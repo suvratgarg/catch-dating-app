@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Add Host" description="Host app — Add-host bottom sheet (from the club's Host team). Phone-number entry to add a co-host by their Catch profile. Faithful to host_team_management_section.dart (_AddHostSheet / CatchBottomSheetScaffold). Rendered over a dimmed Clubs backdrop." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Add Host" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <!-- dimmed backdrop: Host team on the Clubs screen -->
+    <div style="flex: 1; min-height: 0; padding: 12px 20px; opacity: 0.55; filter: saturate(0.9)">
+      <div class="t-kicker" style="color: var(--ink3)">HOST PROFILE</div>
+      <h1 class="t-headline-s" style="margin: 6px 0 16px; color: var(--ink)">Clubs</h1>
+      <div style="background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px">
+        <div class="t-section-title" style="color: var(--ink)">Sunday sea-face crew</div>
+        <div class="t-body-s" style="color: var(--ink2); margin-top: 4px">Bandra · Mumbai · Owner profile</div>
+        <div style="height: 14px"></div>
+        <div style="background: var(--raised); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px">
+          <div class="t-section-title" style="color: var(--ink)">Host team</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- scrim -->
+    <div style="position: absolute; inset: 44px 0 0; background: color-mix(in srgb, var(--ink) 42%, transparent)"></div>
+
+    <!-- sheet -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Sheet" title="Add host" subtitle="Enter the phone number on their Catch profile." hint-size="100%,260px" style="position: absolute; left: 0; right: 0; bottom: 0">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="display: block">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="phone" label="Phone number" leading="+91" value="{{ phone }}" onChange="{{ setPhone }}" hint-size="100%,58px"></x-import>
+      </x-import>
+      <div style="height: 18px"></div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" full="{{ true }}" icon="user-plus" onClick="{{ noop }}" hint-size="100%,49px">Add host</x-import>
+    </x-import>
+  </div>
+</div>
+<helmet>
+  <style>@keyframes catch-caret { 50% { opacity: 0; } }</style>
+</helmet>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 812}}">
+class Component extends DCLogic {
+  state = { phone: '98765 43210' };
+  renderVals() {
+    return { noop: () => {}, phone: this.state.phone, setPhone: (v) => this.setState({ phone: v }) };
+  }
+}
+</script>
+</body>
+</html>

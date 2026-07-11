@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catch for Organizers — Onboarding & Create-event flows</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #E2E1DC; color: var(--ink); font-family: var(--font-function); -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: flex-start; gap: 22px; padding: 28px 16px; min-height: 100vh; flex-wrap: wrap; }
+  .device { position: relative; width: 390px; height: 844px; background: var(--bg); border-radius: 38px; border: 1px solid rgba(22,20,15,0.16); box-shadow: 0 2px 4px rgba(22,20,15,0.05), 0 40px 90px -44px rgba(22,20,15,0.6); overflow: hidden; display: flex; flex-direction: column; }
+  .statusbar { height: 50px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: var(--font-data); font-size: 13px; font-weight: 600; }
+  .statusbar .r { display: flex; gap: 7px; align-items: center; font-size: 14px; }
+  .scroll { flex: 1; min-height: 0; overflow: auto; }
+  .voice { font-family: var(--font-voice); letter-spacing: -0.02em; }
+  .mono { font-family: var(--font-data); }
+
+  /* wizard chrome */
+  .whead { flex: none; padding: 4px 20px 0; }
+  .whead .row { display: flex; align-items: center; gap: 12px; padding: 4px 0 14px; }
+  .whead .bk { width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line2); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
+  .whead .prog { flex: 1; height: 5px; border-radius: 999px; background: var(--line2); overflow: hidden; }
+  .whead .prog i { display: block; height: 100%; background: var(--ink); border-radius: 999px; transition: width .3s; }
+  .whead .stepn { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--ink3); flex: none; }
+  .wbody { padding: 8px 24px 28px; }
+  .wtitle { font-family: var(--font-voice); font-size: 30px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; margin: 8px 0 0; }
+  .wsub { font-size: 14.5px; line-height: 1.55; color: var(--ink2); margin: 10px 0 0; text-wrap: pretty; }
+  .wfoot { flex: none; padding: 12px 20px 20px; background: var(--bg); border-top: 1px solid var(--line); display: flex; gap: 12px; }
+
+  .btn { appearance: none; border: 0; cursor: pointer; border-radius: 14px; padding: 15px 18px; font-family: var(--font-function); font-size: 15px; font-weight: 650; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; }
+  .btn.primary { flex: 1; background: var(--ink); color: var(--primary-ink); }
+  .btn.sec { background: var(--surface); color: var(--ink); border: 1px solid var(--line2); }
+  .btn.ghost { background: none; color: var(--ink2); }
+  .btn:disabled { opacity: 0.4; }
+
+  .lbl { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink2); margin: 22px 0 8px; }
+  .lbl:first-child { margin-top: 18px; }
+  .fld { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line2); border-radius: 14px; padding: 14px 16px; }
+  .fld i { font-size: 18px; color: var(--ink3); flex: none; }
+  .fld input { border: 0; outline: 0; background: none; flex: 1; font-family: var(--font-function); font-size: 15px; font-weight: 600; color: var(--ink); min-width: 0; }
+  .fld .pre { font-weight: 700; color: var(--ink2); }
+  .fld.tap { cursor: pointer; } .fld.tap .val { flex: 1; font-size: 15px; font-weight: 600; }
+  .area { min-height: 84px; align-items: flex-start; } .area textarea { border: 0; outline: 0; background: none; flex: 1; font-family: var(--font-function); font-size: 15px; line-height: 1.5; color: var(--ink); resize: none; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-family: var(--font-function); font-size: 13.5px; font-weight: 600; padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line2); background: var(--surface); color: var(--ink2); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .chip.on { border-color: var(--ink); color: var(--ink); background: var(--primary-soft); }
+  .seg { display: flex; gap: 3px; background: var(--primary-soft); border-radius: 999px; padding: 3px; }
+  .seg button { flex: 1; appearance: none; border: 0; background: none; border-radius: 999px; padding: 10px 4px; font-family: var(--font-data); font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink2); cursor: pointer; } .seg button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(22,20,15,0.12); }
+  .stepper { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--line2); border-radius: 14px; overflow: hidden; }
+  .stepper button { width: 50px; height: 52px; border: 0; background: none; font-size: 20px; color: var(--ink); cursor: pointer; } .stepper .sv { flex: 1; text-align: center; font-family: var(--font-data); font-size: 15px; font-weight: 700; }
+  .two { display: flex; gap: 12px; } .two > * { flex: 1; }
+  .help { font-size: 12px; color: var(--ink3); margin: 8px 0 0; line-height: 1.5; }
+
+  /* onboarding bits */
+  .splash { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 30px; }
+  .logo { width: 60px; height: 60px; border-radius: 17px; background: var(--ink); color: var(--primary-ink); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: 24px; }
+  .otp { display: flex; gap: 9px; } .otp .box { flex: 1; height: 58px; border: 1.5px solid var(--line2); border-radius: 13px; display: flex; align-items: center; justify-content: center; font-family: var(--font-data); font-size: 24px; font-weight: 700; background: var(--surface); } .otp .box.f { border-color: var(--ink); } .otp .box.cur { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(22,20,15,0.06); }
+  .opt2 { display: flex; flex-direction: column; gap: 12px; }
+  .ocard { display: flex; align-items: center; gap: 14px; text-align: left; background: var(--surface); border: 1.5px solid var(--line2); border-radius: 18px; padding: 18px; cursor: pointer; font-family: inherit; } .ocard.on { border-color: var(--ink); }
+  .ocard .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--primary-soft); display: flex; align-items: center; justify-content: center; font-size: 22px; flex: none; }
+  .ocard .t { flex: 1; } .ocard .t b { font-family: var(--font-head); font-size: 16px; font-weight: 700; display: block; } .ocard .t span { font-size: 12.5px; color: var(--ink2); display: block; margin-top: 3px; line-height: 1.45; }
+  .photoslot { display: flex; align-items: center; gap: 14px; }
+  .photoslot .sq { width: 76px; height: 76px; border-radius: 18px; border: 1.5px dashed var(--line2); display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--ink3); background: repeating-linear-gradient(135deg, var(--raised), var(--raised) 9px, var(--surface) 9px, var(--surface) 18px); flex: none; }
+  .photoslot.round .sq { border-radius: 999px; }
+
+  /* review + celebration */
+  .rev { background: var(--surface); border: 1px solid var(--line2); border-radius: 18px; overflow: hidden; }
+  .rev .hd { position: relative; padding: 18px; color: #F4F0E8; } .rev .hd .glow { position: absolute; inset: 0; opacity: 0.9; z-index: -1; } .rev .hd .k { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; } .rev .hd h3 { font-family: var(--font-voice); font-size: 22px; font-weight: 600; margin: 6px 0 0; letter-spacing: -0.02em; }
+  .rev .ln { display: flex; align-items: center; gap: 12px; padding: 13px 18px; border-top: 1px solid var(--line); } .rev .ln i { font-size: 17px; color: var(--ink3); flex: none; } .rev .ln .k { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.06em; color: var(--ink3); width: 64px; flex: none; } .rev .ln .v { font-size: 14px; color: var(--ink); flex: 1; } .rev .ln .ed { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink2); cursor: pointer; }
+  .cel { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 36px; }
+  .cel .burst { width: 92px; height: 92px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 46px; color: #fff; }
+  .cel h2 { font-family: var(--font-voice); font-size: 32px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; margin: 24px 0 0; }
+  .cel p { font-size: 15px; line-height: 1.55; color: var(--ink2); margin: 12px 0 0; text-wrap: pretty; }
+  .repbanner { display: flex; align-items: center; gap: 10px; background: var(--act-pub-quiz-soft); border-radius: 14px; padding: 12px 14px; margin-bottom: 4px; } .repbanner i { color: var(--act-pub-quiz-deep); font-size: 18px; } .repbanner span { font-size: 13px; color: var(--act-pub-quiz-deep); font-weight: 600; }
+
+  /* launcher (left rail) */
+  .rail { width: 300px; }
+  .rail .k { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink2); }
+  .rail h3 { font-family: var(--font-voice); font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 4px 0 0; }
+  .rail p { font-size: 13px; line-height: 1.55; color: var(--ink2); }
+  .lbtn { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 10px; cursor: pointer; font-family: inherit; } .lbtn.on { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(22,20,15,0.05); } .lbtn i { font-size: 20px; color: var(--ink2); } .lbtn b { font-family: var(--font-head); font-size: 14.5px; font-weight: 700; display: block; } .lbtn span { font-size: 12px; color: var(--ink2); }
+  .toast { position: absolute; left: 16px; right: 16px; bottom: 24px; z-index: 50; background: var(--ink); color: var(--primary-ink); border-radius: 14px; padding: 13px 16px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: all .25s; pointer-events: none; } .toast.on { transform: translateY(0); opacity: 1; } .toast i { color: #5BC07C; }
+</style>
+</head>
+<body>
+<div class="device" id="app"></div>
+<div class="rail">
+  <div class="k">Catch for Organizers</div>
+  <h3>The two big flows.</h3>
+  <p>Net-new flows the prototype stubbed — now built. Pick one; each runs end to end and returns here.</p>
+  <button class="lbtn" data-flow="onboard"><i class="ph ph-rocket-launch"></i><div><b>First-run · onboarding</b><span>Sign in → organizer → host profile</span></div></button>
+  <button class="lbtn" data-flow="create"><i class="ph ph-plus-circle"></i><div><b>Create an event</b><span>5-step wizard → publish</span></div></button>
+  <button class="lbtn" data-flow="repeat"><i class="ph ph-arrows-clockwise"></i><div><b>Repeat last event</b><span>Clone ‘Tuesday Trivia’ with a new date</span></div></button>
+  <p style="margin-top:18px;font-size:11.5px;color:var(--ink3);font-style:italic">Composes with v2's widgets &amp; tokens; both flows belong in CatchForOrganizers once approved.</p>
+</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" data-presets="react">
+
+const { useState } = React;
+const ACT = { socialRun: ['--act-social-run', 'Social run'], pubQuiz: ['--act-pub-quiz', 'Pub quiz'], dinner: ['--act-dinner', 'Supper club'], padel: ['--act-padel', 'Padel'], yoga: ['--act-yoga', 'Yoga'], walking: ['--act-walking', 'Walk'] };
+const accentOf = (a) => `var(${ACT[a][0]}-accent)`;
+const SB = () => <div className="statusbar"><span>3:11</span><span className="r"><i className="ph-fill ph-cell-signal-full"></i><i className="ph-fill ph-wifi-high"></i><i className="ph-fill ph-battery-high"></i></span></div>;
+const Field = ({ icon, pre, ...p }) => <div className="fld"><i className={'ph ph-' + icon}></i>{pre && <span className="pre">{pre}</span>}<input {...p} /></div>;
+const Tap = ({ icon, val, onClick }) => <div className="fld tap" onClick={onClick}><i className={'ph ph-' + icon}></i><span className="val">{val}</span><i className="ph ph-caret-right" style={{ color: 'var(--ink3)' }}></i></div>;
+const Stepper = ({ v, set, fmt, step = 1, min = 0, max = 999 }) => <div className="stepper"><button onClick={() => set(Math.max(min, v - step))}>–</button><span className="sv">{fmt ? fmt(v) : v}</span><button onClick={() => set(Math.min(max, v + step))}>+</button></div>;
+
+function WizHead({ step, total, onBack }) {
+  return <div className="whead"><div className="row"><div className="bk" onClick={onBack}><i className={'ph ph-' + (step === 0 ? 'x' : 'arrow-left')}></i></div><div className="prog"><i style={{ width: Math.round((step + 1) / total * 100) + '%' }}></i></div><span className="stepn">{step + 1}/{total}</span></div></div>;
+}
+
+/* ───────── ONBOARDING ───────── */
+function Onboarding({ onDone, toast }) {
+  const [s, setS] = useState(0);
+  const [phone, setPhone] = useState('');
+  const [orgMode, setOrgMode] = useState(null);
+  const [name, setName] = useState('');const [city, setCity] = useState('Mumbai');
+  const [fmts, setFmts] = useState([]);
+  const [hostName, setHostName] = useState('');const [role, setRole] = useState('');
+  const tot = 6;
+  const tF = (f) => setFmts((x) => x.includes(f) ? x.filter((y) => y !== f) : [...x, f]);
+  const next = () => setS(s + 1),back = () => s === 0 ? onDone() : setS(s - 1);
+
+  if (s === 0) return <><SB /><div className="splash">
+    <div className="logo">C</div>
+    <h1 className="voice" style={{ fontSize: 38, fontWeight: 600, margin: '28px 0 0', lineHeight: 1.02 }}>Run better events.</h1>
+    <p style={{ fontSize: 16, lineHeight: 1.55, color: 'var(--ink2)', margin: '14px 0 0' }}>Bookings, waitlists, check-in, live facilitation, and the report — for whatever you host.</p>
+    <div className="lbl">Your phone</div>
+    <Field icon="phone" pre="+91" inputMode="tel" placeholder="98765 43210" value={phone} onChange={(e) => setPhone(e.target.value)} />
+    <p className="help">We’ll text a 6-digit code. Your number is never shown to guests.</p>
+    <button className="btn primary" style={{ width: '100%', marginTop: 18 }} disabled={phone.length < 5} onClick={next}>Continue</button>
+  </div></>;
+
+  if (s === 1) {const code = '418293';
+    return <><SB /><WizHead step={s} total={tot} onBack={back} /><div className="scroll"><div className="wbody">
+      <div className="wtitle">Enter the code</div><div className="wsub">Sent to +91 {phone || '98765 43210'}. <span style={{ color: 'var(--ink)', fontWeight: 600 }}>Change</span></div>
+      <div className="otp" style={{ marginTop: 26 }}>{[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className={'box' + (i < code.length ? ' f' : '') + (i === code.length ? ' cur' : '')}>{code[i] || ''}</div>)}</div>
+      <p className="help" style={{ marginTop: 16 }}>Didn’t get it? <span style={{ color: 'var(--ink)', fontWeight: 600 }}>Resend in 0:24</span></p>
+    </div></div><div className="wfoot"><button className="btn primary" onClick={next}>Verify</button></div></>;
+  }
+
+  if (s === 2) return <><SB /><WizHead step={s} total={tot} onBack={back} /><div className="scroll"><div className="wbody">
+    <div className="wtitle">Set up your organizer</div><div className="wsub">Your organizer is the brand guests follow — it can run any format, not just one club.</div>
+    <div className="opt2" style={{ marginTop: 22 }}>
+      <button className={'ocard' + (orgMode === 'fresh' ? ' on' : '')} onClick={() => setOrgMode('fresh')}><div className="ic"><i className="ph ph-sparkle"></i></div><div className="t"><b>Start fresh</b><span>Create a brand-new organizer from scratch</span></div>{orgMode === 'fresh' && <i className="ph-fill ph-check-circle" style={{ color: 'var(--success)', fontSize: 20 }}></i>}</button>
+      <button className={'ocard' + (orgMode === 'claim' ? ' on' : '')} onClick={() => setOrgMode('claim')}><div className="ic"><i className="ph ph-seal-check"></i></div><div className="t"><b>Claim an existing listing</b><span>Found your run club or supper club already on Catch? Take ownership.</span></div>{orgMode === 'claim' && <i className="ph-fill ph-check-circle" style={{ color: 'var(--success)', fontSize: 20 }}></i>}</button>
+    </div>
+  </div></div><div className="wfoot"><button className="btn primary" disabled={!orgMode} onClick={next}>Continue</button></div></>;
+
+  if (s === 3) return <><SB /><WizHead step={s} total={tot} onBack={back} /><div className="scroll"><div className="wbody">
+    <div className="wtitle">{orgMode === 'claim' ? 'Confirm your organizer' : 'Name your organizer'}</div><div className="wsub">{orgMode === 'claim' ? 'We found this listing — tidy it up and claim it.' : 'You can change any of this later.'}</div>
+    <div className="lbl">Organizer name</div>
+    <Field icon="storefront" placeholder="e.g. Bandra Social" value={name} onChange={(e) => setName(e.target.value)} />
+    <div className="lbl">City</div>
+    <Tap icon="map-pin" val={city} onClick={() => toast('City picker')} />
+    <div className="lbl">What you host</div>
+    <div className="chips">{Object.keys(ACT).map((a) => <button key={a} className={'chip' + (fmts.includes(a) ? ' on' : '')} onClick={() => tF(a)}>{fmts.includes(a) && <i className="ph ph-check" style={{ fontSize: 12 }}></i>}{ACT[a][1]}</button>)}</div>
+    <div className="lbl">Logo</div>
+    <div className="photoslot"><div className="sq" onClick={() => toast('Add logo')}><i className="ph ph-image-square"></i></div><p className="help" style={{ margin: 0, flex: 1 }}>Square mark, shown on your page and every event card. Optional — we’ll use a monogram until you add one.</p></div>
+  </div></div><div className="wfoot"><button className="btn primary" disabled={!name || !fmts.length} onClick={next}>Continue</button></div></>;
+
+  if (s === 4) return <><SB /><WizHead step={s} total={tot} onBack={back} /><div className="scroll"><div className="wbody">
+    <div className="wtitle">You, the host</div><div className="wsub">Your professional host profile — separate from any dating profile, public to guests.</div>
+    <div className="photoslot round" style={{ marginTop: 20 }}><div className="sq" onClick={() => toast('Add photo')}><i className="ph ph-user"></i></div><p className="help" style={{ margin: 0, flex: 1 }}>A friendly face raises bookings — guests like knowing who’s running the room.</p></div>
+    <div className="lbl">Your name</div>
+    <Field icon="user" placeholder="Aanya Sharma" value={hostName} onChange={(e) => setHostName(e.target.value)} />
+    <div className="lbl">Role title</div>
+    <Field icon="identification-badge" placeholder="e.g. Lead host" value={role} onChange={(e) => setRole(e.target.value)} />
+  </div></div><div className="wfoot"><button className="btn primary" disabled={!hostName} onClick={next}>Continue</button></div></>;
+
+  return <><SB /><div className="cel">
+    <div className="burst" style={{ background: 'var(--act-pub-quiz-accent)' }}><i className="ph-fill ph-confetti"></i></div>
+    <h2>You’re an organizer.</h2>
+    <p>{name || 'Bandra Social'} is live. Create your first event whenever you’re ready — your defaults will prefill it.</p>
+    <button className="btn primary" style={{ width: '100%', marginTop: 26 }} onClick={onDone}>Enter Catch</button>
+    <button className="btn ghost" style={{ marginTop: 8 }} onClick={onDone}>Create my first event</button>
+  </div></>;
+}
+
+/* ───────── CREATE / REPEAT EVENT ───────── */
+const LAST = { act: 'pubQuiz', title: 'Tuesday Trivia Night', desc: 'Three rounds, no phones, winners buy the next one. Teams drawn at the door.', where: 'The Daily Bar, Khar', dir: 'Upstairs — ask for the Bandra Social table.', dur: 180, cap: 30, price: 0, adm: 'open', minAge: 21, maxAge: 45 };
+
+function CreateEvent({ repeat, onDone, toast }) {
+  const seed = repeat ? LAST : { act: 'socialRun', title: '', desc: '', where: '', dir: '', dur: 90, cap: 20, price: 0, adm: 'open', minAge: 24, maxAge: 40 };
+  const [s, setS] = useState(repeat ? 1 : 0);
+  const [act, setAct] = useState(seed.act);
+  const [title, setTitle] = useState(seed.title);
+  const [desc, setDesc] = useState(seed.desc);
+  const [date, setDate] = useState(repeat ? 'Tue · 24 Jun 2025' : 'Sun · 22 Jun 2025');
+  const [time, setTime] = useState('8:00 PM');
+  const [dur, setDur] = useState(seed.dur);
+  const [where, setWhere] = useState(seed.where);
+  const [dir, setDir] = useState(seed.dir);
+  const [cap, setCap] = useState(seed.cap);
+  const [price, setPrice] = useState(seed.price);
+  const [adm, setAdm] = useState(seed.adm);
+  const [done, setDone] = useState(false);
+  const tot = 5;
+  const durFmt = (m) => `${Math.floor(m / 60)}h${m % 60 ? ' ' + m % 60 + 'm' : ''}`;
+  const back = () => s === 0 || repeat && s === 1 ? onDone() : setS(s - 1);
+  const next = () => setS(s + 1);
+  const acc = accentOf(act);
+
+  if (done) return <><SB /><div className="cel">
+    <div className="burst" style={{ background: acc }}><i className="ph-fill ph-confetti"></i></div>
+    <h2>Your event is live.</h2>
+    <p>{title || 'Your event'} is listed on Bandra Social. Guests can discover and book it now.</p>
+    <button className="btn primary" style={{ width: '100%', marginTop: 26 }} onClick={onDone}>Manage event</button>
+    <button className="btn ghost" style={{ marginTop: 8 }} onClick={onDone}>Share private link</button>
+  </div></>;
+
+  const repBanner = repeat && <div className="repbanner"><i className="ph-fill ph-arrows-clockwise"></i><span>Repeating ‘Tuesday Trivia’ — set a new date, tweak the rest.</span></div>;
+
+  let body;
+  if (s === 0) body = <><div className="wtitle">What are you hosting?</div>
+    <div className="lbl">Activity</div>
+    <div className="chips">{Object.keys(ACT).map((a) => <button key={a} className={'chip' + (act === a ? ' on' : '')} onClick={() => setAct(a)}>{ACT[a][1]}</button>)}</div>
+    <div className="lbl">Title</div><Field icon="text-aa" placeholder="A name guests will recognise" value={title} onChange={(e) => setTitle(e.target.value)} />
+    <div className="lbl">Description · optional</div><div className="fld area"><textarea rows="3" placeholder="What happens, who it’s for, the vibe." value={desc} onChange={(e) => setDesc(e.target.value)}></textarea></div></>;else
+  if (s === 1) body = <>{repBanner}<div className="wtitle">When is it?</div>
+    <div className="lbl">Date</div><Tap icon="calendar-blank" val={date} onClick={() => toast('Date picker')} />
+    <div className="lbl">Start time</div><Tap icon="clock" val={time} onClick={() => toast('Time picker')} />
+    <div className="lbl">Duration</div><Stepper v={dur} set={setDur} fmt={durFmt} step={15} min={30} max={360} /></>;else
+  if (s === 2) body = <><div className="wtitle">Where do you meet?</div>
+    <div className="lbl">Meeting point</div><Field icon="map-pin" placeholder="Venue or spot guests will see" value={where} onChange={(e) => setWhere(e.target.value)} />
+    <div className="lbl">Finding you · optional</div><div className="fld area"><textarea rows="2" placeholder="Door, floor, landmark…" value={dir} onChange={(e) => setDir(e.target.value)}></textarea></div>
+    <div className="fld tap" style={{ marginTop: 14 }} onClick={() => toast('Open map picker')}><i className="ph-fill ph-map-trifold" style={{ color: acc }}></i><span className="val">Drop a pin on the map</span><i className="ph ph-caret-right" style={{ color: 'var(--ink3)' }}></i></div></>;else
+  if (s === 3) body = <><div className="wtitle">Who, and how much?</div>
+    <div className="two"><div><div className="lbl">Capacity</div><Stepper v={cap} set={setCap} step={1} min={2} max={200} /></div><div><div className="lbl">Price (₹)</div><Stepper v={price} set={setPrice} fmt={(v) => v ? '₹' + v : 'Free'} step={50} min={0} max={5000} /></div></div>
+    <div className="lbl">Admission</div><div className="seg">{[['open', 'Open'], ['invite', 'Invite'], ['request', 'Request'], ['balanced', 'Balanced']].map(([v, l]) => <button key={v} className={adm === v ? 'on' : ''} onClick={() => setAdm(v)}>{l}</button>)}</div>
+    <p className="help">{{ open: 'Anyone eligible can book until it fills.', invite: 'Only people with the code or link can book.', request: 'You review each profile before confirming.', balanced: 'Keeps the straight men/women split within one spot.' }[adm]}</p>
+    <div className="lbl">Age range</div><div className="two"><Stepper v={cap === -1 ? 0 : 0} set={() => {}} fmt={() => seed.minAge} /><Stepper v={0} set={() => {}} fmt={() => seed.maxAge} /></div></>;else
+  body = <>{repBanner}<div className="wtitle">Ready to publish</div>
+    <div className="rev" style={{ marginTop: 18 }}>
+      <div className="hd catch-dark" style={{ background: '#18171A' }}><div className="glow" style={{ background: acc, filter: 'blur(34px)' }}></div><div className="k">{ACT[act][1]} · Bandra Social</div><h3>{title || 'Untitled event'}</h3></div>
+      <div className="ln"><i className="ph ph-calendar-blank"></i><span className="k">WHEN</span><span className="v">{date} · {time} · {durFmt(dur)}</span><span className="ed" onClick={() => setS(1)}>Edit</span></div>
+      <div className="ln"><i className="ph ph-map-pin"></i><span className="k">WHERE</span><span className="v">{where || '—'}</span><span className="ed" onClick={() => setS(2)}>Edit</span></div>
+      <div className="ln"><i className="ph ph-users-three"></i><span className="k">WHO</span><span className="v">{cap} spots · {price ? '₹' + price : 'Free'} · {adm}</span><span className="ed" onClick={() => setS(3)}>Edit</span></div>
+    </div>
+    <p className="help" style={{ marginTop: 14 }}>Publishing lists it for discovery. You can edit until the first booking; schedule &amp; price lock after.</p></>;
+
+  return <><SB /><WizHead step={s} total={tot} onBack={back} /><div className="scroll"><div className="wbody">{body}</div></div>
+    <div className="wfoot">
+      {s > 0 && !(repeat && s === 1) && <button className="btn sec" onClick={() => setS(s - 1)} style={{ flex: 'none', paddingLeft: 16, paddingRight: 16 }}><i className="ph ph-arrow-left"></i></button>}
+      {s < 4 ? <button className="btn primary" disabled={s === 0 && !title} onClick={next}>{repeat && s === 1 ? 'Review changes' : 'Next'}</button> :
+      <button className="btn primary" style={{ background: acc }} onClick={() => setDone(true)}><i className="ph-fill ph-rocket-launch"></i>Publish event</button>}
+    </div></>;
+}
+
+function App() {
+  const [flow, setFlow] = useState('onboard');
+  const [toastMsg, setToastMsg] = useState(null);
+  const toast = (m) => {setToastMsg(m);clearTimeout(window.__t);window.__t = setTimeout(() => setToastMsg(null), 1700);};
+  React.useEffect(() => {document.querySelectorAll('.lbtn').forEach((b) => {b.onclick = () => {document.querySelectorAll('.lbtn').forEach((x) => x.classList.remove('on'));b.classList.add('on');setFlow(b.dataset.flow);};});document.querySelector('.lbtn').classList.add('on');}, []);
+  return <>
+    {flow === 'onboard' && <Onboarding key="o" onDone={() => toast('→ enters the app')} toast={toast} />}
+    {flow === 'create' && <CreateEvent key="c" repeat={false} onDone={() => toast('→ back to Events')} toast={toast} />}
+    {flow === 'repeat' && <CreateEvent key="r" repeat={true} onDone={() => toast('→ back to Events')} toast={toast} />}
+    <div className={'toast' + (toastMsg ? ' on' : '')}><i className="ph-fill ph-check-circle"></i>{toastMsg}</div>
+  </>;
+}
+ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+</script>
+</body>
+</html>

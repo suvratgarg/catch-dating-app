@@ -11,6 +11,10 @@ const defaultFixture = fromRepo(
 const defaultAnswerPacket = fromRepo(
   "tool/organizer_intake/generated/organizer_pending_decision_answer_packet.json"
 );
+const defaultClaimReadinessReceipt = path.join(
+  "/tmp",
+  "catch-organizer-claim-target-readiness.json"
+);
 
 if (isMain()) {
   try {
@@ -244,9 +248,27 @@ export function buildSteps(args) {
     label: "generate organizer intake artifacts",
     command: [process.execPath, "tool/organizer_intake/organizer_intake.mjs"],
   });
+
+  if (args.claimSync === "firestore") {
+    steps.push(claimSyncStep(args, {
+      receipt: args.claimReadinessReceipt ?? defaultClaimReadinessReceipt,
+    }));
+  }
+
   steps.push({
     label: "generate website organizer listings",
-    command: ["npm", "--workspace", "catch-marketing", "run", "generate:organizer-listings"],
+    command: args.claimSync === "firestore" ? [
+      process.execPath,
+      "website/scripts/generateOrganizerListings.mjs",
+      "--claim-target-readiness-receipt",
+      args.claimReadinessReceipt ?? defaultClaimReadinessReceipt,
+    ] : [
+      "npm",
+      "--workspace",
+      "catch-marketing",
+      "run",
+      "generate:organizer-listings",
+    ],
   });
   steps.push({
     label: "validate admin review bridge",
@@ -264,30 +286,35 @@ export function buildSteps(args) {
     });
   }
 
-  if (args.claimSync !== "none") {
-    const command = [
-      process.execPath,
-      "tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
-    ];
-    if (args.claimSync === "fixture") {
-      command.push("--fixture", args.fixture);
-    } else {
-      if (args.env) command.push("--env", args.env);
-      if (args.project) command.push("--project", args.project);
-      if (args.emulator) command.push("--emulator");
-      if (args.writeClaimTargets) command.push("--write");
-      if (args.allowProd) command.push("--allow-prod");
-      if (args.confirmProd) command.push("--confirm-prod");
-    }
-    steps.push({
-      label: args.claimSync === "fixture" ?
-        "preview claim-target sync against empty fixture" :
-        "preview claim-target sync against Firestore",
-      command,
-    });
+  if (args.claimSync === "fixture") {
+    steps.push(claimSyncStep(args));
   }
 
   return steps;
+}
+
+function claimSyncStep(args, {receipt = null} = {}) {
+  const command = [
+    process.execPath,
+    "tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
+  ];
+  if (args.claimSync === "fixture") {
+    command.push("--fixture", args.fixture);
+  } else {
+    if (args.env) command.push("--env", args.env);
+    if (args.project) command.push("--project", args.project);
+    if (args.emulator) command.push("--emulator");
+    if (args.writeClaimTargets) command.push("--write");
+    if (args.allowProd) command.push("--allow-prod");
+    if (args.confirmProd) command.push("--confirm-prod");
+    if (receipt) command.push("--receipt", receipt);
+  }
+  return {
+    label: args.claimSync === "fixture" ?
+      "preview claim-target sync against empty fixture" :
+      "verify claim targets against Firestore",
+    command,
+  };
 }
 
 export function parseArgs(argv) {
@@ -300,6 +327,7 @@ export function parseArgs(argv) {
     answerPacket: defaultAnswerPacket,
     applyDecisionAnswers: false,
     claimSync: "fixture",
+    claimReadinessReceipt: defaultClaimReadinessReceipt,
     confirmProd: false,
     date: null,
     emulator: false,
@@ -345,6 +373,8 @@ export function parseArgs(argv) {
       if (!["fixture", "firestore", "none"].includes(parsed.claimSync)) {
         throw new Error("--claim-sync must be fixture, firestore, or none.");
       }
+    } else if (arg === "--claim-readiness-receipt") {
+      parsed.claimReadinessReceipt = path.resolve(requiredValue(argv, ++index, arg));
     } else if (arg === "--date") parsed.date = requiredValue(argv, ++index, arg);
     else if (arg === "--answer-packet") {
       parsed.answerPacket = path.resolve(requiredValue(argv, ++index, arg));
@@ -419,11 +449,12 @@ Runs the reviewed organizer promotion pipeline in order:
   7. search-result candidate queue generation
   8. external event candidate queue generation
   9. organizer intake artifact generation
-  10. website listing generation
-  11. admin review bridge validation
-  12. promotion bridge validation
-  13. marketing website build-output validation
-  14. claim-target sync dry run or write
+  10. Firestore claim-target verification and receipt (when selected)
+  11. website listing generation from that receipt
+  12. admin review bridge validation
+  13. promotion bridge validation
+  14. marketing website build-output validation
+  15. local fixture claim-target preview (default mode)
 
 Default mode is local-only: no remote Firestore read or write.
 
@@ -450,6 +481,9 @@ Options:
   --allow-overwrite-export        Allow exporter to overwrite an existing identical batch.
   --claim-sync fixture|firestore|none
                                    Default: fixture.
+  --claim-readiness-receipt <path> Read-only Firestore readiness receipt passed to
+                                  website listing generation in firestore mode.
+                                  Default: ${defaultClaimReadinessReceipt}
   --fixture <path>                Existing-club fixture for fixture claim-sync mode.
                                   Default: ${relativeToRepo(defaultFixture)}
   --env dev|staging|prod          Firebase env for export or Firestore claim-sync.

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -69,6 +70,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       backgroundColor: t.bg,
       appBar: const CatchTopBar(title: 'Calendar'),
       body: SafeArea(
+        bottom: false,
         child: Builder(
           builder: (context) {
             if (uidAsync.isLoading) {
@@ -162,6 +164,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     onRetryClubNames: () =>
                         ref.invalidate(clubNameLookupProvider),
                   ),
+                  const CatchSliverTerminalPadding(),
                 ],
               ),
             );

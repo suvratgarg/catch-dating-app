@@ -102,6 +102,55 @@ node tool/check_remote_ops_manifest.mjs --check
 node tool/check_remote_ops_manifest.mjs --list
 ```
 
+## Installable App Targets
+
+`tool/app_targets.json` is the checked Consumer/Host × dev/staging/prod target
+matrix. Build wrappers and Apple flavor generation resolve identity from it;
+the app-target gate reconciles the remaining native, Firebase, capability,
+deep-link, force-update, and release surfaces. Each target has its own explicit
+composition entrypoint (`main_<role>_<environment>.dart`); aggregate Android
+build tasks and caller-supplied wrapper arguments that cannot resolve exactly
+one target fail before compilation.
+
+```sh
+node tool/platform/resolve_app_target.mjs --role host --environment prod
+node tool/run.mjs check platform:app-targets
+node tool/run.mjs check platform:verify-ios-release-identity
+```
+
+The release-identity verifier accepts an `.xcarchive` or exported `.app` and
+checks compiled target markers, version/build, embedded Firebase identity and
+OAuth URL scheme, plus role-specific signed entitlements. GitHub and Xcode
+Cloud run it before distribution and persist JSON receipts.
+
+Do not add a bundle id, Firebase app id, native flavor, or store product only to
+a workflow or platform file. Add it to the target contract and make the
+consumer query or checker change in the same pass.
+
+### Firebase deploy and client-callable gates
+
+`tool/firebase/plan_firebase_deploy_targets.mjs` is the pure planner behind
+`tool/deploy_firebase_targets.sh`. It validates target syntax, expands logical
+Functions from source exports, keeps exact `functions:<name>` targets in the
+Functions-first phase, and fails empty plans before any remote command runs.
+The deploy wrapper synchronizes live callable Cloud Run invoker bindings after
+the Functions phase and before indexes or rules.
+
+`tool/firebase/client_callable_dependencies.json` declares production client
+features that require a callable. The static checker reconciles the Dart define,
+`AppConfig`, and Functions export. Release workflows add `--verify-live` so an
+enabled dependency must reach the Firebase callable adapter before archive:
+
+```sh
+node --test tool/firebase/plan_firebase_deploy_targets.test.mjs
+node tool/firebase/check_client_callable_dependencies.mjs \
+  --role host --environment prod
+```
+
+Do not enable a production callable-backed client flag in the same release step
+that first creates the backend. Deploy and prove the backend while the flag is
+dark, then enable the client in a later merge.
+
 ## App Check Debug Tokens
 
 Local simulator App Check debug tokens are registered through a narrow helper

@@ -1,4 +1,5 @@
 import java.util.Properties
+import groovy.json.JsonSlurper
 
 plugins {
     id("com.android.application")
@@ -31,15 +32,6 @@ fun googleMapsApiKeyValue(name: String): String =
 fun googleMapsApiKeyFor(environmentName: String): String =
     googleMapsApiKeyValue("GOOGLE_MAPS_ANDROID_API_KEY_$environmentName")
         .ifBlank { googleMapsApiKeyValue("GOOGLE_MAPS_ANDROID_API_KEY") }
-
-val catchAppRole = providers.gradleProperty("catchAppRole").orElse("consumer").get()
-if (catchAppRole !in setOf("consumer", "host")) {
-    throw GradleException(
-        "Unsupported catchAppRole '$catchAppRole'. Use consumer or host."
-    )
-}
-val isHostApp = catchAppRole == "host"
-val baseApplicationId = if (isHostApp) "com.catchdates.host" else "com.catchdates.app"
 
 val releaseBuildRequested = gradle.startParameter.taskNames.any {
     it.contains("release", ignoreCase = true)
@@ -90,15 +82,57 @@ if (releaseBuildRequested && releaseStoreFile != null && !releaseStoreFile.exist
 // ./tool/use_firebase_environment.sh. Building a flavor whose package is not in
 // the active file otherwise fails deep inside the google-services plugin with a
 // cryptic "No matching client" error. Fail early with an actionable message.
-val flavorApplicationIds = mapOf(
-    "dev" to "$baseApplicationId.dev",
-    "staging" to "$baseApplicationId.staging",
-    "prod" to baseApplicationId,
+fun jsonObject(value: Any?, label: String): Map<*, *> =
+    value as? Map<*, *> ?: throw GradleException("$label must be a JSON object")
+
+fun jsonString(source: Map<*, *>, key: String, label: String): String =
+    source[key] as? String ?: throw GradleException("$label.$key must be a string")
+
+val appTargetsManifestFile = rootProject.file("../tool/app_targets.json")
+val appTargetsManifest = jsonObject(
+    JsonSlurper().parse(appTargetsManifestFile),
+    "tool/app_targets.json",
 )
-val requestedFlavor = flavorApplicationIds.keys.firstOrNull { flavor ->
-    gradle.startParameter.taskNames.any { task ->
-        task.contains(flavor, ignoreCase = true)
-    }
+val installableAppTargets =
+    (appTargetsManifest["targets"] as? List<*>)
+        ?.mapIndexed { index, target -> jsonObject(target, "targets[$index]") }
+        ?: throw GradleException("tool/app_targets.json.targets must be a list")
+val installableAppRoles = jsonObject(appTargetsManifest["roles"], "roles")
+val flavorApplicationIds = installableAppTargets.associate { target ->
+    val androidTarget = jsonObject(target["android"], "${target["id"]}.android")
+    jsonString(androidTarget, "flavor", "${target["id"]}.android") to
+        jsonString(androidTarget, "applicationId", "${target["id"]}.android")
+}
+val requestedAppTargets = installableAppTargets.filter { target ->
+    val androidTarget = jsonObject(target["android"], "${target["id"]}.android")
+    val flavor = jsonString(androidTarget, "flavor", "${target["id"]}.android")
+    gradle.startParameter.taskNames.any { task -> task.contains(flavor, ignoreCase = true) }
+}
+val nativeAndroidBuildRequested = gradle.startParameter.taskNames.any { task ->
+    val leafTaskName = task.substringAfterLast(':')
+    listOf(
+        "assemble",
+        "bundle",
+        "compileFlutter",
+        "build",
+        "check",
+        "test",
+        "lint",
+        "connected",
+        "device",
+    ).any { prefix -> leafTaskName.startsWith(prefix, ignoreCase = true) }
+}
+if (nativeAndroidBuildRequested && requestedAppTargets.size != 1) {
+    throw GradleException(
+        "Android builds must select exactly one app-target flavor from tool/app_targets.json; " +
+            "resolved ${requestedAppTargets.size}. Use ./tool/flutter_with_env.sh or a fully " +
+            "qualified task such as :app:assembleHostDevDebug."
+    )
+}
+val requestedAppTarget = requestedAppTargets.singleOrNull()
+val requestedFlavor = requestedAppTarget?.let { target ->
+    val androidTarget = jsonObject(target["android"], "${target["id"]}.android")
+    jsonString(androidTarget, "flavor", "${target["id"]}.android")
 }
 if (requestedFlavor != null) {
     val googleServicesFiles = listOf(
@@ -117,7 +151,7 @@ if (requestedFlavor != null) {
                 "${googleServicesFile.path} does not contain the '$requestedFlavor' " +
                     "flavor package ($expectedApplicationId). The checked-in file is an " +
                     "environment working copy — run " +
-                    "./tool/use_firebase_environment.sh $requestedFlavor $catchAppRole before building " +
+                    "./tool/use_firebase_environment.sh for the requested app target before building " +
                     "the $requestedFlavor flavor, or use ./tool/flutter_with_env.sh."
             )
         }
@@ -139,7 +173,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = baseApplicationId
+        applicationId = "com.catchdates.app"
         minSdk = maxOf(26, flutter.minSdkVersion)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -149,37 +183,39 @@ android {
         )
     }
 
-    flavorDimensions += "environment"
+    flavorDimensions += "appTarget"
     productFlavors {
-        create("dev") {
-            dimension = "environment"
-            applicationIdSuffix = ".dev"
-            resValue("string", "app_name", if (isHostApp) "Catch Host Dev" else "Catch Dev")
-            manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyFor("DEV")
-        }
-        create("staging") {
-            dimension = "environment"
-            applicationIdSuffix = ".staging"
-            resValue("string", "app_name", if (isHostApp) "Catch Host Staging" else "Catch Staging")
-            manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyFor("STAGING")
-        }
-        create("prod") {
-            dimension = "environment"
-            resValue("string", "app_name", if (isHostApp) "Catch Host" else "Catch")
-            manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyFor("PROD")
+        for (target in installableAppTargets) {
+            val targetId = jsonString(target, "id", "target")
+            val androidTarget = jsonObject(target["android"], "$targetId.android")
+            val environment = jsonString(target, "environment", targetId)
+            create(jsonString(androidTarget, "flavor", "$targetId.android")) {
+                dimension = "appTarget"
+                applicationId = jsonString(androidTarget, "applicationId", "$targetId.android")
+                resValue("string", "app_name", jsonString(target, "displayName", targetId))
+                manifestPlaceholders["googleMapsApiKey"] =
+                    googleMapsApiKeyFor(environment.uppercase())
+            }
         }
     }
 
-    if (isHostApp) {
-        sourceSets {
-            getByName("dev") {
-                res.setSrcDirs(listOf("src/hostDev/res"))
-            }
-            getByName("staging") {
-                res.setSrcDirs(listOf("src/hostStaging/res"))
-            }
-            getByName("prod") {
-                res.setSrcDirs(listOf("src/hostProd/res"))
+    sourceSets {
+        for (target in installableAppTargets) {
+            val targetId = jsonString(target, "id", "target")
+            val role = jsonString(target, "role", targetId)
+            val roleConfig = jsonObject(installableAppRoles[role], "roles.$role")
+            val androidTarget = jsonObject(target["android"], "$targetId.android")
+            val flavor = jsonString(androidTarget, "flavor", "$targetId.android")
+            val iconSourceSet = jsonString(androidTarget, "iconSourceSet", "$targetId.android")
+            getByName(flavor) {
+                manifest.srcFile(
+                    project.file(
+                        "../../${jsonString(roleConfig, "androidManifestOverlay", "roles.$role")}",
+                    ),
+                )
+                if (iconSourceSet != "main") {
+                    res.setSrcDirs(listOf("src/$iconSourceSet/res"))
+                }
             }
         }
     }
@@ -207,4 +243,7 @@ android {
 
 flutter {
     source = "../.."
+    target = requestedAppTarget?.let { target ->
+        jsonString(target, "entrypoint", jsonString(target, "id", "target"))
+    } ?: "lib/main.dart"
 }

@@ -22,9 +22,11 @@ export 'data/swipe_repository.dart';
 // ── Presentation — screens ──────────────────────────────────────────────────
 export 'presentation/event_recap_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/filters_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/swipe_hub_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/swipe_screen.dart'; // public-api: route entry point exposed to app routing
 
 // ── Presentation — view models & controllers ────────────────────────────────
+export 'presentation/catches_hub_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/event_recap_view_model.dart'; // public-api: read-model seam for route composition
 export 'presentation/filters_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/filters_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
@@ -34,6 +36,7 @@ export 'presentation/swipe_queue_controller.dart'; // public-api: presentation v
 export 'shared/profile_surface/profile_card_content.dart';
 export 'shared/profile_surface/profile_surface.dart';
 export 'presentation/swipe_empty_content.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/attended_event_tile.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/catches_pass_button.dart'; // public-api: shared presentation component used outside this feature
 export 'shared/profile_surface/profile_card_style.dart';
 export 'shared/profile_surface/profile_info_chip.dart';

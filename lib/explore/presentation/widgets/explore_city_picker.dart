@@ -3,7 +3,8 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:flutter/material.dart';
 
@@ -16,12 +17,16 @@ class ExploreCityPicker extends StatefulWidget {
     required this.onSelected,
     this.presentation = ExploreCityPickerPresentation.icon,
     this.foregroundColor,
+    this.backgroundColor,
+    this.borderColor,
   });
 
   final ExploreCityPickerState state;
   final ValueChanged<CityData>? onSelected;
   final ExploreCityPickerPresentation presentation;
   final Color? foregroundColor;
+  final Color? backgroundColor;
+  final Color? borderColor;
 
   @override
   State<ExploreCityPicker> createState() => _ExploreCityPickerState();
@@ -39,6 +44,8 @@ class _ExploreCityPickerState extends State<ExploreCityPicker> {
       focused: _isSheetOpen,
       presentation: widget.presentation,
       foregroundColor: widget.foregroundColor,
+      backgroundColor: widget.backgroundColor,
+      borderColor: widget.borderColor,
       onTap: enabled ? () => _showCitySheet(context) : null,
     );
   }
@@ -47,10 +54,8 @@ class _ExploreCityPickerState extends State<ExploreCityPicker> {
     final onSelected = widget.onSelected;
     if (onSelected == null || widget.state.cities.isEmpty) return;
     setState(() => _isSheetOpen = true);
-    await showModalBottomSheet<void>(
+    await showCatchBottomSheet<void>(
       context: context,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
       builder: (sheetContext) => ExploreCityPickerSheet(
         cities: widget.state.cities,
         selectedCity: widget.state.selectedCity,
@@ -72,6 +77,8 @@ class CityTrigger extends StatelessWidget {
     required this.focused,
     this.presentation = ExploreCityPickerPresentation.icon,
     this.foregroundColor,
+    this.backgroundColor,
+    this.borderColor,
     this.enabled = true,
     this.onTap,
   });
@@ -80,6 +87,8 @@ class CityTrigger extends StatelessWidget {
   final bool focused;
   final ExploreCityPickerPresentation presentation;
   final Color? foregroundColor;
+  final Color? backgroundColor;
+  final Color? borderColor;
   final bool enabled;
   final VoidCallback? onTap;
 
@@ -123,11 +132,55 @@ class CityTrigger extends StatelessWidget {
       );
     }
 
-    return CatchIconAction(
-      icon: state.icon,
-      tooltip: state.semanticLabel,
-      foregroundColor: enabled ? effectiveForeground : t.ink3,
-      onPressed: enabled ? onTap : null,
+    final labelColor = enabled ? effectiveForeground : t.ink3;
+    return Tooltip(
+      message: state.tooltipLabel,
+      excludeFromSemantics: true,
+      child: Semantics(
+        button: true,
+        enabled: enabled,
+        label: state.semanticLabel,
+        child: ExcludeSemantics(
+          child: Material(
+            color: backgroundColor ?? t.surface,
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: enabled ? onTap : null,
+              child: Container(
+                height: CatchIconButton.navSize,
+                constraints: const BoxConstraints(maxWidth: 132),
+                padding: const EdgeInsets.only(
+                  left: CatchSpacing.s2,
+                  right: CatchSpacing.s3,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(CatchRadius.pill),
+                  border: Border.all(color: borderColor ?? t.line2),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(state.icon, color: labelColor, size: CatchIcon.md),
+                    gapW6,
+                    Flexible(
+                      child: Text(
+                        city.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.labelL(
+                          context,
+                          color: labelColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

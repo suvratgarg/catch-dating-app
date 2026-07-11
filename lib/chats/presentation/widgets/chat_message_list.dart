@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/chats/presentation/chat_conversation_context.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_copy.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -22,6 +23,7 @@ class ChatMessageList extends StatelessWidget {
     required this.otherName,
     required this.scrollController,
     this.event,
+    this.conversationContext = ChatConversationContext.match,
     this.onRetry,
   });
 
@@ -30,6 +32,7 @@ class ChatMessageList extends StatelessWidget {
   final String otherName;
   final ScrollController scrollController;
   final Event? event;
+  final ChatConversationContext conversationContext;
   final VoidCallback? onRetry;
 
   @override
@@ -116,6 +119,7 @@ class ChatMessageList extends StatelessWidget {
               message: chatEmptyThreadMessageFor(
                 event: event,
                 otherName: otherName,
+                conversationContext: conversationContext,
               ),
             ),
           );

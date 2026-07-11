@@ -365,6 +365,7 @@ void main() {
                       title: const SizedBox.shrink(),
                       bottomHeight: chatsBrowseHeaderHeight(
                         hasHostFilter: false,
+                        hasHeaderSubtitle: false,
                       ),
                       bottom: ChatsBrowseHeader(
                         showSearchAction: true,
@@ -390,7 +391,7 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Chats'), findsOneWidget);
-    expect(find.text('Messages from your matches'), findsOneWidget);
+    expect(find.text('Messages from your matches'), findsNothing);
     expect(find.text('Your catches'), findsNothing);
     expect(find.text('0 chats'), findsNothing);
     expect(find.byType(TextField), findsNothing);
@@ -628,7 +629,7 @@ void main() {
 
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('Morgan'), findsOneWidget);
-    expect(find.text('CONVERSATIONS'), findsOneWidget);
+    expect(find.text('CONVERSATIONS'), findsNothing);
     expect(find.text('New matches'), findsNothing);
     expect(find.text('Latest message'), findsOneWidget);
     expect(find.text('Older message'), findsNothing);
@@ -771,14 +772,14 @@ void main() {
     expect(find.text('Attendee queries'), findsOneWidget);
     expect(find.text('All'), findsOneWidget);
     expect(find.text('Unread · 1'), findsOneWidget);
-    expect(find.text('Message all 2 attendees'), findsOneWidget);
+    expect(find.text('Message 2 attendees'), findsOneWidget);
     expect(find.text('Reminders, the meeting point, changes'), findsOneWidget);
     expect(find.text('Is there parking near the start?'), findsOneWidget);
     expect(find.text('Do I need ID at check-in?'), findsOneWidget);
     expect(find.text('Messages from your matches'), findsNothing);
     expect(find.text('CONVERSATIONS'), findsNothing);
 
-    await tester.tap(find.text('Message all 2 attendees'));
+    await tester.tap(find.text('Message 2 attendees'));
     await pumpFeatureUi(tester);
 
     expect(find.text('New blast'), findsOneWidget);

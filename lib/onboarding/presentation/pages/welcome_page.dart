@@ -372,7 +372,7 @@ class ReelBand extends StatelessWidget {
   Widget build(BuildContext context) {
     final offset = _welcomeTrackOffset(spinValue: spinValue, landed: landed);
     final trackHeight =
-        _welcomePhrases.length * CatchLayout.welcomeReelRowHeight;
+        welcomePhraseBank.length * CatchLayout.welcomeReelRowHeight;
 
     return ShaderMask(
       blendMode: BlendMode.dstIn,
@@ -408,13 +408,13 @@ class ReelBand extends StatelessWidget {
                   for (var copy = 0; copy < 2; copy += 1)
                     for (
                       var index = 0;
-                      index < _welcomePhrases.length;
+                      index < welcomePhraseBank.length;
                       index += 1
                     )
                       ReelRow(
-                        phrase: _welcomePhrases[index],
+                        phrase: welcomePhraseBank[index],
                         phraseIndex: index,
-                        rowIndex: copy * _welcomePhrases.length + index,
+                        rowIndex: copy * welcomePhraseBank.length + index,
                         trackOffset: offset,
                         landingValue: landingValue,
                         landed: landed,
@@ -457,7 +457,8 @@ class ReelRow extends StatelessWidget {
     final distance = center - CatchLayout.welcomeReelFocus;
     final absDistance = distance.abs();
     final inFocus = CatchLayout.welcomeReelRowIsFocused(distance);
-    final isLandingFocus = landed && phraseIndex == _landingIndex && inFocus;
+    final isLandingFocus =
+        landed && phraseIndex == welcomeLandingIndex && inFocus;
     final pigment =
         ActivityPalette.pigments[phrase.activityKind] ??
         ActivityPalette.pigments[ActivityKind.openActivity]!;
@@ -553,8 +554,9 @@ class RevealEntrance extends StatelessWidget {
 }
 
 double _welcomeTrackOffset({required double spinValue, required bool landed}) {
-  final trackH = _welcomePhrases.length * CatchLayout.welcomeReelRowHeight;
-  final base = CatchLayout.welcomeReelLandingOffset(_landingIndex) % trackH;
+  final trackH = welcomePhraseBank.length * CatchLayout.welcomeReelRowHeight;
+  final base =
+      CatchLayout.welcomeReelLandingOffset(welcomeLandingIndex) % trackH;
   if (landed) return base;
 
   final eased = _welcomeSpinEase(spinValue, CatchMotion.welcomeSpinCurvePower);
@@ -611,7 +613,7 @@ double _durationProgress(double value, Duration duration) {
   return (value / end).clamp(0, 1).toDouble();
 }
 
-const _welcomePhrases = <WelcomePhrase>[
+const welcomePhraseBank = <WelcomePhrase>[
   WelcomePhrase('the 6:30 run', ActivityKind.socialRun),
   WelcomePhrase('the long table', ActivityKind.dinner),
   WelcomePhrase('Tuesday trivia', ActivityKind.pubQuiz),
@@ -626,7 +628,7 @@ const _welcomePhrases = <WelcomePhrase>[
   WelcomePhrase('someone real', ActivityKind.socialRun),
 ];
 
-const _landingIndex = 11;
+const welcomeLandingIndex = 11;
 
 String _authLocation(BuildContext context) {
   final from = _safeFrom(GoRouterState.of(context).uri.queryParameters['from']);

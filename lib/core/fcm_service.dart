@@ -60,10 +60,31 @@ String? eventCompanionRouteFromMessageData(Map<String, Object?> data) {
   return '/clubs/$clubId/events/$eventId/companion';
 }
 
+String? eventDetailRouteFromMessageData(Map<String, Object?> data) {
+  if (AppConfig.appRole.isHost) return null;
+  const eventActivityTypes = {
+    'eventReminder',
+    'eventSignup',
+    'waitlistPromotion',
+    'waitlistOffer',
+    'waitlistOfferExpiring',
+    'waitlistOfferExpired',
+    'eventCancelled',
+    'eventUpdated',
+  };
+  if (!eventActivityTypes.contains(data['type'])) return null;
+  final clubId = data['clubId'];
+  final eventId = data['eventId'];
+  if (clubId is! String || clubId.isEmpty) return null;
+  if (eventId is! String || eventId.isEmpty) return null;
+  return '/clubs/$clubId/events/$eventId';
+}
+
 String? routeFromMessageData(Map<String, Object?> data) =>
     hostEventManageRouteFromMessageData(data) ??
     chatRouteFromMessageData(data) ??
-    eventCompanionRouteFromMessageData(data);
+    eventCompanionRouteFromMessageData(data) ??
+    eventDetailRouteFromMessageData(data);
 
 void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
   final route = routeFromMessageData(data);

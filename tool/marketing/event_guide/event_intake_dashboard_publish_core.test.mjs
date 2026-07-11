@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   applyEventIntakeDashboardPublishPlan,
   buildEventIntakeDashboardPublishPlan,
+  validateEventIntakeDashboardForLivePublish,
 } from "./lib/event_intake_dashboard_publish_core.mjs";
 
 test("buildEventIntakeDashboardPublishPlan wraps generated bridge", () => {
@@ -23,6 +24,48 @@ test("buildEventIntakeDashboardPublishPlan wraps generated bridge", () => {
   assert.equal(
     plan.document.sourcePaths.bridge,
     "admin/src/generated/eventIntakeBridge.json"
+  );
+});
+
+test("live Event Intake validation rejects stale and sample bridge data", () => {
+  const bridge = eventIntakeBridge();
+  bridge.weekEnd = "2026-06-29";
+  bridge.sourceResults = [{
+    id: "placeholder",
+    url: "https://example.com/events",
+    riskFlags: ["placeholder_result"],
+  }];
+  bridge.eventCandidates = [{
+    id: "sample-event",
+    sourceLabel: "sample candidate",
+  }];
+
+  const errors = validateEventIntakeDashboardForLivePublish(bridge, {
+    asOf: "2026-07-11",
+  });
+
+  assert.equal(errors.length, 4);
+  assert.match(errors.join("\n"), /week ended/);
+  assert.match(errors.join("\n"), /placeholder URL/);
+  assert.match(errors.join("\n"), /sample candidate/);
+});
+
+test("live Event Intake validation accepts a current source-backed bridge", () => {
+  const bridge = eventIntakeBridge();
+  bridge.weekEnd = "2026-07-18";
+  bridge.sourceResults = [{
+    id: "official",
+    url: "https://luma.com/verified-event",
+    riskFlags: [],
+  }];
+  bridge.eventCandidates = [{
+    id: "verified-event",
+    sourceLabel: "Luma",
+  }];
+
+  assert.deepEqual(
+    validateEventIntakeDashboardForLivePublish(bridge, {asOf: "2026-07-11"}),
+    []
   );
 });
 

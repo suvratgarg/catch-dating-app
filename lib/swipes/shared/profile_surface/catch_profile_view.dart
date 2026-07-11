@@ -354,7 +354,7 @@ class ProfileCompatibility extends StatelessWidget {
                 Expanded(
                   child: Text(
                     reason,
-                    style: CatchTextStyles.profileAnswer(context, color: t.ink),
+                    style: CatchTextStyles.hint(context, color: t.ink),
                   ),
                 ),
               ],

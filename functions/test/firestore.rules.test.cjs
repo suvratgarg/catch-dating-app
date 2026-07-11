@@ -738,6 +738,43 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps event broadcast delivery receipts server-only", async () => {
+      await seed(["eventBroadcasts", "broadcast-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        actorUid: "host-1",
+        targetUids: ["runner-1"],
+        deliveries: {hashed: {pushStatus: "accepted"}},
+      });
+
+      await assertFails(
+        getDoc(doc(authedDb("host-1"), "eventBroadcasts", "broadcast-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-1"), "eventBroadcasts", "broadcast-1")),
+      );
+      await assertFails(
+        getDocs(collection(authedDb("host-1"), "eventBroadcasts")),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("host-1"), "eventBroadcasts", "broadcast-2"),
+          {eventId: "event-1"},
+        ),
+      );
+      await assertFails(
+        updateDoc(
+          doc(authedDb("host-1"), "eventBroadcasts", "broadcast-1"),
+          {status: "completed"},
+        ),
+      );
+      await assertFails(
+        deleteDoc(
+          doc(authedDb("host-1"), "eventBroadcasts", "broadcast-1"),
+        ),
+      );
+    });
+
     it("allows authenticated users to query active event rosters", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event());

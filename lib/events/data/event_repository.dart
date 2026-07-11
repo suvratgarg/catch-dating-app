@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         EventJoinRequestDecisionCallableRequest,
         MarkEventAttendanceCallableRequest,
         RecordEventInviteLinkOpenCallableRequest,
+        SendEventBroadcastCallableRequest,
         SelfCheckInAttendanceCallableRequest;
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_callable_adapters.dart';
@@ -135,6 +136,17 @@ class EventRepository {
         ),
       );
 
+  Stream<List<Event>> watchEventsForClubs({required List<String> clubIds}) =>
+      watchEventsForClubIdsStream(
+        clubIds: clubIds,
+        eventsRef: _eventsRef,
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch events for hosted clubs',
+          resource: _collectionPath,
+        ),
+      );
+
   Stream<List<Event>> watchAttendedEvents({required String uid}) =>
       _watchEventsForParticipationStatuses(
         uid: uid,
@@ -198,6 +210,10 @@ class EventRepository {
 
   /// Generates a new unique Firestore document ID for an event without writing it.
   String generateId() => _eventsRef.doc().id;
+
+  /// Generates a stable client request id without writing a broadcast receipt.
+  String generateBroadcastRequestId() =>
+      _db.collection('eventBroadcastRequests').doc().id;
 
   /// Fetches upcoming events from the given club IDs.
   Future<List<Event>> fetchUpcomingEventsForClubs(List<String> clubIds) =>
@@ -565,6 +581,32 @@ class EventRepository {
       resource: _collectionPath,
     ),
   );
+
+  Future<SendEventBroadcastCallableResponse> sendEventBroadcast({
+    required String requestId,
+    required String eventId,
+    required EventBroadcastAudience audience,
+    required String body,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('sendEventBroadcast')
+          .call<Object?>(
+            SendEventBroadcastCallableRequest(
+              requestId: requestId,
+              eventId: eventId,
+              audience: audience.name,
+              body: body,
+            ).toJson(),
+          );
+      return SendEventBroadcastCallableResponse.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'send event broadcast',
+      resource: 'eventBroadcasts',
+    ),
+  );
 }
 
 @riverpod
@@ -588,6 +630,12 @@ Stream<List<EventInviteLink>> watchEventInviteLinks(Ref ref, String eventId) =>
 @riverpod
 Stream<List<Event>> watchEventsForClub(Ref ref, String clubId) =>
     ref.watch(eventRepositoryProvider).watchEventsForClub(clubId: clubId);
+
+@riverpod
+Stream<List<Event>> watchEventsForClubs(Ref ref, EventsForClubsQuery query) =>
+    ref
+        .watch(eventRepositoryProvider)
+        .watchEventsForClubs(clubIds: query.clubIds);
 
 @riverpod
 Stream<List<Event>> watchAttendedEvents(Ref ref, String uid) =>
@@ -621,6 +669,25 @@ class EventsByIdQuery {
 
   @override
   int get hashCode => _equality.hash(eventIds);
+}
+
+class EventsForClubsQuery {
+  EventsForClubsQuery._(Iterable<String> clubIds)
+    : clubIds = List.unmodifiable(clubIds.toSet().toList()..sort());
+
+  factory EventsForClubsQuery(Iterable<String> clubIds) =>
+      EventsForClubsQuery._(clubIds);
+
+  static const _equality = ListEquality<String>();
+
+  final List<String> clubIds;
+
+  @override
+  bool operator ==(Object other) =>
+      other is EventsForClubsQuery && _equality.equals(other.clubIds, clubIds);
+
+  @override
+  int get hashCode => _equality.hash(clubIds);
 }
 
 class RecommendedEventsQuery {

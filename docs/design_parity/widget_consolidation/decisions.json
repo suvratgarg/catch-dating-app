@@ -6001,52 +6001,6 @@
       "decidedBy": "claude-review -> codex",
       "date": "2026-07-06",
       "status": "executed-parity-handoff"
-    },
-    {
-      "clusterId": "home-catches-unification: retired Catches hub",
-      "decision": "delete-absorbed-into-home",
-      "canonicalSymbol": "EventLifecycleTimeline",
-      "members": [
-        {
-          "name": "EventFocusRail",
-          "action": "delete",
-          "note": "horizontal Home focus rail replaced by vertical lifecycle timeline"
-        },
-        {
-          "name": "SwipeHubScreen",
-          "action": "delete",
-          "note": "bare /catches redirects home"
-        },
-        {
-          "name": "CatchesHubContent",
-          "action": "delete"
-        },
-        {
-          "name": "CatchesHubHeader",
-          "action": "delete"
-        },
-        {
-          "name": "CatchesIntroCard",
-          "action": "delete"
-        },
-        {
-          "name": "CatchesHubEmptyState",
-          "action": "delete"
-        },
-        {
-          "name": "PillStat",
-          "action": "delete"
-        },
-        {
-          "name": "AttendedEventTile",
-          "action": "delete",
-          "note": "window count/countdown affordance absorbed into lifecycle window card"
-        }
-      ],
-      "rationale": "The Catches hub represented one phase of Home's event lifecycle. Home now derives all open catch windows as windowedEvents and renders them first in EventLifecycleTimeline, while the immersive swipe deck remains a stable deep-link destination.",
-      "decidedBy": "product spec -> codex",
-      "date": "2026-07-06",
-      "status": "executed-home-catches-unification"
     }
   ]
 }

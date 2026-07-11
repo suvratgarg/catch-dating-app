@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-05",
+  "updated": "2026-07-10",
   "tools": [
     {
       "id": "tool:runner",
@@ -58,6 +58,32 @@
         "node tool/agent/context_pack.mjs --task agent-readiness --paths AGENTS.md,docs/agent_operating_model.md --json"
       ],
       "role": "finder"
+    },
+    {
+      "id": "platform:flutter-target-wrapper",
+      "category": "platform",
+      "path": "tool/flutter_with_env.test.sh",
+      "command": "bash tool/flutter_with_env.test.sh",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Regression-checks that the Flutter environment wrapper rejects caller-supplied flavors and entrypoints that disagree with the canonical app target.",
+      "checks": [
+        "bash -n tool/flutter_with_env.sh",
+        "bash -n tool/flutter_with_env.test.sh",
+        "bash tool/flutter_with_env.test.sh"
+      ],
+      "role": "gate",
+      "rules": [
+        "APP-TARGET-IDENTITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/flutter_with_env.test.sh",
+        "contains": [
+          "resolves flavor 'host-prod'; caller supplied 'prod'",
+          "resolves entrypoint 'lib/main_host_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'"
+        ]
+      }
     },
     {
       "id": "agent:readiness",
@@ -1279,6 +1305,46 @@
       ]
     },
     {
+      "id": "firebase:deploy-target-plan",
+      "category": "firebase",
+      "path": "tool/firebase/plan_firebase_deploy_targets.mjs",
+      "command": "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "description": "Plans validated Firebase deploy phases so Functions, including exact targets, run before indexes and rules.",
+      "checks": [
+        "node --check tool/firebase/plan_firebase_deploy_targets.mjs",
+        "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs"
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "firebase:client-callable-dependencies",
+      "category": "firebase",
+      "path": "tool/firebase/check_client_callable_dependencies.mjs",
+      "command": "node tool/firebase/check_client_callable_dependencies.mjs --role host --environment prod",
+      "safety": "local-with-optional-remote-readonly",
+      "status": "active",
+      "description": "Checks target-specific client callable flags and exports, then optionally proves live callable/IAM reachability before release.",
+      "checks": [
+        "node --check tool/firebase/check_client_callable_dependencies.mjs",
+        "node --test tool/firebase/check_client_callable_dependencies.test.mjs",
+        "node tool/firebase/check_client_callable_dependencies.mjs --role host --environment prod"
+      ],
+      "role": "gate",
+      "rules": [
+        "APP-TARGET-IDENTITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/check_client_callable_dependencies.test.mjs",
+        "contains": [
+          "fails enabled flags whose callable is not exported",
+          "live probe rejects HTML, redirects, and IAM permission errors"
+        ]
+      }
+    },
+    {
       "id": "firebase:register-app-check-debug-token",
       "category": "firebase",
       "path": "tool/firebase/register_app_check_debug_token.mjs",
@@ -1402,7 +1468,8 @@
       "status": "active",
       "description": "Deploys Firebase targets in safe order.",
       "checks": [
-        "bash -n tool/deploy_firebase_targets.sh"
+        "bash -n tool/deploy_firebase_targets.sh",
+        "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs"
       ],
       "role": "generator"
     },
@@ -1483,6 +1550,74 @@
       ]
     },
     {
+      "id": "platform:resolve-app-target",
+      "category": "platform",
+      "path": "tool/platform/resolve_app_target.mjs",
+      "command": "node tool/platform/resolve_app_target.mjs --role consumer --environment dev",
+      "safety": "local",
+      "status": "active",
+      "description": "Resolves one explicit Consumer or Host target from the canonical six-target manifest for shell scripts and CI.",
+      "checks": [
+        "node --check tool/platform/resolve_app_target.mjs",
+        "node tool/platform/resolve_app_target.mjs --role host --environment prod --field id"
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "platform:app-targets",
+      "category": "platform",
+      "path": "tool/platform/check_app_targets.mjs",
+      "command": "node tool/platform/check_app_targets.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the six Consumer/Host app targets across entrypoints, Firebase registrations, Apple schemes and entitlements, Android flavors and capabilities, deep links, force-update policy, and release ownership.",
+      "checks": [
+        "node --check tool/platform/resolve_app_target.mjs",
+        "node --check tool/platform/check_app_targets.mjs",
+        "bash tool/flutter_with_env.test.sh",
+        "node --test tool/platform/check_app_targets.test.mjs",
+        "node tool/platform/check_app_targets.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "APP-TARGET-IDENTITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/platform/check_app_targets.test.mjs",
+        "contains": [
+          "validateManifestShape rejects a duplicate role/environment target",
+          "release ownership rejects automatic Host upload without external-proof debt"
+        ]
+      }
+    },
+    {
+      "id": "platform:verify-ios-release-identity",
+      "category": "platform",
+      "path": "tool/platform/verify_ios_release_identity.mjs",
+      "command": "node tool/platform/verify_ios_release_identity.mjs --help",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Verifies an archived or exported iOS app against its manifest target, compiled Flutter composition marker, embedded Firebase identity and URL scheme, version/build, signing identity, and role-specific entitlements.",
+      "checks": [
+        "node --check tool/platform/verify_ios_release_identity.mjs",
+        "node --test tool/platform/verify_ios_release_identity.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "APP-TARGET-IDENTITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/platform/verify_ios_release_identity.test.mjs",
+        "contains": [
+          "rejects a Host archive compiled from the Consumer entrypoint",
+          "rejects Host inheriting Consumer-only capabilities",
+          "rejects Host Firebase and OAuth URL identity drift"
+        ]
+      }
+    },
+    {
       "id": "platform:apple-flavors",
       "category": "platform",
       "path": "tool/platform/configure_apple_flavors.rb",
@@ -1532,7 +1667,9 @@
       "description": "Builds the deterministic organizer discovery search plan while skipping fresh run logs.",
       "checks": [
         "node --check tool/host_discovery/plan_search_runs.mjs",
-        "node tool/host_discovery/plan_search_runs.mjs --check"
+        "node --test tool/host_discovery/plan_search_runs.test.mjs",
+        "node tool/host_discovery/plan_search_runs.mjs --check",
+        "node tool/host_discovery/plan_search_runs.mjs --check-current"
       ],
       "role": "finder"
     },

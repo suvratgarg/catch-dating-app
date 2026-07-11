@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -93,7 +94,6 @@ class ExploreFilterSelection {
     this.distanceFilter = ExploreDistanceFilter.any,
     this.highRatedOnly = false,
     this.joinedOnly = false,
-    this.followingOnly = false,
     this.activityTag,
     this.area,
   }) : timeFilter =
@@ -106,7 +106,6 @@ class ExploreFilterSelection {
   final ExploreDistanceFilter distanceFilter;
   final bool highRatedOnly;
   final bool joinedOnly;
-  final bool followingOnly;
   final String? activityTag;
   final String? area;
 
@@ -121,7 +120,6 @@ class ExploreFilterSelection {
       distanceFilter != ExploreDistanceFilter.any ||
       highRatedOnly ||
       joinedOnly ||
-      followingOnly ||
       activityTag != null ||
       area != null;
 
@@ -134,7 +132,6 @@ class ExploreFilterSelection {
       timeFilter != defaultExploreTimeFilter ||
       highRatedOnly ||
       joinedOnly ||
-      followingOnly ||
       activityTag != null ||
       area != null;
 
@@ -144,7 +141,6 @@ class ExploreFilterSelection {
     bool? thisWeekOnly,
     bool? highRatedOnly,
     bool? joinedOnly,
-    bool? followingOnly,
     Object? activityTag = unsetSentinel,
     Object? area = unsetSentinel,
   }) {
@@ -159,7 +155,6 @@ class ExploreFilterSelection {
           : distanceFilter as ExploreDistanceFilter,
       highRatedOnly: highRatedOnly ?? this.highRatedOnly,
       joinedOnly: joinedOnly ?? this.joinedOnly,
-      followingOnly: followingOnly ?? this.followingOnly,
       activityTag: identical(activityTag, unsetSentinel)
           ? this.activityTag
           : activityTag as String?,
@@ -175,7 +170,6 @@ class ExploreFilterSelection {
             other.distanceFilter == distanceFilter &&
             other.highRatedOnly == highRatedOnly &&
             other.joinedOnly == joinedOnly &&
-            other.followingOnly == followingOnly &&
             other.activityTag == activityTag &&
             other.area == area;
   }
@@ -186,7 +180,6 @@ class ExploreFilterSelection {
     distanceFilter,
     highRatedOnly,
     joinedOnly,
-    followingOnly,
     activityTag,
     area,
   );
@@ -331,7 +324,7 @@ Future<String> debouncedExploreSearchQuery(Ref ref) async {
 
   final completer = Completer<void>();
   // ~300ms typing-pause window before the query reaches the network.
-  final timer = Timer(const Duration(milliseconds: 300), completer.complete);
+  final timer = Timer(CatchMotion.pageStep, completer.complete);
   ref.onDispose(timer.cancel);
   await completer.future;
   return query;
@@ -377,10 +370,6 @@ class ExploreFilters extends _$ExploreFilters {
 
   void toggleJoinedOnly() {
     state = state.copyWith(joinedOnly: !state.joinedOnly);
-  }
-
-  void toggleFollowingOnly() {
-    state = state.copyWith(followingOnly: !state.followingOnly);
   }
 
   void toggleActivityTag(String tag) {
@@ -570,7 +559,6 @@ AsyncValue<ExploreViewModel> exploreClubsViewModel(Ref ref) {
     clubs: sourceClubs,
     filters: browseFilters,
     joinedClubIds: joinedClubIds,
-    followedClubIds: followedClubIds,
   );
 
   return AsyncData(
@@ -593,7 +581,6 @@ List<Club> applyExploreFilters({
   required List<Club> clubs,
   required ExploreFilterSelection filters,
   required Set<String> joinedClubIds,
-  Set<String>? followedClubIds,
   DateTime? now,
 }) {
   if (!filters.hasActiveClubFilters) return clubs;
@@ -608,7 +595,6 @@ List<Club> applyExploreFilters({
           club: club,
           filters: filters,
           joinedClubIds: joinedClubIds,
-          followedClubIds: followedClubIds ?? joinedClubIds,
         );
       })
       .toList(growable: false);

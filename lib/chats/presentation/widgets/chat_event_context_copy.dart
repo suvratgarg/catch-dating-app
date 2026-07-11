@@ -1,9 +1,16 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/chats/presentation/chat_conversation_context.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 
 const chatContextFallbackStamp = 'MATCHED THROUGH CATCH';
 
-String chatContextStampFor(Event? event) {
+String chatContextStampFor(
+  Event? event, {
+  ChatConversationContext conversationContext = ChatConversationContext.match,
+}) {
+  if (conversationContext != ChatConversationContext.match) {
+    return 'EVENT QUESTION';
+  }
   if (event == null) return chatContextFallbackStamp;
   return chatContextStampForActivity(event.activityKind);
 }
@@ -36,7 +43,17 @@ String chatShareCardTitleFor(Event? event) {
 String chatEmptyThreadMessageFor({
   required Event? event,
   required String otherName,
+  ChatConversationContext conversationContext = ChatConversationContext.match,
 }) {
+  final eventName = event?.title ?? 'the event';
+  switch (conversationContext) {
+    case ChatConversationContext.contactedHost:
+      return 'Ask $otherName about $eventName.';
+    case ChatConversationContext.attendeeInquiry:
+      return 'Reply to $otherName about $eventName.';
+    case ChatConversationContext.match:
+      break;
+  }
   if (event == null) return 'Say hi to $otherName!';
   return '${_emptyThreadContextLead(event)}. Say hi to $otherName!';
 }

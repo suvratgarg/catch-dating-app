@@ -18,6 +18,8 @@ on:
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
+      - "tool/host_discovery/**"
+      - "tool/organizer_intake/**"
   push:
     branches: [main]
     paths:
@@ -36,6 +38,8 @@ on:
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
+      - "tool/host_discovery/**"
+      - "tool/organizer_intake/**"
   workflow_dispatch:
 
 concurrency:
@@ -81,6 +85,9 @@ jobs:
       - name: Check generated organizer listings
         run: npm --workspace catch-marketing run check:organizer-listings
 
+      - name: Check organizer promotion bridge
+        run: node tool/organizer_intake/check_promotion_bridge.mjs
+
       - name: Check marketing route contracts
         run: npm --workspace catch-marketing run check:routes
 
@@ -112,6 +119,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Install Firestore read dependencies
+        run: npm --prefix functions ci --omit=dev
+
       - run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
 
       - name: Authenticate to Google Cloud
@@ -133,8 +143,13 @@ jobs:
           VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
         run: node tool/env/check_web_hosting_env.mjs marketing --expected-project-id catch-dating-app-64e51
 
+      - name: Read production organizer claim readiness
+        run: node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --env prod --receipt /tmp/organizer-claim-target-readiness.json --json
+
       - name: Deploy production marketing site
         env:
+          ORGANIZER_CLAIM_TARGET_PROJECT_ID: catch-dating-app-64e51
+          ORGANIZER_CLAIM_TARGET_RECEIPT: /tmp/organizer-claim-target-readiness.json
           VITE_GTM_ID: ${{ vars.VITE_GTM_ID }}
           VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}

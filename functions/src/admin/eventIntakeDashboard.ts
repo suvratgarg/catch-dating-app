@@ -44,16 +44,116 @@ export async function adminGetEventIntakeDashboardHandler(
     "adminGetEventIntakeDashboard"
   );
 
-  const eventSnap = await db
-    .collection("eventIntakeDashboards")
-    .doc("current")
-    .get();
+  const [eventSnap, decisionSnap] = await Promise.all([
+    db.collection("eventIntakeDashboards").doc("current").get(),
+    db.collection("eventIntakeReviewDecisions").limit(500).get(),
+  ]);
   const eventBridge = bridgeFromDashboard(eventSnap.data() ?? {});
   if (eventBridge) {
-    return {bridge: projectEventIntakeBridge(eventBridge, "event_intake")};
+    const decisions = decisionSnap.docs.map((doc) => doc.data());
+    return {
+      bridge: overlayEventIntakeDecisions(
+        projectEventIntakeBridge(eventBridge, "event_intake"),
+        decisions
+      ),
+    };
   }
 
   return {bridge: emptyEventIntakeBridge()};
+}
+
+export function overlayEventIntakeDecisions(
+  bridge: Record<string, unknown>,
+  decisions: Array<Record<string, unknown>>
+): Record<string, unknown> {
+  const byTarget = new Map(
+    decisions.map((decision) => [
+      `${stringValue(decision.targetType)}:${stringValue(decision.targetId)}`,
+      decision,
+    ])
+  );
+  const sourceProfiles = overlayDecisionArray(
+    asArray(bridge.sourceProfiles),
+    "source_profile",
+    byTarget
+  );
+  const queryTemplates = overlayDecisionArray(
+    asArray(bridge.queryTemplates),
+    "query_template",
+    byTarget
+  );
+  const sourceResults = overlayDecisionArray(
+    asArray(bridge.sourceResults),
+    "source_result",
+    byTarget
+  );
+  const eventCandidates = overlayDecisionArray(
+    asArray(bridge.eventCandidates),
+    "event_candidate",
+    byTarget
+  );
+  const runPlan = overlayDecisionObject(
+    recordValue(bridge.runPlan),
+    "run_plan",
+    byTarget
+  );
+  const summary = recordValue(bridge.summary);
+  return {
+    ...bridge,
+    summary: {
+      ...summary,
+      approvedCandidates: eventCandidates.filter((candidate) =>
+        candidate.reviewState === "approved"
+      ).length,
+      candidatesNeedingReview: eventCandidates.filter((candidate) =>
+        !["approved", "rejected"].includes(String(candidate.reviewState))
+      ).length,
+      overlaidDecisions: byTarget.size,
+    },
+    sourceProfiles,
+    queryTemplates,
+    runPlan,
+    sourceResults,
+    eventCandidates,
+  };
+}
+
+function overlayDecisionArray(
+  values: unknown[],
+  targetType: string,
+  byTarget: Map<string, Record<string, unknown>>
+): Array<Record<string, unknown>> {
+  return values.map((value) => {
+    const item = recordValue(value);
+    return overlayDecisionObject(item, targetType, byTarget);
+  });
+}
+
+function overlayDecisionObject(
+  item: Record<string, unknown>,
+  targetType: string,
+  byTarget: Map<string, Record<string, unknown>>
+): Record<string, unknown> {
+  const id = stringValue(item.id);
+  const decision = id ? byTarget.get(`${targetType}:${id}`) : null;
+  if (!decision) return item;
+  const edits = recordValue(decision.edits);
+  const decisionStatus =
+    stringValue(decision.decisionStatus) ?? "needs_changes";
+  const stateField =
+    targetType === "event_candidate" ? "reviewState" : "status";
+  return {
+    ...item,
+    ...edits,
+    id,
+    [stateField]: decisionStatus,
+    latestDecision: {
+      decision: stringValue(decision.decision),
+      note: stringValue(decision.note),
+      reviewer: stringValue(decision.reviewedByUid),
+      reviewedAt: isoFromTimestamp(decision.reviewedAt),
+    },
+  };
 }
 
 /**
@@ -88,6 +188,7 @@ function projectEventIntakeBridge(
     bridgeSource,
     city: bridge.city ?? {id: "unknown", label: "Unknown"},
     weekStart: bridge.weekStart ?? null,
+    weekEnd: bridge.weekEnd ?? null,
     summary: bridge.summary ?? {},
     sourceProfiles: asArray(bridge.sourceProfiles),
     queryTemplates: asArray(bridge.queryTemplates),
@@ -141,6 +242,32 @@ function emptyRunPlan(): Record<string, unknown> {
  */
 function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
+}
+
+function recordValue(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ?
+    value as Record<string, unknown> :
+    {};
+}
+
+function stringValue(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function isoFromTimestamp(value: unknown): string | null {
+  if (value instanceof Date && Number.isFinite(value.getTime())) {
+    return value.toISOString();
+  }
+  if (recordValue(value).toDate instanceof Function) {
+    const date = (recordValue(value).toDate as () => unknown)();
+    return date instanceof Date && Number.isFinite(date.getTime()) ?
+      date.toISOString() :
+      null;
+  }
+  if (typeof value === "string" && Number.isFinite(Date.parse(value))) {
+    return new Date(value).toISOString();
+  }
+  return null;
 }
 
 /**

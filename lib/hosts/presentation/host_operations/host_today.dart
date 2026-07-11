@@ -11,6 +11,8 @@ class HostTodayDashboardCard extends ConsumerWidget {
     required this.onViewEvents,
     required this.onCreateEvent,
     required this.onManageEvent,
+    required this.onOpenTask,
+    this.now,
   });
 
   final Club club;
@@ -21,11 +23,17 @@ class HostTodayDashboardCard extends ConsumerWidget {
   final VoidCallback onViewEvents;
   final HostHomeCreateEventCallback onCreateEvent;
   final HostHomeManageEventCallback onManageEvent;
+  final HostHomeOpenTaskCallback onOpenTask;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final now = this.now ?? DateTime.now();
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
-    final dashboardState = buildHostHomeTodayDashboardState(eventsAsync);
+    final dashboardState = buildHostHomeTodayDashboardState(
+      eventsAsync,
+      now: now,
+    );
 
     return HostTodayDashboardSection(
       club: club,
@@ -38,6 +46,8 @@ class HostTodayDashboardCard extends ConsumerWidget {
       onViewEvents: onViewEvents,
       onCreateEvent: onCreateEvent,
       onManageEvent: onManageEvent,
+      onOpenTask: onOpenTask,
+      now: now,
     );
   }
 }
@@ -54,6 +64,8 @@ class HostTodayDashboardSection extends StatelessWidget {
     required this.onViewEvents,
     required this.onCreateEvent,
     required this.onManageEvent,
+    required this.onOpenTask,
+    required this.now,
     this.onRetryEvents,
   });
 
@@ -66,7 +78,9 @@ class HostTodayDashboardSection extends StatelessWidget {
   final VoidCallback onViewEvents;
   final HostHomeCreateEventCallback onCreateEvent;
   final HostHomeManageEventCallback onManageEvent;
+  final HostHomeOpenTaskCallback onOpenTask;
   final VoidCallback? onRetryEvents;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +93,7 @@ class HostTodayDashboardSection extends StatelessWidget {
           clubs: clubs,
           showClubPicker: showClubPicker,
           onSwitchClubIndex: onSwitchClubIndex,
+          now: now,
         ),
         gapH18,
         switch (state.status) {
@@ -115,29 +130,67 @@ class HostTodayDashboardSection extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     final event = state.event!;
     final tasks = state.tasks;
+    final heroTaskCount = tasks
+        .where((task) => task.event.id == event.id)
+        .length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         HostTodayEventHero(
           event: event,
+          now: now,
+          taskCount: heroTaskCount,
           onPressed: () => onManageEvent(club, event),
         ),
         gapH24,
         CatchSection.plain(
           title: 'Needs you',
-          count: tasks.length,
+          count: tasks.isEmpty ? null : tasks.length,
           titleColor: CatchTokens.of(context).ink3,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (final task in tasks) ...[
-                HostTodayTaskCard(task: task, onPrimary: () {}),
-                gapH12,
-              ],
-            ],
-          ),
+          child: tasks.isEmpty
+              ? Text(
+                  'Nothing needs you right now.',
+                  style: CatchTextStyles.bodyM(context),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final task in tasks) ...[
+                      HostTodayTaskCard(
+                        task: task,
+                        onPrimary: () => onOpenTask(club, task.event, task),
+                      ),
+                      gapH12,
+                    ],
+                  ],
+                ),
         ),
+        if (state.laterEvents.isNotEmpty) ...[
+          gapH24,
+          CatchSection.plain(
+            title: 'Later this week',
+            count: state.laterEvents.length,
+            titleColor: CatchTokens.of(context).ink3,
+            trailing: CatchButton(
+              label: 'All events',
+              variant: CatchButtonVariant.ghost,
+              size: CatchButtonSize.sm,
+              onPressed: onViewEvents,
+            ),
+            child: Column(
+              children: [
+                for (final row in state.laterEvents) ...[
+                  HostEventLifecycleRow(
+                    data: row,
+                    onPressed: () => onManageEvent(club, row.event),
+                  ),
+                  if (row != state.laterEvents.last) gapH10,
+                ],
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -151,6 +204,7 @@ class HostTodayHeader extends StatelessWidget {
     required this.clubs,
     required this.showClubPicker,
     required this.onSwitchClubIndex,
+    required this.now,
   });
 
   final Club club;
@@ -158,11 +212,17 @@ class HostTodayHeader extends StatelessWidget {
   final List<Club> clubs;
   final bool showClubPicker;
   final ValueChanged<int> onSwitchClubIndex;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final hostName = _hostFirstName(club, currentUid);
+    final daypart = switch (now.hour) {
+      < 12 => 'morning',
+      < 17 => 'afternoon',
+      _ => 'evening',
+    };
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -172,12 +232,12 @@ class HostTodayHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'TUESDAY EVENING',
+                '${EventFormatters.longWeekday(now)} $daypart'.toUpperCase(),
                 style: CatchTextStyles.kicker(context, color: t.ink3),
               ),
               gapH8,
               Text(
-                'Good evening,\n$hostName',
+                'Good $daypart,\n$hostName',
                 style: CatchTextStyles.headlineS(context, color: t.ink),
               ),
             ],
@@ -296,10 +356,14 @@ class HostTodayEventHero extends StatelessWidget {
   const HostTodayEventHero({
     super.key,
     required this.event,
+    required this.now,
+    required this.taskCount,
     required this.onPressed,
   });
 
   final Event event;
+  final DateTime now;
+  final int taskCount;
   final VoidCallback onPressed;
 
   @override
@@ -312,13 +376,13 @@ class HostTodayEventHero extends StatelessWidget {
       gradient: LinearGradient(
         begin: Alignment.topRight,
         end: Alignment.bottomLeft,
-        colors: [activity.accent, activity.deep],
+        colors: [activity.deep, CatchTokens.editorialBlack],
       ),
       padding: CatchInsets.contentRelaxed,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          HostTodayCountdownPill(event: event),
+          HostTodayCountdownPill(event: event, now: now),
           gapH16,
           Text(
             _todayEventHeroTitle(event),
@@ -384,17 +448,18 @@ class HostTodayEventHero extends StatelessWidget {
               ),
               gapW20,
               HostTodayHeroMetric(
-                value: '${_reviewCount(event)}',
-                label: 'To review',
+                value: '$taskCount',
+                label: 'Needs you',
                 valueColor: activity.accent,
               ),
               const Spacer(),
-              HostTodayAvatarStack(activity: activity),
             ],
           ),
           gapH20,
           CatchButton(
-            label: 'Set up & run',
+            label: !event.startTime.isAfter(now) && event.endTime.isAfter(now)
+                ? 'Open run-of-show'
+                : 'Set up & run',
             fullWidth: true,
             backgroundColor: activity.accent,
             foregroundColor: CatchTokens.editorialWhite,
@@ -408,9 +473,14 @@ class HostTodayEventHero extends StatelessWidget {
 }
 
 class HostTodayCountdownPill extends StatelessWidget {
-  const HostTodayCountdownPill({super.key, required this.event});
+  const HostTodayCountdownPill({
+    super.key,
+    required this.event,
+    required this.now,
+  });
 
   final Event event;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
@@ -425,7 +495,7 @@ class HostTodayCountdownPill extends StatelessWidget {
         vertical: CatchSpacing.micro6,
       ),
       child: Text(
-        'STARTS ${_eventStartLeadLabel(event)}',
+        _eventStartLeadLabel(event, now),
         style: CatchTextStyles.monoLabel(
           context,
           color: CatchTokens.editorialWhite,
@@ -564,6 +634,7 @@ class HostTodayTaskCard extends StatelessWidget {
       borderColor: t.line,
       backgroundColor: t.surface,
       padding: CatchInsets.content,
+      onTap: onPrimary,
       child: Row(
         children: [
           Container(
@@ -597,23 +668,11 @@ class HostTodayTaskCard extends StatelessWidget {
             ),
           ),
           gapW12,
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CatchButton(
-                label: task.primaryActionLabel.toUpperCase(),
-                size: CatchButtonSize.sm,
-                accentColor: t.danger,
-                onPressed: onPrimary,
-              ),
-              gapW8,
-              CatchButton(
-                label: task.secondaryActionLabel.toUpperCase(),
-                size: CatchButtonSize.sm,
-                variant: CatchButtonVariant.secondary,
-                onPressed: () {},
-              ),
-            ],
+          CatchButton(
+            label: task.primaryActionLabel.toUpperCase(),
+            size: CatchButtonSize.sm,
+            accentColor: t.danger,
+            onPressed: onPrimary,
           ),
         ],
       ),
@@ -661,17 +720,27 @@ String _todayEventHeroTitle(Event event) {
   return event.title;
 }
 
-String _eventStartLeadLabel(Event event) {
-  final weekday = EventFormatters.longWeekday(event.startTime).toUpperCase();
-  final time = EventFormatters.time(event.startTime).toUpperCase();
-  return '$weekday · $time';
-}
-
-int _reviewCount(Event event) {
-  if (event.waitlistCount > 0) {
-    return event.waitlistCount > 4 ? 4 : event.waitlistCount;
+String _eventStartLeadLabel(Event event, DateTime now) {
+  if (!event.startTime.isAfter(now) && event.endTime.isAfter(now)) {
+    return 'LIVE NOW';
   }
-  final pendingCount = event.signedUpCount - event.attendedCount;
-  if (pendingCount <= 0) return 0;
-  return pendingCount > 4 ? 4 : pendingCount;
+
+  final lead = event.startTime.difference(now);
+  if (!lead.isNegative && lead < const Duration(hours: 1)) {
+    final minutes = lead.inMinutes.clamp(1, 59);
+    return 'STARTS IN $minutes MIN';
+  }
+  if (DateUtils.isSameDay(event.startTime, now) && !lead.isNegative) {
+    final hours = lead.inHours;
+    final minutes = lead.inMinutes.remainder(60);
+    return minutes == 0
+        ? 'STARTS IN ${hours}H'
+        : 'STARTS IN ${hours}H ${minutes}M';
+  }
+
+  final tomorrow = DateUtils.dateOnly(now).add(const Duration(days: 1));
+  final prefix = DateUtils.isSameDay(event.startTime, tomorrow)
+      ? 'TOMORROW'
+      : EventFormatters.shortWeekday(event.startTime).toUpperCase();
+  return 'STARTS $prefix · ${EventFormatters.time(event.startTime).toUpperCase()}';
 }

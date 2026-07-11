@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
@@ -41,6 +42,8 @@ List<Widget> buildExploreEventsSlivers(
   ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
   ValueChanged<Club>? onClubSelected,
   bool pinnedDayHeaders = true,
+  bool promoteFeaturedItem = false,
+  DateTime? now,
   List<Club> candidateClubs = const <Club>[],
   Set<String> joinedClubIds = const <String>{},
 }) {
@@ -99,8 +102,11 @@ List<Widget> buildExploreEventsSlivers(
               candidateClubs: candidateClubs,
               joinedClubIds: joinedClubIds,
               pinnedDayHeaders: pinnedDayHeaders,
+              promoteFeaturedItem: promoteFeaturedItem,
               showThisWeekList:
-                  filters.timeFilter == ExploreTimeFilter.thisWeek,
+                  filters.timeFilter == ExploreTimeFilter.thisWeek &&
+                  searchQuery.trim().isEmpty,
+              now: now,
               onEventSelected: onEventSelected,
               onExternalEventOpened: onExternalEventOpened,
               onClubSelected: onClubSelected,
@@ -164,7 +170,9 @@ List<Widget> _exploreContentSlivers(
   required List<Club> candidateClubs,
   required Set<String> joinedClubIds,
   required bool pinnedDayHeaders,
+  required bool promoteFeaturedItem,
   required bool showThisWeekList,
+  required DateTime? now,
   required ExploreEventSelected? onEventSelected,
   required ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
   required ValueChanged<Club>? onClubSelected,
@@ -191,6 +199,8 @@ List<Widget> _exploreContentSlivers(
     candidateClubs: effectiveCandidateClubs,
     joinedClubIds: joinedClubIds,
     showThisWeekList: showThisWeekList,
+    promoteFeaturedItem: promoteFeaturedItem,
+    now: now,
   );
   if (sectionState.isEmpty) {
     return const [SliverToBoxAdapter(child: SizedBox.shrink())];
@@ -203,15 +213,9 @@ List<Widget> _exploreContentSlivers(
     top: CatchSpacing.s3,
     bottom: sectionState.cards.isEmpty ? CatchSpacing.s4 : CatchSpacing.s2,
   );
-  final feedListPadding = CatchInsets.pageBody.copyWith(
-    top: sectionState.thisWeekItems.isEmpty
-        ? (pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3)
-        : CatchSpacing.s4,
-    bottom: CatchSpacing.s2,
-  );
 
   return [
-    if (sectionState.bodyViewModel.count > 0)
+    if (sectionState.totalCount > 0)
       SliverToBoxAdapter(
         child: Padding(
           padding: resultCountPadding,
@@ -235,35 +239,74 @@ List<Widget> _exploreContentSlivers(
           ),
         ),
       ),
-    SliverPadding(
-      padding: feedListPadding,
-      sliver: SliverList.separated(
-        itemCount: sectionState.cards.length,
-        separatorBuilder: (_, _) => const SizedBox(height: CatchSpacing.s4),
-        itemBuilder: (context, index) {
-          return switch (sectionState.cards[index]) {
-            ExploreMixedEventRowCard(:final item) => ExploreFeedEventRow(
-              item: item,
-              onEventSelected: onEventSelected,
-            ),
-            ExploreMixedExternalEventRowCard(:final item) =>
-              ExploreExternalEventRow(
-                item: item,
-                onExternalEventOpened: onExternalEventOpened,
-              ),
-            ExploreMixedClubSpotlightCard(:final club) =>
-              ExploreClubPolaroidCard(
-                club: club,
-                onClubSelected: onClubSelected,
-              ),
-            ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
-              club: club,
-              onClubSelected: onClubSelected,
-            ),
-          };
-        },
+    for (final group in sectionState.cardGroups) ...[
+      if (group.label != null && pinnedDayHeaders)
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: CatchDaySectionHeaderDelegate(
+            label: group.label!,
+            count: group.timedCardCount,
+          ),
+        ),
+      if (group.label != null && !pinnedDayHeaders)
+        SliverToBoxAdapter(
+          child: CatchDaySectionHeader(
+            label: group.label!,
+            count: group.timedCardCount,
+          ),
+        ),
+      SliverPadding(
+        padding: CatchInsets.pageHorizontal.copyWith(
+          top: group.label == null ? CatchSpacing.s4 : 0,
+          bottom: CatchSpacing.s4,
+        ),
+        sliver: SliverList.separated(
+          itemCount: group.cards.length,
+          separatorBuilder: (_, index) => SizedBox(
+            height:
+                group.cards[index] is ExploreMixedEventRowCard &&
+                    group.cards[index + 1] is ExploreMixedEventRowCard
+                ? 0
+                : CatchSpacing.s4,
+          ),
+          itemBuilder: (context, index) => _exploreMixedFeedCard(
+            group.cards,
+            index,
+            onEventSelected: onEventSelected,
+            onExternalEventOpened: onExternalEventOpened,
+            onClubSelected: onClubSelected,
+          ),
+        ),
       ),
-    ),
+    ],
     const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
   ];
+}
+
+Widget _exploreMixedFeedCard(
+  List<ExploreMixedCard> cards,
+  int index, {
+  required ExploreEventSelected? onEventSelected,
+  required ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
+  required ValueChanged<Club>? onClubSelected,
+}) {
+  return switch (cards[index]) {
+    ExploreMixedEventRowCard(:final item) => ExploreFeedEventRow(
+      item: item,
+      stripPosition: exploreMixedEventStripPosition(cards, index),
+      onEventSelected: onEventSelected,
+    ),
+    ExploreMixedExternalEventRowCard(:final item) => ExploreExternalEventRow(
+      item: item,
+      onExternalEventOpened: onExternalEventOpened,
+    ),
+    ExploreMixedClubSpotlightCard(:final club) => ExploreClubPolaroidCard(
+      club: club,
+      onClubSelected: onClubSelected,
+    ),
+    ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
+      club: club,
+      onClubSelected: onClubSelected,
+    ),
+  };
 }

@@ -54,20 +54,28 @@ ExploreEventItem _exploreItem({
   required Club club,
   required DateTime startTime,
   bool isJoinedClubMember = false,
+  bool isFollowedClubSignal = false,
   int? bookedCount,
   int priceInPaise = 0,
   double? distanceFromUserKm,
+  double? startingPointLat,
+  double? startingPointLng,
 }) {
   return ExploreEventItem(
-    event: buildEvent(
-      id: id,
-      clubId: club.id,
-      startTime: startTime,
-      bookedCount: bookedCount,
-      priceInPaise: priceInPaise,
-    ),
+    event:
+        buildEvent(
+          id: id,
+          clubId: club.id,
+          startTime: startTime,
+          bookedCount: bookedCount,
+          priceInPaise: priceInPaise,
+        ).copyWith(
+          startingPointLat: startingPointLat,
+          startingPointLng: startingPointLng,
+        ),
     club: club,
     isJoinedClubMember: isJoinedClubMember,
+    isFollowedClubSignal: isFollowedClubSignal,
     distanceFromUserKm: distanceFromUserKm,
   );
 }
@@ -143,9 +151,15 @@ void main() {
     });
 
     test('ExploreMapLauncherState derives provider-free map labels', () {
-      expect(ExploreMapLauncherState.from(eventFeedCount: null).label, 'Map');
-      expect(ExploreMapLauncherState.from(eventFeedCount: 0).label, 'Map');
-      expect(ExploreMapLauncherState.from(eventFeedCount: 3).label, 'Map · 3');
+      expect(
+        ExploreMapLauncherState.from(mappableEventCount: null).label,
+        'Map',
+      );
+      expect(ExploreMapLauncherState.from(mappableEventCount: 0).label, 'Map');
+      expect(
+        ExploreMapLauncherState.from(mappableEventCount: 3).label,
+        'Map · 3',
+      );
     });
 
     test('ExploreCityTriggerState derives provider-free city chrome', () {
@@ -204,7 +218,6 @@ void main() {
       );
 
       expect(state.title, 'Explore');
-      expect(state.subtitle, 'Find an event worth showing up for.');
       expect(state.searchValue, 'pickleball dinner');
       expect(state.searchPlaceholder, 'Search events or clubs');
       expect(state.searchTooltip, 'Search events or clubs');
@@ -319,70 +332,109 @@ void main() {
       expect(state.attendanceLabel, '19 going - 1 left');
     });
 
-    test('ExploreFeedSectionState derives mixed feed card plan', () {
-      final now = DateTime(2026, 7, 1, 10);
-      final eventClub = buildClub(id: 'event-club');
-      final joinedClub = buildClub(
-        id: 'joined-club',
-        name: 'Joined Club',
-        nextEventLabel: 'Tonight',
-      );
-      final spotlightClub = buildClub(
-        id: 'spotlight-club',
-        name: 'Spotlight Club',
-        nextEventLabel: 'Tomorrow',
-        imageUrl: 'https://example.com/club.jpg',
-        rating: 4.9,
-        memberCount: 200,
-      );
+    test(
+      'ExploreFeedSectionState counts the full feed and only promotes a visible cover',
+      () {
+        final now = DateTime(2026, 7, 1, 10);
+        final eventClub = buildClub(id: 'event-club');
+        final joinedClub = buildClub(
+          id: 'joined-club',
+          name: 'Joined Club',
+          nextEventLabel: 'Tonight',
+        );
+        final spotlightClub = buildClub(
+          id: 'spotlight-club',
+          name: 'Spotlight Club',
+          nextEventLabel: 'Tomorrow',
+          imageUrl: 'https://example.com/club.jpg',
+          rating: 4.9,
+          memberCount: 200,
+        );
 
-      final state = ExploreFeedSectionState.from(
-        viewModel: ExploreFeedViewModel(
-          items: [
-            _exploreItem(
-              id: 'featured-event',
-              club: eventClub,
-              startTime: DateTime(2026, 7, 1, 18),
-            ),
-            _exploreItem(
-              id: 'second-event',
-              club: eventClub,
-              startTime: DateTime(2026, 7, 2, 18),
-            ),
-            _exploreItem(
-              id: 'third-event',
-              club: eventClub,
-              startTime: DateTime(2026, 7, 3, 18),
-            ),
-          ],
-        ),
-        candidateClubs: [joinedClub, spotlightClub],
-        joinedClubIds: {'joined-club'},
-        showThisWeekList: false,
-        now: now,
-      );
+        final state = ExploreFeedSectionState.from(
+          viewModel: ExploreFeedViewModel(
+            items: [
+              _exploreItem(
+                id: 'featured-event',
+                club: eventClub,
+                startTime: DateTime(2026, 7, 1, 18),
+              ),
+              _exploreItem(
+                id: 'second-event',
+                club: eventClub,
+                startTime: DateTime(2026, 7, 2, 18),
+              ),
+              _exploreItem(
+                id: 'third-event',
+                club: eventClub,
+                startTime: DateTime(2026, 7, 3, 18),
+              ),
+            ],
+          ),
+          candidateClubs: [joinedClub, spotlightClub],
+          joinedClubIds: {'joined-club'},
+          showThisWeekList: false,
+          now: now,
+        );
 
-      expect(state.bodyViewModel.items.map((item) => item.event.id), [
-        'second-event',
-        'third-event',
-      ]);
-      expect(state.resultCountLabel, '2 PLANS · JUL 2-3');
-      expect(state.cards, hasLength(3));
-      expect(
-        (state.cards[0] as ExploreMixedEventRowCard).item.event.id,
-        'second-event',
-      );
-      expect(
-        (state.cards[1] as ExploreMixedEventRowCard).item.event.id,
-        'third-event',
-      );
-      expect(
-        (state.cards[2] as ExploreMixedClubSpotlightCard).club.id,
-        'spotlight-club',
-      );
-    });
+        expect(state.bodyViewModel.items.map((item) => item.event.id), [
+          'second-event',
+          'third-event',
+        ]);
+        expect(state.totalCount, 3);
+        expect(state.resultCountLabel, '3 PLANS · JUL 1-3');
+        expect(state.cards, hasLength(3));
+        expect(
+          (state.cards[0] as ExploreMixedEventRowCard).item.event.id,
+          'second-event',
+        );
+        expect(
+          (state.cards[1] as ExploreMixedEventRowCard).item.event.id,
+          'third-event',
+        );
+        expect(
+          (state.cards[2] as ExploreMixedClubSpotlightCard).club.id,
+          'spotlight-club',
+        );
+        expect(state.cardGroups, hasLength(2));
+        expect(state.cardGroups.first.label, startsWith('Tomorrow ·'));
 
-    test('ExploreFeedSectionState promotes this-week only above threshold', () {
+        final searchState = ExploreFeedSectionState.from(
+          viewModel: ExploreFeedViewModel(
+            items: [
+              _exploreItem(
+                id: 'featured-event',
+                club: eventClub,
+                startTime: DateTime(2026, 7, 1, 18),
+              ),
+              _exploreItem(
+                id: 'second-event',
+                club: eventClub,
+                startTime: DateTime(2026, 7, 2, 18),
+              ),
+              _exploreItem(
+                id: 'third-event',
+                club: eventClub,
+                startTime: DateTime(2026, 7, 3, 18),
+              ),
+            ],
+          ),
+          candidateClubs: const [],
+          joinedClubIds: const {},
+          showThisWeekList: false,
+          promoteFeaturedItem: false,
+          now: now,
+        );
+        expect(searchState.bodyViewModel.items.map((item) => item.event.id), [
+          'featured-event',
+          'second-event',
+          'third-event',
+        ]);
+        expect(searchState.resultCountLabel, '3 PLANS · JUL 1-3');
+      },
+    );
+
+    test('ExploreFeedSectionState promotes a real two-day This week strip', () {
       final now = DateTime(2026, 7, 1, 10);
       final club = buildClub(id: 'week-club');
       final featured = _exploreItem(
@@ -391,11 +443,7 @@ void main() {
         startTime: DateTime(2026, 7, 1, 18),
       );
       final weekItems = [
-        for (
-          var index = 0;
-          index < minimumExploreThisWeekRecommendationCount;
-          index += 1
-        )
+        for (var index = 0; index < 5; index += 1)
           _exploreItem(
             id: 'week-event-$index',
             club: club,
@@ -414,11 +462,11 @@ void main() {
       expect(promoted.cards, isEmpty);
       expect(promoted.isEmpty, false);
 
-      final belowThreshold = ExploreFeedSectionState.from(
+      final twoDayStrip = ExploreFeedSectionState.from(
         viewModel: ExploreFeedViewModel(
           items: [
             featured,
-            ...weekItems.take(minimumExploreThisWeekRecommendationCount - 1),
+            ...weekItems.take(minimumExploreThisWeekRecommendationCount),
           ],
         ),
         candidateClubs: const [],
@@ -426,11 +474,225 @@ void main() {
         showThisWeekList: true,
         now: now,
       );
-      expect(belowThreshold.thisWeekItems, isEmpty);
-      expect(
-        belowThreshold.cards.whereType<ExploreMixedEventRowCard>(),
-        hasLength(4),
+      expect(twoDayStrip.thisWeekItems, hasLength(2));
+      expect(twoDayStrip.cards, isEmpty);
+
+      final oneDayFallback = ExploreFeedSectionState.from(
+        viewModel: ExploreFeedViewModel(items: [featured, weekItems.first]),
+        candidateClubs: const [],
+        joinedClubIds: const {},
+        showThisWeekList: true,
+        now: now,
       );
+      expect(oneDayFallback.thisWeekItems, isEmpty);
+      expect(
+        oneDayFallback.cards.whereType<ExploreMixedEventRowCard>(),
+        hasLength(1),
+      );
+    });
+
+    test(
+      'mixed feed chronologically merges internal and external plans before clubs',
+      () {
+        final club = buildClub(id: 'event-club');
+        final spotlightClub = buildClub(
+          id: 'spotlight-club',
+          nextEventLabel: 'Friday',
+        );
+        final external = ExploreExternalEventItem(
+          event: _externalEvent(
+            id: 'external-early',
+            title: 'External Early',
+            citySlug: 'mumbai',
+            startTime: DateTime(2026, 7, 2, 12),
+          ),
+        );
+        final cards = buildExploreMixedFeedCards(
+          viewModel: ExploreFeedViewModel(
+            items: [
+              _exploreItem(
+                id: 'internal-late',
+                club: club,
+                startTime: DateTime(2026, 7, 3, 18),
+              ),
+              _exploreItem(
+                id: 'internal-middle',
+                club: club,
+                startTime: DateTime(2026, 7, 2, 18),
+              ),
+            ],
+            externalItems: [external],
+          ),
+          candidateClubs: [spotlightClub],
+          joinedClubIds: const {},
+        );
+
+        expect(cards, hasLength(4));
+        expect(
+          (cards[0] as ExploreMixedExternalEventRowCard).item.event.id,
+          'external-early',
+        );
+        expect(
+          (cards[1] as ExploreMixedEventRowCard).item.event.id,
+          'internal-middle',
+        );
+        expect(
+          (cards[2] as ExploreMixedClubSpotlightCard).club.id,
+          'spotlight-club',
+        );
+        expect(
+          (cards[3] as ExploreMixedEventRowCard).item.event.id,
+          'internal-late',
+        );
+
+        final groups = groupExploreMixedFeedCards(
+          cards,
+          now: DateTime(2026, 7, 1, 10),
+        );
+        expect(groups, hasLength(2));
+        expect(groups.first.timedCardCount, 2);
+        expect(groups.first.cards, hasLength(3));
+        expect(groups.last.timedCardCount, 1);
+      },
+    );
+
+    test('second club row waits until the feed has room to interleave', () {
+      final eventClub = buildClub(id: 'cadence-event-club');
+      final clubs = [
+        buildClub(id: 'cadence-spotlight', nextEventLabel: 'Friday'),
+        buildClub(id: 'cadence-row', nextEventLabel: 'Saturday'),
+      ];
+
+      List<ExploreMixedCard> cardsFor(int eventCount) {
+        return buildExploreMixedFeedCards(
+          viewModel: ExploreFeedViewModel(
+            items: [
+              for (var index = 0; index < eventCount; index += 1)
+                _exploreItem(
+                  id: 'cadence-event-$index',
+                  club: eventClub,
+                  startTime: DateTime(2026, 7, 2, 10 + index),
+                ),
+            ],
+          ),
+          candidateClubs: clubs,
+          joinedClubIds: const {},
+        );
+      }
+
+      for (final eventCount in [1, 2, 3]) {
+        expect(
+          cardsFor(eventCount).whereType<ExploreMixedClubRowCard>(),
+          isEmpty,
+        );
+      }
+      final fourEventCards = cardsFor(4);
+      expect(fourEventCards.whereType<ExploreMixedClubRowCard>(), hasLength(1));
+      expect(fourEventCards.last, isA<ExploreMixedClubRowCard>());
+    });
+
+    test('mixed feed does not silently truncate external results', () {
+      final externalItems = [
+        for (var index = 0; index < 9; index += 1)
+          ExploreExternalEventItem(
+            event: _externalEvent(
+              id: 'external-$index',
+              title: 'External $index',
+              citySlug: 'mumbai',
+              startTime: DateTime(2026, 7, 2, 10 + index),
+            ),
+          ),
+      ];
+
+      final cards = buildExploreMixedFeedCards(
+        viewModel: ExploreFeedViewModel(
+          items: const [],
+          externalItems: externalItems,
+        ),
+        candidateClubs: const [],
+        joinedClubIds: const {},
+      );
+
+      expect(cards.whereType<ExploreMixedExternalEventRowCard>(), hasLength(9));
+    });
+
+    test('ticket strip joins only uninterrupted internal event rows', () {
+      final club = buildClub(id: 'event-club');
+      ExploreMixedEventRowCard internal(String id, int hour) =>
+          ExploreMixedEventRowCard(
+            _exploreItem(
+              id: id,
+              club: club,
+              startTime: DateTime(2026, 7, 2, hour),
+            ),
+          );
+      final cards = <ExploreMixedCard>[
+        internal('first', 10),
+        internal('second', 11),
+        ExploreMixedClubRowCard(buildClub(id: 'club-break')),
+        internal('third', 12),
+        ExploreMixedExternalEventRowCard(
+          ExploreExternalEventItem(
+            event: _externalEvent(
+              id: 'external-break',
+              title: 'External Break',
+              citySlug: 'mumbai',
+              startTime: DateTime(2026, 7, 2, 13),
+            ),
+          ),
+        ),
+        internal('fourth', 14),
+      ];
+
+      expect(
+        exploreMixedEventStripPosition(cards, 0),
+        EventDateRailCardStripPosition.first,
+      );
+      expect(
+        exploreMixedEventStripPosition(cards, 1),
+        EventDateRailCardStripPosition.last,
+      );
+      expect(
+        exploreMixedEventStripPosition(cards, 3),
+        EventDateRailCardStripPosition.single,
+      );
+      expect(
+        exploreMixedEventStripPosition(cards, 5),
+        EventDateRailCardStripPosition.single,
+      );
+    });
+
+    test('mappableEventCount ignores external and coordinate-less events', () {
+      final club = buildClub(id: 'map-club');
+      final viewModel = ExploreFeedViewModel(
+        items: [
+          _exploreItem(
+            id: 'pinned',
+            club: club,
+            startTime: DateTime(2026, 7, 2, 10),
+            startingPointLat: 19.06,
+            startingPointLng: 72.83,
+          ),
+          _exploreItem(
+            id: 'unpinned',
+            club: club,
+            startTime: DateTime(2026, 7, 2, 11),
+          ),
+        ],
+        externalItems: [
+          ExploreExternalEventItem(
+            event: _externalEvent(
+              id: 'external',
+              title: 'External',
+              citySlug: 'mumbai',
+              startTime: DateTime(2026, 7, 2, 12),
+            ),
+          ),
+        ],
+      );
+
+      expect(viewModel.count, 3);
+      expect(viewModel.mappableEventCount, 1);
     });
 
     test('ExploreEventRowState derives provider-free event row labels', () {
@@ -449,6 +711,19 @@ void main() {
       expect(state.priceLabel, 'Free');
       expect(state.capacityLabel, isNotEmpty);
       expect(state.statusLabel, 'Picked');
+    });
+
+    test('ExploreEventRowState uses truthful membership-derived copy', () {
+      final club = buildClub(id: 'member-row-club', name: 'Member Club');
+      final item = _exploreItem(
+        id: 'member-row-event',
+        club: club,
+        startTime: DateTime(2026, 7, 2, 18),
+        isJoinedClubMember: true,
+        isFollowedClubSignal: true,
+      );
+
+      expect(ExploreEventRowState.from(item).kicker, 'FROM ONE OF YOUR CLUBS');
     });
 
     test('ExploreExternalEventRowState derives provider-free row labels', () {
@@ -599,7 +874,7 @@ void main() {
           distanceFilter: ExploreDistanceFilter.threeKm,
         ),
         hasSourceClubs: true,
-        eventFeedCount: 4,
+        mappableEventCount: 4,
         viewModelLoading: false,
         viewModel: emptyViewModel,
         eventFeedLoading: false,
@@ -623,7 +898,7 @@ void main() {
         query: '',
         filters: const ExploreFilterSelection(),
         hasSourceClubs: false,
-        eventFeedCount: 1,
+        mappableEventCount: 1,
         viewModelLoading: false,
         viewModel: emptyViewModel,
         eventFeedLoading: false,
@@ -824,28 +1099,6 @@ void main() {
       );
 
       expect(filtered.map((club) => club.id), ['matching-club']);
-    });
-
-    test('applyExploreFilters supports the Following club lens', () {
-      final now = DateTime(2026, 1, 1, 8);
-      final followedClub = buildClub(
-        id: 'followed-club',
-        nextEventAt: now.add(const Duration(days: 2)),
-      );
-      final joinedOnlyClub = buildClub(
-        id: 'joined-only-club',
-        nextEventAt: now.add(const Duration(days: 2)),
-      );
-
-      final filtered = applyExploreFilters(
-        clubs: [followedClub, joinedOnlyClub],
-        filters: const ExploreFilterSelection(followingOnly: true),
-        joinedClubIds: {'followed-club', 'joined-only-club'},
-        followedClubIds: {'followed-club'},
-        now: now,
-      );
-
-      expect(filtered.map((club) => club.id), ['followed-club']);
     });
 
     test('applyExploreFilters uses the selected time window', () {
@@ -1178,43 +1431,6 @@ void main() {
         );
       },
     );
-
-    test('promotes followed-club events into the first Explore page', () {
-      final now = DateTime(2026, 5, 26, 8);
-      final neutralClub = buildClub(id: 'neutral-club');
-      final followedClub = buildClub(id: 'followed-club');
-      final items = [
-        for (var index = 0; index < 10; index++)
-          _exploreItem(
-            id: 'neutral-$index',
-            club: neutralClub,
-            startTime: now.add(Duration(hours: index)),
-          ),
-        _exploreItem(
-          id: 'followed-a',
-          club: followedClub,
-          startTime: now.add(const Duration(hours: 12)),
-        ),
-        _exploreItem(
-          id: 'followed-b',
-          club: followedClub,
-          startTime: now.add(const Duration(hours: 13)),
-        ),
-      ];
-
-      final ranked = promoteFollowedClubItemsForExplore(
-        items,
-        followedClubIds: {'followed-club'},
-      );
-
-      final firstPageIds = ranked.take(10).map((item) => item.event.id);
-      expect(firstPageIds, containsAll(['followed-a', 'followed-b']));
-      expect(
-        ranked.map((item) => item.event.id).toSet(),
-        hasLength(ranked.length),
-      );
-      expect(ranked, hasLength(items.length));
-    });
 
     test(
       'exploreFeedViewModelProvider keeps external supply separate',

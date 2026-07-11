@@ -13,96 +13,42 @@ shift 2
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 
-selected_targets=()
-extra_targets=()
-
-trim() {
-  local value="$1"
-  value="${value#"${value%%[![:space:]]*}"}"
-  value="${value%"${value##*[![:space:]]}"}"
-  printf '%s' "$value"
-}
-
-contains_target() {
-  local needle="$1"
-  shift
-
-  local item
-  for item in "$@"; do
-    if [[ "$item" == "$needle" ]]; then
-      return 0
-    fi
-  done
-
-  return 1
-}
-
-add_target() {
-  local target="$1"
-  if [[ ${#selected_targets[@]} -eq 0 ]] ||
-    ! contains_target "$target" "${selected_targets[@]}"; then
-    selected_targets+=("$target")
-  fi
-}
-
-target_is_selected() {
-  local target="$1"
-  [[ ${#selected_targets[@]} -gt 0 ]] &&
-    contains_target "$target" "${selected_targets[@]}"
-}
-
-IFS=',' read -ra requested_targets <<< "$targets_csv"
-for raw_target in "${requested_targets[@]}"; do
-  target="$(trim "$raw_target")"
-  [[ -z "$target" ]] && continue
-
-  case "$target" in
-    all)
-      add_target functions
-      add_target firestore:indexes
-      add_target firestore:rules
-      add_target storage
-      add_target hosting
-      ;;
-    firestore)
-      add_target firestore:indexes
-      add_target firestore:rules
-      ;;
-    functions|firestore:indexes|firestore:rules|storage|hosting|remoteconfig)
-      add_target "$target"
-      ;;
-    *)
-      extra_targets+=("$target")
-      ;;
-  esac
-done
-
 deploy_target() {
-  local target="$1"
+  local phase="$1"
+  local deploy_only="$2"
   shift
-  local deploy_only="$target"
+  shift
 
-  if [[ "$target" == "functions" ]]; then
-    deploy_only="$(
-      node "$repo_root/tool/firebase/list_firebase_function_targets.mjs" --csv
-    )"
-  fi
-
-  echo "::group::Deploy Firebase target: $target"
+  echo "::group::Deploy Firebase target: $phase"
   "$repo_root/tool/firebase_with_env.sh" \
     "$environment" deploy --only "$deploy_only" --non-interactive "$@"
   echo "::endgroup::"
 }
 
-safe_order=(functions firestore:indexes firestore:rules storage hosting remoteconfig)
-for target in "${safe_order[@]}"; do
-  if target_is_selected "$target"; then
-    deploy_target "$target" "$@"
-  fi
-done
+sync_callable_invokers() {
+  local project_id
+  project_id="$(
+    node -e '
+      const fs = require("fs");
+      const env = process.argv[1];
+      const rc = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+      const project = rc.projects && rc.projects[env];
+      if (!project) process.exit(2);
+      process.stdout.write(project);
+    ' "$environment" "$repo_root/.firebaserc"
+  )"
+  npm --prefix "$repo_root/functions" run sync:callable-invokers -- "$project_id"
+}
 
-if [[ ${#extra_targets[@]} -gt 0 ]]; then
-  for target in "${extra_targets[@]}"; do
-    deploy_target "$target" "$@"
-  done
-fi
+plan_output="$(
+  node "$repo_root/tool/firebase/plan_firebase_deploy_targets.mjs" \
+    "$targets_csv" --tsv
+)"
+
+while IFS=$'\t' read -r phase deploy_only; do
+  [[ -z "$phase" || -z "$deploy_only" ]] && continue
+  deploy_target "$phase" "$deploy_only" "$@"
+  if [[ "$phase" == "functions" ]]; then
+    sync_callable_invokers
+  fi
+done <<< "$plan_output"

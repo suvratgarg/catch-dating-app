@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.144
-updated: 2026-07-03
+version: 0.4.145
+updated: 2026-07-11
 owner: marketing_website
 status: active
 ---
@@ -24,6 +24,10 @@ The website is already split out of the old monolithic shell:
 - `website/src/app/routeRegistry.ts` owns runtime route patterns.
 - `website/src/app/pageMeta.ts` owns client-side page metadata.
 - `website/scripts/postbuild.mjs` emits route-specific static HTML after Vite.
+  Generated organizer routes include semantic profile content, Organization and
+  breadcrumb JSON-LD, canonical/robots metadata, and `lastVerifiedAt` sitemap
+  dates before React executes. `checkOrganizerBuildOutputs.mjs` fails builds
+  that regress those crawlable outputs.
 - `design/website/routes.json` records the public route contract, review
   states, and Storybook/manual state coverage.
 - `design/website/components.json` records route and section ownership, CSS
@@ -403,7 +407,9 @@ aggregation points:
    Client metadata in `pageMeta.ts`, route resolution in `App`, and postbuild
    output in `website/scripts/postbuild.mjs` must stay covered by the route
    contract. Legacy organizer routes must preserve canonical/noindex behavior
-   before and after hydration.
+   before and after hydration. Firebase Hosting must route `/claim/**` to the
+   generated `/claim/index.html` shell so direct claim lookup links do not fall
+   through to root metadata.
 
 10. Analytics and Firebase boundaries stay centralized.
 

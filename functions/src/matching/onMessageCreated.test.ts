@@ -143,7 +143,13 @@ function event(eventId: string) {
   };
 }
 
-function harness({eventIds = ["event-1"]}: {eventIds?: string[]} = {}) {
+function harness({
+  eventIds = ["event-1"],
+  conversationType,
+}: {
+  eventIds?: string[];
+  conversationType?: "match" | "clubHostInquiry";
+} = {}) {
   const firestore = new FakeFirestore({
     "matches/match-1": {
       user1Id: "runner-1",
@@ -156,17 +162,20 @@ function harness({eventIds = ["event-1"]}: {eventIds?: string[]} = {}) {
       lastMessageSenderId: null,
       unreadCounts: {"runner-1": 0, "runner-2": 1},
       status: "active",
+      ...(conversationType == null ? {} : {conversationType}),
     },
     "publicProfiles/runner-1": {name: "Runner One"},
     "users/runner-2": {fcmToken: "token-2"},
   });
   const notifications: Notification[] = [];
   const scorecardRefreshes: string[] = [];
+  const signalFactBatches: unknown[] = [];
 
   return {
     firestore,
     notifications,
     scorecardRefreshes,
+    signalFactBatches,
     deps: {
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
@@ -177,6 +186,12 @@ function harness({eventIds = ["event-1"]}: {eventIds?: string[]} = {}) {
       },
       refreshScorecard: async (eventId: string) => {
         scorecardRefreshes.push(eventId);
+      },
+      recordSignalFacts: async (
+        _db: FirebaseFirestore.Firestore,
+        facts: unknown
+      ) => {
+        signalFactBatches.push(facts);
       },
     },
   };
@@ -270,5 +285,22 @@ test("onMessageCreatedHandler redacts blocked content in push and preview",
     );
     assert.equal(h.notifications.length, 1);
     assert.equal(h.notifications[0]?.body, "[message removed for review]");
+  }
+);
+
+test(
+  "onMessageCreatedHandler keeps Host inquiries out of dating analytics",
+  async () => {
+    const h = harness({conversationType: "clubHostInquiry"});
+
+    await onMessageCreatedHandler(event("event-1"), h.deps);
+
+    assert.equal(h.notifications.length, 1);
+    assert.deepEqual(h.scorecardRefreshes, []);
+    assert.deepEqual(h.signalFactBatches, []);
+    assert.equal(
+      h.firestore.get("matches/match-1")?.lastMessagePreview,
+      "Hello there"
+    );
   }
 );

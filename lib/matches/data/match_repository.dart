@@ -144,12 +144,31 @@ class MatchRepository {
 }
 
 List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {
-  final buckets = <String, List<Match>>{};
+  final buckets =
+      <
+        ({
+          MatchConversationType type,
+          String? clubId,
+          String? eventId,
+          String otherId,
+        }),
+        List<Match>
+      >{};
   for (final match in matches) {
     final otherId = match.otherId(uid);
     final bucketKey = match.isClubHostInquiry
-        ? 'hostInquiry:${match.clubId ?? 'unknown'}:$otherId'
-        : 'match:$otherId';
+        ? (
+            type: match.conversationType,
+            clubId: match.clubId,
+            eventId: match.latestEventId,
+            otherId: otherId,
+          )
+        : (
+            type: match.conversationType,
+            clubId: null,
+            eventId: null,
+            otherId: otherId,
+          );
     buckets.putIfAbsent(bucketKey, () => []).add(match);
   }
 

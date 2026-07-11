@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catch — Host App (Catch for Organizers)</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+  body { margin: 0; background: #E2E1DC; color: var(--ink); font-family: var(--font-function); -webkit-font-smoothing: antialiased; }
+
+  .mast { max-width: 1500px; margin: 0 auto; padding: 56px 40px 26px; }
+  .mast .kicker { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink2); }
+  .mast h1 { font-family: var(--font-voice); font-stretch: 78%; font-size: 60px; font-weight: 600; letter-spacing: -0.03em; line-height: 0.98; margin: 12px 0 0; }
+  .mast h1 em { font-style: normal; color: var(--act-social-run-deep); }
+  .mast p { max-width: 680px; font-size: 16px; line-height: 1.55; color: var(--ink2); margin: 16px 0 0; }
+  .mast p code { font-family: var(--font-data); font-size: 0.84em; background: var(--primary-soft); padding: 1px 6px; border-radius: 5px; }
+  .mast .meta { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 22px; font-family: var(--font-data); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink2); }
+  .mast .meta b { color: var(--ink); }
+  .mast .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .mast .links a { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); text-decoration: none; padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line2); background: var(--surface); }
+  .mast .links a:hover { border-color: var(--ink2); }
+  .mast .links a.dark { background: var(--ink); color: var(--primary-ink); border-color: var(--ink); }
+
+  nav { position: sticky; top: 0; z-index: 20; background: rgba(244,244,241,0.86); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .navin { max-width: 1500px; margin: 0 auto; padding: 12px 40px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .navin a { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-data); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink2); text-decoration: none; padding: 7px 12px; border-radius: 999px; border: 1px solid transparent; }
+  .navin a:hover { color: var(--ink); border-color: var(--line2); background: var(--surface); }
+  .navin a i { font-size: 14px; }
+  .navsep { width: 1px; height: 18px; background: var(--line2); margin: 0 6px; }
+
+  .group { max-width: 1500px; margin: 0 auto; padding: 46px 40px 6px; }
+  .group h2 { font-family: var(--font-voice); font-stretch: 78%; font-size: 27px; font-weight: 600; letter-spacing: -0.02em; margin: 0; color: var(--ink); }
+  .group p { font-size: 14.5px; color: var(--ink2); margin: 8px 0 0; max-width: 760px; line-height: 1.5; }
+  .group .rehomed { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #3a4d96; background: rgba(67,86,168,0.12); padding: 3px 8px; border-radius: 999px; margin-left: 10px; vertical-align: 4px; }
+
+  .rail { max-width: 1500px; margin: 0 auto; padding: 22px 40px 8px; display: flex; flex-wrap: wrap; gap: 30px; }
+  .screen { width: 430px; }
+  .screen .cap { display: flex; align-items: baseline; gap: 10px; margin: 0 4px 12px; }
+  .screen .ix { font-family: var(--font-data); font-size: 11px; font-weight: 700; color: var(--ink3); letter-spacing: 0.06em; flex: none; }
+  .screen .nm { font-size: 16px; font-weight: 650; color: var(--ink); }
+  .screen .tag { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink2); border: 1px solid var(--line2); border-radius: 999px; padding: 2px 8px; }
+  .screen .open { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-data); font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink2); text-decoration: none; }
+  .screen .open:hover { color: var(--ink); }
+  .screen .sub { font-size: 13px; color: var(--ink2); margin: 0 4px 12px; line-height: 1.45; }
+  .frame { border-radius: 30px; overflow: hidden; background: #E2E1DC; box-shadow: 0 1px 2px rgba(22,20,15,0.04), 0 18px 50px -28px rgba(22,20,15,0.5); }
+  .frame iframe { display: block; width: 430px; height: 912px; border: 0; background: #E2E1DC; }
+
+  footer { max-width: 1500px; margin: 0 auto; padding: 56px 40px 80px; font-family: var(--font-data); font-size: 12px; color: var(--ink3); line-height: 1.7; }
+  footer b { color: var(--ink2); }
+  footer a { color: var(--ink2); }
+</style>
+</head>
+<body>
+
+  <header class="mast">
+    <div class="kicker">Catch · Host app · Catch for Organizers</div>
+    <h1>The host app,<br>re-cut by <em>lifecycle</em>.</h1>
+    <p>The consolidated host app. Four club-shaped tabs became four lifecycle-shaped ones — <code>Today · Events · Inbox · Organizer</code> — with <b>Manage</b> and <b>Insights</b> as first-class destinations. Every screen is a live template composed <b>purely of catalogue widgets</b>; the create / edit / sheet flows are re-homed from the on-system rebuild so nothing is lost.</p>
+    <div class="meta">
+      <span><b>4</b> lifecycle tabs</span>
+      <span><b>2</b> destinations</span>
+      <span><b>9</b> re-homed flows</span>
+      <span><b>10</b> new catalogue widgets</span>
+    </div>
+    <div class="links">
+      <a class="dark" href="Host App Decisions.html"><i class="ph ph-compass"></i>Decisions &amp; consolidation</a>
+      <a href="Host App Coverage.html"><i class="ph ph-table"></i>Code-coverage audit</a>
+      <a href="explorations/host-ia-review/HostIAReview.html"><i class="ph ph-tree-structure"></i>IA review</a>
+      <a href="explorations/host-redesign/UX_AUDIT.html"><i class="ph ph-list-checks"></i>UX punch list</a>
+    </div>
+  </header>
+
+  <nav>
+    <div class="navin">
+      <a href="#tabs"><i class="ph-fill ph-squares-four"></i>Tabs</a>
+      <span class="navsep"></span>
+      <a href="#tabs"><i class="ph ph-house"></i>Today</a>
+      <a href="#tabs"><i class="ph ph-ticket"></i>Events</a>
+      <a href="#tabs"><i class="ph ph-chat-circle"></i>Inbox</a>
+      <a href="#tabs"><i class="ph ph-storefront"></i>Organizer</a>
+      <span class="navsep"></span>
+      <a href="#hub"><i class="ph ph-sliders-horizontal"></i>Manage &amp; Insights</a>
+      <a href="#flows"><i class="ph ph-pencil-simple"></i>Create / edit</a>
+      <a href="#sheets"><i class="ph ph-cards"></i>Sheets &amp; dialogs</a>
+    </div>
+  </nav>
+
+  <!-- ════════ TABS ════════ -->
+  <div class="group" id="tabs">
+    <h2>The app bar · four lifecycle tabs</h2>
+    <p>The new shell. <b>Today</b> is the time-aware ops home (live hero + triage queue); <b>Events</b> owns the create + lifecycle list; <b>Inbox</b> is event-scoped with blasts; <b>Organizer</b> merges the old Clubs brand + Account profile into one durable surface.</p>
+  </div>
+  <div class="rail">
+    <div class="screen">
+      <div class="cap"><span class="ix">01</span><span class="nm">Today</span><span class="tag">Tab</span><a class="open" href="templates/hosts-today/Today.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">NextUpHero (live countdown) + NeedsYouQueue (approve / offer / reply, inline) + the week's events.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-today/Today.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">02</span><span class="nm">Events</span><span class="tag">Tab</span><a class="open" href="templates/hosts-events/Events.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">New event + Repeat-last, an Upcoming / Live / Past SegPill, month-grouped EventLifecycleRows. Tap the segments.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-events/Events.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">03</span><span class="nm">Inbox</span><span class="tag">Tab</span><a class="open" href="templates/hosts-inbox/Inbox.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">Booked / Prospective threads, event-scoped. Tap the blast row for the BlastComposer sheet.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-inbox/Inbox.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">04</span><span class="nm">Organizer</span><span class="tag">Tab</span><a class="open" href="templates/hosts-organizer/Organizer.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">OrganizerHeader + payouts nudge + brand stats + team + a TrendStrip into Insights + manage rows.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-organizer/Organizer.dc.html"></iframe></div>
+    </div>
+  </div>
+
+  <!-- ════════ HUB ════════ -->
+  <div class="group" id="hub">
+    <h2>The per-event hub &amp; analytics</h2>
+    <p>Reached from a Today hero, an Events row, or a NeedsYou item. <b>Manage</b> opens on the event's lifecycle state; <b>Insights</b> is the cross-event analytics destination from the Organizer's trends.</p>
+  </div>
+  <div class="rail">
+    <div class="screen">
+      <div class="cap"><span class="ix">05</span><span class="nm">Manage event</span><span class="tag">Setup · Guests · Live · Report</span><a class="open" href="templates/hosts-manage/Manage.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">One screen, four modes — MetricGrid, RosterBoard, the LiveConsole run-of-show + big check-in, and the post-event report. Tap the modes.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-manage/Manage.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">06</span><span class="nm">Insights</span><span class="tag">Destination</span><a class="open" href="templates/hosts-insights/Insights.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">DateRangePicker (tap the range chip), ▲▼ deltas, the demand→booking trend, a by-format split, top events, and data-quality fixes.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-insights/Insights.dc.html"></iframe></div>
+    </div>
+  </div>
+
+  <!-- ════════ CREATE / EDIT (RE-HOMED) ════════ -->
+  <div class="group" id="flows">
+    <h2>Create &amp; edit flows<span class="rehomed"><i class="ph-fill ph-arrows-merge"></i>Re-homed</span></h2>
+    <p>The deeper wizards, preserved from the on-system rebuild and re-homed under the new IA — create lives in <b>Events</b>, edit in <b>Manage</b>, the organizer wizards in <b>Organizer</b>. These prevent the prototype's toast-stub regressions (R1–R3).</p>
+  </div>
+  <div class="rail">
+    <div class="screen">
+      <div class="cap"><span class="ix">07</span><span class="nm">Create event</span><span class="tag">Events › New</span><a class="open" href="templates/hosts-create-event/HostCreateEvent.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">The 5-step wizard, reached from Events → New event (and Repeat-last). Tap Next to step through.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-create-event/HostCreateEvent.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">08</span><span class="nm">Event created</span><span class="tag">Confirm</span><a class="open" href="templates/hosts-create-event-success/HostCreateEventSuccess.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">The confirmation after scheduling. Tweak adds the invite-only code + private link.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-create-event-success/HostCreateEventSuccess.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">09</span><span class="nm">Edit event</span><span class="tag">Manage › Setup</span><a class="open" href="templates/hosts-edit-event/HostEditEvent.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">Reached from Manage → Setup → Edit. Tweak "Has bookings" locks schedule + policy to read-only.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-edit-event/HostEditEvent.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">10</span><span class="nm">Create organizer</span><span class="tag">Organizer › New</span><a class="open" href="templates/hosts-create-club/HostCreateClub.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">The organizer (club) wizard — identity, contact, host + event-success defaults. Tap Next.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-create-club/HostCreateClub.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">11</span><span class="nm">Edit organizer</span><span class="tag">Organizer › Edit</span><a class="open" href="templates/hosts-edit-club/HostEditClub.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">The wizard flattened — cover photos + Identity / Contact / Event-defaults rows.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-edit-club/HostEditClub.dc.html"></iframe></div>
+    </div>
+  </div>
+
+  <!-- ════════ SHEETS & DIALOGS (RE-HOMED) ════════ -->
+  <div class="group" id="sheets">
+    <h2>Sheets &amp; dialogs<span class="rehomed"><i class="ph-fill ph-arrows-merge"></i>Re-homed</span></h2>
+    <p>The modal layers behind the screens — add a co-host, resume a draft, the Stripe payouts hand-off, and the confirm dialogs. Preserved from the on-system rebuild (regression R4); toggle Tweaks on the dialogs to switch which one.</p>
+  </div>
+  <div class="rail">
+    <div class="screen">
+      <div class="cap"><span class="ix">12</span><span class="nm">Add host</span><span class="tag">Sheet</span><a class="open" href="templates/hosts-add-host/HostAddHost.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">Add a co-host by their Catch phone number, from the Organizer team section.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-add-host/HostAddHost.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">13</span><span class="nm">Draft picker</span><span class="tag">Sheet</span><a class="open" href="templates/hosts-draft-picker/HostDraftPicker.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">Resume a saved create-event/club draft or start fresh — the Today "Finish your draft" entry.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-draft-picker/HostDraftPicker.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">14</span><span class="nm">Payouts hand-off</span><span class="tag">Sheet</span><a class="open" href="templates/hosts-payouts-handoff/HostPayoutsHandoff.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">The external Stripe onboarding from the Organizer payouts nudge — country/currency + continue.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-payouts-handoff/HostPayoutsHandoff.dc.html"></iframe></div>
+    </div>
+    <div class="screen">
+      <div class="cap"><span class="ix">15</span><span class="nm">Confirm dialogs</span><span class="tag">Dialog</span><a class="open" href="templates/hosts-dialogs/HostDialogs.dc.html" target="_blank">Open <i class="ph ph-arrow-up-right"></i></a></div>
+      <div class="sub">Cancel event · remove host · transfer ownership. Tweak switches the dialog.</div>
+      <div class="frame"><iframe loading="lazy" src="templates/hosts-dialogs/HostDialogs.dc.html"></iframe></div>
+    </div>
+  </div>
+
+  <footer>
+    <div><b>Decisions ·</b> <a href="Host App Decisions.html">Host App Decisions.html</a> — the direction, the full re-homing map, and the regression audit (renders from <a href="host-app-manifest.json">host-app-manifest.json</a>).</div>
+    <div><b>Composed of ·</b> the catalogue (<code>components/</code>) — incl. the 10 widgets promoted from this redesign: NextUpHero · NeedsYouQueue · EventLifecycleRow · FacePile · OrganizerHeader · TrendStrip · SegPill · MetricGrid/StatCard · BlastComposer · DateRangePicker.</div>
+    <div><b>Superseded ·</b> the old club-shaped tabs (<code>templates/hosts-events · host-clubs · host-account · host-inbox</code>) remain as the faithful on-system rebuild of the prior IA — retained, not deleted.</div>
+    <div><b>Research ·</b> retained under <code>explorations/host-redesign</code> + <code>host-ia-review</code> — IA review, UX punch list, v1/v2 prototypes, flows, calendar primitive.</div>
+    <div><b>Not yet built ·</b> onboarding / auth · empty / loading / error states · the cancel-refund flow (regression R5, net-new).</div>
+  </footer>
+
+</body>
+</html>

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
@@ -59,6 +60,14 @@ export async function main(argv = process.argv.slice(2)) {
   const actions = buildClaimTargetSyncActions(plan.targets, existingDocs);
   const summary = summarizeActions(actions);
 
+  writeReadinessReceipt({
+    args,
+    actions,
+    planPath,
+    projectId,
+    summary,
+  });
+
   if (args.check && summary.writesNeeded > 0) {
     printSummary({args, projectId, planPath, summary, actions});
     fail(
@@ -97,6 +106,68 @@ export async function main(argv = process.argv.slice(2)) {
   }
   await batch.commit();
   console.log(`Wrote ${summary.writesNeeded} organizer claim target updates.`);
+
+  if (args.receipt) {
+    const verifiedDocs = await readExistingDocs({
+      projectId,
+      emulatorHost: args.emulatorHost,
+      targets: plan.targets,
+    });
+    const verifiedActions = buildClaimTargetSyncActions(plan.targets, verifiedDocs);
+    writeReadinessReceipt({
+      args,
+      actions: verifiedActions,
+      planPath,
+      projectId,
+      summary: summarizeActions(verifiedActions),
+    });
+  }
+}
+
+export function buildReadinessReceipt({
+  actions,
+  fixture,
+  generatedAt = new Date().toISOString(),
+  planPath,
+  projectId,
+  summary,
+}) {
+  return {
+    schemaVersion: 1,
+    receiptType: "organizer_claim_target_readiness",
+    generatedAt,
+    mode: {
+      source: fixture ? "fixture" : "firestore_read",
+      remoteWrites: 0,
+    },
+    projectId,
+    fixture,
+    plan: {
+      path: relativeToRepo(planPath),
+      sha256: crypto.createHash("sha256")
+        .update(fs.readFileSync(planPath))
+        .digest("hex"),
+    },
+    summary,
+    actions: actions.map(actionSummary),
+  };
+}
+
+function writeReadinessReceipt({args, actions, planPath, projectId, summary}) {
+  if (!args.receipt) return;
+  const receiptPath = path.resolve(args.receipt);
+  const receipt = buildReadinessReceipt({
+    actions,
+    fixture: args.fixture ? relativeToRepo(path.resolve(args.fixture)) : null,
+    planPath,
+    projectId,
+    summary,
+  });
+  fs.mkdirSync(path.dirname(receiptPath), {recursive: true});
+  fs.writeFileSync(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`);
+  if (!args.json) {
+    console.log(`Readiness receipt: ${relativeToRepo(receiptPath)}`);
+  }
 }
 
 function loadPlan(planPath) {
@@ -189,6 +260,7 @@ function parseArgs(argv) {
     json: false,
     plan: null,
     project: null,
+    receipt: null,
     write: false,
   };
 
@@ -206,6 +278,7 @@ function parseArgs(argv) {
     else if (arg === "--fixture") parsed.fixture = requiredValue(argv, ++index, arg);
     else if (arg === "--plan") parsed.plan = requiredValue(argv, ++index, arg);
     else if (arg === "--project") parsed.project = requiredValue(argv, ++index, arg);
+    else if (arg === "--receipt") parsed.receipt = requiredValue(argv, ++index, arg);
     else fail(`Unknown argument: ${arg}`);
   }
   return parsed;
@@ -251,6 +324,7 @@ Options:
   --fixture <path>         Read existing docs from a local fixture.
   --write                  Apply remote writes. Default is dry run.
   --check                  Fail when any create/refresh action is needed.
+  --receipt <path>         Write a read-only environment readiness receipt.
   --allow-prod             Permit prod writes after a reviewed dry run.
   --confirm-prod           Required with --allow-prod for prod writes.
   --json                   Print machine-readable output.

@@ -18,8 +18,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
 
 /// Returns the slivers that make up the Explore feed body — mixed event/club
 /// discovery feed, optional legacy club rails, and browse prompts — as a flat
-/// list so they can be spread directly into a parent `CustomScrollView.slivers`
-/// without triggering nested-group layout pathologies.
+/// list so they can be spread directly into a parent `CustomScrollView.slivers`.
+/// When sticky day headers are enabled, only the event stream is wrapped in a
+/// bounded [SliverMainAxisGroup]; compatibility callers disable pinning and
+/// continue to receive flat inline-header slivers, avoiding nested groups.
 List<Widget> buildExploreBodySlivers({
   required BuildContext context,
   required AsyncValue<ExploreFeedViewModel> feedAsync,
@@ -40,12 +42,31 @@ List<Widget> buildExploreBodySlivers({
   bool includeJoinedClubsRail = true,
   bool includeClubDirectory = true,
   bool pinnedExploreDayHeaders = true,
+  bool promoteFeaturedItem = false,
+  DateTime? now,
 }) {
   final viewModel = clubsViewModel;
   final feedValue = switch (feedAsync) {
     AsyncData(:final value) => value,
     _ => null,
   };
+  final eventSlivers = buildExploreEventsSlivers(
+    feedAsync,
+    filters: filters,
+    searchQuery: searchQuery,
+    onRetry: onRetryFeed,
+    onClearSearch: onClearSearch,
+    onClearFilters: onClearFilters,
+    onSetTimeFilter: onSetTimeFilter,
+    onEventSelected: onEventSelected,
+    onExternalEventOpened: onExternalEventOpened,
+    onClubSelected: onClubSelected,
+    candidateClubs: viewModel?.allClubs ?? const [],
+    joinedClubIds: viewModel?.joinedClubIds ?? const {},
+    pinnedDayHeaders: pinnedExploreDayHeaders,
+    promoteFeaturedItem: promoteFeaturedItem,
+    now: now,
+  );
   return [
     if (includeJoinedClubsRail &&
         viewModel != null &&
@@ -53,21 +74,10 @@ List<Widget> buildExploreBodySlivers({
       SliverToBoxAdapter(
         child: ClubAvatarRail(clubs: viewModel.joinedClubs, fullBleed: true),
       ),
-    ...buildExploreEventsSlivers(
-      feedAsync,
-      filters: filters,
-      searchQuery: searchQuery,
-      onRetry: onRetryFeed,
-      onClearSearch: onClearSearch,
-      onClearFilters: onClearFilters,
-      onSetTimeFilter: onSetTimeFilter,
-      onEventSelected: onEventSelected,
-      onExternalEventOpened: onExternalEventOpened,
-      onClubSelected: onClubSelected,
-      candidateClubs: viewModel?.allClubs ?? const [],
-      joinedClubIds: viewModel?.joinedClubIds ?? const {},
-      pinnedDayHeaders: pinnedExploreDayHeaders,
-    ),
+    if (pinnedExploreDayHeaders)
+      SliverMainAxisGroup(slivers: eventSlivers)
+    else
+      ...eventSlivers,
     if (recommendationsAsync != null)
       switch (recommendationsAsync) {
         AsyncLoading() => const SliverToBoxAdapter(

@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catch for Organizers — v2 (improvements + options)</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #E2E1DC; color: var(--ink); font-family: var(--font-function); -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: flex-start; gap: 24px; padding: 28px 16px; min-height: 100vh; flex-wrap: wrap; }
+  .device { position: relative; width: 390px; height: 844px; background: var(--bg); border-radius: 38px; border: 1px solid rgba(22,20,15,0.16); box-shadow: 0 2px 4px rgba(22,20,15,0.05), 0 40px 90px -44px rgba(22,20,15,0.6); overflow: hidden; display: flex; flex-direction: column; }
+  .statusbar { height: 50px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: var(--font-data); font-size: 13px; font-weight: 600; }
+  .statusbar .r { display: flex; gap: 7px; align-items: center; font-size: 14px; }
+  .scroll { flex: 1; min-height: 0; overflow: auto; }
+  .pad { padding: 4px 20px 28px; }
+  .tabbar { flex: none; display: flex; border-top: 1px solid var(--line); background: rgba(244,244,241,0.92); backdrop-filter: blur(12px); padding: 8px 6px 10px; }
+  .tabbar button { flex: 1; appearance: none; background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; cursor: pointer; color: var(--ink3); position: relative; }
+  .tabbar button.on { color: var(--ink); }
+  .tabbar button i { font-size: 23px; }
+  .tabbar button span { font-family: var(--font-data); font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .tabbar .cnt { position: absolute; top: 0; left: 50%; margin-left: 6px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: var(--act-social-run-accent); color: #fff; font-family: var(--font-data); font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .voice { font-family: var(--font-voice); letter-spacing: -0.02em; }
+  .mono { font-family: var(--font-data); }
+  .ml { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink2); }
+  .greet { padding: 14px 0 2px; display: flex; align-items: center; gap: 12px; }
+  .greet .hi { flex: 1; } .greet .hi .k { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
+  .greet .hi h1 { font-family: var(--font-voice); font-size: 26px; font-weight: 600; letter-spacing: -0.03em; margin: 3px 0 0; }
+  .orgchip { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line2); border-radius: 999px; padding: 5px 11px 5px 6px; background: var(--surface); font-size: 12px; font-weight: 600; cursor: pointer; }
+  .sechead { display: flex; align-items: baseline; gap: 8px; margin: 26px 0 12px; }
+  .sechead .ml { flex: 1; } .sechead a { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink2); text-decoration: none; cursor: pointer; }
+  .av { border-radius: 999px; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 700; flex: none; overflow: hidden; color: var(--ink); background: var(--primary-soft); }
+  .av img { width: 100%; height: 100%; object-fit: cover; }
+  .gbtn { appearance:none; border:0; background:none; cursor:pointer; font-family:inherit; }
+
+  /* hero */
+  .hero { position: relative; border-radius: 24px; overflow: hidden; padding: 20px; color: #F4F0E8; isolation: isolate; }
+  .hero .glow { position: absolute; z-index:-1; width: 280px; height: 280px; border-radius: 999px; filter: blur(40px); opacity: 0.5; top: -90px; right: -60px; }
+  .hero .state { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; background: rgba(244,240,232,0.14); }
+  .hero .state.live { background: rgba(91,192,124,0.2); color: #8be0a5; }
+  .hero .ld { width: 7px; height: 7px; border-radius: 999px; background: #5BC07C; animation: pulse 1.7s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(91,192,124,0.5)} 70%{box-shadow:0 0 0 8px rgba(91,192,124,0)} }
+  .hero h2 { font-family: var(--font-voice); font-size: 27px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.04; margin: 14px 0 0; }
+  .hero .meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; }
+  .hero .meta span { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #D9D2C7; }
+  .hstats { display: flex; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(244,240,232,0.16); }
+  .hstats .s { flex:1; background:none; border:0; text-align:left; cursor:pointer; padding:0; color:inherit; }
+  .hstats .s b { font-family: var(--font-data); font-size: 19px; font-weight: 700; display: block; }
+  .hstats .s span { font-family: var(--font-data); font-size: 8px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #BAB2A7; display:flex; align-items:center; gap:3px; }
+  .hcta { display: flex; gap: 10px; margin-top: 18px; }
+  .hcta button { appearance: none; border: 0; cursor: pointer; border-radius: 999px; padding: 15px 18px; font-family: var(--font-function); font-size: 14.5px; font-weight: 650; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; }
+  .hcta .primary { flex: 1; color: #fff; }
+  .hcta .ghost { background: rgba(244,240,232,0.12); color: #F4F0E8; padding: 15px 16px; }
+  .facepile { display: flex; }
+  .facepile .av { border: 2px solid; }
+  .facepile .av + .av, .facepile .more + .av, .facepile .av + .more { margin-left: -9px; }
+  .facepile .more { border-radius: 999px; display: flex; align-items: center; justify-content: center; font-family: var(--font-data); font-weight: 700; border: 2px solid; }
+
+  .qcard { display: flex; align-items: center; gap: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; margin-bottom: 10px; font-family: inherit; }
+  .qcard .qi { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex: none; }
+  .qcard .qt { flex: 1; min-width: 0; cursor:pointer; }
+  .qcard .qt b { font-family: var(--font-head); font-size: 14.5px; font-weight: 700; color: var(--ink); display: block; }
+  .qcard .qt span { font-size: 12.5px; color: var(--ink2); display: block; margin-top: 2px; line-height: 1.4; }
+  .qact { display:flex; gap:7px; flex:none; }
+  .qmini { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 999px; padding: 0 12px; height:36px; display:flex; align-items:center; cursor: pointer; border:1px solid var(--line2); background:var(--surface); color:var(--ink); }
+  .qmini.warm { background: var(--act-social-run-accent); border-color: var(--act-social-run-accent); color:#fff; }
+  .empty { text-align:center; padding: 30px 20px; color: var(--ink3); }
+  .empty i { font-size: 30px; color: var(--success); } .empty b { display:block; font-family:var(--font-head); font-size:15px; color:var(--ink); margin-top:10px; } .empty span{ font-size:13px; }
+
+  .erow { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 13px; margin-bottom: 10px; cursor: pointer; font-family: inherit; position: relative; overflow: hidden; }
+  .erow .spine { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+  .erow .dt { width: 48px; flex: none; text-align: center; margin-left:4px; }
+  .erow .dt .d { font-family: var(--font-voice); font-size: 21px; font-weight: 600; line-height: 1; }
+  .erow .dt .mo { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink3); margin-top: 3px; }
+  .erow .eb { flex: 1; min-width: 0; }
+  .erow .et { font-family: var(--font-head); font-size: 15px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .erow .em { font-family: var(--font-data); font-size: 9px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-top: 4px; }
+  .erow .fill { height: 4px; border-radius: 999px; background: var(--line2); margin-top: 9px; overflow: hidden; } .erow .fill i { display: block; height: 100%; border-radius: 999px; }
+  .monthhd { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); margin: 4px 0 10px; }
+
+  .pillbtn { display: inline-flex; align-items: center; justify-content:center; gap: 7px; border: 1px solid var(--line2); background: var(--surface); border-radius: 14px; padding: 14px 15px; font-family: inherit; font-size: 14px; font-weight: 600; color: var(--ink); cursor: pointer; min-height:50px; } .pillbtn.accent { background: var(--ink); color: var(--primary-ink); border-color: var(--ink); } .pillbtn i { font-size: 17px; }
+  .seg { display: flex; gap: 3px; background: var(--primary-soft); border-radius: 999px; padding: 3px; }
+  .seg button { flex: 1; appearance: none; border: 0; background: none; border-radius: 999px; padding: 9px 4px; font-family: var(--font-data); font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink2); cursor: pointer; } .seg button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(22,20,15,0.12); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+  .mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+  .mcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 15px; }
+  .mcard .v { font-family: var(--font-voice); font-size: 26px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; } .mcard .v small { font-family: var(--font-data); font-size: 13px; color: var(--ink3); font-weight: 600; }
+  .mcard .l { font-family: var(--font-data); font-size: 9.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink2); margin-top: 9px; } .mcard .d { font-size: 11.5px; color: var(--ink3); margin-top: 3px; }
+  .delta { font-family: var(--font-data); font-size: 10px; font-weight: 700; display:inline-flex; align-items:center; gap:2px; margin-top:6px; }
+  .delta.up { color: var(--success); } .delta.down { color: var(--danger); }
+  .act { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line2); border-radius: 15px; padding: 14px 15px; margin-bottom: 10px; cursor: pointer; font-family: inherit; }
+  .act i.lead { font-size: 19px; color: var(--ink2); flex: none; } .act .t { flex: 1; min-width: 0; } .act .t b { display: block; font-family: var(--font-head); font-size: 15px; font-weight: 700; color: var(--ink); } .act .t span { display: block; font-size: 12px; color: var(--ink2); margin-top: 2px; } .act .chev { color: var(--ink3); font-size: 15px; } .act.danger .t b, .act.danger i.lead { color: var(--danger); }
+  .ro { opacity: 0.92; } /* read-only metric tiles */
+
+  .overlay { position: absolute; inset: 0; z-index: 30; background: var(--bg); display: flex; flex-direction: column; transform: translateX(100%); transition: transform .32s cubic-bezier(.2,.7,.2,1); } .overlay.on { transform: translateX(0); }
+  .mbar { flex: none; padding: 6px 16px 0; } .mbar .top { display: flex; align-items: center; gap: 10px; padding: 6px 0 10px; } .mbar .bk { width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line2); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; } .mbar .tt { flex: 1; min-width: 0; } .mbar .tt .k { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); } .mbar .tt h2 { font-family: var(--font-voice); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ctxbar { display:flex; gap:14px; padding: 8px 0 12px; } .ctxbar .ci { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink2); } .ctxbar .ci i { font-size:14px; color:var(--ink3); }
+
+  .deck { position: absolute; right: 16px; bottom: 18px; z-index: 9; width: 174px; height: 108px; cursor: pointer; }
+  .deck .c { position: absolute; inset: 0; border-radius: 18px; background: var(--surface); border: 1px solid var(--line2); box-shadow: 0 10px 26px -14px rgba(22,20,15,0.45); }
+  .deck .c2 { transform: rotate(-7deg) translate(7px,5px); background: var(--act-pub-quiz-soft); } .deck .c1 { transform: rotate(-3.5deg) translate(4px,3px); }
+  .deck .front { display: flex; flex-direction: column; justify-content: space-between; padding: 12px; overflow: hidden; }
+  .deck .dog { position: absolute; top: 0; right: 0; width: 0; height: 0; border-top: 20px solid var(--act-pub-quiz-soft); border-left: 20px solid transparent; border-top-right-radius: 18px; }
+  .deck .lbl { font-family: var(--font-voice); font-size: 15px; font-weight: 600; } .deck .sub { font-family: var(--font-data); font-size: 8px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-top: 3px; }
+  .deck .badge { position:absolute; top:10px; right:10px; min-width:18px; height:18px; border-radius:999px; background:var(--warning); color:#fff; font-family:var(--font-data); font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+
+  .scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--ink) 40%, transparent); opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 40; } .scrim.on { opacity: 1; pointer-events: auto; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 41; background: var(--surface); border-top-left-radius: 28px; border-top-right-radius: 28px; box-shadow: 0 -14px 40px -18px rgba(22,20,15,0.42); max-height: 82%; display: flex; flex-direction: column; transition: transform .36s cubic-bezier(.22,.7,.2,1); }
+  .sheet .grab { width: 40px; height: 4px; border-radius: 999px; background: var(--line2); margin: 10px auto 2px; }
+  .sheet .sh { display: flex; align-items: center; gap:10px; padding: 8px 22px 12px; border-bottom: 1px solid var(--line); } .sheet .sh h3 { font-family: var(--font-voice); font-size: 21px; font-weight: 600; letter-spacing: -0.02em; margin: 0; flex: 1; } .sheet .sh .sub { font-family: var(--font-data); font-size: 9px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink3); }
+  .sheet .sb { overflow: auto; padding: 4px 22px 22px; }
+  .srch { display:flex; align-items:center; gap:8px; background:var(--raised); border:1px solid var(--line); border-radius:10px; padding:9px 12px; margin:12px 0; color:var(--ink3); } .srch input { border:0; background:none; outline:0; flex:1; font-family:var(--font-function); font-size:13.5px; color:var(--ink); }
+  .bulk { display:flex; gap:8px; margin-bottom:4px; }
+  .gl { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); margin: 16px 0 2px; }
+  .prow { display: flex; align-items: center; gap: 13px; padding: 11px 0; border-top: 1px solid var(--line); cursor:pointer; } .gl + .prow { border-top: 0; } .prow .pn { flex: 1; min-width: 0; } .prow .pn b { font-family: var(--font-head); font-size: 15.5px; font-weight: 700; display: block; } .prow .pn span { font-size: 12px; color: var(--ink2); display: block; margin-top: 1px; }
+  .sdot { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; flex: none; } .sdot i { width: 7px; height: 7px; border-radius: 999px; }
+  .warmbtn { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border: 0; border-radius: 999px; padding: 0 14px; height:38px; flex: none; cursor: pointer; background: var(--act-social-run-accent); color: #fff; }
+
+  /* live mode */
+  .livestep { border:1px solid; border-radius:18px; padding:18px; }
+  .dots { display:flex; gap:6px; margin-top:14px; } .dots i { flex:1; height:4px; border-radius:999px; background:var(--line2); } .dots i.on { background: var(--ink); }
+  .bigcheck { display:flex; align-items:center; gap:14px; width:100%; background:var(--ink); color:var(--primary-ink); border:0; border-radius:18px; padding:18px; cursor:pointer; font-family:inherit; margin-top:12px; } .bigcheck .n { font-family:var(--font-voice); font-size:30px; font-weight:600; } .bigcheck i { font-size:26px; }
+
+  .obrand { display: flex; align-items: center; gap: 14px; } .obrand .logo { width: 64px; height: 64px; border-radius: 18px; flex: none; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: 22px; color: #fff; } .obrand h1 { font-family: var(--font-voice); font-size: 24px; font-weight: 600; letter-spacing: -0.025em; margin: 0; display: flex; align-items: center; gap: 7px; }
+  .formats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; } .fchip { font-family: var(--font-data); font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line2); color: var(--ink2); }
+  .nudge { display:flex; align-items:center; gap:12px; background: color-mix(in srgb, var(--warning) 9%, var(--surface)); border:1px solid color-mix(in srgb, var(--warning) 32%, transparent); border-radius:16px; padding:14px; margin-top:14px; } .nudge i { font-size:22px; color:var(--warning); flex:none; } .nudge .t{flex:1;} .nudge .t b{ font-family:var(--font-head); font-size:14.5px; font-weight:700; display:block;} .nudge .t span{ font-size:12px; color:var(--ink2);} .nudge button{ font-family:var(--font-data); font-size:10px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; background:var(--warning); color:#fff; border:0; border-radius:999px; padding:9px 13px; cursor:pointer; flex:none; }
+
+  .thread { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); cursor: pointer; } .thread .pn { flex: 1; min-width: 0; } .thread .pn b { font-family: var(--font-head); font-size: 15px; font-weight: 700; display: block; } .thread .pn span { font-size: 13px; color: var(--ink2); display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .thread .when { font-family: var(--font-data); font-size: 9px; font-weight: 600; color: var(--ink3); flex: none; } .thread .unread { width: 8px; height: 8px; border-radius: 999px; background: var(--act-social-run-accent); flex: none; }
+  .blast { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--ink); color: var(--primary-ink); border: 0; border-radius: 16px; padding: 14px 16px; cursor: pointer; font-family: inherit; } .blast i { font-size: 19px; flex: none; } .blast .t { flex: 1; } .blast .t b { font-family: var(--font-head); font-size: 14.5px; font-weight: 700; display: block; } .blast .t span { font-size: 12px; color: #BAB2A7; display: block; margin-top: 2px; }
+
+  .opt { display:flex; align-items:center; gap:12px; padding:14px 0; border-top:1px solid var(--line); } .opt:first-child{border-top:0;} .opt .t{flex:1;} .opt .t b{ font-family:var(--font-head); font-size:14.5px; font-weight:700; display:block;} .opt .t span{ font-size:12px; color:var(--ink2); display:block; margin-top:2px;}
+  .segsm { display:flex; gap:2px; background:var(--primary-soft); border-radius:999px; padding:2px; flex:none; } .segsm button{ appearance:none; border:0; background:none; border-radius:999px; padding:6px 11px; font-family:var(--font-data); font-size:9.5px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink2); cursor:pointer;} .segsm button.on{ background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(22,20,15,0.12);}
+
+  .toast { position: absolute; left: 16px; right: 16px; bottom: 92px; z-index: 50; background: var(--ink); color: var(--primary-ink); border-radius: 14px; padding: 13px 16px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow-overlay); display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: all .25s; pointer-events: none; } .toast.on { transform: translateY(0); opacity: 1; } .toast i { color: #5BC07C; font-size: 17px; }
+.rangechip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line2); border-radius:999px; padding:9px 13px; background:var(--surface); cursor:pointer; font-family:var(--font-data); font-size:11px; font-weight:700; letter-spacing:0.03em; color:var(--ink); }
+  .rangechip i { font-size:14px; color:var(--ink2); }
+  .sheet.drsheet { max-height:92%; }
+  .drsheet .x { width:32px; height:32px; border-radius:999px; border:1px solid var(--line2); background:var(--surface); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink2); flex:none; }
+  .presets { display:flex; gap:8px; overflow-x:auto; padding:0 22px 14px; border-bottom:1px solid var(--line); scrollbar-width:none; flex:none; } .presets::-webkit-scrollbar{display:none;}
+  .preset { flex:none; font-family:var(--font-data); font-size:11px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; padding:9px 14px; border-radius:999px; border:1px solid var(--line2); background:var(--surface); color:var(--ink2); cursor:pointer; white-space:nowrap; } .preset.on{ background:var(--ink); border-color:var(--ink); color:var(--primary-ink); }
+  .ends { display:flex; gap:10px; padding:16px 22px 8px; flex:none; } .end { flex:1; border:1.5px solid var(--line2); border-radius:14px; padding:11px 14px; cursor:pointer; } .end.act{ border-color:var(--ink); box-shadow:0 0 0 3px rgba(22,20,15,0.05);} .end .k{ font-family:var(--font-data); font-size:8.5px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink3);} .end .v{ font-family:var(--font-voice); font-size:18px; font-weight:600; letter-spacing:-0.01em; margin-top:3px;} .end .v.empty{ color:var(--ink3);} .arrow{ align-self:center; color:var(--ink3); font-size:16px;}
+  .cal { flex:1; min-height:0; overflow-y:auto; padding:4px 16px 8px; } .wk{ display:grid; grid-template-columns:repeat(7,1fr); padding:6px 0; position:sticky; top:0; background:var(--surface); z-index:2;} .wk span{ text-align:center; font-family:var(--font-data); font-size:9px; font-weight:700; letter-spacing:0.06em; color:var(--ink3);} .mo{ margin-top:6px;} .mo .mh{ font-family:var(--font-voice); font-size:15px; font-weight:600; letter-spacing:-0.01em; padding:8px 6px 6px;} .grid{ display:grid; grid-template-columns:repeat(7,1fr);} .dcell{ height:42px; display:flex; align-items:center; justify-content:center;} .dnum{ width:36px; height:36px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-family:var(--font-data); font-size:13.5px; font-weight:600; color:var(--ink); cursor:pointer;} .dnum.on{ background:var(--ink); color:var(--primary-ink); font-weight:700;} .dnum.today:not(.on){ box-shadow:inset 0 0 0 1.5px var(--ink2);} .dnum.dis{ color:var(--ink3); opacity:0.5; cursor:default;}
+  .drfoot { flex:none; padding:12px 20px 20px; border-top:1px solid var(--line); display:flex; align-items:center; gap:14px; } .drfoot .sum{ flex:1; min-width:0;} .drfoot .sum b{ font-family:var(--font-head); font-size:14px; font-weight:700; display:block;} .drfoot .sum span{ font-family:var(--font-data); font-size:10px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink3);} .drfoot .apply{ appearance:none; border:0; background:var(--ink); color:var(--primary-ink); border-radius:14px; padding:14px 22px; font-family:var(--font-function); font-size:15px; font-weight:650; cursor:pointer;} .drfoot .apply:disabled{ opacity:0.4;}
+  .tip { position:absolute; transform:translate(-50%,-130%); background:var(--ink); color:var(--primary-ink); font-family:var(--font-data); font-size:10px; font-weight:700; padding:5px 8px; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:5; }
+  .panelnote { font-size: 11px; color: var(--ink3); font-style: italic; margin: 14px 0 0; line-height:1.5; }
+  .legend { width: 320px; }
+  .legend h3 { font-family: var(--font-voice); font-size: 20px; font-weight: 600; letter-spacing:-0.02em; margin: 4px 0 0; }
+  .legend .k { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink2); }
+  .legend p { font-size: 13px; line-height: 1.55; color: var(--ink2); }
+  .legend .grp { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-top: 12px; }
+  .legend .grp b { font-family: var(--font-head); font-size: 13px; }
+  .legend ul { margin: 8px 0 0; padding-left: 18px; } .legend li { font-size: 12.5px; line-height: 1.6; color: var(--ink2); }
+</style>
+</head>
+<body>
+<div class="device" id="app"></div>
+<div class="legend">
+  <div class="k">Catch for Organizers · v2</div>
+  <h3>High-confidence fixes, baked in.</h3>
+  <p>Every clearly-correct improvement from the punch list is live in this build. The debatable / alternative-direction ones are toggles — tap the <b>gear</b> in the status bar to open <b>Options</b>.</p>
+  <div class="grp"><b>Baked in (try them)</b><ul>
+    <li>Live ticking countdown hero → flips to LIVE / Wrap</li>
+    <li>Hero stats deep-link · Needs-you resolves inline + empty state</li>
+    <li>Events: Upcoming / Live / Past, named Repeat, month groups</li>
+    <li>Manage opens on the event's lifecycle state + context bar</li>
+    <li>Live: big check-in, progress dots, elapsed timer</li>
+    <li>Roster: search + Approve-all / Offer-next, live counts</li>
+    <li>Inbox: Prospective vs Booked + a real blast composer</li>
+    <li>Insights: range scopes data, ▲▼ deltas, tap a bar, format split</li>
+    <li>Payouts nudge · 44px targets · richer stats</li>
+  </ul></div>
+  <div class="grp"><b>Optioned (in the gear)</b><ul>
+    <li>Event clock: Soon / Live / Past</li>
+    <li>Payouts: connected vs needs-setup</li>
+    <li>Create order: New-first vs Repeat-first</li>
+    <li>Live: inline vs full-screen event mode</li>
+    <li>4th tab: "Organizer" vs the org name</li>
+  </ul></div>
+  <p class="panelnote">v1 preserved at CatchForOrganizers.html.</p>
+</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef } = React;
+const DS = window.CatchDesignSystem_3a44f2 || {};
+const Badge = DS.Badge || (({children}) => <span>{children}</span>);
+
+const ORG = { name: 'Bandra Social', initials: 'BS', accent: '#2E9AA0', formats: ['Social run','Pub quiz','Supper club','Padel'], members: 124, events: 37, rating: '4.8' };
+const PORTRAIT = '../../assets/sample-portrait.jpg';
+const ACT = { socialRun:'--act-social-run', pubQuiz:'--act-pub-quiz', dinner:'--act-dinner', padel:'--act-padel' };
+const accentOf = a => `var(${ACT[a]}-accent)`, softOf = a => `var(${ACT[a]}-soft)`, deepOf = a => `var(${ACT[a]}-deep)`;
+const P0 = [
+  { id:'aanya', n:'Aanya Sharma', i:'AS', img:PORTRAIT, g:'in', m:'Checked in · 7:58' },
+  { id:'dev', n:'Dev Patel', i:'DP', g:'in', m:'Checked in · 8:02', tint:'oklch(0.9 0.03 50)' },
+  { id:'mira', n:"Mira D'Souza", i:'MD', g:'due', m:'Booked · paid', tint:'oklch(0.9 0.03 150)' },
+  { id:'rahul', n:'Rahul S.', i:'RS', g:'due', m:'Booked · paid', tint:'oklch(0.9 0.03 90)' },
+  { id:'kabir', n:'Kabir Khanna', i:'KK', g:'due', m:'Booked · paid', tint:'oklch(0.9 0.03 25)' },
+  { id:'tara', n:'Tara Nair', i:'TN', g:'due', m:'Booked · paid', tint:'oklch(0.9 0.03 320)' },
+  { id:'ishaan', n:'Ishaan Verma', i:'IV', g:'req', m:'Requested · review profile', tint:'oklch(0.9 0.03 70)' },
+  { id:'zoya', n:'Zoya Merchant', i:'ZM', g:'req', m:'Requested · review profile', tint:'oklch(0.9 0.03 200)' },
+  { id:'nikhil', n:'Nikhil Rao', i:'NR', g:'wait', m:'Waitlisted', tint:'oklch(0.9 0.03 280)' },
+];
+const EVENTS = [
+  { id:'quiz42', act:'pubQuiz', title:'Tuesday Trivia Night', d:'17', mo:'JUN', month:'June', when:'Tonight · 8:00 PM', where:'The Daily Bar, Khar', cap:30, price:0 },
+  { id:'run15', act:'socialRun', title:'Sundowner 5K, Bandra seafront', d:'21', mo:'JUN', month:'June', when:'Sat · 6:30 AM', where:'Carter Road jetty', cap:20, price:0 },
+  { id:'supper', act:'dinner', title:'Long table № 24', d:'27', mo:'JUN', month:'June', when:'Fri · 8:00 PM', where:'Pali Village Cafe', cap:12, price:1800 },
+  { id:'padel1', act:'padel', title:'Sunday doubles social', d:'06', mo:'JUL', month:'July', when:'Sun · 9:00 AM', where:'Khar Gymkhana', cap:16, price:600 },
+  { id:'quiz41', act:'pubQuiz', title:'Tuesday Trivia Night', d:'10', mo:'JUN', month:'June', when:'Last Tue', where:'The Daily Bar, Khar', cap:30, price:0, past:{att:26, gross:0, fill:100, caught:3} },
+  { id:'run13', act:'socialRun', title:'Sundowner 5K, Bandra seafront', d:'07', mo:'JUN', month:'June', when:'10 days ago', where:'Carter Road jetty', cap:32, price:0, past:{att:27, gross:0, fill:100, caught:5} },
+];
+const byId = id => EVENTS.find(e => e.id === id);
+const TREND = { '7D':{book:[4,6,5,7,6,8,7], dem:[6,9,8,11,9,12,10]}, '30D':{book:[44,58,50,66,62,74,60,82,76,88,70,94], dem:[70,86,78,98,92,104,90,118,108,122,100,130]}, '90D':{book:[120,140,135,160,175], dem:[180,210,200,235,260]}, 'MONTH':{book:[58,66,74,82,70,94], dem:[86,98,104,118,100,130]} };
+const FORMATS_SPLIT = [['Pub quiz','pubQuiz',46],['Social run','socialRun',34],['Supper club','dinner',14],['Padel','padel',6]];
+
+function Av({ p, size=38, border }) { const st={width:size,height:size,fontSize:size*0.36,background:p.tint||'var(--primary-soft)'}; if(border)st.borderColor=border; return <div className="av" style={st}>{p.img?<img src={p.img} alt=""/>:p.i}</div>; }
+function FacePile({ list, n, size=26, onDark }) { const bd=onDark?'#211f23':'var(--surface)'; return <div className="facepile">{list.map((p,i)=><Av key={i} p={p} size={size} border={bd}/>)}{n>0?<div className="more" style={{width:size,height:size,fontSize:size*0.34,background:onDark?'rgba(244,240,232,0.16)':'var(--ink)',color:onDark?'#F4F0E8':'var(--primary-ink)',borderColor:bd}}>+{n}</div>:null}</div>; }
+function SegPill({ options, value, onChange }) { return <div className="seg">{options.map(o=>{const v=o.v||o,l=o.l||o;return <button key={v} className={v===value?'on':''} onClick={()=>onChange(v)}>{l}</button>;})}</div>; }
+
+/* roster state helper */
+function useRoster() {
+  const [g, setG] = useState(() => Object.fromEntries(P0.map(p => [p.id, p.g])));
+  const set = (id, grp) => setG(s => ({ ...s, [id]: grp }));
+  const list = grp => P0.filter(p => g[p.id] === grp);
+  return { g, set, list,
+    counts: { in:list('in').length, due:list('due').length, req:list('req').length, wait:list('wait').length, off:list('off').length,
+              booked: P0.filter(p=>['in','due'].includes(g[p.id])).length } };
+}
+
+function NextUpHero({ ev, clock, onRun, onShare, onStat }) {
+  const [secs, setSecs] = useState(3*3600+12*60);
+  useEffect(() => { if(clock!=='soon') return; const t=setInterval(()=>setSecs(s=>Math.max(0,s-1)),1000); return ()=>clearInterval(t); }, [clock]);
+  const live = clock==='live' || (clock==='soon' && secs===0);
+  const past = clock==='past';
+  const acc = accentOf(ev.act);
+  const hh=Math.floor(secs/3600), mm=Math.floor(secs%3600/60), ss=secs%60;
+  const state = past ? 'WRAP UP' : live ? 'LIVE NOW' : `STARTS IN ${hh}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  return (
+    <div className="hero catch-dark" style={{ background:'#18171A' }}>
+      <div className="glow" style={{ background:acc }}></div>
+      <div className={'state'+(live?' live':'')}>{live?<span className="ld"></span>:<i className={'ph-fill ph-'+(past?'flag-checkered':'timer')} style={{fontSize:12}}></i>}{state}</div>
+      <h2>{ev.title}</h2>
+      <div className="meta"><span><i className="ph ph-calendar-blank"></i>{ev.when}</span><span><i className="ph ph-map-pin"></i>{ev.where}</span></div>
+      <div className="hstats">
+        <button className="s" onClick={()=>onStat('guests')}><b>24</b><span>Going</span></button>
+        <button className="s" onClick={()=>onStat('guests')}><b>6</b><span>Waiting</span></button>
+        <button className="s" onClick={()=>onStat('guests')}><b style={{color:'#E5A655'}}>2</b><span>To review <i className="ph ph-arrow-right" style={{fontSize:9}}></i></span></button>
+        <div style={{alignSelf:'center'}}><FacePile list={P0.slice(0,3)} n={21} onDark/></div>
+      </div>
+      <div className="hcta">
+        <button className="primary" style={{background:acc}} onClick={onRun}><i className={'ph-fill ph-'+(live?'broadcast':past?'chart-bar':'sliders-horizontal')}></i>{live?'Open run-of-show':past?'See the report':'Set up & run'}</button>
+        <button className="ghost" onClick={onShare}><i className="ph ph-share-network"></i></button>
+      </div>
+    </div>
+  );
+}
+
+const QTINT = { warning:['rgba(185,119,15,0.14)','var(--warning)'], gold:['rgba(201,162,74,0.18)','#8a6d22'], accent:['var(--act-social-run-soft)','var(--act-social-run-deep)'], neutral:['var(--primary-soft)','var(--ink2)'] };
+
+function TodayScreen({ go, toast, opts }) {
+  const hero = byId('quiz42');
+  const [queue, setQueue] = useState([
+    { id:'q1', icon:'user-check', tint:'warning', title:'Approve requests', sub:'Ishaan & Zoya want into Tuesday Trivia', actions:['Approve','Later'], ev:'quiz42' },
+    { id:'q2', icon:'user-plus', tint:'gold', title:'Offer waitlist spots', sub:'6 waiting · 6 spots open', actions:['Offer 6','Later'], ev:'quiz42' },
+    { id:'q3', icon:'chat-circle', tint:'accent', title:'A guest is waiting on you', sub:'“Is there parking nearby?” — Zoya', actions:['Reply','Later'], ev:'quiz42' },
+    { id:'q4', icon:'note-pencil', tint:'neutral', title:'Finish your draft', sub:'Padel social · saved 2d ago', actions:['Resume','Discard'], ev:null },
+  ]);
+  const resolve = (id, msg) => { setQueue(q => q.filter(x => x.id !== id)); toast(msg); };
+  return (
+    <div className="scroll"><div className="pad">
+      <div className="greet">
+        <div className="hi"><div className="k">Tuesday evening</div><h1>Good evening, Aanya</h1></div>
+        <button className="orgchip" onClick={()=>go.tab('organizer')}>
+          <div className="logo av" style={{width:26,height:26,borderRadius:7,background:ORG.accent,color:'#fff',fontSize:11}}>{ORG.initials}</div>{ORG.name}
+          {opts.multiOrg && <i className="ph ph-caret-down" style={{fontSize:12,color:'var(--ink3)'}}></i>}
+        </button>
+      </div>
+      <div style={{marginTop:14}}><NextUpHero ev={hero} clock={opts.clock} onRun={()=>go.manage('quiz42')} onShare={()=>toast('Private link copied')} onStat={(m)=>go.manage('quiz42',m)} /></div>
+      <div className="sechead"><span className="ml">Needs you{queue.length?' · '+queue.length:''}</span></div>
+      {queue.length===0 ? <div className="empty card" style={{border:'1px solid var(--line)'}}><i className="ph-fill ph-check-circle"></i><b>You're all set for tonight</b><span>Nothing needs you right now.</span></div>
+        : queue.map(it=>{ const [bg,fg]=QTINT[it.tint]; return (
+        <div className="qcard" key={it.id}>
+          <div className="qi" style={{background:bg,color:fg}}><i className={'ph-fill ph-'+it.icon}></i></div>
+          <div className="qt" onClick={()=> it.ev?go.manage(it.ev, it.id==='q3'?'guests':'setup'):toast('Opening draft…')}><b>{it.title}</b><span>{it.sub}</span></div>
+          <div className="qact">
+            <button className="qmini warm" onClick={()=>resolve(it.id, it.actions[0]+' — done')}>{it.actions[0]}</button>
+            <button className="qmini" onClick={()=>resolve(it.id,'Dismissed')}>{it.actions[1]}</button>
+          </div>
+        </div>); })}
+      <div className="sechead"><span className="ml">Later this week</span><a onClick={()=>go.tab('events')}>All events</a></div>
+      {['run15','supper'].map(id=><EventRow key={id} ev={byId(id)} onOpen={go.manage} />)}
+    </div></div>
+  );
+}
+
+function EventRow({ ev, onOpen, live }) {
+  const acc=accentOf(ev.act), booked=24, pct=ev.past?100:Math.round((ev.id==='quiz42'?24:ev.id==='run15'?12:ev.id==='supper'?8:5)/ev.cap*100);
+  const tag = ev.past ? `${ev.past.att} attended · ${ev.past.fill}% full${ev.past.gross?` · ₹${ev.past.gross.toLocaleString('en-IN')}`:''}` : live ? 'Live now · 2 checked in' : ev.when.includes('Tonight')?'Tonight · 24 going':`${pct}% full`;
+  return (
+    <button className="erow" onClick={()=>onOpen(ev.id)}>
+      <div className="spine" style={{background:acc}}></div>
+      <div className="dt">{live||ev.when.includes('Tonight')?<><div className="d" style={{fontSize:13,color:acc}}><i className="ph-fill ph-broadcast"></i></div><div className="mo">{live?'LIVE':'TODAY'}</div></>:<><div className="d" style={{color:ev.past?'var(--ink3)':'var(--ink)'}}>{ev.d}</div><div className="mo">{ev.mo}</div></>}</div>
+      <div className="eb"><div className="et">{ev.title}</div><div className="em">{ev.when.replace('Tonight · ','').replace('Tonight','Tonight')} · {tag}</div>{!ev.past&&<div className="fill"><i style={{width:pct+'%',background:acc}}></i></div>}</div>
+      <i className="ph ph-caret-right" style={{color:'var(--ink3)',fontSize:16,flex:'none'}}></i>
+    </button>
+  );
+}
+
+function EventsScreen({ go, opts }) {
+  const [tab, setTab] = useState('upcoming');
+  const live = opts.clock==='live';
+  let list;
+  if(tab==='live') list = live?[byId('quiz42')]:[];
+  else if(tab==='past') list = EVENTS.filter(e=>e.past);
+  else list = EVENTS.filter(e=>!e.past && (e.id!=='quiz42'||!live));
+  const groups = {}; list.forEach(e=>{(groups[e.month]=groups[e.month]||[]).push(e);});
+  return (
+    <div className="scroll"><div className="pad">
+      <div className="greet"><div className="hi"><h1 style={{fontSize:30}}>Events</h1></div></div>
+      <div style={{display:'flex',gap:10,margin:'16px 0 4px',flexDirection:opts.createOrder==='repeat'?'row-reverse':'row'}}>
+        <button className="pillbtn accent" style={{flex:1}} onClick={()=>go.create()}><i className="ph ph-plus"></i>New event</button>
+        <button className="pillbtn" style={{flex:1}} onClick={()=>go.create('repeat')}><i className="ph ph-arrows-clockwise"></i>Repeat ‘Trivia’</button>
+      </div>
+      <div style={{margin:'16px 0'}}><SegPill options={[{v:'upcoming',l:'Upcoming'},{v:'live',l:live?'Live · 1':'Live'},{v:'past',l:'Past'}]} value={tab} onChange={setTab} /></div>
+      {list.length===0 ? <div className="empty"><i className="ph ph-calendar-x" style={{color:'var(--ink3)'}}></i><b>{tab==='live'?'Nothing live right now':'No events yet'}</b><span>{tab==='live'?'Your next event will appear here when it starts.':'Create your first event to get going.'}</span></div>
+        : Object.keys(groups).map(m=>(<div key={m}><div className="monthhd">{m}</div>{groups[m].map(e=><EventRow key={e.id} ev={e} onOpen={go.manage} live={live&&e.id==='quiz42'} />)}</div>))}
+    </div></div>
+  );
+}
+
+function RosterBody({ roster, toast, sheet }) {
+  const [q, setQ] = useState('');
+  const match = p => !q || p.n.toLowerCase().includes(q.toLowerCase());
+  const SW = { in:['var(--success)','Here'], due:['var(--ink3)','Due'], req:['var(--warning)','Review'], wait:['var(--warning)','Waiting'], off:['var(--gold)','Offered'] };
+  const groups = [['Here now',roster.list('in')],['Expected',roster.list('due')],['Requests',roster.list('req')],['Offered',roster.list('off')],['Waitlist',roster.list('wait')]].filter(g=>g[1].length);
+  const reqN = roster.counts.req, waitN = roster.counts.wait;
+  return (<div>
+    {sheet && <div className="srch"><i className="ph ph-magnifying-glass"></i><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search guests"/></div>}
+    {(reqN>0||waitN>0)&&<div className="bulk">
+      {reqN>0&&<button className="warmbtn" style={{flex:1}} onClick={()=>{roster.list('req').forEach(p=>roster.set(p.id,'due'));toast('Approved '+reqN+' requests');}}>Approve all {reqN}</button>}
+      {waitN>0&&<button className="warmbtn" style={{flex:1,background:'var(--gold)'}} onClick={()=>{roster.list('wait').forEach(p=>roster.set(p.id,'off'));toast('Offered '+waitN+' spots');}}>Offer next {waitN}</button>}
+    </div>}
+    {groups.map(([label,list])=>{ const flt=list.filter(match); if(!flt.length)return null; return (<div key={label}>
+      <div className="gl">{label} · {list.length}</div>
+      {flt.map(p=>{ const grp=roster.g[p.id]; const [c,w]=SW[grp]; return (
+        <div className="prow" key={p.id} onClick={()=>toast('Open '+p.n+'’s profile')}>
+          <Av p={p} size={44}/><div className="pn"><b>{p.n}</b><span>{p.m}</span></div>
+          {grp==='req'?<button className="warmbtn" onClick={e=>{e.stopPropagation();roster.set(p.id,'due');toast(p.n+' approved');}}>Approve</button>
+            :grp==='wait'?<button className="warmbtn" style={{background:'var(--gold)'}} onClick={e=>{e.stopPropagation();roster.set(p.id,'off');toast('Offered '+p.n);}}>Offer</button>
+            :<span className="sdot" style={{color:c}}><i style={{background:c}}></i>{w}</span>}
+        </div>); })}
+    </div>); })}
+  </div>);
+}
+
+function Manage({ id, initialMode, onClose, toast, opts }) {
+  const ev = byId(id) || EVENTS[0];
+  const lifeMode = ev.past ? 'report' : opts.clock==='live' ? 'live' : 'setup';
+  const [mode, setMode] = useState(initialMode || lifeMode);
+  const [roster, setRosterOpen] = useState(false);
+  const [step, setStep] = useState(2);
+  const [secs, setSecs] = useState(0);
+  const R = useRoster();
+  const acc = accentOf(ev.act);
+  useEffect(()=>{ if(opts.clock!=='live')return; const t=setInterval(()=>setSecs(s=>s+1),1000); return ()=>clearInterval(t); },[opts.clock]);
+  const el = `${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
+  const STEPS=[['ARRIVAL','Arrival & first hello'],['OPENING','Team draw & rounds'],['ROUND','Round in play'],['MIXING','Mingle between rounds'],['CLOSING','Wrap & catch']];
+  const eventMode = opts.liveMode==='full' && mode==='live';
+  return (
+    <div className="overlay on">
+      <div className="statusbar"><span>3:11</span><span className="r"><i className="ph-fill ph-cell-signal-full"></i><i className="ph-fill ph-battery-high"></i></span></div>
+      {!eventMode && <div className="mbar">
+        <div className="top"><div className="bk" onClick={onClose}><i className="ph ph-arrow-left"></i></div><div className="tt"><div className="k">{ORG.name}</div><h2>{ev.title}</h2></div></div>
+        <div className="ctxbar"><span className="ci"><i className="ph ph-calendar-blank"></i>{ev.when}</span><span className="ci"><i className="ph ph-map-pin"></i>{ev.where.split(',')[0]}</span><span className="ci"><i className="ph ph-users-three"></i>{R.counts.booked}/{ev.cap}</span></div>
+        <SegPill options={[{v:'setup',l:'Setup'},{v:'guests',l:'Guests'},{v:'live',l:'Live'},{v:'report',l:'Report'}]} value={mode} onChange={setMode} />
+        <div style={{height:14}}></div>
+      </div>}
+
+      <div className="scroll"><div className="pad" style={{paddingTop:2,paddingBottom:mode!=='guests'?150:30}}>
+        {mode==='setup' && <>
+          <div className="mgrid">
+            <div className="mcard ro"><div className="v">{R.counts.booked}<small>/{ev.cap}</small></div><div className="l">Booked</div><div className="d">{ev.cap-R.counts.booked} open</div></div>
+            <div className="mcard ro"><div className="v">{R.counts.wait}</div><div className="l">Waitlist</div><div className="d">{R.counts.req} to review</div></div>
+            <div className="mcard ro"><div className="v">{ev.price?'₹'+(R.counts.booked*ev.price).toLocaleString('en-IN'):'Free'}</div><div className="l">Revenue est</div></div>
+            <div className="mcard ro"><div className="v" style={{fontSize:19}}>Standard</div><div className="l">Refund policy</div></div>
+          </div>
+          <div className="sechead"><span className="ml">Host actions</span></div>
+          <button className="act" onClick={()=>toast('Edit event')}><i className="ph ph-pencil-simple lead"></i><div className="t"><b>Edit event details</b><span>Schedule, location, capacity</span></div><i className="ph ph-caret-right chev"></i></button>
+          <button className="act" onClick={()=>toast('Private link copied')}><i className="ph ph-share-network lead"></i><div className="t"><b>Share private link</b><span>2 named invite links</span></div><i className="ph ph-caret-right chev"></i></button>
+          <div className="sechead"><span className="ml" style={{color:'var(--danger)'}}>Danger zone</span></div>
+          <button className="act danger" onClick={()=>toast('Cancel flow')}><i className="ph ph-x-circle lead"></i><div className="t"><b>Cancel event</b><span>Keeps records · notifies guests</span></div><i className="ph ph-caret-right chev"></i></button>
+        </>}
+        {mode==='guests' && <RosterBody roster={R} toast={toast} sheet={false} />}
+        {mode==='live' && <>
+          {eventMode && <div style={{display:'flex',alignItems:'center',padding:'2px 0 12px'}}><div className="bk" onClick={()=>setMode('setup')}><i className="ph ph-x"></i></div><div style={{flex:1,textAlign:'center',fontFamily:'var(--font-data)',fontSize:10,fontWeight:700,letterSpacing:'0.1em',color:'var(--ink3)'}}>LIVE · {el}</div><div style={{width:36}}></div></div>}
+          <div className="livestep" style={{borderColor:'color-mix(in srgb, '+acc+' 32%, transparent)'}}>
+            <div style={{display:'flex',alignItems:'center'}}><div className="mono" style={{fontSize:9,fontWeight:700,letterSpacing:'0.1em',color:deepOf(ev.act)}}>STEP {step+1}/5 · {STEPS[step][0]}</div><div style={{flex:1}}></div>{opts.clock==='live'&&<div className="mono" style={{fontSize:10,fontWeight:700,color:'var(--ink2)'}}>⏱ {el}</div>}</div>
+            <div className="voice" style={{fontSize:21,fontWeight:600,margin:'8px 0 6px'}}>{STEPS[step][1]}</div>
+            <div style={{fontSize:14,lineHeight:1.5,color:'var(--ink2)'}}>Keep rounds tight; reveal scores between each. Swap anyone sitting out into a team.</div>
+            <div className="dots">{STEPS.map((_,i)=><i key={i} className={i<=step?'on':''} style={i<=step?{background:acc}:null}></i>)}</div>
+            <div style={{display:'flex',gap:10,marginTop:14}}>
+              <button className="pillbtn" style={{flex:1,opacity:step===0?0.4:1}} onClick={()=>setStep(Math.max(0,step-1))}><i className="ph ph-arrow-left"></i>Back</button>
+              <button className="pillbtn accent" style={{flex:2,background:acc,borderColor:acc}} onClick={()=>setStep(Math.min(4,step+1))}>Next<i className="ph ph-arrow-right"></i></button>
+            </div>
+          </div>
+          <button className="bigcheck" onClick={()=>toast('Check-in scanner')}><i className="ph-fill ph-qr-code"></i><div style={{flex:1,textAlign:'left'}}><div style={{fontFamily:'var(--font-head)',fontSize:15,fontWeight:700}}>Check guests in</div><div style={{fontSize:12,color:'#BAB2A7'}}>{R.counts.in} of {R.counts.booked} arrived</div></div><span className="n">{R.counts.in}</span></button>
+        </>}
+        {mode==='report' && <>
+          <div className="mgrid">
+            <div className="mcard ro"><div className="v">{ev.past?ev.past.att:R.counts.in}</div><div className="l">Attended</div><div className="d">of {R.counts.booked} booked</div></div>
+            <div className="mcard ro"><div className="v">{(ev.past?ev.past.att:R.counts.in)?(R.counts.booked-(ev.past?ev.past.att:R.counts.in)):0}</div><div className="l">No-shows</div></div>
+            <div className="mcard ro"><div className="v">{ev.past&&ev.past.gross?'₹'+ev.past.gross.toLocaleString('en-IN'):ev.price?'₹'+(R.counts.in*ev.price).toLocaleString('en-IN'):'Free'}</div><div className="l">Gross</div></div>
+            <button className="mcard" style={{textAlign:'left',cursor:'pointer'}} onClick={()=>toast('See who caught')}><div className="v">{ev.past?ev.past.caught:3}</div><div className="l">Caught <i className="ph ph-arrow-right" style={{fontSize:9}}></i></div><div className="d">mutual matches</div></button>
+          </div>
+          <div className="sechead"><span className="ml">Take it with you</span></div>
+          <button className="act" onClick={()=>toast('Attendance CSV')}><i className="ph ph-export lead"></i><div className="t"><b>Attendance CSV</b></div><i className="ph ph-caret-right chev"></i></button>
+          <button className="act" onClick={()=>toast('Revenue CSV')}><i className="ph ph-export lead"></i><div className="t"><b>Revenue CSV</b></div><i className="ph ph-caret-right chev"></i></button>
+        </>}
+      </div></div>
+
+      {mode!=='guests' && !eventMode && !roster && (
+        <div className="deck" onClick={()=> opts.peekMode==='tab' ? setMode('guests') : setRosterOpen(true)}>
+          <div className="c c2"></div><div className="c c1"></div>
+          <div className="c front"><div className="dog"></div>{R.counts.req>0&&<div className="badge">{R.counts.req}</div>}
+            <FacePile list={P0.slice(0,3)} n={R.counts.booked-3}/>
+            <div><div className="lbl">Your room</div><div className="sub">{R.counts.booked} booked · {R.counts.wait} waiting</div></div>
+          </div>
+        </div>
+      )}
+      {opts.peekMode!=='tab' && <>
+        <div className={'scrim'+(roster?' on':'')} onClick={()=>setRosterOpen(false)}></div>
+        <div className="sheet" style={{transform:roster?'translateY(0)':'translateY(100%)'}}>
+          <div className="grab"></div>
+          <div className="sh"><h3>Who's coming</h3><span className="sub">{R.counts.booked} booked · {R.counts.wait} waiting</span></div>
+          <div className="sb"><RosterBody roster={R} toast={toast} sheet={true} /></div>
+        </div>
+      </>}
+    </div>
+  );
+}
+
+function InboxScreen({ go, toast }) {
+  const [seg, setSeg] = useState('booked');
+  const ev = byId('quiz42');
+  const booked = [
+    { p:{n:'Dev Patel',i:'DP',tint:'oklch(0.9 0.03 50)'}, last:'See you tonight!', when:'3h', unread:false },
+    { p:{n:"Mira D'Souza",i:'MD',tint:'oklch(0.9 0.03 150)'}, last:'Can I bring a +1?', when:'1h', unread:true },
+  ];
+  const prospective = [
+    { p:{n:'Zoya Merchant',i:'ZM',tint:'oklch(0.9 0.03 200)'}, last:'Is there parking nearby?', when:'12m', unread:true, tag:'Requested' },
+    { p:{n:'Nikhil Rao',i:'NR',tint:'oklch(0.9 0.03 280)'}, last:'Any chance of a spot opening?', when:'5h', unread:false, tag:'Waitlist' },
+  ];
+  const list = seg==='booked'?booked:prospective;
+  return (
+    <div className="scroll"><div className="pad">
+      <div className="greet"><div className="hi"><h1 style={{fontSize:30}}>Inbox</h1></div></div>
+      <div className="sechead" style={{margin:'10px 0'}}><span className="ml" style={{color:deepOf(ev.act),flex:1}}>{ev.title} · {ev.when}</span></div>
+      <div style={{marginBottom:14}}><SegPill options={[{v:'booked',l:'Booked · 2'},{v:'prospective',l:'Prospective · 2'}]} value={seg} onChange={setSeg} /></div>
+      <button className="blast" onClick={()=>go.blast(seg)}><i className="ph-fill ph-megaphone-simple"></i><div className="t"><b>Message all {seg==='booked'?'24 booked':'9 prospective'}</b><span>{seg==='booked'?'Reminders, the meeting point, changes':'Nudge requests & waitlist to confirm'}</span></div><i className="ph ph-caret-right" style={{color:'#BAB2A7'}}></i></button>
+      {list.map((t,i)=>(<div className="thread" key={i} onClick={()=>toast('Chat with '+t.p.n)}>
+        <Av p={t.p} size={44}/><div className="pn"><b>{t.p.n}{t.tag?<Badge tone={t.tag==='Requested'?'warning':'neutral'} style={{marginLeft:8}}>{t.tag}</Badge>:null}</b><span>{t.last}</span></div><div className="when">{t.when}</div>{t.unread?<div className="unread"></div>:null}
+      </div>))}
+    </div></div>
+  );
+}
+
+function OrganizerScreen({ go, toast, opts }) {
+  return (
+    <div className="scroll"><div className="pad">
+      <div style={{height:18}}></div>
+      <div className="obrand"><div className="logo" style={{background:ORG.accent}}>{ORG.initials}</div><div style={{minWidth:0}}><h1>{ORG.name}<i className="ph-fill ph-seal-check" style={{fontSize:17,color:ORG.accent}}></i></h1><div className="mono" style={{fontSize:11,fontWeight:600,color:'var(--ink2)',marginTop:4}}>BANDRA · MUMBAI · SINCE 2020</div></div></div>
+      <div className="formats">{ORG.formats.map(f=><span className="fchip" key={f}>{f}</span>)}</div>
+      {!opts.payouts && <div className="nudge"><i className="ph-fill ph-warning-circle"></i><div className="t"><b>Connect payouts to get paid</b><span>Paid events can't collect until Stripe is set up</span></div><button onClick={()=>toast('Stripe onboarding')}>Set up</button></div>}
+      <div className="mgrid" style={{marginTop:opts.payouts?16:12}}>
+        <div className="mcard"><div className="v">{ORG.members}</div><div className="l">Members</div></div>
+        <div className="mcard"><div className="v">{ORG.rating}</div><div className="l">Rating · 41 reviews</div></div>
+        <div className="mcard"><div className="v">{ORG.events}</div><div className="l">Events hosted</div></div>
+        <div className="mcard"><div className="v">4</div><div className="l">Upcoming</div></div>
+      </div>
+      <button className="act" style={{marginTop:12}} onClick={()=>toast('Preview public page')}><i className="ph ph-eye lead"></i><div className="t"><b>How guests see you</b><span>Your public organizer page</span></div><i className="ph ph-caret-right chev"></i></button>
+      <div className="sechead"><span className="ml">Team · 2</span><a onClick={()=>toast('Manage team')}>Manage</a></div>
+      <div className="card" style={{padding:'4px 14px'}}>
+        <div className="prow" style={{borderTop:0,cursor:'default'}}><Av p={P0[0]} size={42}/><div className="pn"><b>Aanya Sharma</b><span>You · Lead host · profile public</span></div><Badge tone="solid">Owner</Badge></div>
+        <div className="prow" style={{cursor:'default'}}><Av p={P0[1]} size={42}/><div className="pn"><b>Dev Patel</b><span>Host · scorekeeper</span></div><i className="ph ph-caret-right" style={{color:'var(--ink3)'}}></i></div>
+      </div>
+      <div className="sechead"><span className="ml">Trends · last 12 weeks</span><a onClick={()=>go.insights()}>See insights</a></div>
+      <button className="mcard" style={{width:'100%',textAlign:'left',cursor:'pointer'}} onClick={()=>go.insights()}>
+        <div style={{display:'flex',gap:18}}><div><div className="v" style={{fontSize:22}}>312</div><div className="l">Bookings</div><div className="delta up">▲ 18%</div></div><div><div className="v" style={{fontSize:22}}>78%</div><div className="l">Fill rate</div><div className="delta up">▲ 6%</div></div><div style={{flex:1}}></div><div><div className="v" style={{fontSize:22}}>64%</div><div className="l">Repeat</div><div className="delta down">▼ 3%</div></div></div>
+        <div style={{display:'flex',alignItems:'flex-end',gap:4,height:48,marginTop:16}}>{TREND['30D'].book.map((v,i)=>{const mx=Math.max(...TREND['30D'].book);return <div key={i} style={{flex:1,height:(v/mx*100)+'%',background:'var(--ink)',opacity:0.82,borderRadius:'2px 2px 0 0'}}></div>;})}</div>
+      </button>
+      <div className="sechead"><span className="ml">Manage</span></div>
+      <button className="act" onClick={()=>toast(opts.payouts?'Payouts':'Stripe onboarding')}><i className="ph ph-bank lead"></i><div className="t"><b>Payouts</b><span>{opts.payouts?'Stripe · ready':'Not set up yet'}</span></div><i className="ph ph-caret-right chev"></i></button>
+      <button className="act" onClick={()=>toast('Event defaults')}><i className="ph ph-sliders-horizontal lead"></i><div className="t"><b>Event defaults</b><span>Prefill new events</span></div><i className="ph ph-caret-right chev"></i></button>
+      <button className="act" onClick={()=>toast('Settings')}><i className="ph ph-gear lead"></i><div className="t"><b>Settings</b></div><i className="ph ph-caret-right chev"></i></button>
+    </div></div>
+  );
+}
+
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MNS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const TODAY={y:2025,m:5,d:17};
+const MONTHS=[{y:2025,m:2},{y:2025,m:3},{y:2025,m:4},{y:2025,m:5}];
+const ser=o=>o?o.y*10000+o.m*100+o.d:0;
+const daysIn=(y,m)=>new Date(y,m+1,0).getDate();
+const firstWd=(y,m)=>(new Date(y,m,1).getDay()+6)%7;
+const fmt=o=>o?`${o.d} ${MNS[o.m]}`:'—';
+const fmtLong=o=>o?`${o.d} ${MNS[o.m]} ${o.y}`:'';
+function ago(days){const x=new Date(TODAY.y,TODAY.m,TODAY.d);x.setDate(x.getDate()-days+1);return {y:x.getFullYear(),m:x.getMonth(),d:x.getDate()};}
+const PRESETS=[{k:'7d',l:'7 days',r:()=>({s:ago(7),e:TODAY})},{k:'30d',l:'30 days',r:()=>({s:ago(30),e:TODAY})},{k:'90d',l:'3 months',r:()=>({s:ago(90),e:TODAY})},{k:'mtd',l:'This month',r:()=>({s:{y:2025,m:5,d:1},e:TODAY})},{k:'qtd',l:'This quarter',r:()=>({s:{y:2025,m:3,d:1},e:TODAY})}];
+const dayCount=(s,e)=>s&&e?Math.round((new Date(e.y,e.m,e.d)-new Date(s.y,s.m,s.d))/864e5)+1:0;
+function MonthGrid({ y, m, start, end, pick }) {
+  const n=daysIn(y,m), lead=firstWd(y,m), cells=[];
+  for(let i=0;i<lead;i++) cells.push(<div className="dcell" key={'l'+i}></div>);
+  for(let d=1;d<=n;d++){ const o={y,m,d}, s=ser(o); const dis=s>ser(TODAY); const isS=start&&s===ser(start), isE=end&&s===ser(end); const inR=start&&end&&s>ser(start)&&s<ser(end); const isToday=s===ser(TODAY); const single=isS&&isE; const band=inR||((isS||isE)&&start&&end&&!single); const capL=single||isS, capR=single||isE;
+    cells.push(<div className="dcell" key={d} style={{background:band?'var(--primary-soft)':'transparent',borderTopLeftRadius:capL?99:0,borderBottomLeftRadius:capL?99:0,borderTopRightRadius:capR?99:0,borderBottomRightRadius:capR?99:0}}><div className={'dnum'+((isS||isE)?' on':'')+(isToday?' today':'')+(dis?' dis':'')} onClick={()=>!dis&&pick(o)}>{d}</div></div>); }
+  return <div className="mo"><div className="mh">{MN[m]} {y}</div><div className="grid">{cells}</div></div>;
+}
+function DateRangePicker({ open, value, onClose, onApply }) {
+  const [start,setStart]=useState(value.s); const [end,setEnd]=useState(value.e); const [preset,setPreset]=useState(value.k||'custom'); const [edit,setEdit]=useState('start'); const calRef=React.useRef(null);
+  React.useEffect(()=>{ if(open){ setStart(value.s); setEnd(value.e); setPreset(value.k||'custom'); setEdit('start'); setTimeout(()=>{ if(calRef.current) calRef.current.scrollTop=calRef.current.scrollHeight; },30);} },[open]);
+  const applyPreset=p=>{const r=p.r();setStart(r.s);setEnd(r.e);setPreset(p.k);};
+  const pickDay=o=>{ setPreset('custom'); if(edit==='start'||!start||(start&&end)){setStart(o);setEnd(null);setEdit('end');} else { if(ser(o)<ser(start)){setEnd(start);setStart(o);} else setEnd(o); setEdit('start'); } };
+  const days=dayCount(start,end); const label=start&&end?`${fmtLong(start)} – ${fmtLong(end)}`:start?`${fmtLong(start)} – pick an end`:'Pick a start';
+  return (<>
+    <div className={'scrim'+(open?' on':'')} onClick={onClose}></div>
+    <div className="sheet drsheet" style={{transform:open?'translateY(0)':'translateY(101%)',zIndex:55}}>
+      <div className="grab"></div>
+      <div className="sh"><h3>Date range</h3><div className="x" onClick={onClose}><i className="ph ph-x"></i></div></div>
+      <div className="presets">{PRESETS.map(p=><button key={p.k} className={'preset'+(preset===p.k?' on':'')} onClick={()=>applyPreset(p)}>{p.l}</button>)}<button className={'preset'+(preset==='custom'?' on':'')} onClick={()=>setPreset('custom')}>Custom</button></div>
+      <div className="ends"><div className={'end'+(edit==='start'?' act':'')} onClick={()=>setEdit('start')}><div className="k">Start</div><div className={'v'+(start?'':' empty')}>{fmt(start)}</div></div><i className="ph ph-arrow-right arrow"></i><div className={'end'+(edit==='end'?' act':'')} onClick={()=>setEdit('end')}><div className="k">End</div><div className={'v'+(end?'':' empty')}>{fmt(end)}</div></div></div>
+      <div className="cal" ref={calRef}><div className="wk">{['M','T','W','T','F','S','S'].map((d,i)=><span key={i}>{d}</span>)}</div>{MONTHS.map(mo=><MonthGrid key={mo.y+'-'+mo.m} y={mo.y} m={mo.m} start={start} end={end} pick={pickDay} />)}</div>
+      <div className="drfoot"><div className="sum"><b>{start&&end?`${days} day${days>1?'s':''}`:'Select a range'}</b><span>{start&&end?label:'tap a preset or two days'}</span></div><button className="apply" disabled={!start||!end} onClick={()=>onApply({s:start,e:end,k:preset})}>Apply</button></div>
+    </div>
+  </>);
+}
+
+function Insights({ onClose, toast }) {
+  const [pick, setPick] = useState(false);
+  const [rng, setRng] = useState(() => { const r=PRESETS[1].r(); return { s:r.s, e:r.e, k:'30d', label:'30 days' }; });
+  const [gran, setGran] = useState('WEEK');
+  const [tip, setTip] = useState(null);
+  const rdays = dayCount(rng.s, rng.e);
+  const scale = rdays/30;
+  const M = [
+    { ic:'target', l:'Fill rate', v:'86%', dv:'▲ 6%', up:true },
+    { ic:'seal-check', l:'Check-in rate', v:'78%', dv:'▲ 2%', up:true },
+    { ic:'ticket', l:'Bookings', v:Math.round(142*scale).toString(), dv:'▲ 18%', up:true },
+    { ic:'heart', l:'Mutual matches', v:Math.round(28*scale).toString(), dv:'▲ 9%', up:true },
+    { ic:'arrows-clockwise', l:'Repeat rate', v:'64%', dv:'▼ 3%', up:false, badge:'Partial' },
+    { ic:'currency-inr', l:'Gross revenue', v:'₹'+Math.round(48000*scale).toLocaleString('en-IN'), dv:'▲ 22%', up:true },
+  ];
+  const bucket = rdays<=10?'7D':rdays<=45?'30D':'90D';
+  const series = TREND[bucket] || TREND['30D'];
+  const {book,dem} = series; const n=book.length; const max=Math.max(...dem,1);
+  const axis = [fmt(rng.s), '', fmt(rng.e)];
+  return (
+    <div className="overlay on">
+      <div className="statusbar"><span>3:11</span><span className="r"><i className="ph-fill ph-cell-signal-full"></i><i className="ph-fill ph-battery-high"></i></span></div>
+      <div className="mbar"><div className="top"><div className="bk" onClick={onClose}><i className="ph ph-arrow-left"></i></div><div className="tt"><div className="k">{ORG.name} · all events</div><h2>Insights</h2></div></div>
+        <button className="rangechip" onClick={()=>setPick(true)} style={{marginTop:2}}><i className="ph ph-calendar-blank"></i>{rng.k==='custom'?`${fmt(rng.s)} – ${fmt(rng.e)}`:rng.label}<i className="ph ph-caret-down" style={{fontSize:12}}></i></button><div style={{height:14}}></div></div>
+      <div className="scroll"><div className="pad" style={{paddingTop:2,paddingBottom:28}}>
+        <div className="mgrid">{M.map((m,i)=>(<div className="mcard" key={i} style={m.badge?{borderColor:'rgba(185,119,15,0.35)',background:'rgba(185,119,15,0.06)'}:null}>
+          <div style={{display:'flex',alignItems:'center'}}><i className={'ph ph-'+m.ic} style={{fontSize:15,color:'var(--ink2)'}}></i><span style={{flex:1}}></span>{m.badge?<Badge tone="warning">{m.badge}</Badge>:null}</div>
+          <div className="v" style={{fontSize:24,marginTop:12}}>{m.v}</div><div className="l">{m.l}</div><div className={'delta '+(m.up?'up':'down')}>{m.dv} vs prev</div>
+        </div>))}</div>
+        <div className="sechead"><span className="ml" style={{flex:1}}>Trend</span>
+          <span style={{display:'flex',gap:5,alignItems:'center'}}><span style={{width:8,height:8,borderRadius:2,background:'var(--ink)',opacity:0.85}}></span><span className="mono" style={{fontSize:9,fontWeight:700,color:'var(--ink2)'}}>BOOKINGS</span></span>
+          <span style={{display:'flex',gap:5,alignItems:'center',marginLeft:10}}><span style={{width:8,height:8,borderRadius:2,background:'color-mix(in srgb,var(--ink) 14%,transparent)'}}></span><span className="mono" style={{fontSize:9,fontWeight:700,color:'var(--ink3)'}}>DEMAND</span></span></div>
+        <div style={{marginBottom:12}}><SegPill options={[{v:'DAY',l:'Day'},{v:'WEEK',l:'Week'},{v:'MONTH',l:'Month'}]} value={gran} onChange={setGran} /></div>
+        <div className="mcard" style={{position:'relative'}}>
+          <div style={{display:'flex',gap:18}}><div><div className="v" style={{fontSize:21}}>{book.reduce((a,b)=>a+b,0)}</div><div className="l">Bookings</div></div><div><div className="v" style={{fontSize:21}}>{dem.reduce((a,b)=>a+b,0)}</div><div className="l">Demand</div></div><div style={{flex:1}}></div><div style={{textAlign:'right'}}><div className="v" style={{fontSize:21}}>{Math.round(book.reduce((a,b)=>a+b,0)/dem.reduce((a,b)=>a+b,0)*100)}%</div><div className="l">Fill</div></div></div>
+          {tip&&<div className="tip" style={{left:tip.x,top:tip.y}}>{tip.t}</div>}
+          <div style={{display:'flex',alignItems:'flex-end',gap:n>20?2:5,height:110,marginTop:16}}>{book.map((b,i)=>(
+            <div key={i} style={{flex:1,position:'relative',height:'100%',display:'flex',alignItems:'flex-end',cursor:'pointer'}} onClick={e=>{const r=e.currentTarget.getBoundingClientRect(),pr=e.currentTarget.offsetParent.getBoundingClientRect();setTip({x:r.left-pr.left+r.width/2,y:r.top-pr.top,t:b+' booked · '+dem[i]+' demand'});setTimeout(()=>setTip(null),1600);}}>
+              <div style={{width:'100%',height:(dem[i]/max*100)+'%',minHeight:2,background:'color-mix(in srgb,var(--ink) 12%,transparent)',borderRadius:'2px 2px 0 0'}}></div>
+              <div style={{position:'absolute',left:0,right:0,bottom:0,height:(b/max*100)+'%',minHeight:2,background:'var(--ink)',opacity:0.85,borderRadius:'2px 2px 0 0'}}></div>
+            </div>))}</div>
+          <div style={{display:'flex',marginTop:8}}>{axis.map((a,i)=><span key={i} className="mono" style={{flex:1,fontSize:9,fontWeight:600,color:'var(--ink3)',textAlign:i===0?'left':i===1?'center':'right'}}>{a}</span>)}</div>
+        </div>
+        <div className="sechead"><span className="ml">By format</span></div>
+        <div className="card" style={{padding:'4px 14px'}}>{FORMATS_SPLIT.map(([l,a,pct],i)=>(<div key={l} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 0',borderTop:i?'1px solid var(--line)':0}}>
+          <span style={{width:8,height:8,borderRadius:2,background:accentOf(a),flex:'none'}}></span><span style={{flex:1,fontSize:14,fontWeight:600}}>{l}</span>
+          <div style={{width:90,height:6,borderRadius:999,background:'var(--line2)',overflow:'hidden'}}><div style={{width:pct+'%',height:'100%',background:accentOf(a)}}></div></div>
+          <span className="mono" style={{fontSize:11,fontWeight:700,color:'var(--ink2)',width:30,textAlign:'right'}}>{pct}%</span>
+        </div>))}</div>
+        <div className="sechead"><span className="ml">Top events</span></div>
+        {EVENTS.filter(e=>e.past).map(e=>(<button className="erow" key={e.id} onClick={()=>toast('Open '+e.title+' report')}>
+          <div className="spine" style={{background:accentOf(e.act)}}></div><div className="dt"><div className="d" style={{color:'var(--ink3)'}}>{e.d}</div><div className="mo">{e.mo}</div></div>
+          <div className="eb"><div className="et">{e.title}</div><div className="em">{e.past.att} attended · {e.past.fill}% full{e.past.gross?' · ₹'+e.past.gross.toLocaleString('en-IN'):' · free'}</div></div><i className="ph ph-caret-right" style={{color:'var(--ink3)',fontSize:16,flex:'none'}}></i>
+        </button>))}
+        <div className="sechead"><span className="ml">Data quality</span></div>
+        <button className="act" onClick={()=>toast('Send review prompts')} style={{borderColor:'rgba(185,119,15,0.3)',background:'rgba(185,119,15,0.06)'}}><i className="ph-fill ph-warning lead" style={{color:'var(--warning)'}}></i><div className="t"><b>2 events missing reviews</b><span>Send the review prompts now</span></div><i className="ph ph-caret-right chev"></i></button>
+      </div></div>
+      <DateRangePicker open={pick} value={rng} onClose={()=>setPick(false)} onApply={(v)=>{ const p=PRESETS.find(x=>x.k===v.k); setRng({s:v.s,e:v.e,k:v.k,label:p?p.l:'custom'}); setPick(false); }} />
+    </div>
+  );
+}
+
+function BlastSheet({ seg, onClose, toast }) {
+  const [aud, setAud] = useState(seg==='prospective'?'wait':'booked');
+  const [tpl, setTpl] = useState(null);
+  const TPL = [['Reminder','See you tonight at 8 — The Daily Bar, Khar. Doors at 7:45.'],['Meeting point','We’re upstairs at The Daily Bar. Ask for the Bandra Social table.'],['Change','Heads up: start pushed to 8:15. Same place.']];
+  return (<>
+    <div className="scrim on" onClick={onClose}></div>
+    <div className="sheet" style={{transform:'translateY(0)',zIndex:60}}>
+      <div className="grab"></div>
+      <div className="sh"><h3>New blast</h3><span className="sub">Tuesday Trivia</span></div>
+      <div className="sb">
+        <div className="gl">Audience</div>
+        <div style={{marginTop:8}}><SegPill options={[{v:'booked',l:'Booked · 24'},{v:'wait',l:'Waitlist · 6'},{v:'all',l:'Everyone · 30'}]} value={aud} onChange={setAud} /></div>
+        <div className="gl" style={{marginTop:18}}>Template</div>
+        <div style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}}>
+          {TPL.map(([t,body],i)=><button key={i} className="act" style={{margin:0,borderColor:tpl===i?'var(--ink)':'var(--line2)'}} onClick={()=>setTpl(i)}><div className="t"><b>{t}</b><span style={{whiteSpace:'normal'}}>{body}</span></div>{tpl===i?<i className="ph-fill ph-check-circle" style={{color:'var(--success)',fontSize:18}}></i>:null}</button>)}
+        </div>
+        <button className="pillbtn accent" style={{width:'100%',marginTop:16,opacity:tpl===null?0.5:1}} onClick={()=>{onClose();toast('Blast sent to '+(aud==='booked'?'24 booked':aud==='wait'?'6 waitlist':'30')+' guests');}}><i className="ph-fill ph-paper-plane-tilt"></i>Send blast</button>
+      </div>
+    </div>
+  </>);
+}
+
+function OptionsSheet({ opts, set, onClose }) {
+  const Row = ({k,t,d,options}) => (<div className="opt"><div className="t"><b>{t}</b><span>{d}</span></div><div className="segsm">{options.map(o=><button key={o.v} className={opts[k]===o.v?'on':''} onClick={()=>set(k,o.v)}>{o.l}</button>)}</div></div>);
+  return (<>
+    <div className="scrim on" onClick={onClose}></div>
+    <div className="sheet" style={{transform:'translateY(0)',zIndex:70}}>
+      <div className="grab"></div>
+      <div className="sh"><h3>Options</h3><span className="sub">Mock the alternatives</span></div>
+      <div className="sb">
+        <Row k="clock" t="Event clock" d="Drives the hero + Manage default" options={[{v:'soon',l:'Soon'},{v:'live',l:'Live'},{v:'past',l:'Past'}]} />
+        <Row k="payouts" t="Payouts" d="Show the connect nudge" options={[{v:true,l:'Ready'},{v:false,l:'Unset'}]} />
+        <Row k="createOrder" t="Create order" d="Which action leads on Events" options={[{v:'new',l:'New'},{v:'repeat',l:'Repeat'}]} />
+        <Row k="liveMode" t="Live mode" d="Inline tab vs full-screen" options={[{v:'inline',l:'Inline'},{v:'full',l:'Event'}]} />
+        <Row k="peekMode" t="Roster peek" d="Opens a sheet, or the Guests tab" options={[{v:'sheet',l:'Sheet'},{v:'tab',l:'Tab'}]} />
+        <Row k="multiOrg" t="Organizer switcher" d="For multi-city brands" options={[{v:false,l:'Off'},{v:true,l:'On'}]} />
+        <p className="panelnote">These are the punch-list items that are judgment calls — toggle to compare. Everything else is already implemented in the build.</p>
+      </div>
+    </div>
+  </>);
+}
+
+const TABS = [['today','Today','house','house-fill'],['events','Events','ticket','ticket'],['inbox','Inbox','chat-circle','chat-circle-fill'],['organizer','Organizer','storefront','storefront-fill']];
+
+function App() {
+  const [tab, setTab] = useState('today');
+  const [manage, setManage] = useState(null);
+  const [insights, setInsights] = useState(false);
+  const [blast, setBlast] = useState(null);
+  const [optsOpen, setOptsOpen] = useState(false);
+  const [toastMsg, setToastMsg] = useState(null);
+  const [opts, setOpts] = useState({ clock:'soon', payouts:false, createOrder:'new', liveMode:'inline', peekMode:'sheet', multiOrg:false });
+  const setOpt = (k,v) => setOpts(o=>({...o,[k]:v}));
+  const toast = m => { setToastMsg(m); clearTimeout(window.__t); window.__t=setTimeout(()=>setToastMsg(null),1900); };
+  const unread = 2;
+  const go = { tab:setTab, manage:(id,mode)=>setManage({id,mode}), create:()=>toast('Create event wizard'), insights:()=>setInsights(true), blast:(seg)=>setBlast(seg) };
+  const tabLabel = (id,label) => id==='organizer' && opts.tabName==='org' ? ORG.name.split(' ')[0] : label;
+  return (<>
+    <div className="statusbar"><span>3:11</span><span className="r"><i className="ph-fill ph-cell-signal-full"></i><i className="ph-fill ph-wifi-high"></i><i className="ph-fill ph-battery-high"></i><i className="ph ph-sliders gbtn" style={{cursor:'pointer',fontSize:15}} onClick={()=>setOptsOpen(true)}></i></span></div>
+    {tab==='today' && <TodayScreen go={go} toast={toast} opts={opts} />}
+    {tab==='events' && <EventsScreen go={go} opts={opts} />}
+    {tab==='inbox' && <InboxScreen go={go} toast={toast} />}
+    {tab==='organizer' && <OrganizerScreen go={go} toast={toast} opts={opts} />}
+    <div className="tabbar">{TABS.map(([id,label,ic,icf])=>(<button key={id} className={tab===id?'on':''} onClick={()=>setTab(id)}>{id==='inbox'&&unread>0?<span className="cnt">{unread}</span>:null}<i className={'ph'+(tab===id?'-fill ph-'+icf:' ph-'+ic)}></i><span>{tabLabel(id,label)}</span></button>))}</div>
+    {manage && <Manage id={manage.id} initialMode={manage.mode} onClose={()=>setManage(null)} toast={toast} opts={opts} />}
+    {insights && <Insights onClose={()=>setInsights(false)} toast={toast} />}
+    {blast!==null && <BlastSheet seg={blast} onClose={()=>setBlast(null)} toast={toast} />}
+    {optsOpen && <OptionsSheet opts={opts} set={setOpt} onClose={()=>setOptsOpen(false)} />}
+    <div className={'toast'+(toastMsg?' on':'')}><i className="ph-fill ph-check-circle"></i>{toastMsg}</div>
+  </>);
+}
+ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+</script>
+<div id="hsplash"><div class="hsw">Catch<span class="hsbar"></span><span class="hshosts">Hosts</span></div></div>
+<style>
+  #hsplash { position: fixed; inset: 0; z-index: 9999; background: #16140F; display: flex; align-items: center; justify-content: center; animation: hsOut .5s ease 1.9s forwards; }
+  .hsw { font-family: var(--font-voice); font-weight: 700; font-stretch: 78%; letter-spacing: -0.02em; font-size: 64px; color: #F4F0E8; display: inline-flex; align-items: flex-end; gap: .14em; opacity: 0; transform: translateY(10px); animation: hsIn .6s cubic-bezier(.2,.7,.2,1) .15s forwards; }
+  .hsbar { width: .6em; height: .12em; border-radius: 2px; background: var(--act-padel-accent); margin-bottom: .15em; animation: hsBar .45s ease 1s forwards; }
+  .hshosts { color: #BAB2A7; opacity: 0; transform: translateX(-6px); animation: hsHosts .5s ease 1.05s forwards; }
+  @keyframes hsIn { to { opacity: 1; transform: none; } }
+  @keyframes hsBar { to { opacity: 0; width: 0; margin-left: 0; } }
+  @keyframes hsHosts { to { opacity: 1; transform: none; } }
+  @keyframes hsOut { to { opacity: 0; visibility: hidden; } }
+</style>
+<script>setTimeout(function(){ var s=document.getElementById('hsplash'); if(s) s.remove(); }, 2500);</script>
+</body>
+</html>

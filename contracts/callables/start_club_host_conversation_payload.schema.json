@@ -8,6 +8,7 @@
   "required": ["clubId", "hostUid"],
   "properties": {
     "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "hostUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+    "hostUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
   }
 }

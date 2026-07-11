@@ -101,6 +101,29 @@ test("checkAdminReviewBridge passes for the current organizer review channels", 
   );
 });
 
+test("checkAdminReviewBridge rejects a removed React Query mutation action", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
+  mirrorRequiredFiles(root);
+
+  const controllerPath = path.join(root, adminControllerPath);
+  fs.writeFileSync(
+    controllerPath,
+    fs.readFileSync(controllerPath, "utf8")
+      .replaceAll(
+        "mutationFn: decideOrganizerIntake",
+        "mutationFn: removedOrganizerIntake"
+      )
+  );
+
+  const result = checkAdminReviewBridge({
+    root,
+    channels: [adminReviewBridgeChannels[0]],
+  });
+
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join("\n"), /admin UI action/);
+});
+
 test("checkAdminReviewBridge fails when pending input callable payloads drift", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);

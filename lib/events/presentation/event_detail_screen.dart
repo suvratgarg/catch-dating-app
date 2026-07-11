@@ -227,7 +227,12 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
               pathParameters: {'clubId': clubId},
             ),
             onMessageHost: (clubId, hostUid) => unawaited(
-              _messageHost(context, clubId: clubId, hostUid: hostUid),
+              _messageHost(
+                context,
+                clubId: clubId,
+                hostUid: hostUid,
+                eventId: widget.eventId,
+              ),
             ),
             onRetryHosts: () =>
                 ref.invalidate(fetchClubProvider(widget.clubId)),
@@ -319,7 +324,12 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             pathParameters: {'clubId': clubId},
           ),
           onMessageHost: (clubId, hostUid) => unawaited(
-            _messageHost(context, clubId: clubId, hostUid: hostUid),
+            _messageHost(
+              context,
+              clubId: clubId,
+              hostUid: hostUid,
+              eventId: widget.eventId,
+            ),
           ),
           onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
           inviteCode: widget.inviteCode,
@@ -424,13 +434,18 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     BuildContext context, {
     required String clubId,
     required String hostUid,
+    required String eventId,
   }) async {
     final matchId = await ClubHostContactController.startConversationMutation
         .run(
           ref,
           (tx) => tx
               .get(clubHostContactControllerProvider.notifier)
-              .startConversation(clubId: clubId, hostUid: hostUid),
+              .startConversation(
+                clubId: clubId,
+                hostUid: hostUid,
+                eventId: eventId,
+              ),
         );
     if (!context.mounted) return;
     unawaited(

@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-06T19:18:53.059Z",
+  "generatedAt": "2026-07-10T20:20:33.719Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 845,
-    "components": 814,
-    "stateCards": 1690,
-    "reviewCandidates": 37,
-    "oversizedUseCases": 41,
-    "multiUseCaseComponents": 30
+    "useCases": 862,
+    "components": 828,
+    "stateCards": 1746,
+    "reviewCandidates": 39,
+    "oversizedUseCases": 44,
+    "multiUseCaseComponents": 33
   },
   "reviewCandidates": [
     {
@@ -231,7 +231,8 @@
       "useCaseCount": 2,
       "stateCardCount": 24,
       "paths": [
-        "[P1 product surfaces]/Matches and chat"
+        "[P1 product surfaces]/Matches and chat",
+        "[P2 supporting surfaces]/Matches and chat"
       ],
       "labels": [
         "attendee queries",
@@ -339,10 +340,10 @@
           ]
         },
         {
-          "name": "Host inbox states",
+          "name": "Legacy shared Host list states",
           "functionName": "matchesListHostInboxStates",
           "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
-          "path": "[P1 product surfaces]/Matches and chat",
+          "path": "[P2 supporting surfaces]/Matches and chat",
           "stateCardCount": 14,
           "stateCards": [
             {
@@ -2898,6 +2899,87 @@
       ]
     },
     {
+      "component": "HostInboxScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 10,
+      "paths": [
+        "[P1 product surfaces]/Host/Inbox"
+      ],
+      "labels": [
+        "Booked · 24 with personal inquiries",
+        "General inquiries stay explicit",
+        "Prospective · 9 with Requested and Waitlist rows",
+        "dark theme",
+        "error",
+        "loading",
+        "production preflight disabled",
+        "roster remains visible without threads",
+        "search empty after event and audience classification",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "hostInboxEventScopedStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Event-scoped states",
+          "functionName": "hostInboxEventScopedStates",
+          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "path": "[P1 product surfaces]/Host/Inbox",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "Booked · 24 with personal inquiries",
+              "normalizedLabel": "booked 24 with personal inquiries"
+            },
+            {
+              "label": "Prospective · 9 with Requested and Waitlist rows",
+              "normalizedLabel": "prospective 9 with requested and waitlist rows"
+            },
+            {
+              "label": "General inquiries stay explicit",
+              "normalizedLabel": "general inquiries stay explicit"
+            },
+            {
+              "label": "roster remains visible without threads",
+              "normalizedLabel": "roster remains visible without threads"
+            },
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            },
+            {
+              "label": "error",
+              "normalizedLabel": "error"
+            },
+            {
+              "label": "search empty after event and audience classification",
+              "normalizedLabel": "search empty after event and audience classification"
+            },
+            {
+              "label": "production preflight disabled",
+              "normalizedLabel": "production preflight disabled"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostSettingsProfileSection",
       "useCaseCount": 1,
       "stateCardCount": 10,
@@ -3135,6 +3217,87 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "SwipeHubScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 10,
+      "paths": [
+        "[P1 product surfaces]/Catches"
+      ],
+      "labels": [
+        "active catch windows",
+        "attended events error",
+        "attended events loading",
+        "auth error",
+        "no active windows",
+        "offline event load",
+        "reduced motion",
+        "signed out shell-hidden",
+        "text scale 2.0",
+        "uid loading"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchesHubRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Hub route states",
+          "functionName": "catchesHubRouteStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "uid loading",
+              "normalizedLabel": "uid loading"
+            },
+            {
+              "label": "auth error",
+              "normalizedLabel": "auth error"
+            },
+            {
+              "label": "signed out shell-hidden",
+              "normalizedLabel": "signed out shell hidden"
+            },
+            {
+              "label": "attended events loading",
+              "normalizedLabel": "attended events loading"
+            },
+            {
+              "label": "attended events error",
+              "normalizedLabel": "attended events error"
+            },
+            {
+              "label": "offline event load",
+              "normalizedLabel": "offline event load"
+            },
+            {
+              "label": "no active windows",
+              "normalizedLabel": "no active windows"
+            },
+            {
+              "label": "active catch windows",
+              "normalizedLabel": "active catch windows"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
             }
           ]
         }
@@ -3961,7 +4124,8 @@
       "useCaseCount": 2,
       "stateCardCount": 24,
       "paths": [
-        "[P1 product surfaces]/Matches and chat"
+        "[P1 product surfaces]/Matches and chat",
+        "[P2 supporting surfaces]/Matches and chat"
       ],
       "labels": [
         "attendee queries",
@@ -4069,10 +4233,10 @@
           ]
         },
         {
-          "name": "Host inbox states",
+          "name": "Legacy shared Host list states",
           "functionName": "matchesListHostInboxStates",
           "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
-          "path": "[P1 product surfaces]/Matches and chat",
+          "path": "[P2 supporting surfaces]/Matches and chat",
           "stateCardCount": 14,
           "stateCards": [
             {
@@ -6628,6 +6792,87 @@
       ]
     },
     {
+      "component": "HostInboxScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 10,
+      "paths": [
+        "[P1 product surfaces]/Host/Inbox"
+      ],
+      "labels": [
+        "Booked · 24 with personal inquiries",
+        "General inquiries stay explicit",
+        "Prospective · 9 with Requested and Waitlist rows",
+        "dark theme",
+        "error",
+        "loading",
+        "production preflight disabled",
+        "roster remains visible without threads",
+        "search empty after event and audience classification",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "hostInboxEventScopedStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Event-scoped states",
+          "functionName": "hostInboxEventScopedStates",
+          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "path": "[P1 product surfaces]/Host/Inbox",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "Booked · 24 with personal inquiries",
+              "normalizedLabel": "booked 24 with personal inquiries"
+            },
+            {
+              "label": "Prospective · 9 with Requested and Waitlist rows",
+              "normalizedLabel": "prospective 9 with requested and waitlist rows"
+            },
+            {
+              "label": "General inquiries stay explicit",
+              "normalizedLabel": "general inquiries stay explicit"
+            },
+            {
+              "label": "roster remains visible without threads",
+              "normalizedLabel": "roster remains visible without threads"
+            },
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            },
+            {
+              "label": "error",
+              "normalizedLabel": "error"
+            },
+            {
+              "label": "search empty after event and audience classification",
+              "normalizedLabel": "search empty after event and audience classification"
+            },
+            {
+              "label": "production preflight disabled",
+              "normalizedLabel": "production preflight disabled"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostSettingsProfileSection",
       "useCaseCount": 1,
       "stateCardCount": 10,
@@ -6865,6 +7110,87 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "SwipeHubScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 10,
+      "paths": [
+        "[P1 product surfaces]/Catches"
+      ],
+      "labels": [
+        "active catch windows",
+        "attended events error",
+        "attended events loading",
+        "auth error",
+        "no active windows",
+        "offline event load",
+        "reduced motion",
+        "signed out shell-hidden",
+        "text scale 2.0",
+        "uid loading"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchesHubRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Hub route states",
+          "functionName": "catchesHubRouteStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "uid loading",
+              "normalizedLabel": "uid loading"
+            },
+            {
+              "label": "auth error",
+              "normalizedLabel": "auth error"
+            },
+            {
+              "label": "signed out shell-hidden",
+              "normalizedLabel": "signed out shell hidden"
+            },
+            {
+              "label": "attended events loading",
+              "normalizedLabel": "attended events loading"
+            },
+            {
+              "label": "attended events error",
+              "normalizedLabel": "attended events error"
+            },
+            {
+              "label": "offline event load",
+              "normalizedLabel": "offline event load"
+            },
+            {
+              "label": "no active windows",
+              "normalizedLabel": "no active windows"
+            },
+            {
+              "label": "active catch windows",
+              "normalizedLabel": "active catch windows"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
             }
           ]
         }
@@ -7781,6 +8107,82 @@
       ]
     },
     {
+      "component": "CatchTabBar",
+      "useCaseCount": 1,
+      "stateCardCount": 9,
+      "paths": [
+        "[Core primitives]/Navigation"
+      ],
+      "labels": [
+        "disabled-readonly",
+        "reduced-motion",
+        "safe-area",
+        "selected",
+        "text-scale",
+        "unselected",
+        "with-active-icon",
+        "with-badge",
+        "with-four-tabs"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [
+          "canonical-contract-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchTabDockContractStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchTabDockContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Navigation",
+          "stateCardCount": 9,
+          "stateCards": [
+            {
+              "label": "selected",
+              "normalizedLabel": "selected"
+            },
+            {
+              "label": "unselected",
+              "normalizedLabel": "unselected"
+            },
+            {
+              "label": "with-active-icon",
+              "normalizedLabel": "with active icon"
+            },
+            {
+              "label": "with-badge",
+              "normalizedLabel": "with badge"
+            },
+            {
+              "label": "disabled-readonly",
+              "normalizedLabel": "disabled readonly"
+            },
+            {
+              "label": "safe-area",
+              "normalizedLabel": "safe area"
+            },
+            {
+              "label": "text-scale",
+              "normalizedLabel": "text scale"
+            },
+            {
+              "label": "reduced-motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "with-four-tabs",
+              "normalizedLabel": "with four tabs"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchTopBar",
       "useCaseCount": 1,
       "stateCardCount": 9,
@@ -8256,68 +8658,6 @@
       ]
     },
     {
-      "component": "CatchTabDock",
-      "useCaseCount": 1,
-      "stateCardCount": 7,
-      "paths": [
-        "[Core primitives]/Navigation"
-      ],
-      "labels": [
-        "disabled-readonly",
-        "radius",
-        "safe-area",
-        "selected",
-        "unselected",
-        "with-active-icon",
-        "with-badge"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchTabDockContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Navigation",
-          "stateCardCount": 7,
-          "stateCards": [
-            {
-              "label": "selected",
-              "normalizedLabel": "selected"
-            },
-            {
-              "label": "unselected",
-              "normalizedLabel": "unselected"
-            },
-            {
-              "label": "with-active-icon",
-              "normalizedLabel": "with active icon"
-            },
-            {
-              "label": "with-badge",
-              "normalizedLabel": "with badge"
-            },
-            {
-              "label": "disabled-readonly",
-              "normalizedLabel": "disabled readonly"
-            },
-            {
-              "label": "safe-area",
-              "normalizedLabel": "safe area"
-            },
-            {
-              "label": "radius",
-              "normalizedLabel": "radius"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ExploreMapScreen",
       "useCaseCount": 1,
       "stateCardCount": 7,
@@ -8494,6 +8834,68 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "HostClubsScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 7,
+      "paths": [
+        "[P1 product surfaces]/Host operations"
+      ],
+      "labels": [
+        "auth required",
+        "clubs error",
+        "clubs loading",
+        "dark theme",
+        "empty organizer account",
+        "insights report",
+        "organizer overview"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Route states",
+          "functionName": "hostClubsRouteStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host operations",
+          "stateCardCount": 7,
+          "stateCards": [
+            {
+              "label": "auth required",
+              "normalizedLabel": "auth required"
+            },
+            {
+              "label": "clubs loading",
+              "normalizedLabel": "clubs loading"
+            },
+            {
+              "label": "clubs error",
+              "normalizedLabel": "clubs error"
+            },
+            {
+              "label": "empty organizer account",
+              "normalizedLabel": "empty organizer account"
+            },
+            {
+              "label": "organizer overview",
+              "normalizedLabel": "organizer overview"
+            },
+            {
+              "label": "insights report",
+              "normalizedLabel": "insights report"
             },
             {
               "label": "dark theme",
@@ -9683,6 +10085,130 @@
       ]
     },
     {
+      "component": "HostBroadcastComposerSheet",
+      "useCaseCount": 2,
+      "stateCardCount": 5,
+      "paths": [
+        "[P1 product surfaces]/Host/Inbox",
+        "[P2 supporting surfaces]/Matches and chat"
+      ],
+      "labels": [
+        "production preflight disabled",
+        "prospective audience",
+        "ready with template selected",
+        "template review surface",
+        "zero audience"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Lifecycle states",
+          "functionName": "hostBroadcastComposerLifecycleStates",
+          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "path": "[P1 product surfaces]/Host/Inbox",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "ready with template selected",
+              "normalizedLabel": "ready with template selected"
+            },
+            {
+              "label": "prospective audience",
+              "normalizedLabel": "prospective audience"
+            },
+            {
+              "label": "zero audience",
+              "normalizedLabel": "zero audience"
+            },
+            {
+              "label": "production preflight disabled",
+              "normalizedLabel": "production preflight disabled"
+            }
+          ]
+        },
+        {
+          "name": "Legacy review sheet",
+          "functionName": "hostBroadcastComposerSheetStates",
+          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
+          "path": "[P2 supporting surfaces]/Matches and chat",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "template review surface",
+              "normalizedLabel": "template review surface"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "HostInboxBroadcastCard",
+      "useCaseCount": 2,
+      "stateCardCount": 5,
+      "paths": [
+        "[P1 product surfaces]/Host/Inbox/Components",
+        "[P1 product surfaces]/Matches and chat/Components"
+      ],
+      "labels": [
+        "Booked · 24",
+        "Prospective · 9",
+        "attendee blast affordance",
+        "one recipient",
+        "zero recipients"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Audience states",
+          "functionName": "hostInboxBroadcastAudienceStates",
+          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "path": "[P1 product surfaces]/Host/Inbox/Components",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "Booked · 24",
+              "normalizedLabel": "booked 24"
+            },
+            {
+              "label": "Prospective · 9",
+              "normalizedLabel": "prospective 9"
+            },
+            {
+              "label": "one recipient",
+              "normalizedLabel": "one recipient"
+            },
+            {
+              "label": "zero recipients",
+              "normalizedLabel": "zero recipients"
+            }
+          ]
+        },
+        {
+          "name": "Card states",
+          "functionName": "hostInboxBroadcastCardStates",
+          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
+          "path": "[P1 product surfaces]/Matches and chat/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "attendee blast affordance",
+              "normalizedLabel": "attendee blast affordance"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchActivityArt",
       "useCaseCount": 1,
       "stateCardCount": 5,
@@ -10197,6 +10723,58 @@
             {
               "label": "semantic-values",
               "normalizedLabel": "semantic values"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchSegmentedControl",
+      "useCaseCount": 1,
+      "stateCardCount": 5,
+      "paths": [
+        "[Core primitives]/Selection"
+      ],
+      "labels": [
+        "compact-mono",
+        "default / selected",
+        "expanded",
+        "surface-style",
+        "with-icons"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchSegmentedControlContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Selection",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "default / selected",
+              "normalizedLabel": "default selected"
+            },
+            {
+              "label": "expanded",
+              "normalizedLabel": "expanded"
+            },
+            {
+              "label": "with-icons",
+              "normalizedLabel": "with icons"
+            },
+            {
+              "label": "surface-style",
+              "normalizedLabel": "surface style"
+            },
+            {
+              "label": "compact-mono",
+              "normalizedLabel": "compact mono"
             }
           ]
         }
@@ -11557,53 +12135,6 @@
       ]
     },
     {
-      "component": "CatchSegmentedControl",
-      "useCaseCount": 1,
-      "stateCardCount": 4,
-      "paths": [
-        "[Core primitives]/Selection"
-      ],
-      "labels": [
-        "default / selected",
-        "expanded",
-        "surface-style",
-        "with-icons"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchSegmentedControlContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Selection",
-          "stateCardCount": 4,
-          "stateCards": [
-            {
-              "label": "default / selected",
-              "normalizedLabel": "default selected"
-            },
-            {
-              "label": "expanded",
-              "normalizedLabel": "expanded"
-            },
-            {
-              "label": "with-icons",
-              "normalizedLabel": "with icons"
-            },
-            {
-              "label": "surface-style",
-              "normalizedLabel": "surface style"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchSkeletonRows",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -12027,53 +12558,6 @@
       ]
     },
     {
-      "component": "EventLifecycleTimeline",
-      "useCaseCount": 1,
-      "stateCardCount": 4,
-      "paths": [
-        "[P1 product surfaces]/Dashboard home"
-      ],
-      "labels": [
-        "check-in pending",
-        "multiple open catch windows",
-        "open catch window plus upcoming",
-        "upcoming event"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Timeline states",
-          "functionName": "dashboardEventLifecycleTimelineReviewStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard home",
-          "stateCardCount": 4,
-          "stateCards": [
-            {
-              "label": "upcoming event",
-              "normalizedLabel": "upcoming event"
-            },
-            {
-              "label": "open catch window plus upcoming",
-              "normalizedLabel": "open catch window plus upcoming"
-            },
-            {
-              "label": "multiple open catch windows",
-              "normalizedLabel": "multiple open catch windows"
-            },
-            {
-              "label": "check-in pending",
-              "normalizedLabel": "check in pending"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "EventLocationMapRouteScreen",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -12397,6 +12881,53 @@
             {
               "label": "add offline",
               "normalizedLabel": "add offline"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "HostInsightsScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[P1 product surfaces]/Host operations"
+      ],
+      "labels": [
+        "authorized organizer report",
+        "range sheet",
+        "text scale 2.0",
+        "unknown organizer"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Dedicated route states",
+          "functionName": "hostInsightsRouteStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host operations",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "authorized organizer report",
+              "normalizedLabel": "authorized organizer report"
+            },
+            {
+              "label": "unknown organizer",
+              "normalizedLabel": "unknown organizer"
+            },
+            {
+              "label": "range sheet",
+              "normalizedLabel": "range sheet"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
             }
           ]
         }
@@ -12840,6 +13371,58 @@
             {
               "label": "anchored-action",
               "normalizedLabel": "anchored action"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchScreenHeaderTitle",
+      "useCaseCount": 2,
+      "stateCardCount": 3,
+      "paths": [
+        "[P1 product surfaces]/Dashboard home",
+        "[P1 product surfaces]/Profiles/Sections"
+      ],
+      "labels": [
+        "copy only",
+        "notification action",
+        "title row"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Header content",
+          "functionName": "dashboardHeaderContentReview",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard home",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "copy only",
+              "normalizedLabel": "copy only"
+            },
+            {
+              "label": "notification action",
+              "normalizedLabel": "notification action"
+            }
+          ]
+        },
+        {
+          "name": "Profile title",
+          "functionName": "profileTitleStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "title row",
+              "normalizedLabel": "title row"
             }
           ]
         }
@@ -14881,6 +15464,48 @@
       ]
     },
     {
+      "component": "HostInsightsScaffold",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[P1 product surfaces]/Host operations/Composed sections"
+      ],
+      "labels": [
+        "club switcher action",
+        "compact large text",
+        "title with kicker"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Covered by Host Insights route states",
+          "functionName": "hostOperationsTopBarStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host operations/Composed sections",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "title with kicker",
+              "normalizedLabel": "title with kicker"
+            },
+            {
+              "label": "club switcher action",
+              "normalizedLabel": "club switcher action"
+            },
+            {
+              "label": "compact large text",
+              "normalizedLabel": "compact large text"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostMetaRow",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -14917,48 +15542,6 @@
             {
               "label": "missing area fallback",
               "normalizedLabel": "missing area fallback"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "HostOperationsTopBar",
-      "useCaseCount": 1,
-      "stateCardCount": 3,
-      "paths": [
-        "[P1 product surfaces]/Host operations/Sections"
-      ],
-      "labels": [
-        "club switcher action",
-        "compact large text",
-        "title with kicker"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Top bar states",
-          "functionName": "hostOperationsTopBarStates",
-          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P1 product surfaces]/Host operations/Sections",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "title with kicker",
-              "normalizedLabel": "title with kicker"
-            },
-            {
-              "label": "club switcher action",
-              "normalizedLabel": "club switcher action"
-            },
-            {
-              "label": "compact large text",
-              "normalizedLabel": "compact large text"
             }
           ]
         }
@@ -16123,6 +16706,80 @@
       ]
     },
     {
+      "component": "CatchesHubContent",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Catches/Sections"
+      ],
+      "labels": [
+        "active windows",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Hub composition",
+          "functionName": "catchesHubContentStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "active windows",
+              "normalizedLabel": "active windows"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchesIntroCard",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Catches/Sections"
+      ],
+      "labels": [
+        "closing soon",
+        "window open"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Intro card states",
+          "functionName": "catchesIntroCardStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "window open",
+              "normalizedLabel": "window open"
+            },
+            {
+              "label": "closing soon",
+              "normalizedLabel": "closing soon"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchesProfileReview",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -16376,6 +17033,80 @@
             {
               "label": "decision row",
               "normalizedLabel": "decision row"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchRowPressSurface",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "chat-row",
+        "field-row"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchRowPressSurfaceContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "field-row",
+              "normalizedLabel": "field row"
+            },
+            {
+              "label": "chat-row",
+              "normalizedLabel": "chat row"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchScreenTopBar",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core catalog]/Navigation"
+      ],
+      "labels": [
+        "root search chrome",
+        "root title / subtitle / action"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchScreenTopBarCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Navigation",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "root title / subtitle / action",
+              "normalizedLabel": "root title subtitle action"
+            },
+            {
+              "label": "root search chrome",
+              "normalizedLabel": "root search chrome"
             }
           ]
         }
@@ -17714,43 +18445,6 @@
       ]
     },
     {
-      "component": "DashboardHeaderContent",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Dashboard home"
-      ],
-      "labels": [
-        "copy only",
-        "notification action"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Header content",
-          "functionName": "dashboardHeaderContentReview",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard home",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "copy only",
-              "normalizedLabel": "copy only"
-            },
-            {
-              "label": "notification action",
-              "normalizedLabel": "notification action"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "DockCount",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -18300,6 +18994,43 @@
             {
               "label": "spotlight transition target",
               "normalizedLabel": "spotlight transition target"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "EventFocusRail",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Dashboard home"
+      ],
+      "labels": [
+        "check-in pending",
+        "upcoming event"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Rail states",
+          "functionName": "dashboardEventFocusRailReviewStates",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard home",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "upcoming event",
+              "normalizedLabel": "upcoming event"
+            },
+            {
+              "label": "check-in pending",
+              "normalizedLabel": "check in pending"
             }
           ]
         }
@@ -19114,6 +19845,43 @@
             {
               "label": "dark dock",
               "normalizedLabel": "dark dock"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "HostInboxEmptyState",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Host/Inbox/Components"
+      ],
+      "labels": [
+        "Booked personal threads empty",
+        "General inquiries empty"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Empty states",
+          "functionName": "hostInboxEmptyStates",
+          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "path": "[P1 product surfaces]/Host/Inbox/Components",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "Booked personal threads empty",
+              "normalizedLabel": "booked personal threads empty"
+            },
+            {
+              "label": "General inquiries empty",
+              "normalizedLabel": "general inquiries empty"
             }
           ]
         }
@@ -21145,6 +21913,38 @@
       ]
     },
     {
+      "component": "AttendedEventTile",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Catches/Sections"
+      ],
+      "labels": [
+        "open and closing soon"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Tile states",
+          "functionName": "attendedEventTileStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "open and closing soon",
+              "normalizedLabel": "open and closing soon"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CalendarDateHeaderSkeleton",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -22028,6 +22828,70 @@
         {
           "name": "Bottom scrim states",
           "functionName": "catchesBottomScrimStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "default",
+              "normalizedLabel": "default"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchesHubEmptyState",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Catches/Sections"
+      ],
+      "labels": [
+        "no active catches"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Empty states",
+          "functionName": "catchesHubEmptyStateStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "no active catches",
+              "normalizedLabel": "no active catches"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchesHubHeader",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Catches/Sections"
+      ],
+      "labels": [
+        "default"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Header states",
+          "functionName": "catchesHubHeaderStates",
           "file": "widgetbook/lib/catches/catches_use_cases.dart",
           "path": "[P1 product surfaces]/Catches/Sections",
           "stateCardCount": 1,
@@ -23289,7 +24153,7 @@
       ]
     },
     {
-      "component": "CatchTabDockButton",
+      "component": "CatchTabBarButton",
       "useCaseCount": 1,
       "stateCardCount": 1,
       "paths": [
@@ -23321,7 +24185,7 @@
       ]
     },
     {
-      "component": "CatchTabDockIcon",
+      "component": "CatchTabBarIcon",
       "useCaseCount": 1,
       "stateCardCount": 1,
       "paths": [
@@ -25593,38 +26457,6 @@
       ]
     },
     {
-      "component": "HostBroadcastComposerSheet",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Matches and chat/Host inbox"
-      ],
-      "labels": [
-        "template review surface"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Sheet states",
-          "functionName": "hostBroadcastComposerSheetStates",
-          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
-          "path": "[P1 product surfaces]/Matches and chat/Host inbox",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "template review surface",
-              "normalizedLabel": "template review surface"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "HostClubEditorLoadingScreen",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -25689,14 +26521,14 @@
       ]
     },
     {
-      "component": "HostInboxBroadcastCard",
+      "component": "HostInboxAudienceRail",
       "useCaseCount": 1,
       "stateCardCount": 1,
       "paths": [
-        "[P1 product surfaces]/Matches and chat/Components"
+        "[P1 product surfaces]/Host/Inbox/Components"
       ],
       "labels": [
-        "attendee blast affordance"
+        "Booked and Prospective personal thread counts"
       ],
       "review": {
         "needsReview": false,
@@ -25706,15 +26538,79 @@
       },
       "useCases": [
         {
-          "name": "Card states",
-          "functionName": "hostInboxBroadcastCardStates",
-          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
-          "path": "[P1 product surfaces]/Matches and chat/Components",
+          "name": "Audience control states",
+          "functionName": "hostInboxAudienceRailStates",
+          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "path": "[P1 product surfaces]/Host/Inbox/Components",
           "stateCardCount": 1,
           "stateCards": [
             {
-              "label": "attendee blast affordance",
-              "normalizedLabel": "attendee blast affordance"
+              "label": "Booked and Prospective personal thread counts",
+              "normalizedLabel": "booked and prospective personal thread counts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "HostInboxScopeSelector",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Host/Inbox/Components"
+      ],
+      "labels": [
+        "selected event with explicit General option"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Scope control states",
+          "functionName": "hostInboxScopeSelectorStates",
+          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "path": "[P1 product surfaces]/Host/Inbox/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "selected event with explicit General option",
+              "normalizedLabel": "selected event with explicit general option"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "HostInboxWorkspaceSliver",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Host/Inbox/Components"
+      ],
+      "labels": [
+        "Roster-backed broadcast and personal threads"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Workspace states",
+          "functionName": "hostInboxWorkspaceStates",
+          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "path": "[P1 product surfaces]/Host/Inbox/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "Roster-backed broadcast and personal threads",
+              "normalizedLabel": "roster backed broadcast and personal threads"
             }
           ]
         }
@@ -27475,38 +28371,6 @@
             {
               "label": "complete profile",
               "normalizedLabel": "complete profile"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ProfileTitle",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Sections"
-      ],
-      "labels": [
-        "title row"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Profile title",
-          "functionName": "profileTitleStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "title row",
-              "normalizedLabel": "title row"
             }
           ]
         }

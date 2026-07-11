@@ -27,7 +27,7 @@ export type ActivityNotificationType =
   | "eventUpdated"
   | "clubUpdate";
 
-interface ActivityNotificationParams {
+export interface ActivityNotificationParams {
   id: string;
   uid: string;
   type: ActivityNotificationType;
@@ -180,6 +180,44 @@ export async function createActivityNotificationIfAbsent(
     created = true;
   });
   return created;
+}
+
+export type ActiveUserActivityCreationResult =
+  | "created"
+  | "existing"
+  | "recipient-deleted";
+
+/**
+ * Creates Activity only while the recipient account is still active. The
+ * deletion tombstone and user projection are read in the same transaction as
+ * the notification create, closing the cleanup-versus-delivery race.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {ActivityNotificationParams} params Notification payload.
+ * @return {Promise<ActiveUserActivityCreationResult>} Creation outcome.
+ */
+export async function createActivityForActiveUserIfAbsent(
+  db: FirebaseFirestore.Firestore,
+  params: ActivityNotificationParams
+): Promise<ActiveUserActivityCreationResult> {
+  const ref = activityNotificationRef(db, params.uid, params.id);
+  const userRef = db.collection("users").doc(params.uid);
+  const deletedRef = db.collection("deletedUsers").doc(params.uid);
+  return db.runTransaction(async (tx) => {
+    const [snap, userSnap, deletedSnap] = await Promise.all([
+      tx.get(ref),
+      tx.get(userRef),
+      tx.get(deletedRef),
+    ]);
+    if (deletedSnap.exists || userSnap.data()?.deleted === true) {
+      return "recipient-deleted";
+    }
+    if (snap.exists) return "existing";
+    tx.create(ref, {
+      ...activityNotificationData(params),
+      readAt: null,
+    });
+    return "created";
+  });
 }
 
 /**

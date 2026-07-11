@@ -6,6 +6,7 @@ const test = require("node:test");
 const sourceRoot = path.resolve(__dirname, "../src");
 const allowedPrefixes = [
   "onCall(appCheckCallableOptions",
+  "onCall(appCheckCallableOptionsWithLimits",
   "onCall(appCheckCallableOptionsWithSecrets",
 ];
 

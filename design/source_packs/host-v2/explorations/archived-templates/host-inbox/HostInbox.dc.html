@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Inbox" description="Host app — Inbox tab. Attendee queries & customer support, grouped by event (not a matches inbox — hosts don't match). Search + All / Unread filter over ChatListTile rows. Built on the design system; the host inbox reuses the chat list shell but is framed as event support, with no new-matches rail." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Inbox" style="width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <!-- header -->
+    <div style="flex: none; padding: 8px 20px 14px">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.AppBar" kicker="ATTENDEE QUERIES" title="Inbox" gutter="{{ false }}" search-value="{{ q }}" on-search="{{ setQ }}" search-placeholder="Search attendees" hint-size="100%,64px" style="display: block"></x-import>
+      <div style="margin-top: 16px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.OptionGroup" options="{{ filterOptions }}" value="{{ filter }}" onChange="{{ setFilter }}" hint-size="100%,38px" style="display: block"></x-import>
+      </div>
+    </div>
+
+    <!-- threads grouped by event -->
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 4px var(--screen-px) 24px">
+      <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+          <div style="margin-top: 18px">
+            <div class="t-mono-label" style="font-size: 9px; color: var(--ink3); margin-bottom: 4px">{{ g.event }}</div>
+            <sc-for list="{{ g.threads }}" as="th" hint-placeholder-count="3">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatListTile" display-name="{{ th.name }}" preview="{{ th.preview }}" time="{{ th.time }}" unread="{{ th.unread }}" divider="{{ th.divider }}" onClick="{{ noop }}" hint-size="100%,72px" style="display: block"></x-import>
+            </sc-for>
+          </div>
+        </sc-for>
+      </sc-if>
+      <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top: 60px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.EmptyState" icon="chats-circle" title="{{ emptyTitle }}" message="{{ emptyMessage }}" hint-size="100%,120px" style="display: block"></x-import>
+        </div>
+      </sc-if>
+    </div>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.TabDock" items="{{ hostTabs }}" active="inbox" radius="0 0 30px 30px" hint-size="100%,64px" style="display: block"></x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 812}}">
+const HOST_TABS = [
+  { id: 'events', icon: 'calendar-blank', label: 'EVENTS' },
+  { id: 'clubs', icon: 'users-three', label: 'CLUBS' },
+  { id: 'inbox', icon: 'chat-circle', label: 'INBOX' },
+  { id: 'account', icon: 'gear', label: 'ACCOUNT' },
+];
+
+const GROUPS = [
+  {
+    event: 'SUNDOWNER 5K · SUN 6:30 AM',
+    threads: [
+      { name: 'Aanya Sharma', preview: 'Is there parking near the jetty start?', time: '9:24 AM', unread: 2 },
+      { name: 'Dev Patel', preview: 'Running late — can you hold my spot?', time: '8:50 AM', unread: 0 },
+      { name: "Mira D'Souza", preview: 'You: We keep it easy, ~6:00/km.', time: 'Yesterday', unread: 0 },
+    ],
+  },
+  {
+    event: 'TUESDAY TRIVIA NIGHT · TUE 8:00 PM',
+    threads: [
+      { name: 'Rahul S.', preview: 'Can I bring a +1 who isn\u2019t booked?', time: 'Mon', unread: 1 },
+      { name: 'Tara Nair', preview: 'Is the venue wheelchair accessible?', time: 'Sun', unread: 0 },
+    ],
+  },
+];
+
+class Component extends DCLogic {
+  state = { q: '', filter: 'all' };
+
+  renderVals() {
+    const { q, filter } = this.state;
+    const needle = q.trim().toLowerCase();
+
+    const groups = GROUPS.map((g) => {
+      const threads = g.threads.filter((t) =>
+        (filter === 'all' || t.unread > 0) &&
+        (!needle || t.name.toLowerCase().includes(needle))
+      );
+      return { event: g.event, threads: threads.map((t, i) => ({ ...t, divider: i > 0 })) };
+    }).filter((g) => g.threads.length > 0);
+
+    const totalUnread = GROUPS.reduce((n, g) => n + g.threads.filter((t) => t.unread > 0).length, 0);
+
+    return {
+      hostTabs: HOST_TABS,
+      noop: () => {},
+      q,
+      setQ: (v) => this.setState({ q: v }),
+      filter,
+      setFilter: (v) => this.setState({ filter: v }),
+      filterOptions: [
+        { value: 'all', label: 'All' },
+        { value: 'unread', label: 'Unread · ' + totalUnread },
+      ],
+      groups,
+      hasResults: groups.length > 0,
+      empty: groups.length === 0,
+      emptyTitle: filter === 'unread' ? 'No unread queries' : 'No matching attendees',
+      emptyMessage: filter === 'unread'
+        ? 'You\u2019re all caught up. New attendee questions land here.'
+        : 'No attendees match this search.',
+    };
+  }
+}
+</script>
+</body>
+</html>

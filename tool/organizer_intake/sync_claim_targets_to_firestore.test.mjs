@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {fileURLToPath} from "node:url";
 import {
   buildClaimTargetSyncPreview,
   buildClaimTargetSyncActions,
@@ -7,6 +8,7 @@ import {
   isOwnerBoundClubDoc,
   publicRefreshPatch,
 } from "./lib/claim_target_sync_core.mjs";
+import {buildReadinessReceipt} from "./sync_claim_targets_to_firestore.mjs";
 
 test("buildClaimTargetSyncActions creates missing claim targets", () => {
   const actions = buildClaimTargetSyncActions([claimTarget()], new Map());
@@ -129,6 +131,29 @@ test("buildClaimTargetSyncPreview produces durable review actions", () => {
   assert.match(preview.commands.firestoreDryRun, /sync_claim_targets_to_firestore/);
 });
 
+test("buildReadinessReceipt binds live state to the exact claim target plan", () => {
+  const planPath = fileURLToPath(new URL(
+    "./generated/organizer_claim_targets.json",
+    import.meta.url
+  ));
+  const actions = buildClaimTargetSyncActions([claimTarget()], new Map());
+  const receipt = buildReadinessReceipt({
+    actions,
+    fixture: null,
+    generatedAt: "2026-07-11T00:00:00.000Z",
+    planPath,
+    projectId: "catchdates-dev",
+    summary: summarizeActionsForTest(actions),
+  });
+
+  assert.equal(receipt.receiptType, "organizer_claim_target_readiness");
+  assert.equal(receipt.projectId, "catchdates-dev");
+  assert.equal(receipt.mode.source, "firestore_read");
+  assert.equal(receipt.mode.remoteWrites, 0);
+  assert.match(receipt.plan.sha256, /^[a-f0-9]{64}$/);
+  assert.equal(receipt.actions[0].status, "create");
+});
+
 function claimTarget() {
   return {
     entityId: "afterfly",
@@ -153,5 +178,20 @@ function clubDocument() {
     claim: {state: "unclaimed", claimHref: "/organizers/afterfly/#claim"},
     publicPage: {canonicalPath: "/organizers/afterfly/"},
     publicProfile: {headline: "AFTER FLY"},
+  };
+}
+
+function summarizeActionsForTest(actions) {
+  return {
+    targets: actions.length,
+    creates: actions.filter((action) => action.status === "create").length,
+    refreshes: actions.filter((action) => action.status === "refresh").length,
+    inSync: actions.filter((action) => action.status === "in_sync").length,
+    skippedOwnerBound: actions.filter((action) =>
+      action.status === "skip_owner_bound"
+    ).length,
+    writesNeeded: actions.filter((action) =>
+      action.status === "create" || action.status === "refresh"
+    ).length,
   };
 }

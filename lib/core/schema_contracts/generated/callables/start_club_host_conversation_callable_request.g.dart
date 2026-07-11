@@ -10,13 +10,16 @@ final class StartClubHostConversationCallableRequest {
   const StartClubHostConversationCallableRequest({
     required this.clubId,
     required this.hostUid,
+    this.eventId,
   });
 
   final String clubId;
   final String hostUid;
+  final String? eventId;
 
   Map<String, Object?> toJson() => {
     'clubId': clubId,
     'hostUid': hostUid,
+    'eventId': ?eventId,
   };
 }

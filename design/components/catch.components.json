@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 1,
-  "updated": "2026-07-03",
+  "updated": "2026-07-11",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -3676,6 +3676,28 @@
               "filled",
               "surface"
             ]
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "default": "regular",
+            "dartType": "CatchSegmentedControlSize",
+            "values": [
+              "compact",
+              "regular"
+            ]
+          },
+          {
+            "name": "labelStyle",
+            "type": "enum",
+            "required": false,
+            "default": "standard",
+            "dartType": "CatchSegmentedControlLabelStyle",
+            "values": [
+              "standard",
+              "mono"
+            ]
           }
         ],
         "states": [
@@ -3683,13 +3705,15 @@
           "selected",
           "expanded",
           "with-icons",
-          "surface-style"
+          "surface-style",
+          "compact-mono"
         ],
         "slots": [],
         "tokens": [
           "space.s1",
           "space.s2",
           "space.s3",
+          "space.micro6",
           "theme.light.color.raised",
           "theme.light.color.ink",
           "theme.light.color.ink2",
@@ -3703,6 +3727,7 @@
           "CatchMotion.easeInOutCurve",
           "CatchElevation.segmentedSelected",
           "CatchTextStyles.sectionTitle",
+          "CatchTextStyles.monoLabel",
           "CatchIcon.control"
         ],
         "goldens": [],
@@ -4090,12 +4115,15 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
+          "CatchScreenHeaderTitle",
+          "CatchScreenTopBar",
           "CatchLayout.topBarHeight",
           "CatchLayout.topBarLargeHeight",
           "CatchIconButton.navSize",
           "CatchSearchField",
           "CatchKicker",
           "CatchPersonAvatar",
+          "CatchTextStyles.headline",
           "CatchTextStyles.titleL",
           "CatchTextStyles.appBarSubtitle",
           "CatchCollapsedSliverTitle",
@@ -4106,6 +4134,32 @@
         ],
         "goldens": [],
         "members": [
+          {
+            "id": "catch.top_bar.screen_header_title",
+            "symbol": "CatchScreenHeaderTitle",
+            "file": "lib/core/widgets/catch_top_bar.dart",
+            "summary": "Root-screen title stack for Home, Explore, Chats, Profile, Activity, and Settings using Archivo headline typography with optional eyebrow, subtitle, leading, action, material, and padding slots.",
+            "states": [
+              "title",
+              "eyebrow",
+              "subtitle",
+              "leading",
+              "actions"
+            ]
+          },
+          {
+            "id": "catch.top_bar.screen_top_bar",
+            "symbol": "CatchScreenTopBar",
+            "file": "lib/core/widgets/catch_top_bar.dart",
+            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeaderTitle inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, and expanding search configuration.",
+            "states": [
+              "root-title",
+              "with-subtitle",
+              "with-search",
+              "with-leading",
+              "with-actions"
+            ]
+          },
           {
             "id": "catch.top_bar.collapsed_sliver_title",
             "symbol": "CatchCollapsedSliverTitle",
@@ -4169,9 +4223,10 @@
         ],
         "notes": [
           "Use this primitive for route chrome before creating local AppBar variants.",
+          "Use CatchScreenHeaderTitle or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
-          "Top-bar action wrappers and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets."
+          "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets."
         ]
       },
       "governance": {
@@ -6533,16 +6588,16 @@
       }
     },
     {
-      "id": "catch.tab_dock",
-      "name": "CatchTabDock",
+      "id": "catch.tab_bar",
+      "name": "CatchTabBar",
       "status": "active",
       "kind": "composite",
-      "summary": "Blurred bottom navigation dock with safe-area padding, active glyphs, uppercase mono labels, and badges.",
+      "summary": "Adaptive bottom navigation bar with icon-only unselected tabs, selected icon-label pill reveal, badges, and platform-specific chrome.",
       "dart": {
-        "symbol": "CatchTabDock",
-        "file": "lib/core/widgets/catch_tab_dock.dart",
+        "symbol": "CatchTabBar",
+        "file": "lib/core/widgets/catch_tab_bar.dart",
         "constructors": [
-          "CatchTabDock"
+          "CatchTabBar"
         ]
       },
       "design": {
@@ -6567,7 +6622,7 @@
             "name": "items",
             "type": "generic-list",
             "required": true,
-            "dartType": "List<CatchTabDockItem<T>>"
+            "dartType": "List<CatchTabBarItem<T>>"
           },
           {
             "name": "active",
@@ -6580,12 +6635,6 @@
             "type": "callback",
             "required": false,
             "dartType": "ValueChanged<T>?"
-          },
-          {
-            "name": "radius",
-            "type": "object",
-            "required": false,
-            "dartType": "BorderRadiusGeometry"
           }
         ],
         "states": [
@@ -6595,7 +6644,9 @@
           "with-badge",
           "disabled-readonly",
           "safe-area",
-          "radius"
+          "text-scale",
+          "reduced-motion",
+          "with-four-tabs"
         ],
         "slots": [],
         "tokens": [
@@ -6610,18 +6661,18 @@
           "theme.light.color.surface"
         ],
         "dartRoles": [
-          "CatchTabDockItem",
-          "CatchTextStyles.monoLabel",
-          "CatchLayout.tabDockBlurSigma",
-          "CatchLayout.tabDockIconSize"
+          "CatchTabBarItem",
+          "CatchTextStyles.buttonSm",
+          "CatchLayout.tabBarBlurSigma",
+          "CatchLayout.tabBarIconSize"
         ],
         "goldens": [],
         "members": [
           {
-            "id": "catch.tab_dock.button",
-            "symbol": "CatchTabDockButton",
-            "file": "lib/core/widgets/catch_tab_dock.dart",
-            "summary": "Direct tab-dock button renderer for navigation tabs.",
+            "id": "catch.tab_bar.button",
+            "symbol": "CatchTabBarButton",
+            "file": "lib/core/widgets/catch_tab_bar.dart",
+            "summary": "Direct tab-bar button renderer with selected-label reveal semantics.",
             "states": [
               "selected",
               "unselected",
@@ -6629,10 +6680,10 @@
             ]
           },
           {
-            "id": "catch.tab_dock.icon",
-            "symbol": "CatchTabDockIcon",
-            "file": "lib/core/widgets/catch_tab_dock.dart",
-            "summary": "Direct tab-dock icon/count renderer.",
+            "id": "catch.tab_bar.icon",
+            "symbol": "CatchTabBarIcon",
+            "file": "lib/core/widgets/catch_tab_bar.dart",
+            "summary": "Direct tab-bar icon/count renderer.",
             "states": [
               "plain",
               "badge",
@@ -6646,12 +6697,12 @@
           "catch.badge"
         ],
         "notes": [
-          "Use for custom Catch docks; native platform tab bars may remain where app-shell behavior requires them."
+          "Use for Catch bottom navigation. Platform adaptation belongs inside this widget; do not fork native/custom tab bars in shells."
         ]
       },
       "governance": {
         "role": "composition",
-        "canonicalFamily": "catch.tab_dock",
+        "canonicalFamily": "catch.tab_bar",
         "publicApi": true,
         "stateOwnership": "slot-state-only",
         "asyncOwnership": "none",
@@ -6819,7 +6870,7 @@
         ],
         "notes": [
           "Use CatchBottomDock for anchored utility chrome and sticky CTA footers.",
-          "Use CatchTabDock for bottom navigation; do not merge tab navigation behavior into this utility dock."
+          "Use CatchTabBar for bottom navigation; do not merge tab navigation behavior into this utility dock."
         ]
       },
       "governance": {
@@ -7997,6 +8048,94 @@
         "stateOwnership": "local-ui-only",
         "asyncOwnership": "none",
         "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical"
+      }
+    },
+    {
+      "id": "catch.row_press_surface",
+      "name": "CatchRowPressSurface",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Full-width hover, focus, pressed, tap, and semantic interaction layer for list and field rows.",
+      "dart": {
+        "symbol": "CatchRowPressSurface",
+        "file": "lib/core/widgets/catch_row_press_surface.dart",
+        "constructors": [
+          "CatchRowPressSurface"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/RowPressSurface",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "RowPressSurface",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback"
+          },
+          {
+            "name": "semanticButton",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "expandToMaxWidth",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          }
+        ],
+        "states": [
+          "field-row",
+          "chat-row"
+        ],
+        "slots": [
+          "child"
+        ],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "members": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "The child owns content layout and padding; this primitive owns only the full-row interaction layer."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.row_press_surface",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"

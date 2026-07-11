@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_search_header_controller.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
@@ -11,8 +10,12 @@ import 'package:flutter/material.dart';
 const double _chatsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;
 const double _hostInboxFilterHeight = CatchLayout.tabRailHeight;
 
-double chatsBrowseHeaderHeight({required bool hasHostFilter}) =>
-    _chatsBrowseHeaderHeight + (hasHostFilter ? _hostInboxFilterHeight : 0);
+double chatsBrowseHeaderHeight({
+  required bool hasHostFilter,
+  required bool hasHeaderSubtitle,
+}) =>
+    (hasHeaderSubtitle ? _chatsBrowseHeaderHeight : CatchLayout.topBarHeight) +
+    (hasHostFilter ? _hostInboxFilterHeight : 0);
 
 class ChatsBrowseHeader extends StatefulWidget {
   const ChatsBrowseHeader({
@@ -23,6 +26,9 @@ class ChatsBrowseHeader extends StatefulWidget {
     required this.hostFilter,
     required this.hostUnreadCount,
     required this.onHostFilterChanged,
+    this.showHostSubtitle = true,
+    this.height,
+    this.contentPadding,
   });
 
   final bool showSearchAction;
@@ -31,6 +37,9 @@ class ChatsBrowseHeader extends StatefulWidget {
   final HostInboxFilter? hostFilter;
   final int hostUnreadCount;
   final ValueChanged<HostInboxFilter>? onHostFilterChanged;
+  final bool showHostSubtitle;
+  final double? height;
+  final EdgeInsetsGeometry? contentPadding;
 
   @override
   State<ChatsBrowseHeader> createState() => _ChatsBrowseHeaderState();
@@ -48,8 +57,14 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
   @override
   Widget build(BuildContext context) {
     final isHostApp = AppConfig.appRole.isHost;
+    final hasHeaderSubtitle = isHostApp && widget.showHostSubtitle;
     final query = widget.searchValue;
     final searchActive = _searchController.isSearchActive(query);
+    final headerHeight =
+        widget.height ??
+        (hasHeaderSubtitle
+            ? CatchLayout.browseHeaderHeight
+            : CatchLayout.topBarHeight);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -60,31 +75,17 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
               MediaQuery.textScalerOf(context).scale(1.0).clamp(0.85, 1.0),
             ),
           ),
-          child: CatchTopBar(
-            titleWidget: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  isHostApp ? 'Inbox' : 'Chats',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.headline(context),
-                ),
-                const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-                Text(
-                  isHostApp ? 'Attendee queries' : 'Messages from your matches',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.supporting(context),
-                ),
-              ],
-            ),
+          child: CatchScreenTopBar(
+            title: isHostApp ? 'Inbox' : 'Chats',
+            subtitle: hasHeaderSubtitle ? 'Attendee queries' : null,
             leadingType: CatchTopBarLeading.none,
             applySafeArea: false,
-            gutter: false,
-            height: _chatsBrowseHeaderHeight,
-            contentPadding: CatchInsets.screenTitleBlock,
+            height: headerHeight,
+            contentPadding:
+                widget.contentPadding ??
+                (hasHeaderSubtitle
+                    ? CatchInsets.screenTitleBlock
+                    : CatchInsets.screenTitleBlockCompact),
             searchEnabled: widget.showSearchAction || searchActive,
             searchExpanded: searchActive,
             onSearchExpandedChanged: (expanded) =>

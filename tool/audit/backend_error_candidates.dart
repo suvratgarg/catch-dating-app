@@ -371,6 +371,15 @@ CandidateDisposition _dispositionFor({
     );
   }
 
+  if (path == 'lib/clubs/data/clubs_repository.dart' &&
+      rule.id == 'raw_firebase_exception_type') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason:
+          'legacy callable compatibility classifier rethrows all other errors',
+    );
+  }
+
   if (rule.id == 'manual_error_logging') {
     return const CandidateDisposition(
       status: CandidateStatus.review,

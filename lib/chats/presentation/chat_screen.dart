@@ -5,6 +5,7 @@ import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
+import 'package:catch_dating_app/chats/presentation/chat_conversation_context.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_retry_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_route_state.dart';
@@ -18,6 +19,7 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart'
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -263,6 +265,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
     final chatState = routeState.chatState;
+    final conversationContext = chatConversationContextFor(
+      isHostInquiry: routeState.lookupState.isHostInquiry,
+      viewerIsHost: AppConfig.appRole.isHost,
+    );
     final routeError = routeState.routeError;
     final authError = routeState.authError;
     if (!_scrollCoordinator.didScrollToLatestMessage &&
@@ -318,7 +324,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         body: Column(
           children: [
             if (routeState.showEventContextHeader)
-              ChatEventContextHeader(event: routeState.event),
+              ChatEventContextHeader(
+                event: routeState.event,
+                conversationContext: conversationContext,
+              ),
             Expanded(
               child: authError != null
                   ? CatchErrorState.fromError(
@@ -334,6 +343,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       currentUid: routeState.uid,
                       event: routeState.event,
                       otherName: chatState.messageOtherName,
+                      conversationContext: conversationContext,
                       scrollController: _scrollCoordinator.scrollController,
                       onRetry: chatState.messagesRetryIntent == null
                           ? null

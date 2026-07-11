@@ -14,6 +14,88 @@ final class MarkEventAttendanceCallableResponse {
   final bool attended;
 }
 
+enum EventBroadcastAudience { booked, prospective, everyone }
+
+enum EventBroadcastDeliveryStatus { completed, partial }
+
+final class SendEventBroadcastCallableResponse {
+  const SendEventBroadcastCallableResponse({
+    required this.broadcastId,
+    required this.status,
+    required this.recipientCount,
+    required this.excludedCount,
+    required this.activityAvailableCount,
+    required this.pushAttemptedCount,
+    required this.pushAcceptedCount,
+    required this.pushFailedCount,
+    required this.pushUnknownCount,
+    required this.idempotentReplay,
+  });
+
+  factory SendEventBroadcastCallableResponse.fromCallableData(Object? data) {
+    if (data case final Map<Object?, Object?> map) {
+      final broadcastId = map['broadcastId'];
+      final status = switch (map['status']) {
+        'completed' => EventBroadcastDeliveryStatus.completed,
+        'partial' => EventBroadcastDeliveryStatus.partial,
+        _ => null,
+      };
+      final recipientCount = _callableInt(map['recipientCount']);
+      final excludedCount = _callableInt(map['excludedCount']);
+      final activityAvailableCount = _callableInt(
+        map['activityAvailableCount'],
+      );
+      final pushAttemptedCount = _callableInt(map['pushAttemptedCount']);
+      final pushAcceptedCount = _callableInt(map['pushAcceptedCount']);
+      final pushFailedCount = _callableInt(map['pushFailedCount']);
+      final pushUnknownCount = _callableInt(map['pushUnknownCount']);
+      final idempotentReplay = map['idempotentReplay'];
+      if (broadcastId is String &&
+          broadcastId.isNotEmpty &&
+          status != null &&
+          recipientCount != null &&
+          excludedCount != null &&
+          activityAvailableCount != null &&
+          pushAttemptedCount != null &&
+          pushAcceptedCount != null &&
+          pushFailedCount != null &&
+          pushUnknownCount != null &&
+          idempotentReplay is bool) {
+        return SendEventBroadcastCallableResponse(
+          broadcastId: broadcastId,
+          status: status,
+          recipientCount: recipientCount,
+          excludedCount: excludedCount,
+          activityAvailableCount: activityAvailableCount,
+          pushAttemptedCount: pushAttemptedCount,
+          pushAcceptedCount: pushAcceptedCount,
+          pushFailedCount: pushFailedCount,
+          pushUnknownCount: pushUnknownCount,
+          idempotentReplay: idempotentReplay,
+        );
+      }
+    }
+    throw StateError(
+      'sendEventBroadcast response was missing delivery counters.',
+    );
+  }
+
+  final String broadcastId;
+  final EventBroadcastDeliveryStatus status;
+  final int recipientCount;
+  final int excludedCount;
+  final int activityAvailableCount;
+  final int pushAttemptedCount;
+  final int pushAcceptedCount;
+  final int pushFailedCount;
+  final int pushUnknownCount;
+  final bool idempotentReplay;
+
+  bool get isPartial => status == EventBroadcastDeliveryStatus.partial;
+}
+
+int? _callableInt(Object? value) => value is num ? value.toInt() : null;
+
 final class CreateEventInviteLinkCallableResponse {
   const CreateEventInviteLinkCallableResponse({
     required this.inviteLinkId,

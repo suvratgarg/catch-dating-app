@@ -1,12 +1,18 @@
 ---
 doc_id: splash_welcome_spec
-version: 1.0.0
+version: 1.0.2
 updated: 2026-07-06
 owner: design_parity_review
-status: ready-for-implementation
+status: implemented
 ---
 
 # Splash + Welcome — Boot Chrome Fix & Reel Parity Spec
+
+> **IMPLEMENTED 2026-07-07.** Parts 1–4 landed: the transparent splash mark
+> is generated (`assets/branding/catch_splash_mark_light.png` — the
+> root-cause blocker is resolved), boot preserve/remove flow, retoned
+> startup screen, and welcome reel parity. Part 5 (cold-boot brand beat) was
+> deferred by design. Retained as the record.
 
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
 Design SoT: `~/Downloads/Catch Design System (2)/splash-welcome-handoff/`
@@ -182,6 +188,33 @@ If a boot brand moment is still wanted after Parts 1–3: cap it at a
 ≤400ms fade-in of the mark on the bg frame (post-`remove()`), cold start
 only, never on resume, never a reel. NOT part of this spec's checklist —
 record as a backlog note only.
+
+## Accepted Drift
+
+- `SPLASH-WELCOME-DEBT-001` (accepted 2026-07-06): the handoff's
+  single-line object inset of `108` remains deferred for a later visual
+  review. Current Flutter keeps the `116` object inset for every reel row.
+  This is a deliberate follow-up, not a blocker for closing the boot chrome,
+  native splash, startup handoff, and phrase-bank coverage work in this pass.
+
+## Closure Checklist (2026-07-06)
+
+| Contract row | Status | Evidence |
+|---|---|---|
+| Part 1 transparent splash marks generated separately from launcher icon | aligned | `tool/branding/generate_catch_icon.swift`, `tool/branding/native_branding.generated.json`, `tool/branding/README.md`, tracked `assets/branding/catch_splash_mark_*.png` |
+| Part 1 splash refs point to transparent marks while launcher icon stays opaque | aligned | `pubspec.yaml` keeps launcher `image_path` on `catch_icon.png` and splash `image`/`image_dark` on `catch_splash_mark_*` |
+| Part 1 regenerated native/web splash outputs and cold-launch evidence | aligned | `docs/audit_registry/passes.jsonl` pass ids `2026-07-06-splash-welcome-spec`, `2026-07-06-splash-native-appshots`, and `2026-07-06-splash-welcome-final-gates` |
+| Part 2 preserve native splash before startup awaits | aligned | `lib/app_bootstrap.dart` calls `FlutterNativeSplash.preserve` before orientation/Firebase/logger/analytics awaits |
+| Part 2 remove native splash after force-update gate resolves | aligned | `lib/app.dart` schedules one post-frame `FlutterNativeSplash.remove()` on allowed/update-required/error branches |
+| Part 3 startup screen retone and delayed spinner | aligned | `CatchStartupLoadingScreen` uses `t.bg`, brightness-matched transparent splash marks, and `CatchMotion.startupIndicatorDelay`; covered by `test/core/catch_primitives_test.dart` |
+| Part 3 route-level loading no longer reuses startup screen | aligned | Host club create/edit loading routes use `HostClubEditorLoadingScreen`; widget catalog records startup as boot-only |
+| Part 4 Archivo type and motion/layout tokenization | aligned | `CatchFonts.archivoWidth`, `_WelcomeType`, `CatchLayout`, and `CatchMotion` own the reel typography, geometry, and timing constants |
+| Part 4 geometry anchors | aligned with accepted drift | `test/onboarding/onboarding_widgets_test.dart` covers Catch/focus/CTA anchors; `SPLASH-WELCOME-DEBT-001` defers only the single-line `108` inset |
+| Part 4 reel mechanics and phrase bank | aligned | `welcomePhraseBank` is the runtime bank; `test/onboarding/onboarding_widgets_test.dart` verifies object, activity kind, pigment, landing index, and 2x rendered rows against `strings.json` |
+| Part 4 focus/color math and band mask | aligned | `ReelRow` and `ReelBand` implement focus threshold, pigment mix, period opacity, dimming, and mask stops through tokens |
+| Part 4 landing and reduced motion | aligned | `WelcomePage` owns separate spin/landing controllers; tests cover reduced-motion/direct landed state and skip-to-CTA behavior |
+| Part 4 Widgetbook and appshot proof | aligned | `widgetbook/lib/onboarding/onboarding_use_cases.dart` has animated/landed/reduced-motion states; `/tmp/catch-splash-welcome-captures/start_welcome` holds light/dark captures from the recorded pass |
+| Part 5 cold-boot brand beat | deferred owner call | Optional by spec; no implementation required for closure |
 
 ## Acceptance
 

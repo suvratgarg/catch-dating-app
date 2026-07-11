@@ -60,6 +60,9 @@ function validateMatrix({
   const errors = [];
   const routeIds = new Set((routeInventory.routes ?? []).map((route) => route.id));
   const captureIds = new Set(captureCatalog.map((entry) => entry.id));
+  const captureRouteIds = new Map(
+    captureCatalog.map((entry) => [entry.id, new Set(entry.routeIds)]),
+  );
   const componentIds = new Set((componentRegistry.components ?? []).map((entry) => entry.id));
   const screenContractIds = new Set((screenContracts.screens ?? []).map((screen) => screen.id));
   const screenContractStateIds = new Map(
@@ -144,6 +147,7 @@ function validateMatrix({
         matrixCaptureIdsByContractId,
         routeIds,
         captureIds,
+        captureRouteIds,
         componentIds,
         allowedStateStatuses,
         allowedDesignKinds,
@@ -185,6 +189,7 @@ function validateScreen(
     matrixCaptureIdsByContractId,
     routeIds,
     captureIds,
+    captureRouteIds,
     componentIds,
     allowedStateStatuses,
     allowedDesignKinds,
@@ -199,8 +204,14 @@ function validateScreen(
   if (screenIds.has(screen?.id)) errors.push(`${screenLabel}: duplicate screen id.`);
   screenIds.add(screen?.id);
 
-  if (!routeIds.has(screen?.routeId)) {
-    errors.push(`${screenLabel}: unknown routeId ${screen?.routeId}.`);
+  const declaredRouteIds = screen?.routeIds ?? [screen?.routeId];
+  if (screen?.routeIds && !screen.routeIds.includes(screen.routeId)) {
+    errors.push(`${screenLabel}: routeIds must include primary routeId ${screen.routeId}.`);
+  }
+  for (const routeId of declaredRouteIds) {
+    if (!routeIds.has(routeId)) {
+      errors.push(`${screenLabel}: unknown routeId ${routeId}.`);
+    }
   }
   const explicitScreenContractId = `screen.${screen?.id}`;
   const boundScreenContractId = routeToScreenContractId.get(screen?.routeId);
@@ -215,6 +226,17 @@ function validateScreen(
 
   validatePaths(errors, `${screenLabel}.implementationPaths`, screen.implementationPaths);
   validateIds(errors, `${screenLabel}.captureIds`, screen.captureIds, captureIds);
+  if (screen?.routeIds) {
+    for (const captureId of screen.captureIds ?? []) {
+      for (const captureRouteId of captureRouteIds.get(captureId) ?? []) {
+        if (!declaredRouteIds.includes(captureRouteId)) {
+          errors.push(
+            `${screenLabel}.captureIds.${captureId}: route ${captureRouteId} is missing from routeIds.`,
+          );
+        }
+      }
+    }
+  }
   const screenCaptureIds = new Set(screen.captureIds ?? []);
   validateIds(errors, `${screenLabel}.componentIds`, screen.componentIds, componentIds);
   validateDesignRefs(errors, screenLabel, screen.designRefs, allowedDesignKinds, allowedDesignStatuses);
@@ -389,7 +411,9 @@ function parseCaptureCatalog(source) {
   for (const block of extractCallBlocks(source, "ScreenCaptureEntry")) {
     const id = matchString(block, /\bid:\s*'([^']+)'/u);
     if (!id) continue;
-    entries.push({id});
+    const routeBlock = /\brouteIds:\s*const\s*<String>\s*\[([\s\S]*?)\]/u.exec(block)?.[1] ?? "";
+    const routeIds = [...routeBlock.matchAll(/'([^']+)'/gu)].map((match) => match[1]);
+    entries.push({id, routeIds});
   }
   return entries;
 }

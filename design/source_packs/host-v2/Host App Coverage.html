@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catch — Host App Coverage Audit</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    margin: 0; background: #E2E1DC; color: var(--ink);
+    font-family: var(--font-function); -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+
+  /* Masthead */
+  .mast { padding: 56px 0 24px; }
+  .mast .kicker { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink2); }
+  .mast h1 { font-family: var(--font-voice); font-size: 56px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.0; margin: 12px 0 0; }
+  .mast p { max-width: 680px; font-size: 16px; line-height: 1.55; color: var(--ink2); margin: 16px 0 0; }
+  .mast code { font-family: var(--font-data); font-size: 0.86em; background: var(--primary-soft); padding: 1px 6px; border-radius: 5px; }
+
+  /* Scoreboard */
+  .score { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 30px 0 8px; }
+  .score .cell { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px 20px; }
+  .score .n { font-family: var(--font-data); font-size: 40px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+  .score .l { font-family: var(--font-data); font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink2); margin-top: 8px; }
+  .score .cell .bar { height: 4px; border-radius: 999px; margin-top: 14px; background: var(--line2); overflow: hidden; }
+  .score .cell .bar i { display: block; height: 100%; border-radius: 999px; }
+
+  /* Section heads */
+  .sec { padding: 44px 0 4px; }
+  .sec h2 { font-family: var(--font-voice); font-size: 27px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+  .sec p { font-size: 14.5px; color: var(--ink2); margin: 8px 0 0; max-width: 760px; line-height: 1.5; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin-top: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; }
+  thead th {
+    text-align: left; font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink2); padding: 13px 16px; border-bottom: 1px solid var(--line2); background: var(--raised);
+  }
+  tbody td { padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 13.5px; line-height: 1.45; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--raised); }
+  .ix { font-family: var(--font-data); font-size: 11px; font-weight: 700; color: var(--ink3); white-space: nowrap; }
+  .scr { font-weight: 650; color: var(--ink); }
+  .scr .path { font-family: var(--font-data); font-size: 11px; font-weight: 500; color: var(--ink3); display: block; margin-top: 3px; }
+  .src { font-family: var(--font-data); font-size: 11px; color: var(--ink2); line-height: 1.5; word-break: break-word; }
+  .notes { color: var(--ink2); font-size: 12.5px; line-height: 1.5; }
+  .notes b { color: var(--ink); }
+
+  /* Status pills */
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-data); font-size: 9.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
+  .pill i { font-size: 11px; }
+  .st-built   { background: rgba(47,125,85,0.12);  color: #2F7D55; }
+  .st-partial { background: rgba(185,119,15,0.14); color: #8a5907; }
+  .st-missing { background: rgba(194,38,26,0.10);  color: #C2261A; }
+  .st-shared, .st-design-only { background: rgba(22,20,15,0.07); color: var(--ink2); }
+
+  /* Divergence cards */
+  .divs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+  .dcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 20px; border-left: 3px solid var(--ink3); }
+  .dcard.sev-high { border-left-color: #C2261A; }
+  .dcard.sev-med  { border-left-color: #B9770F; }
+  .dcard.sev-low  { border-left-color: var(--ink3); }
+  .dcard .top { display: flex; align-items: center; gap: 10px; }
+  .dcard .id { font-family: var(--font-data); font-size: 12px; font-weight: 700; }
+  .dcard .sev { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: var(--primary-soft); color: var(--ink2); margin-left: auto; }
+  .dcard .sev.done { background: rgba(47,125,85,0.12); color: #2F7D55; }
+  .dcard.resolved { border-left-color: #2F7D55; opacity: 0.92; }
+  .dcard.resolved h3 { text-decoration: line-through; text-decoration-color: var(--ink3); text-decoration-thickness: 1px; }
+  .dcard h3 { font-family: var(--font-function); font-size: 14.5px; font-weight: 700; margin: 12px 0 0; line-height: 1.3; }
+  .dcard .where { font-family: var(--font-data); font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-top: 4px; }
+  .dcard .detail { font-size: 12.5px; color: var(--ink2); line-height: 1.55; margin-top: 12px; }
+  .dcard .detail code { font-family: var(--font-data); font-size: 0.9em; color: var(--ink); }
+
+  /* Method panel */
+  .method { background: var(--ink); color: var(--primary-ink); border-radius: var(--radius-lg); padding: 34px 36px; margin-top: 20px; }
+  .method .kicker { font-family: var(--font-data); font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink3); }
+  .method h2 { font-family: var(--font-voice); font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin: 10px 0 0; color: var(--primary-ink); }
+  .method p.lead { font-size: 14px; color: #BAB2A7; margin: 12px 0 0; max-width: 720px; line-height: 1.55; }
+  .steps { counter-reset: s; margin: 24px 0 0; display: grid; gap: 2px; }
+  .steps li { list-style: none; display: grid; grid-template-columns: 34px 1fr; gap: 14px; padding: 14px 0; border-top: 1px solid rgba(244,240,232,0.13); align-items: start; }
+  .steps li::before { counter-increment: s; content: counter(s, decimal-leading-zero); font-family: var(--font-data); font-size: 12px; font-weight: 700; color: var(--gold); padding-top: 2px; }
+  .steps .h { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-ink); }
+  .steps .d { font-size: 13px; color: #BAB2A7; line-height: 1.55; margin-top: 5px; }
+  .steps code { font-family: var(--font-data); font-size: 0.9em; color: #E0B45E; }
+  .method .file { font-family: var(--font-data); font-size: 12px; color: #BAB2A7; margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(244,240,232,0.13); }
+  .method .file b { color: var(--gold); }
+
+  footer { padding: 48px 0 80px; font-family: var(--font-data); font-size: 12px; color: var(--ink3); line-height: 1.7; }
+  footer b { color: var(--ink2); }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <header class="mast">
+      <div class="kicker">Catch · Host app · Design-coverage audit</div>
+      <h1>What's built,<br>what's drifted.</h1>
+      <p>Every host surface in the Flutter build — enumerated from the route table in <code>go_router.dart</code> — mapped to its Catch design file. The route table is the spine: if it isn't reachable in code, it isn't here; if it's here without a design, it's a gap. Generated <span id="gen"></span>.</p>
+      <div class="score" id="score"></div>
+    </header>
+
+    <div class="sec" id="routes">
+      <h2>Routed screens</h2>
+      <p>The 15 host routes under <code>_hostShellRoute()</code>, in source order. Status compares each backing widget to its design file.</p>
+    </div>
+    <div id="routesTable"></div>
+
+    <div class="sec" id="surfaces">
+      <h2>Sheets, dialogs &amp; states</h2>
+      <p>Non-routed surfaces — bottom sheets, confirm dialogs, and async states. These don't appear in the route table, so they're tracked by grepping the host presentation layer.</p>
+    </div>
+    <div id="surfacesTable"></div>
+
+    <div class="sec" id="divergences">
+      <h2>Divergences</h2>
+      <p>Where a design file exists but no longer matches the code — including one <em>reverse</em> divergence (designed, never built).</p>
+    </div>
+    <div class="divs" id="divs"></div>
+
+    <div class="sec" id="method">
+      <h2>Re-running this cheaply</h2>
+      <p>The point of the manifest is that the next audit is a <em>diff</em>, not a re-read. The route table is deterministic and ordered; line-count anchors tell you which of the ~12 source files actually changed.</p>
+    </div>
+    <div class="method">
+      <div class="kicker">The loop · token-bounded &amp; deterministic</div>
+      <h2>host-coverage-manifest.json drives everything</h2>
+      <p class="lead">One canonical file holds the route→design map, source anchors, and divergences. This report renders from it. To re-audit, refresh the manifest in five bounded steps — only changed files get read.</p>
+      <ol class="steps" id="steps"></ol>
+      <div class="file">Canonical artifact · <b>host-coverage-manifest.json</b> — edit it, reopen this report, the tables regenerate.</div>
+    </div>
+
+    <footer>
+      <div><b>Spine ·</b> lib/routing/go_router.dart → _hostShellRoute() · lib/core/presentation/host_app_shell.dart</div>
+      <div><b>Reads ·</b> host-coverage-manifest.json (same directory) — the report is a view, the JSON is the source of truth.</div>
+    </footer>
+  </div>
+
+<script>
+const PILL = {
+  built:   {c:'st-built',   i:'ph-bold ph-check-circle',  t:'Built'},
+  partial: {c:'st-partial', i:'ph-bold ph-circle-half',   t:'Partial'},
+  missing: {c:'st-missing', i:'ph-bold ph-x-circle',      t:'Missing'},
+  shared:  {c:'st-shared',  i:'ph-bold ph-arrows-merge',  t:'Shared'},
+  'design-only': {c:'st-design-only', i:'ph-bold ph-pencil-simple', t:'Design only'}
+};
+function pill(s){ const p = PILL[s] || PILL.missing; return `<span class="pill ${p.c}"><i class="${p.i}"></i>${p.t}</span>`; }
+function esc(x){ return (x==null?'':String(x)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function noteHtml(x){ return esc(x).replace(/`([^`]+)`/g,'<code>$1</code>'); }
+
+fetch('host-coverage-manifest.json').then(r=>r.json()).then(M=>{
+  document.getElementById('gen').textContent = M.generated;
+
+  // Scoreboard
+  const t = M.totals;
+  const cells = [
+    {n:`${t.routes_built}/${t.routes}`, l:'Routes built', frac:t.routes_built/t.routes, col:'#2F7D55'},
+    {n:t.routes_partial, l:'Routes partial', frac:t.routes_partial/t.routes, col:'#B9770F'},
+    {n:t.routes_missing, l:'Routes missing', frac:t.routes_missing/t.routes, col:'#C2261A'},
+    {n:t.surfaces_missing + t.surfaces_design_only, l:'Surface gaps', frac:(t.surfaces_missing+t.surfaces_design_only)/(t.surfaces_built+t.surfaces_missing+t.surfaces_design_only), col:'#544F47'}
+  ];
+  document.getElementById('score').innerHTML = cells.map(c=>`
+    <div class="cell"><div class="n">${c.n}</div><div class="l">${c.l}</div>
+    <div class="bar"><i style="width:${Math.round(c.frac*100)}%;background:${c.col}"></i></div></div>`).join('');
+
+  // Routes table
+  document.getElementById('routesTable').innerHTML = `<table>
+    <thead><tr><th style="width:30px"></th><th>Screen / route</th><th style="width:110px">Status</th><th style="width:230px">Backing widget · source</th><th>Notes</th></tr></thead>
+    <tbody>${M.routes.map((r,i)=>`
+      <tr>
+        <td class="ix">${String(i+1).padStart(2,'0')}</td>
+        <td class="scr">${esc(r.route)}<span class="path">${esc(r.path)}</span>
+          ${r.design?`<span class="path" style="color:var(--success)">${esc(r.design)}</span>`:''}</td>
+        <td>${pill(r.status)}</td>
+        <td class="src">${esc(r.widget)}<br>${esc(r.source)}</td>
+        <td class="notes">${noteHtml(r.notes)||'<span style="color:var(--ink3)">—</span>'}</td>
+      </tr>`).join('')}</tbody></table>`;
+
+  // Surfaces table
+  document.getElementById('surfacesTable').innerHTML = `<table>
+    <thead><tr><th>Surface</th><th style="width:90px">Kind</th><th style="width:120px">Status</th><th style="width:230px">Source</th><th>Notes</th></tr></thead>
+    <tbody>${M.surfaces.map(s=>`
+      <tr>
+        <td class="scr">${esc(s.name)}${s.design?`<span class="path" style="color:var(--success)">${esc(s.design)}</span>`:''}</td>
+        <td class="ix" style="text-transform:uppercase">${esc(s.kind)}</td>
+        <td>${pill(s.status)}</td>
+        <td class="src">${esc(s.source)||'<span style="color:var(--ink3)">—</span>'}</td>
+        <td class="notes">${noteHtml(s.notes)}</td>
+      </tr>`).join('')}</tbody></table>`;
+
+  // Divergences
+  document.getElementById('divs').innerHTML = M.divergences.map(d=>`
+    <div class="dcard sev-${d.severity}${d.resolved?' resolved':''}">
+      <div class="top"><span class="id">${esc(d.id)}</span><span class="sev${d.resolved?' done':''}">${d.resolved?'✓ Resolved':esc(d.severity)+' severity'}</span></div>
+      <h3>${esc(d.summary)}</h3>
+      <div class="where">${esc(d.where)}</div>
+      <div class="detail">${noteHtml(d.detail)}</div>
+    </div>`).join('');
+
+  // Method steps
+  document.getElementById('steps').innerHTML = M.method.map(m=>{
+    const txt = m.replace(/^\d+\.\s*/,'');
+    const sp = txt.indexOf(':');
+    const head = sp>0 && sp<22 ? txt.slice(0,sp) : '';
+    const body = head ? txt.slice(sp+1).trim() : txt;
+    return `<li><div><div class="h">${esc(head)}</div><div class="d">${noteHtml(body)}</div></div></li>`;
+  }).join('');
+}).catch(e=>{
+  document.getElementById('routesTable').innerHTML = '<p style="font-family:var(--font-data);color:#C2261A;padding:20px">Could not load host-coverage-manifest.json — '+esc(e.message)+'</p>';
+});
+</script>
+</body>
+</html>

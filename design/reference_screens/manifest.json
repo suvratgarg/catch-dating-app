@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-03",
+  "updated": "2026-07-11",
   "references": [
     {
       "id": "screen.dashboard.home.full_dashboard",
@@ -277,12 +277,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.manage/setup_private_access.png",
       "maskPath": "design/reference_screens/screen.host.event.manage/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-event-manage",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-manage/Manage.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -316,12 +319,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.manage/full_waitlist_apron.png",
       "maskPath": "design/reference_screens/screen.host.event.manage/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-event-manage-full-waitlist",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-manage/Manage.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
         "exportedAt": "2026-06-25",
         "exportTool": "Google Chrome headless screenshot + temp full/waitlist apron patch + sips crop",
         "viewport": {
@@ -358,12 +364,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.manage/attendance_setup_roster.png",
       "maskPath": "design/reference_screens/screen.host.event.manage/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-event-manage",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-manage/Manage.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + temp guests-mode patch + sips crop",
         "viewport": {
@@ -629,12 +638,18 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.inbox/inbox.png",
       "maskPath": "design/reference_screens/screen.host.inbox/masks.json",
+      "forceCompareMaskIds": [
+        "host_tab_bar"
+      ],
       "source": {
         "kind": "claude",
         "id": "claude.host-inbox",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-inbox/Inbox.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-inbox/Inbox.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "7ac0e7f09ac388e7713dd79674a61b88a2143112db0695e6c82f08f93d7d41e8",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -653,7 +668,8 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Host Inbox reference for advisory comparison against host_inbox_queries light captures rendered on the design-phone device. 2026-06-25 host broadcast card plus reference-safe-area capture compares within threshold at mismatch 8.64%, meanDelta 14.81, maxDelta 240, masked 60276."
+      "parityDebtId": "HOST-V2-INBOX-PARITY-001",
+      "notes": "Canonical Claude Host Inbox reference. The fresh 2026-07-11 full-shell comparison records 7.34% mismatch and 7.62 meanDelta after the compact title/event-scope/mono SegPill pass, within the pinned 18% thresholds without loosening them. The retired All/Unread result remains invalid. HOST-V2-INBOX-PARITY-001 now tracks only live production callable, IAM, and delivery proof."
     },
     {
       "id": "screen.host.chat.populated_thread",
@@ -668,12 +684,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.chat/thread.png",
       "maskPath": "design/reference_screens/screen.host.chat/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-chat",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-messaging/Messaging.dc.html",
+        "path": "design/source_packs/host-v2/templates/catch-messaging/Messaging.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "9efc62ad1dc3457e1a34a3f49de4d3558aeafb87f06e121e4c565394fa219fd7",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + reused shared Messaging thread crop",
         "viewport": {
@@ -707,12 +726,18 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.home/today_dashboard.png",
       "maskPath": "design/reference_screens/screen.host.home/masks.json",
+      "forceCompareMaskIds": [
+        "host_tab_bar"
+      ],
       "source": {
         "kind": "claude",
         "id": "claude.host-home",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-today/Today.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-today/Today.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "78a437895a79cc4c63f47a0a8643c627c95a145afa8b4385178a02634b53efcf",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -731,12 +756,17 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Host Today reference for advisory comparison against host_home_dashboard light captures rendered on the design-phone device. 2026-06-25 host reference batch: above advisory threshold; mismatch 15.56%, meanDelta 26.97, maxDelta 226, masked 145024. 2026-06-25 Host Home Today pass: production now separates Today and Events composition through HostHomeTab, renders a provider-free Today dashboard over HostHomeTodayDashboardState, and uses a deterministic Bandra Social trivia fixture; advisory comparison is within threshold at mismatch 17.48%, meanDelta 15.54, maxDelta 240, masked 145024."
+      "parityDebtId": "HOST-V2-TODAY-FUNCTIONAL-PARITY-001",
+      "regressionThresholds": {
+        "maxMismatchRatio": 0.29,
+        "maxMeanDelta": 38
+      },
+      "notes": "Canonical Claude Host Today reference. The 2026-07-10 full-shell capture renders the production HostAppShell and deterministic Bandra Social fixture. A truthful Today pass added a minute-refreshing countdown, event-identified cross-event waitlist work routed to the exact event Guests section, lifecycle-aware live run-of-show routing, and real later-event rows while removing the unconditional setup task, synthetic review count, and fake attendee stack. The comparison improved from 29.22% / 38.22 to mismatch 28.48%, meanDelta 37.31, maxDelta 243, masked 127864. It remains above the canonical threshold because pending approvals, waitlist offers, drafts, and guest-inquiry task sources are not yet composed. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 records that functional remainder; the tightened regression ceiling prevents backsliding without claiming parity."
     },
     {
       "id": "screen.host.home.events_list",
       "screenId": "screen.host.home",
-      "stateId": "upcoming_events",
+      "stateId": "events_list_default",
       "captureId": "host_home_events_list",
       "theme": "light",
       "textScale": 1,
@@ -746,12 +776,18 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.home/events_list.png",
       "maskPath": "design/reference_screens/screen.host.home/masks.json",
+      "forceCompareMaskIds": [
+        "host_tab_bar"
+      ],
       "source": {
         "kind": "claude",
         "id": "claude.host-events",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-events/Events.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-events/Events.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "6c2bf8691c8603dc3c71062487c51f88a6853c3ef93b74dd4cfdc656ad9c2325",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -770,7 +806,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Host Events-list reference for advisory comparison against host_home_events_list light captures rendered on the design-phone device. 2026-06-25 host reference batch: within advisory threshold; mismatch 6.54%, meanDelta 11.93, maxDelta 226, masked 145024. 2026-06-25 Host Home Today pass keeps the explicit Events tab capture within threshold at mismatch 6.76%, meanDelta 12.26, maxDelta 226, masked 145024."
+      "notes": "Canonical Claude Host Events-list reference. The 2026-07-10 routed full-shell implementation includes backend-backed New and exact-policy-gated non-persisted Repeat actions, minute-refreshed Upcoming/Live/Past lifecycle filtering, month groups, activity-spined rows, and truthful fill progress. It passes the canonical threshold without regressionThresholds at mismatch 15.24%, meanDelta 15.20, maxDelta 240, masked 17160."
     },
     {
       "id": "screen.host.clubs.organizer_overview",
@@ -785,12 +821,18 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.clubs/organizer.png",
       "maskPath": "design/reference_screens/screen.host.clubs/masks.json",
+      "forceCompareMaskIds": [
+        "host_tab_bar"
+      ],
       "source": {
         "kind": "claude",
         "id": "claude.host-clubs",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-organizer/Organizer.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-organizer/Organizer.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "0be99934278aa816beefe84f5e82809af4e26346e944294708f025e4718da0a8",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -809,7 +851,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Host Organizer reference for advisory comparison against host_clubs_management light captures rendered on the design-phone device. After the compact Organizer header, payout callout, metric-row treatment, and mask calibration, the 2026-06-25 advisory compare is within threshold: mismatch 5.71%, mean delta 3.53, max delta 34, masked 286220."
+      "notes": "Canonical Claude Host Organizer reference. The 2026-07-10 full-shell capture renders the production HostAppShell and its four-tab navigation; advisory comparison is within threshold at mismatch 12.02%, meanDelta 7.79, maxDelta 240, masked 260416."
     },
     {
       "id": "screen.host.event.create.basics_default",
@@ -824,12 +866,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.create/basics_default.png",
       "maskPath": "design/reference_screens/screen.host.event.create/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-create-event",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b3ce99ed0ecb2390271764adfe93887880c839f84fa78a11ab5dba40863f1351",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -863,12 +908,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.create/where_step_default.png",
       "maskPath": "design/reference_screens/screen.host.event.create/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-create-event",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b3ce99ed0ecb2390271764adfe93887880c839f84fa78a11ab5dba40863f1351",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -902,12 +950,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.create/when_step_default.png",
       "maskPath": "design/reference_screens/screen.host.event.create/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-create-event",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b3ce99ed0ecb2390271764adfe93887880c839f84fa78a11ab5dba40863f1351",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -941,12 +992,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.create/policy_default.png",
       "maskPath": "design/reference_screens/screen.host.event.create/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-create-event",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b3ce99ed0ecb2390271764adfe93887880c839f84fa78a11ab5dba40863f1351",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -980,12 +1034,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.create/event_success_step.png",
       "maskPath": "design/reference_screens/screen.host.event.create/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-create-event",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b3ce99ed0ecb2390271764adfe93887880c839f84fa78a11ab5dba40863f1351",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -1019,12 +1076,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.create/success_manage.png",
       "maskPath": "design/reference_screens/screen.host.event.create/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-create-event",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-create-event/HostCreateEvent.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b3ce99ed0ecb2390271764adfe93887880c839f84fa78a11ab5dba40863f1351",
         "exportedAt": "2026-06-25",
         "exportTool": "Google Chrome headless screenshot + temp submitted-state patch + sips crop",
         "viewport": {
@@ -1058,12 +1118,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.manage/live_workspace.png",
       "maskPath": "design/reference_screens/screen.host.event.manage/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-event-manage",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-manage/Manage.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -1097,12 +1160,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.manage/report_workspace.png",
       "maskPath": "design/reference_screens/screen.host.event.manage/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-event-manage",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-manage/Manage.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -1214,12 +1280,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.club.create/basics_default.png",
       "maskPath": "design/reference_screens/screen.host.club.create/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-club-create",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-create-club/HostCreateClub.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-create-club/HostCreateClub.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "d52db9768c75ff703219af3497b80bfc12801f739bccacc12b9634788e4f8920",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -1253,12 +1322,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.club.edit/prefilled_owner_edit.png",
       "maskPath": "design/reference_screens/screen.host.club.edit/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-club-edit",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-edit-club/HostEditClub.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-edit-club/HostEditClub.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "af93223c607361297ed48f7205a4a2ac9d3d88054ed4d3e3cefb1d4a869612b6",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -1292,12 +1364,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.event.edit/prefilled_event.png",
       "maskPath": "design/reference_screens/screen.host.event.edit/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-event-edit",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/hosts-edit-event/HostEditEvent.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-edit-event/HostEditEvent.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "869a631124edfa0721a47908a2e1bc4a23261dbe9516102b4f3ac412a8d9c27e",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -1766,12 +1841,15 @@
         "height": 812,
         "pixelRatio": 1
       },
+      "chromePolicy": "full-shell",
       "referencePath": "design/reference_screens/screen.host.club.detail/host_public_view.png",
       "maskPath": "design/reference_screens/screen.host.club.detail/masks.json",
       "source": {
         "kind": "claude",
         "id": "claude.host-club-detail",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-club-detail/ClubDetailV2.dc.html",
+        "path": "design/source_packs/host-v2/templates/catch-club-detail/ClubDetailV2.dc.html",
+        "packManifest": "design/source_packs/host-v2/source-pack.json",
+        "sha256": "4438d4620690852306c11e647b3e78f8cb18a2e51ec311ea7d97865eb37350f5",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {

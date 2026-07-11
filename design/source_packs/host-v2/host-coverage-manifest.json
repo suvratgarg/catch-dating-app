@@ -1,0 +1,242 @@
+{
+  "$schema": "catch.host-coverage/v1",
+  "title": "Catch Host App — design-coverage manifest",
+  "scope": "host  (main_host.dart · AppRole.host)",
+  "generated": "2026-06-19",
+  "purpose": "Authoritative map of every host surface in the Flutter codebase to its Catch design file, with status + divergences. This file is the deterministic spine for repeat audits — re-runs diff against it instead of re-reading the whole app.",
+
+  "spine": {
+    "routes": "catch_dating_app/lib/routing/go_router.dart  ·  _hostShellRoute() lines 582-745",
+    "shell":  "catch_dating_app/lib/core/presentation/host_app_shell.dart  ·  4 nav tabs (Events / Clubs / Inbox / Account)",
+    "rule":   "The route table IS the surface inventory. Enumerate routes from the host shell route; that set, in order, is what must be covered. Sheets, dialogs, and async states are NOT routes — they are tracked separately under `surfaces`."
+  },
+
+  "legend": {
+    "built":   "Design file exists and faithfully represents the coded screen.",
+    "partial": "Design file exists but omits part of the coded screen (sub-tab, embedded console, etc).",
+    "missing": "Surface exists in code, no design file.",
+    "shared":  "Host route renders a screen shared with the consumer app (not host-specific code)."
+  },
+
+  "sources": {
+    "_comment": "Change-detection anchors. On a re-run, compare these line counts; only re-read a source whose count moved. Counts captured at generation.",
+    "lib/routing/go_router.dart": 1027,
+    "lib/core/presentation/host_app_shell.dart": 121,
+    "lib/hosts/presentation/host_operations_screen.dart": 3261,
+    "lib/hosts/data/host_analytics_repository.dart": 447,
+    "lib/hosts/presentation/host_event_manage_screen.dart": null,
+    "lib/hosts/presentation/edit_hosted_event_screen.dart": null,
+    "lib/hosts/presentation/event_management/host_create_event_screen.dart": null,
+    "lib/hosts/presentation/club_management/host_create_club_screen.dart": null,
+    "lib/hosts/presentation/widgets/host_team_management_section.dart": null,
+    "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart": null,
+    "lib/hosts/presentation/payments/host_payment_account_card.dart": null,
+    "lib/matches/presentation/matches_list_screen.dart": null,
+    "lib/event_success/presentation/event_success_host_screen.dart": null
+  },
+
+  "routes": [
+    {
+      "route": "hostHomeScreen", "path": "/host", "tab": "Events",
+      "widget": "HostOperationsHomeScreen", "source": "lib/hosts/presentation/host_operations_screen.dart:48",
+      "design": "explorations/archived-templates/host-events/HostEvents.dc.html", "status": "built", "notes": ""
+    },
+    {
+      "route": "hostClubsScreen", "path": "/host/clubs", "tab": "Clubs",
+      "widget": "HostClubsScreen → _HostClubsScaffold", "source": "lib/hosts/presentation/host_operations_screen.dart:69, :857",
+      "design": "explorations/archived-templates/host-clubs/HostClubs.dc.html", "status": "built",
+      "notes": "Per-club segmented rail _HostClubTab { edit, insights, preview } (:92, rail :942). All three now designed: EDIT (_HostClubProfileCard), INSIGHTS (_HostClubInsightsPane :1553 — range/granularity controls, metric grid, funnel sparkline, top events, reviews/saves, data quality), PREVIEW (_HostClubPreviewPane). D6 resolved."
+    },
+    {
+      "route": "hostClubDetailScreen", "path": "/host/clubs/:clubId", "tab": "Clubs",
+      "widget": "ClubDetailScreen (shared)", "source": "lib/routing/go_router.dart:202 _clubDetailScreen",
+      "design": null, "status": "missing",
+      "notes": "Host's club-detail view. Renders the SHARED ClubDetailScreen — never designed in a host register. No host design file."
+    },
+    {
+      "route": "hostCreateClubScreen", "path": "/host/clubs/create-club", "tab": "Clubs",
+      "widget": "HostCreateClubScreen", "source": "lib/hosts/presentation/club_management/host_create_club_screen.dart",
+      "design": "templates/hosts-create-club/HostCreateClub.dc.html", "status": "built", "notes": "4-step wizard."
+    },
+    {
+      "route": "hostEditClubScreen", "path": "/host/clubs/:clubId/edit", "tab": "Clubs",
+      "widget": "HostEditClubRouteScreen", "source": "lib/hosts/presentation/club_management/host_create_club_screen.dart",
+      "design": "templates/hosts-edit-club/HostEditClub.dc.html", "status": "built", "notes": ""
+    },
+    {
+      "route": "hostCreateEventScreen", "path": "/host/clubs/:clubId/create-event", "tab": "Clubs",
+      "widget": "HostCreateEventRouteScreen", "source": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
+      "design": "templates/hosts-create-event/HostCreateEvent.dc.html  (+ host-create-event-success)", "status": "built", "notes": "5-step wizard; success confirmation is a second design file."
+    },
+    {
+      "route": "hostAppEventDetailScreen", "path": "/host/clubs/:clubId/events/:eventId", "tab": "Clubs",
+      "widget": "EventDetailScreen (shared)", "source": "lib/routing/go_router.dart:181 _eventDetailScreen",
+      "design": null, "status": "missing",
+      "notes": "Host's read-only event detail. Renders the SHARED EventDetailScreen. Already flagged in Host App.html footer as not-on-system."
+    },
+    {
+      "route": "hostAppEventManageScreen", "path": "/host/clubs/:clubId/events/:eventId/manage", "tab": "Clubs",
+      "widget": "HostEventManageRouteScreen", "source": "lib/hosts/presentation/host_event_manage_screen.dart:45",
+      "design": "explorations/archived-templates/host-event-manage/HostEventManage.dc.html", "status": "partial",
+      "notes": "Design = the Setup/Live/Report roster board. CODE additionally embeds EventSuccessHostSection (host_event_manage_screen.dart:276-311) — each section renders the full Event Success run-of-show console (EventSuccessHostTab.live/.report from lib/event_success/presentation/event_success_host_screen.dart:73). That console is NOT designed. See divergence D1."
+    },
+    {
+      "route": "hostAppEditEventScreen", "path": "/host/clubs/:clubId/events/:eventId/edit", "tab": "Clubs",
+      "widget": "EditHostedEventRouteScreen", "source": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "design": "templates/hosts-edit-event/HostEditEvent.dc.html", "status": "built", "notes": "Locks schedule + policy once bookings exist (modeled in design via tweak)."
+    },
+    {
+      "route": "hostAppAttendanceSheet", "path": "/host/clubs/:clubId/events/:eventId/attendance", "tab": "Clubs",
+      "widget": "HostEventManageRouteScreen (live section)", "source": "lib/routing/go_router.dart:676; lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "design": "(folded into host-event-manage)", "status": "partial",
+      "notes": "A distinct route that deep-links into Manage/Live for attendance-taking (host_event_attendance_panel). No standalone attendance design — design folds it into the Manage Live tab. See divergence D4."
+    },
+    {
+      "route": "hostAppEventSuccessScreen", "path": "/host/clubs/:clubId/events/:eventId/success", "tab": "Clubs",
+      "widget": "HostEventManageRouteScreen", "source": "lib/routing/go_router.dart:690",
+      "design": null, "status": "missing",
+      "notes": "Event Success console route. NOT the same as design screen 06 'Event created' (that is the post-CREATE confirmation, create_event_success_screen.dart). This route opens the Event Success host console — undesigned. See divergence D1."
+    },
+    {
+      "route": "hostInboxScreen", "path": "/host/inbox", "tab": "Inbox",
+      "widget": "ChatsListScreen (shared, host filter)", "source": "lib/matches/presentation/matches_list_screen.dart:10",
+      "design": "explorations/archived-templates/host-inbox/HostInbox.dc.html", "status": "built",
+      "notes": "Shared widget but host-gated: HostInboxFilter.all/unread, no matches rail (isHostApp). Design is faithful to the host variant."
+    },
+    {
+      "route": "hostChatScreen", "path": "/host/inbox/:matchId", "tab": "Inbox",
+      "widget": "ChatScreen (shared)", "source": "lib/routing/go_router.dart:718",
+      "design": null, "status": "missing",
+      "notes": "Host's chat-thread view. Renders the SHARED ChatScreen. No host-specific chat design (only the inbox list is designed)."
+    },
+    {
+      "route": "hostSettingsScreen", "path": "/host/settings", "tab": "Account",
+      "widget": "HostAccountScreen", "source": "lib/hosts/presentation/host_operations_screen.dart:96",
+      "design": "explorations/archived-templates/host-account/HostAccount.dc.html", "status": "built",
+      "notes": "Edit/Preview segmented rail (_HostAccountTab.edit|preview, lines 90/303). Both now designed — Edit form + Preview (host profile as attendees see it). The separate full-screen HostProfileScreen route (#15) is still its own gap."
+    },
+    {
+      "route": "hostProfileScreen", "path": "/host/settings/profile", "tab": "Account",
+      "widget": "HostProfileScreen", "source": "lib/hosts/presentation/host_operations_screen.dart:556",
+      "design": null, "status": "missing",
+      "notes": "A SEPARATE full-screen profile editor ('HOST PROFILE' top bar) nested under Account — distinct from the Account tab's inline edit. Not designed. See divergence D2."
+    }
+  ],
+
+  "surfaces": [
+    {
+      "name": "Add host (sheet)", "kind": "sheet",
+      "source": "lib/hosts/presentation/widgets/host_team_management_section.dart",
+      "design": "templates/hosts-add-host/HostAddHost.dc.html", "status": "built", "notes": "Add co-host by phone."
+    },
+    {
+      "name": "Resume draft (sheet)", "kind": "sheet",
+      "source": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
+      "design": "templates/hosts-draft-picker/HostDraftPicker.dc.html", "status": "built", "notes": ""
+    },
+    {
+      "name": "Payouts / Stripe hand-off (sheet)", "kind": "sheet",
+      "source": "lib/hosts/presentation/payments/host_payment_account_card.dart",
+      "design": "templates/hosts-payouts-handoff/HostPayoutsHandoff.dc.html", "status": "built", "notes": ""
+    },
+    {
+      "name": "Remove host (dialog)", "kind": "dialog",
+      "source": "lib/hosts/presentation/widgets/host_team_management_section.dart:102 _confirmRemove",
+      "design": "templates/hosts-dialogs/HostDialogs.dc.html", "status": "built", "notes": "'Remove host?'"
+    },
+    {
+      "name": "Transfer ownership (dialog)", "kind": "dialog",
+      "source": "lib/hosts/presentation/widgets/host_team_management_section.dart:136 _confirmTransfer",
+      "design": "templates/hosts-dialogs/HostDialogs.dc.html", "status": "built", "notes": "'Transfer ownership?'"
+    },
+    {
+      "name": "Cancel published event (dialog)", "kind": "dialog",
+      "source": "lib/hosts/presentation/host_event_manage_screen.dart:974 _confirmCancelEvent",
+      "design": "templates/hosts-dialogs/HostDialogs.dc.html", "status": "built", "notes": ""
+    },
+    {
+      "name": "Delete unused event (dialog)", "kind": "dialog",
+      "source": "lib/hosts/presentation/host_event_manage_screen.dart:1007 _confirmDeleteEvent",
+      "design": null, "status": "missing",
+      "notes": "Distinct from Cancel. Only deletable while no bookings/waitlist/attendance/payments/reviews. Not in the designed dialog set. See divergence D3."
+    },
+    {
+      "name": "Create invite link (dialog)", "kind": "dialog",
+      "source": "lib/hosts/presentation/host_event_manage_screen.dart:767 (_InviteLinkDraft showDialog)",
+      "design": null, "status": "missing",
+      "notes": "Invite-link draft dialog (private/invite-only events). The success screen shows a code; this is the editor. Not designed. See divergence D3."
+    },
+    {
+      "name": "Unsaved changes (dialog)", "kind": "dialog",
+      "source": null,
+      "design": "templates/hosts-dialogs/HostDialogs.dc.html", "status": "design-only",
+      "notes": "REVERSE divergence: designed but NOT in code. No PopScope/discard guard exists anywhere in lib/hosts; create/edit flows persist via draft controllers instead. See divergence D5."
+    },
+    {
+      "name": "Auth-required state", "kind": "state",
+      "source": "lib/hosts/presentation/host_operations_screen.dart:3201 _HostAuthRequiredScreen",
+      "design": null, "status": "missing", "notes": "Signed-out fallback. Not designed."
+    },
+    {
+      "name": "Loading state", "kind": "state",
+      "source": "lib/hosts/presentation/host_operations_screen.dart:3215 _HostLoadingScreen",
+      "design": null, "status": "missing", "notes": "Initial load fallback. Not designed."
+    },
+    {
+      "name": "Empty / error states", "kind": "state",
+      "source": "CatchErrorState / CatchLoadingIndicator across host screens",
+      "design": null, "status": "missing", "notes": "No-clubs / no-events / no-threads + error retry. Not designed as a set."
+    }
+  ],
+
+  "divergences": [
+    {
+      "id": "D1", "severity": "high", "where": "Manage event (host-event-manage)",
+      "summary": "Design is a roster board; code embeds the full Event Success run-of-show console.",
+      "detail": "host_event_manage_screen.dart renders EventSuccessHostSection inside each of Setup/Live/Report (lines 276-311), surfacing the Event Success host console (lib/event_success/presentation/event_success_host_screen.dart — EventSuccessHostSection:73, EventSuccessHostPanel:318) with live/report tabs. The /success route reaches the same console. The design under-represents this screen and the whole Event Success editor is undesigned."
+    },
+    {
+      "id": "D6", "severity": "high", "resolved": true, "where": "Clubs → Insights (host-clubs)",
+      "summary": "Host-analytics surface — now built as the Clubs tab's Insights sub-tab.",
+      "detail": "_HostClubsScaffold (host_operations_screen.dart:857) gives each club an Edit/Insights/Preview rail (_HostClubTab :92). Insights = _HostClubInsightsPane (:1553): range presets 7D/30D/90D/Month/Custom + Day/Week/Month granularity + custom date pickers (_HostAnalyticsControls :1660), a summary metric grid with ready/partial/missing states (:1856), a trend bar-sparkline panel (:1950), top-events list (:2045), review & discovery panel (:2241), and a data-quality panel (:2297). Backed by hostAnalyticsProvider / host_analytics_repository.dart (447 lines). None of this is designed. Preview sub-tab (_HostClubPreviewPane) is also unbuilt."
+    },
+    {
+      "id": "D2", "severity": "med", "where": "Account (host-account)",
+      "summary": "Account Preview now built; the separate full-screen profile editor route remains undesigned.",
+      "detail": "_HostAccountTab { edit, preview } (host_operations_screen.dart:90, rail at 303) — both designed now. Remaining gap: HostProfileScreen (:556), a standalone editor at /host/settings/profile (tracked as route #15, missing)."
+    },
+    {
+      "id": "D3", "severity": "med", "where": "Dialogs (host-dialogs)",
+      "summary": "Code has Delete-unused-event and Create-invite-link dialogs the designed set omits.",
+      "detail": "_confirmDeleteEvent (host_event_manage_screen.dart:1007) is distinct from Cancel; invite-link draft dialog at :767. Neither is in HostDialogs.dc.html."
+    },
+    {
+      "id": "D4", "severity": "low", "where": "Attendance",
+      "summary": "Code has a dedicated /attendance route + panel; design folds attendance into Manage/Live.",
+      "detail": "hostAppAttendanceSheet deep-links Manage/Live (host_event_attendance_panel.dart). Acceptable consolidation, but the deep-link entry + panel aren't represented as their own surface."
+    },
+    {
+      "id": "D5", "severity": "low", "where": "Dialogs (host-dialogs)",
+      "summary": "REVERSE: 'Unsaved changes' dialog is designed but has no code.",
+      "detail": "No PopScope/onWillPop/discard guard in lib/hosts. Create/edit flows auto-save drafts instead. Either remove from the design or treat as a proposed addition."
+    }
+  ],
+
+  "totals": {
+    "routes": 15,
+    "routes_built": 9,
+    "routes_partial": 2,
+    "routes_missing": 4,
+    "surfaces_built": 6,
+    "surfaces_missing": 5,
+    "surfaces_design_only": 1
+  },
+
+  "method": [
+    "1. SPINE: grep _hostShellRoute in lib/routing/go_router.dart → ordered list of routes + builders. This is the full surface inventory; nothing host-facing is reachable that isn't here.",
+    "2. DIFF ROUTES: compare the grepped route set to `routes[]` in this file. Added route = new screen to design; removed = retire its design file. No code reading yet.",
+    "3. CHANGE-DETECT: for each existing route, compare its `source` file line count to `sources{}`. Only re-read files whose count moved — those are the only screens that could have diverged since last audit.",
+    "4. SURFACES: sheets/dialogs/states aren't routed. Refresh them by grepping showCatchAdaptiveDialog | showDialog | CatchBottomSheet | _Host*Screen across lib/hosts — cheap and bounded.",
+    "5. WRITE BACK: update statuses/divergences + line counts here, regenerate the report. The manifest is the only thing that must stay current; the HTML reads from it."
+  ]
+}

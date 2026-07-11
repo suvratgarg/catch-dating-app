@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
+import {eventBroadcastDeliveryKey} from "../shared/eventBroadcasts";
 import {
   requestAccountDeletionHandler,
   storagePathFromDownloadUrl,
@@ -26,6 +27,8 @@ test("storagePathFromDownloadUrl returns null for invalid urls", () => {
 
 test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   const now = {kind: "serverTimestamp"};
+  const runnerDeliveryKey = eventBroadcastDeliveryKey("runner-1");
+  const otherDeliveryKey = eventBroadcastDeliveryKey("runner-2");
   const harness = createAccountDeletionHarness({
     seed: {
       "users/runner-1": {
@@ -92,6 +95,25 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "reviews/event-1~runner-1": {reviewerUserId: "runner-1"},
       "payments/payment-1": {userId: "runner-1"},
       "notifications/runner-1/items/item-1": {uid: "runner-1"},
+      "eventBroadcasts/authored": {
+        actorUid: "runner-1",
+        targetUids: ["runner-2"],
+        deliveries: {},
+      },
+      "eventBroadcasts/targeted": {
+        actorUid: "host-1",
+        targetUids: ["runner-1", "runner-2"],
+        deliveries: {
+          [runnerDeliveryKey]: {
+            activityStatus: "created",
+            pushStatus: "accepted",
+          },
+          [otherDeliveryKey]: {
+            activityStatus: "created",
+            pushStatus: "ineligible",
+          },
+        },
+      },
       "blocks/runner-1__runner-2": {
         blockerUserId: "runner-1",
         blockedUserId: "runner-2",
@@ -224,6 +246,21 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.ok(
     harness.deletedPublicDocs.includes("notifications/runner-1/items/item-1")
   );
+  assert.ok(harness.deletedPublicDocs.includes("eventBroadcasts/authored"));
+  const targetedBroadcastUpdate = harness.updateWrites.find(
+    (write) => write.path === "eventBroadcasts/targeted"
+  );
+  assert.ok(targetedBroadcastUpdate);
+  assert.deepEqual(targetedBroadcastUpdate.data.targetUids, ["runner-2"]);
+  assert.equal(
+    hasOwn(
+      targetedBroadcastUpdate.data.deliveries as FakeDocumentData,
+      runnerDeliveryKey
+    ),
+    false
+  );
+  assert.equal(targetedBroadcastUpdate.data.recipientCount, 1);
+  assert.equal(targetedBroadcastUpdate.data.activityAvailableCount, 1);
   assert.ok(
     harness.deletedPublicDocs.includes("blocks/runner-1__runner-2")
   );
@@ -239,6 +276,18 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "users/runner-1/photoThumbnails/grouped.jpg",
   ]);
   assert.equal(harness.commits, 1);
+  assert.ok(
+    harness.setWrites.some((write) =>
+      write.path === "deletedUsers/runner-1" &&
+      write.data.status === "processing"
+    )
+  );
+  assert.ok(
+    harness.setWrites.some((write) =>
+      write.path === "deletedUsers/runner-1" &&
+      write.data.status === "completed"
+    )
+  );
 });
 
 test("requestAccountDeletionHandler rate limits before destructive work",
@@ -322,6 +371,38 @@ test("requestAccountDeletionHandler short-circuits when already deleted",
     assert.deepEqual(harness.deletedPublicDocs, []);
     // The Auth user is still ensured-gone on the retry.
     assert.deepEqual(harness.deletedAuthUsers, ["runner-1"]);
+  }
+);
+
+test("requestAccountDeletionHandler resumes a processing tombstone",
+  async () => {
+    const harness = createAccountDeletionHarness({
+      seed: {
+        "deletedUsers/runner-1": {
+          uid: "runner-1",
+          status: "processing",
+          deletedAt: {kind: "oldTimestamp"},
+        },
+        "users/runner-1": {name: "Asha"},
+      },
+      now: {kind: "serverTimestamp"},
+    });
+
+    const result = await requestAccountDeletionHandler(
+      {auth: {uid: "runner-1"}} as Parameters<
+        typeof requestAccountDeletionHandler
+      >[0],
+      harness.deps
+    );
+
+    assert.deepEqual(result, {deleted: true});
+    assert.equal(harness.commits, 1);
+    assert.ok(
+      harness.setWrites.some((write) =>
+        write.path === "deletedUsers/runner-1" &&
+        write.data.status === "completed"
+      )
+    );
   }
 );
 

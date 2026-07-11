@@ -240,11 +240,8 @@ Future<String?> showPromptPickerSheet(
   required List<String> promptIds,
   required String selectedPromptId,
 }) {
-  return showModalBottomSheet<String>(
+  return showCatchBottomSheet<String>(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    backgroundColor: Colors.transparent,
     builder: (_) => PromptPickerSheet(
       promptIds: promptIds,
       selectedPromptId: selectedPromptId,

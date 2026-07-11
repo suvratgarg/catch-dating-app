@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.14
-updated: 2026-07-05
+version: 1.4.19
+updated: 2026-07-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -302,6 +302,29 @@ should usually be sliver-native. Box widgets can still be used at composition
 boundaries through `SliverToBoxAdapter`, but growing repeated content should use
 lazy slivers.
 
+## App Shell Chrome Policy
+
+The consumer and host tab shells own bottom tab chrome only for tab-root
+screens. Branch child routes that own their own route chrome or bottom affordance
+must set `parentNavigatorKey: _rootNavigatorKey` in `lib/routing/go_router.dart`
+so detail CTAs, chat composers, and full-screen actions are not rendered under
+the floating tab bar.
+
+Bottom sheets must be opened through `showCatchBottomSheet` from
+`lib/core/widgets/catch_bottom_sheet.dart`. The helper presents on the root
+navigator by default, which keeps drawers above shell chrome. Do not call
+Flutter's raw `showModalBottomSheet` directly from production code unless this
+policy test is intentionally updated.
+
+Tab-root overlays that still coexist with the floating tab bar should use
+`AppShellActiveTab.bottomOverlayClearanceOf(context, minimum: ...)`; feature
+code should not recompute the tab-bar height, safe-area subtraction, or platform
+floating inset. Root scroll views without tab chrome should end with a semantic
+terminal sliver such as `CatchSliverTerminalPadding` instead of hard-coded
+bottom spacers. When a route uses this terminal sliver inside a `SafeArea`, the
+screen-level `SafeArea` must leave `bottom: false` so the device bottom inset
+remains visible to the sliver and becomes scrollable clearance.
+
 ## Layout, Spacing, And UI Architecture
 
 Use `CatchSpacing` from `lib/core/theme/catch_tokens.dart` for reusable layout
@@ -483,7 +506,7 @@ For `NestedScrollView` plus pinned tab rows:
 
 | Surface | Direction |
 |---|---|
-| Home dashboard | Keep one `CustomScrollView` with `CatchSliverHeader(title: DashboardHeaderContent(...))`; do not reintroduce Dashboard/Activity tabs without a product decision. |
+| Home dashboard | Keep one `CustomScrollView` with `CatchSliverHeader(title: CatchScreenHeaderTitle.block(...))`; do not reintroduce Dashboard/Activity tabs without a product decision. |
 | Explore | Keep sliver-native. This remains the strongest mixed event/club discovery pattern. |
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
@@ -1250,6 +1273,94 @@ Rules:
   evidence and remaining TestFlight/Play work live in
   `docs/release_operations.md`.
 
+Host Inbox is the reference for sharing foundations without sharing product
+composition. Consumer `/chats` owns `ChatsListScreen`; Host `/host/inbox` owns
+`HostInboxScreen`. They may reuse `ChatConversationsList`, `CatchPersonRow`,
+search state, inquiry repositories, and routing contracts, but the consumer
+screen must not remain the Host route dispatcher.
+
+The Host Inbox contract is:
+
+- an explicit selected Event or explicit General scope; General is never an
+  event-id sentinel;
+- personal two-party contacted-host inquiry threads, separated by event;
+- Booked and Prospective thread views, with broadcast counts derived from
+  `eventParticipations` rather than conversation count;
+- inquiry-only users may appear as Prospective/Inquiry without becoming a
+  broadcast recipient;
+- event broadcasts use a dedicated callable and produce Activity plus
+  preference-gated push, never match/message fan-out;
+- production callable-backed affordances stay disabled until the target-specific
+  live dependency preflight succeeds.
+
+`HostInboxViewModel.compose` is the provider-free reference adapter for scope,
+classification, roster/thread separation, search, lifecycle, and row-status
+policy. `HostInboxScreen` owns provider reads, typed route effects, and sheet
+composition; `HostInboxBroadcastController` owns the mutation.
+
+### Installable App Target Contract
+
+`tool/app_targets.json` is the source of truth for the six installable target
+combinations: Consumer and Host across dev, staging, and prod. It explicitly
+owns each target's entrypoint, display name, Apple scheme/configurations/bundle
+id/icon/URL scheme, Android flavor/application id/icon source set, Firebase
+project and app registrations, capability policy, deep-link ownership,
+role-scoped force-update prefix, store product, and routine release owner.
+
+Target identity must not be reconstructed independently in shell scripts,
+Gradle, Xcode generators, Firebase activation scripts, or CI workflows. Those
+surfaces must query the manifest or be checked against it. The first reference
+implementation is:
+
+```text
+tool/app_targets.json
+  -> tool/platform/resolve_app_target.mjs
+  -> tool/flutter_with_env.sh
+  -> Android app-target flavor or Apple app-target scheme
+  -> role-matched Firebase config and Dart entrypoint
+```
+
+Current native policy:
+
+- Android uses six explicit app-target flavors rather than an environment
+  flavor plus a mutable global role property.
+- Apple may continue using one `Runner` native target while each scheme has an
+  explicit bundle id, Firebase role, icon, and role-specific entitlements. A
+  second Xcode target becomes required if capabilities or build phases can no
+  longer remain safely scheme/configuration driven.
+- Consumer owns HealthKit/Health Connect and the current public event-link
+  association. Host must not inherit those capabilities until a Host-specific
+  product contract requires them.
+- Force-update minimum builds and store URLs are role-prefixed. Consumer may
+  temporarily fall back to the legacy unprefixed remote values during rollout;
+  Host never does.
+- Xcode Cloud is the intended routine iOS uploader. Any temporary automatic
+  GitHub Host upload must have a stable transitional debt entry with the exact
+  external TestFlight proof required before removal.
+
+Run `node tool/run.mjs check platform:app-targets` whenever app identity,
+native configuration, Firebase registration, links, force-update policy, or
+release ownership changes.
+
+### Exhibit ARCH-APP-TARGET-001: Installable App Target Resolution
+
+<!-- exhibit-freshness: ARCH-APP-TARGET-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+The build wrapper resolves entrypoint and native identity from the target
+contract before it activates Firebase or invokes Flutter:
+
+```bash
+IFS=$'\t' read -r target_entrypoint ios_flavor android_flavor <<<"$(
+  node "$repo_root/tool/platform/resolve_app_target.mjs" \
+    --role "$app_role" \
+    --environment "$environment" \
+    --fields 'entrypoint,ios.scheme,android.flavor'
+)"
+```
+
+Generators may read `tool/app_targets.json` directly. Other scripts should use
+the resolver rather than reproduce suffix or role formulas.
+
 ## Routing And Navigation
 
 Routing remains centralized in `lib/routing/go_router.dart`.
@@ -1686,6 +1797,110 @@ Widget build(BuildContext context) {
 }
 ```
 
+### Exhibit ARCH-SCREEN-CHROME-001: Root Screen Header Chrome
+
+<!-- exhibit-freshness: ARCH-SCREEN-CHROME-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/core/widgets/catch_top_bar.dart`
+- `lib/dashboard/presentation/dashboard_home_screen.dart`
+- `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart`
+- `lib/explore/presentation/widgets/explore_header.dart`
+- `lib/user_profile/presentation/profile_screen.dart`
+
+Use this pattern for root tab screens and root-like shell destinations whose
+screen title should read as Catch voice/head typography. The title text routes
+through `CatchScreenHeaderTitle`, which uses `CatchTextStyles.headline`
+(Archivo) for the primary title, optional mono kicker and supporting subtitle
+roles, and explicit leading/action slots. Sliver screens pass
+`CatchScreenHeaderTitle.block(...)` into `CatchSliverHeader.title`; app-bar
+screens use `CatchScreenTopBar(...)`, which wraps `CatchTopBar` while preserving
+search, leading, action, safe-area, and padding configuration.
+
+Do not use bare `CatchTopBar(title: ...)` for these root headers. That compact
+route-title path intentionally remains available for detail, edit, lab, and
+utility screens where the title is functional navigation chrome rather than the
+root screen voice.
+
+```dart
+const CatchScreenHeaderTitle.block({
+  required this.title,
+  this.eyebrow,
+  this.subtitle,
+  this.leading,
+  this.actions = const <Widget>[],
+  this.padding = CatchInsets.screenTitleBlock,
+  this.backgroundColor,
+}) : material = true;
+
+@override
+Widget build(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return Row(
+    children: [
+      if (leading != null) ...[leading!, gapW12],
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (eyebrow != null) ...[
+              Text(
+                eyebrow!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.kicker(context, color: t.ink3),
+              ),
+              gapH2,
+            ],
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.headline(context, color: t.ink),
+            ),
+            if (subtitle != null) ...[
+              const SizedBox(height: CatchGaps.headerTitleToSubtitle),
+              Text(
+                subtitle!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+          ],
+        ),
+      ),
+      if (actions.isNotEmpty) ...[
+        gapW12,
+        Row(mainAxisSize: MainAxisSize.min, children: actions),
+      ],
+    ],
+  );
+}
+
+@override
+Widget build(BuildContext context) {
+  return CatchTopBar(
+    titleWidget: CatchScreenHeaderTitle(
+      title: title,
+      eyebrow: eyebrow,
+      subtitle: subtitle,
+    ),
+    large: false,
+    leading: leading,
+    leadingType: leadingType,
+    actions: actions,
+    contentPadding: contentPadding,
+    height: height,
+    searchValue: searchValue,
+    searchEnabled: searchEnabled,
+    onSearch: onSearch,
+  );
+}
+```
+
 ### Exhibit ARCH-UI-STATE-001: Provider-Free Presentation State Model
 
 <!-- exhibit-freshness: ARCH-UI-STATE-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
@@ -1695,6 +1910,20 @@ Reference files:
 - `lib/events/presentation/calendar/calendar_screen_state.dart`
 - `test/calendar/calendar_screen_state_test.dart`
 - `lib/events/presentation/calendar/calendar_screen.dart`
+
+Current Host-v2 adopter:
+
+- `lib/hosts/presentation/host_home_screen_state.dart`
+- `lib/hosts/presentation/host_operations/host_events_list.dart`
+- `test/hosts/host_operations_screen_test.dart`
+
+`HostEventsWorkspaceState` applies the same boundary to lifecycle policy: the
+provider adapter supplies events and an injected clock once; the state object
+owns cancellation exclusion, exact Upcoming/Live/Past classification, ordering,
+month/year grouping, Repeat availability, fill clamping, and render-ready row
+metadata; provider-free widgets consume only that state and typed callbacks.
+Do not move those decisions back into row widgets or substitute waitlist count
+for a pending-approval aggregate.
 
 Use this pattern when a screen needs a provider-free display model that merges
 repository/domain data into UI-ready state. The screen may watch providers at the

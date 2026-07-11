@@ -5,9 +5,11 @@ on:
     branches:
       - main
     paths:
-      - '.github/actions/setup-flutter/**'
+      - '.github/actions/**'
       - '.github/workflows/ios-testflight-release.yml'
       - 'assets/**'
+      - 'contracts/**'
+      - 'firebase/prod/**'
       - 'ios/**'
       - 'lib/**'
       - 'packages/**'
@@ -53,6 +55,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - name: Validate installable app-target contract
+        run: node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity
+
       - name: Resolve release target
         env:
           APP_ROLE_INPUT: ${{ github.event.inputs.app_role || 'consumer' }}
@@ -68,30 +80,24 @@ jobs:
             upload_to_testflight="$UPLOAD_TO_TESTFLIGHT_INPUT"
           fi
 
-          case "$app_role" in
-            consumer)
-              archive_name="Runner"
-              expected_bundle_id="com.catchdates.app"
-              export_path="build/ios/export/prod"
-              ios_configuration="Release-prod"
-              ios_scheme="prod"
-              ;;
-            host)
-              archive_name="HostRunner"
-              expected_bundle_id="com.catchdates.host"
-              export_path="build/ios/export/host-prod"
-              ios_configuration="Release-host-prod"
-              ios_scheme="host-prod"
-              ;;
-            *)
-              echo "Unsupported app_role: $app_role"
-              exit 1
-              ;;
-          esac
+          target_fields="$(node tool/platform/resolve_app_target.mjs \
+            --role "$app_role" \
+            --environment prod \
+            --fields id,ios.bundleId,ios.configurations.release,ios.scheme)"
+          IFS=$'\t' read -r target_id expected_bundle_id ios_configuration ios_scheme <<< "$target_fields"
+          if [[ -z "$target_id" || -z "$expected_bundle_id" || -z "$ios_configuration" || -z "$ios_scheme" ]]; then
+            echo "Could not resolve complete prod iOS target metadata for role '$app_role'."
+            exit 1
+          fi
+          archive_name="${target_id//-/_}"
+          export_path="build/ios/export/$target_id"
 
           version_line="$(awk '/^version: / { print $2; exit }' pubspec.yaml)"
           build_name="${version_line%%+*}"
-          build_number="${FLUTTER_BUILD_NUMBER:-$(date -u +%Y%m%d)${GITHUB_RUN_NUMBER}${GITHUB_RUN_ATTEMPT}}"
+          # Reserve the 8.* namespace for this temporary GitHub-owned release
+          # path so it cannot collide with an Xcode Cloud build number during
+          # the Host ownership cutover.
+          build_number="${FLUTTER_BUILD_NUMBER:-8.$(date -u +%Y%m%d)${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}}"
 
           {
             echo "APP_ROLE=$app_role"
@@ -104,6 +110,13 @@ jobs:
             echo "FLUTTER_BUILD_NAME=$build_name"
             echo "FLUTTER_BUILD_NUMBER=$build_number"
           } >> "$GITHUB_ENV"
+
+      - name: Verify client callable dependencies
+        run: |
+          node tool/firebase/check_client_callable_dependencies.mjs \
+            --role "$APP_ROLE" \
+            --environment prod \
+            --verify-live
 
       - uses: ./.github/actions/setup-flutter
 
@@ -148,18 +161,21 @@ jobs:
             -hideShellScriptEnvironment \
             archive
 
-      - name: Verify archived Maps key
+      - name: Verify archived release identity and Maps key
         run: |
           set -euo pipefail
+          mkdir -p build/ios/release-evidence
+          node tool/platform/verify_ios_release_identity.mjs \
+            --archive "$ARCHIVE_PATH" \
+            --role "$APP_ROLE" \
+            --environment prod \
+            --expected-version "$FLUTTER_BUILD_NAME" \
+            --expected-build "$FLUTTER_BUILD_NUMBER" \
+            --receipt "build/ios/release-evidence/${APP_ROLE}-archive.json"
+
           archived_app="$(find "$ARCHIVE_PATH/Products/Applications" -maxdepth 1 -type d -name '*.app' -print -quit)"
           if [[ -z "$archived_app" ]]; then
             echo "Could not find archived app in $ARCHIVE_PATH/Products/Applications."
-            exit 1
-          fi
-
-          bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$archived_app/Info.plist")"
-          if [[ "$bundle_id" != "$EXPECTED_BUNDLE_ID" ]]; then
-            echo "Archived bundle ID '$bundle_id' did not match expected '$EXPECTED_BUNDLE_ID'."
             exit 1
           fi
 
@@ -181,12 +197,11 @@ jobs:
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
-      - name: Verify exported entitlements
+      - name: Verify exported release identity
         run: |
           set -euo pipefail
           ipa_path="$(find "$EXPORT_PATH" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
           extract_dir="$RUNNER_TEMP/${APP_ROLE}-ipa"
-          profile_plist="$RUNNER_TEMP/${APP_ROLE}-profile.plist"
 
           if [[ -z "$ipa_path" ]]; then
             echo "Could not find exported IPA under $EXPORT_PATH."
@@ -201,52 +216,38 @@ jobs:
             exit 1
           fi
 
-          bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$exported_app/Info.plist")"
-          if [[ "$bundle_id" != "$EXPECTED_BUNDLE_ID" ]]; then
-            echo "Exported bundle ID '$bundle_id' did not match expected '$EXPECTED_BUNDLE_ID'."
-            exit 1
-          fi
+          node tool/platform/verify_ios_release_identity.mjs \
+            --app "$exported_app" \
+            --role "$APP_ROLE" \
+            --environment prod \
+            --expected-version "$FLUTTER_BUILD_NAME" \
+            --expected-build "$FLUTTER_BUILD_NUMBER" \
+            --receipt "build/ios/release-evidence/${APP_ROLE}-export.json"
 
           node tool/firebase/validate_google_maps_config.mjs \
             --env prod \
             --platform ios \
             --ios-built-plist "$exported_app/Info.plist"
 
-          openssl cms -inform DER -verify -noverify \
-            -in "$exported_app/embedded.mobileprovision" \
-            -out "$profile_plist"
-
-          profile_name="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$profile_plist")"
-          healthkit="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.healthkit' "$profile_plist")"
-          app_id="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$profile_plist")"
-
-          if [[ "$healthkit" != "true" ]]; then
-            echo "Exported provisioning profile is missing HealthKit."
-            exit 1
-          fi
-
-          entitlements_path="$RUNNER_TEMP/${APP_ROLE}-entitlements.txt"
-          codesign -d --entitlements - "$exported_app" > "$entitlements_path" 2>/dev/null
-          grep -q 'com.apple.developer.healthkit' "$entitlements_path"
-          grep -q 'applinks:catchdates.com' "$entitlements_path"
-
           {
             echo "## iOS export verification"
             echo
             echo "- App role: \`$APP_ROLE\`"
             echo "- IPA: \`$ipa_path\`"
-            echo "- Bundle ID: \`$bundle_id\`"
-            echo "- Profile: \`$profile_name\`"
-            echo "- App ID: \`$app_id\`"
-            echo "- HealthKit entitlement: \`$healthkit\`"
-            echo "- Associated Domains entitlement: verified"
+            echo "- Target: \`$IOS_SCHEME\` / \`$IOS_CONFIGURATION\`"
+            echo "- Bundle ID: \`$EXPECTED_BUNDLE_ID\`"
+            echo "- Version/build: \`$FLUTTER_BUILD_NAME ($FLUTTER_BUILD_NUMBER)\`"
+            echo "- Role-specific signed entitlements: verified from \`tool/app_targets.json\`"
+            echo "- Identity receipts: \`build/ios/release-evidence/${APP_ROLE}-{archive,export}.json\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v6
         with:
           name: catch-ios-${{ github.event_name == 'push' && 'host' || inputs.app_role }}-prod-ipa
-          path: build/ios/export/**/*.ipa
+          path: |
+            build/ios/export/**/*.ipa
+            build/ios/release-evidence/*.json
           if-no-files-found: error
           retention-days: 14
 

@@ -23,6 +23,7 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
@@ -107,6 +108,27 @@ void main() {
       expect(find.text('Extra Hydration Club'), findsOneWidget);
       expect(find.text('Loading club'), findsNothing);
       expect(find.text('Host access required'), findsNothing);
+    });
+
+    testWidgets('route rejects an initial club that disagrees with its path', (
+      tester,
+    ) async {
+      await pumpEventsTestApp(
+        tester,
+        HostCreateEventRouteScreen(
+          clubId: 'path-club',
+          initialClub: buildClub(id: 'extra-club'),
+        ),
+        signedInUid: 'host-1',
+      );
+      await tester.pump();
+
+      expect(find.text('Event setup unavailable'), findsOneWidget);
+      expect(
+        find.text('That organizer does not match this event route.'),
+        findsOneWidget,
+      );
+      expect(find.text('Event basics'), findsNothing);
     });
 
     testWidgets(
@@ -1154,6 +1176,46 @@ void main() {
       expect(find.text('Resume a draft?'), findsNothing);
       expect(find.text('9'), findsOneWidget);
     });
+
+    testWidgets('repeat prefill stays separate from persisted draft state', (
+      tester,
+    ) async {
+      final now = DateTime(2026, 7, 10, 12);
+      final draftRepository = EventDraftRepository(ErrorLogger());
+      await draftRepository.saveDraft(
+        userId: 'runner-1',
+        draft: _buildEventDraft(
+          id: 'saved-draft',
+          savedAt: now,
+          distance: '9',
+          meetingPoint: 'Saved draft point',
+        ),
+      );
+      final source = buildEvent(
+        id: 'repeat-source',
+        startTime: DateTime(2026, 7, 3, 20, 15),
+        endTime: DateTime(2026, 7, 3, 21, 45),
+      );
+      final prefill = CreateEventPrefill.repeat(event: source, createdAt: now);
+
+      await _pumpCreateEventFlow(
+        tester,
+        now: () => now,
+        initialPrefill: prefill,
+        initialStep: 2,
+      );
+      await _openCreateEventFlow(tester);
+
+      expect(find.text('When is the event?'), findsWidgets);
+      expect(find.text('Select a date'), findsOneWidget);
+      expect(find.text('8:15 PM'), findsOneWidget);
+      expect(find.text('Resume a draft?'), findsNothing);
+      final drafts = await draftRepository.loadDrafts(
+        clubId: 'club-1',
+        userId: 'runner-1',
+      );
+      expect(drafts.map((draft) => draft.id), ['saved-draft']);
+    });
   });
 }
 
@@ -1221,6 +1283,7 @@ Future<void> _pumpCreateEventFlow(
   DateTime Function()? now,
   Club? clubOverride,
   EventDraft? initialDraft,
+  CreateEventPrefill? initialPrefill,
   int initialStep = 0,
 }) async {
   final club = clubOverride ?? buildClub();
@@ -1245,6 +1308,7 @@ Future<void> _pumpCreateEventFlow(
           loadMapTiles: false,
           now: now ?? DateTime.now,
           initialDraft: initialDraft,
+          initialPrefill: initialPrefill,
           initialStep: initialStep,
         ),
       ),

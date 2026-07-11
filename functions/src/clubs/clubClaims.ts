@@ -116,13 +116,25 @@ export async function requestClubClaimHandler(
         requestSnap,
         "ClubClaimRequestDocument"
       );
-      if (existing.status === "pending") return;
+      if (existing.status === "pending") {
+        if (claimRequestOwnsPendingState(club, requestId)) return;
+        throw new HttpsError(
+          "failed-precondition",
+          "Another organizer claim is already under review."
+        );
+      }
       if (existing.status === "approved") {
         throw new HttpsError(
           "failed-precondition",
           "This claim request has already been approved."
         );
       }
+    }
+    if (club.claim?.state === "claimPending") {
+      throw new HttpsError(
+        "failed-precondition",
+        "Another organizer claim is already under review."
+      );
     }
 
     const timestamp = deps.serverTimestamp();
@@ -173,6 +185,11 @@ export async function adminDecideClubClaimHandler(
     normalizeAdminDecideClubClaimPayload
   );
   const db = deps.firestore();
+  await deps.checkRateLimit?.(
+    db,
+    adminContext.uid,
+    "adminDecideClubClaim"
+  );
 
   let response: AdminDecideClubClaimResponse | null = null;
 
@@ -193,7 +210,13 @@ export async function adminDecideClubClaimHandler(
       );
     }
 
+    const clubRef = db.collection("clubs").doc(claimRequest.clubId);
+
     if (data.decision === "reject") {
+      const clubSnap = await tx.get(clubRef);
+      const club = clubSnap.exists ?
+        requireDoc<ClubDocument>(clubSnap, "ClubDocument") :
+        null;
       const timestamp = deps.serverTimestamp();
       tx.set(requestRef, {
         status: "rejected",
@@ -202,12 +225,26 @@ export async function adminDecideClubClaimHandler(
         decidedByUid: adminContext.uid,
         decisionReason: data.decisionReason ?? null,
       }, {merge: true});
-      tx.update(db.collection("clubs").doc(claimRequest.clubId), {
-        claim: {
-          state: "unclaimed",
-          claimHref: "/host/#founding-hosts",
-          lastClaimRequestId: data.requestId,
-        },
+      if (club && claimRequestOwnsPendingState(club, data.requestId)) {
+        tx.update(clubRef, {
+          claim: {
+            state: "unclaimed",
+            claimHref: club.claim?.claimHref ?? "/host/#founding-hosts",
+            lastClaimRequestId: data.requestId,
+          },
+        });
+      }
+      setActivityNotificationInTransaction(tx, db, {
+        id: activityNotificationId("clubUpdate", `${data.requestId}_rejected`),
+        uid: claimRequest.requesterUid,
+        type: "clubUpdate",
+        title: "Organizer claim update",
+        body: club?.name ?
+          `Catch could not verify the claim for ${club.name}.` :
+          "Catch could not verify this organizer claim.",
+        createdAt: timestamp,
+        clubId: claimRequest.clubId,
+        actorUid: adminContext.uid,
       });
       setAdminAuditLogInTransaction(tx, db, adminContext, {
         action: "adminDecideClubClaim",
@@ -231,7 +268,6 @@ export async function adminDecideClubClaimHandler(
       return;
     }
 
-    const clubRef = db.collection("clubs").doc(claimRequest.clubId);
     const requesterRef = db.collection("users").doc(claimRequest.requesterUid);
     const deletedUserRef = db
       .collection("deletedUsers")
@@ -276,6 +312,13 @@ export async function adminDecideClubClaimHandler(
 
     const club = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
     assertClubCanBeClaimed(club);
+    if (club.claim?.state === "claimPending" &&
+        !claimRequestOwnsPendingState(club, data.requestId)) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This claim request is no longer the active organizer claim."
+      );
+    }
     const user = requireDoc<UserProfileDocument>(
       requesterSnap,
       "UserProfileDocument"
@@ -410,6 +453,14 @@ function assertClubCanBeClaimed(club: ClubDocument) {
       "This organizer listing is not available for claims."
     );
   }
+}
+
+function claimRequestOwnsPendingState(
+  club: ClubDocument,
+  requestId: string
+): boolean {
+  return club.claim?.state === "claimPending" &&
+    club.claim?.lastClaimRequestId === requestId;
 }
 
 /**

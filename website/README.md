@@ -26,6 +26,14 @@ deploys should also validate
 preflight, so the marketing site cannot ship with missing App Check or Firebase
 config.
 
+The production deploy job also runs a read-only claim-target sync against the
+selected Firebase project and writes a temporary readiness receipt. Organizer
+listing generation accepts that receipt only when its project id and exact
+claim-target-plan SHA-256 match, so claim CTAs cannot be enabled from the
+checked-in empty fixture or from a stale environment snapshot. This preflight
+does not write Firestore. The reviewed organizer promotion pipeline uses the
+same receipt handoff in `--claim-sync firestore` mode.
+
 The deploy job uses the repo's existing `prod` Firebase alias and Google Cloud
 Workload Identity variables:
 
@@ -117,3 +125,8 @@ Primary web events:
 - `organizer_contactClick`
 - `organizer_claimClick`
 - `organizer_outboundClick`
+
+Claim conversion events use the ads contract keys `club_id` and `claim_role`.
+Consent-based marketing events are still recorded for public organizer pages
+whose App Check-protected host analytics callable is disabled; only the
+callable dispatch is suppressed in that state.

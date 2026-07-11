@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Club Detail v2" description="Domain-complete club screen — multi-host roster, typed activity chips, photo strip, rating + EST. provenance, next-event callout, reviews, contact channels, and a stateful membership dock. Tweaks flip viewing-as (guest / visitor / member / owner), hero treatment, next-event placement, and an empty-schedule state." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <script src="../../image-slot.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Club Detail v2" style="width: 390px; background: var(--surface); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column">
+
+    <!-- hero — variant comes from Tweaks: polaroid / full / masthead -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ClubHero" variant="{{ hero }}" frame-height="{{ heroFrameHeight }}" seed="club:sunday-sea-face-crew" kicker="BANDRA · MUMBAI" title="Sunday sea-face crew" location="Carter Road, Bandra West" photo="../../assets/sample-portrait.jpg" slot-id="club-hero" logo="../../assets/sample-portrait.jpg" hint-size="100%,338px"></x-import>
+
+    <!-- hero apron — banner + stat strip; 0 20px gutter, 16px gaps (see SectionStack.prompt.md) -->
+    <div style="padding: 0 20px">
+      <sc-if value="{{ showBanner }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px; background: var(--act-social-run-soft); border-radius: var(--radius-md); padding: 12px 14px; cursor: pointer">
+          <i class="ph ph-sneaker-move" style="font-size: 16px; color: var(--act-social-run-deep); flex: none"></i>
+          <span class="t-mono-label" style="flex: 1; font-size: 10px; font-weight: 700; color: var(--act-social-run-deep)">NEXT RUN · SAT 14 JUN · 6:30 AM</span>
+          <i class="ph ph-arrow-right" style="font-size: 14px; color: var(--act-social-run-deep); flex: none"></i>
+        </div>
+      </sc-if>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatStrip" items="{{ stats }}" hint-size="100%,58px"></x-import>
+    </div>
+
+    <!-- body — SectionStack owns the gutter (24 top, 20 sides); Sections own every gap -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.SectionStack" hint-size="100%,1400px" style="display: block">
+
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="ABOUT" first="{{ true }}" hint-size="100%,120px">
+        <p style="font-size: 15.5px; line-height: 1.55; color: var(--ink); margin: 0; text-wrap: pretty">The standing Saturday run — an easy 5K along the Bandra seafront as the light goes gold, coffee and bun maska after. No medals, no Strava pressure. Just show up, move, linger.</p>
+      </x-import>
+
+      <!-- next-event callout, placement B: a lead NEXT UP section -->
+      <sc-if value="{{ showNextUpSection }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="NEXT UP" activity="socialRun" lead="{{ true }}" hint-size="100%,150px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.DateTicket" activity="socialRun" day="SAT" date="14" month="JUN" kicker="RUN #14 · IN 2 DAYS" title="Sundowner 5K, Bandra seafront" meta="5 km · Easy · Carter Road jetty" data="6:30 AM · FREE · 12 GOING · 4 LEFT" data-em="{{ goingEm }}" notch-bg="var(--surface)" hint-size="100%,118px" style="display: block"></x-import>
+        </x-import>
+      </sc-if>
+
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="WHAT WE DO" hint-size="100%,100px">
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 0">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ActivityChip" activity="socialRun" primary="{{ true }}" hint-size="110px,35px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ActivityChip" activity="running" hint-size="100px,35px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ActivityChip" activity="walking" hint-size="100px,35px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Chip" hint-size="100px,35px">Beginners ok</x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Chip" hint-size="100px,35px">Coffee after</x-import>
+        </div>
+      </x-import>
+
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="FROM THE CLUB" hint-size="100%,160px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.PhotoStrip" activity="socialRun" cells="{{ photoCells }}" caption="LAST SATURDAY · RUN #13" data="12 PHOTOS" hint-size="100%,140px" style="display: block"></x-import>
+      </x-import>
+
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="YOUR HOSTS" count="3" hint-size="100%,220px">
+        <div style="border: 1px solid var(--line2); border-radius: var(--radius-md); background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 12px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.HostRow" activity="socialRun" host="Priya Kapoor" img="../../assets/sample-portrait.jpg" role="owner" meta="OWNER · EST. JAN 2025" onMessage="{{ messageOwner }}" hint-size="100%,40px" style="display: block"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.HostRow" divider="{{ true }}" activity="socialRun" host="Arjun Mehta" initials="AM" meta="HOST · 23 RUNS LED" onMessage="{{ messageHost }}" hint-size="100%,52px" style="display: block"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.HostRow" divider="{{ true }}" activity="socialRun" host="Sana Iyer" initials="SI" meta="HOST · JOINED MAR 2025" onMessage="{{ messageHost }}" hint-size="100%,52px" style="display: block"></x-import>
+        </div>
+      </x-import>
+
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="SCHEDULE" count="{{ scheduleCount }}" hint-size="100%,380px">
+        <!-- empty state — role-aware copy, mirrors the app's CatchEmptyState -->
+        <sc-if value="{{ scheduleEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="border: 1px solid var(--line); border-radius: var(--radius-md); padding: 24px 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+            <span style="width: 44px; height: 44px; border-radius: var(--radius-pill); border: 1px solid var(--line2); display: grid; place-items: center; color: var(--ink2)"><i class="ph ph-calendar-blank" style="font-size: 20px"></i></span>
+            <div style="color: var(--ink); margin-top: 4px" class="t-name">No events scheduled</div>
+            <div class="t-body-s" style="max-width: 250px">{{ emptyScheduleCopy }}</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showFirstInSchedule }}" hint-placeholder-val="{{ true }}">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.DateTicket" activity="socialRun" day="SAT" date="14" month="JUN" kicker="RUN #14 · BANDRA DAWN CLUB" title="Sundowner 5K, Bandra seafront" meta="5 km · Easy · Carter Road jetty" data="6:30 AM · FREE · 12 GOING · 4 LEFT" data-em="{{ goingEm }}" notch-bg="var(--surface)" hint-size="100%,118px" style="display: block"></x-import>
+        </sc-if>
+        <sc-if value="{{ scheduleHasEvents }}" hint-placeholder-val="{{ true }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.DateTicket" activity="socialRun" day="SAT" date="21" month="JUN" kicker="RUN #15 · BANDRA DAWN CLUB" title="Sundowner 5K, Bandra seafront" meta="5 km · Easy · Carter Road jetty" data="6:30 AM · FREE · 8 GOING · 8 LEFT" notch-bg="var(--surface)" hint-size="100%,118px" style="display: block"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.DateTicket" activity="socialRun" day="SAT" date="28" month="JUN" kicker="RUN #16 · BANDRA DAWN CLUB" title="Sundowner 5K, Bandra seafront" meta="5 km · Easy · Carter Road jetty" data="6:30 AM · FREE · SPOTS OPEN" notch-bg="var(--surface)" hint-size="100%,118px" style="display: block"></x-import>
+        </sc-if>
+      </x-import>
+
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="GET IN TOUCH" hint-size="100%,200px">
+        <div style="border: 1px solid var(--line2); border-radius: var(--radius-md); background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 12px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ContactRow" icon="instagram-logo" channel="INSTAGRAM" value="@sundayseaface" href="https://instagram.com/sundayseaface" hint-size="100%,38px" style="display: flex"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ContactRow" divider="{{ true }}" icon="phone" channel="PHONE" value="+91 98200 11223" href="tel:+919820011223" hint-size="100%,50px" style="display: flex"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ContactRow" divider="{{ true }}" icon="envelope-simple" channel="EMAIL" value="hello@seafacecrew.in" href="mailto:hello@seafacecrew.in" hint-size="100%,50px" style="display: flex"></x-import>
+        </div>
+      </x-import>
+
+      <!-- reviews — authenticated only, 2 inline + quiet "all" row -->
+      <sc-if value="{{ showReviews }}" hint-placeholder-val="{{ true }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="REVIEWS" count="23" hint-size="100%,340px">
+          <div style="border: 1px solid var(--line2); border-radius: var(--radius-md); background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 12px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ReviewRow" activity="socialRun" author="Mira D'Souza" img="../../assets/sample-portrait.jpg" rating="5" meta="MAY 2026" body="Showed up alone on a rainy Saturday and left with brunch plans. The pace talk is real — nobody gets dropped." hint-size="100%,110px" style="display: block"></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ReviewRow" divider="{{ true }}" activity="socialRun" author="Rahul S." initials="RS" rating="4" meta="APR 2026" body="Well organised, easy crowd. Coffee after is the actual event." hint-size="100%,100px" style="display: block"></x-import>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; cursor: pointer">
+            <span class="t-mono-label" style="font-size: 10px; color: var(--ink2)">ALL 23 REVIEWS</span>
+            <i class="ph ph-arrow-right" style="font-size: 12px; color: var(--ink2)"></i>
+          </div>
+        </x-import>
+      </sc-if>
+
+    </x-import>
+
+    <!-- membership dock — stateful over viewing-as -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ClubDock" state="{{ membership }}" activity="socialRun" members="124" footnote="{{ dockFootnote }}" onJoin="{{ join }}" onSignIn="{{ signIn }}" onBell="{{ noop }}" onManage="{{ noop }}" onCreate="{{ noop }}" hint-size="100%,100px" style="margin-top: auto; display: block"></x-import>
+
+  </div>
+</div>
+
+<!-- Tweaks — hidden until the host toggles tweaks mode -->
+<x-import component="TweaksPanel" from="./tweaks-panel.jsx" hint-size="0px,0px">
+  <x-import component="TweakSection" from="./tweaks-panel.jsx" label="Viewing as" hint-size="0px,0px"></x-import>
+  <x-import component="TweakRadio" from="./tweaks-panel.jsx" label="Membership" value="{{ membership }}" options="{{ membershipOptions }}" onChange="{{ setMembership }}" hint-size="0px,0px"></x-import>
+  <x-import component="TweakSection" from="./tweaks-panel.jsx" label="Layout" hint-size="0px,0px"></x-import>
+  <x-import component="TweakRadio" from="./tweaks-panel.jsx" label="Hero" value="{{ hero }}" options="{{ heroOptions }}" onChange="{{ setHero }}" hint-size="0px,0px"></x-import>
+  <x-import component="TweakRadio" from="./tweaks-panel.jsx" label="Next event" value="{{ nextUp }}" options="{{ nextUpOptions }}" onChange="{{ setNextUp }}" hint-size="0px,0px"></x-import>
+  <x-import component="TweakSection" from="./tweaks-panel.jsx" label="Content states" hint-size="0px,0px"></x-import>
+  <x-import component="TweakToggle" from="./tweaks-panel.jsx" label="Empty schedule" value="{{ scheduleEmpty }}" onChange="{{ setScheduleEmpty }}" hint-size="0px,0px"></x-import>
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "membership": "member",
+  "hero": "polaroid",
+  "nextUp": "banner",
+  "scheduleEmpty": false
+}/*EDITMODE-END*/;
+
+const TWEAKS_STORE = 'clubDetailV2.tweaks';
+
+function readSavedTweaks() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(TWEAKS_STORE) || '{}');
+    const out = {};
+    for (const k of Object.keys(TWEAK_DEFAULTS)) {
+      if (typeof saved[k] === typeof TWEAK_DEFAULTS[k]) out[k] = saved[k];
+    }
+    return out;
+  } catch (e) {
+    return {};
+  }
+}
+
+class Component extends DCLogic {
+  state = { ...TWEAK_DEFAULTS, ...readSavedTweaks() };
+
+  message = () => {};
+
+  setTweak(key, val) {
+    this.setState({ [key]: val });
+    const next = {};
+    for (const k of Object.keys(TWEAK_DEFAULTS)) next[k] = k === key ? val : this.state[k];
+    try { localStorage.setItem(TWEAKS_STORE, JSON.stringify(next)); } catch (e) {}
+    try { window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*'); } catch (e) {}
+  }
+
+  renderVals() {
+    const { membership, hero, nextUp, scheduleEmpty } = this.state;
+    const isMember = membership === 'member' || membership === 'owner';
+    const isGuest = membership === 'guest';
+    return {
+      membership,
+      hero,
+      nextUp,
+      heroFrameHeight: hero === 'full' ? 280 : 220,
+      scheduleEmpty,
+      scheduleHasEvents: !scheduleEmpty,
+      emptyScheduleCopy: membership === 'owner'
+        ? 'Publish an event when this club is ready to meet.'
+        : 'Future events will appear here once the hosts publish one.',
+      showBanner: nextUp === 'banner' && !scheduleEmpty,
+      showNextUpSection: nextUp === 'schedule' && !scheduleEmpty,
+      showFirstInSchedule: nextUp === 'banner' && !scheduleEmpty,
+      scheduleCount: scheduleEmpty ? '' : (nextUp === 'banner' ? '3' : '2'),
+      goingEm: isMember ? 'YOU\u2019RE GOING' : '',
+      showReviews: !isGuest,
+      messageHost: isGuest ? undefined : this.message,
+      messageOwner: isGuest || membership === 'owner' ? undefined : this.message,
+      dockFootnote: {
+        guest: 'JOINING, REVIEWS & CHAT NEED AN ACCOUNT',
+        visitor: 'FREE TO JOIN · LEAVE ANYTIME',
+        member: 'MEMBER SINCE JUN 2026 · MANAGE OR LEAVE UNDER JOINED',
+        owner: '124 MEMBERS · EST. JAN 2025',
+      }[membership] || '',
+      stats: [
+        { value: '124', label: 'MEMBERS' },
+        { value: '4.7', label: 'RATING' },
+        { value: '23', label: 'REVIEWS' },
+        { value: 'JAN \u201925', label: 'EST.' },
+      ],
+      photoCells: [
+        { slotId: 'club-photo-1', placeholder: 'Drop a photo' },
+        { slotId: 'club-photo-2', placeholder: 'Drop a photo' },
+        { slotId: 'club-photo-3', placeholder: 'Drop a photo' },
+      ],
+      membershipOptions: [
+        { value: 'guest', label: 'Guest (signed out)' },
+        { value: 'visitor', label: 'Visitor' },
+        { value: 'member', label: 'Member' },
+        { value: 'owner', label: 'Owner' },
+      ],
+      heroOptions: [
+        { value: 'polaroid', label: 'Polaroid' },
+        { value: 'full', label: 'Full' },
+        { value: 'masthead', label: 'Masthead' },
+      ],
+      nextUpOptions: [
+        { value: 'banner', label: 'Banner' },
+        { value: 'schedule', label: 'In schedule' },
+      ],
+      setMembership: (v) => this.setTweak('membership', v),
+      setHero: (v) => this.setTweak('hero', v),
+      setNextUp: (v) => this.setTweak('nextUp', v),
+      join: () => this.setTweak('membership', 'member'),
+      signIn: () => this.setTweak('membership', 'visitor'),
+      setScheduleEmpty: (v) => this.setTweak('scheduleEmpty', v),
+      noop: () => {},
+    };
+  }
+}
+</script>
+</body>
+</html>

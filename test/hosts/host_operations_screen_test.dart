@@ -8,10 +8,13 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -422,79 +425,132 @@ void main() {
     expect(find.text('Connect payouts to get paid'), findsNothing);
   });
 
+  test('Host Events groups upcoming rows and derives truthful metadata', () {
+    final now = DateTime(2026, 6, 15, 12);
+    final today = buildEvent(
+      id: 'today',
+      startTime: DateTime(2026, 6, 15, 18),
+      bookedCount: 24,
+    ).copyWith(capacityLimit: 30);
+    final july = buildEvent(
+      id: 'july',
+      startTime: DateTime(2026, 7, 2, 9),
+      bookedCount: 40,
+    );
+    final nextYear = buildEvent(
+      id: 'next-year',
+      startTime: DateTime(2027, 6, 1, 9),
+    );
+    final past = buildEvent(
+      id: 'past',
+      startTime: DateTime(2026, 6, 14, 9),
+      endTime: DateTime(2026, 6, 14, 10),
+    );
+    final cancelled = buildEvent(
+      id: 'cancelled',
+      startTime: DateTime(2026, 6, 15, 17),
+    ).copyWith(status: EventLifecycleStatus.cancelled);
+
+    final state = HostEventsWorkspaceState.fromEvents(
+      events: [nextYear, july, cancelled, past, today],
+      now: now,
+      selectedFilter: HostEventsLifecycleFilter.upcoming,
+    );
+
+    expect(state.status, HostEventsWorkspaceStatus.populated);
+    expect(state.sections.map((section) => section.label), [
+      'June',
+      'July',
+      'June 2027',
+    ]);
+    expect(
+      state.sections
+          .expand((section) => section.rows)
+          .map((row) => row.event.id),
+      ['today', 'july', 'next-year'],
+    );
+    final todayRow = state.sections.first.rows.single;
+    expect(todayRow.isToday, isTrue);
+    expect(todayRow.metaLabel, 'Today · 24 going');
+    expect(todayRow.fillPercent, 80);
+    expect(state.sections[1].rows.single.fillRatio, 1);
+    expect(state.repeatSource, past);
+  });
+
+  test('Host Events classifies exact lifecycle boundaries', () {
+    final now = DateTime(2026, 6, 15, 12);
+    final startsNow = buildEvent(
+      id: 'starts-now',
+      startTime: now,
+      endTime: now.add(const Duration(hours: 1)),
+    );
+    final endsNow = buildEvent(
+      id: 'ends-now',
+      startTime: now.subtract(const Duration(hours: 1)),
+      endTime: now,
+      checkedInCount: 12,
+      bookedCount: 15,
+    );
+
+    final live = HostEventsWorkspaceState.fromEvents(
+      events: [endsNow, startsNow],
+      now: now,
+      selectedFilter: HostEventsLifecycleFilter.live,
+    );
+    expect(live.sections.single.rows.single.event, startsNow);
+    expect(live.sections.single.rows.single.isLive, isTrue);
+
+    final past = HostEventsWorkspaceState.fromEvents(
+      events: [endsNow, startsNow],
+      now: now,
+      selectedFilter: HostEventsLifecycleFilter.past,
+    );
+    expect(past.sections.single.rows.single.event, endsNow);
+    expect(past.sections.single.rows.single.metaLabel, contains('12 attended'));
+    expect(past.sections.single.rows.single.metaLabel, contains('free'));
+  });
+
   test(
-    'HostHomeEventRowsState sorts, limits, and filters cancelled events',
+    'Host Events async state maps loading, error, and filter empty copy',
     () {
-      final early = buildEvent(
-        id: 'early',
-        startTime: DateTime(2026, 6, 15, 8),
-      );
-      final middle = buildEvent(
-        id: 'middle',
-        startTime: DateTime(2026, 6, 15, 12),
-      );
-      final late = buildEvent(id: 'late', startTime: DateTime(2026, 6, 15, 18));
-      final latest = buildEvent(
-        id: 'latest',
-        startTime: DateTime(2026, 6, 15, 22),
-      );
+      final now = DateTime(2026, 6, 15, 12);
       final cancelled = buildEvent(
         id: 'cancelled',
-        startTime: DateTime(2026, 6, 15, 6),
+        startTime: DateTime(2026, 6, 14),
       ).copyWith(status: EventLifecycleStatus.cancelled);
+      final stackTrace = StackTrace.current;
+      final error = StateError('events failed');
 
-      final state = HostHomeEventRowsState.fromEvents([
-        late,
-        cancelled,
-        middle,
-        latest,
-        early,
-      ]);
+      expect(
+        buildHostEventsWorkspaceState(
+          const AsyncLoading<List<Event>>(),
+          now: now,
+          selectedFilter: HostEventsLifecycleFilter.upcoming,
+        ).status,
+        HostEventsWorkspaceStatus.loading,
+      );
 
-      expect(state.isEmpty, isFalse);
-      expect(state.rows.map((row) => row.event.id), [
-        'early',
-        'middle',
-        'late',
-      ]);
-      expect(state.rows.map((row) => row.divider), [false, true, true]);
+      final errorState = buildHostEventsWorkspaceState(
+        AsyncError<List<Event>>(error, stackTrace),
+        now: now,
+        selectedFilter: HostEventsLifecycleFilter.live,
+      );
+      expect(errorState.status, HostEventsWorkspaceStatus.error);
+      expect(errorState.error, error);
+
+      final emptyState = buildHostEventsWorkspaceState(
+        AsyncData<List<Event>>([cancelled]),
+        now: now,
+        selectedFilter: HostEventsLifecycleFilter.live,
+      );
+      expect(emptyState.status, HostEventsWorkspaceStatus.empty);
+      expect(emptyState.emptyTitle, 'Nothing live right now');
+      expect(emptyState.emptyBody, contains('when it starts'));
     },
   );
 
-  test('HostHomeEventsSectionState maps event async branches', () {
-    final event = buildEvent();
-    final cancelled = buildEvent(
-      id: 'cancelled',
-      startTime: DateTime(2026, 6, 14),
-    ).copyWith(status: EventLifecycleStatus.cancelled);
-    final stackTrace = StackTrace.current;
-    final error = StateError('events failed');
-
-    expect(
-      buildHostHomeEventsSectionState(const AsyncLoading<List<Event>>()).status,
-      HostHomeEventsStatus.loading,
-    );
-
-    final errorState = buildHostHomeEventsSectionState(
-      AsyncError<List<Event>>(error, stackTrace),
-    );
-    expect(errorState.status, HostHomeEventsStatus.error);
-    expect(errorState.error, error);
-
-    final emptyState = buildHostHomeEventsSectionState(
-      AsyncData<List<Event>>([cancelled]),
-    );
-    expect(emptyState.status, HostHomeEventsStatus.empty);
-    expect(emptyState.rows.isEmpty, isTrue);
-
-    final populatedState = buildHostHomeEventsSectionState(
-      AsyncData<List<Event>>([event, cancelled]),
-    );
-    expect(populatedState.status, HostHomeEventsStatus.populated);
-    expect(populatedState.rows.rows.single.event, event);
-  });
-
   test('HostHomeTodayDashboardState maps next event and tasks', () {
+    final now = DateTime(2026, 6, 15, 12);
     final early = buildEvent(
       id: 'early',
       startTime: DateTime(2026, 6, 15, 17),
@@ -510,23 +566,168 @@ void main() {
     expect(
       buildHostHomeTodayDashboardState(
         const AsyncLoading<List<Event>>(),
+        now: now,
       ).status,
       HostHomeTodayStatus.loading,
     );
 
     final emptyState = buildHostHomeTodayDashboardState(
       AsyncData<List<Event>>([cancelled]),
+      now: now,
     );
     expect(emptyState.status, HostHomeTodayStatus.empty);
 
     final contentState = buildHostHomeTodayDashboardState(
       AsyncData<List<Event>>([late, early, cancelled]),
+      now: now,
     );
     expect(contentState.status, HostHomeTodayStatus.content);
     expect(contentState.event, early);
-    expect(contentState.tasks, hasLength(4));
-    expect(contentState.tasks.first.title, 'Approve requests');
-    expect(contentState.tasks[1].primaryActionLabel, 'Offer 6');
+    expect(contentState.tasks, hasLength(1));
+    expect(contentState.tasks.first.id, 'waitlist:early');
+    expect(contentState.tasks.first.event, early);
+    expect(contentState.tasks.first.title, 'Review waitlist');
+    expect(
+      contentState.tasks.first.destination,
+      HostHomeTodayTaskDestination.guests,
+    );
+    expect(contentState.laterEvents, hasLength(1));
+    expect(contentState.laterEvents.single.event, late);
+  });
+
+  test(
+    'Host Today excludes concurrent live rows and unsupported approvals',
+    () {
+      final now = DateTime(2026, 6, 15, 12);
+      final hero = buildEvent(
+        id: 'hero-live',
+        startTime: DateTime(2026, 6, 15, 10),
+        endTime: DateTime(2026, 6, 15, 14),
+      );
+      final overlapping = buildEvent(
+        id: 'overlapping-live',
+        startTime: DateTime(2026, 6, 15, 11),
+        endTime: DateTime(2026, 6, 15, 13),
+      );
+      final approval =
+          buildEvent(
+            id: 'approval-event',
+            startTime: DateTime(2026, 6, 16, 18),
+            waitlistedCount: 3,
+          ).copyWith(
+            eventPolicy: EventPolicyBundle.requestToJoinEvent(
+              capacityLimit: 20,
+              basePriceInPaise: 0,
+            ),
+          );
+
+      final state = buildHostHomeTodayDashboardState(
+        AsyncData<List<Event>>([approval, overlapping, hero]),
+        now: now,
+      );
+
+      expect(state.event, hero);
+      expect(state.laterEvents.map((row) => row.event.id), ['approval-event']);
+      expect(state.tasks, isEmpty);
+    },
+  );
+
+  test('Host Today keeps every real task instead of truncating work', () {
+    final now = DateTime(2026, 6, 15, 12);
+    final events = List.generate(
+      5,
+      (index) => buildEvent(
+        id: 'task-$index',
+        startTime: now.add(Duration(hours: index + 1)),
+        waitlistedCount: index + 1,
+      ),
+    );
+
+    final state = buildHostHomeTodayDashboardState(
+      AsyncData<List<Event>>(events),
+      now: now,
+    );
+
+    expect(state.tasks, hasLength(5));
+    expect(state.tasks.map((task) => task.event.id), [
+      'task-0',
+      'task-1',
+      'task-2',
+      'task-3',
+      'task-4',
+    ]);
+  });
+
+  testWidgets('Host Today uses real countdown and routes cross-event tasks', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 6, 15, 12);
+    final club = buildClub(id: 'today-club', ownerUserId: _hostUid);
+    final hero = buildEvent(
+      id: 'hero-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 15, 17),
+    );
+    final later = buildEvent(
+      id: 'later-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 16, 20),
+      waitlistedCount: 3,
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostOperationsHomeScreen(now: now),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([hero, later])),
+      ],
+    );
+
+    expect(find.text('STARTS IN 5H'), findsOneWidget);
+    expect(find.text('Review waitlist'), findsOneWidget);
+    expect(find.textContaining('3 waiting · 20 spots open'), findsOneWidget);
+    expect(find.text('Check host setup'), findsNothing);
+    expect(find.byType(HostEventLifecycleRow), findsOneWidget);
+    expect(find.text(later.title), findsOneWidget);
+
+    await tester.tap(find.text('REVIEW'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Manage ${later.id}'), findsOneWidget);
+    expect(find.text('Section guests'), findsOneWidget);
+  });
+
+  testWidgets('Host Today opens a live hero in the run-of-show', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 6, 15, 12);
+    final club = buildClub(id: 'live-club', ownerUserId: _hostUid);
+    final live = buildEvent(
+      id: 'live-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 15, 11),
+      endTime: DateTime(2026, 6, 15, 13),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostOperationsHomeScreen(now: now),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([live])),
+      ],
+    );
+
+    expect(find.text('LIVE NOW'), findsOneWidget);
+    expect(find.text('Open run-of-show'), findsOneWidget);
+    await tester.tap(find.text('Open run-of-show'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Manage live-event'), findsOneWidget);
+    expect(find.text('Section live'), findsOneWidget);
   });
 
   testWidgets('Host events has no create-club header and opens event manage', (
@@ -541,7 +742,10 @@ void main() {
 
     await _pumpHostScreen(
       tester,
-      const HostOperationsHomeScreen(initialTab: HostHomeTab.events),
+      HostOperationsHomeScreen(
+        initialTab: HostHomeTab.events,
+        now: DateTime(2026, 6, 15, 12),
+      ),
       overrides: [
         ..._hostClubOverrides(owned: [club]),
         watchEventsForClubProvider(
@@ -550,10 +754,11 @@ void main() {
       ],
     );
 
-    expect(find.text(club.name), findsOneWidget);
+    expect(find.text('Events'), findsWidgets);
     expect(find.byTooltip('Create club'), findsNothing);
     expect(find.byTooltip('Switch club'), findsNothing);
-    expect(find.text('Add event'), findsOneWidget);
+    expect(find.text('New event'), findsOneWidget);
+    expect(find.text('Repeat last'), findsOneWidget);
     expect(find.text('View club'), findsNothing);
     expect(find.text('View public profile'), findsNothing);
 
@@ -561,6 +766,59 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Manage ${event.id}'), findsOneWidget);
+  });
+
+  testWidgets('Host events filters lifecycle rows and repeats a past event', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 6, 15, 12);
+    final club = buildClub(id: 'club-host', ownerUserId: _hostUid);
+    final past = buildEvent(
+      id: 'past-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 14, 9),
+      endTime: DateTime(2026, 6, 14, 10),
+    );
+    final live = buildEvent(
+      id: 'live-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 15, 11),
+      endTime: DateTime(2026, 6, 15, 13),
+    );
+    final upcoming = buildEvent(
+      id: 'upcoming-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 16, 18),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostOperationsHomeScreen(initialTab: HostHomeTab.events, now: now),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([past, live, upcoming])),
+      ],
+    );
+
+    expect(find.text(upcoming.title), findsOneWidget);
+    expect(find.text(live.title), findsNothing);
+    expect(find.text(past.title), findsNothing);
+    expect(find.text('Repeat ‘Social run’'), findsOneWidget);
+
+    await tester.tap(find.text('Live'));
+    await pumpFeatureUi(tester);
+    expect(find.text(live.title), findsOneWidget);
+    expect(find.text(upcoming.title), findsNothing);
+
+    await tester.tap(find.text('Past'));
+    await pumpFeatureUi(tester);
+    expect(find.text(past.title), findsOneWidget);
+
+    await tester.tap(find.text('Repeat ‘Social run’'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Repeat ${past.id}'), findsOneWidget);
   });
 
   testWidgets('Host events switches between hosted clubs from the app bar', (
@@ -590,7 +848,10 @@ void main() {
 
     await _pumpHostScreen(
       tester,
-      const HostOperationsHomeScreen(initialTab: HostHomeTab.events),
+      HostOperationsHomeScreen(
+        initialTab: HostHomeTab.events,
+        now: DateTime(2026, 6, 15, 12),
+      ),
       overrides: [
         ..._hostClubOverrides(owned: [ownedClub], hosted: [cohostClub]),
         watchEventsForClubProvider(
@@ -614,7 +875,6 @@ void main() {
     expect(find.text('Quizzicals'), findsOneWidget);
     expect(find.text(hostedEvent.title), findsOneWidget);
     expect(find.text(ownedEvent.title), findsNothing);
-    expect(find.text('HOST TEAM'), findsOneWidget);
   });
 
   testWidgets('Host clubs defaults to organizer overview', (tester) async {
@@ -663,6 +923,102 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('IDENTITY'), findsOneWidget);
+  });
+
+  testWidgets('Host Insights resolves the exact club and owns range chrome', (
+    tester,
+  ) async {
+    final firstClub = buildClub(
+      id: 'first-club',
+      name: 'First Club',
+      ownerUserId: _hostUid,
+    );
+    final exactClub = buildClub(
+      id: 'exact-club',
+      name: 'Bandra Social',
+      ownerUserId: _hostUid,
+    );
+
+    await _pumpHostScreen(
+      tester,
+      const HostInsightsScreen(clubId: 'exact-club'),
+      overrides: [
+        ..._hostClubOverrides(owned: [firstClub, exactClub]),
+        hostAnalyticsRepositoryProvider.overrideWithValue(
+          _EmptyHostAnalyticsRepository(
+            topEvents: [_hostAnalyticsEventRow(eventId: 'top-event')],
+          ),
+        ),
+      ],
+    );
+
+    expect(find.text('Bandra Social · all events'), findsOneWidget);
+    expect(find.text('First Club · all events'), findsNothing);
+    expect(find.text('Insights'), findsOneWidget);
+    expect(find.byTooltip('Back to Organizer'), findsOneWidget);
+    expect(find.text('30 days'), findsOneWidget);
+    expect(find.text('Organizer'), findsNothing);
+    expect(find.text('Edit'), findsNothing);
+    expect(find.text('Preview'), findsNothing);
+
+    await tester.tap(find.text('30 days'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Date range'), findsOneWidget);
+    await tester.tap(find.text('7 DAYS'));
+    await tester.tap(find.text('Apply range'));
+    await pumpFeatureUi(tester);
+    expect(find.text('7 days'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Top event'));
+    await tester.tap(find.text('Top event'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Manage top-event'), findsOneWidget);
+    expect(find.text('Section report'), findsOneWidget);
+  });
+
+  testWidgets('Host analytics trend renders every backend bucket', (
+    tester,
+  ) async {
+    final points = List.generate(
+      30,
+      (index) => HostAnalyticsTrendPoint(
+        periodStart: DateTime(2026, 6, index + 1),
+        periodEnd: DateTime(2026, 6, index + 2),
+        metrics: {'demand': index + 2, 'bookings': index + 1},
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(body: HostAnalyticsTrendPanel(points: points)),
+      ),
+    );
+
+    expect(find.byType(HostAnalyticsDualBar), findsNWidgets(30));
+  });
+
+  testWidgets('Host Insights never falls back when the route club is unknown', (
+    tester,
+  ) async {
+    final availableClub = buildClub(
+      id: 'available-club',
+      name: 'Available Club',
+      ownerUserId: _hostUid,
+    );
+
+    await _pumpHostScreen(
+      tester,
+      const HostInsightsScreen(clubId: 'missing-club'),
+      overrides: _hostClubOverrides(owned: [availableClub]),
+    );
+
+    expect(find.text('Insights unavailable'), findsOneWidget);
+    expect(find.text('Available Club · all events'), findsNothing);
+
+    await tester.tap(find.text('Back to Organizer'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Organizer route'), findsOneWidget);
   });
 
   testWidgets('Host clubs owns profile management without event CTAs', (
@@ -1282,6 +1638,11 @@ Future<void> _pumpHostScreen(
     routes: [
       GoRoute(path: '/', builder: (_, _) => child),
       GoRoute(
+        path: Routes.hostOrganizerScreen.path,
+        name: Routes.hostOrganizerScreen.name,
+        builder: (_, _) => const Text('Organizer route'),
+      ),
+      GoRoute(
         path: Routes.hostCreateClubScreen.path,
         name: Routes.hostCreateClubScreen.name,
         builder: (_, _) => const Text('Create club route'),
@@ -1289,7 +1650,12 @@ Future<void> _pumpHostScreen(
       GoRoute(
         path: Routes.hostCreateEventScreen.path,
         name: Routes.hostCreateEventScreen.name,
-        builder: (_, state) => Text('Create ${state.pathParameters['clubId']}'),
+        builder: (_, state) => switch (state.extra) {
+          final HostCreateEventRouteArguments arguments
+              when arguments.initialPrefill != null =>
+            Text('Repeat ${arguments.initialPrefill!.sourceEventId}'),
+          _ => Text('Create ${state.pathParameters['clubId']}'),
+        },
       ),
       GoRoute(
         path: Routes.hostClubDetailScreen.path,
@@ -1304,8 +1670,12 @@ Future<void> _pumpHostScreen(
       GoRoute(
         path: Routes.hostAppEventManageScreen.path,
         name: Routes.hostAppEventManageScreen.name,
-        builder: (_, state) =>
+        builder: (_, state) => Column(
+          children: [
             Text('Manage ${state.pathParameters['eventId']}'),
+            Text('Section ${state.uri.queryParameters['section'] ?? 'setup'}'),
+          ],
+        ),
       ),
       GoRoute(
         path: Routes.hostProfileScreen.path,
@@ -1384,3 +1754,66 @@ class _FakeHostAuthRepository extends Fake implements AuthRepository {
     if (throwOnSignOut) throw StateError('sign out failed');
   }
 }
+
+final class _EmptyHostAnalyticsRepository implements HostAnalyticsRepository {
+  const _EmptyHostAnalyticsRepository({this.topEvents = const []});
+
+  final List<HostAnalyticsEventRow> topEvents;
+
+  @override
+  Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) async {
+    return HostAnalyticsReport(
+      generatedAt: DateTime(2026, 7, 10),
+      summaryCards: const [],
+      trend: const [],
+      topEvents: topEvents,
+      reviewSummary: const HostAnalyticsReviewSummary(
+        newReviews: 0,
+        publishedReviews: 0,
+        verifiedReviews: 0,
+        publicReviews: 0,
+        ownerResponseCount: 0,
+        averageRating: 0,
+      ),
+      discoverySummary: const HostAnalyticsDiscoverySummary(
+        listingViews: 0,
+        searchAppearances: 0,
+        eventViews: 0,
+        organizerSaves: 0,
+        eventSaves: 0,
+        contactClicks: 0,
+        claimClicks: 0,
+        outboundClicks: 0,
+      ),
+      dataQuality: const [],
+    );
+  }
+}
+
+HostAnalyticsEventRow _hostAnalyticsEventRow({required String eventId}) =>
+    HostAnalyticsEventRow(
+      eventId: eventId,
+      clubId: 'exact-club',
+      title: 'Top event',
+      startTime: DateTime(2026, 7, 8, 19),
+      status: 'completed',
+      bookedCount: 20,
+      checkedInCount: 18,
+      waitlistedCount: 2,
+      fillRate: 1,
+      checkInRate: 0.9,
+      grossRevenueMinor: 0,
+      currency: 'INR',
+      checkoutStartedCount: 0,
+      checkoutDropoffCount: 0,
+      paymentCompletedCount: 0,
+      paymentFailedCount: 0,
+      paymentRefundedCount: 0,
+      reviewCount: 2,
+      averageRating: 4.5,
+      demandCount: 24,
+      inviteOpenCount: 3,
+      mutualMatchCount: 4,
+      chatStartedCount: 2,
+      repeatAttendeeCount: 5,
+    );

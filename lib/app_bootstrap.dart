@@ -24,8 +24,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future<void> runCatchApp({required AppRole appRole}) async {
+Future<void> runCatchApp({
+  required AppRole appRole,
+  AppEnvironment? environment,
+}) async {
   AppConfig.configureEntrypointRole(appRole);
+  if (environment != null) {
+    AppConfig.configureEntrypointEnvironment(environment);
+  }
 
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {

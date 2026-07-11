@@ -22,9 +22,7 @@ class ChatsListBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final threads = [...viewModel.newMatches, ...viewModel.conversations];
-    final t = CatchTokens.of(context);
     final isHostApp = AppConfig.appRole.isHost;
-    final sectionLabel = isHostApp ? null : 'CONVERSATIONS';
 
     return SliverMainAxisGroup(
       slivers: [
@@ -36,23 +34,10 @@ class ChatsListBody extends StatelessWidget {
                 bottom: CatchSpacing.s4,
               ),
               child: HostInboxBroadcastCard(
-                threadCount: viewModel.totalThreadCount,
+                audienceCount: viewModel.totalThreadCount,
+                audienceLabel: 'attendee',
+                subtitle: 'Reminders, the meeting point, changes',
                 onTap: onHostBroadcastSelected,
-              ),
-            ),
-          ),
-        if (threads.isNotEmpty && sectionLabel != null)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s4,
-                CatchSpacing.micro14,
-                CatchSpacing.s4,
-                CatchSpacing.s2,
-              ),
-              child: Text(
-                sectionLabel,
-                style: CatchTextStyles.kicker(context, color: t.ink2),
               ),
             ),
           ),
@@ -70,19 +55,26 @@ class ChatsListBody extends StatelessWidget {
 class HostInboxBroadcastCard extends StatelessWidget {
   const HostInboxBroadcastCard({
     super.key,
-    required this.threadCount,
+    required this.audienceCount,
+    required this.audienceLabel,
+    required this.subtitle,
     this.onTap,
   });
 
-  final int threadCount;
+  final int audienceCount;
+  final String audienceLabel;
+  final String subtitle;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final countLabel = threadCount <= 0
-        ? 'attendees'
-        : '$threadCount attendees';
+    final countLabel = audienceCount == 1
+        ? '1 $audienceLabel'
+        : '$audienceCount ${audienceLabel}s';
+    final title = audienceCount == 0
+        ? 'No ${audienceLabel}s yet'
+        : 'Message $countLabel';
 
     return CatchSurface(
       radius: CatchRadius.md,
@@ -103,7 +95,7 @@ class HostInboxBroadcastCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Message all $countLabel',
+                  title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.fieldRowTitle(
@@ -113,7 +105,7 @@ class HostInboxBroadcastCard extends StatelessWidget {
                 ),
                 const SizedBox(height: CatchSpacing.micro2),
                 Text(
-                  'Reminders, the meeting point, changes',
+                  subtitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.supporting(

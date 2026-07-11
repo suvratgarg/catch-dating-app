@@ -11,7 +11,9 @@
   "x-owner": "requestAccountDeletion callable",
   "required": [
     "uid",
-    "deletedAt"
+    "deletedAt",
+    "status",
+    "updatedAt"
   ],
   "properties": {
     "uid": {
@@ -20,6 +22,22 @@
     },
     "deletedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "processing",
+        "completed"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "completedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
       "x-catch-ownership": "server-only"
     },
     "retainedFor": {

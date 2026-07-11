@@ -4,6 +4,7 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
+import {eventBroadcastDeliveryKey} from "../shared/eventBroadcasts";
 import {
   ProfilePhoto,
   ClubMembershipDocument,
@@ -47,19 +48,25 @@ export async function requestAccountDeletionHandler(
   await deps.checkRateLimit?.(db, uid, "requestAccountDeletion");
 
   const deletedUserRef = db.collection("deletedUsers").doc(uid);
+  const now = deps.serverTimestamp();
 
-  // Re-entrancy guard. The tombstone is written only AFTER all cleanup has
-  // committed (see below), so its presence means this account was already
-  // fully deleted. A retry — e.g. the previous call died right after the
-  // tombstone but before removing the Auth user — just ensures the Auth user
-  // is gone and returns, instead of re-running the destructive cleanup.
+  // A legacy tombstone without status is treated as completed. A processing
+  // tombstone is deliberately resumed: edge cleanup is status-aware, so a
+  // retry does not double-decrement counters.
   const existingTombstone = await deletedUserRef.get();
-  if (existingTombstone.exists) {
+  if (existingTombstone.exists &&
+      existingTombstone.data()?.status !== "processing") {
     await deleteAuthUserIfPresent(deps.auth(), uid);
     return {deleted: true};
   }
+  await deletedUserRef.set({
+    uid,
+    deletedAt: existingTombstone.data()?.deletedAt ?? now,
+    status: "processing",
+    updatedAt: now,
+    retainedFor: ["safety", "payments", "fraud"],
+  }, {merge: true});
 
-  const now = deps.serverTimestamp();
   const userSnap = await db.collection("users").doc(uid).get();
   const userData = userSnap.data() ?? {};
 
@@ -129,16 +136,14 @@ export async function requestAccountDeletionHandler(
 
   await writer.commit();
 
-  // Write the tombstone only after every cleanup batch has committed, so it is
-  // a reliable "fully deleted" marker for the re-entrancy guard above. The
-  // count decrements in the cleanup are conditioned on each edge's current
-  // status (which the same writes flip to "deleted"), so a retry that reaches
-  // here again cannot double-decrement.
+  // Mark the already-present deletion guard complete only after cleanup.
   await deletedUserRef.set({
     uid,
-    deletedAt: now,
+    status: "completed",
+    updatedAt: now,
+    completedAt: now,
     retainedFor: ["safety", "payments", "fraud"],
-  });
+  }, {merge: true});
   await deleteAuthUserIfPresent(deps.auth(), uid);
 
   return {deleted: true};
@@ -186,6 +191,7 @@ async function queueRelationshipCleanup(params: {
     queueReviewCleanup(db, uid, now, writer),
     queuePaymentCleanup(db, uid, now, writer),
     queueNotificationCleanup(db, uid, writer),
+    queueEventBroadcastCleanup(db, uid, writer),
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
@@ -401,6 +407,79 @@ async function queueNotificationCleanup(
     .collection("items")
     .get();
   notifications.forEach((doc) => writer.delete(doc.ref));
+}
+
+/** Deletes authored broadcasts and removes recipient evidence for this user. */
+async function queueEventBroadcastCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const [authored, targeted] = await Promise.all([
+    db.collection("eventBroadcasts").where("actorUid", "==", uid).get(),
+    db.collection("eventBroadcasts")
+      .where("targetUids", "array-contains", uid).get(),
+  ]);
+  const authoredPaths = new Set(authored.docs.map((doc) => doc.ref.path));
+  authored.forEach((doc) => writer.delete(doc.ref));
+  const deliveryKey = eventBroadcastDeliveryKey(uid);
+  targeted.forEach((doc) => {
+    if (authoredPaths.has(doc.ref.path)) return;
+    writer.update(
+      doc.ref,
+      eventBroadcastRecipientDeletionPatch(doc.data(), uid, deliveryKey)
+    );
+  });
+}
+
+function eventBroadcastRecipientDeletionPatch(
+  receipt: FirebaseFirestore.DocumentData,
+  uid: string,
+  deliveryKey: string
+): Record<string, unknown> {
+  const targetUids = Array.isArray(receipt.targetUids) ?
+    [...new Set(receipt.targetUids.filter((value: unknown) =>
+      typeof value === "string" && value.length > 0 && value !== uid
+    ))] :
+    [];
+  const sourceDeliveries =
+    typeof receipt.deliveries === "object" && receipt.deliveries !== null ?
+      receipt.deliveries as Record<string, Record<string, unknown>> :
+      {};
+  const deliveries: Record<string, Record<string, unknown>> = {};
+  for (const targetUid of targetUids) {
+    const key = eventBroadcastDeliveryKey(targetUid);
+    if (key === deliveryKey) continue;
+    const delivery = sourceDeliveries[key];
+    if (delivery) deliveries[key] = delivery;
+  }
+  const evidence = Object.values(deliveries)
+    .filter((delivery) => delivery.excluded !== true);
+  const activityAvailableCount = evidence.filter((delivery) =>
+    delivery.activityStatus === "created" ||
+    delivery.activityStatus === "existing"
+  ).length;
+  const pushAcceptedCount = evidence.filter((delivery) =>
+    delivery.pushStatus === "accepted"
+  ).length;
+  const pushFailedCount = evidence.filter((delivery) =>
+    delivery.pushStatus === "failed"
+  ).length;
+  const pushUnknownCount = evidence.filter((delivery) =>
+    delivery.pushStatus === "unknown"
+  ).length;
+  return {
+    targetUids,
+    deliveries,
+    recipientCount: evidence.length,
+    excludedCount: targetUids.length - evidence.length,
+    activityAvailableCount,
+    pushAttemptedCount:
+      pushAcceptedCount + pushFailedCount + pushUnknownCount,
+    pushAcceptedCount,
+    pushFailedCount,
+    pushUnknownCount,
+  };
 }
 
 /**

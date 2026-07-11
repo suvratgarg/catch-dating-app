@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host App — Inbox" description="Event-scoped messaging. A Booked / Prospective SegPill, a blast entry that opens a real BlastComposer in a Sheet (audience + templates + send), and ChatListTile threads. Re-homes the generic host inbox as an event-ops tool. Composed purely of catalogue widgets." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+    .evlabel { margin: 12px 0; }
+    .blast { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--ink); color: var(--primary-ink); border: 0; border-radius: var(--radius-md); padding: 14px 16px; cursor: pointer; font-family: inherit; }
+    .blast .t { flex: 1; min-width: 0; }
+    .scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--ink) 40%, transparent); z-index: 40; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Inbox" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 8px 20px 24px">
+      <h1 class="t-headline" style="margin: 6px 0 0">Inbox</h1>
+      <div class="evlabel t-mono-label" style="color: var(--act-pub-quiz-deep)">Tuesday Trivia Night · Tonight 8:00 PM</div>
+
+      <div style="margin-bottom: 14px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.SegPill" options="{{ segs }}" value="{{ seg }}" onChange="{{ setSeg }}" hint-size="100%,42px"></x-import>
+      </div>
+
+      <button class="blast" onClick="{{ openBlast }}">
+        <i class="ph-fill ph-megaphone-simple" style="font-size: 19px"></i>
+        <span class="t"><b class="t-name" style="font-size: 14.5px; display: block">{{ blastTitle }}</b><span class="t-body-s" style="color: #BAB2A7; display: block; margin-top: 2px">{{ blastSub }}</span></span>
+        <i class="ph ph-caret-right" style="color: #BAB2A7"></i>
+      </button>
+
+      <div style="margin-top: 8px">
+        <sc-for list="{{ threads }}" as="t" hint-placeholder-count="3">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatListTile"
+            displayName="{{ t.name }}" photo="{{ t.photo }}" preview="{{ t.preview }}" time="{{ t.when }}"
+            unread="{{ t.unread }}" divider="{{ t.divider }}" host="{{ true }}" onClick="{{ t.onOpen }}" style="display: block"></x-import>
+        </sc-for>
+      </div>
+    </div>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.TabDock" items="{{ hostTabs }}" active="inbox" radius="0 0 30px 30px" hint-size="100%,64px" style="display: block"></x-import>
+
+    <sc-if value="{{ blastOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="scrim" onClick="{{ closeBlast }}"></div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Sheet" title="New blast" subtitle="Tuesday Trivia" hint-size="100%,440px" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 41">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.BlastComposer" audiences="{{ audiences }}" templates="{{ templates }}" onSend="{{ sendBlast }}" hint-size="100%,360px"></x-import>
+      </x-import>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const HOST_TABS = [
+  { id: 'today', icon: 'house', label: 'TODAY' },
+  { id: 'events', icon: 'ticket', label: 'EVENTS' },
+  { id: 'inbox', icon: 'chat-circle', label: 'INBOX' },
+  { id: 'organizer', icon: 'storefront', label: 'ORGANIZER' },
+];
+const PORTRAIT = '../../assets/sample-portrait.jpg';
+const BOOKED = [
+  { name: 'Dev Patel', preview: 'See you tonight!', when: '3h', unread: 0 },
+  { name: "Mira D'Souza", preview: 'Can I bring a +1?', when: '1h', unread: 1 },
+];
+const PROSPECTIVE = [
+  { name: 'Zoya Merchant', preview: 'Requested · Is there parking nearby?', when: '12m', unread: 1 },
+  { name: 'Nikhil Rao', preview: 'Waitlist · Any chance of a spot opening?', when: '5h', unread: 0 },
+];
+const AUDIENCES = [
+  { value: 'booked', label: 'Booked · 24' },
+  { value: 'wait', label: 'Waitlist · 6' },
+  { value: 'all', label: 'Everyone · 30' },
+];
+const TEMPLATES = [
+  { label: 'Reminder', body: 'See you tonight at 8 \u2014 The Daily Bar, Khar. Doors at 7:45.' },
+  { label: 'Meeting point', body: 'We\u2019re upstairs at The Daily Bar. Ask for the Bandra Social table.' },
+  { label: 'Change', body: 'Heads up: start pushed to 8:15. Same place.' },
+];
+
+class Component extends DCLogic {
+  state = { seg: 'booked', blastOpen: false };
+
+  renderVals() {
+    const booked = this.state.seg === 'booked';
+    const raw = booked ? BOOKED : PROSPECTIVE;
+    const threads = raw.map((t, i) => ({ ...t, photo: i === 0 && booked ? PORTRAIT : undefined, divider: i > 0, onOpen: () => {} }));
+    return {
+      hostTabs: HOST_TABS,
+      segs: [{ value: 'booked', label: 'Booked · 2' }, { value: 'prospective', label: 'Prospective · 2' }],
+      seg: this.state.seg,
+      setSeg: (v) => this.setState({ seg: v }),
+      blastTitle: booked ? 'Message all 24 booked' : 'Message all 9 prospective',
+      blastSub: booked ? 'Reminders, the meeting point, changes' : 'Nudge requests & waitlist to confirm',
+      threads,
+      blastOpen: this.state.blastOpen,
+      openBlast: () => this.setState({ blastOpen: true }),
+      closeBlast: () => this.setState({ blastOpen: false }),
+      sendBlast: () => this.setState({ blastOpen: false }),
+      audiences: AUDIENCES,
+      templates: TEMPLATES,
+    };
+  }
+}
+</script>
+</body>
+</html>

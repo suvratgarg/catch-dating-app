@@ -1,7 +1,5 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
@@ -63,7 +61,7 @@ class DashboardFullViewModel {
     required this.upcomingEvents,
     required this.nextEvent,
     required this.arrivalAction,
-    required this.windowedEvents,
+    required this.activeSwipeEvent,
     required this.pendingReviewEvent,
     this.clubPostNotifications = const <ActivityNotification>[],
     required this.attendedEventsSection,
@@ -76,7 +74,7 @@ class DashboardFullViewModel {
   final List<Event> upcomingEvents;
   final Event? nextEvent;
   final EventArrivalAction? arrivalAction;
-  final List<CatchWindowItem> windowedEvents;
+  final Event? activeSwipeEvent;
   final Event? pendingReviewEvent;
   final List<ActivityNotification> clubPostNotifications;
   final DashboardSectionModel<List<Event>> attendedEventsSection;
@@ -96,27 +94,6 @@ class DashboardFullViewModel {
   get recommendationsSection =>
       _recommendationsSection ??
       const DashboardSectionModel<List<ExploreEventRecommendation>>.data([]);
-}
-
-class CatchWindowItem {
-  const CatchWindowItem({
-    required this.event,
-    required this.title,
-    required this.subtitle,
-    required this.dateAttendeeLabel,
-    required this.attendedCountLabel,
-    required this.windowClosesAt,
-  });
-
-  final Event event;
-  final String title;
-  final String subtitle;
-  final String dateAttendeeLabel;
-  final String attendedCountLabel;
-  final DateTime windowClosesAt;
-
-  String countdownLabel(DateTime now) =>
-      catchWindowCountdownLabel(windowClosesAt.difference(now));
 }
 
 enum DashboardHomeScreenStatus { loading, error, empty, full }
@@ -149,16 +126,12 @@ class DashboardHomeLoadError {
 }
 
 class DashboardHomeHeaderModel {
-  const DashboardHomeHeaderModel({required this.eyebrow, required this.title});
+  const DashboardHomeHeaderModel({required this.title});
 
-  final String eyebrow;
   final String title;
 
   factory DashboardHomeHeaderModel.empty() {
-    return const DashboardHomeHeaderModel(
-      eyebrow: 'WELCOME TO CATCH',
-      title: "Let's find your first event",
-    );
+    return const DashboardHomeHeaderModel(title: "Let's find your first event");
   }
 
   factory DashboardHomeHeaderModel.full({
@@ -166,7 +139,6 @@ class DashboardHomeHeaderModel {
     required DateTime now,
   }) {
     return DashboardHomeHeaderModel(
-      eyebrow: dashboardDayCity(user.city, now: now).toUpperCase(),
       title: '${dashboardGreeting(now)}, ${user.greetingDisplayName}',
     );
   }
@@ -233,12 +205,6 @@ String dashboardGreeting(DateTime now) {
   return 'Evening';
 }
 
-String dashboardDayCity(String? city, {required DateTime now}) {
-  final day = AppTimeFormatters.longWeekday(now);
-  final label = cityLabel(city);
-  return '$day · ${label.isEmpty ? defaultCityDataForMarket().label : label}';
-}
-
 DashboardHomeLiveState dashboardHomeLiveStateFor(
   DashboardHomeScreenState state, {
   required DateTime now,
@@ -249,7 +215,7 @@ DashboardHomeLiveState dashboardHomeLiveStateFor(
 
   final viewModel = state.viewModel;
   if (viewModel == null) return DashboardHomeLiveState.idle;
-  if (viewModel.windowedEvents.isNotEmpty) {
+  if (viewModel.activeSwipeEvent != null) {
     return DashboardHomeLiveState.windowOpen;
   }
   if (viewModel.arrivalAction != null ||
@@ -274,13 +240,13 @@ List<String> dashboardHomeModuleImpressionsFor(DashboardHomeScreenState state) {
   if (viewModel == null) return const ['idle_cta'];
 
   final modules = <String>[];
-  if (viewModel.windowedEvents.isNotEmpty) {
+  if (viewModel.activeSwipeEvent != null) {
     modules.add('catch_window');
   }
   if (viewModel.upcomingEvents.isNotEmpty ||
       viewModel.arrivalAction != null ||
       viewModel.pendingReviewEvent != null) {
-    modules.add('lifecycle_timeline');
+    modules.add('focus_rail');
   }
   final hasLiveModule = modules.isNotEmpty;
   if (!hasLiveModule) {
@@ -290,37 +256,6 @@ List<String> dashboardHomeModuleImpressionsFor(DashboardHomeScreenState state) {
     modules.add('club_posts');
   }
   return List.unmodifiable(modules);
-}
-
-List<CatchWindowItem> catchWindowItemsFromEvents(
-  Iterable<Event> events, {
-  required DateTime now,
-}) {
-  final items = [
-    for (final event in eventsWithOpenSwipeWindow(events, now: now))
-      catchWindowItemFromEvent(event),
-  ]..sort((a, b) => a.windowClosesAt.compareTo(b.windowClosesAt));
-  return List.unmodifiable(items);
-}
-
-CatchWindowItem catchWindowItemFromEvent(Event event) {
-  final dateLabel = AppTimeFormatters.weekdayDayMonth(event.startTime);
-  return CatchWindowItem(
-    event: event,
-    title: event.title,
-    subtitle: 'Only checked-in attendees from ${event.title} are here.',
-    dateAttendeeLabel:
-        '$dateLabel · ${event.attendedCount} attendees checked in',
-    attendedCountLabel: '${event.attendedCount}',
-    windowClosesAt: swipeWindowClosesAt(event),
-  );
-}
-
-String catchWindowCountdownLabel(Duration remaining) {
-  if (remaining.isNegative) return '0h 00m';
-  final hours = remaining.inHours;
-  final minutes = remaining.inMinutes.remainder(60);
-  return '${hours}h ${minutes.toString().padLeft(2, '0')}m';
 }
 
 List<ActivityNotification> clubPostNotificationsFromActivity(
@@ -409,9 +344,9 @@ DashboardFullViewModel buildDashboardFullViewModel({
             ),
       ) ??
       const DashboardSectionModel<List<ExploreEventRecommendation>>.data([]);
-  final windowedEvents = attendedEventsSection.data == null
-      ? const <CatchWindowItem>[]
-      : catchWindowItemsFromEvents(
+  final activeSwipeEvent = attendedEventsSection.data == null
+      ? null
+      : latestEventWithOpenSwipeWindow(
           attendedEventsSection.data!,
           now: effectiveNow,
         );
@@ -440,7 +375,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
     upcomingEvents: upcomingEvents,
     nextEvent: nextEvent,
     arrivalAction: arrivalAction,
-    windowedEvents: windowedEvents,
+    activeSwipeEvent: activeSwipeEvent,
     pendingReviewEvent: pendingReviewEvent,
     clubPostNotifications: clubPostNotifications,
     attendedEventsSection: attendedEventsSection,

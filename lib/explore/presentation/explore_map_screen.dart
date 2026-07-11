@@ -25,7 +25,8 @@ import 'package:go_router/go_router.dart';
 class ExploreMapScreen extends ConsumerStatefulWidget {
   const ExploreMapScreen({
     super.key,
-    this.enableNetworkTiles = true,
+    // Keep the Explore map usable when native Google Maps key validation fails.
+    this.enableNetworkTiles = false,
     this.initialSelectedEventId,
   });
 

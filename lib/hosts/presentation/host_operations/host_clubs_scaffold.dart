@@ -136,6 +136,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
                 ),
                 HostClubTab.insights => HostClubInsightsPane(
                   club: selectedClub,
+                  isOwner: _state.selectedClubIsOwner,
                 ),
                 HostClubTab.preview => HostClubPreviewPane(
                   club: selectedClub,
@@ -154,6 +155,15 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
       : HostClubTab.edit;
 
   void _selectTab(HostClubTab tab) {
+    if (tab == HostClubTab.insights &&
+        _state.selectedTab != HostClubTab.insights &&
+        _state.selectedClub != null) {
+      context.pushNamed(
+        Routes.hostInsightsScreen.name,
+        pathParameters: {'clubId': _state.selectedClub!.id},
+      );
+      return;
+    }
     setState(() => _state = _state.selectTab(tab));
   }
 

@@ -1,12 +1,22 @@
 #!/usr/bin/env node
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
-import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {repoRoot as defaultRepoRoot} from "../lib/repo_paths.mjs";
 
-const manifestPath = fromRepo("design/reference_screens/manifest.json");
 const args = process.argv.slice(2);
+const repoRootArg = valueAfter("--repo-root");
+const repoRoot = repoRootArg ? path.resolve(repoRootArg) : defaultRepoRoot;
+const manifestArg = valueAfter("--manifest");
+const manifestPath = manifestArg
+  ? resolvePath(manifestArg)
+  : fromRepo("design/reference_screens/manifest.json");
 const command = args[0] ?? "--help";
+const hostSourcePackPrefix = "design/source_packs/";
+const sourcePackSchema = "catch.design-source-pack/v1";
+const appNavigationMaskPattern =
+  /(?:^|_)(?:host_)?(?:tab_bar|tab_dock|bottom_nav(?:igation)?|navigation_bar|shell_nav)(?:_|$)/u;
 
 if (command === "--help" || command === "-h" || command === "help") {
   printHelp();
@@ -49,16 +59,33 @@ function compareReferences() {
   const captureDir = resolvePath(captureDirArg);
   const layout = valueAfter("--capture-layout") ?? "capture-first";
   const strict = args.includes("--strict");
+  const selectedIds = new Set(
+    (valueAfter("--ids") ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean),
+  );
+  const matchedSelectedIds = new Set();
   let compared = 0;
   let missing = 0;
   let dimensionMismatches = 0;
   let thresholdFailures = 0;
+  let knownDebtBaselines = 0;
 
   console.log(`Reference screen comparison: ${path.relative(repoRoot, manifestPath)}`);
   console.log(`Capture directory: ${path.relative(repoRoot, captureDir) || captureDir}`);
   console.log(`Capture layout: ${layout}`);
 
   for (const ref of manifest.references ?? []) {
+    if (
+      selectedIds.size > 0 &&
+      !selectedIds.has(ref.id) &&
+      !selectedIds.has(ref.captureId)
+    ) {
+      continue;
+    }
+    if (selectedIds.has(ref.id)) matchedSelectedIds.add(ref.id);
+    if (selectedIds.has(ref.captureId)) matchedSelectedIds.add(ref.captureId);
     const referencePath = fromRepo(ref.referencePath);
     const capturePath = captureFilePath({captureDir, layout, ref});
     if (!fs.existsSync(capturePath)) {
@@ -89,18 +116,46 @@ function compareReferences() {
     const maxMeanDelta = ref.thresholds?.maxMeanDelta ?? 18;
     const failed =
       result.mismatchRatio > maxMismatchRatio || result.meanDelta > maxMeanDelta;
-    if (failed) thresholdFailures += 1;
+    const regressionMaxMismatchRatio =
+      ref.regressionThresholds?.maxMismatchRatio ?? maxMismatchRatio;
+    const regressionMaxMeanDelta =
+      ref.regressionThresholds?.maxMeanDelta ?? maxMeanDelta;
+    const regressionFailed =
+      result.mismatchRatio > regressionMaxMismatchRatio ||
+      result.meanDelta > regressionMaxMeanDelta;
+    const isBoundedKnownDebt =
+      failed &&
+      Boolean(ref.parityDebtId) &&
+      Boolean(ref.regressionThresholds) &&
+      !regressionFailed;
+    if (isBoundedKnownDebt) knownDebtBaselines += 1;
+    else if (failed) thresholdFailures += 1;
 
-    const status = failed ? "above advisory threshold" : "within advisory threshold";
+    const status = isBoundedKnownDebt
+      ? `known parity debt ${ref.parityDebtId}; within regression baseline`
+      : failed
+        ? "above advisory threshold"
+        : "within advisory threshold";
     console.log(
       `- ${ref.id}: ${status}; mismatch=${formatPercent(result.mismatchRatio)}, meanDelta=${result.meanDelta.toFixed(2)}, maxDelta=${result.maxDelta}, masked=${result.maskedPixels}`
     );
   }
 
+  for (const selectedId of selectedIds) {
+    if (matchedSelectedIds.has(selectedId)) continue;
+    missing += 1;
+    console.warn(`- unknown selected reference or capture id: ${selectedId}`);
+  }
+
   console.log(
-    `Reference comparisons: ${compared} compared, ${missing} missing captures, ${dimensionMismatches} dimension mismatches, ${thresholdFailures} above threshold.`
+    `Reference comparisons: ${compared} compared, ${missing} missing captures, ${dimensionMismatches} dimension mismatches, ${thresholdFailures} above threshold, ${knownDebtBaselines} bounded known debt.`,
   );
-  if (strict && thresholdFailures > 0) process.exit(1);
+  if (
+    strict &&
+    (thresholdFailures > 0 || missing > 0 || dimensionMismatches > 0)
+  ) {
+    process.exit(1);
+  }
 }
 
 function validateManifest() {
@@ -118,13 +173,14 @@ function validateManifest() {
   }
 
   const seen = new Set();
+  const sourcePacks = new Map();
   for (const ref of manifest.references) {
-    validateReference(errors, ref, seen);
+    validateReference(errors, ref, seen, sourcePacks);
   }
   return {manifest, errors};
 }
 
-function validateReference(errors, ref, seen) {
+function validateReference(errors, ref, seen, sourcePacks) {
   const label = ref?.id ?? "<missing reference id>";
   if (!/^[a-z0-9_.-]+$/u.test(label)) errors.push(`${label}: invalid id.`);
   if (seen.has(label)) errors.push(`${label}: duplicate id.`);
@@ -138,6 +194,26 @@ function validateReference(errors, ref, seen) {
   if (typeof ref?.textScale !== "number") errors.push(`${label}: textScale must be numeric.`);
   if (!ref?.referencePath) errors.push(`${label}: referencePath is required.`);
   if (!ref?.source?.path) errors.push(`${label}: source.path is required.`);
+  const isHostReference = ref?.screenId?.startsWith("screen.host.") ?? false;
+  if (isHostReference) {
+    validateHostSource(errors, label, ref.source, sourcePacks);
+    if (ref.chromePolicy !== "full-shell") {
+      errors.push(`${label}: Host references must set chromePolicy to full-shell.`);
+    }
+  }
+  if (ref?.regressionThresholds !== undefined) {
+    if (!/^[A-Z0-9][A-Z0-9-]+$/u.test(ref?.parityDebtId ?? "")) {
+      errors.push(`${label}: regressionThresholds require a stable parityDebtId.`);
+    }
+    for (const key of ["maxMismatchRatio", "maxMeanDelta"]) {
+      const value = ref.regressionThresholds?.[key];
+      if (typeof value !== "number" || value < (ref.thresholds?.[key] ?? 0)) {
+        errors.push(
+          `${label}: regressionThresholds.${key} must be numeric and no stricter than thresholds.${key}.`,
+        );
+      }
+    }
+  }
 
   const referencePath = ref?.referencePath ? fromRepo(ref.referencePath) : null;
   if (referencePath && !fs.existsSync(referencePath)) {
@@ -156,12 +232,219 @@ function validateReference(errors, ref, seen) {
     }
   }
 
+  let maskData = null;
   if (ref?.maskPath) {
     const maskPath = fromRepo(ref.maskPath);
     if (!fs.existsSync(maskPath)) {
       errors.push(`${label}: missing maskPath ${ref.maskPath}.`);
     } else {
-      validateMasks(errors, label, readJson(maskPath));
+      maskData = readJson(maskPath);
+      validateMasks(errors, label, maskData);
+    }
+  }
+  if (isHostReference) validateHostChrome(errors, label, ref, maskData);
+}
+
+function validateHostSource(errors, label, source, sourcePacks) {
+  const sourcePath = source?.path;
+  if (!isRepoRelativePath(sourcePath) || !sourcePath.startsWith(hostSourcePackPrefix)) {
+    errors.push(
+      `${label}: Host source.path must be a normalized repo-relative path under ${hostSourcePackPrefix}.`
+    );
+    return;
+  }
+
+  const sourceFile = fromRepo(sourcePath);
+  if (!fs.existsSync(sourceFile) || !fs.statSync(sourceFile).isFile()) {
+    errors.push(`${label}: missing Host source.path ${sourcePath}.`);
+  }
+
+  if (!isSha256(source?.sha256)) {
+    errors.push(`${label}: Host source.sha256 must be a lowercase SHA-256 digest.`);
+  } else if (fs.existsSync(sourceFile) && sha256File(sourceFile) !== source.sha256) {
+    errors.push(`${label}: Host source.sha256 does not match ${sourcePath}.`);
+  }
+
+  const packManifestPath = source?.packManifest;
+  if (!isRepoRelativePath(packManifestPath) || !/^design\/source_packs\/[^/]+\/source-pack\.json$/u.test(packManifestPath)) {
+    errors.push(
+      `${label}: Host source.packManifest must point to design/source_packs/<pack>/source-pack.json.`
+    );
+    return;
+  }
+
+  const sourcePackRoot = path.posix.dirname(packManifestPath);
+  if (!sourcePath.startsWith(`${sourcePackRoot}/`)) {
+    errors.push(`${label}: Host source.path and source.packManifest must use the same source pack.`);
+    return;
+  }
+
+  const sourcePack = validateSourcePack(errors, packManifestPath, sourcePacks);
+  if (!sourcePack) return;
+  const packRelativePath = sourcePath.slice(sourcePackRoot.length + 1);
+  const declaredSha = sourcePack.files.get(packRelativePath);
+  if (!declaredSha) {
+    errors.push(`${label}: ${sourcePath} is not declared by ${packManifestPath}.`);
+  } else if (isSha256(source?.sha256) && declaredSha !== source.sha256) {
+    errors.push(`${label}: source.sha256 disagrees with ${packManifestPath} for ${packRelativePath}.`);
+  }
+}
+
+function validateSourcePack(errors, packManifestPath, sourcePacks) {
+  if (sourcePacks.has(packManifestPath)) return sourcePacks.get(packManifestPath);
+  const packManifestFile = fromRepo(packManifestPath);
+  if (!fs.existsSync(packManifestFile)) {
+    errors.push(`source pack ${packManifestPath}: manifest is missing.`);
+    sourcePacks.set(packManifestPath, null);
+    return null;
+  }
+
+  let pack;
+  try {
+    pack = readJson(packManifestFile);
+  } catch (error) {
+    errors.push(`source pack ${packManifestPath}: invalid JSON (${error.message}).`);
+    sourcePacks.set(packManifestPath, null);
+    return null;
+  }
+
+  const packRoot = path.dirname(packManifestFile);
+  const declaredFiles = new Map();
+  const result = {files: declaredFiles};
+  sourcePacks.set(packManifestPath, result);
+  if (pack?.$schema !== sourcePackSchema) {
+    errors.push(`source pack ${packManifestPath}: $schema must be ${sourcePackSchema}.`);
+  }
+  if (pack?.id !== path.basename(packRoot)) {
+    errors.push(`source pack ${packManifestPath}: id must match its directory name.`);
+  }
+  if (!isDate(pack?.importedAt)) {
+    errors.push(`source pack ${packManifestPath}: importedAt must be YYYY-MM-DD.`);
+  }
+  if (!Array.isArray(pack?.files)) {
+    errors.push(`source pack ${packManifestPath}: files must be an array.`);
+    return result;
+  }
+
+  for (const entry of pack.files) {
+    const entryPath = entry?.path;
+    const entryLabel = `source pack ${packManifestPath}.${entryPath ?? "<missing path>"}`;
+    if (!isRepoRelativePath(entryPath)) {
+      errors.push(`${entryLabel}: path must be normalized and relative to the pack root.`);
+      continue;
+    }
+    if (declaredFiles.has(entryPath)) {
+      errors.push(`${entryLabel}: duplicate path.`);
+      continue;
+    }
+    if (!isSha256(entry?.sha256)) {
+      errors.push(`${entryLabel}: sha256 must be a lowercase SHA-256 digest.`);
+      continue;
+    }
+    declaredFiles.set(entryPath, entry.sha256);
+    const filePath = path.join(packRoot, ...entryPath.split("/"));
+    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      errors.push(`${entryLabel}: file is missing.`);
+    } else if (sha256File(filePath) !== entry.sha256) {
+      errors.push(`${entryLabel}: sha256 does not match.`);
+    }
+  }
+
+  const actualFiles = listFiles(packRoot)
+    .map((filePath) => path.relative(packRoot, filePath).split(path.sep).join("/"))
+    .filter((filePath) => filePath !== path.basename(packManifestFile));
+  for (const filePath of actualFiles) {
+    if (!declaredFiles.has(filePath)) {
+      errors.push(`source pack ${packManifestPath}.${filePath}: file is not declared.`);
+    }
+  }
+  if (!Array.isArray(pack?.entrypoints) || pack.entrypoints.length === 0) {
+    errors.push(`source pack ${packManifestPath}: entrypoints must be a non-empty array.`);
+  } else {
+    for (const entrypoint of pack.entrypoints) {
+      if (!isRepoRelativePath(entrypoint) || !declaredFiles.has(entrypoint)) {
+        errors.push(
+          `source pack ${packManifestPath}: entrypoint ${entrypoint} must be a declared pack file.`,
+        );
+      }
+    }
+  }
+  validateSourcePackDependencyClosure({
+    errors,
+    packManifestPath,
+    packRoot,
+    declaredFiles,
+  });
+  return result;
+}
+
+function validateSourcePackDependencyClosure({
+  errors,
+  packManifestPath,
+  packRoot,
+  declaredFiles,
+}) {
+  for (const relativePath of declaredFiles.keys()) {
+    if (!relativePath.endsWith(".html")) continue;
+    const sourcePath = path.join(packRoot, ...relativePath.split("/"));
+    if (!fs.existsSync(sourcePath)) continue;
+    const source = fs.readFileSync(sourcePath, "utf8");
+    const references = [
+      ...source.matchAll(/\b(?:href|src)\s*=\s*["']([^"']+)["']/giu),
+      ...source.matchAll(/\bfetch\(\s*["']([^"']+)["']/giu),
+    ].map((match) => match[1]);
+    for (const reference of references) {
+      const localPath = resolvePackDependency(relativePath, reference);
+      if (!localPath) continue;
+      if (localPath.startsWith("../") || path.posix.isAbsolute(localPath)) {
+        errors.push(
+          `source pack ${packManifestPath}.${relativePath}: local dependency escapes the pack (${reference}).`,
+        );
+      } else if (!declaredFiles.has(localPath)) {
+        errors.push(
+          `source pack ${packManifestPath}.${relativePath}: missing declared local dependency ${localPath}.`,
+        );
+      }
+    }
+  }
+}
+
+function resolvePackDependency(sourcePath, reference) {
+  const trimmed = reference.trim();
+  if (
+    trimmed === "" ||
+    trimmed.startsWith("#") ||
+    trimmed.startsWith("//") ||
+    /^[a-z][a-z0-9+.-]*:/iu.test(trimmed) ||
+    trimmed.includes("${")
+  ) {
+    return null;
+  }
+  const withoutFragment = trimmed.split("#", 1)[0].split("?", 1)[0];
+  if (!withoutFragment) return null;
+  const base = path.posix.dirname(sourcePath);
+  return path.posix.normalize(path.posix.join(base, withoutFragment));
+}
+
+function validateHostChrome(errors, label, ref, maskData) {
+  const forceCompareMaskIds = ref?.forceCompareMaskIds ?? [];
+  if (!Array.isArray(forceCompareMaskIds)) {
+    errors.push(`${label}: forceCompareMaskIds must be an array when provided.`);
+    return;
+  }
+  const ids = new Set((maskData?.regions ?? []).map((region) => region?.id));
+  for (const id of forceCompareMaskIds) {
+    if (!/^[a-z0-9_.-]+$/u.test(id)) {
+      errors.push(`${label}: invalid forceCompareMaskIds value ${id}.`);
+    } else if (!ids.has(id)) {
+      errors.push(`${label}: forceCompareMaskIds references unknown mask ${id}.`);
+    }
+  }
+  for (const id of ids) {
+    if (appNavigationMaskPattern.test(id) && !forceCompareMaskIds.includes(id)) {
+      errors.push(
+        `${label}: full-shell Host references must force-compare app navigation mask ${id}.`
+      );
     }
   }
 }
@@ -204,8 +487,10 @@ function captureFilePath({captureDir, layout, ref}) {
 function readMasks(ref) {
   if (!ref.maskPath) return [];
   const maskData = readJson(fromRepo(ref.maskPath));
+  const forceCompareMaskIds = new Set(ref.forceCompareMaskIds ?? []);
   return (maskData.regions ?? [])
     .filter((region) => !region.stateIds || region.stateIds.includes(ref.stateId))
+    .filter((region) => !forceCompareMaskIds.has(region.id))
     .map((region) => region.rect);
 }
 
@@ -376,6 +661,10 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function fromRepo(value) {
+  return path.join(repoRoot, ...value.split("/"));
+}
+
 function resolvePath(value) {
   return path.isAbsolute(value) ? value : fromRepo(value);
 }
@@ -388,17 +677,46 @@ function isDate(value) {
   return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/u.test(value);
 }
 
+function isRepoRelativePath(value) {
+  return (
+    typeof value === "string" &&
+    value.length > 0 &&
+    !path.isAbsolute(value) &&
+    !value.includes("\\") &&
+    path.posix.normalize(value) === value &&
+    value !== ".." &&
+    !value.startsWith("../")
+  );
+}
+
+function isSha256(value) {
+  return typeof value === "string" && /^[a-f0-9]{64}$/u.test(value);
+}
+
+function sha256File(filePath) {
+  return crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex");
+}
+
+function listFiles(directory) {
+  return fs.readdirSync(directory, {withFileTypes: true}).flatMap((entry) => {
+    const entryPath = path.join(directory, entry.name);
+    return entry.isDirectory() ? listFiles(entryPath) : [entryPath];
+  });
+}
+
 function formatPercent(value) {
   return `${(value * 100).toFixed(2)}%`;
 }
 
 function printHelp() {
   console.log(`Usage:
-  node tool/design/check_reference_screens.mjs --check [--summary]
-  node tool/design/check_reference_screens.mjs --summary
-  node tool/design/check_reference_screens.mjs --compare --capture-dir <dir> [--capture-layout capture-first|theme-first] [--strict]
+  node tool/design/check_reference_screens.mjs --check [--summary] [--repo-root <dir>] [--manifest <path>]
+  node tool/design/check_reference_screens.mjs --summary [--repo-root <dir>] [--manifest <path>]
+  node tool/design/check_reference_screens.mjs --compare --capture-dir <dir> [--ids <reference-or-capture-ids>] [--capture-layout capture-first|theme-first] [--strict] [--repo-root <dir>] [--manifest <path>]
 
 Validates exported design references under design/reference_screens/. The compare
-mode performs an advisory pixel diff against UI capture PNGs. Use --strict only
-after masks and thresholds are stable enough to block a gate.`);
+mode performs an advisory pixel diff against UI capture PNGs. Strict mode fails
+missing captures, dimension drift, and threshold regressions; a reference may
+carry a stable parityDebtId plus a looser regressionThresholds ceiling while its
+known debt remains open.`);
 }

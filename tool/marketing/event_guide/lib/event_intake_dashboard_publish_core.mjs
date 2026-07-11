@@ -39,6 +39,34 @@ export function buildEventIntakeDashboardPublishPlan({
   };
 }
 
+export function validateEventIntakeDashboardForLivePublish(
+  bridge,
+  {asOf = new Date().toISOString().slice(0, 10)} = {}
+) {
+  const errors = [];
+  const weekEnd = stringValue(bridge?.weekEnd);
+  if (!weekEnd) {
+    errors.push("weekEnd is required for a live Event Intake dashboard");
+  } else if (weekEnd < asOf) {
+    errors.push(`event intake week ended on ${weekEnd}; as-of date is ${asOf}`);
+  }
+  for (const result of arrayOrEmpty(bridge?.sourceResults)) {
+    const url = stringValue(result?.url);
+    if (url && isPlaceholderUrl(url)) {
+      errors.push(`${result.id ?? "source result"}: placeholder URL is not live-safe`);
+    }
+    if (arrayOrEmpty(result?.riskFlags).includes("placeholder_result")) {
+      errors.push(`${result.id ?? "source result"}: placeholder result is not live-safe`);
+    }
+  }
+  for (const candidate of arrayOrEmpty(bridge?.eventCandidates)) {
+    if (/^sample candidate$/iu.test(stringValue(candidate?.sourceLabel) ?? "")) {
+      errors.push(`${candidate.id ?? "event candidate"}: sample candidate is not live-safe`);
+    }
+  }
+  return errors;
+}
+
 export async function applyEventIntakeDashboardPublishPlan(
   firestore,
   plan,
@@ -65,6 +93,7 @@ function normalizeEventIntakeBridge(bridge) {
     bridgeSource: "native_generated",
     city: bridge.city ?? {id: "unknown", label: "Unknown"},
     weekStart: bridge.weekStart ?? null,
+    weekEnd: bridge.weekEnd ?? null,
     summary: plainObjectOrEmpty(bridge.summary),
     sourceProfiles: arrayOrEmpty(bridge.sourceProfiles),
     queryTemplates: arrayOrEmpty(bridge.queryTemplates),
@@ -93,6 +122,19 @@ function arrayOrEmpty(value) {
 
 function arrayLength(value) {
   return Array.isArray(value) ? value.length : 0;
+}
+
+function stringValue(value) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function isPlaceholderUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.hostname === "example.com" || url.hostname.endsWith(".example.com");
+  } catch {
+    return true;
+  }
 }
 
 function splitDocumentPath(targetPath) {

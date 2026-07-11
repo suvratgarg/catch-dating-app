@@ -1,13 +1,23 @@
 ---
 doc_id: home_catches_unification_spec
-version: 1.0.1
+version: 1.0.0
 updated: 2026-07-06
 owner: product (approved direction 2026-07-06)
-status: implemented
+status: ready-for-implementation
 depends_on: home_live_layer_product_spec
 ---
 
 # Home + Catches Unification — Product Spec
+
+> **STATUS 2026-07-07 — partially mooted, mostly still pending.** The
+> Catches TAB is already gone (the adaptive-tab-bar / 4-tab work removed it;
+> `/catches` now redirects to Home, `/catches/:eventId` is re-parented under
+> the Home branch) and a SINGLE open catch window already surfaces on Home
+> via the focus rail's `activeSwipeEvent` slot — so catching is not orphaned.
+> What remains genuinely UNBUILT is the full lifecycle timeline: U1
+> multi-window list (`windowedEvents`), U2 lifecycle card with live
+> countdown, the U-C1 vertical priority list, U4 merged empty state, U5
+> analytics. Treat U3 as done-by-side-effect; the rest is the open scope.
 
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
 Builds on: `docs/plans/home_live_layer_product_spec.md` (the "home = live
@@ -60,13 +70,6 @@ escalate-and-continue on failed preconditions. Standard workflow (AGENTS.md,
 focused tests + analyzer, sequential Flutter runs, widgetbook, catalog/
 doc_versions/passes stamps, readiness gate). Never edit
 `packages/catch_ui_lints`.
-
-Implementation note (2026-07-06): landed as
-`codex/home-catches-unification`. Home now owns the event lifecycle timeline
-through `EventLifecycleTimeline` and `DashboardFullViewModel.windowedEvents`;
-the Catches hub route/screen/widgets are retired. `/catches/:eventId` and
-`/catches/:eventId/recap` remain stable catch-flow destinations under the Home
-branch, while bare `/catches` redirects home.
 
 ---
 
@@ -211,10 +214,10 @@ independent and can interleave.
 
 ## Completion checklist (goal mode)
 
-- [x] U1 view model unified (windowedEvents list; hub aggregation moved, not duplicated)
-- [x] U-C1 focus surface = vertical priority list (rail retired; hero window card + condensed upcoming tail per §6)
-- [x] U2 lifecycle card window phase (countdown + count + launch) + hub widgets retired + ledger
-- [x] U3 nav shell: Catches tab removed, catch flow re-parented, deep links preserved, indices verified (tab stays "Home", U-C2)
-- [x] U4 merged idle/empty state (explainer folded in)
-- [x] U5 analytics + tests + widgetbook states
-- [x] full analyze clean; readiness 100/100; scanners green; catalog/doc_versions/passes stamped
+- [ ] U1 view model unified (windowedEvents list; hub aggregation moved, not duplicated)
+- [ ] U-C1 focus surface = vertical priority list (rail retired; hero window card + condensed upcoming tail per §6)
+- [ ] U2 lifecycle card window phase (countdown + count + launch) + hub widgets retired + ledger
+- [ ] U3 nav shell: Catches tab removed, catch flow re-parented, deep links preserved, indices verified (tab stays "Home", U-C2) — nav-shell mechanics landed 2026-07-07 for the adaptive tab bar; `SwipeHubScreen`/hub captures remain pending U1/U2/U4 absorption before this phase is fully closed
+- [ ] U4 merged idle/empty state (explainer folded in)
+- [ ] U5 analytics + tests + widgetbook states
+- [ ] full analyze clean; readiness 100/100; scanners green; catalog/doc_versions/passes stamped

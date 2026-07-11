@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-06",
+  "updated": "2026-07-11",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -911,7 +911,7 @@
       "name": "Explore Discovery",
       "priority": "P1",
       "status": "in_progress",
-      "nextPass": "explore-discovery-composition-01",
+      "nextPass": "explore-spec-policy-review-01",
       "screens": [
         {
           "id": "explore.discovery",
@@ -967,13 +967,22 @@
               "id": "claude.catch-explore",
               "kind": "external",
               "status": "available",
-              "notes": "Claude Design export at /Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-explore/Explore.dc.html."
+              "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/templates/catch-explore/Explore.dc.html",
+              "notes": "Representative generated-feed fixture; use the Explore v2 spec for product behavior rather than treating this frozen composition as literal lane order."
             },
             {
               "id": "claude.components.explore",
               "kind": "external",
               "status": "available",
+              "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/components/explore",
               "notes": "Claude Explore components: CoverStory, CountPill, and CrossPathsCard."
+            },
+            {
+              "id": "claude.explore-spec-v2",
+              "kind": "external",
+              "status": "available",
+              "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/explorations/screen-specs/Explore Spec.html",
+              "notes": "Explore v2 product model and behavior spec dated 2026-07-08. Open choices remain owner-blocked in EXPLORE-PRODUCT-DECISIONS-2026-07-10 until accepted."
             },
             {
               "id": "screen.explore.discovery",
@@ -1655,15 +1664,15 @@
       "lintCandidates": [
         {
           "id": "DP-EXPLORE-LINT-001",
-          "status": "open",
-          "nextAction": "Add or extend scanners so P1 routes cannot remain planned in screen_coverage.json after a screen contract exists."
+          "status": "closed",
+          "nextAction": "Closed by tool/design/check_screen_coverage.mjs: every route listed by a screen contract must be contracted to that screen, while advisory mode reports P1 planned routes awaiting contracts."
         }
       ],
       "previewPlan": [
         {
           "id": "DP-EXPLORE-PREVIEW-001",
-          "status": "open",
-          "nextAction": "Create Widgetbook use cases for Explore browse chrome, filter rail/sheet, CoverStory, mixed feed cards, map pill, empty/error states, and map route adapters."
+          "status": "closed",
+          "nextAction": "Closed by existing Widgetbook use cases for Explore screen, browse chrome, filter rail/sheet, CoverStory, mixed feed cards, Cross Paths, map launcher, empty/error states, activity index, and map route states."
         }
       ]
     },
@@ -1682,11 +1691,9 @@
             "lib/dashboard/presentation/dashboard_full_view_model.dart",
             "lib/dashboard/presentation/widgets/dashboard_empty.dart",
             "lib/dashboard/presentation/widgets/dashboard_full.dart",
-            "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-            "lib/dashboard/presentation/widgets/event_lifecycle_timeline.dart",
+            "lib/dashboard/presentation/widgets/event_focus_rail.dart",
             "lib/dashboard/presentation/widgets/empty_hero_card.dart",
-            "lib/dashboard/presentation/widgets/club_posts_home_section.dart",
-            "lib/swipes/domain/swipe_window.dart"
+            "lib/dashboard/presentation/widgets/club_posts_home_section.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -1703,6 +1710,8 @@
             "dashboard_home_memberships_error",
             "dashboard_home_booked_events_error",
             "dashboard_home_empty_start",
+            "dashboard_home_recommendations_loading",
+            "dashboard_home_recommendations_error",
             "dashboard_home_text_scale_2",
             "dashboard_home_reduced_motion",
             "dashboard_home_self_check_in",
@@ -1827,7 +1836,7 @@
               ]
             },
             {
-              "id": "event_lifecycle_upcoming",
+              "id": "event_focus_upcoming",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
@@ -1859,13 +1868,13 @@
               ]
             },
             {
-              "id": "catch_window_open_and_review",
+              "id": "after_event_swipe_review",
               "kind": "populated",
               "status": "captured",
               "tests": [
                 "test/dashboard/dashboard_screen_test.dart"
               ],
-              "notes": "dashboard_home_after_event_focus now captures the Home-owned catch-window lifecycle card with Start catching, Review pending, and Write review affordances. Focused tests cover window-open analytics, impression/open events, vertical ordering, and the /catches/:eventId route launch.",
+              "notes": "dashboard_home_after_event_focus captures the after-event Start catching and Write review focus card.",
               "previewIds": [
                 "DashboardScreen/Screen states"
               ],
@@ -1916,6 +1925,51 @@
               "notes": "Apple Health permission-required card is captured and tested; DashboardStrideSection now receives typed action callbacks and display-only busy state from DashboardFullSliverBody.",
               "previewIds": [
                 "DashboardScreen/Screen states"
+              ]
+            },
+            {
+              "id": "recommendations_ready",
+              "kind": "populated",
+              "status": "captured",
+              "captureIds": [
+                "dashboard_home"
+              ],
+              "tests": [
+                "test/dashboard/dashboard_screen_test.dart"
+              ],
+              "notes": "Recommendation rail is captured and tested on the happy path.",
+              "previewIds": [
+                "DashboardScreen/Screen states"
+              ]
+            },
+            {
+              "id": "recommendations_loading",
+              "kind": "loading",
+              "status": "captured",
+              "tests": [
+                "test/dashboard/dashboard_screen_test.dart"
+              ],
+              "notes": "Section-level recommendation loading card is tested and captured inside the full dashboard shell. Capture proof is registered in the route capture catalog.",
+              "previewIds": [
+                "DashboardScreen/Screen states"
+              ],
+              "captureIds": [
+                "dashboard_home_recommendations_loading"
+              ]
+            },
+            {
+              "id": "recommendations_error",
+              "kind": "error",
+              "status": "captured",
+              "tests": [
+                "test/dashboard/dashboard_screen_test.dart"
+              ],
+              "notes": "Section-level recommendation error is tested and captured inside the full dashboard shell. Capture proof is registered in the route capture catalog.",
+              "previewIds": [
+                "DashboardScreen/Screen states"
+              ],
+              "captureIds": [
+                "dashboard_home_recommendations_error"
               ]
             },
             {
@@ -2549,6 +2603,221 @@
       "nextPass": "catches-captures-01",
       "screens": [
         {
+          "id": "catches.hub",
+          "routeId": "swipeHubScreen",
+          "implementationPaths": [
+            "lib/swipes/presentation/catches_hub_screen_state.dart",
+            "lib/swipes/presentation/swipe_hub_screen.dart",
+            "lib/swipes/presentation/widgets/attended_event_tile.dart",
+            "lib/swipes/domain/swipe_window.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.surface"
+          ],
+          "captureIds": [
+            "swipe_hub_active",
+            "swipe_hub_uid_loading",
+            "swipe_hub_uid_error",
+            "swipe_hub_signed_out",
+            "swipe_hub_attended_events_loading",
+            "swipe_hub_attended_events_error",
+            "swipe_hub_offline",
+            "swipe_hub_empty",
+            "swipe_hub_text_scale_2",
+            "swipe_hub_reduced_motion"
+          ],
+          "designRefs": [
+            {
+              "id": "catches-hub-reference",
+              "kind": "external",
+              "status": "blocked",
+              "notes": "No distinct Catches Hub Claude source was found in /Users/suvratgarg/Downloads/Catch Design System (2) during the 2026-06-23 reference pass. The bundle contains the Catches Event Deck/post-run catch-window asset, which is already registered separately. Need a canonical Catches Hub design export or design decision before advisory pixel comparison."
+            }
+          ],
+          "states": [
+            {
+              "id": "uid_loading",
+              "kind": "loading",
+              "status": "captured",
+              "notes": "Captured uid loading skeleton state.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states"
+              ],
+              "captureIds": [
+                "swipe_hub_uid_loading"
+              ]
+            },
+            {
+              "id": "uid_error",
+              "kind": "error",
+              "status": "captured",
+              "notes": "Captured auth/session error state with branded retry surface.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states"
+              ],
+              "captureIds": [
+                "swipe_hub_uid_error"
+              ]
+            },
+            {
+              "id": "signed_out_hidden",
+              "kind": "permission",
+              "status": "captured",
+              "notes": "Captured signed-out shell-hidden state.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states"
+              ],
+              "captureIds": [
+                "swipe_hub_signed_out"
+              ]
+            },
+            {
+              "id": "attended_events_loading",
+              "kind": "loading",
+              "status": "captured",
+              "notes": "Captured attended-events loading skeleton state.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states"
+              ],
+              "captureIds": [
+                "swipe_hub_attended_events_loading"
+              ]
+            },
+            {
+              "id": "attended_events_error",
+              "kind": "error",
+              "status": "captured",
+              "notes": "Captured attended-events error state with branded retry surface.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states"
+              ],
+              "captureIds": [
+                "swipe_hub_attended_events_error"
+              ]
+            },
+            {
+              "id": "active_windows",
+              "kind": "populated",
+              "status": "captured",
+              "captureIds": [
+                "swipe_hub_active"
+              ],
+              "tests": [
+                "test/swipes/swipe_hub_screen_test.dart"
+              ],
+              "notes": "CatchesHubScreenState filters active open catch windows with an injected clock and maps countdown labels plus catch/recap route intents before rendering hero card and attended event tiles.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states",
+                "CatchesHubContent/Hub composition",
+                "CatchesIntroCard/Intro card states",
+                "AttendedEventTile/Tile states"
+              ]
+            },
+            {
+              "id": "no_active_windows",
+              "kind": "empty",
+              "status": "captured",
+              "notes": "Captured no-active-catch-windows empty state.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states",
+                "CatchesHubEmptyState/Empty states"
+              ],
+              "captureIds": [
+                "swipe_hub_empty"
+              ]
+            },
+            {
+              "id": "dark_intro_cta",
+              "kind": "theme",
+              "status": "captured",
+              "tests": [
+                "test/swipes/swipe_hub_screen_test.dart"
+              ],
+              "notes": "Baseline paired hub capture includes the dark-mode intro CTA treatment.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states",
+                "CatchesIntroCard/Intro card states"
+              ],
+              "captureIds": [
+                "swipe_hub_active"
+              ]
+            },
+            {
+              "id": "offline",
+              "kind": "offline",
+              "status": "captured",
+              "notes": "swipe_hub_offline captures attended-event provider offline errors through shared mapped offline copy.",
+              "captureIds": [
+                "swipe_hub_offline"
+              ],
+              "previewIds": [
+                "SwipeHubScreen/Hub route states"
+              ]
+            },
+            {
+              "id": "text_scale_2",
+              "kind": "accessibility",
+              "status": "captured",
+              "notes": "Captured Catches hub at text scale 2.0.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states",
+                "CatchesHubContent/Hub composition"
+              ],
+              "captureIds": [
+                "swipe_hub_text_scale_2"
+              ]
+            },
+            {
+              "id": "reduced_motion",
+              "kind": "accessibility",
+              "status": "captured",
+              "notes": "Captured Catches hub with animations disabled.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states"
+              ],
+              "captureIds": [
+                "swipe_hub_reduced_motion"
+              ]
+            },
+            {
+              "id": "light_dark",
+              "kind": "theme",
+              "status": "captured",
+              "notes": "Baseline hub capture writes paired light and dark PNGs.",
+              "previewIds": [
+                "SwipeHubScreen/Hub route states"
+              ],
+              "captureIds": [
+                "swipe_hub_active"
+              ]
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-CATCHES-HUB-001",
+              "status": "closed",
+              "nextAction": "Closed by SwipeHubScreen/Hub route states first-pass Widgetbook coverage."
+            },
+            {
+              "id": "DP-CATCHES-HUB-002",
+              "status": "closed",
+              "nextAction": "Closed by swipe_hub_offline plus existing loading, auth error, signed-out hidden, attended-events loading/error, empty, text-scale, reduced-motion, and paired light/dark captures. The hub intentionally uses shared mapped offline copy unless product requests Catches-specific wording."
+            },
+            {
+              "id": "DP-CATCHES-HUB-003",
+              "status": "closed",
+              "nextAction": "Closed by CatchesHubScreenState and focused tests proving provider waves, active-window filtering, countdown labels, and catch/recap route intents."
+            },
+            {
+              "id": "DP-CATCHES-HUB-004",
+              "status": "blocked",
+              "nextAction": "Blocked on a canonical Catches Hub design source/export. Once design provides the hub reference, export the PNG, add masks for dynamic countdown/live attendee regions, register the manifest entry, and run advisory pixel comparison."
+            }
+          ]
+        },
+        {
           "id": "catches.event",
           "routeId": "swipeEventScreen",
           "implementationPaths": [
@@ -2916,7 +3185,7 @@
         {
           "id": "DP-CATCHES-PREVIEW-001",
           "status": "closed",
-          "nextAction": "Closed for the remaining Catches deck by SwipeScreen/Event deck route states first-pass Widgetbook use cases. The retired Catches hub is now represented by Home's EventLifecycleTimeline window-open states."
+          "nextAction": "Closed by SwipeHubScreen/Hub route states and SwipeScreen/Event deck route states first-pass Widgetbook use cases."
         }
       ]
     },
@@ -2959,9 +3228,7 @@
             "matches_list_duplicate_collapsed",
             "matches_list_match_celebration",
             "matches_list_text_scale_2",
-            "matches_list_reduced_motion",
-            "host_inbox_queries",
-            "matches_host_unread_empty"
+            "matches_list_reduced_motion"
           ],
           "designRefs": [
             {
@@ -3106,22 +3373,6 @@
               ]
             },
             {
-              "id": "host_inbox_filter",
-              "kind": "permission",
-              "status": "captured",
-              "tests": [
-                "test/chats/chat_inbox_screen_test.dart"
-              ],
-              "notes": "Host app role switches copy to Inbox/Attendee queries and exposes All/Unread host filters.",
-              "previewIds": [
-                "ChatsListScreen/Host inbox states"
-              ],
-              "captureIds": [
-                "host_inbox_queries",
-                "matches_host_unread_empty"
-              ]
-            },
-            {
               "id": "match_celebration",
               "kind": "mutation",
               "status": "captured",
@@ -3186,7 +3437,7 @@
             {
               "id": "DP-MATCHES-LIST-001",
               "status": "closed",
-              "nextAction": "Closed by ChatsListScreen/Consumer route states and ChatsListScreen/Host inbox states first-pass Widgetbook use cases."
+              "nextAction": "Closed by ChatsListScreen/Consumer route states and the separate HostInboxScreen/Event-scoped states Widgetbook coverage."
             },
             {
               "id": "DP-MATCHES-LIST-002",
@@ -3616,7 +3867,7 @@
         {
           "id": "DP-MATCHES-CHAT-PREVIEW-001",
           "status": "closed",
-          "nextAction": "Closed by ChatsListScreen/Consumer route states, ChatsListScreen/Host inbox states, and ChatScreen/Route states first-pass Widgetbook use cases."
+          "nextAction": "Closed by ChatsListScreen/Consumer route states, HostInboxScreen/Event-scoped states, and ChatScreen/Route states first-pass Widgetbook coverage."
         }
       ]
     },
@@ -4215,6 +4466,10 @@
         {
           "id": "host.home",
           "routeId": "hostHomeScreen",
+          "routeIds": [
+            "hostHomeScreen",
+            "hostEventsScreen"
+          ],
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
             "lib/hosts/presentation/host_home_screen_state.dart",
@@ -4363,7 +4618,7 @@
               "id": "club_events_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "HostHomeEventsSectionState maps the selected club event async branch to loading, and HostEventsClubSection renders HostEventRowsSkeleton under the Upcoming label. Event-list loading capture is registered.",
+              "notes": "HostEventsClubCard maps the selected club event async branch to HostEventsWorkspaceState.loading, and HostEventsClubSection renders the lifecycle-list skeleton beneath the New/Repeat and Upcoming/Live/Past controls. Event-list loading capture is registered.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -4376,7 +4631,7 @@
               "id": "club_events_error",
               "kind": "error",
               "status": "captured",
-              "notes": "HostHomeEventsSectionState maps event errors before HostEventsClubSection renders CatchInlineErrorState.fromError with AppErrorContext.event and a typed retry callback supplied by HostEventsClubCard. Event-list error capture is registered.",
+              "notes": "HostEventsClubCard maps event errors into HostEventsWorkspaceState before HostEventsClubSection renders CatchInlineErrorState.fromError with AppErrorContext.event and a typed retry callback. Event-list error capture is registered.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -4392,7 +4647,7 @@
               "captureIds": [
                 "host_home_events_offline"
               ],
-              "notes": "HostHomeEventsSectionState maps offline event errors before HostEventsClubSection renders the shared retryable connection issue copy without blocking loaded host club chrome.",
+              "notes": "HostEventsWorkspaceState preserves offline event failures so HostEventsClubSection renders the shared retryable connection issue copy without blocking the loaded Host Events controls.",
               "previewIds": [
                 "hostHomeEventSectionStates"
               ]
@@ -4404,11 +4659,11 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Host Home now separates HostHomeTab.today from HostHomeTab.events. HostHomeTodayDashboardState maps selected-club events into the Today next-event hero plus needs-you task rows, while HostHomeEventRowsState continues sorting non-cancelled club events for the Events list. The registered Host Today and Host Events-list references are both within threshold after the 2026-06-25 pass: Today 17.48% / 15.54, Events 6.76% / 12.26. Add long-title and accessibility variants.",
+              "notes": "Host Home separates HostHomeTab.today from HostHomeTab.events and mounts both through the production HostAppShell. Events implements the Host-v2 lifecycle workspace and passes the canonical reference at 15.24% mismatch / 15.20 meanDelta without a regression ceiling. Today now uses a minute-refreshing countdown, event-identified cross-event waitlist tasks with exact-event routing, lifecycle-aware live run-of-show routing, and later-event rows while omitting unsupported task types; it remains open at 28.48% / 37.31 under HOST-V2-TODAY-FUNCTIONAL-PARITY-001.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates",
-                "HostEventRows/Exact catalog"
+                "HostEventLifecycleRow/Exact catalog"
               ],
               "captureIds": [
                 "host_home_dashboard",
@@ -4448,10 +4703,10 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "_HostEventsScaffold owns the typed manage-event callback and pushes hostAppEventManageScreen with clubId, eventId, and event extra. HostEventRows now renders provider/router-free row data and delegates taps to its parent.",
+              "notes": "_HostEventsScaffold owns the typed manage-event callback and pushes hostAppEventManageScreen with clubId, eventId, and event extra. HostEventLifecycleRow renders provider/router-free lifecycle data and delegates taps to its parent.",
               "previewIds": [
                 "hostHomeRouteStates",
-                "HostEventRows/Exact catalog"
+                "HostEventLifecycleRow/Exact catalog"
               ]
             },
             {
@@ -4517,20 +4772,26 @@
             {
               "id": "DP-HOST-HOME-003",
               "status": "closed",
-              "nextAction": "HostHomeRouteState now maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before the route composes the shell. HostHomeScreenState owns selected-club and HostHomeTab selection; HostHomeTodayDashboardState maps Today loading/error/empty/content branches; HostHomeEventsSectionState maps Events loading/error/empty/populated branches; provider-free sections render Today cards, event rows, Add event, empty copy, and typed retry/create/manage callbacks."
+              "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before shell composition. HostHomeScreenState owns selected-club and HostHomeTab selection; HostHomeTodayDashboardState maps Today branches; HostEventsWorkspaceState owns Events loading/error/empty/populated lifecycle branches, filtering, grouping, Repeat availability, and render-ready rows."
             },
             {
               "id": "DP-HOST-HOME-004",
               "status": "blocked",
-              "nextAction": "Blocked/reference-only until canonical state-variant exports exist: Host Today and Host Events-list references and masks are exported and registered, and both are within advisory threshold: Today 17.48% / 15.54, Events 6.76% / 12.26. The current Claude sources only provide the base Today and Events compositions; loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional event-list variants need source exports before reference work can continue."
+              "nextAction": "Events base parity is closed at the canonical threshold with its regression ceiling removed. Continue HOST-V2-TODAY-FUNCTIONAL-PARITY-001 by composing real pending-approval, offer, draft, and guest-inquiry sources; remove the Today regressionThresholds only after the canonical threshold passes. Additional loading/empty/role/theme variants still need design exports."
             }
           ]
         },
         {
           "id": "host.clubs",
           "routeId": "hostClubsScreen",
+          "routeIds": [
+            "hostClubsScreen",
+            "hostOrganizerScreen",
+            "hostInsightsScreen"
+          ],
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
+            "lib/hosts/presentation/host_operations/host_insights_screen.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/payments/data/host_payment_account_repository.dart",
             "lib/hosts/data/host_analytics_repository.dart",
@@ -4554,6 +4815,7 @@
             "host_clubs_offline",
             "host_clubs_empty",
             "host_clubs_cohost_edit",
+            "host_clubs_insights_reference",
             "host_clubs_insights_report",
             "host_clubs_preview_tab",
             "host_clubs_text_scale_2",
@@ -4586,8 +4848,15 @@
               "id": "host-clubs-reference",
               "kind": "external",
               "status": "available",
-              "notes": "Claude Host Organizer reference exported and registered for advisory pixel comparison. After the compact Organizer header, payout callout, metric-row treatment, and mask calibration, the 2026-06-25 host_clubs_management advisory compare is within threshold: mismatch 5.71%, mean delta 3.53, max delta 34, masked 286220.",
+              "notes": "The repo-pinned Host Organizer reference is registered. The 2026-07-10 production full-shell comparison includes navigation chrome and is within the aggregate advisory threshold at mismatch 12.02%, meanDelta 7.79, maxDelta 240, masked 260416.",
               "path": "design/reference_screens/screen.host.clubs/organizer.png"
+            },
+            {
+              "id": "host-insights-reference",
+              "kind": "external",
+              "status": "blocked",
+              "notes": "The pinned Host Insights source and routed 390x812 production capture are available. Repo-owned PNG export and focused comparison remain open because the 2026-07-10 headless-Chrome exporter was denied by the Codex execution-credit limit; do not treat this as parity closure.",
+              "path": "design/source_packs/host-v2/templates/hosts-insights/Insights.dc.html"
             }
           ],
           "states": [
@@ -4826,12 +5095,24 @@
               ]
             },
             {
+              "id": "insights_unknown_club",
+              "kind": "permission",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "notes": "HostInsightsScreen requires an exact operated-club id and renders Insights unavailable instead of silently falling back to the first club. Back navigation returns to Organizer.",
+              "previewIds": [
+                "HostInsightsScreen/Dedicated route states"
+              ]
+            },
+            {
               "id": "insights_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "The Insights tab watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load. A deterministic analytics loading capture now covers this state.",
+              "notes": "The dedicated Insights route watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load. A deterministic route capture covers this state without the legacy Clubs tab rail.",
               "previewIds": [
-                "HostClubsScreen/Route states"
+                "HostInsightsScreen/Dedicated route states"
               ],
               "captureIds": [
                 "host_clubs_insights_loading"
@@ -4841,11 +5122,12 @@
               "id": "insights_report",
               "kind": "populated",
               "status": "captured",
-              "notes": "_HostAnalyticsReportView renders metrics, trend bars, top events, reviews/saves, and data-quality panels from HostAnalyticsReport. HostClubInsightsState now owns range, granularity, custom date bounds, event scope, and provider query derivation. Add Widgetbook states for sparse, missing-data, event-scoped, custom-range, and long-label analytics reports.",
+              "notes": "HostInsightsScreen renders exact organizer back/title/range chrome and HostAnalyticsReportView renders backend metrics, a real demand/bookings dual-series trend with adjacent granularity control, top events, reviews/saves, and data quality. The routed 390x812 capture and tall report capture are registered; reference export/comparison remains open under HOST-V2-INSIGHTS-REFERENCE-001.",
               "previewIds": [
-                "HostClubsScreen/Route states"
+                "HostInsightsScreen/Dedicated route states"
               ],
               "captureIds": [
+                "host_clubs_insights_reference",
                 "host_clubs_insights_report"
               ]
             },
@@ -4855,7 +5137,7 @@
               "status": "captured",
               "notes": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
               "previewIds": [
-                "HostClubsScreen/Route states"
+                "HostInsightsScreen/Dedicated route states"
               ],
               "captureIds": [
                 "host_clubs_insights_error",
@@ -4951,7 +5233,7 @@
             {
               "id": "DS-HOST-CLUBS-004",
               "status": "closed",
-              "nextAction": "Host Organizer reference and masks are exported and registered. After the compact Organizer header, payout callout, metric-row treatment, and mask calibration, the 2026-06-25 advisory compare against host_clubs_management is within threshold: mismatch 5.71%, mean delta 3.53, max delta 34, masked 286220. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future Claude reference exports."
+              "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
             }
           ]
         },
@@ -6979,19 +7261,18 @@
           "id": "host.inbox",
           "routeId": "hostInboxScreen",
           "implementationPaths": [
-            "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-            "lib/chats/presentation/inbox/chats_list_celebration_controller.dart",
-            "lib/chats/presentation/inbox/chats_list_screen_state.dart",
-            "lib/chats/presentation/inbox/chats_search_header_controller.dart",
+            "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+            "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
+            "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
+            "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
             "lib/chats/presentation/inbox/chats_list_view_model.dart",
-            "lib/chats/presentation/inbox/host_inbox_filter.dart",
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-            "lib/chats/presentation/inbox/widgets/chats_list.dart",
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/core/widgets/catch_person_row.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-            "lib/matches/data/match_repository.dart"
+            "lib/events/data/event_repository.dart",
+            "lib/events/data/event_participation_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -7007,11 +7288,15 @@
             "host_inbox_offline",
             "host_inbox_empty",
             "host_inbox_queries",
-            "host_inbox_unread_filter",
-            "matches_host_unread_empty",
+            "host_inbox_prospective",
+            "host_inbox_general",
+            "host_inbox_roster_no_threads",
             "host_inbox_search_active",
             "host_inbox_search_empty",
             "host_inbox_new_query",
+            "host_inbox_broadcast_composer",
+            "host_inbox_broadcast_pending",
+            "host_inbox_broadcast_error",
             "host_inbox_text_scale_2",
             "host_inbox_reduced_motion",
             "host_inbox_light_dark"
@@ -7021,7 +7306,7 @@
               "id": "host-inbox-reference",
               "kind": "external",
               "status": "available",
-              "notes": "Host Inbox populated reference is exported, manifest-registered, and compared against host_inbox_queries. After the host broadcast card plus reference-safe-area capture pass, the comparison is within threshold at mismatch 8.64%, meanDelta 14.81, maxDelta 240, masked 60276. Search/unread variants remain future work.",
+              "notes": "The repo-pinned Host Inbox populated reference remains authoritative. The fresh 2026-07-11 full-shell comparison is within both pinned thresholds at 7.34% mismatch / 7.62 meanDelta after the compact title, event-scope menu, and mono SegPill pass. The retired All/Unread result remains invalid.",
               "path": "design/reference_screens/screen.host.inbox/inbox.png"
             }
           ],
@@ -7032,7 +7317,7 @@
               "status": "captured",
               "notes": "HostInboxScreenState maps unresolved uid plus loading view-model state to ChatsListLoading while retaining host header and filter shell. Decide whether null uid should remain skeleton loading or become an explicit host access state.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "tests": [
                 "test/chats/chat_inbox_screen_test.dart"
@@ -7047,7 +7332,7 @@
               "status": "captured",
               "notes": "HostInboxScreenState and ChatsListDisplayState map loading matches to the attendee-query skeleton body. Use this capture for skeleton parity against host inbox references.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "tests": [
                 "test/chats/chat_inbox_screen_test.dart"
@@ -7062,7 +7347,7 @@
               "status": "captured",
               "notes": "ChatsListDisplayState maps match stream failures to ChatsListError with ChatsListRetryIntent.reloadViewModel before ChatsList renders CatchSliverErrorState.fromError with AppErrorContext.chat and executes the typed retry target.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "tests": [
                 "test/chats/chat_inbox_screen_test.dart"
@@ -7077,7 +7362,7 @@
               "status": "captured",
               "notes": "ChatsListDisplayState maps a successful empty host inbox to the host-specific No attendee queries yet empty state. Keep empty copy aligned with the host inbox reference variants.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_empty"
@@ -7087,9 +7372,9 @@
               "id": "host_query_filtering",
               "kind": "populated",
               "status": "tested",
-              "notes": "ChatsListViewModel filters host app data to matches where match.isClubHostInquiry is true; mixed host-inquiry and consumer-dating matches are covered by a host-specific test. Host-inquiry grouping policy is covered by collapseMatchesByOtherUser, which groups duplicates by club plus attendee so separate club inquiries do not merge into one row.",
+              "notes": "ChatsListViewModel filters host app data to matches where match.isClubHostInquiry is true; mixed host-inquiry and consumer-dating matches are covered by a host-specific test. collapseMatchesByOtherUser uses a typed club, optional-event, and attendee key: same-event duplicates collapse, different event inquiries remain distinct, and General never aliases an event id.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "tests": [
                 "test/chats/chat_inbox_screen_test.dart"
@@ -7099,12 +7384,12 @@
               "id": "populated_queries",
               "kind": "populated",
               "status": "captured",
-              "notes": "Host Inbox renders attendee-query rows plus a host broadcast card for host-mode conversations. Host Inbox populated-query state now has a manifest-registered reference and compares within threshold after the broadcast-card and reference-safe-area capture pass: mismatch 8.64%, meanDelta 14.81, maxDelta 240. Continue backend send wiring and state-specific unread/search/text-scale/theme variants if design exports them.",
+              "notes": "Host Inbox renders the selected event, Booked/Prospective personal inquiry rows, and roster-backed broadcast card inside the production HostAppShell. The fresh 2026-07-11 strict comparison passes at 7.34% mismatch / 7.62 meanDelta. HOST-V2-INBOX-PARITY-001 remains active only because production callable/IAM and delivery proof are external and not yet recorded.",
               "tests": [
                 "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_queries",
@@ -7121,7 +7406,7 @@
                 "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_queries",
@@ -7130,34 +7415,69 @@
               ]
             },
             {
-              "id": "host_unread_filter",
+              "id": "prospective_queries",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostInboxScreenState provides HostInboxFilter and unread count; ChatsListDisplayState applies unread filtering before rows render. Add long-count 99+ capture only if backend data can produce that count in host inbox.",
+              "notes": "HostInboxViewModel classifies non-booked event inquiries as Prospective and labels Requested, Offered, Accepted, Waitlist, or Inquiry independently from the waitlisted roster count.",
               "tests": [
-                "test/chats/chat_inbox_screen_test.dart"
+                "test/hosts/host_inbox_view_model_test.dart",
+                "test/hosts/host_inbox_screen_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
-                "host_inbox_unread_filter",
-                "matches_host_unread_empty"
+                "host_inbox_prospective"
               ]
             },
             {
-              "id": "no_unread_queries",
-              "kind": "empty",
+              "id": "general_queries",
+              "kind": "populated",
               "status": "captured",
-              "notes": "ChatsList renders ChatsEmptyState.noUnreadQueries when the host unread filter hides all otherwise-visible queries. Add focused test/capture for no-unread host filter empty state. Keep no-unread copy in the host empty-state catalog before pixel comparison.",
+              "notes": "HostInboxScope.general selects only eventless personal inquiries and never overloads a string event-id sentinel.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "tests": [
-                "test/chats/chat_inbox_screen_test.dart"
+                "test/hosts/host_inbox_view_model_test.dart",
+                "test/hosts/host_inbox_screen_test.dart"
               ],
               "captureIds": [
-                "matches_host_unread_empty"
+                "host_inbox_general"
+              ]
+            },
+            {
+              "id": "roster_without_threads",
+              "kind": "empty",
+              "status": "captured",
+              "notes": "Broadcast audience counts come from eventParticipations and remain visible when no attendee has opened a personal inquiry thread.",
+              "previewIds": [
+                "HostInboxScreen/Event-scoped states"
+              ],
+              "tests": [
+                "test/hosts/host_inbox_view_model_test.dart",
+                "test/hosts/host_inbox_screen_test.dart"
+              ],
+              "captureIds": [
+                "host_inbox_roster_no_threads"
+              ]
+            },
+            {
+              "id": "broadcast_composer_lifecycle",
+              "kind": "mutation",
+              "status": "captured",
+              "notes": "HostBroadcastComposerSheet and HostInboxBroadcastController cover stable retry ids, payload-change id rotation, audience counts, bounded copy, pending/error feedback, and backend-first production disablement.",
+              "previewIds": [
+                "HostBroadcastComposerSheet/Lifecycle states"
+              ],
+              "tests": [
+                "test/events/event_repository_test.dart",
+                "functions/src/events/sendEventBroadcast.test.ts"
+              ],
+              "captureIds": [
+                "host_inbox_broadcast_composer",
+                "host_inbox_broadcast_pending",
+                "host_inbox_broadcast_error"
               ]
             },
             {
@@ -7169,7 +7489,7 @@
                 "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_queries",
@@ -7185,7 +7505,7 @@
                 "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_search_active"
@@ -7200,7 +7520,7 @@
                 "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_search_empty"
@@ -7212,7 +7532,7 @@
               "status": "captured",
               "notes": "Host inquiry previews with no lastMessagePreview use Ask the host copy and are folded into the same conversation section. Add capture/Widgetbook state for new host inquiry row and decide whether Host Inbox needs a distinct new-query treatment. Decide whether Host Inbox needs a distinct new-query treatment beyond the shared row new-state affordance.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_new_query"
@@ -7227,11 +7547,11 @@
                 "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_queries",
-                "host_inbox_unread_filter"
+                "host_inbox_prospective"
               ]
             },
             {
@@ -7243,11 +7563,11 @@
                 "test/core/catch_person_row_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_queries",
-                "host_inbox_unread_filter"
+                "host_inbox_prospective"
               ]
             },
             {
@@ -7256,7 +7576,7 @@
               "status": "captured",
               "notes": "CatchPersonRow uses square CatchPersonAvatar shape for club host inquiries and circular avatars for dating matches. Add visual preview/capture for square host inquiry avatars with photo, fallback initials, and missing profile data. Add fallback-avatar capture only if missing profile/club data becomes a visual parity concern.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_queries",
@@ -7269,20 +7589,20 @@
               "status": "implemented",
               "notes": "ChatsListViewModel reads public profile and club host profile AsyncValues opportunistically; while data loads, rows fall back to Host conversation or Unknown copy instead of blocking the inbox. Decide whether profile/club loading should remain fallback-only or expose row skeletons for host inbox parity.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ]
             },
             {
               "id": "duplicate_match_collapse",
               "kind": "populated",
               "status": "tested",
-              "notes": "collapseMatchesByOtherUser keeps one row per person for consumer chats and one row per club plus attendee for host inquiries, so duplicate event inquiries collapse inside the same club while separate club inquiries remain separate rows.",
+              "notes": "collapseMatchesByOtherUser keeps one row per person for consumer chats and one row per club, optional event, and attendee for Host inquiries. Same-event duplicates collapse; different events, separate clubs, and General remain distinct, including sentinel-like and delimiter-containing ids.",
               "tests": [
                 "test/chats/chat_inbox_screen_test.dart",
                 "test/chats/match_repository_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ]
             },
             {
@@ -7294,7 +7614,7 @@
                 "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ]
             },
             {
@@ -7303,7 +7623,7 @@
               "status": "captured",
               "notes": "ChatsListDisplayState maps offline-like match stream failures through the shared chat error branch while retaining host inbox chrome. Define whether offline copy needs a host-specific variant or should stay on shared CatchErrorState mapping.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_offline"
@@ -7315,7 +7635,7 @@
               "status": "captured",
               "notes": "Host Inbox capture applies MediaQuery textScaler 2.0 across pinned header, filter row, search affordance, and attendee-query rows. Use this capture to fix any visual parity issues found during pixel comparison.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_text_scale_2"
@@ -7327,7 +7647,7 @@
               "status": "captured",
               "notes": "Host Inbox capture applies MediaQuery.disableAnimations for reduced-motion review. Use this capture to verify search/header behavior during future animation changes.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_reduced_motion"
@@ -7339,7 +7659,7 @@
               "status": "captured",
               "notes": "Host Inbox paired theme capture renders light and dark variants from the same populated fixture state. Use this capture for token parity once matching Claude references are exported.",
               "previewIds": [
-                "ChatsListScreen/Host inbox states"
+                "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_light_dark"
@@ -7349,23 +7669,23 @@
           "gaps": [
             {
               "id": "DP-HOST-INBOX-001",
-              "status": "blocked",
-              "nextAction": "Blocked/reference-only until canonical Host Inbox variant exports or product-backed high-count/keyboard scenarios exist. Flutter captures already cover uid loading, matches loading, generic error, offline, empty, populated, unread-filter rows, no-unread empty, search active, search empty, new inquiry, text-scale, reduced-motion, and light/dark. Remaining duplicate/grouping, long-count, keyboard, and pixel-reference variants have no canonical source in the current Host Inbox handoff."
+              "status": "closed",
+              "nextAction": "Closed without loosening thresholds. Fresh 2026-07-11 full-shell evidence is 7.34% mismatch / 7.62 meanDelta after compact title/event-scope/mono SegPill alignment."
             },
             {
               "id": "DP-HOST-INBOX-002",
               "status": "closed",
-              "nextAction": "HostInboxScreenState and ChatsListDisplayState own host filter state, unread count, search-action visibility, loading/error/content/empty mapping, unread filtering, empty-state selection, and display-error retry intents through ChatsListRetryIntent.reloadViewModel. ChatsListScreen owns typed host/consumer chat route callbacks. collapseMatchesByOtherUser has host-inquiry grouping policy coverage proving duplicate host inquiries collapse by club plus attendee instead of merging all attendee threads together."
+              "nextAction": "HostInboxViewModel owns Event/General scope, Booked/Prospective classification, roster/thread count separation, search, lifecycle availability, and row status labels; HostInboxScreen owns routing and composition."
             },
             {
               "id": "DP-HOST-INBOX-003",
               "status": "closed",
-              "nextAction": "Add Widgetbook use cases for host inbox header, filter row, async shell, attendee query section, row list, row variants, empty/error states, accessibility, and theme variants."
+              "nextAction": "Widgetbook covers the production HostInboxScreen, HostInboxBroadcastCard, and HostBroadcastComposerSheet across event scope, audiences, async/empty/search/accessibility/theme, and composer lifecycle states."
             },
             {
               "id": "DP-HOST-INBOX-004",
-              "status": "closed",
-              "nextAction": "Host Inbox populated reference and masks are exported and registered. The host broadcast card plus reference-safe-area capture pass moved `host_inbox_queries` within threshold at mismatch 8.64%, meanDelta 14.81, maxDelta 240, masked 60276. Remaining work is backend send wiring plus future loading, empty, unread/no-unread, search, offline/error, text-scale, reduced-motion, and light/dark reference variants."
+              "status": "in_progress",
+              "nextAction": "Product semantics, the authorized callable, and visual parity are implemented locally. Keep production sending disabled until the live callable/IAM preflight succeeds, then record Activity durability, preference-gated push, and no match/message fan-out evidence."
             }
           ]
         },
@@ -8536,7 +8856,7 @@
               "kind": "external",
               "status": "needs_export",
               "notes": "Direct Host Account Claude template found in explorations/archived-templates/host-account/HostAccount.dc.html and mapped to hostSettingsScreen by host-coverage-manifest.json. Export remains blocked: 2026-06-25 Chrome headless attempts with the corrected temporary bundle layout, current support runtime swap, CDP capture, and original source path either produced placeholder boxes or hung before a valid PNG.",
-              "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/explorations/archived-templates/host-account/HostAccount.dc.html"
+              "path": "design/source_packs/host-v2/host-account/HostAccount.dc.html"
             }
           ],
           "states": [

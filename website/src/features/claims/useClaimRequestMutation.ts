@@ -55,18 +55,18 @@ export function useClaimAuthController({
     setIsSigningIn(true);
     setStatus({message: "", tone: ""});
     trackMarketingEvent(`${eventPrefix}_sign_in_started`, {
-      listing_id: listingId,
+      club_id: listingId,
     });
     try {
       const {signInForClaim} = await import("../../firebase");
       await signInForClaim();
       trackMarketingEvent(`${eventPrefix}_signed_in`, {
-        listing_id: listingId,
+        club_id: listingId,
       });
     } catch (error) {
       setStatus({message: readableError(error), tone: "is-error"});
       trackMarketingEvent(`${eventPrefix}_sign_in_error`, {
-        listing_id: listingId,
+        club_id: listingId,
       });
     } finally {
       setIsSigningIn(false);

@@ -24,10 +24,8 @@ Future<void> showWriteReviewSheet({
   required UserProfile reviewer,
   Review? existingReview,
 }) {
-  return showModalBottomSheet(
+  return showCatchBottomSheet(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
     builder: (_) => WriteReviewSheet(
       clubId: clubId,
       eventId: eventId,

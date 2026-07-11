@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Clubs" description="Host app — Clubs tab. A single-club view with a dropdown club picker (hidden when you host one club), role Badge + default-activity ActivityChip, and an Edit/Preview slider: Edit shows the club's fields as InfoRow stacked rows (Identity / Contact / Event defaults) plus Payouts + Host-team sections; Preview shows the public club page (ClubHero + StatStrip + About + Schedule). Flattened on-surface grammar — hairlines, not cards." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <script src="../../image-slot.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+    .metarow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .mcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px; box-sizing: border-box; }
+    .mcard.miss { border-color: rgba(185,119,15,0.35); background: rgba(185,119,15,0.06); }
+    .mcard .mv { color: var(--ink); }
+    .mcard.miss .mv { color: var(--ink3); }
+    .apanel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px; box-sizing: border-box; }
+    .etile { display: flex; gap: 12px; padding: 14px 0; }
+    .etile.dv { border-top: 1px solid var(--line); }
+    .dqrow { display: flex; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-info-tile); background: var(--surface); box-sizing: border-box; }
+    .dqrow.warn { border-color: rgba(185,119,15,0.3); background: rgba(185,119,15,0.06); }
+    .dqrow.ok i { color: var(--success); }
+    .dqrow.warn i { color: var(--warning); }
+    .seg-wrap { display: flex; gap: 2px; background: var(--primary-soft); border-radius: 999px; padding: 3px; }
+    .seg { flex: 1; text-align: center; padding: 7px 4px; border-radius: 999px; cursor: pointer; transition: background .15s; }
+    .seg span { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink2); }
+    .seg.on { background: var(--surface); box-shadow: 0 1px 3px rgba(22,20,15,0.12); }
+    .seg.on span { color: var(--ink); }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Clubs" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.AppBar" kicker="HOST CLUBS" title="{{ name }}" action-icon="{{ pickerIcon }}" action-variant="bordered" action-label="Switch club" on-action="{{ togglePicker }}" hint-size="100%,72px" style="display: block"></x-import>
+
+    <div style="flex: none; padding: 0 20px 8px; border-bottom: 1px solid var(--line)">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.OptionGroup" options="{{ tabs }}" value="{{ tab }}" onChange="{{ setTab }}" variant="label" hint-size="100%,40px" style="display: block"></x-import>
+    </div>
+
+    <sc-if value="{{ pickerOpen }}" hint-placeholder-val="{{ false }}">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Menu" items="{{ clubMenu }}" hint-size="100%,120px" style="position: absolute; top: 96px; left: 14px; right: 14px; z-index: 30"></x-import>
+    </sc-if>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ScreenBody" hint-size="100%,600px" style="flex: 1; min-height: 0; display: flex; flex-direction: column">
+
+      <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ true }}">
+        <div class="metarow">
+          <span class="t-mono-label" style="color: var(--ink3)">{{ area }}</span>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="{{ roleTone }}" hint-size="80px,22px">{{ role }}</x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ActivityChip" activity="{{ activity }}" hint-size="120px,32px"></x-import>
+        </div>
+
+        <section style="margin-top: 22px">
+          <div class="t-kicker" style="color: var(--ink2)">Identity</div>
+          <div style="margin-top: 10px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,260px" style="display: block">
+              <sc-for list="{{ identity }}" as="e" hint-placeholder-count="4">
+                <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="{{ e.icon }}" label="{{ e.caption }}" value="{{ e.text }}" trailing="chevron" divider="{{ e.divider }}" onClick="{{ noop }}"></x-import>
+              </sc-for>
+            </x-import>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 24px">
+          <div class="t-kicker" style="color: var(--ink2)">Contact</div>
+          <div style="margin-top: 10px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,196px" style="display: block">
+              <sc-for list="{{ contact }}" as="e" hint-placeholder-count="3">
+                <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="{{ e.icon }}" label="{{ e.caption }}" value="{{ e.text }}" trailing="chevron" divider="{{ e.divider }}" onClick="{{ noop }}"></x-import>
+              </sc-for>
+            </x-import>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 24px">
+          <div class="t-kicker" style="color: var(--ink2)">Event defaults</div>
+          <div style="margin-top: 10px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,260px" style="display: block">
+              <sc-for list="{{ defaults }}" as="e" hint-placeholder-count="4">
+                <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="{{ e.icon }}" label="{{ e.caption }}" value="{{ e.text }}" trailing="chevron" divider="{{ e.divider }}" onClick="{{ noop }}"></x-import>
+              </sc-for>
+            </x-import>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 24px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span class="t-kicker" style="color: var(--ink2); flex: 1">Payouts</span>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="{{ payoutTone }}" hint-size="90px,22px">{{ payoutBadge }}</x-import>
+          </div>
+          <div class="t-label-l" style="color: var(--ink); margin-top: 12px">{{ payoutTitle }}</div>
+          <div class="t-body-s" style="color: var(--ink2); margin-top: 4px; text-wrap: pretty">{{ payoutBody }}</div>
+          <div style="margin-top: 12px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" size="sm" icon="bank" onClick="{{ noop }}" hint-size="150px,36px">{{ payoutCta }}</x-import>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 24px">
+          <div class="t-kicker" style="color: var(--ink2)">Host team</div>
+          <div style="margin-top: 10px">
+            <sc-for list="{{ hosts }}" as="h" hint-placeholder-count="2">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.HostRow" host="{{ h.host }}" img="{{ h.img }}" initials="{{ h.initials }}" role="{{ h.role }}" meta="{{ h.meta }}" activity="{{ activity }}" divider="{{ h.divider }}" hint-size="100%,52px" style="display: block"></x-import>
+            </sc-for>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" add="{{ true }}" label="Add host" divider="{{ true }}" onClick="{{ noop }}" hint-size="100%,52px" style="display: block"></x-import>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ isInsights }}" hint-placeholder-val="{{ false }}">
+        <div class="metarow" style="justify-content: space-between">
+          <span class="t-mono-label" style="color: var(--ink3)">{{ rangeCaption }}</span>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="neutral" hint-size="120px,22px">{{ generatedLabel }}</x-import>
+        </div>
+
+        <div class="seg-wrap" style="margin-top: 14px">
+          <sc-for list="{{ rangeSeg }}" as="r" hint-placeholder-count="4">
+            <div class="seg {{ r.cls }}" onClick="{{ r.select }}"><span>{{ r.label }}</span></div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+          <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="6">
+            <div class="mcard {{ m.cls }}">
+              <div style="display: flex; align-items: center; gap: 8px">
+                <i class="ph ph-{{ m.icon }}" style="font-size: 16px; color: var(--ink2)"></i>
+                <span style="flex: 1"></span>
+                <sc-if value="{{ m.showBadge }}" hint-placeholder-val="{{ false }}">
+                  <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="{{ m.badgeTone }}" hint-size="64px,20px">{{ m.badge }}</x-import>
+                </sc-if>
+              </div>
+              <div class="t-numeric-l mv" style="font-size: 27px; line-height: 1; margin-top: 14px">{{ m.value }}</div>
+              <div class="t-body-m" style="color: var(--ink2); margin-top: 6px">{{ m.label }}</div>
+              <sc-if value="{{ m.hasCaption }}" hint-placeholder-val="{{ false }}">
+                <div class="t-body-s" style="color: var(--ink3); margin-top: 8px; text-wrap: pretty">{{ m.caption }}</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+
+        <section style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 20px">
+          <div style="display: flex; align-items: baseline">
+            <div class="t-kicker" style="color: var(--ink2); flex: 1">Trend</div>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span style="display: flex; align-items: center; gap: 5px"><span style="width: 8px; height: 8px; border-radius: 2px; background: var(--ink); opacity: 0.85"></span><span class="t-meta" style="color: var(--ink2)">BOOKINGS</span></span>
+              <span style="display: flex; align-items: center; gap: 5px"><span style="width: 8px; height: 8px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 14%, transparent)"></span><span class="t-meta" style="color: var(--ink3)">DEMAND</span></span>
+            </div>
+          </div>
+
+          <div class="seg-wrap" style="margin-top: 12px">
+            <sc-for list="{{ granSeg }}" as="g" hint-placeholder-count="3">
+              <div class="seg {{ g.cls }}" onClick="{{ g.select }}"><span>{{ g.label }}</span></div>
+            </sc-for>
+          </div>
+
+          <div class="apanel" style="margin-top: 12px">
+            <div style="display: flex; align-items: flex-start; gap: 16px">
+              <div>
+                <div class="t-numeric-l" style="font-size: 22px">{{ trendBookings }}</div>
+                <div class="t-mono-label" style="color: var(--ink3); margin-top: 4px">BOOKINGS</div>
+              </div>
+              <div>
+                <div class="t-numeric-l" style="font-size: 22px">{{ trendDemand }}</div>
+                <div class="t-mono-label" style="color: var(--ink3); margin-top: 4px">DEMAND</div>
+              </div>
+              <div style="flex: 1"></div>
+              <div style="text-align: right">
+                <div class="t-numeric-l" style="font-size: 22px">{{ trendFill }}</div>
+                <div class="t-mono-label" style="color: var(--ink3); margin-top: 4px">FILL</div>
+              </div>
+            </div>
+            <div style="margin-top: 16px">{{ trendChart }}</div>
+            <div style="display: flex; margin-top: 8px">
+              <span class="t-meta" style="color: var(--ink3); flex: 1">{{ axisL }}</span>
+              <span class="t-meta" style="color: var(--ink3); flex: 1; text-align: center">{{ axisM }}</span>
+              <span class="t-meta" style="color: var(--ink3); flex: 1; text-align: right">{{ axisR }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 20px">
+          <div class="t-kicker" style="color: var(--ink2)">Top events</div>
+          <div style="margin-top: 6px">
+            <sc-for list="{{ topEvents }}" as="e" hint-placeholder-count="3">
+              <div class="etile {{ e.cls }}">
+                <i class="ph ph-ticket" style="font-size: 18px; color: var(--ink2); flex: none; margin-top: 2px"></i>
+                <div style="flex: 1; min-width: 0">
+                  <div class="t-label-l" style="color: var(--ink)">{{ e.title }}</div>
+                  <div class="t-body-s" style="color: var(--ink3); margin-top: 2px">{{ e.date }}</div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px">
+                    <sc-for list="{{ e.tags }}" as="tg" hint-placeholder-count="3">
+                      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="{{ tg.tone }}" hint-size="72px,20px">{{ tg.label }}</x-import>
+                    </sc-for>
+                  </div>
+                </div>
+                <div class="t-mono-label" style="color: var(--ink2); flex: none">{{ e.revenue }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 20px">
+          <div class="t-kicker" style="color: var(--ink2)">Reviews and saves</div>
+          <div class="apanel" style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 12px">
+            <sc-for list="{{ reviewStats }}" as="r" hint-placeholder-count="4">
+              <div>
+                <div class="t-numeric-l" style="font-size: 20px">{{ r.value }}</div>
+                <div class="t-mono-label" style="color: var(--ink3); margin-top: 4px">{{ r.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 20px">
+          <div class="t-kicker" style="color: var(--ink2)">Data quality</div>
+          <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px">
+            <sc-for list="{{ dataQuality }}" as="d" hint-placeholder-count="3">
+              <div class="dqrow {{ d.cls }}">
+                <i class="ph-fill ph-{{ d.icon }}" style="font-size: 16px; flex: none; margin-top: 1px"></i>
+                <div class="t-body-s" style="color: var(--ink2); text-wrap: pretty">{{ d.text }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ isPreview }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ClubHero" chrome="{{ false }}" seed="{{ heroSeed }}" kicker="{{ area }}" title="{{ name }}" location="Carter Road, Bandra West" photo="../../assets/sample-portrait.jpg" hint-size="100%,300px" style="display: block; margin: 0 calc(-1 * var(--screen-px))"></x-import>
+        <div style="margin-top: 4px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatStrip" items="{{ stats }}" hint-size="100%,58px" style="display: block"></x-import>
+        </div>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="ABOUT" first="{{ true }}" hint-size="100%,110px">
+          <p style="font-size: 15.5px; line-height: 1.55; color: var(--ink); margin: 0; text-wrap: pretty">{{ about }}</p>
+        </x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="SCHEDULE" hint-size="100%,260px">
+          <sc-for list="{{ previewEvents }}" as="pe" hint-placeholder-count="2">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.DateTicket" activity="{{ activity }}" day="{{ pe.day }}" date="{{ pe.date }}" month="{{ pe.month }}" kicker="{{ pe.kicker }}" title="{{ pe.title }}" meta="{{ pe.meta }}" data="{{ pe.data }}" hint-size="100%,118px" style="display: block"></x-import>
+          </sc-for>
+        </x-import>
+      </sc-if>
+    </x-import>
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.TabDock" items="{{ hostTabs }}" active="clubs" radius="0 0 30px 30px" hint-size="100%,64px" style="display: block"></x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const HOST_TABS = [
+  { id: 'events', icon: 'calendar-blank', label: 'EVENTS' },
+  { id: 'clubs', icon: 'users-three', label: 'CLUBS' },
+  { id: 'inbox', icon: 'chat-circle', label: 'INBOX' },
+  { id: 'account', icon: 'gear', label: 'ACCOUNT' },
+];
+
+const FIELD_ICON = {
+  'Club name': 'users-three', 'City': 'buildings', 'Area / neighbourhood': 'map-pin', 'Description': 'note',
+  'Instagram': 'instagram-logo', 'Phone': 'phone', 'Email': 'envelope-simple',
+  'Default activity': 'sparkle', 'Admission': 'ticket', 'Age range': 'cake', 'Cancellation policy': 'arrow-u-up-left',
+};
+const withIcon = (arr) => arr.map((e, i) => ({ ...e, divider: i > 0, icon: FIELD_ICON[e.caption] || 'circle' }));
+const div0 = (arr) => arr.map((e, i) => ({ ...e, divider: i > 0 }));
+
+const CLUBS = [
+  {
+    name: 'Sunday sea-face crew', area: 'BANDRA · MUMBAI', role: 'OWNER', roleTone: 'solid',
+    activity: 'socialRun', heroSeed: 'club:sunday-sea-face-crew',
+    about: 'The standing Saturday run — an easy 5K along the Bandra seafront as the light goes gold, coffee and bun maska after. No medals, no Strava pressure. Just show up, move, linger.',
+    identity: [
+      { caption: 'Club name', text: 'Sunday sea-face crew' },
+      { caption: 'City', text: 'Mumbai' },
+      { caption: 'Area / neighbourhood', text: 'Bandra' },
+      { caption: 'Description', text: 'Dawn runs along the Bandra seafront, every Sunday since 2020.' },
+    ],
+    contact: [
+      { caption: 'Instagram', text: '@sundayseafacecrew' },
+      { caption: 'Phone', text: '98765 43210' },
+      { caption: 'Email', text: 'hello@seafacecrew.com' },
+    ],
+    defaults: [
+      { caption: 'Default activity', text: 'Social run' },
+      { caption: 'Admission', text: 'Open capacity' },
+      { caption: 'Age range', text: '24\u201340' },
+      { caption: 'Cancellation policy', text: 'Standard' },
+    ],
+    payout: { tone: 'warning', badge: 'Not set up', title: 'Set up international payouts', body: 'Required before paid non-INR events can accept checkout through Stripe.', cta: 'Set up payouts' },
+    hosts: [
+      { host: 'Aanya Sharma', initials: 'AS', role: 'owner', meta: 'OWNER · EST. JAN 2025', img: '../../assets/sample-portrait.jpg' },
+      { host: 'Dev Patel', initials: 'DP', role: 'host', meta: 'HOST · 23 RUNS LED' },
+    ],
+    previewEvents: [
+      { day: 'SAT', date: '14', month: 'JUN', kicker: 'RUN #14 · BANDRA DAWN CLUB', title: 'Sundowner 5K, Bandra seafront', meta: '5 km · Easy · Carter Road jetty', data: '6:30 AM · FREE · 12 GOING · 4 LEFT' },
+      { day: 'SAT', date: '21', month: 'JUN', kicker: 'RUN #15 · BANDRA DAWN CLUB', title: 'Sundowner 5K, Bandra seafront', meta: '5 km · Easy · Carter Road jetty', data: '6:30 AM · FREE · 8 GOING · 8 LEFT' },
+    ],
+  },
+  {
+    name: 'Quizzicals', area: 'BANDRA · MUMBAI', role: 'HOST TEAM', roleTone: 'neutral',
+    activity: 'pubQuiz', heroSeed: 'club:quizzicals',
+    about: 'Tuesday-night trivia across Bandra and Khar — three rounds, no phones, winners buy the next one. Teams drawn at the door.',
+    identity: [
+      { caption: 'Club name', text: 'Quizzicals' },
+      { caption: 'City', text: 'Mumbai' },
+      { caption: 'Area / neighbourhood', text: 'Bandra' },
+      { caption: 'Description', text: 'Weekly pub-quiz nights across Bandra and Khar since 2022.' },
+    ],
+    contact: [
+      { caption: 'Instagram', text: '@quizzicals.bom' },
+      { caption: 'Phone', text: '90011 22334' },
+      { caption: 'Email', text: 'play@quizzicals.in' },
+    ],
+    defaults: [
+      { caption: 'Default activity', text: 'Pub quiz' },
+      { caption: 'Admission', text: 'Open capacity' },
+      { caption: 'Age range', text: '21\u201345' },
+      { caption: 'Cancellation policy', text: 'Flexible' },
+    ],
+    payout: { tone: 'success', badge: 'Ready', title: 'International checkout is ready', body: 'Non-INR paid bookings can route through Stripe for this host account.', cta: 'Continue setup' },
+    hosts: [
+      { host: 'Rahul S.', initials: 'RS', role: 'owner', meta: 'OWNER · QUIZMASTER', img: '../../assets/sample-portrait.jpg' },
+      { host: 'Tara Nair', initials: 'TN', role: 'host', meta: 'HOST · SCOREKEEPER' },
+    ],
+    previewEvents: [
+      { day: 'TUE', date: '17', month: 'JUN', kicker: 'NIGHT #41 · KHAR SOCIAL', title: 'Tuesday trivia night', meta: 'Three rounds · teams of 4', data: '8:00 PM · FREE · 24 GOING · 6 LEFT' },
+      { day: 'TUE', date: '24', month: 'JUN', kicker: 'NIGHT #42 · KHAR SOCIAL', title: 'Tuesday trivia night', meta: 'Three rounds · teams of 4', data: '8:00 PM · FREE · 18 GOING · 12 LEFT' },
+    ],
+  },
+];
+
+const RANGE_CAPTION = { '7D': 'LAST 7 DAYS', '30D': 'LAST 30 DAYS', '90D': 'LAST 90 DAYS', 'MONTH': 'THIS MONTH' };
+
+const N = (tone, label) => ({ tone, label });
+const INSIGHTS = [
+  {
+    // Sunday sea-face crew — free social run
+    trendSeed: 2, trendScale: 1.0,
+    metrics: [
+      { icon: 'target', label: 'Fill rate', value: '86%', cls: '', showBadge: false, hasCaption: false },
+      { icon: 'seal-check', label: 'Check-in rate', value: '78%', cls: '', showBadge: false, hasCaption: false },
+      { icon: 'ticket', label: 'Bookings', value: '142', cls: '', showBadge: false, hasCaption: false },
+      { icon: 'heart', label: 'Mutual matches', value: '28', cls: '', showBadge: false, hasCaption: false },
+      { icon: 'arrows-clockwise', label: 'Repeat rate', value: '64%', cls: '', showBadge: true, badge: 'Partial', badgeTone: 'warning', hasCaption: true, caption: 'From 4 of 6 events with full check-in data.' },
+      { icon: 'currency-inr', label: 'Gross revenue', value: '\u20b90', cls: 'miss', showBadge: true, badge: 'Missing', badgeTone: 'neutral', hasCaption: true, caption: 'Every run in range was free.' },
+    ],
+    funnel: { demand: '210', bookings: '142', note: 'Bookings per week \u00b7 last 12 weeks' },
+    bars: ['38%','52%','46%','60%','72%','55%','68%','84%','70%','90%','78%','100%'].map((h) => ({ h })),
+    topEvents: [
+      { title: 'Sundowner 5K \u00b7 Run #13', date: 'Sat 7 Jun', revenue: 'FREE', cls: '', tags: [N('neutral','Past'), N('neutral','46 demand'), N('neutral','32 booked'), N('success','27 attended'), N('gold','7 matches')] },
+      { title: 'Full-moon night run', date: 'Sat 21 Jun', revenue: 'FREE', cls: 'dv', tags: [N('neutral','Upcoming'), N('neutral','38 demand'), N('neutral','24 booked'), N('warning','8 waitlisted')] },
+      { title: 'Sundowner 5K \u00b7 Run #12', date: 'Sat 31 May', revenue: 'FREE', cls: 'dv', tags: [N('neutral','Past'), N('neutral','41 demand'), N('neutral','30 booked'), N('success','25 attended'), N('gold','5 matches')] },
+    ],
+    reviewStats: [
+      { value: '9', label: 'NEW REVIEWS' }, { value: '4.8', label: 'AVG RATING' },
+      { value: '64', label: 'EVENT SAVES' }, { value: '7', label: 'RESPONSES' },
+    ],
+    dataQuality: [
+      { icon: 'check-circle', cls: 'ok', text: 'Check-in scans recorded for all 6 events in range.' },
+      { icon: 'warning', cls: 'warn', text: '2 events have no published reviews yet \u2014 attendance closed but the review prompt wasn\u2019t sent.' },
+      { icon: 'check-circle', cls: 'ok', text: 'Booking and waitlist counts reconcile with payment records.' },
+    ],
+  },
+  {
+    // Quizzicals — paid pub quiz
+    trendSeed: 6, trendScale: 0.7,
+    metrics: [
+      { icon: 'target', label: 'Fill rate', value: '92%', cls: '', showBadge: false, hasCaption: false },
+      { icon: 'seal-check', label: 'Check-in rate', value: '81%', cls: '', showBadge: false, hasCaption: false },
+      { icon: 'ticket', label: 'Bookings', value: '96', cls: '', showBadge: false, hasCaption: false },
+      { icon: 'heart', label: 'Mutual matches', value: '14', cls: '', showBadge: false, hasCaption: false },
+      { icon: 'arrows-clockwise', label: 'Repeat rate', value: '58%', cls: '', showBadge: false, hasCaption: false },
+      { icon: 'currency-inr', label: 'Gross revenue', value: '\u20b948,000', cls: '', showBadge: false, hasCaption: false },
+    ],
+    funnel: { demand: '148', bookings: '96', note: 'Bookings per week \u00b7 last 12 weeks' },
+    bars: ['44%','58%','50%','66%','62%','74%','60%','82%','76%','88%','70%','94%'].map((h) => ({ h })),
+    topEvents: [
+      { title: 'Tuesday trivia \u00b7 Night #41', date: 'Tue 10 Jun', revenue: '\u20b912,000', cls: '', tags: [N('neutral','Past'), N('neutral','52 demand'), N('neutral','30 booked'), N('success','26 attended'), N('warning','4 drop-off'), N('gold','3 matches')] },
+      { title: 'Tuesday trivia \u00b7 Night #42', date: 'Tue 17 Jun', revenue: '\u20b910,000', cls: 'dv', tags: [N('neutral','Upcoming'), N('neutral','44 demand'), N('neutral','24 booked'), N('neutral','18 checkouts')] },
+      { title: 'Quiz finals night', date: 'Tue 27 May', revenue: '\u20b916,000', cls: 'dv', tags: [N('neutral','Past'), N('neutral','61 demand'), N('neutral','40 booked'), N('success','35 attended'), N('danger','2 failed')] },
+    ],
+    reviewStats: [
+      { value: '6', label: 'NEW REVIEWS' }, { value: '4.6', label: 'AVG RATING' },
+      { value: '41', label: 'EVENT SAVES' }, { value: '5', label: 'RESPONSES' },
+    ],
+    dataQuality: [
+      { icon: 'check-circle', cls: 'ok', text: 'Payments reconciled across Stripe and booking records.' },
+      { icon: 'check-circle', cls: 'ok', text: 'Check-in scans recorded for all 5 events in range.' },
+      { icon: 'warning', cls: 'warn', text: '2 failed payments at Quiz finals night were not retried.' },
+    ],
+  },
+];
+
+function gen(seed, n, base) {
+  const dem = [], book = [];
+  for (let i = 0; i < n; i++) {
+    const w = 1 + 0.28 * Math.sin((i + seed) * 1.1) + 0.16 * Math.sin((i + seed) * 0.45);
+    const b = Math.max(1, Math.round(base * w));
+    book.push(b);
+    dem.push(Math.max(b + 1, Math.round(b / (0.6 + 0.06 * Math.sin((i + seed) * 0.8)))));
+  }
+  return { dem, book };
+}
+
+class Component extends DCLogic {
+  state = { sel: 0, tab: 'Edit', pickerOpen: false, range: '30D', grain: 'WEEK' };
+
+  componentDidMount() {
+    const h = (window.location.hash || '').replace('#', '').toLowerCase();
+    if (h === 'insights') this.setState({ tab: 'Insights' });
+    else if (h === 'preview') this.setState({ tab: 'Preview' });
+  }
+
+  _trend(ins, gran) {
+    const n = { DAY: 30, WEEK: 12, MONTH: 6 }[gran] || 12;
+    const base = ({ DAY: 5, WEEK: 13, MONTH: 26 }[gran] || 12) * ins.trendScale;
+    const seed = ins.trendSeed + (gran === 'WEEK' ? 1 : gran === 'MONTH' ? 2 : 0);
+    const { dem, book } = gen(seed, n, base);
+    const max = Math.max.apply(null, dem.concat(1));
+    const gap = n > 20 ? 2 : n > 8 ? 4 : 9;
+    const cols = book.map((b, i) => React.createElement('div', { key: i, style: { flex: 1, position: 'relative', height: '100%', display: 'flex', alignItems: 'flex-end' } },
+      React.createElement('div', { style: { width: '100%', height: (dem[i] / max * 100) + '%', minHeight: 2, background: 'color-mix(in srgb, var(--ink) 12%, transparent)', borderRadius: '2px 2px 0 0' } }),
+      React.createElement('div', { style: { position: 'absolute', left: 0, right: 0, bottom: 0, height: (b / max * 100) + '%', minHeight: 2, background: 'var(--ink)', opacity: 0.85, borderRadius: '2px 2px 0 0' } })
+    ));
+    const chart = React.createElement('div', { style: { display: 'flex', alignItems: 'flex-end', gap, height: 120 } }, cols);
+    const sum = (a) => a.reduce((x, y) => x + y, 0);
+    const d = sum(dem), bk = sum(book);
+    const axis = { DAY: ['30 DAYS AGO', '15 DAYS', 'TODAY'], WEEK: ['12 WK AGO', '6 WK', 'THIS WK'], MONTH: ['6 MO AGO', '3 MO', 'THIS MO'] }[gran] || ['', '', ''];
+    return { chart, demand: d.toLocaleString(), bookings: bk.toLocaleString(), fill: Math.round(bk / d * 100) + '%', axisL: axis[0], axisM: axis[1], axisR: axis[2] };
+  }
+
+  renderVals() {
+    const c = CLUBS[this.state.sel];
+    const ins = INSIGHTS[this.state.sel];
+    const tr = this._trend(ins, this.state.grain);
+    const single = CLUBS.length < 2;
+    return {
+      range: this.state.range, grain: this.state.grain,
+      rangeCaption: RANGE_CAPTION[this.state.range],
+      generatedLabel: 'UPDATED TODAY',
+      rangeSeg: ['7D', '30D', '90D', 'MONTH'].map((r) => ({ label: r, cls: r === this.state.range ? 'on' : '', select: () => this.setState({ range: r }) })),
+      granSeg: [['DAY', 'Day'], ['WEEK', 'Week'], ['MONTH', 'Month']].map(([v, label]) => ({ label, cls: v === this.state.grain ? 'on' : '', select: () => this.setState({ grain: v }) })),
+      metrics: ins.metrics,
+      trendChart: tr.chart, trendDemand: tr.demand, trendBookings: tr.bookings, trendFill: tr.fill,
+      axisL: tr.axisL, axisM: tr.axisM, axisR: tr.axisR,
+      topEvents: ins.topEvents, reviewStats: ins.reviewStats, dataQuality: ins.dataQuality,
+      hostTabs: HOST_TABS,
+      noop: () => {},
+      clubMenu: CLUBS.map((x, i) => ({
+        value: String(i), label: x.name, sublabel: x.role, selected: i === this.state.sel,
+        onSelect: () => this.setState({ sel: i, pickerOpen: false }),
+      })),
+      pickerIcon: single ? null : (this.state.pickerOpen ? 'caret-up' : 'caret-down'),
+      pickerOpen: this.state.pickerOpen,
+      togglePicker: () => this.setState({ pickerOpen: !this.state.pickerOpen }),
+      tabs: ['Edit', 'Insights', 'Preview'],
+      tab: this.state.tab,
+      setTab: (v) => this.setState({ tab: v }),
+      isEdit: this.state.tab === 'Edit',
+      isInsights: this.state.tab === 'Insights',
+      isPreview: this.state.tab === 'Preview',
+      name: c.name, area: c.area, role: c.role, roleTone: c.roleTone,
+      activity: c.activity, heroSeed: c.heroSeed, about: c.about,
+      identity: withIcon(c.identity), contact: withIcon(c.contact), defaults: withIcon(c.defaults),
+      hosts: div0(c.hosts),
+      payoutTone: c.payout.tone, payoutBadge: c.payout.badge, payoutTitle: c.payout.title, payoutBody: c.payout.body, payoutCta: c.payout.cta,
+      previewEvents: c.previewEvents,
+      stats: [
+        { value: '124', label: 'MEMBERS' },
+        { value: String(c.previewEvents.length), label: 'UPCOMING' },
+        { value: '4.7', label: 'RATING' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -7830,6 +7830,322 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
   }
 } as const;
 
+export const eventBroadcastDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_broadcasts.schema.json",
+  "title": "EventBroadcastDocument",
+  "description": "Server-owned delivery receipt for an organizer event broadcast stored at eventBroadcasts/{broadcastId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventBroadcasts",
+  "x-firestore-path": "eventBroadcasts/{broadcastId}",
+  "x-document-id-field": "id",
+  "x-owner": "sendEventBroadcast callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "actorUid",
+    "audience",
+    "title",
+    "body",
+    "targetUids",
+    "status",
+    "recipientCount",
+    "excludedCount",
+    "activityAvailableCount",
+    "pushAttemptedCount",
+    "pushAcceptedCount",
+    "pushFailedCount",
+    "pushUnknownCount",
+    "pushErrorCodes",
+    "deliveries",
+    "leaseOwner",
+    "leaseExpiresAt",
+    "expiresAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "booked",
+        "prospective",
+        "everyone"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "x-catch-ownership": "server-only"
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "targetUids": {
+      "type": "array",
+      "maxItems": 500,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "processing",
+        "completed",
+        "partial",
+        "failed"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "recipientCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "excludedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "activityAvailableCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "pushAttemptedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "pushAcceptedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "pushFailedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "pushUnknownCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "pushErrorCodes": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "deliveries": {
+      "type": "object",
+      "maxProperties": 500,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "activityStatus",
+          "pushStatus",
+          "activityNotificationId"
+        ],
+        "properties": {
+          "activityStatus": {
+            "type": "string",
+            "enum": [
+              "created",
+              "existing",
+              "failed"
+            ]
+          },
+          "pushStatus": {
+            "type": "string",
+            "enum": [
+              "ineligible",
+              "accepted",
+              "failed",
+              "unknown"
+            ]
+          },
+          "activityNotificationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "excluded": {
+            "type": "boolean"
+          },
+          "errorCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "leaseOwner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "leaseExpiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    }
+  }
+} as const;
+
 export const eventWaitlistOfferDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_waitlist_offers.schema.json",
@@ -12736,7 +13052,9 @@ export const deletedUserTombstoneDocumentSchema: Record<string, unknown> = {
   "x-owner": "requestAccountDeletion callable",
   "required": [
     "uid",
-    "deletedAt"
+    "deletedAt",
+    "status",
+    "updatedAt"
   ],
   "properties": {
     "uid": {
@@ -12764,6 +13082,63 @@ export const deletedUserTombstoneDocumentSchema: Record<string, unknown> = {
           "maximum": 999999999
         }
       },
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "processing",
+        "completed"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
       "x-catch-ownership": "server-only"
     },
     "retainedFor": {
@@ -16271,6 +16646,119 @@ export const createClubPostCallableResponseSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 0,
       "maximum": 3
+    }
+  }
+} as const;
+
+export const sendEventBroadcastCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/send_event_broadcast_payload.schema.json",
+  "title": "SendEventBroadcastCallablePayload",
+  "description": "Callable payload accepted by sendEventBroadcast.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "eventId",
+    "audience",
+    "body"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "booked",
+        "prospective",
+        "everyone"
+      ]
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  }
+} as const;
+
+export const sendEventBroadcastCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/send_event_broadcast_response.schema.json",
+  "title": "SendEventBroadcastCallableResponse",
+  "description": "Delivery summary returned by sendEventBroadcast.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "broadcastId",
+    "status",
+    "recipientCount",
+    "excludedCount",
+    "activityAvailableCount",
+    "pushAttemptedCount",
+    "pushAcceptedCount",
+    "pushFailedCount",
+    "pushUnknownCount",
+    "idempotentReplay"
+  ],
+  "properties": {
+    "broadcastId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "partial"
+      ]
+    },
+    "recipientCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "excludedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "activityAvailableCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "pushAttemptedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "pushAcceptedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "pushFailedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "pushUnknownCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "idempotentReplay": {
+      "type": "boolean"
     }
   }
 } as const;
@@ -20365,6 +20853,11 @@ export const startClubHostConversationCallablePayloadSchema: Record<string, unkn
       "maxLength": 180
     },
     "hostUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180

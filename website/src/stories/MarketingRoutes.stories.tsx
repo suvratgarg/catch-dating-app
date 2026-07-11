@@ -100,16 +100,33 @@ export const Claim: Story = {
     catchRoute: {
       id: "claim",
       path: "/claim/",
-      reviewStates: ["default", "not-found", "pending-claim", "already-claimed"],
+      reviewStates: [
+        "default",
+        "not-found",
+        "pending-claim",
+        "already-claimed",
+        "claim-unavailable",
+      ],
       stateCoverage: {
         storybook: ["default"],
-        manual: ["not-found", "pending-claim", "already-claimed"],
+        manual: [
+          "not-found",
+          "pending-claim",
+          "already-claimed",
+          "claim-unavailable",
+        ],
       },
     },
     catchComponent: {
       id: "route_claim",
       routeIds: ["claim", "claim_lookup"],
-      states: ["default", "not-found", "pending-claim", "already-claimed"],
+      states: [
+        "default",
+        "not-found",
+        "pending-claim",
+        "already-claimed",
+        "claim-unavailable",
+      ],
     },
   },
   render: () => (

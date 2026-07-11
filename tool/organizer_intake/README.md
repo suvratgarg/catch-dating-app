@@ -135,12 +135,15 @@ publication packet. It shows the future canonical path, index state, sitemap
 eligibility, claim-target path, app visibility, and follow-up commands while
 recording no decision and writing no remote data.
 After website builds, `website/scripts/checkOrganizerBuildOutputs.mjs` verifies
-that generated organizer routes, legacy routes, canonical tags, robots tags, and
-the sitemap match `website/src/generated/hostListings.json`. The marketing
+that generated organizer routes, legacy routes, canonical tags, robots tags,
+semantic static profile content, Organization JSON-LD, and sitemap lastmod
+dates match `website/src/generated/hostListings.json`. The marketing
 postbuild step invokes this validator so stale public-page SEO output fails the
-build before deploy. `run_promotion_pipeline.mjs` runs that marketing build by
-default before claim-target sync preview; use `--skip-website-build` only for
-focused local debugging where deploy readiness is not being asserted.
+build before deploy. In `--claim-sync firestore` mode,
+`run_promotion_pipeline.mjs` first creates a read-only, plan-hash-bound
+environment receipt and passes it to website listing generation; fixture mode
+keeps its local sync preview after the build. Use `--skip-website-build` only
+for focused local debugging where deploy readiness is not being asserted.
 `generated/organizer_claim_target_sync_preview.json` is the local claim-target
 sync review packet. It applies the same create/refresh/owner-bound skip rules
 as `sync_claim_targets_to_firestore.mjs` against a no-remote fixture so the
@@ -504,6 +507,12 @@ Reviewed answer packets also carry a source fingerprint; use
 `--allow-stale-decision-answer-source` only when intentionally applying a
 packet whose generated source has changed and the differences have been
 manually reviewed.
+
+`sync_claim_targets_to_firestore.mjs --receipt PATH` records the selected
+project, exact claim-target plan SHA-256, remote-write count, and per-target
+readiness actions. Website generation accepts only a Firestore-read receipt
+whose project and plan hash match the current invocation; fixture receipts
+cannot enable public claim submission.
 
 ## Promotion Rules
 

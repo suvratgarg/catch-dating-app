@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -43,6 +44,19 @@ const claimTargetSyncPreviewPath = path.resolve(
     "organizer_claim_target_sync_preview.json"
   )
 );
+const claimTargetPlanPath = path.resolve(
+  args.claimTargetPlan ?? path.join(
+    repoRoot,
+    "tool",
+    "organizer_intake",
+    "generated",
+    "organizer_claim_targets.json"
+  )
+);
+const claimTargetReadinessReceiptPath =
+  args.claimTargetReadinessReceipt ??
+  process.env.ORGANIZER_CLAIM_TARGET_RECEIPT ??
+  null;
 const demoScenarioRoot = path.resolve(
   args.demoScenarioRoot ??
     path.join(repoRoot, "tool", "demo", "demo_seed", "scenarios")
@@ -53,6 +67,11 @@ const generatedPath = path.resolve(
 );
 const checkOnly = args.check;
 const claimTargetSyncPreview = readJsonIfExists(claimTargetSyncPreviewPath);
+const claimTargetReadinessReceipt = claimTargetReadinessReceiptPath ?
+  readAndValidateClaimTargetReadinessReceipt(
+    path.resolve(claimTargetReadinessReceiptPath)
+  ) :
+  null;
 const approvedIntakeProjections = organizerIntakeProjectionEntries();
 const publicExternalEventsByHostId =
   publicExternalEventsByCanonicalHostId(readJsonIfExists(externalEventReadinessPath));
@@ -104,6 +123,39 @@ function organizerIntakeProjectionEntries() {
 function readJsonIfExists(filePath) {
   if (!fs.existsSync(filePath)) return null;
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function readAndValidateClaimTargetReadinessReceipt(filePath) {
+  const receipt = readJsonIfExists(filePath);
+  if (!receipt) {
+    fail(`Missing organizer claim-target readiness receipt: ${filePath}`);
+  }
+  if (receipt.schemaVersion !== 1 ||
+      receipt.receiptType !== "organizer_claim_target_readiness") {
+    fail(`Unsupported organizer claim-target readiness receipt: ${filePath}`);
+  }
+  if (receipt.mode?.source !== "firestore_read" ||
+      receipt.mode?.remoteWrites !== 0) {
+    fail("Organizer claim-target readiness must come from a read-only Firestore receipt.");
+  }
+  const expectedProjectId =
+    process.env.ORGANIZER_CLAIM_TARGET_PROJECT_ID?.trim() || null;
+  if (expectedProjectId && receipt.projectId !== expectedProjectId) {
+    fail(
+      `Organizer claim-target receipt project ${receipt.projectId ?? "missing"} ` +
+        `does not match ${expectedProjectId}.`
+    );
+  }
+  const planHash = crypto.createHash("sha256")
+    .update(fs.readFileSync(claimTargetPlanPath))
+    .digest("hex");
+  if (receipt.plan?.sha256 !== planHash) {
+    fail("Organizer claim-target readiness receipt does not match the current plan.");
+  }
+  if (!Array.isArray(receipt.actions)) {
+    fail("Organizer claim-target readiness receipt actions are missing.");
+  }
+  return receipt;
 }
 
 function compareText(a, b) {
@@ -229,31 +281,32 @@ function withPublicExternalEvents(listing) {
 }
 
 function publicApiForOrganizerIntake(entityId) {
-  const action = (claimTargetSyncPreview?.actions ?? []).find((item) =>
+  const readiness = claimTargetReadinessReceipt ?? claimTargetSyncPreview;
+  const action = (readiness?.actions ?? []).find((item) =>
     item?.entityId === entityId || item?.path === `clubs/${entityId}`
   );
-  if (!claimTargetSyncPreview) {
+  if (!readiness) {
     return disabledPublicApi(
-      "Claim target sync preview is missing, so public organizer APIs stay disabled.",
+      "Claiming is not available for this organizer yet.",
       "unknown"
     );
   }
   if (!action) {
     return {
       state: "enabled",
-      reason: "Firestore claim target sync preview has no pending action for this organizer.",
+      reason: "The organizer claim target is ready.",
       claimTargetSyncStatus: "in_sync",
     };
   }
   if (action.status === "in_sync") {
     return {
       state: "enabled",
-      reason: "Firestore claim target sync preview reports this organizer in sync.",
+      reason: "The organizer claim target is ready.",
       claimTargetSyncStatus: "in_sync",
     };
   }
   return disabledPublicApi(
-    `Firestore claim target sync still needs ${action.status ?? "a"} action for ${action.path ?? entityId}.`,
+    "Claiming is not available for this organizer yet.",
     "write_needed"
   );
 }
@@ -868,6 +921,8 @@ function parseArgs(argv) {
     noSeeds: false,
     output: null,
     projectionPlan: null,
+    claimTargetPlan: null,
+    claimTargetReadinessReceipt: null,
     seedRoot: null,
   };
 
@@ -887,6 +942,10 @@ function parseArgs(argv) {
       parsed.externalEventReadiness = requiredValue(argv, ++index, arg);
     } else if (arg === "--claim-target-sync-preview") {
       parsed.claimTargetSyncPreview = requiredValue(argv, ++index, arg);
+    } else if (arg === "--claim-target-plan") {
+      parsed.claimTargetPlan = requiredValue(argv, ++index, arg);
+    } else if (arg === "--claim-target-readiness-receipt") {
+      parsed.claimTargetReadinessReceipt = requiredValue(argv, ++index, arg);
     } else if (arg === "--seed-root") {
       parsed.seedRoot = requiredValue(argv, ++index, arg);
     } else {
@@ -913,6 +972,9 @@ Options:
                                   Read a specific external event readiness/preflight plan.
   --claim-target-sync-preview <path>
                                   Read a specific claim target sync preview.
+  --claim-target-plan <path>       Read a specific claim target plan for receipt validation.
+  --claim-target-readiness-receipt <path>
+                                  Read a Firestore readiness receipt for public claim APIs.
   --seed-root <path>               Read legacy scraped seed listings from a specific folder.
   --demo-scenario-root <path>      Read demo scenario configs from a specific folder.
   --output <path>                  Write or check a specific output file.

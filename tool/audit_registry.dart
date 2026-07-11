@@ -14,6 +14,7 @@ const screenContractsPath = 'design/screens/catch.screens.json';
 
 const trackedPaths = [
   '.github/workflows',
+  'android',
   'analysis_options.yaml',
   'admin',
   'analytics',
@@ -23,7 +24,9 @@ const trackedPaths = [
   'extensions',
   'firebase',
   'firebase.json',
+  'ios',
   'lib',
+  'macos',
   'package.json',
   'packages',
   'pubspec.lock',
@@ -35,6 +38,7 @@ const trackedPaths = [
   'functions/src',
   'functions/test',
   'tool',
+  'web',
   'website',
   'widgetbook',
   'docs',

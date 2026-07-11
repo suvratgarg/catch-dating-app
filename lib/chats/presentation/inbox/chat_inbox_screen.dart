@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -52,6 +53,7 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
               title: const SizedBox.shrink(),
               bottomHeight: chatsBrowseHeaderHeight(
                 hasHostFilter: screenState.hostFilter != null,
+                hasHeaderSubtitle: isHostApp,
               ),
               bottom: ChatsBrowseHeader(
                 showSearchAction: screenState.showSearchAction,
@@ -91,10 +93,8 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
   }
 
   void _showHostBroadcastComposer() {
-    showModalBottomSheet<void>(
+    showCatchBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const HostBroadcastComposerSheet(),
     );
   }
