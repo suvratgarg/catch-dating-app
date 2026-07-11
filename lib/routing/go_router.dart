@@ -668,6 +668,7 @@ List<RouteBase> _hostUtilityRoutes() {
         GoRoute(
           path: ':clubId',
           name: Routes.hostClubDetailScreen.name,
+          parentNavigatorKey: _rootNavigatorKey,
           pageBuilder: _clubDetailPage,
           routes: [
             GoRoute(
@@ -705,6 +706,7 @@ List<RouteBase> _hostUtilityRoutes() {
             GoRoute(
               path: 'events/:eventId',
               name: Routes.hostAppEventDetailScreen.name,
+              parentNavigatorKey: _rootNavigatorKey,
               pageBuilder: _eventDetailPage,
             ),
             GoRoute(
@@ -770,6 +772,7 @@ List<RouteBase> _hostUtilityRoutes() {
         GoRoute(
           path: 'profile',
           name: Routes.hostProfileScreen.name,
+          parentNavigatorKey: _rootNavigatorKey,
           builder: (context, state) => const HostProfileScreen(),
         ),
       ],

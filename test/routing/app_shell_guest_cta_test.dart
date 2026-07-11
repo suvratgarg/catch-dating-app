@@ -364,3 +364,4 @@ final class _NoOpAnalyticsReporter implements AnalyticsReporter {
   @override
   Future<void> setUserId(String? userId) async {}
 }
+// ignore_for_file: scoped_providers_should_specify_dependencies
