@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.9.2
+version: 1.9.3
 updated: 2026-07-12
 owner: recursive_audit_loop
 status: active
@@ -915,8 +915,14 @@ the target marker, compiled Flutter entrypoint, bundle/display identity,
 version/build, embedded Firebase bundle/app/project identity, Firebase OAuth URL
 scheme, and role-specific signed entitlements. Consumer requires HealthKit and
 Associated Domains. Host intentionally has neither; both roles require their
-Push/App Attest contract. The workflow separately validates the built prod Maps
-key and writes JSON identity receipts with the IPA artifact.
+Push/App Attest contract. Xcode automatic signing may produce a development-signed
+archive before distribution export, so the archive receipt verifies role and app
+identity without treating it as store-ready proof. The exported IPA receipt is
+strict: production entitlement values and an explicit `get-task-allow=false`
+are required. The workflow separately validates the built prod Maps key, writes
+stage-labelled JSON identity receipts, records the IPA SHA-256, and uploads that
+same verified IPA with `altool`; a second export after verification is rejected
+by the app-target scanner.
 
 Before archive, the workflow checks the proposed Apple build against the latest
 200 App Store Connect builds for that app. Canonical GitHub iOS releases use an
@@ -947,12 +953,17 @@ test for that real plist shape. The failed dispatch is diagnostic evidence, not
 TestFlight upload proof.
 
 The first unified main run `29165188541` proved the credential and build-number
-preflight, then the archive verifier rejected a development-signed Host archive
-before export (`aps-environment=development`, `get-task-allow=true`). The Apple
-flavor generator, checked target contract, and archive command now require
-`Apple Distribution` for every `Release-*` iOS archive; Debug/Profile remain
-development-signed. This keeps a Release build from being mistaken for a
-distribution-signed build.
+preflight, then exposed that the verifier incorrectly treated a development-signed
+archive as a distributable app (`aps-environment=development`,
+`get-task-allow=true`). Run `29166191690` then proved why forcing
+`Apple Distribution` is not the fix: both iOS jobs failed because that manual
+identity conflicts with automatic signing, while both Consumer and Host Android
+jobs built, verified, and uploaded their signed AAB artifacts successfully. The
+corrected contract leaves archive signing automatic, lets `xcodebuild
+-exportArchive` re-sign with `ios/ExportOptions.prod.plist`, and reserves strict
+distribution-entitlement enforcement for the exported IPA. The checked IPA is
+then uploaded directly instead of asking Xcode to export a different binary for
+upload.
 
 1. Both GitHub role jobs archive, verify, export, and upload successfully.
 2. Both builds finish processing in App Store Connect.

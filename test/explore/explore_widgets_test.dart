@@ -515,9 +515,18 @@ void main() {
         name: 'Pace Social',
         area: 'Necklace Road',
       );
+      final referenceNow = DateTime.now();
+      // Keep both sparse-market picks on one explicit local calendar day.
+      // Relative +2h/+4h fixtures split across UTC midnight on CI.
+      final eventDay = DateTime(
+        referenceNow.year,
+        referenceNow.month,
+        referenceNow.day + 1,
+      );
       final featuredEvent = event_test.buildEvent(
         id: 'event-featured',
         clubId: club.id,
+        startTime: eventDay.add(const Duration(hours: 10)),
         meetingPoint: 'People Plaza',
         bookedCount: 8,
         capacityLimit: 12,
@@ -525,7 +534,7 @@ void main() {
       final bodyEvent = event_test.buildEvent(
         id: 'event-body',
         clubId: club.id,
-        startTime: DateTime.now().add(const Duration(hours: 4)),
+        startTime: eventDay.add(const Duration(hours: 14)),
         meetingPoint: 'Library steps',
         bookedCount: 8,
         capacityLimit: 12,
@@ -551,7 +560,7 @@ void main() {
                           availability: resolveViewerEventAvailability(
                             event: featuredEvent,
                             userProfile: null,
-                            now: DateTime.now(),
+                            now: referenceNow,
                           ),
                           status: EventTileStatus.open,
                         ),
@@ -561,7 +570,7 @@ void main() {
                           availability: resolveViewerEventAvailability(
                             event: bodyEvent,
                             userProfile: null,
-                            now: DateTime.now(),
+                            now: referenceNow,
                           ),
                           status: EventTileStatus.open,
                         ),

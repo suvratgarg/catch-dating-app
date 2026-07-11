@@ -15,6 +15,8 @@ const controlledEntitlements = [
   "com.apple.developer.associated-domains",
   "com.apple.developer.healthkit",
 ];
+const artifactStages = new Set(["archive", "export"]);
+const signingEnvironments = new Set(["development", "production"]);
 
 export function resolveReleaseTarget({manifest, targetId, role, environment, scheme}) {
   const candidates = (manifest.targets ?? []).filter((target) => {
@@ -54,7 +56,11 @@ export function collectReleaseIdentityFindings({
   signedEntitlements,
   expectedVersion,
   expectedBuild,
+  artifactStage = "export",
 }) {
+  if (!artifactStages.has(artifactStage)) {
+    throw new Error(`Unsupported iOS release artifact stage '${artifactStage}'.`);
+  }
   const findings = [];
   const bundleId = stringValue(appInfo.CFBundleIdentifier);
   const version = stringValue(appInfo.CFBundleShortVersionString);
@@ -138,6 +144,7 @@ export function collectReleaseIdentityFindings({
     target,
     expected: roleEntitlements,
     actual: signedEntitlements,
+    requiresDistributionSigning: artifactStage === "export",
   });
   return findings;
 }
@@ -147,6 +154,7 @@ export function buildReleaseIdentityReceipt({
   appInfo,
   firebaseInfo,
   signedEntitlements,
+  artifactStage = "export",
 }) {
   const capabilities = Object.fromEntries(
     controlledEntitlements.map((key) => [key, signedEntitlements[key] ?? null]),
@@ -167,6 +175,7 @@ export function buildReleaseIdentityReceipt({
     },
     version: appInfo.CFBundleShortVersionString,
     build: appInfo.CFBundleVersion,
+    artifactStage,
     releaseOwner: target.release?.owner ?? null,
     signedCapabilities: capabilities,
   };
@@ -293,7 +302,13 @@ export function locateArchivedApp(archivePath) {
   return apps[0];
 }
 
-function validateRoleEntitlements({findings, target, expected, actual}) {
+function validateRoleEntitlements({
+  findings,
+  target,
+  expected,
+  actual,
+  requiresDistributionSigning,
+}) {
   for (const key of controlledEntitlements) {
     const expectsKey = Object.hasOwn(expected, key);
     const hasKey = Object.hasOwn(actual, key);
@@ -322,7 +337,15 @@ function validateRoleEntitlements({findings, target, expected, actual}) {
     if (typeof expectedValue === "string" && expectedValue.startsWith("$(")) {
       if (typeof actualValue !== "string" || actualValue.length === 0 || actualValue.startsWith("$(")) {
         findings.push(`entitlement '${key}' was not resolved at signing time`);
-      } else if (target.environment === "prod" && actualValue !== "production") {
+      } else if (!signingEnvironments.has(actualValue)) {
+        findings.push(
+          `entitlement '${key}' resolved to unsupported signing environment '${actualValue}'`,
+        );
+      } else if (
+        requiresDistributionSigning &&
+        target.environment === "prod" &&
+        actualValue !== "production"
+      ) {
         findings.push(`prod entitlement '${key}' must be 'production'; found '${actualValue}'`);
       }
       continue;
@@ -346,8 +369,13 @@ function validateRoleEntitlements({findings, target, expected, actual}) {
   } else if (!applicationIdentifier.startsWith(`${teamIdentifier}.`)) {
     findings.push("signed application-identifier does not use the signed team identifier");
   }
-  if (target.environment === "prod" && actual["get-task-allow"] === true) {
-    findings.push("prod app has get-task-allow=true");
+  if (requiresDistributionSigning && target.environment === "prod") {
+    const getTaskAllow = actual["get-task-allow"];
+    if (getTaskAllow !== false) {
+      findings.push(
+        `prod exported app must set get-task-allow=false; found ${JSON.stringify(getTaskAllow) ?? "undefined"}`,
+      );
+    }
   }
 }
 
@@ -449,6 +477,7 @@ function runCli() {
   const archiveInfo = archivePath
     ? readArchiveInfoPlist(path.join(archivePath, "Info.plist"))
     : null;
+  const artifactStage = archivePath ? "archive" : "export";
   const roleEntitlements = readPlistFile(roleEntitlementsPath);
   const findings = collectReleaseIdentityFindings({
     target,
@@ -459,6 +488,7 @@ function runCli() {
     signedEntitlements,
     expectedVersion,
     expectedBuild,
+    artifactStage,
   });
   if (findings.length > 0) {
     throw new Error(
@@ -471,6 +501,7 @@ function runCli() {
     appInfo,
     firebaseInfo,
     signedEntitlements,
+    artifactStage,
   });
   const receiptPath = valueAfter(args, "--receipt");
   if (receiptPath) {

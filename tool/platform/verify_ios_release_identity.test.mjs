@@ -72,6 +72,13 @@ const baseSignedConsumerEntitlements = {
   "get-task-allow": false,
 };
 
+const baseDevelopmentSignedConsumerEntitlements = {
+  ...baseSignedConsumerEntitlements,
+  "aps-environment": "development",
+  "com.apple.developer.devicecheck.appattest-environment": "development",
+  "get-task-allow": true,
+};
+
 function appInfoFor(target) {
   return {
     CFBundleIdentifier: target.ios.bundleId,
@@ -155,7 +162,7 @@ test(
   },
 );
 
-test("accepts a matching Consumer archive identity", () => {
+test("accepts a development-signed Consumer archive before export", () => {
   assert.deepEqual(
     collectReleaseIdentityFindings({
       target: consumerTarget,
@@ -163,11 +170,93 @@ test("accepts a matching Consumer archive identity", () => {
       appInfo: appInfoFor(consumerTarget),
       firebaseInfo: firebaseInfoFor(consumerTarget),
       archiveInfo: archiveInfoFor(consumerTarget),
-      signedEntitlements: baseSignedConsumerEntitlements,
+      signedEntitlements: baseDevelopmentSignedConsumerEntitlements,
       expectedVersion: "1.2.3",
       expectedBuild: "202607101",
+      artifactStage: "archive",
     }),
     [],
+  );
+});
+
+test("rejects development signing on an exported Consumer app", () => {
+  const findings = collectReleaseIdentityFindings({
+    target: consumerTarget,
+    roleEntitlements: baseConsumerEntitlements,
+    appInfo: appInfoFor(consumerTarget),
+    firebaseInfo: firebaseInfoFor(consumerTarget),
+    archiveInfo: null,
+    signedEntitlements: baseDevelopmentSignedConsumerEntitlements,
+    expectedVersion: "1.2.3",
+    expectedBuild: "202607101",
+    artifactStage: "export",
+  });
+
+  assert.ok(findings.some((finding) => finding.includes("must be 'production'")));
+  assert.ok(findings.some((finding) => finding.includes("get-task-allow=false")));
+});
+
+test("requires an explicit boolean false get-task-allow on exported apps", () => {
+  for (const value of [undefined, "false", 0]) {
+    const signedEntitlements = {...baseSignedConsumerEntitlements};
+    if (value === undefined) {
+      delete signedEntitlements["get-task-allow"];
+    } else {
+      signedEntitlements["get-task-allow"] = value;
+    }
+    const findings = collectReleaseIdentityFindings({
+      target: consumerTarget,
+      roleEntitlements: baseConsumerEntitlements,
+      appInfo: appInfoFor(consumerTarget),
+      firebaseInfo: firebaseInfoFor(consumerTarget),
+      archiveInfo: null,
+      signedEntitlements,
+      expectedVersion: "1.2.3",
+      expectedBuild: "202607101",
+      artifactStage: "export",
+    });
+    assert.ok(
+      findings.some((finding) => finding.includes("get-task-allow=false")),
+      `expected invalid get-task-allow finding for ${JSON.stringify(value)}`,
+    );
+  }
+});
+
+test("rejects unsupported resolved signing environments on archives", () => {
+  const findings = collectReleaseIdentityFindings({
+    target: consumerTarget,
+    roleEntitlements: baseConsumerEntitlements,
+    appInfo: appInfoFor(consumerTarget),
+    firebaseInfo: firebaseInfoFor(consumerTarget),
+    archiveInfo: archiveInfoFor(consumerTarget),
+    signedEntitlements: {
+      ...baseDevelopmentSignedConsumerEntitlements,
+      "aps-environment": "invalid",
+    },
+    expectedVersion: "1.2.3",
+    expectedBuild: "202607101",
+    artifactStage: "archive",
+  });
+  assert.ok(
+    findings.some((finding) => finding.includes("unsupported signing environment")),
+  );
+});
+
+test("rejects an unknown artifact stage instead of weakening export checks", () => {
+  assert.throws(
+    () =>
+      collectReleaseIdentityFindings({
+        target: consumerTarget,
+        roleEntitlements: baseConsumerEntitlements,
+        appInfo: appInfoFor(consumerTarget),
+        firebaseInfo: firebaseInfoFor(consumerTarget),
+        archiveInfo: null,
+        signedEntitlements: baseSignedConsumerEntitlements,
+        expectedVersion: "1.2.3",
+        expectedBuild: "202607101",
+        artifactStage: "unknown",
+      }),
+    /Unsupported iOS release artifact stage/u,
   );
 });
 
@@ -182,6 +271,7 @@ test("accepts Host without Consumer-only capabilities", () => {
     "com.apple.developer.team-identifier": "TEAM123",
     "aps-environment": "production",
     "com.apple.developer.devicecheck.appattest-environment": "production",
+    "get-task-allow": false,
   };
   assert.deepEqual(
     collectReleaseIdentityFindings({
@@ -309,7 +399,7 @@ test("rejects bundle, version, build, archive metadata, and signing drift", () =
     "build number",
     "application-identifier",
     "must be 'production'",
-    "get-task-allow=true",
+    "get-task-allow=false",
   ]) {
     assert.ok(
       findings.some((finding) => finding.includes(marker)),
@@ -353,8 +443,9 @@ test("CLI verifies a synthetic Host archive and writes a receipt", () => {
     writeXmlPlist(entitlementsPath, {
       "application-identifier": "TEAM123.com.catchdates.host",
       "com.apple.developer.team-identifier": "TEAM123",
-      "aps-environment": "production",
-      "com.apple.developer.devicecheck.appattest-environment": "production",
+      "aps-environment": "development",
+      "com.apple.developer.devicecheck.appattest-environment": "development",
+      "get-task-allow": true,
     });
 
     const scriptPath = fileURLToPath(
@@ -385,6 +476,30 @@ test("CLI verifies a synthetic Host archive and writes a receipt", () => {
     const receipt = JSON.parse(fs.readFileSync(receiptPath, "utf8"));
     assert.equal(receipt.targetId, "host-prod");
     assert.equal(receipt.bundleIdentifier, "com.catchdates.host");
+    assert.equal(receipt.artifactStage, "archive");
+
+    const exportedResult = spawnSync(
+      process.execPath,
+      [
+        scriptPath,
+        "--app",
+        appPath,
+        "--role",
+        "host",
+        "--environment",
+        "prod",
+        "--expected-version",
+        "1.2.3",
+        "--expected-build",
+        "202607101",
+        "--entitlements-plist",
+        entitlementsPath,
+      ],
+      {encoding: "utf8"},
+    );
+    assert.equal(exportedResult.status, 1);
+    assert.match(exportedResult.stderr, /must be 'production'/u);
+    assert.match(exportedResult.stderr, /get-task-allow=false/u);
   } finally {
     fs.rmSync(tempRoot, {recursive: true, force: true});
   }

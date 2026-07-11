@@ -50,7 +50,15 @@ def ensure_project_config(project, name, type, base_ref)
   config
 end
 
-def ensure_target_config(target, name, type, base_ref, build_settings, template_name: nil)
+def ensure_target_config(
+  target,
+  name,
+  type,
+  base_ref,
+  build_settings,
+  template_name: nil,
+  remove_build_settings: []
+)
   config = target.build_configurations.find { |item| item.name == name }
   if config.nil?
     config = target.add_build_configuration(name, type)
@@ -60,6 +68,7 @@ def ensure_target_config(target, name, type, base_ref, build_settings, template_
     end
   end
   config.base_configuration_reference = base_ref if base_ref
+  remove_build_settings.each { |setting| config.build_settings.delete(setting) }
   config.build_settings.merge!(build_settings)
   config
 end
@@ -119,10 +128,6 @@ def app_attest_environment(mode)
   mode == 'Debug' ? 'development' : 'production'
 end
 
-def ios_code_sign_identity(mode)
-  mode == 'Release' ? 'Apple Distribution' : 'Apple Development'
-end
-
 def remove_static_firebase_resource(target)
   target.resources_build_phase.files.each do |build_file|
     next unless build_file.file_ref&.display_name == 'GoogleService-Info.plist'
@@ -170,7 +175,6 @@ def configure_ios
           'APP_DISPLAY_NAME' => settings[:app_name],
           'ASSETCATALOG_COMPILER_APPICON_NAME' => settings[:app_icon],
           'CODE_SIGN_ENTITLEMENTS' => settings[:entitlements],
-          'CODE_SIGN_IDENTITY[sdk=iphoneos*]' => ios_code_sign_identity(mode),
           'CATCH_APP_TARGET_ID' => settings[:target_id],
           'FLUTTER_TARGET' => "$(SRCROOT)/../#{settings[:flutter_target]}",
           'FLAVOR' => flavor,
@@ -179,7 +183,8 @@ def configure_ios
           'FIREBASE_ROLE_PATH' => settings[:firebase_role_path],
           'FIREBASE_IOS_URL_SCHEME' => settings[:ios_url_scheme]
         },
-        template_name: mode
+        template_name: mode,
+        remove_build_settings: ['CODE_SIGN_IDENTITY[sdk=iphoneos*]']
       )
       ensure_target_config(
         tests,
