@@ -26,7 +26,10 @@ class FakeSnapshot {
 }
 
 class FakeDocRef {
-  constructor(private readonly firestore: FakeFirestore, readonly path: string) {}
+  constructor(
+    private readonly firestore: FakeFirestore,
+    readonly path: string
+  ) {}
 
   async get(): Promise<FakeSnapshot> {
     return new FakeSnapshot(this.path, this.firestore.get(this.path));
@@ -37,7 +40,10 @@ class FakeQuery {
   private status: unknown = null;
   private limitCount = 1000;
 
-  constructor(private readonly firestore: FakeFirestore, private readonly path: string) {}
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly path: string
+  ) {}
 
   where(field: string, op: "==", value: unknown) {
     assert.equal(field, "status");
@@ -66,7 +72,10 @@ class FakeQuery {
 }
 
 class FakeCollectionRef {
-  constructor(private readonly firestore: FakeFirestore, private readonly path: string) {}
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly path: string
+  ) {}
 
   doc(id: string) {
     return new FakeDocRef(this.firestore, `${this.path}/${id}`);

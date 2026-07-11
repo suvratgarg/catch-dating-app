@@ -191,7 +191,11 @@ export function readPlistFile(plistPath) {
       ).trim()}`,
     );
   }
-  return JSON.parse(result.stdout);
+  try {
+    return JSON.parse(result.stdout);
+  } catch {
+    return JSON.parse(fs.readFileSync(plistPath, "utf8"));
+  }
 }
 
 export function readSignedEntitlements(appPath) {

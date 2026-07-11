@@ -7,7 +7,9 @@ import * as schemaRegistry from "./generated/schema_contract_registry.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
-const requireFromRepo = createRequire(new URL("../../package.json", import.meta.url));
+const requireFromRepo = createRequire(
+  new URL("../../functions/package.json", import.meta.url),
+);
 
 const Ajv = requireFromRepo("ajv");
 const addFormats = requireFromRepo("ajv-formats");

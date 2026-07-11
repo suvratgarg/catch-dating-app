@@ -138,8 +138,10 @@ function overlayDecisionObject(
   const decision = id ? byTarget.get(`${targetType}:${id}`) : null;
   if (!decision) return item;
   const edits = recordValue(decision.edits);
-  const decisionStatus = stringValue(decision.decisionStatus) ?? "needs_changes";
-  const stateField = targetType === "event_candidate" ? "reviewState" : "status";
+  const decisionStatus =
+    stringValue(decision.decisionStatus) ?? "needs_changes";
+  const stateField =
+    targetType === "event_candidate" ? "reviewState" : "status";
   return {
     ...item,
     ...edits,
