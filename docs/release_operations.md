@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.9.3
+version: 1.9.4
 updated: 2026-07-12
 owner: recursive_audit_loop
 status: active
@@ -346,7 +346,8 @@ Verified setup state:
   stapled, and Gatekeeper accepted.
 - Consumer TestFlight upload/install/launch and iOS Maps behavior have legacy
   Xcode Cloud proof. GitHub Actions is now the canonical owner for both roles;
-  each role still needs current processed-build and tester-group evidence.
+  both current GitHub builds have processed, while tester-group assignment and
+  install/launch proof remain pending for each role.
 
 Still outside this setup verdict:
 
@@ -965,15 +966,27 @@ distribution-entitlement enforcement for the exported IPA. The checked IPA is
 then uploaded directly instead of asking Xcode to export a different binary for
 upload.
 
-1. Both GitHub role jobs archive, verify, export, and upload successfully.
-2. Both builds finish processing in App Store Connect.
-3. The Consumer and Host app-scoped workflows whose exact App Store Connect API
-   name is `Default` are disabled in Xcode Cloud. GitHub/App Store status
-   surfaces may prefix those workflows as `Catch | Default` and
-   `Runner | Default`; those display contexts are not API workflow names.
-4. Intended internal TestFlight groups are recorded and assigned.
-5. Consumer and Host installs launch with App Check, Maps, phone auth, push, and
-   their role-specific entrypoints.
+Run `29168074271` on main SHA
+`05a3a5811a9c20ec82d14a4b04114c4538acfdd2` closed the upload and processing
+proof on 2026-07-12. Both role jobs archived, verified, exported, uploaded the
+same checksum-verified IPA, and reached App Store Connect `VALID` as build
+`202607110000000301`. Its Consumer and Host processing receipts are bound to
+that exact GitHub run. Retirement dispatch `29168662623` downloaded those
+receipts, re-verified both live builds, and disabled both app-scoped `Default`
+workflows. Independent App Store Connect reads confirmed both remain disabled.
+
+Current cutover status:
+
+1. Complete: both GitHub role jobs archive, verify, export, and upload.
+2. Complete: both exact builds finish processing in App Store Connect.
+3. Complete: the Consumer workflow
+   `93EC2EEF-494E-492D-8574-570AA8BF690E` and Host workflow
+   `1F97B043-9337-427B-854C-6F88F2110020` are disabled. GitHub/App Store status
+   surfaces may prefix them as `Catch | Default` and `Runner | Default`; the
+   app-scoped API name is `Default` for each app.
+4. Pending: record and assign the intended internal TestFlight groups.
+5. Pending: install and launch both GitHub-owned builds with App Check, Maps,
+   phone auth, push, and role-specific entrypoint proof.
 
 Current host icon status: host builds use generated `AppIcon-host-dev`,
 `AppIcon-host-staging`, and `AppIcon-host-prod` catalogs on iOS/macOS, plus
@@ -985,10 +998,11 @@ native brand-token or base-icon changes.
 
 The old 12 a.m. scheduled Consumer Xcode Cloud build was retired live in App
 Store Connect on 2026-05-21. The later Consumer and Host app-scoped `Default`
-workflows are legacy cutover surfaces. They may appear in status contexts as
-`Catch | Default` and `Runner | Default`, but the App Store Connect API returns
-the exact workflow name `Default` for each distinct app. They must be disabled
-after GitHub upload proof so the same commit cannot produce duplicate builds.
+workflows were disabled on 2026-07-12 after the exact GitHub builds reached
+`VALID`. They may appear in status contexts as `Catch | Default` and
+`Runner | Default`, but the App Store Connect API returns the exact workflow
+name `Default` for each distinct app. GitHub Actions is the sole routine release
+owner; do not reactivate these workflows except for an explicit rollback.
 The manual `retire_xcode_cloud` input is a separate, retire-only operation. It
 requires exact processed Consumer and Host GitHub build numbers, re-verifies
 both as `VALID`, downloads the matching processing receipts from the declared
@@ -996,6 +1010,13 @@ both as `VALID`, downloads the matching processing receipts from the declared
 resolves both named Xcode Cloud workflows read-only before any
 mutation, verifies each PATCH response, and rolls back workflows changed by
 that operation if the second mutation fails.
+
+The unused prototype App Store Connect record `catch_dating_app` (app id
+`6738610809`, bundle id `com.example.catchDatingApp`) was removed on 2026-07-12
+after API inventory proved it had no builds, prerelease versions, beta groups,
+or commercial products. Its disabled Xcode Cloud product
+`26D4F6B6-7D4F-4FC8-8B34-6B5D9FB9C692` had zero build runs and was deleted; the
+active `Catch Dating` and `Catch Host` records were re-listed afterward.
 
 Current App Store Connect file/folder rules:
 
@@ -1015,12 +1036,12 @@ triggers.
 If a backend-only change intentionally requires a compatible app binary,
 dispatch `Mobile Internal Release` after the backend deploy is promoted.
 
-GitHub Actions iOS jobs and Xcode Cloud must all write
-`ios/Flutter/GoogleMapsKeys.xcconfig` through
+GitHub Actions iOS jobs write `ios/Flutter/GoogleMapsKeys.xcconfig` through
 `tool/write_ios_maps_key_xcconfig.sh <env>`. The simulator build matrix uses
-`dev`; TestFlight/Xcode Cloud release builds use `prod`. Keep Maps-key
-validation in that shared helper instead of duplicating secret preflight logic
-in each CI surface.
+`dev`; TestFlight release builds use `prod`. If a legacy Xcode Cloud workflow is
+deliberately re-enabled for rollback, its scripts must use the same helper and
+prod key. Keep Maps-key validation there instead of duplicating secret preflight
+logic in each CI surface.
 
 ## Legacy Xcode Cloud Build Scripts
 
@@ -1061,36 +1082,41 @@ check will reject any later build number that is not above the resulting build.
 The repo migration is implemented: one Actions workflow owns both roles, both
 iOS uploads, both signed Android bundles, and guarded Play internal uploads.
 
-Cutover is not externally complete until `APP-TARGET-IOS-GITHUB-CUTOVER-001`
-and `APP-TARGET-ANDROID-PLAY-001` have their remote processing and tester proof.
+iOS upload, processing, and legacy-owner retirement are externally complete.
+`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only for TestFlight group plus
+install/launch proof. `APP-TARGET-ANDROID-PLAY-001` remains blocked on Play
+enrollment, publisher access, processing, tester, and device proof.
 
 Cutover checklist:
 
-1. Prove Consumer and Host GitHub uploads and App Store processing.
-2. Disable both legacy Xcode Cloud workflows.
-3. Record TestFlight group assignment plus install/launch proof.
+1. Complete: Consumer and Host GitHub uploads and App Store processing.
+2. Complete: both legacy Xcode Cloud workflows disabled.
+3. Pending: record TestFlight group assignment plus install/launch proof.
 4. Complete Play enrollment and publisher access, then enable the Play flag.
 5. Record both Play internal processing/install/launch proofs and signing
    fingerprints.
 
-The repository can verify that the GitHub `prod` environment has the required
-App Store Connect secret names and that the local/Xcode Cloud scripts fail
+The repository can verify that the GitHub `prod-mobile` environment has the
+required App Store Connect secret names and that the local/Xcode Cloud scripts fail
 loudly when required release secrets are missing. It cannot prove App Store
 Connect account settings, TestFlight group membership, export-compliance,
 privacy, or review metadata state without direct App Store Connect access.
 
 ## Human Release Evidence
 
-Already confirmed outside repository checks for Consumer:
+Already confirmed outside repository checks:
 
 - TestFlight upload, install, launch, and iOS Maps behavior through the App
   Store Connect/Xcode Cloud build process before the nightly schedule was
   retired.
+- Consumer and Host GitHub build `202607110000000301` reached App Store Connect
+  `VALID` from run `29168074271`; receipt-gated run `29168662623` then disabled
+  both legacy Xcode Cloud workflows.
 
 These still require human confirmation outside repository checks:
 
-- Current Consumer and Host TestFlight processing, intended-group assignment,
-  install, and launch through the GitHub-owned pipeline.
+- Intended-group assignment, install, and launch through the GitHub-owned
+  Consumer and Host pipeline.
 - Consumer and Host Play internal-testing evidence.
 - Crashlytics visibility and symbolication evidence.
 - Analytics DebugView event evidence.

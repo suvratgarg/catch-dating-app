@@ -1,6 +1,6 @@
 {
-  "version": "1.5.33",
-  "updated": "2026-07-11",
+  "version": "1.5.34",
+  "updated": "2026-07-12",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -999,32 +999,32 @@
           "path": ".github/workflows/mobile-internal-release.yml",
           "role": "approval-free Consumer and Host matrix for TestFlight and Play internal artifacts",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-11-unified-mobile-release"
+          "lastReviewedPass": "2026-07-12-release-live-state-sync"
         },
         {
           "path": "tool/platform/verify_android_release_bundle.mjs",
           "role": "signed Android bundle certificate, compiled role, Firebase, Maps, debug, package, and version receipt gate",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-11-unified-mobile-release"
+          "lastReviewedPass": "2026-07-12-release-live-state-sync"
         },
         {
           "path": "tool/platform/verify_app_store_build.mjs",
           "role": "Apple build-floor preflight and exact processing receipt gate",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-11-unified-mobile-release"
+          "lastReviewedPass": "2026-07-12-release-live-state-sync"
         },
         {
           "path": "tool/platform/verify_ios_processing_receipts.mjs",
           "role": "cross-run TestFlight receipt provenance gate before legacy owner retirement",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-11-unified-mobile-release"
+          "lastReviewedPass": "2026-07-12-release-live-state-sync"
         }
       ],
       "exceptions": [
         {
           "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
           "path": ".github/workflows/mobile-internal-release.yml",
-          "reason": "GitHub is canonical for both iOS roles, but processed-build, tester-group, install, and legacy Xcode Cloud shutdown proof remains external.",
+          "reason": "GitHub is canonical for both iOS roles, both exact builds processed, and both legacy Xcode Cloud workflows are disabled. Intended TestFlight group assignment plus install and launch proof remains external.",
           "status": "blocked_external"
         },
         {
