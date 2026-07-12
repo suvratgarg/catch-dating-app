@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "families": [
+    {
+      "id": "chip-core",
+      "title": "Core chip family",
+      "intent": "One ergonomic contract for quiet tags, selectable choices, and activity-typed chips. Compact status metadata belongs to badge-status, pressable floating counters belong to floating-compact-controls, identity switching belongs to identity-switchers, and temporal or sequence state belongs to progress-cues. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",
+      "priority": "P0",
+      "status": "approved",
+      "targetContract": "catch.chip",
+      "qualityReference": "CatchSelectChip",
+      "decisionSource": "user-approved:2026-07-12",
+      "acceptedVisualDelta": [
+        "Use a solid selected fill with inverse ink.",
+        "Use a subtle selected shadow.",
+        "Scale only while pressed.",
+        "Do not retain persistent selected scale or glow."
+      ],
+      "members": [
+        {
+          "symbol": "CatchChip",
+          "disposition": "repair",
+          "target": "CatchChip",
+          "preview": "required",
+          "rationale": "Keep CatchChip as the public seam, but replace the weak active flag surface with semantic named constructors and the approved stronger selected treatment."
+        },
+        {
+          "symbol": "CatchSelectChip",
+          "disposition": "unify",
+          "target": "CatchChip.selectable",
+          "preview": "required",
+          "rationale": "Its solid inverse selected state is the quality reference; fold that behavior into the canonical chip contract without retaining persistent glow or selected scale."
+        },
+        {
+          "symbol": "CatchActivityChip",
+          "disposition": "unify",
+          "target": "CatchChip.activity",
+          "preview": "required",
+          "rationale": "Preserve the typed activity pigment and glyph behavior as a semantic constructor instead of a parallel chip implementation."
+        }
+      ]
+    },
+    {
+      "id": "badge-status",
+      "title": "Badge and compact status family",
+      "intent": "Review compact non-interactive metadata, status, privacy, role, rating, live, and on-dark treatments against one badge grammar. Floating controls, context switchers, and progress indicators remain separate families. Event Detail symbols, including EventStatusPill, are excluded while the parallel Event Detail change is in flight.",
+      "priority": "P0",
+      "status": "review",
+      "targetContract": "catch.badge",
+      "qualityReference": "CatchBadge on light surfaces; EventSuccessDarkPill on dark surfaces",
+      "decisionSource": "visual-triage:2026-07-12; owner review pending",
+      "acceptedVisualDelta": [],
+      "members": [
+        {
+          "symbol": "CatchBadge",
+          "disposition": "repair",
+          "target": "CatchBadge",
+          "preview": "required",
+          "rationale": "This is the widely used core seam; review semantic constructors and the stronger on-dark recipe before approving the family."
+        },
+        {
+          "symbol": "CatchIconBadge",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Its overlay-count placement is distinct from an inline badge and must stay visible while the badge-versus-control boundary is reviewed."
+        },
+        {
+          "symbol": "CatchPrivacyBadge",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Privacy copy and icons carry trust semantics; keep the specialized adapter visible while reviewing whether its chrome should route through CatchBadge."
+        },
+        {
+          "symbol": "ClubHostRoleBadge",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "This feature adapter already delegates its role semantics to CatchBadge and is useful evidence for the intended adapter boundary."
+        },
+        {
+          "symbol": "CatchStatusDot",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "The dot is an ingredient for live and presence badges, not a competing complete badge; retain it in the review set to test composition ergonomics."
+        },
+        {
+          "symbol": "ClubRatingPill",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "The cataloged rating treatment has no current production call site; include it so review can explicitly choose repair or discard instead of losing the evidence."
+        },
+        {
+          "symbol": "EventSuccessDarkPill",
+          "disposition": "repair",
+          "target": "CatchBadge.onDark",
+          "preview": "required",
+          "rationale": "Its dark-overlay contrast and border recipe is the strongest current on-dark treatment, but the feature-owned API should be tested against a core semantic variant."
+        },
+        {
+          "symbol": "LiveNowPill",
+          "disposition": "repair",
+          "target": "CatchBadge.live",
+          "preview": "required",
+          "rationale": "This is compact live status composed from a dot, uppercase label, and on-dark surface, making it a concrete semantic badge case."
+        },
+        {
+          "symbol": "HostTodayCountdownPill",
+          "disposition": "repair",
+          "target": "CatchBadge.onDark",
+          "preview": "source-only",
+          "rationale": "It presents compact temporal metadata on a hero surface without interaction or progress-state behavior; compare it with the on-dark badge recipe."
+        }
+      ]
+    },
+    {
+      "id": "floating-compact-controls",
+      "title": "Floating compact controls",
+      "intent": "Review raised, pressable compact controls that may carry an icon, label, and count. They are actions rather than inline chips or status badges. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",
+      "priority": "P1",
+      "status": "review",
+      "targetContract": "catch.compact_control",
+      "qualityReference": "CatchCountPill",
+      "decisionSource": "visual-triage:2026-07-12; owner review pending",
+      "acceptedVisualDelta": [],
+      "members": [
+        {
+          "symbol": "CatchCountPill",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Its elevated pressable surface and optional corner count make it a compact control, not a chip; preserve it as the current reference while naming and API are reviewed."
+        }
+      ]
+    },
+    {
+      "id": "identity-switchers",
+      "title": "Identity switchers",
+      "intent": "Review compact current-context controls that combine identity art, a constrained label, and an optional switch menu. They should not be flattened into generic chips. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",
+      "priority": "P1",
+      "status": "review",
+      "targetContract": "catch.identity_switcher",
+      "qualityReference": "HostTodayClubPill",
+      "decisionSource": "visual-triage:2026-07-12; owner review pending",
+      "acceptedVisualDelta": [],
+      "members": [
+        {
+          "symbol": "HostTodayClubPill",
+          "disposition": "register",
+          "preview": "source-only",
+          "rationale": "The current widget combines club identity and a menu-backed context change; keep it as source evidence until a standalone preview and cross-surface comparison exist."
+        }
+      ]
+    },
+    {
+      "id": "progress-cues",
+      "title": "Compact progress cues",
+      "intent": "Review compact sequence or temporal cues whose active and complete states communicate progress. Static countdown metadata remains in badge-status, and generic selectable choices remain in chip-core. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",
+      "priority": "P1",
+      "status": "review",
+      "targetContract": "catch.progress_cue",
+      "qualityReference": "CountdownBeatPill",
+      "decisionSource": "visual-triage:2026-07-12; owner review pending",
+      "acceptedVisualDelta": [],
+      "members": [
+        {
+          "symbol": "CountdownBeatPill",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Its active and complete states encode ordered progress rather than selection or status; retain it as the first visual reference for this family."
+        }
+      ]
+    }
+  ]
+}
