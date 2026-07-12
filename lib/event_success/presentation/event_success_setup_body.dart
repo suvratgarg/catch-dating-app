@@ -6,9 +6,9 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
@@ -612,11 +612,11 @@ class SetupChoiceChips<T> extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final option in options)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: option.label,
-                  active: value == option.value,
+                  selected: value == option.value,
                   enabled: enabled,
-                  onTap: enabled ? () => onChanged(option.value) : null,
+                  onChanged: (_) => onChanged(option.value),
                 ),
             ],
           ),
@@ -836,11 +836,11 @@ class QuestionnaireBlock extends StatelessWidget {
           runSpacing: CatchSpacing.s2,
           children: [
             for (final option in _QuestionnaireMode.values)
-              CatchSelectChip(
+              CatchChip.selectable(
                 label: _questionnaireModeLabel(option),
-                active: mode == option,
+                selected: mode == option,
                 enabled: editable,
-                onTap: editable ? () => onModeChanged(option) : null,
+                onChanged: (_) => onModeChanged(option),
               ),
           ],
         ),

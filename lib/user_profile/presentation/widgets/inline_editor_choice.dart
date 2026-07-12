@@ -359,14 +359,14 @@ class ProfileSingleChipValue<T extends Labelled> extends StatelessWidget {
 
     return Align(
       alignment: Alignment.centerLeft,
-      child: CatchChip(
-        label: currentSelected.label,
-        active: true,
-        enabled: enabled,
-        onTap: allowEmptySelection
-            ? () => onSelectedTap(currentSelected)
-            : null,
-      ),
+      child: allowEmptySelection
+          ? CatchChip.selectable(
+              label: currentSelected.label,
+              selected: true,
+              enabled: enabled,
+              onChanged: (_) => onSelectedTap(currentSelected),
+            )
+          : CatchChip.tag(label: currentSelected.label),
     );
   }
 }
@@ -409,12 +409,12 @@ class ProfileMultiChipValue<T extends Labelled> extends StatelessWidget {
       runSpacing: CatchSpacing.s2,
       children: [
         for (final value in selected)
-          CatchChip(
+          CatchChip.selectable(
             label: value.label,
-            active: true,
-            icon: Icon(CatchIcons.checkRounded),
+            selected: true,
+            leading: Icon(CatchIcons.checkRounded),
             enabled: enabled,
-            onTap: () => onSelectedTap(value),
+            onChanged: (_) => onSelectedTap(value),
           ),
       ],
     );
@@ -467,11 +467,11 @@ class ProfileChipOptions<T extends Labelled> extends StatelessWidget {
       runSpacing: CatchSpacing.s3,
       children: [
         for (final value in values)
-          CatchChip(
+          CatchChip.selectable(
             label: value.label,
-            active: selected.contains(value),
+            selected: selected.contains(value),
             enabled: enabled,
-            onTap: () => onTap(value),
+            onChanged: (_) => onTap(value),
           ),
       ],
     );

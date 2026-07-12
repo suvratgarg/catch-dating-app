@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
@@ -94,10 +94,10 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final playbook in widget.playbooks)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: playbook.activityType.label,
-                  active: playbook.id == _draft.playbook.id,
-                  onTap: () {
+                  selected: playbook.id == _draft.playbook.id,
+                  onChanged: (_) {
                     setState(() {
                       _draft = EventSuccessHostDraft.fromPlaybook(playbook);
                     });

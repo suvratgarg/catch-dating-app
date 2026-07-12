@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
@@ -24,7 +25,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -569,19 +569,17 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   runSpacing: CatchSpacing.s2,
                   children: PaceLevel.values
                       .map(
-                        (pace) => CatchSelectChip(
+                        (pace) => CatchChip.selectable(
                           label: pace.label,
-                          active: detailsFields.selectedPace == pace,
+                          selected: detailsFields.selectedPace == pace,
                           enabled: screenState.canEdit,
                           semanticsLabel: context.l10n
                               .hostsEditHostedEventScreenBodySelectLabelPace(
                                 label: pace.label,
                               ),
-                          onTap: screenState.canEdit
-                              ? () => _handleIntent(
-                                  HostEventEditPaceChangedIntent(pace),
-                                )
-                              : null,
+                          onChanged: (_) => _handleIntent(
+                            HostEventEditPaceChangedIntent(pace),
+                          ),
                         ),
                       )
                       .toList(),
@@ -1039,11 +1037,11 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final preset in EventAdmissionPreset.values)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: preset.label(context.l10n),
-                  active: state.admissionPreset == preset,
+                  selected: state.admissionPreset == preset,
                   semanticsLabel: preset.title(context.l10n),
-                  onTap: () => onAdmissionPresetChanged(preset),
+                  onChanged: (_) => onAdmissionPresetChanged(preset),
                 ),
             ],
           ),
@@ -1222,11 +1220,11 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: policyFor(policyId).title.toUpperCase(),
-                  active: state.cancellationPolicyId == policyId,
+                  selected: state.cancellationPolicyId == policyId,
                   semanticsLabel: policyFor(policyId).title,
-                  onTap: () => onCancellationPolicyChanged(policyId),
+                  onChanged: (_) => onCancellationPolicyChanged(policyId),
                 ),
             ],
           ),

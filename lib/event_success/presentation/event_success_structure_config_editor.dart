@@ -4,8 +4,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -72,11 +72,11 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           runSpacing: CatchSpacing.s2,
           children: [
             for (final kind in EventSuccessUnitKind.values)
-              CatchSelectChip(
+              CatchChip.selectable(
                 label: kind.label,
-                active: value.unitKind == kind,
+                selected: value.unitKind == kind,
                 enabled: enabled,
-                onTap: enabled ? () => onChanged(_withUnitKind(kind)) : null,
+                onChanged: (_) => onChanged(_withUnitKind(kind)),
               ),
           ],
         ),
@@ -143,33 +143,26 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                           spacing: CatchSpacing.s2,
                           runSpacing: CatchSpacing.s2,
                           children: [
-                            CatchSelectChip(
+                            CatchChip.selectable(
                               label: context
                                   .l10n
                                   .eventSuccessEventSuccessStructureConfigEditorLabelAuto,
-                              active: value.unitCount == null,
+                              selected: value.unitCount == null,
                               enabled:
                                   enabled && value.unitKind.supportsUnitCount,
-                              onTap: enabled && value.unitKind.supportsUnitCount
-                                  ? () => onChanged(
-                                      value.copyWith(unitCount: null),
-                                    )
-                                  : null,
+                              onChanged: (_) =>
+                                  onChanged(value.copyWith(unitCount: null)),
                             ),
-                            CatchSelectChip(
+                            CatchChip.selectable(
                               label: context
                                   .l10n
                                   .eventSuccessEventSuccessStructureConfigEditorLabelFixed,
-                              active: value.unitCount != null,
+                              selected: value.unitCount != null,
                               enabled:
                                   enabled && value.unitKind.supportsUnitCount,
-                              onTap: enabled && value.unitKind.supportsUnitCount
-                                  ? () => onChanged(
-                                      value.copyWith(
-                                        unitCount: estimatedUnitCount,
-                                      ),
-                                    )
-                                  : null,
+                              onChanged: (_) => onChanged(
+                                value.copyWith(unitCount: estimatedUnitCount),
+                              ),
                             ),
                           ],
                         ),
@@ -285,15 +278,13 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final strategy in EventSuccessRotationRepeatStrategy.values)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: strategy.label,
-                  active: value.rotationRepeatStrategy == strategy,
+                  selected: value.rotationRepeatStrategy == strategy,
                   enabled: enabled,
-                  onTap: enabled
-                      ? () => onChanged(
-                          value.copyWith(rotationRepeatStrategy: strategy),
-                        )
-                      : null,
+                  onChanged: (_) => onChanged(
+                    value.copyWith(rotationRepeatStrategy: strategy),
+                  ),
                 ),
             ],
           ),
@@ -400,11 +391,11 @@ class ActivityAttributeGoalChips extends StatelessWidget {
           children: [
             for (final attribute
                 in EventSuccessActivityAssignmentAttribute.values)
-              CatchSelectChip(
+              CatchChip.selectable(
                 label: labelFor(attribute),
-                active: attributes.contains(attribute),
+                selected: attributes.contains(attribute),
                 enabled: enabled,
-                onTap: enabled ? () => onToggle(attribute) : null,
+                onChanged: (_) => onToggle(attribute),
               ),
           ],
         ),

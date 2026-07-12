@@ -4,9 +4,9 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -84,10 +84,10 @@ class EventDetailsStep extends StatelessWidget {
               runSpacing: CatchSpacing.s2,
               children: ActivityKind.eventCreationDefaults
                   .map(
-                    (activityKind) => CatchSelectChip(
+                    (activityKind) => CatchChip.selectable(
                       label: activityKind.label,
-                      active: selectedActivityKind == activityKind,
-                      accentColor: ActivityPalette.resolve(
+                      selected: selectedActivityKind == activityKind,
+                      accent: ActivityPalette.resolve(
                         context,
                         activityKind,
                       ).accent,
@@ -95,7 +95,7 @@ class EventDetailsStep extends StatelessWidget {
                           .hostsEventDetailsStepVisiblecopySelectLabel(
                             label: activityKind.label,
                           ),
-                      onTap: () => onActivityKindChanged(activityKind),
+                      onChanged: (_) => onActivityKindChanged(activityKind),
                     ),
                   )
                   .toList(),
@@ -138,16 +138,16 @@ class EventDetailsStep extends StatelessWidget {
                 runSpacing: CatchSpacing.s2,
                 children: EventInteractionModel.values
                     .map(
-                      (model) => CatchSelectChip(
+                      (model) => CatchChip.selectable(
                         key: CreateEventFormKeys.interactionModel(model.name),
                         label: model.label,
-                        active: selectedInteractionModel == model,
-                        accentColor: activityAccent,
+                        selected: selectedInteractionModel == model,
+                        accent: activityAccent,
                         semanticsLabel: context.l10n
                             .hostsEventDetailsStepVisiblecopySelectLabel(
                               label: model.label,
                             ),
-                        onTap: () => onInteractionModelChanged(model),
+                        onChanged: (_) => onInteractionModelChanged(model),
                       ),
                     )
                     .toList(),
@@ -202,15 +202,15 @@ class EventDetailsStep extends StatelessWidget {
                       runSpacing: CatchSpacing.s2,
                       children: PaceLevel.values
                           .map(
-                            (p) => CatchSelectChip(
+                            (p) => CatchChip.selectable(
                               label: p.label,
-                              active: selectedPace == p,
-                              accentColor: activityAccent,
+                              selected: selectedPace == p,
+                              accent: activityAccent,
                               semanticsLabel: context.l10n
                                   .hostsEventDetailsStepVisiblecopySelectLabelPace(
                                     label: p.label,
                                   ),
-                              onTap: () {
+                              onChanged: (_) {
                                 final next = selectedPace == p ? null : p;
                                 onPaceChanged(next);
                                 field.didChange(next);

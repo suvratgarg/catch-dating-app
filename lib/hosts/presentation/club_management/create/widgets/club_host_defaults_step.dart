@@ -5,9 +5,9 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
@@ -103,18 +103,15 @@ class ClubHostDefaultsStep extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final activityKind in ActivityKind.eventCreationDefaults)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: activityKind.label,
-                  active: selectedActivityKind == activityKind,
-                  accentColor: ActivityPalette.resolve(
-                    context,
-                    activityKind,
-                  ).accent,
+                  selected: selectedActivityKind == activityKind,
+                  accent: ActivityPalette.resolve(context, activityKind).accent,
                   semanticsLabel: context.l10n
                       .hostsClubHostDefaultsStepVisiblecopyUseLabelByDefault(
                         label: activityKind.label,
                       ),
-                  onTap: () => onChanged(activityKind),
+                  onChanged: (_) => onChanged(activityKind),
                 ),
             ],
           ),
@@ -266,11 +263,11 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             children: [
               for (final preset in EventAdmissionDefaultPreset.values)
                 if (preset != EventAdmissionDefaultPreset.fixedCohortCaps)
-                  CatchSelectChip(
+                  CatchChip.selectable(
                     label: preset.label(context.l10n),
-                    active: selectedAdmissionPreset == preset,
+                    selected: selectedAdmissionPreset == preset,
                     semanticsLabel: preset.label(context.l10n),
-                    onTap: () => _emit(
+                    onChanged: (_) => _emit(
                       defaults.copyWith(
                         admissionPreset: preset,
                         dynamicPricingEnabled:
@@ -447,11 +444,11 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: policyFor(policyId).title.toUpperCase(),
-                  active: defaults.cancellationPolicyId == policyId,
+                  selected: defaults.cancellationPolicyId == policyId,
                   semanticsLabel: policyFor(policyId).title,
-                  onTap: () =>
+                  onChanged: (_) =>
                       _emit(defaults.copyWith(cancellationPolicyId: policyId)),
                 ),
             ],

@@ -3,9 +3,9 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -155,12 +155,12 @@ class EventPolicyStep extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final preset in EventAdmissionPreset.values)
-                CatchSelectChip(
+                CatchChip.selectable(
                   key: CreateEventFormKeys.admissionPreset(preset.name),
                   label: preset.label(context.l10n),
-                  active: admissionPreset == preset,
+                  selected: admissionPreset == preset,
                   semanticsLabel: preset.title(context.l10n),
-                  onTap: () => onAdmissionPresetChanged(preset),
+                  onChanged: (_) => onAdmissionPresetChanged(preset),
                 ),
             ],
           ),
@@ -450,11 +450,11 @@ class EventPolicyStep extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: policyFor(policyId).title.toUpperCase(),
-                  active: cancellationPolicyId == policyId,
+                  selected: cancellationPolicyId == policyId,
                   semanticsLabel: policyFor(policyId).title,
-                  onTap: () => onCancellationPolicyChanged(policyId),
+                  onChanged: (_) => onCancellationPolicyChanged(policyId),
                 ),
             ],
           ),

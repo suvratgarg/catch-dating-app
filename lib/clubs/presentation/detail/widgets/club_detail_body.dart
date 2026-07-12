@@ -14,8 +14,8 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -278,15 +278,17 @@ class ClubActivitySection extends StatelessWidget {
       runSpacing: CatchSpacing.micro6,
       children: [
         for (final activity in activities)
-          CatchActivityChip(
+          CatchChip.activity(
             activityKind: activity,
-            primary: activity == club.hostDefaults.primaryActivityKind,
+            emphasis: activity == club.hostDefaults.primaryActivityKind
+                ? CatchChipEmphasis.solid
+                : CatchChipEmphasis.soft,
           ),
         if (activities.isEmpty)
-          CatchActivityChip(
+          CatchChip.activity(
             activityKind: ActivityKind.openActivity,
             label: tags.first,
-            primary: true,
+            emphasis: CatchChipEmphasis.solid,
           ),
         if (firstGenericTag != null)
           ClubTagWrap(

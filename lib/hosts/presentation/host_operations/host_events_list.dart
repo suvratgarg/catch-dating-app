@@ -390,9 +390,9 @@ class HostMetaRow extends StatelessWidget {
           tone: owner ? CatchBadgeTone.solid : CatchBadgeTone.neutral,
           uppercase: true,
         ),
-        CatchActivityChip(
+        CatchChip.activity(
           activityKind: club.hostDefaults.primaryActivityKind,
-          primary: true,
+          emphasis: CatchChipEmphasis.solid,
         ),
       ],
     );

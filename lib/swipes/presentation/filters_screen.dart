@@ -5,10 +5,10 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -234,11 +234,11 @@ class FiltersContent extends StatelessWidget {
                   runSpacing: CatchSpacing.s2,
                   children: [
                     for (final gender in Gender.values)
-                      CatchSelectChip(
+                      CatchChip.selectable(
                         key: SwipeKeys.genderFilterChip(gender.name),
                         label: gender.label,
-                        active: interestedIn.contains(gender),
-                        onTap: () => onGenderToggled(gender),
+                        selected: interestedIn.contains(gender),
+                        onChanged: (_) => onGenderToggled(gender),
                       ),
                   ],
                 ),

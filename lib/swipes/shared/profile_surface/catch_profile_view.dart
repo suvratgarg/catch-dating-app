@@ -371,7 +371,8 @@ class ProfileCompatibility extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              for (final signal in section.confidence) CatchChip(label: signal),
+              for (final signal in section.confidence)
+                CatchChip.tag(label: signal),
             ],
           ),
         ],
@@ -449,7 +450,7 @@ class ProfileRunning extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final tag in section.tags)
-                CatchChip(
+                CatchChip.tag(
                   label: tag,
                   tintColor: activity?.soft,
                   inkColor: activity?.deep,

@@ -5,9 +5,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -59,23 +59,23 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
           children: [
             for (final template
                 in EventSuccessQuestionnairePackLibrary.allTemplates)
-              CatchSelectChip(
+              CatchChip.selectable(
                 label: template.title,
-                active:
+                selected:
                     !normalized.usesCustom &&
                     normalized.templateId == template.id,
                 enabled: enabled,
-                onTap: () => onChanged(
+                onChanged: (_) => onChanged(
                   EventSuccessQuestionnaireConfig(templateId: template.id),
                 ),
               ),
-            CatchSelectChip(
+            CatchChip.selectable(
               label: context
                   .l10n
                   .eventSuccessEventSuccessQuestionnaireConfigEditorLabelCustom,
-              active: normalized.usesCustom,
+              selected: normalized.usesCustom,
               enabled: enabled,
-              onTap: () => onChanged(
+              onChanged: (_) => onChanged(
                 normalized.usesCustom
                     ? normalized
                     : const EventSuccessQuestionnaireConfig.customTemplate(),
