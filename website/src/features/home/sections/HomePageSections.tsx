@@ -117,8 +117,12 @@ export function HomeHeroSection() {
   );
 }
 
-export function HomeDiscoverySection() {
-  const events = publicEventSummaries.slice(0, 3);
+export function HomeDiscoverySection({
+  events = publicEventSummaries,
+}: {
+  events?: PublicEventCardModel[];
+} = {}) {
+  const visibleEvents = events.slice(0, 3);
   return (
     <MarketingSection variant="home-discovery" id="events" aria-labelledby="home-events-title">
       <SectionHeader
@@ -130,7 +134,7 @@ export function HomeDiscoverySection() {
       />
       <PublicSearchBar
         cityHref="/organizers/"
-        cityName={events[0]?.city ?? "Your city"}
+        cityName={visibleEvents[0]?.city ?? "Your city"}
         onCityClick={trackPublicSearchCityClick}
         onSearchSubmit={trackPublicSearchSubmit}
         onSuggestionClick={trackPublicSearchSuggestionClick}
@@ -138,8 +142,8 @@ export function HomeDiscoverySection() {
         suggestions={publicSearchSuggestions}
       />
       <ContentGrid variant="public-event">
-        {events.length ? (
-          events.map((event) => (
+        {visibleEvents.length ? (
+          visibleEvents.map((event) => (
             <PublicEventCard
               event={event}
               key={event.id}

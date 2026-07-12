@@ -4,6 +4,7 @@ import type {
   PublicSearchSuggestion,
 } from "../../shared/ui/primitives";
 import {activityMeta, type ActivityMeta} from "../marketing/content";
+import {eligibleHomeCatchEvents} from "./homeEventEligibility";
 import {isFutureCatchEvent} from "./selectors";
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
 
@@ -16,66 +17,40 @@ export interface OrganizerEventHighlight {
   activityToken: string;
 }
 
-export function buildPublicEventSummaries(listings: HostListing[]): PublicEventCardModel[] {
-  const now = Date.now();
-  return listings
-    .flatMap((listing) =>
-      [
-        ...(listing.catchEvents ?? []).map((event) => {
-          const activity = activityForKind(event.activityKind);
-          const sortTime = Date.parse(event.startTime);
-          return {
-            sortTime: Number.isFinite(sortTime) ? sortTime : 0,
-            model: {
-              id: `${listing.id}-${event.id}`,
-              title: event.title,
-              href: eventDeepLinkForListing(listing, event),
-              hostName: listing.name,
-              activityLabel: activity.label,
-              activityToken: activity.token,
-              city: listing.city,
-              date: event.date,
-              location: event.location,
-              priceLabel: event.priceLabel,
-              bookedCount: event.bookedCount,
-              capacityLimit: event.capacityLimit,
-              waitlistedCount: event.waitlistedCount,
-              summary: event.summary || listing.description,
-            },
-          };
-        }),
-        ...(listing.externalEvents ?? []).map((event) => {
-          const activity = activityForKind(event.activityKind);
-          const sortTime = Date.parse(event.startTime);
-          return {
-            sortTime: Number.isFinite(sortTime) ? sortTime : 0,
-            model: {
-              id: `${listing.id}-${event.id}`,
-              title: event.title,
-              href: externalEventDeepLinkForListing(listing, event),
-              hostName: listing.name,
-              activityLabel: activity.label,
-              activityToken: activity.token,
-              city: listing.city,
-              date: event.date,
-              location: event.location,
-              priceLabel: event.priceLabel,
-              sourceLabel: event.sourceLabel,
-              externalLinkCount: event.externalLinkCount,
-              readOnlyLabel: "External",
-              summary: event.summary || listing.description,
-            },
-          };
-        }),
-      ]
-    )
-    .sort((a, b) => {
-      const aFuture = a.sortTime >= now;
-      const bFuture = b.sortTime >= now;
-      if (aFuture !== bFuture) return aFuture ? -1 : 1;
-      return aFuture ? a.sortTime - b.sortTime : b.sortTime - a.sortTime;
-    })
-    .map((item) => item.model);
+export function buildPublicEventSummaries(
+  listings: HostListing[],
+  options: {
+    now: number;
+    cities: ReadonlyArray<{
+      id: string;
+      label: string;
+      aliases: readonly string[];
+      status: "live" | "waitlist";
+    }>;
+  }
+): PublicEventCardModel[] {
+  return eligibleHomeCatchEvents<HostListingCatchEvent, HostListing>(
+    listings,
+    options
+  ).map(({event, listing}) => {
+    const activity = activityForKind(event.activityKind);
+    return {
+      id: `${listing.id}-${event.id}`,
+      title: event.title,
+      href: eventDeepLinkForListing(listing, event),
+      hostName: listing.name,
+      activityLabel: activity.label,
+      activityToken: activity.token,
+      city: listing.city,
+      date: event.date,
+      location: event.location,
+      priceLabel: event.priceLabel,
+      bookedCount: event.bookedCount,
+      capacityLimit: event.capacityLimit,
+      waitlistedCount: event.waitlistedCount,
+      summary: event.summary || listing.description,
+    };
+  });
 }
 
 export function buildPublicSearchSuggestions(

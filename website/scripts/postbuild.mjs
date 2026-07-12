@@ -2,6 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {checkOrganizerBuildOutputs} from "./checkOrganizerBuildOutputs.mjs";
+import {
+  formatContentTemplate,
+  readWebsiteMeta,
+  staticRouteMeta,
+} from "../../tool/marketing/website_meta_contract.mjs";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const websiteRoot = path.resolve(dirname, "..");
@@ -15,73 +20,40 @@ const distRoot = path.resolve(args.distRoot ?? path.join(websiteRoot, "dist"));
 const hostListingsPath = path.resolve(
   args.hostListings ?? path.join(websiteRoot, "src", "generated", "hostListings.json")
 );
+const metaContentPath = path.resolve(
+  args.metaContent ?? path.join(websiteRoot, "src", "content", "meta.json")
+);
 const baseUrl = String(args.baseUrl ?? "https://catchdates.com").replace(/\/+$/, "");
 const hostListings = JSON.parse(fs.readFileSync(hostListingsPath, "utf8"));
-
-const routeMetas = {
-  "/": {
-    title: "Catch | The event before the match",
-    description:
-      "Catch turns curated singles events into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
-    canonical: `${baseUrl}/`,
-    twitterDescription: "Curated singles events become real dating context.",
-  },
-  "/host/": {
-    title: "Catch for Hosts | Host better singles events",
-    description:
-      "Catch helps hosts publish curated singles events, manage admission and waitlists, run live facilitation, and turn real attendance into post-event connections.",
-    canonical: `${baseUrl}/host/`,
-    twitterDescription:
-      "Event setup, admission, waitlists, live facilitation, check-in, and aggregate post-event reporting for hosts.",
-  },
-  "/organizers/": {
-    title: "Organizer Search | Catch",
-    description:
-      "Search Catch organizer profiles by name, city, format, and review signal.",
-    canonical: `${baseUrl}/organizers/`,
-    twitterDescription: "Search Catch organizer and club profiles.",
-    robots: "noindex, follow",
-  },
-  "/claim/": {
-    title: "Claim your organizer listing | Catch",
-    description:
-      "Find an unclaimed organizer profile, verify ownership, and request access to Catch host tools.",
-    canonical: `${baseUrl}/claim/`,
-    twitterDescription: "Claim an organizer profile and unlock Catch host tools.",
-    robots: "noindex, follow",
-  },
-  "/404/": {
-    title: "Page not found | Catch",
-    description:
-      "This Catch page does not exist. Search organizer profiles, browse the member site, or explore host tools.",
-    canonical: `${baseUrl}/404/`,
-    twitterDescription:
-      "Search organizer profiles, browse the member site, or explore Catch host tools.",
-    robots: "noindex, follow",
-  },
-};
+const websiteMeta = readWebsiteMeta(metaContentPath);
 
 const rootHtmlPath = path.join(distRoot, "index.html");
 const rootHtml = fs.readFileSync(rootHtmlPath, "utf8");
 const sitemapEntries = [];
-writeRoute("/", routeMetas["/"]);
+writeRoute("/", staticRouteMeta(websiteMeta, "home", baseUrl));
 
-writeRoute("/host/", routeMetas["/host/"]);
-writeRoute("/organizers/", routeMetas["/organizers/"]);
-writeRoute("/claim/", routeMetas["/claim/"]);
-writeRoute("/404/", routeMetas["/404/"]);
-writeStaticHtml("404.html", routeMetas["/404/"]);
+writeRoute("/host/", staticRouteMeta(websiteMeta, "host", baseUrl));
+writeRoute("/organizers/", staticRouteMeta(websiteMeta, "organizers", baseUrl));
+writeRoute("/claim/", staticRouteMeta(websiteMeta, "claim", baseUrl));
+writeRoute("/404/", staticRouteMeta(websiteMeta, "not_found", baseUrl));
+writeStaticHtml("404.html", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 
 for (const listing of hostListings) {
   const listingMeta = {
-    title: `${listing.name} | ${listing.city} organizer profile | Catch`,
+    title: formatContentTemplate(websiteMeta.listing.titleTemplate, {
+      name: listing.name,
+      city: listing.city,
+    }),
     description: listing.description,
     canonical: `${baseUrl}${listing.path}`,
     twitterDescription: listing.sourceSummary,
     robots: listing.indexing,
     lastModified: listing.lastVerifiedAt,
-    bodyHtml: buildListingStaticBody(listing),
-    structuredData: buildListingStructuredData(listing),
+    bodyHtml: buildListingStaticBody(listing, websiteMeta.listing.staticLabels),
+    structuredData: buildListingStructuredData(
+      listing,
+      websiteMeta.listing.staticLabels
+    ),
   };
   writeRoute(listing.path, listingMeta);
   for (const legacyPath of listing.legacyPaths ?? []) {
@@ -167,7 +139,7 @@ function applyMeta(html, meta) {
   return output;
 }
 
-function buildListingStaticBody(listing) {
+function buildListingStaticBody(listing, labels) {
   const formats = (listing.formats ?? [])
     .map((format) => `<li>${escapeHtml(String(format))}</li>`)
     .join("");
@@ -188,18 +160,18 @@ function buildListingStaticBody(listing) {
 
   return [
     '<main data-static-organizer-profile="true">',
-    `<header><p>Organizer profile · ${escapeHtml(String(listing.city))}</p>`,
+    `<header><p>${escapeHtml(labels.profileEyebrow)} · ${escapeHtml(String(listing.city))}</p>`,
     `<h1>${escapeHtml(String(listing.name))}</h1>`,
     `<p>${escapeHtml(String(listing.description))}</p></header>`,
-    formats ? `<section><h2>Formats</h2><ul>${formats}</ul></section>` : "",
-    facts ? `<section><h2>Profile facts</h2><dl>${facts}</dl></section>` : "",
-    sources ? `<section><h2>Public sources</h2><ul>${sources}</ul></section>` : "",
-    `<p>Last verified ${escapeHtml(String(listing.lastVerifiedAt ?? "not recorded"))}.</p>`,
+    formats ? `<section><h2>${escapeHtml(labels.formatsHeading)}</h2><ul>${formats}</ul></section>` : "",
+    facts ? `<section><h2>${escapeHtml(labels.factsHeading)}</h2><dl>${facts}</dl></section>` : "",
+    sources ? `<section><h2>${escapeHtml(labels.sourcesHeading)}</h2><ul>${sources}</ul></section>` : "",
+    `<p>${escapeHtml(labels.lastVerifiedPrefix)} ${escapeHtml(String(listing.lastVerifiedAt ?? labels.notRecorded))}.</p>`,
     "</main>",
   ].join("");
 }
 
-function buildListingStructuredData(listing) {
+function buildListingStructuredData(listing, labels) {
   const canonical = `${baseUrl}${listing.path}`;
   const sameAs = (listing.sources ?? [])
     .map((source) => source.href)
@@ -227,13 +199,13 @@ function buildListingStructuredData(listing) {
           {
             "@type": "ListItem",
             position: 1,
-            name: "Catch",
+            name: labels.homeBreadcrumb,
             item: `${baseUrl}/`,
           },
           {
             "@type": "ListItem",
             position: 2,
-            name: "Organizers",
+            name: labels.organizersBreadcrumb,
             item: `${baseUrl}/organizers/`,
           },
           {
@@ -340,6 +312,7 @@ function parseArgs(argv) {
     distRoot: null,
     help: false,
     hostListings: null,
+    metaContent: null,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -348,6 +321,7 @@ function parseArgs(argv) {
     else if (arg === "--base-url") parsed.baseUrl = requiredValue(argv, ++index, arg);
     else if (arg === "--dist-root") parsed.distRoot = requiredValue(argv, ++index, arg);
     else if (arg === "--host-listings") parsed.hostListings = requiredValue(argv, ++index, arg);
+    else if (arg === "--meta-content") parsed.metaContent = requiredValue(argv, ++index, arg);
     else fail(`Unknown argument: ${arg}`);
   }
 
@@ -366,6 +340,7 @@ function printHelp() {
 Options:
   --dist-root <path>      Directory containing Vite build output.
   --host-listings <path>  Generated host listings JSON file.
+  --meta-content <path>   Validated website metadata content JSON file.
   --base-url <url>        Public website base URL.
 `);
 }

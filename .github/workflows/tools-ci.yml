@@ -109,6 +109,10 @@ jobs:
 
       - run: npm --prefix functions ci
 
+      - name: Install marketing design browser
+        if: matrix.name == 'marketing-design'
+        run: npx playwright install --with-deps chromium
+
       - name: Check tool categories
         env:
           CATEGORIES: ${{ matrix.categories }}

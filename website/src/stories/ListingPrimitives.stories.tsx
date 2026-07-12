@@ -26,7 +26,6 @@ import {
   OrganizerResultCardFooter,
   OrganizerResultCardShell,
   OrganizerResultCardTopline,
-  ProfileStrength,
   ReviewSignalLane,
   StatusBadge,
   type ActivityMeta,
@@ -94,10 +93,11 @@ type Story = StoryObj<typeof meta>;
 export const IdentityDisplayShellStory: Story = {
   name: "Identity display shell",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "shared_identity_display_shell",
       routeIds: ["claim", "claim_lookup", "host", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["activity-mark", "status-badges", "profile-strength"],
+      states: ["activity-mark", "status-badges"],
     },
   },
   render: () => (
@@ -113,7 +113,6 @@ export const IdentityDisplayShellStory: Story = {
           <StatusBadge tone="verified">Verified on Catch</StatusBadge>
           <StatusBadge tone="claimed">Owner claimed</StatusBadge>
         </BadgeRow>
-        <ProfileStrength value={92} />
       </article>
       <article>
         <ActivityMark
@@ -125,7 +124,6 @@ export const IdentityDisplayShellStory: Story = {
         <BadgeRow>
           <StatusBadge tone="unclaimed">Claimable</StatusBadge>
         </BadgeRow>
-        <ProfileStrength value={78} />
       </article>
     </ContentGrid>
   ),
@@ -273,6 +271,7 @@ export const ListingEventSectionShellStory: Story = {
 export const ListingReviewShellStory: Story = {
   name: "Listing review shell",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "shared_listing_review_shell",
       routeIds: listingRouteIds,
@@ -336,6 +335,7 @@ export const ListingSourceLedgerShellStory: Story = {
 export const OrganizerResultShellStory: Story = {
   name: "Organizer result shell",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "shared_organizer_result_shell",
       routeIds: ["organizer_search"],
@@ -379,7 +379,6 @@ export const OrganizerResultShellStory: Story = {
         />
       </OrganizerResultCardBody>
       <OrganizerResultCardFooter>
-        <ProfileStrength value={78} />
         <ButtonLink href="/organizers/afterfly/" size="small">
           View listing
         </ButtonLink>

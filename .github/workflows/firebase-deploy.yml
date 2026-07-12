@@ -79,6 +79,8 @@ jobs:
       - name: Deploy selected Firebase targets in safe order
         env:
           VITE_GTM_ID: ${{ vars.VITE_GTM_ID }}
+          VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
+          VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
           VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
           VITE_ADMIN_DATA_MODE: ${{ vars.VITE_ADMIN_DATA_MODE }}
           VITE_ADMIN_FIREBASE_ENV: ${{ vars.VITE_ADMIN_FIREBASE_ENV }}

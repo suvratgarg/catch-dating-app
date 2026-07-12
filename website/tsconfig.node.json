@@ -1,7 +1,11 @@
 {
   "extends": "../packages/web-config/tsconfig.vite.json",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  },
   "include": [
     "vite.config.ts",
+    "vitest.config.ts",
     ".storybook/*.ts",
     "src/vite-env.d.ts",
     "../packages/web-config/vite-react.ts"

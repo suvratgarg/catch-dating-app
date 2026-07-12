@@ -1,5 +1,5 @@
 import type {FormVariant} from "../../shared/forms/types";
-import {cities} from "../../shared/lib/cities";
+import {activeWaitlistCityOptions} from "@content/markets";
 import {
   Button,
   FormStatus,
@@ -36,7 +36,7 @@ export function WaitlistForm({variant}: {variant: FormVariant}) {
         }}
       >
         <option value="">Choose city</option>
-        {cities.map((city) => (
+        {activeWaitlistCityOptions.map((city) => (
           <option key={city}>{city}</option>
         ))}
       </SelectField>

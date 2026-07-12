@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 3,
-  "updated": "2026-07-03",
+  "version": 5,
+  "updated": "2026-07-12",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -10,7 +10,10 @@
     "runtimeShell": "website/src/app/App.tsx",
     "runtimeRouter": "website/src/app/routeRegistry.ts",
     "metadataRuntime": "website/src/app/pageMeta.ts",
+    "metadataContent": "website/src/content/meta.json",
+    "metadataSchema": "website/src/content/meta.schema.json",
     "staticOutput": "website/scripts/postbuild.mjs",
+    "hostingConfig": "firebase.json",
     "generatedListings": "website/src/generated/hostListings.json"
   },
   "routes": [
@@ -154,9 +157,10 @@
       "source": "website/src/features/notFound/NotFoundPage.tsx",
       "metaKey": "not_found",
       "staticOutput": "postbuild",
+      "httpStatus": 404,
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "Unknown client routes and unresolved generated organizer paths render a noindex not-found page; postbuild also emits /404.html for static hosting fallbacks.",
+      "notes": "Unknown direct routes are served through the generated root 404.html with HTTP 404; client-side unknown routes render the same noindex not-found page.",
       "review": {
         "priority": "p1",
         "status": "ready",

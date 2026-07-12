@@ -1,3 +1,5 @@
+import {activeFeaturedCity} from "@content/markets";
+
 export type HostApplicationStep = "profile" | "event" | "policy" | "success" | "review";
 
 export interface HostApplicationDraft {
@@ -81,7 +83,7 @@ export const hostSuccessModuleOptions = [
 export const initialHostApplicationDraft: HostApplicationDraft = {
   fullName: "",
   email: "",
-  city: "Mumbai",
+  city: activeFeaturedCity.label,
   customCity: "",
   organizationName: "",
   organizationType: "Independent host",

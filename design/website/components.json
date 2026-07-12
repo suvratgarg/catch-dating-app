@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 75,
-  "updated": "2026-07-03",
+  "version": 77,
+  "updated": "2026-07-12",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -131,10 +131,11 @@
         "exportName": "HomeDiscoverySectionStory",
         "states": [
           "event-grid",
-          "search-suggestions"
+          "search-suggestions",
+          "empty-state"
         ]
       },
-      "notes": "Home route public event discovery section with public search suggestions and projected event cards."
+      "notes": "Home event discovery renders only future Catch-bookable events in configured live-market cities, with deterministic Storybook event and empty-inventory states."
     },
     {
       "id": "home_formats_section",
@@ -307,11 +308,10 @@
         "exportName": "IdentityDisplayShellStory",
         "states": [
           "activity-mark",
-          "status-badges",
-          "profile-strength"
+          "status-badges"
         ]
       },
-      "notes": "Shared identity display shell primitives for organizer activity marks and profile-strength meters; raw activity-mark/profile-strength markup is blocked by web:react-component-governance."
+      "notes": "Shared identity display shell primitives for organizer activity marks and status badges. Public organizer profile-strength scores are deliberately not rendered."
     },
     {
       "id": "shared_process_status_panel",
@@ -2517,7 +2517,7 @@
           "claimable-unclaimed"
         ]
       },
-      "notes": "Generated listing hero with claim, save, share, identity, and profile-strength signals; configures shared scanner-enforced listing hero shell primitives instead of rendering raw hero shells."
+      "notes": "Generated listing hero with claim, save, share, identity, and source-backed diagnostics; public profile-strength scores are deliberately omitted."
     },
     {
       "id": "listing_facts_section",
@@ -2897,34 +2897,6 @@
         ]
       },
       "notes": "Domain adapter that maps HostListing claim/source state to the shared StatusBadge primitive tone and copy."
-    },
-    {
-      "id": "organizer_profile_strength_adapter",
-      "kind": "supporting-component",
-      "routeIds": [
-        "home",
-        "host",
-        "host_preview",
-        "organizer_search",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers",
-      "source": "website/src/features/organizers/OrganizerIdentity.tsx",
-      "exportName": "ProfileStrength",
-      "css": [
-        "website/src/styles/organizer-public.css",
-        "website/src/styles/home.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/AdapterPrimitives.stories.tsx",
-        "exportName": "OrganizerProfileStrengthAdapterStory",
-        "states": [
-          "numeric-strength"
-        ]
-      },
-      "notes": "Domain adapter that keeps profile-strength values configured by feature controllers while the visual meter stays in the shared ProfileStrength primitive."
     },
     {
       "id": "listing_external_events_section",

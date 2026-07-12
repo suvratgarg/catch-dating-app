@@ -1,4 +1,9 @@
 {
   "extends": "../packages/web-config/tsconfig.react.json",
+  "compilerOptions": {
+    "paths": {
+      "@content/*": ["./src/content/*"]
+    }
+  },
   "include": ["src"]
 }

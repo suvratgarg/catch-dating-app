@@ -9,6 +9,33 @@ import {fileURLToPath} from "node:url";
 
 const scriptPath = fileURLToPath(new URL("./generateOrganizerListings.mjs", import.meta.url));
 
+test("production output excludes demo listings while explicit story output includes them", () => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-organizer-demo-split-"));
+  const productionPath = path.join(tmpRoot, "hostListings.json");
+  const storyPath = path.join(tmpRoot, "hostListings.demo.json");
+
+  execFileSync(process.execPath, [scriptPath, "--output", productionPath], {
+    stdio: "pipe",
+  });
+  execFileSync(process.execPath, [
+    scriptPath,
+    "--include-demo",
+    "--output",
+    storyPath,
+  ], {stdio: "pipe"});
+
+  const productionListings = JSON.parse(fs.readFileSync(productionPath, "utf8"));
+  const storyListings = JSON.parse(fs.readFileSync(storyPath, "utf8"));
+  assert.equal(
+    productionListings.some((listing) => listing.dataOrigin === "catchDemo"),
+    false
+  );
+  assert.equal(
+    storyListings.some((listing) => listing.dataOrigin === "catchDemo"),
+    true
+  );
+});
+
 test("approved organizer intake projections render canonical listings and suppress legacy seeds", () => {
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-organizer-listings-"));
   const projectionPath = path.join(tmpRoot, "public_projection_plan.json");

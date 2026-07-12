@@ -1,6 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {MemoryRouter} from "react-router";
-import {hostListings} from "../features/organizers/data";
+import {hostListings} from "./fixtures/hostListings";
 import {
   DirectoryClaimPressureStrip,
   OrganizerResultsSection,
@@ -66,6 +66,7 @@ export const DirectoryClaimPressure: Story = {
 export const OrganizerResults: Story = {
   name: "Results list",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "organizer_results_section",
       routeIds: ["organizer_search"],

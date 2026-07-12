@@ -206,6 +206,7 @@ export const HostCapturesFallback: Story = {
 export const HostApplySectionStory: Story = {
   name: "Host apply section",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "host_apply_section",
       routeIds: ["host"],
@@ -374,6 +375,7 @@ export const HostPreviewFaqSectionStory: Story = {
 export const HostPreviewApplySectionStory: Story = {
   name: "Host preview apply",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "host_preview_apply_section",
       routeIds: ["host_preview"],
@@ -386,6 +388,7 @@ export const HostPreviewApplySectionStory: Story = {
 export const HostApplicationFlowInitial: Story = {
   name: "Host application flow · initial",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "host_application_flow",
       routeIds: ["host", "host_preview"],

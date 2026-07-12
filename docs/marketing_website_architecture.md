@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.145
-updated: 2026-07-11
+version: 0.4.161
+updated: 2026-07-12
 owner: marketing_website
 status: active
 ---
@@ -22,18 +22,39 @@ The website is already split out of the old monolithic shell:
 - `website/src/app/App.tsx` owns the React Router shell, metadata selection,
   page-level lifecycle hooks, and route-level lazy loading.
 - `website/src/app/routeRegistry.ts` owns runtime route patterns.
-- `website/src/app/pageMeta.ts` owns client-side page metadata.
+- `website/src/content/meta.json`, validated by
+  `website/src/content/meta.schema.json` and
+  the browser-safe `website/src/content/metaContract.ts`, owns static page
+  metadata and the static labels used for generated organizer HTML.
+  `website/src/app/pageMeta.ts` runtime-validates on client module load;
+  `tool/marketing/website_meta_contract.mjs` adds filesystem reading for Node
+  postbuild. Ajv parity tests run valid and invalid fixtures through both the
+  JSON Schema and browser validator. Neither consumer owns a duplicate validator
+  or copy of the strings.
 - `website/scripts/postbuild.mjs` emits route-specific static HTML after Vite.
   Generated organizer routes include semantic profile content, Organization and
   breadcrumb JSON-LD, canonical/robots metadata, and `lastVerifiedAt` sitemap
   dates before React executes. `checkOrganizerBuildOutputs.mjs` fails builds
   that regress those crawlable outputs.
+- Postbuild emits root `404.html`; the marketing Hosting target intentionally
+  has no catch-all SPA rewrite, so unknown direct URLs reach Firebase's custom
+  404 response with status 404. The route contract declares that status, the
+  route checker compares it with `firebase.json`, and deployment performs a
+  unique-path HTTP probe.
 - `design/website/routes.json` records the public route contract, review
   states, and Storybook/manual state coverage.
 - `design/website/components.json` records route and section ownership, CSS
   ownership, and Storybook coverage status. It is validated bidirectionally
   against referenced Storybook `parameters.catchComponent` declarations by
   `tool/marketing/check_website_components.mjs`.
+- `website/src/generated/hostListings.json` is production-only and excludes
+  `dataOrigin: "catchDemo"`. Storybook reads the explicit demo-inclusive
+  `hostListings.demo.json` projection through `stories/fixtures/hostListings.ts`.
+  The generator and pretypecheck gate validate both outputs.
+- Home event discovery applies the pure `homeEventEligibility.ts` selector:
+  only future Catch events in market-pack live cities are eligible. External
+  events remain listing-page evidence, and city aliases normalize at this
+  boundary. The selector receives `now` explicitly and has focused tests.
 - `tool/marketing/check_website_routes.mjs` validates route URL, metadata,
   static output, generated listing coverage, and referenced Storybook
   `parameters.catchRoute` declarations.
@@ -99,11 +120,12 @@ The website is already split out of the old monolithic shell:
   `website/src/shared/ui/primitives.tsx` as `EventActionCard`. Organizer
   listing event sections own the event-card content and analytics callback, but
   configure the shared card instead of rendering raw `event-action-card` shells.
-- Shared identity display shells live in
-  `website/src/shared/ui/primitives.tsx` as `ActivityMark` and
-  `ProfileStrength`. Organizer adapters compute listing activity/status data,
-  but route visual marks and strength meters through shared UI instead of
-  rendering raw `activity-mark` or `profile-strength` shells.
+- Shared organizer identity display shells use `ActivityMark` and
+  `StatusBadge`. The listing-strength heuristic remains available only for
+  internal ordering; public organizer cards, directory results, and listing
+  diagnostics must not render it as a percentage or quality score. The shared
+  `ProfileStrength` meter remains a host-application completeness primitive,
+  not an organizer reputation signal.
 - Shared process status panels live in
   `website/src/shared/ui/primitives.tsx` as `ProcessStatusPanel`. Claim route
   sections own state-specific copy and CTA analytics callbacks, but configure
@@ -313,7 +335,33 @@ aggregation points:
    Manual-only route states stay in `stateCoverage.manual`; do not mark a route
    `ready` unless it has at least one Storybook-backed state.
 
-2. Component ownership follows the route contract.
+   Static metadata is read from `website/src/content/meta.json`; both the
+   client and postbuild readers must pass the same validated contract.
+
+2. Marketing-authored copy belongs to the content layer.
+
+   `web:website-copy-ownership` scans production `.ts` and `.tsx` and blocks
+   new visible JSX text (including single-word labels), accessibility copy,
+   copy-bearing prop/data literals, and validation/status messages outside
+   `website/src/content/**`. The current component copy is recorded as
+   migration debt in `tool/web/website_copy_baseline.json`.
+   Move entries into direct page-specific content imports and shrink that
+   baseline; permanent technical exceptions belong in the reasoned allowlist.
+   The gate rejects malformed, duplicate, overlapping, or stale registry
+   entries, so completed migration debt cannot remain hidden in an inflated
+   baseline and allowlist exceptions cannot survive without a live finding.
+
+   ```sh
+   node tool/run.mjs check web:website-copy-ownership
+   ```
+
+   Templates use `content/interpolate.ts`. Its runtime contract rejects
+   missing, extra, and misspelled tokens and is shared by client metadata and
+   Node postbuild validation. Literal templates infer exact token keys at
+   compile time; `interpolate.typecheck.ts` proves missing and extra keys fail.
+   Copy-bearing template expressions are included in the ownership ratchet.
+
+3. Component ownership follows the route contract.
 
    Component review starts from `design/website/components.json`. Route and
    section stories must attach `parameters.catchComponent.id`, `routeIds`, and
@@ -331,28 +379,37 @@ aggregation points:
    known ready component ids, valid route ids, and registered state names.
 
    Storybook stories that render query-backed sections must wrap those sections
-   in `WebsiteQueryProvider` so the workbench matches the runtime root.
+   in `WebsiteQueryProvider` so the workbench matches the runtime root. The
+   global Storybook preview now provides that runtime boundary for every story.
 
-3. The app shell resolves routes and lifecycle only.
+   Accessibility runs through the Storybook Vitest addon in Playwright
+   Chromium with axe failures blocking by default. Existing visual findings
+   are exact, reasoned `todo` entries under `WEB-A11Y-001` in
+   `design/website/a11y.todo.json`; the pretypecheck debt scanner rejects new,
+   missing, duplicate, or stale annotations. The CI runner therefore blocks
+   regressions while allowing the legacy set to shrink without silently
+   disabling accessibility analysis.
+
+4. The app shell resolves routes and lifecycle only.
 
    `App` should choose the route, metadata, page class, page-level captures, and
    shell lifecycle hooks. It should not own page content, feature state, form
    mutation logic, analytics payload assembly, or generated-listing selectors.
 
-4. Page components compose sections; controllers own state.
+5. Page components compose sections; controllers own state.
 
    Page files should mostly assemble feature sections. Hooks/controllers own URL
    state, forms, local persistence, Firebase calls, analytics side effects, and
    mutation status.
 
-5. Feature folders own domain-specific UI.
+6. Feature folders own domain-specific UI.
 
    Do not promote a component to shared UI because it is visually reusable once.
    Shared UI is for neutral primitives with stable semantics across multiple
    features. Domain blocks such as listing diagnostics, host product sections,
    claim proof panels, and review lanes stay feature-owned until reuse is real.
 
-6. Interactive controls go through shared primitives.
+7. Interactive controls go through shared primitives.
 
    Feature, app, and Storybook code must not render raw `<button>`, `<a>`,
    `<input>`, `<select>`, or `<textarea>` elements. Use the website shared UI
@@ -364,7 +421,7 @@ aggregation points:
    node tool/run.mjs check web:react-ui-primitives
    ```
 
-7. Governed component families and class names go through shared primitives.
+8. Governed component families and class names go through shared primitives.
 
    Website and admin code must not hand-roll governed component shells in
    feature, app, or Storybook code. Feature code also must not pass `className`
@@ -396,29 +453,36 @@ aggregation points:
    node tool/run.mjs check marketing:website-components
    ```
 
-8. Generated data remains explicit.
+9. Generated data remains explicit.
 
    `website/src/generated/hostListings.json` is a generated projection. Feature
    code should read it through `features/organizers/data.ts` and typed selectors,
    not directly from pages outside the organizer feature.
 
-9. Metadata and static output stay coupled.
+10. Metadata and static output stay coupled.
 
    Client metadata in `pageMeta.ts`, route resolution in `App`, and postbuild
    output in `website/scripts/postbuild.mjs` must stay covered by the route
    contract. Legacy organizer routes must preserve canonical/noindex behavior
    before and after hydration. Firebase Hosting must route `/claim/**` to the
    generated `/claim/index.html` shell so direct claim lookup links do not fall
-   through to root metadata.
+    through to root metadata.
 
-10. Analytics and Firebase boundaries stay centralized.
+    Website analytics payloads are also version-coupled to the copy migration:
+    `trackMarketingEvent` appends the immutable `website_copy_v2` content
+    version, and the pretypecheck analytics contract covers page events plus
+    unset, essential-only, and accepted consent presentation states. Both CTA
+    wrappers use the same tested `marketingCtaClickParameters` builder, keeping
+    the existing `cta_label`/`cta_href` transport exact.
+
+11. Analytics and Firebase boundaries stay centralized.
 
    Consent, event IDs, attribution, GTM/dataLayer emission, and organizer
    analytics dispatch should go through shared analytics services. Feature
    controllers may decide when a business event happened, but should not
    duplicate low-level analytics mechanics.
 
-11. CSS ownership follows component ownership.
+12. CSS ownership follows component ownership.
 
    Global CSS defines tokens, resets, shell utilities, and shared primitives.
    Feature CSS belongs beside feature concepts, even if it remains imported from
@@ -509,6 +573,17 @@ website/src/
     routeRegistry.ts
     pageMeta.ts
     usePageLifecycle.ts
+  content/
+    README.md
+    legal.ts
+    meta.json
+    meta.schema.json
+    site.ts
+    types.ts
+    markets/
+      types.ts
+      in.ts
+      index.ts
   features/
     home/
       HomePage.tsx
@@ -599,15 +674,38 @@ website/src/
 
 ### Import Boundaries
 
-- `app/**` may import feature pages, route metadata, lifecycle hooks, analytics,
-  and generated route contracts.
+- `app/**` may import feature pages, validated content, route metadata,
+  lifecycle hooks, analytics, and generated route contracts.
+- `content/**` contains authored data and browser-safe pure contract helpers;
+  it may import only other content modules and must not contain JSX or read
+  `import.meta.env`. The import-boundary scanner enforces those source rules.
+  Route features may read their page-specific content directly; do not add a
+  global content barrel that pulls unrelated route copy into lazy chunks.
+- `content/site.ts` owns site-wide authored labels such as app-store CTA copy.
+  The feature hook owns `import.meta.env` reads and joins destinations to copy;
+  environment access never belongs in the content layer.
+- `content/legal.ts` reserves the existing app-linked `/privacy`, `/terms`, and
+  `/help` contracts with null bodies; `content/site.ts` reserves an empty
+  contact destination. A pretypecheck contract requires them to remain
+  unregistered and unlinked until owner-supplied text and destinations exist.
+- `content/markets/index.ts` selects the active market pack. City lists,
+  currency, geo-adaptive labels, India-specific comparison columns, and example
+  event name/venue/city/currency belong in that pack rather than page or
+  shared-UI modules. Host create-flow fixtures and application defaults read
+  those values through `@content/markets`.
+- Market cities are structured by stable id, slug, aliases, IANA timezone, and
+  `live`/`waitlist` status. Country/store availability, locale, ISO currency,
+  and featured city are pack-level contracts; event-live and form options are
+  derived from the city records rather than parallel city lists.
+  `check:market-pack` validates references and formatting; Home eligibility
+  resolves generated listing labels/aliases back to city ids.
 - Feature pages may import their own feature modules, `shared/**`, and explicitly
   named cross-feature controllers only when the product flow requires it.
 - `features/claims/**` may depend on organizer listing models because the claim
   flow selects an organizer.
 - `features/organizers/**` may depend on claim and review controllers for the
   listing page until those panels move behind local adapter components.
-- `shared/**` must not import from `features/**`.
+- `shared/**` must not import from `features/**` or route-specific `content/**`.
 - `generated/**` should be read through a typed feature-owned adapter.
 
 ## Recommended Refactor Order
@@ -805,8 +903,11 @@ read or mutation family without changing the surrounding UI contracts.
 
 - Decide whether the mixed organizer canonical route family should be preserved
   short term or migrated toward city-scoped canonical paths only.
-- Decide whether marketing content should remain TypeScript-owned or move to a
-  content file format that non-engineering workflows can edit.
+- Static marketing-authored content uses typed TypeScript modules or validated
+  JSON under `website/src/content/**`. Metadata is the first migrated owner;
+  visible page-copy extraction remains incremental and must preserve route lazy
+  loading through direct page-specific imports. A CMS remains deferred until a
+  real non-engineering publishing workflow is approved.
 - Decide which route review states are required for launch versus acceptable as
   manual review notes.
 - Decide whether React Hook Form is worth adding during a specific long-form

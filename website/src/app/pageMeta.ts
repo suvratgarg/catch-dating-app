@@ -1,4 +1,7 @@
 import type {HostListing} from "../features/organizers/types";
+import metaContent from "../content/meta.json";
+import {interpolateContent} from "../content/interpolate";
+import {validatedWebsiteMeta} from "../content/metaContract";
 
 export type PageKey = "home" | "host" | "organizers" | "listing" | "claim" | "not_found";
 
@@ -10,55 +13,20 @@ export interface PageMeta {
   robots?: string;
 }
 
-export const pageMeta: Record<Exclude<PageKey, "listing">, PageMeta> = {
-  home: {
-    title: "Catch | The event before the match",
-    description:
-      "Catch turns curated singles events into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
-    canonicalPath: "/",
-    twitterDescription: "Curated singles events become real dating context.",
-  },
-  host: {
-    title: "Catch for Hosts | Host better singles events",
-    description:
-      "Catch helps hosts publish curated singles events, manage admission and waitlists, run live facilitation, and turn real attendance into post-event connections.",
-    canonicalPath: "/host/",
-    twitterDescription:
-      "Event setup, admission, waitlists, live facilitation, check-in, and aggregate post-event reporting for hosts.",
-  },
-  organizers: {
-    title: "Organizer Search | Catch",
-    description:
-      "Search Catch organizer profiles by name, city, format, and review signal.",
-    canonicalPath: "/organizers/",
-    twitterDescription: "Search Catch organizer and club profiles.",
-    robots: "noindex, follow",
-  },
-  claim: {
-    title: "Claim your organizer listing | Catch",
-    description:
-      "Find an unclaimed organizer profile, verify ownership, and request access to Catch host tools.",
-    canonicalPath: "/claim/",
-    twitterDescription: "Claim an organizer profile and unlock Catch host tools.",
-    robots: "noindex, follow",
-  },
-  not_found: {
-    title: "Page not found | Catch",
-    description:
-      "This Catch page does not exist. Search organizer profiles, browse the member site, or explore host tools.",
-    canonicalPath: "/404/",
-    twitterDescription:
-      "Search organizer profiles, browse the member site, or explore Catch host tools.",
-    robots: "noindex, follow",
-  },
-};
+const websiteMeta = validatedWebsiteMeta(metaContent);
+
+export const pageMeta: Record<Exclude<PageKey, "listing">, PageMeta> =
+  websiteMeta.routes;
 
 export function pageMetaForListing(
   listing: HostListing,
   options: {noindexOverride?: boolean} = {}
 ): PageMeta {
   return {
-    title: `${listing.name} | ${listing.city} organizer profile | Catch`,
+    title: interpolateContent(websiteMeta.listing.titleTemplate, {
+      name: listing.name,
+      city: listing.city,
+    }),
     description: listing.description,
     canonicalPath: listing.path,
     twitterDescription: listing.sourceSummary,

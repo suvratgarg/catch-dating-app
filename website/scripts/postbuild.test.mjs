@@ -7,6 +7,9 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 const scriptPath = fileURLToPath(new URL("./postbuild.mjs", import.meta.url));
+const canonicalMetaPath = fileURLToPath(
+  new URL("../src/content/meta.json", import.meta.url)
+);
 
 test("postbuild writes route metadata, robots, and an indexable-only sitemap", () => {
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-postbuild-"));
@@ -78,6 +81,21 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   );
   assert.match(notFoundHtml, /<meta name="robots" content="noindex, follow" \/>/);
 
+  const canonicalMeta = JSON.parse(fs.readFileSync(canonicalMetaPath, "utf8"));
+  for (const [routeKey, relativeOutput] of [
+    ["home", "index.html"],
+    ["host", path.join("host", "index.html")],
+    ["organizers", path.join("organizers", "index.html")],
+    ["claim", path.join("claim", "index.html")],
+    ["not_found", "404.html"],
+  ]) {
+    assertStaticRouteMeta(
+      fs.readFileSync(path.join(distRoot, relativeOutput), "utf8"),
+      canonicalMeta.routes[routeKey],
+      "https://example.test"
+    );
+  }
+
   const sitemap = fs.readFileSync(path.join(distRoot, "sitemap.xml"), "utf8");
   assert.match(sitemap, /<loc>https:\/\/example\.test\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/host\/<\/loc>/);
@@ -97,6 +115,43 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.match(robots, /Sitemap: https:\/\/example\.test\/sitemap\.xml/);
 });
 
+test("postbuild reads static and listing metadata from the validated content source", () => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-postbuild-content-"));
+  const distRoot = path.join(tmpRoot, "dist");
+  const hostListingsPath = path.join(tmpRoot, "hostListings.json");
+  const metaContentPath = path.join(tmpRoot, "meta.json");
+  const metaContent = JSON.parse(fs.readFileSync(canonicalMetaPath, "utf8"));
+  metaContent.routes.claim.title = "Custom claim metadata";
+  metaContent.listing.titleTemplate = "{name} in {city} | Custom profile";
+  metaContent.listing.staticLabels.sourcesHeading = "Verified links";
+
+  fs.mkdirSync(distRoot, {recursive: true});
+  fs.writeFileSync(path.join(distRoot, "index.html"), baseHtml());
+  fs.writeFileSync(hostListingsPath, `${JSON.stringify(hostListings(), null, 2)}\n`);
+  fs.writeFileSync(metaContentPath, `${JSON.stringify(metaContent, null, 2)}\n`);
+
+  execFileSync(process.execPath, [
+    scriptPath,
+    "--dist-root",
+    distRoot,
+    "--host-listings",
+    hostListingsPath,
+    "--meta-content",
+    metaContentPath,
+    "--base-url",
+    "https://example.test",
+  ], {stdio: "pipe"});
+
+  const claimHtml = fs.readFileSync(path.join(distRoot, "claim", "index.html"), "utf8");
+  const listingHtml = fs.readFileSync(
+    path.join(distRoot, "organizers", "afterfly", "index.html"),
+    "utf8"
+  );
+  assert.match(claimHtml, /<title>Custom claim metadata<\/title>/u);
+  assert.match(listingHtml, /<title>AFTER FLY in Indore \| Custom profile<\/title>/u);
+  assert.match(listingHtml, /<h2>Verified links<\/h2>/u);
+});
+
 function baseHtml() {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -113,6 +168,38 @@ function baseHtml() {
   <body><div id="root"></div></body>
 </html>
 `;
+}
+
+function assertStaticRouteMeta(html, meta, baseUrl) {
+  const canonical = `${baseUrl}${meta.canonicalPath}`;
+  const expectedTags = [
+    `<title>${escapeHtml(meta.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(meta.description)}" />`,
+    `<meta property="og:title" content="${escapeHtml(meta.title)}" />`,
+    `<meta property="og:description" content="${escapeHtml(meta.description)}" />`,
+    `<meta property="og:url" content="${escapeHtml(canonical)}" />`,
+    `<meta name="twitter:title" content="${escapeHtml(meta.title)}" />`,
+    `<meta name="twitter:description" content="${escapeHtml(meta.twitterDescription)}" />`,
+    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+  ];
+  if (meta.robots) {
+    expectedTags.push(`<meta name="robots" content="${escapeHtml(meta.robots)}" />`);
+  }
+  for (const tag of expectedTags) {
+    assert.ok(html.includes(tag), `expected built HTML to include ${tag}`);
+  }
+  if (!meta.robots) {
+    assert.doesNotMatch(html, /<meta name="robots"/u);
+  }
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
 
 function hostListings() {

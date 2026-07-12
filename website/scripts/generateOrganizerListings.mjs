@@ -85,7 +85,7 @@ const suppressedLegacyPaths = new Set(
 const listings = [
   ...approvedIntakeProjections.map(listingFromOrganizerIntakeProjection),
   ...(args.noSeeds ? [] : scrapedSeedListings(suppressedLegacyPaths)),
-  ...(args.noDemo ? [] : appCreatedDemoListings()),
+  ...(args.includeDemo ? appCreatedDemoListings() : []),
 ]
   .map(withPublicExternalEvents)
   .sort((a, b) => compareText(a.name, b.name));
@@ -917,7 +917,7 @@ function parseArgs(argv) {
     demoScenarioRoot: null,
     externalEventReadiness: null,
     help: false,
-    noDemo: false,
+    includeDemo: false,
     noSeeds: false,
     output: null,
     projectionPlan: null,
@@ -930,7 +930,8 @@ function parseArgs(argv) {
     const arg = argv[index];
     if (arg === "--check") parsed.check = true;
     else if (arg === "--help" || arg === "-h") parsed.help = true;
-    else if (arg === "--no-demo") parsed.noDemo = true;
+    else if (arg === "--include-demo") parsed.includeDemo = true;
+    else if (arg === "--no-demo") parsed.includeDemo = false;
     else if (arg === "--no-seeds") parsed.noSeeds = true;
     else if (arg === "--demo-scenario-root") {
       parsed.demoScenarioRoot = requiredValue(argv, ++index, arg);
@@ -979,7 +980,8 @@ Options:
   --demo-scenario-root <path>      Read demo scenario configs from a specific folder.
   --output <path>                  Write or check a specific output file.
   --no-seeds                      Exclude legacy scraped seed listings.
-  --no-demo                       Exclude app-created demo listings.
+  --include-demo                  Include app-created demo listings (Storybook/sales fixtures only).
+  --no-demo                       Compatibility flag; production already excludes demos by default.
 `);
 }
 

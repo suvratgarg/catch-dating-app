@@ -1,11 +1,15 @@
 import {useState} from "react";
-import {getMarketingConsent, setMarketingConsent} from "../../analytics";
+import {
+  getMarketingConsent,
+  setMarketingConsent,
+  shouldShowMarketingConsentBanner,
+} from "../../analytics";
 import {Button, MarketingConsentBannerShell} from "../../shared/ui/primitives";
 
 export function MarketingConsentBanner() {
   const [consent, setConsent] = useState(() => getMarketingConsent());
 
-  if (consent) return null;
+  if (!shouldShowMarketingConsentBanner(consent)) return null;
 
   return (
     <MarketingConsentBannerShell

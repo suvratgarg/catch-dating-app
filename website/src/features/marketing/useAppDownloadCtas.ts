@@ -3,14 +3,24 @@ import type {
   AppDownloadCtaGroupProps,
   AppDownloadCtaItem,
 } from "../../shared/ui/primitives";
+import {storeCtaCopy} from "@content/site";
 import {trackMarketingEvent} from "../../analytics";
-import {storeCtas} from "./content";
 import {trackCtaClick} from "./tracking";
 
 type AppDownloadCtaConfig = Pick<
   AppDownloadCtaGroupProps,
   "items" | "onPendingClick" | "onStoreLinkClick" | "placement"
 >;
+
+const storeUrls = {
+  android: import.meta.env.VITE_PLAY_STORE_URL?.trim() ?? "",
+  ios: import.meta.env.VITE_APP_STORE_URL?.trim() ?? "",
+} satisfies Record<(typeof storeCtaCopy)[number]["platform"], string>;
+
+const storeCtas: AppDownloadCtaItem[] = storeCtaCopy.map((store) => ({
+  ...store,
+  href: storeUrls[store.platform],
+}));
 
 export function useAppDownloadCtas({placement}: {placement: string}): AppDownloadCtaConfig {
   const handlePendingClick = useCallback(
