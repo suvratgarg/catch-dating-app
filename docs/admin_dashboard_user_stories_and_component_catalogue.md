@@ -1,7 +1,7 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.2.18
-updated: 2026-07-03
+version: 0.2.19
+updated: 2026-07-13
 owner: admin_console
 status: active
 ---
@@ -157,8 +157,9 @@ operator workflows are not built.
 
 Current implementation:
 
-- `admin/src/shared/api/firebase.ts` initializes Firebase Auth and signs in with
-  Google popup.
+- `admin/src/shared/api/firebase.ts` initializes Firebase Auth, supports phone
+  OTP sign-in for claimed app accounts, and keeps Google popup sign-in for
+  separately claimed internal accounts.
 - `admin/src/app/App.tsx` subscribes to `onAuthStateChanged` only in live mode.
 - `VITE_ADMIN_DATA_MODE=sample` bypasses Auth entirely and now shows a visible
   "Sample mode · auth bypassed" status in the top bar.

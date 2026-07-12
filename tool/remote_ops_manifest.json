@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "updated": "2026-07-11",
+  "version": 2,
+  "updated": "2026-07-13",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -243,12 +243,20 @@
           "owner": "docs/release_operations.md",
           "ticket": "trusted-device-debug-token-review",
           "guardrail": "Register debug tokens only for trusted test devices and remove stale tokens during release readiness review."
+        },
+        {
+          "kind": "manual",
+          "ref": "Production admin Auth and App Check configuration",
+          "owner": "docs/release_operations.md",
+          "ticket": "admin-auth-console-evidence-required",
+          "guardrail": "After admin Auth, Hosting-domain, App Check-key, or provider changes, record console/API and live-browser evidence for authorized domains, Phone and Google providers, the App Check reCAPTCHA v3 server secret, and successful live App Check token exchange."
         }
       ],
       "requiredChecks": [
         "functions/test/callable-app-check.test.cjs",
         "tool/validate_firebase_environment.sh <env>",
-        "Console evidence for provider registration and enforcement before release or after Firebase app registration changes"
+        "Console evidence for provider registration and enforcement before release or after Firebase app registration changes",
+        "For production admin changes, verify admin.catchdates.com and catchdates-admin.web.app as authorized Auth domains, Phone and Google providers enabled, the deployed reCAPTCHA v3 key paired with a Firebase App Check server secret, and successful live App Check token exchange before sign-in"
       ],
       "notes": [
         "No local script should pretend to prove console enforcement by itself.",
