@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.9.4
-updated: 2026-07-12
+version: 1.9.5
+updated: 2026-07-13
 owner: recursive_audit_loop
 status: active
 ---
@@ -293,6 +293,13 @@ rollback duplicates in `prod` follow the cutover cleanup above.
 The production admin Hosting target has its own `Admin Website` workflow. It
 validates `npm run web:admin:build`, checks live prod Vite Firebase/App Check
 env, then deploys only `hosting:admin` after matching changes land on `main`.
+
+That local environment check cannot prove Firebase console state. After admin
+Auth, Hosting-domain, provider, reCAPTCHA-key, or App Check changes, record live
+evidence that `admin.catchdates.com` and `catchdates-admin.web.app` are
+authorized Auth domains, Phone and Google providers are enabled, the deployed
+web app's reCAPTCHA v3 key has a matching Firebase App Check server secret, and
+the live page completes App Check token exchange before sign-in.
 
 The manual `Firebase Deploy` workflow forwards these GitHub Environment
 variables into Firebase Hosting predeploys when `hosting` is selected:

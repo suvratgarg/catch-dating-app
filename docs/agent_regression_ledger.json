@@ -1,6 +1,6 @@
 {
-  "version": 6,
-  "updated": "2026-07-12",
+  "version": 7,
+  "updated": "2026-07-13",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -410,6 +410,27 @@
         "website/README.md"
       ],
       "notes": "Local and preview builds may intentionally omit store links; production marketing predeploy requires official HTTPS product URLs and both deploy workflows forward the GitHub Environment variables."
+    },
+    {
+      "id": "REG-WEB-005",
+      "title": "Production admin Hosting reaches an unusable Firebase Auth or App Check configuration",
+      "status": "active",
+      "applies_to": [
+        "admin/src/shared/api/firebase.ts",
+        ".github/workflows/admin-website.yml",
+        "tool/env/check_web_hosting_env.mjs",
+        "tool/remote_ops_manifest.json"
+      ],
+      "symptom": "The production admin sign-in screen loads, but phone or Google sign-in fails because the custom domain is unauthorized, the required Auth provider is disabled, or the deployed reCAPTCHA site key has no matching server-side Firebase App Check configuration.",
+      "guard": {
+        "type": "manual",
+        "command": "After production admin Auth, Hosting-domain, GitHub Environment App Check-key, or Firebase console changes, record live evidence that admin.catchdates.com and catchdates-admin.web.app are authorized Auth domains, Phone and Google providers are enabled, the deployed Firebase web app has a reCAPTCHA v3 server secret configured, and the live page completes App Check token exchange before sign-in."
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "admin/README.md"
+      ],
+      "notes": "The local Hosting env gate proves only that explicit project-aligned values exist. Console/API evidence plus a live browser/network smoke is required to prove remote Auth and App Check usability."
     },
     {
       "id": "REG-CLAIM-001",

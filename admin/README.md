@@ -21,8 +21,9 @@ The app starts in `sample` data mode by default so the UI can be reviewed before
 admin claims and App Check are configured. In sample mode the top bar shows
 that Auth is bypassed and no login/logout control is rendered because no
 Firebase session is required.
-In live mode the shell shows a Google sign-in screen before any callable data
-loads, shows the signed-in email/uid and custom admin claims after Auth
+In live mode the shell supports phone OTP sign-in for claimed app accounts and
+Google sign-in for separately claimed internal accounts before any callable
+data loads. It shows the signed-in email/uid and custom admin claims after Auth
 resolves, blocks signed-in users with no Catch admin claim before dashboard
 data loads, and surfaces sign-in, claim refresh, and sign-out errors in the UI.
 
