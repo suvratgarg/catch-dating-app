@@ -1,3 +1,6 @@
+// GENERATED CODE - DO NOT EDIT.
+// Source: copy/structured_domain_copy_en.json and tool/copy/templates/structured_domain_copy/metrics.dart.template
+
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 
 abstract final class EventSuccessMetricCatalog {

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_content.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
@@ -6,6 +7,8 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapp
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   group('profileViewFromCardContent', () {
@@ -81,6 +84,7 @@ void main() {
 
       final view = profileViewFromCardContent(
         content,
+        l10n: _l10n,
         name: 'Maya',
         age: 29,
         running: const RunningPreferences(

@@ -10,7 +10,6 @@ import {
   MarketingLoopList,
   MarketingSection,
   MarketingSectionCopy,
-  ProfileStrength,
   StatusBadge,
   type ActivityMeta,
   type FeaturedOrganizerCardItem,
@@ -57,7 +56,6 @@ const featuredOrganizerItems: FeaturedOrganizerCardItem[] = [
     href: "/organizers/club-sales-sunday-table/",
     name: "Sunday Table Club",
     status: <StatusBadge tone="verified">Verified on Catch</StatusBadge>,
-    strength: <ProfileStrength value={92} />,
   },
   {
     activity: (
@@ -71,7 +69,6 @@ const featuredOrganizerItems: FeaturedOrganizerCardItem[] = [
     href: "/organizers/afterfly/",
     name: "Afterfly",
     status: <StatusBadge tone="unclaimed">Claimable</StatusBadge>,
-    strength: <ProfileStrength value={78} />,
   },
 ];
 

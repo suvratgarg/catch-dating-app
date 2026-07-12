@@ -15,7 +15,10 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
     final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
     if (uidAsync.isLoading) {
-      return const HostLoadingScreen(title: 'Host profile', showTabRail: true);
+      return HostLoadingScreen(
+        title: context.l10n.hostsHostAccountScreenTitleHostProfile,
+        showTabRail: true,
+      );
     }
     if (uidAsync.hasError) {
       return CatchErrorScaffold.fromError(
@@ -59,12 +62,12 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
         child: Scaffold(
           backgroundColor: t.bg,
           appBar: CatchTopBar(
-            title: 'Host profile',
+            title: context.l10n.hostsHostAccountScreenTitleHostProfile,
             showBackButton: false,
             border: true,
             actions: [
               CatchIconAction(
-                tooltip: 'Sign out',
+                tooltip: context.l10n.hostsHostAccountScreenTooltipSignOut,
                 icon: CatchIcons.logoutRounded,
                 onPressed: actions.canSignOut
                     ? () => unawaited(_signOut())
@@ -74,9 +77,15 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
             bottom: CatchTabRail<HostSettingsMode>(
               selected: _selectedTab,
               onChanged: (tab) => setState(() => _selectedTab = tab),
-              options: const [
-                CatchOption(value: HostSettingsMode.edit, label: 'Edit'),
-                CatchOption(value: HostSettingsMode.preview, label: 'Preview'),
+              options: [
+                CatchOption(
+                  value: HostSettingsMode.edit,
+                  label: context.l10n.hostsHostAccountScreenLabelEdit,
+                ),
+                CatchOption(
+                  value: HostSettingsMode.preview,
+                  label: context.l10n.hostsHostAccountScreenLabelPreview,
+                ),
               ],
             ),
           ),
@@ -123,7 +132,10 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
       builder: (_) => HostProfileEditorSheet(profile: profile),
     );
     if (saved == true && mounted) {
-      showCatchSnackBar(context, 'Host profile saved.');
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsHostAccountScreenVisiblecopyHostProfileSaved,
+      );
     }
   }
 
@@ -139,7 +151,10 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
       return;
     }
     if (!mounted) return;
-    showCatchSnackBar(context, 'Host profile created.');
+    showCatchSnackBar(
+      context,
+      context.l10n.hostsHostAccountScreenVisiblecopyHostProfileCreated,
+    );
   }
 
   void _openSettingsClub(HostSettingsClubNavigationState navigation) {
@@ -199,14 +214,16 @@ class HostSettingsProfileSection extends StatelessWidget {
         onRetry: onRetry,
       ),
       HostSettingsProfileMissing() => CatchSection.fieldRows(
-        title: 'Profile',
+        title: context.l10n.hostsHostAccountScreenTitleProfile,
         first: true,
         children: [
           CatchField.nav(
-            title: 'Display name',
+            title: context.l10n.hostsHostAccountScreenTitleDisplayName,
             valueText: creatingProfile
-                ? 'Creating profile...'
-                : 'Create host profile',
+                ? context.l10n.hostsHostAccountScreenVisiblecopyCreatingProfile
+                : context
+                      .l10n
+                      .hostsHostAccountScreenVisiblecopyCreateHostProfile,
             icon: CatchIcons.businessOutlined,
             action: creatingProfile
                 ? const SizedBox.square(
@@ -249,27 +266,27 @@ class HostSettingsProfileRows extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchSection.fieldRows(
-          title: 'Profile',
+          title: context.l10n.hostsHostAccountScreenTitleProfile,
           first: true,
           children: [
             CatchField.nav(
-              title: 'Display name',
+              title: context.l10n.hostsHostAccountScreenTitleDisplayName,
               valueText: profile.displayName,
               icon: CatchIcons.personOutlineRounded,
               onTap: canEdit ? onEditProfile : null,
               showChevron: canEdit,
             ),
             CatchField.nav(
-              title: 'Role title',
+              title: context.l10n.hostsHostAccountScreenTitleRoleTitle,
               valueText: profile.roleTitle?.trim().isNotEmpty == true
                   ? profile.roleTitle!.trim()
-                  : 'Add role title',
+                  : context.l10n.hostsHostAccountScreenVisiblecopyAddRoleTitle,
               icon: CatchIcons.cardMembershipOutlined,
               onTap: canEdit ? onEditProfile : null,
               showChevron: canEdit,
             ),
             CatchField.nav(
-              title: 'Status',
+              title: context.l10n.hostsHostAccountScreenTitleStatus,
               valueText: hostProfileStatusLabel(profile.status),
               icon: CatchIcons.checkCircleOutlineRounded,
               showChevron: false,
@@ -277,13 +294,13 @@ class HostSettingsProfileRows extends StatelessWidget {
           ],
         ),
         CatchSection.fieldRows(
-          title: 'Bio',
+          title: context.l10n.hostsHostAccountScreenTitleBio,
           children: [
             CatchField.nav(
-              title: 'About you as a host',
+              title: context.l10n.hostsHostAccountScreenTitleAboutYouAsA,
               valueText: profile.bio?.trim().isNotEmpty == true
                   ? profile.bio!.trim()
-                  : 'Add a host bio',
+                  : context.l10n.hostsHostAccountScreenVisiblecopyAddAHostBio,
               icon: CatchIcons.chatBubbleOutlineRounded,
               valueMaxLines: 2,
               onTap: canEdit ? onEditProfile : null,
@@ -314,7 +331,7 @@ class HostSettingsClubsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSection.fieldRows(
-      title: 'Clubs you host',
+      title: context.l10n.hostsHostAccountScreenTitleClubsYouHost,
       children: [
         switch (state) {
           HostSettingsClubsLoading() => const CatchSkeletonRows(
@@ -328,7 +345,7 @@ class HostSettingsClubsSection extends StatelessWidget {
             onRetry: onRetry,
           ),
           HostSettingsClubsEmpty() => Text(
-            'No host clubs yet.',
+            context.l10n.hostsHostAccountScreenTextNoHostClubsYet,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           HostSettingsClubsContent(:final clubs) => HostSettingsClubRows(
@@ -415,11 +432,11 @@ class _HostProfileEditorSheetState
     return Form(
       key: _formKey,
       child: CatchBottomSheetScaffold(
-        title: 'Professional profile',
+        title: context.l10n.hostsHostAccountScreenTitleProfessionalProfile,
         subtitle: hostProfileStatusLabel(widget.profile.status),
         keyboardSafe: true,
         action: CatchButton(
-          label: 'Save profile',
+          label: context.l10n.hostsHostAccountScreenLabelSaveProfile,
           icon: Icon(CatchIcons.checkRounded, size: CatchIcon.md),
           isLoading: saveMutation.isPending,
           fullWidth: true,

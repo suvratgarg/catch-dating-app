@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart'
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
@@ -177,7 +178,11 @@ class _ProfileInlinePromptEntryEditorState
       title: widget.isExpanded ? selectedDefinition.title : widget.label,
       body: widget.isExpanded
           ? null
-          : (widget.isAddAffordance ? '+ ${widget.value}' : widget.value),
+          : (widget.isAddAffordance
+                ? context.l10n.userProfileInlineEditorPromptBodyValue(
+                    value: widget.value,
+                  )
+                : widget.value),
       tone: widget.isAddAffordance
           ? CatchFieldTone.primary
           : CatchFieldTone.normal,
@@ -188,8 +193,15 @@ class _ProfileInlinePromptEntryEditorState
       actionLeading: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) => Text(
-          '${_controller.text.length} / $maximumProfilePromptAnswerLength',
-          key: const ValueKey('profile-inline-counter'),
+          context.l10n
+              .userProfileInlineEditorPromptTextLengthMaximumprofilepromptanswerlength(
+                length: _controller.text.length,
+                maximumProfilePromptAnswerLength:
+                    maximumProfilePromptAnswerLength,
+              ),
+          key: ValueKey(
+            context.l10n.userProfileInlineEditorPromptTextProfileInlineCounter,
+          ),
           style: CatchTextStyles.labelM(context),
         ),
       ),
@@ -214,7 +226,8 @@ class _ProfileInlinePromptEntryEditorState
             gapH8,
             CatchTextButton(
               key: const ValueKey('profile-inline-change-prompt'),
-              label: 'Change prompt',
+              label:
+                  context.l10n.userProfileInlineEditorPromptLabelChangePrompt,
               tone: CatchTextButtonTone.neutral,
               minimumSize: const Size(0, CatchSpacing.s8),
               padding: EdgeInsets.zero,
@@ -262,8 +275,9 @@ class PromptPickerSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchBottomSheetScaffold(
-      title: 'Prompt',
-      subtitle: 'Pick the question this answer responds to.',
+      title: context.l10n.userProfileInlineEditorPromptTitlePrompt,
+      subtitle:
+          context.l10n.userProfileInlineEditorPromptSubtitlePickTheQuestionThis,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.sizeOf(context).height * 0.56,
@@ -305,7 +319,9 @@ class PromptOptionTile extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label: 'Select prompt: $title',
+      label: context.l10n.userProfileInlineEditorPromptLabelSelectPromptTitle(
+        title: title,
+      ),
       child: Material(
         color: selected ? t.primarySoft : Colors.transparent,
         borderRadius: BorderRadius.circular(CatchRadius.sm),

@@ -94,6 +94,12 @@ jobs:
       - name: Build marketing website
         run: npm run web:marketing:build
 
+      - name: Install Storybook accessibility browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Storybook accessibility gate
+        run: npm --workspace catch-marketing run test:storybook:a11y
+
   deploy:
     name: Deploy marketing Hosting
     needs: validate
@@ -133,6 +139,8 @@ jobs:
       - name: Validate production marketing environment
         env:
           VITE_GTM_ID: ${{ vars.VITE_GTM_ID }}
+          VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
+          VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
           VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -151,6 +159,8 @@ jobs:
           ORGANIZER_CLAIM_TARGET_PROJECT_ID: catch-dating-app-64e51
           ORGANIZER_CLAIM_TARGET_RECEIPT: /tmp/organizer-claim-target-readiness.json
           VITE_GTM_ID: ${{ vars.VITE_GTM_ID }}
+          VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
+          VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
           VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -160,3 +170,6 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
           VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
         run: ./tool/firebase_with_env.sh prod deploy --only hosting:marketing --non-interactive
+
+      - name: Verify production unknown paths return HTTP 404
+        run: node website/scripts/verifyHosting404.mjs https://catchdates.com

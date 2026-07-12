@@ -1,6 +1,8 @@
 type ConsentChoice = "accepted" | "essential";
 type FormVariant = "member" | "host";
 
+export const marketingContentVersion = "website_copy_v2" as const;
+
 interface MarketingConsent {
   choice: ConsentChoice;
   analytics: boolean;
@@ -84,6 +86,12 @@ export function getMarketingConsent(): MarketingConsent | null {
   return stored;
 }
 
+export function shouldShowMarketingConsentBanner(
+  consent: MarketingConsent | null = getMarketingConsent()
+) {
+  return consent === null;
+}
+
 export function setMarketingConsent(choice: ConsentChoice) {
   const consent: MarketingConsent = {
     choice,
@@ -122,7 +130,16 @@ export function trackMarketingEvent(
   dataLayer().push({
     event: eventName,
     ...parameters,
+    content_version: marketingContentVersion,
   });
+}
+
+export function marketingCtaClickParameters(label: string, href: string) {
+  return {
+    cta_href: href,
+    cta_label: label,
+    page_path: `${window.location.pathname}${window.location.search}`,
+  };
 }
 
 export function createMarketingEventId(prefix: string) {
@@ -178,7 +195,7 @@ function updateConsentMode(consent: MarketingConsent) {
 
 function maybeLoadGtm() {
   if (gtmLoaded) return;
-  const gtmId = import.meta.env.VITE_GTM_ID;
+  const gtmId = import.meta.env?.VITE_GTM_ID;
   if (!gtmId) return;
 
   const consent = getMarketingConsent();

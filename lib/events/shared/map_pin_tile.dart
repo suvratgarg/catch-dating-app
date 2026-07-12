@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +26,9 @@ class MapPinTile extends StatelessWidget {
     final t = CatchTokens.of(context);
     final hasPin = startingPoint != null;
     final label = _trimToNull(selectedLabel);
-    final title = hasPin ? label ?? 'Pinned location' : 'Choose on map';
+    final title = hasPin
+        ? label ?? context.l10n.eventsMapPinTileTitlePinnedLocation
+        : context.l10n.eventsMapPinTileTitleChooseOnMap;
     final foregroundColor = enabled
         ? hasPin
               ? t.primary

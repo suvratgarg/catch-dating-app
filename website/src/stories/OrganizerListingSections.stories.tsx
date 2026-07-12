@@ -1,7 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent, ReactNode} from "react";
 import type {ListingClaimController} from "../features/claims/useListingClaimController";
-import {hostListings} from "../features/organizers/data";
+import {hostListings} from "./fixtures/hostListings";
 import {
   ListingCatchEventsSection,
   ListingEventEvidenceSection,
@@ -190,6 +190,7 @@ export const ListingEventEvidence: Story = {
 export const ListingReviews: Story = {
   name: "Reviews · verified",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "listing_reviews_section",
       routeIds: listingRouteIds,

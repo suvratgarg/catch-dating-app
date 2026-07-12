@@ -29,6 +29,7 @@ const routeContract = readJson(routesPath, "website route contract");
 validateRegistryShape(registry);
 validateComponents(registry.components ?? [], routeContract.routes ?? []);
 validateFeatureComponentExports(registry.components ?? []);
+validatePublicOrganizerProfileStrength();
 
 if (errors.length > 0) {
   console.error("Website component registry check failed:");
@@ -327,6 +328,22 @@ function walkFiles(directory, extension) {
   return files;
 }
 
+function validatePublicOrganizerProfileStrength() {
+  const organizerRoot = fromRepo("website/src/features/organizers");
+  for (const filePath of walkFiles(organizerRoot, ".tsx")) {
+    const source = fs.readFileSync(filePath, "utf8");
+    if (!containsProfileStrengthComponent(source)) continue;
+    errors.push(
+      `${normalizeRepoPath(path.relative(fromRepo("."), filePath))}: ` +
+        "public organizer UI must not render the internal ProfileStrength heuristic."
+    );
+  }
+}
+
+function containsProfileStrengthComponent(source) {
+  return /\bProfileStrength\b/u.test(source);
+}
+
 function normalizeRepoPath(value) {
   return String(value ?? "").split(path.sep).join("/");
 }
@@ -498,6 +515,16 @@ function PrivateComponent() {
 }
 `).map((component) => component.name),
     ["RegisteredSection", "RegisteredCard"]
+  );
+  assert.equal(
+    containsProfileStrengthComponent(
+      'import {ProfileStrength} from "./OrganizerIdentity";\n<ProfileStrength value={92} />'
+    ),
+    true
+  );
+  assert.equal(
+    containsProfileStrengthComponent("const score = listingProfileStrength(listing);"),
+    false
   );
   console.log("Website component checker self-test passed.");
 }

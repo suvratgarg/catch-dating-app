@@ -21,6 +21,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:flutter/material.dart';
 
@@ -84,14 +85,14 @@ class ClubDetailBody extends StatelessWidget {
                     ),
                     gapH16,
                   ],
-                  CatchMetricStrip(items: _clubMetricItems(club)),
+                  CatchMetricStrip(items: _clubMetricItems(club, context.l10n)),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CatchSection.divided(
-                    title: 'About',
+                    title: context.l10n.clubsClubDetailBodyTitleAbout,
                     first: true,
                     child: Text(
                       club.description,
@@ -100,16 +101,16 @@ class ClubDetailBody extends StatelessWidget {
                   ),
                   if (tags.isNotEmpty)
                     CatchSection.divided(
-                      title: 'What we do',
+                      title: context.l10n.clubsClubDetailBodyTitleWhatWeDo,
                       child: ClubActivitySection(club: club, tags: tags),
                     ),
                   if (club.clubPhotos.isNotEmpty)
                     CatchSection.divided(
-                      title: 'From the club',
+                      title: context.l10n.clubsClubDetailBodyTitleFromTheClub,
                       child: ClubPhotoStrip(club: club),
                     ),
                   CatchSection.divided(
-                    title: 'Your hosts',
+                    title: context.l10n.clubsClubDetailBodyTitleYourHosts,
                     count: club.displayHostProfiles.length,
                     child: ClubHostSection(
                       club: club,
@@ -138,7 +139,7 @@ class ClubDetailBody extends StatelessWidget {
               sections: [
                 if (state.showReviews)
                   CatchSection.divided(
-                    title: 'Reviews',
+                    title: context.l10n.clubsClubDetailBodyTitleReviews,
                     child: ClubReviewsSection(
                       reviews: state.reviews,
                       currentUid: state.uid,
@@ -146,7 +147,7 @@ class ClubDetailBody extends StatelessWidget {
                   ),
                 if (state.contactActions.isNotEmpty)
                   CatchSection.divided(
-                    title: 'Get in touch',
+                    title: context.l10n.clubsClubDetailBodyTitleGetInTouch,
                     child: ClubContactSection(
                       actions: state.contactActions,
                       showTitle: false,
@@ -161,15 +162,24 @@ class ClubDetailBody extends StatelessWidget {
   }
 }
 
-List<CatchMetricStripItem> _clubMetricItems(Club club) {
+List<CatchMetricStripItem> _clubMetricItems(Club club, AppLocalizations l10n) {
   return [
-    CatchMetricStripItem(value: '${club.memberCount}', label: 'members'),
+    CatchMetricStripItem(
+      value: '${club.memberCount}',
+      label: l10n.clubsClubDetailBodyLabelMembers,
+    ),
     CatchMetricStripItem(
       value: club.rating > 0 ? club.rating.toStringAsFixed(1) : '—',
-      label: 'rating',
+      label: l10n.clubsClubDetailBodyLabelRating,
     ),
-    CatchMetricStripItem(value: '${club.reviewCount}', label: 'reviews'),
-    CatchMetricStripItem(value: clubEstablishedLabel(club), label: 'est.'),
+    CatchMetricStripItem(
+      value: '${club.reviewCount}',
+      label: l10n.clubsClubDetailBodyLabelReviews,
+    ),
+    CatchMetricStripItem(
+      value: clubEstablishedLabel(club),
+      label: l10n.clubsClubDetailBodyLabelEst,
+    ),
   ];
 }
 

@@ -18,6 +18,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -125,12 +126,13 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         ),
         gapH8,
         SetupDisclosureSection(
-          title: 'Guide notes',
+          title: context.l10n.eventSuccessEventSuccessSetupBodyTitleGuideNotes,
           subtitle: _guideNotesSubtitle(draft, widget.attendeePrompt),
           initiallyExpanded: true,
           children: [
             CatchField.input(
-              title: 'Host goal',
+              title:
+                  context.l10n.eventSuccessEventSuccessSetupBodyTitleHostGoal,
               controller: _hostGoalController,
               enabled: widget.editable,
               placeholder: draft.hostGoal,
@@ -152,11 +154,15 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
             ),
             gapH12,
             CatchField.input(
-              title: 'Attendee prompt',
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTitleAttendeePrompt,
               isOptional: true,
               controller: _attendeePromptController,
               enabled: widget.editable,
-              placeholder: 'Prompt attendees before or after the event.',
+              placeholder: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyPlaceholderPromptAttendeesBeforeOr,
               inputFormatters: [LengthLimitingTextInputFormatter(300)],
               minLines: 2,
               maxLines: 4,
@@ -171,19 +177,28 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         ),
         gapH8,
         StageCard(
-          title: 'When people arrive',
-          subtitle:
-              'Check-in stays reliable; optional rituals can start the room.',
+          title: context
+              .l10n
+              .eventSuccessEventSuccessSetupBodyTitleWhenPeopleArrive,
+          subtitle: context
+              .l10n
+              .eventSuccessEventSuccessSetupBodySubtitleCheckInStaysReliable,
           children: [
-            const FoundationLine(
-              title: 'Check attendees in and confirm groups',
-              subtitle:
-                  'Arrival is the source of truth for assignments, feedback, and post-event matching.',
+            FoundationLine(
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTitleCheckAttendeesInAnd,
+              subtitle: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodySubtitleArrivalIsTheSource,
             ),
-            const FoundationLine(
-              title: 'Read a brief welcome script',
-              subtitle:
-                  'A short host opener gives attendees permission to talk.',
+            FoundationLine(
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTitleReadABriefWelcome,
+              subtitle: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodySubtitleAShortHostOpener,
             ),
             for (final recommendation in _stageRecommendations(
               profile,
@@ -200,9 +215,11 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         ),
         gapH8,
         StageCard(
-          title: 'During the event',
-          subtitle:
-              'Tools the host runs live. Pre-selected defaults match the activity.',
+          title:
+              context.l10n.eventSuccessEventSuccessSetupBodyTitleDuringTheEvent,
+          subtitle: context
+              .l10n
+              .eventSuccessEventSuccessSetupBodySubtitleToolsTheHostRuns,
           children: [
             for (final recommendation in _stageRecommendations(
               profile,
@@ -221,13 +238,40 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                     EventSuccessModuleCatalog.guidedRotations.id,
                   ))
                 SetupChoiceChips<int?>(
-                  label: 'Rotation cadence',
-                  options: const [
-                    CatchOption<int?>(value: null, label: 'No timed rotation'),
-                    CatchOption(value: 10, label: '10 min'),
-                    CatchOption(value: 15, label: '15 min'),
-                    CatchOption(value: 20, label: '20 min'),
-                    CatchOption(value: 30, label: '30 min'),
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyLabelRotationCadence,
+                  options: [
+                    CatchOption<int?>(
+                      value: null,
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessSetupBodyLabelNoTimedRotation,
+                    ),
+                    CatchOption(
+                      value: 10,
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessSetupBodyLabel10Min,
+                    ),
+                    CatchOption(
+                      value: 15,
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessSetupBodyLabel15Min,
+                    ),
+                    CatchOption(
+                      value: 20,
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessSetupBodyLabel20Min,
+                    ),
+                    CatchOption(
+                      value: 30,
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessSetupBodyLabel30Min,
+                    ),
                   ],
                   value: draft.structureConfig.rotationIntervalMinutes,
                   enabled: widget.editable,
@@ -248,11 +292,30 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   ))
                 SetupChoiceChips<int>(
                   label: _revealCountdownLabel(draft),
-                  options: const [
-                    CatchOption(value: 0, label: 'Off'),
-                    CatchOption(value: 5, label: '5s'),
-                    CatchOption(value: 10, label: '10s'),
-                    CatchOption(value: 15, label: '15s'),
+                  options: [
+                    CatchOption(
+                      value: 0,
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessSetupBodyLabelOff,
+                    ),
+                    CatchOption(
+                      value: 5,
+                      label:
+                          context.l10n.eventSuccessEventSuccessSetupBodyLabel5s,
+                    ),
+                    CatchOption(
+                      value: 10,
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessSetupBodyLabel10s,
+                    ),
+                    CatchOption(
+                      value: 15,
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessSetupBodyLabel15s,
+                    ),
                   ],
                   value: draft.structureConfig.revealCountdownSeconds,
                   enabled: widget.editable,
@@ -271,8 +334,11 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         ),
         gapH8,
         StageCard(
-          title: 'After the event',
-          subtitle: 'Wrap-up tools for matches and feedback.',
+          title:
+              context.l10n.eventSuccessEventSuccessSetupBodyTitleAfterTheEvent,
+          subtitle: context
+              .l10n
+              .eventSuccessEventSuccessSetupBodySubtitleWrapUpToolsFor,
           children: [
             for (final recommendation in _stageRecommendations(
               profile,
@@ -285,14 +351,21 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                     ? (_) => _emitModuleToggle(draft, recommendation.module.id)
                     : null,
               ),
-            const FoundationLine(
-              title: 'Collect quick attendee feedback',
-              subtitle:
-                  'Short ratings tell you what to improve, not who liked whom.',
+            FoundationLine(
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTitleCollectQuickAttendeeFeedback,
+              subtitle: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodySubtitleShortRatingsTellYou,
             ),
-            const FoundationLine(
-              title: 'Host coaching summary',
-              subtitle: 'A short post-event recap, not a wall of metrics.',
+            FoundationLine(
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTitleHostCoachingSummary,
+              subtitle: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodySubtitleAShortPostEvent,
             ),
           ],
         ),
@@ -313,7 +386,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         ),
         gapH8,
         SetupDisclosureSection(
-          title: 'Advanced',
+          title: context.l10n.eventSuccessEventSuccessSetupBodyTitleAdvanced,
           subtitle: _advancedSubtitle(draft),
           children: [
             QuestionnaireBlock(
@@ -580,7 +653,10 @@ class AttendeePromptPreview extends StatelessWidget {
           gapW6,
           Expanded(
             child: Text(
-              'Attendees will see: "$text"',
+              context.l10n
+                  .eventSuccessEventSuccessSetupBodyTextAttendeesWillSeeText(
+                    text: text,
+                  ),
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
@@ -605,7 +681,9 @@ class SafetyFooter extends StatelessWidget {
           gapW8,
           Expanded(
             child: Text(
-              'Safety, blocking, and report tools always on.',
+              context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTextSafetyBlockingAndReport,
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
@@ -646,13 +724,16 @@ class PresetReviewCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Recommended preset',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyTextRecommendedPreset,
                   style: CatchTextStyles.labelL(context),
                 ),
               ),
               if (showReset && onReset != null)
                 CatchTextButton(
-                  label: 'Reset',
+                  label:
+                      context.l10n.eventSuccessEventSuccessSetupBodyLabelReset,
                   onPressed: onReset,
                   minimumSize: const Size(
                     CatchLayout.eventSuccessResetButtonMinWidth,
@@ -740,7 +821,10 @@ class QuestionnaireBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Match clue questions', style: CatchTextStyles.labelL(context)),
+        Text(
+          context.l10n.eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
+          style: CatchTextStyles.labelL(context),
+        ),
         gapH4,
         Text(
           _questionnaireModeSubtitle(mode),

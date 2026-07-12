@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailLoadingScreen extends StatelessWidget {
@@ -204,7 +205,7 @@ class EventDetailPlanSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
-      title: 'The plan',
+      title: context.l10n.eventsEventDetailLoadingSkeletonTitleThePlan,
       first: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +225,7 @@ class EventDetailHintSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
-      title: 'Why you might click',
+      title: context.l10n.eventsEventDetailLoadingSkeletonTitleWhyYouMightClick,
       child: Column(
         children: [
           for (var index = 0; index < 3; index++) ...[
@@ -257,7 +258,7 @@ class EventDetailItinerarySkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
-      title: 'Itinerary',
+      title: context.l10n.eventsEventDetailLoadingSkeletonTitleItinerary,
       child: Column(
         children: [
           for (var index = 0; index < 3; index++) ...[
@@ -298,7 +299,7 @@ class EventDetailMapSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
-      title: 'Where',
+      title: context.l10n.eventsEventDetailLoadingSkeletonTitleWhere,
       child: CatchSkeleton.card(height: CatchLayout.eventDetailMapCardHeight),
     );
   }
@@ -310,7 +311,7 @@ class EventDetailMechanismSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
-      title: 'How sign-ups work',
+      title: context.l10n.eventsEventDetailLoadingSkeletonTitleHowSignUpsWork,
       child: Column(
         children: [
           for (var index = 0; index < 3; index++) ...[
@@ -341,7 +342,7 @@ class EventDetailSocialSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
-      title: "Who's going",
+      title: context.l10n.eventsEventDetailLoadingSkeletonTitleWhoSGoing,
       dividerColor: surfaceStyle?.dividerColor,
       titleColor: surfaceStyle?.headingColor,
       child: Row(
@@ -404,7 +405,7 @@ class EventDetailHostsSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
-      title: 'Your hosts',
+      title: context.l10n.eventsEventDetailLoadingSkeletonTitleYourHosts,
       dividerColor: surfaceStyle?.dividerColor,
       titleColor: surfaceStyle?.headingColor,
       child: Row(

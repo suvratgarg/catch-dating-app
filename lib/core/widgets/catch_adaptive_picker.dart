@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ Future<DateTime?> showCatchDatePicker({
   required DateTime initialDate,
   required DateTime firstDate,
   required DateTime lastDate,
-  String title = 'Select date',
+  String? title,
 }) {
   if (!prefersCupertinoControls()) {
     return showDatePicker(
@@ -32,7 +33,7 @@ Future<DateTime?> showCatchDatePicker({
     semanticsDismissible: true,
     builder: (context) => _buildCupertinoPickerSheet(
       context,
-      title: title,
+      title: title ?? context.l10n.coreCatchAdaptivePickerVisiblecopySelectDate,
       onCancel: () => Navigator.of(context).pop(),
       onDone: () => Navigator.of(context).pop(selectedDate),
       child: CupertinoDatePicker(
@@ -51,7 +52,7 @@ Future<DateTime?> showCatchDatePicker({
 Future<TimeOfDay?> showCatchTimePicker({
   required BuildContext context,
   required TimeOfDay initialTime,
-  String title = 'Select time',
+  String? title,
 }) {
   if (!prefersCupertinoControls()) {
     return showTimePicker(
@@ -80,7 +81,7 @@ Future<TimeOfDay?> showCatchTimePicker({
     semanticsDismissible: true,
     builder: (context) => _buildCupertinoPickerSheet(
       context,
-      title: title,
+      title: title ?? context.l10n.coreCatchAdaptivePickerVisiblecopySelectTime,
       onCancel: () => Navigator.of(context).pop(),
       onDone: () => Navigator.of(context).pop(selectedTime),
       child: CupertinoDatePicker(
@@ -131,7 +132,7 @@ Widget _buildCupertinoPickerSheet(
                       ),
                       onPressed: onCancel,
                       child: Text(
-                        'Cancel',
+                        context.l10n.coreCatchAdaptivePickerTextCancel,
                         style: CatchTextStyles.labelL(context, color: t.ink2),
                       ),
                     ),
@@ -156,7 +157,7 @@ Widget _buildCupertinoPickerSheet(
                       ),
                       onPressed: onDone,
                       child: Text(
-                        'Done',
+                        context.l10n.coreCatchAdaptivePickerTextDone,
                         style: CatchTextStyles.labelL(
                           context,
                           color: t.primary,

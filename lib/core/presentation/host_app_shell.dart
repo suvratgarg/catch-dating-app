@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -87,7 +88,7 @@ class HostAppShell extends ConsumerWidget {
           )
         : null;
     final body = CatchNoticeHost(
-      persistentNotices: [if (isOffline) const CatchNoticeData.offline()],
+      persistentNotices: [if (isOffline) CatchNoticeData.offline(context.l10n)],
       child: AppShellActiveTab(
         index: navigationShell.currentIndex,
         bottomOverlayInset: authenticatedBottomOverlayInset,
@@ -122,21 +123,21 @@ class HostAppShell extends ConsumerWidget {
 
 final _hostNavigationItems = [
   AppShellNavigationItem(
-    label: 'Today',
+    destination: AppShellNavigationDestination.hostToday,
     materialIcon: CatchIcons.tabHome,
     materialSelectedIcon: CatchIcons.tabHomeFilled,
     cupertinoIcon: CatchIcons.tabHome,
     cupertinoSelectedIcon: CatchIcons.tabHomeFilled,
   ),
   AppShellNavigationItem(
-    label: 'Events',
+    destination: AppShellNavigationDestination.hostEvents,
     materialIcon: CatchIcons.tabEvents,
     materialSelectedIcon: CatchIcons.tabEventsFilled,
     cupertinoIcon: CatchIcons.tabEvents,
     cupertinoSelectedIcon: CatchIcons.tabEventsFilled,
   ),
   AppShellNavigationItem(
-    label: 'Inbox',
+    destination: AppShellNavigationDestination.hostInbox,
     materialIcon: CatchIcons.tabChats,
     materialSelectedIcon: CatchIcons.tabChatsFilled,
     cupertinoIcon: CatchIcons.tabChats,
@@ -144,7 +145,7 @@ final _hostNavigationItems = [
     showsUnreadBadge: true,
   ),
   AppShellNavigationItem(
-    label: 'Organizer',
+    destination: AppShellNavigationDestination.hostOrganizer,
     materialIcon: CatchIcons.tabOrganizer,
     materialSelectedIcon: CatchIcons.tabOrganizerFilled,
     cupertinoIcon: CatchIcons.tabOrganizer,

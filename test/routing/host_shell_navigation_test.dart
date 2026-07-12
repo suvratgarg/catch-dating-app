@@ -56,8 +56,13 @@ void main() {
       find.byType(AppShellNavigationBar),
     );
     expect(
-      navigationBar.items!.map((item) => item.label),
-      orderedEquals(const ['Today', 'Events', 'Inbox', 'Organizer']),
+      navigationBar.items!.map((item) => item.destination),
+      orderedEquals(const [
+        AppShellNavigationDestination.hostToday,
+        AppShellNavigationDestination.hostEvents,
+        AppShellNavigationDestination.hostInbox,
+        AppShellNavigationDestination.hostOrganizer,
+      ]),
     );
     expect(find.text('TODAY BODY'), findsOneWidget);
 

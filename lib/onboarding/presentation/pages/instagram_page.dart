@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
@@ -84,7 +85,7 @@ class OnboardingInstagramStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchButton(
-            label: 'Continue',
+            label: context.l10n.onboardingInstagramPageLabelContinue,
             onPressed: callbacks.onContinue,
             fullWidth: true,
             size: CatchButtonSize.lg,
@@ -92,7 +93,7 @@ class OnboardingInstagramStep extends StatelessWidget {
           gapH12,
           Center(
             child: CatchButton(
-              label: 'Skip for now',
+              label: context.l10n.onboardingInstagramPageLabelSkipForNow,
               onPressed: callbacks.onSkip,
               variant: CatchButtonVariant.ghost,
               size: CatchButtonSize.sm,
@@ -104,8 +105,9 @@ class OnboardingInstagramStep extends StatelessWidget {
       children: [
         CatchField.input(
           controller: controllers.handle,
-          title: 'HANDLE',
-          placeholder: '@yourhandle',
+          title: context.l10n.onboardingInstagramPageTitleHandle,
+          placeholder:
+              context.l10n.onboardingInstagramPagePlaceholderYourhandle,
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => callbacks.onContinue(),
           prefixText: '@',

@@ -342,7 +342,6 @@ class HostEventEditPolicyFieldState {
   const HostEventEditPolicyFieldState({
     required this.currencyCode,
     required this.admissionPreset,
-    required this.admissionDescription,
     required this.cohortCapsEnabled,
     required this.dynamicPricingEnabled,
     required this.cancellationPolicyId,
@@ -365,7 +364,6 @@ class HostEventEditPolicyFieldState {
     return HostEventEditPolicyFieldState(
       currencyCode: currencyCode,
       admissionPreset: admissionPreset,
-      admissionDescription: admissionPreset.description,
       cohortCapsEnabled: cohortCapsEnabled,
       dynamicPricingEnabled: dynamicPricingEnabled,
       cancellationPolicyId: cancellationPolicyId,
@@ -388,7 +386,6 @@ class HostEventEditPolicyFieldState {
 
   final String currencyCode;
   final EventAdmissionPreset admissionPreset;
-  final String admissionDescription;
   final bool cohortCapsEnabled;
   final bool dynamicPricingEnabled;
   final EventCancellationPolicyId cancellationPolicyId;

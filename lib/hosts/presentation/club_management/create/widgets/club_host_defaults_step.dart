@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -88,12 +89,12 @@ class ClubHostDefaultsStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Default activity',
+            context.l10n.hostsClubHostDefaultsStepTextDefaultActivity,
             style: CatchTextStyles.sectionTitle(context),
           ),
           gapH4,
           Text(
-            'New events start from this activity. Hosts can still change the activity and override the event-specific setup.',
+            context.l10n.hostsClubHostDefaultsStepTextNewEventsStartFrom,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
@@ -109,7 +110,10 @@ class ClubHostDefaultsStep extends StatelessWidget {
                     context,
                     activityKind,
                   ).accent,
-                  semanticsLabel: 'Use ${activityKind.label} by default',
+                  semanticsLabel: context.l10n
+                      .hostsClubHostDefaultsStepVisiblecopyUseLabelByDefault(
+                        label: activityKind.label,
+                      ),
                   onTap: () => onChanged(activityKind),
                 ),
             ],
@@ -242,16 +246,19 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Default event policy',
+            context.l10n.hostsClubHostDefaultsStepTextDefaultEventPolicy,
             style: CatchTextStyles.sectionTitle(context),
           ),
           gapH4,
           Text(
-            'These defaults prefill new events. Hosts can override them per event before anyone books or joins the waitlist.',
+            context.l10n.hostsClubHostDefaultsStepTextTheseDefaultsPrefillNew,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH18,
-          const CatchFormFieldLabel(label: 'Admission format', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
+            large: true,
+          ),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -260,9 +267,9 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
               for (final preset in EventAdmissionDefaultPreset.values)
                 if (preset != EventAdmissionDefaultPreset.fixedCohortCaps)
                   CatchSelectChip(
-                    label: preset.label,
+                    label: preset.label(context.l10n),
                     active: selectedAdmissionPreset == preset,
-                    semanticsLabel: preset.label,
+                    semanticsLabel: preset.label(context.l10n),
                     onTap: () => _emit(
                       defaults.copyWith(
                         admissionPreset: preset,
@@ -279,17 +286,20 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           gapH8,
           Text(
             cohortCapsEnabled
-                ? 'Anyone eligible can book until capacity, with optional straight men and straight women caps prefilled.'
-                : selectedAdmissionPreset.description,
+                ? context
+                      .l10n
+                      .hostsClubHostDefaultsStepTextAnyoneEligibleCanBook
+                : selectedAdmissionPreset.description(context.l10n),
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (selectedAdmissionPreset ==
               EventAdmissionDefaultPreset.openCapacity) ...[
             gapH12,
             CatchField.toggle(
-              title: 'Cohort caps',
-              body:
-                  'Optionally prefill straight men and straight women caps for open events.',
+              title: context.l10n.hostsClubHostDefaultsStepTitleCohortCaps,
+              body: context
+                  .l10n
+                  .hostsClubHostDefaultsStepBodyOptionallyPrefillStraightMen,
               value: cohortCapsEnabled,
               onChanged: (value) => _emit(
                 defaults.copyWith(
@@ -306,7 +316,9 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
               children: [
                 Expanded(
                   child: CatchField.input(
-                    title: 'Max straight men',
+                    title: context
+                        .l10n
+                        .hostsClubHostDefaultsStepTitleMaxStraightMen,
                     isOptional: true,
                     controller: _maxMenController,
                     keyboardType: TextInputType.number,
@@ -318,7 +330,9 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 gapW12,
                 Expanded(
                   child: CatchField.input(
-                    title: 'Max straight women',
+                    title: context
+                        .l10n
+                        .hostsClubHostDefaultsStepTitleMaxStraightWomen,
                     isOptional: true,
                     controller: _maxWomenController,
                     keyboardType: TextInputType.number,
@@ -334,9 +348,10 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
               EventAdmissionDefaultPreset.balancedSingles) ...[
             gapH12,
             CatchField.toggle(
-              title: 'Demand pricing',
-              body:
-                  'Prefill dynamic pricing controls for balanced singles events.',
+              title: context.l10n.hostsClubHostDefaultsStepTitleDemandPricing,
+              body: context
+                  .l10n
+                  .hostsClubHostDefaultsStepBodyPrefillDynamicPricingControls,
               value: defaults.dynamicPricingEnabled,
               onChanged: (value) => _emit(
                 defaults.copyWith(
@@ -356,7 +371,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 children: [
                   Expanded(
                     child: CatchField.input(
-                      title: 'Step',
+                      title: context.l10n.hostsClubHostDefaultsStepTitleStep,
                       controller: _pricingStepController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -367,7 +382,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                   gapW12,
                   Expanded(
                     child: CatchField.input(
-                      title: 'Max',
+                      title: context.l10n.hostsClubHostDefaultsStepTitleMax,
                       controller: _pricingMaxController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -380,13 +395,16 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             ],
           ],
           gapH18,
-          const CatchFormFieldLabel(label: 'Age range', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsClubHostDefaultsStepLabelAgeRange,
+            large: true,
+          ),
           gapH8,
           Row(
             children: [
               Expanded(
                 child: CatchField.input(
-                  title: 'Min age',
+                  title: context.l10n.hostsClubHostDefaultsStepTitleMinAge,
                   isOptional: true,
                   controller: _minAgeController,
                   keyboardType: TextInputType.number,
@@ -402,7 +420,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
               gapW12,
               Expanded(
                 child: CatchField.input(
-                  title: 'Max age',
+                  title: context.l10n.hostsClubHostDefaultsStepTitleMaxAge,
                   isOptional: true,
                   controller: _maxAgeController,
                   keyboardType: TextInputType.number,
@@ -418,7 +436,11 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             ],
           ),
           gapH18,
-          const CatchFormFieldLabel(label: 'Cancellation policy', large: true),
+          CatchFormFieldLabel(
+            label:
+                context.l10n.hostsClubHostDefaultsStepLabelCancellationPolicy,
+            large: true,
+          ),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -467,22 +489,26 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
 }
 
 extension on EventAdmissionDefaultPreset {
-  String get label => switch (this) {
-    EventAdmissionDefaultPreset.openCapacity => 'OPEN',
-    EventAdmissionDefaultPreset.inviteOnly => 'INVITE',
-    EventAdmissionDefaultPreset.balancedSingles => 'BALANCED',
-    EventAdmissionDefaultPreset.fixedCohortCaps => 'OPEN',
+  String label(AppLocalizations l10n) => switch (this) {
+    EventAdmissionDefaultPreset.openCapacity =>
+      l10n.hostsClubHostDefaultsStepLabelOpen,
+    EventAdmissionDefaultPreset.inviteOnly =>
+      l10n.hostsClubHostDefaultsStepLabelInvite,
+    EventAdmissionDefaultPreset.balancedSingles =>
+      l10n.hostsClubHostDefaultsStepLabelBalanced,
+    EventAdmissionDefaultPreset.fixedCohortCaps =>
+      l10n.hostsClubHostDefaultsStepLabelOpen,
   };
 
-  String get description => switch (this) {
+  String description(AppLocalizations l10n) => switch (this) {
     EventAdmissionDefaultPreset.openCapacity =>
-      'Anyone eligible can book until the event reaches capacity.',
+      l10n.hostsClubHostDefaultsStepDescriptionAnyoneEligibleCanBook,
     EventAdmissionDefaultPreset.inviteOnly =>
-      'New invite-only events will ask for an event-specific code.',
+      l10n.hostsClubHostDefaultsStepDescriptionNewInviteOnlyEvents,
     EventAdmissionDefaultPreset.balancedSingles =>
-      'Straight men and women are kept within one spot of each other.',
+      l10n.hostsClubHostDefaultsStepDescriptionStraightMenAndWomen,
     EventAdmissionDefaultPreset.fixedCohortCaps =>
-      'New events start open with optional straight men and straight women caps.',
+      l10n.hostsClubHostDefaultsStepDescriptionNewEventsStartOpen,
   };
 }
 

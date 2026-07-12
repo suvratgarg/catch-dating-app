@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
@@ -32,7 +33,9 @@ class PaymentHistoryScreen extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
 
     return Scaffold(
-      appBar: const CatchTopBar(title: 'Payment history'),
+      appBar: CatchTopBar(
+        title: context.l10n.paymentsPaymentHistoryScreenTitlePaymentHistory,
+      ),
       body: CatchAsyncValueView<String?>(
         value: uidAsync,
         loadingBuilder: (_) => const PaymentHistorySkeleton(),
@@ -45,8 +48,12 @@ class PaymentHistoryScreen extends ConsumerWidget {
               child: Center(
                 child: CatchEmptyState(
                   icon: CatchIcons.lockOutlineRounded,
-                  title: 'Sign in required',
-                  message: 'Sign in again to view payment history.',
+                  title: context
+                      .l10n
+                      .paymentsPaymentHistoryScreenTitleSignInRequired,
+                  message: context
+                      .l10n
+                      .paymentsPaymentHistoryScreenMessageSignInAgainTo,
                 ),
               ),
             );
@@ -93,8 +100,10 @@ class PaymentHistoryList extends StatelessWidget {
         child: Center(
           child: CatchEmptyState(
             icon: CatchIcons.receiptLongOutlined,
-            title: 'No payments yet',
-            message: 'Event bookings and refunds will appear here.',
+            title: context.l10n.paymentsPaymentHistoryScreenTitleNoPaymentsYet,
+            message: context
+                .l10n
+                .paymentsPaymentHistoryScreenMessageEventBookingsAndRefunds,
           ),
         ),
       );
@@ -210,11 +219,13 @@ class PaymentHistoryTile extends StatelessWidget {
     final t = CatchTokens.of(context);
     final payment = row.payment;
     final eventTitle = row.eventTitle;
-    final statusPresentation = paymentStatusPresentation(payment);
+    final statusPresentation = paymentStatusPresentation(payment, context.l10n);
 
     return Semantics(
       button: true,
-      label: 'Payment for $eventTitle',
+      label: context.l10n.paymentsPaymentHistoryScreenLabelPaymentForEventtitle(
+        eventTitle: eventTitle,
+      ),
       child: Padding(
         padding: CatchInsets.contentVertical,
         child: InkWell(
@@ -326,7 +337,7 @@ class PaymentReceiptSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
-    final statusPresentation = paymentStatusPresentation(payment);
+    final statusPresentation = paymentStatusPresentation(payment, context.l10n);
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -360,19 +371,31 @@ class PaymentReceiptSheet extends StatelessWidget {
               gapH20,
               const CatchDivider.section(),
               gapH20,
-              CatchField.read(title: 'Payment ID', body: payment.paymentId),
-              gapH12,
-              CatchField.read(title: 'Order ID', body: payment.orderId),
-              gapH12,
-              CatchField.read(title: 'Event ID', body: payment.eventId),
+              CatchField.read(
+                title: context.l10n.paymentsPaymentHistoryScreenTitlePaymentId,
+                body: payment.paymentId,
+              ),
               gapH12,
               CatchField.read(
-                title: 'Date',
+                title: context.l10n.paymentsPaymentHistoryScreenTitleOrderId,
+                body: payment.orderId,
+              ),
+              gapH12,
+              CatchField.read(
+                title: context.l10n.paymentsPaymentHistoryScreenTitleEventId,
+                body: payment.eventId,
+              ),
+              gapH12,
+              CatchField.read(
+                title: context.l10n.paymentsPaymentHistoryScreenTitleDate,
                 body: AppTimeFormatters.dateTime(payment.createdAt),
               ),
               if (statusPresentation.detail case final detail?) ...[
                 gapH12,
-                CatchField.read(title: 'Status', body: detail),
+                CatchField.read(
+                  title: context.l10n.paymentsPaymentHistoryScreenTitleStatus,
+                  body: detail,
+                ),
               ],
               if (payment.signUpFailed) ...[
                 gapH20,
@@ -381,7 +404,9 @@ class PaymentReceiptSheet extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: CatchButton(
-                    label: 'Get help with this booking',
+                    label: context
+                        .l10n
+                        .paymentsPaymentHistoryScreenLabelGetHelpWithThis,
                     onPressed: onHelp,
                     icon: Icon(CatchIcons.helpOutlineRounded),
                     variant: CatchButtonVariant.secondary,
@@ -403,52 +428,51 @@ class PaymentReceiptSheet extends StatelessWidget {
 
 ({String label, CatchBadgeTone tone, String? detail}) paymentStatusPresentation(
   Payment payment,
+  AppLocalizations l10n,
 ) {
   if (payment.signUpFailed) {
     return switch (payment.status) {
       PaymentStatus.refunded => (
-        label: 'Refunded',
+        label: l10n.paymentsPaymentHistoryScreenLabelRefunded,
         tone: CatchBadgeTone.brand,
-        detail: 'Booking failed, but your payment was refunded.',
+        detail: l10n.paymentsPaymentHistoryScreenDetailBookingFailedButYour,
       ),
       PaymentStatus.refundFailed => (
-        label: 'Refund pending',
+        label: l10n.paymentsPaymentHistoryScreenLabelRefundPending,
         tone: CatchBadgeTone.danger,
-        detail:
-            'No spot was reserved and the refund needs attention. '
-            'Please contact support.',
+        detail: l10n.paymentsPaymentHistoryScreenDetailNoSpotWasReserved,
       ),
       _ => (
-        label: 'Booking failed',
+        label: l10n.paymentsPaymentHistoryScreenLabelBookingFailed,
         tone: CatchBadgeTone.warning,
-        detail: 'No spot was reserved. Refund may still be pending.',
+        detail: l10n.paymentsPaymentHistoryScreenDetailNoSpotWasReservedd0a580,
       ),
     };
   }
 
   return switch (payment.status) {
     PaymentStatus.completed => (
-      label: 'Paid',
+      label: l10n.paymentsPaymentHistoryScreenLabelPaid,
       tone: CatchBadgeTone.success,
       detail: null,
     ),
     PaymentStatus.refunded => (
-      label: 'Refunded',
+      label: l10n.paymentsPaymentHistoryScreenLabelRefunded,
       tone: CatchBadgeTone.brand,
       detail: null,
     ),
     PaymentStatus.failed => (
-      label: 'Failed',
+      label: l10n.paymentsPaymentHistoryScreenLabelFailed,
       tone: CatchBadgeTone.danger,
       detail: null,
     ),
     PaymentStatus.refundFailed => (
-      label: 'Refund pending',
+      label: l10n.paymentsPaymentHistoryScreenLabelRefundPending,
       tone: CatchBadgeTone.danger,
-      detail: 'Your refund needs attention. Please contact support.',
+      detail: l10n.paymentsPaymentHistoryScreenDetailYourRefundNeedsAttention,
     ),
     PaymentStatus.pending => (
-      label: 'Pending',
+      label: l10n.paymentsPaymentHistoryScreenLabelPending,
       tone: CatchBadgeTone.warning,
       detail: null,
     ),

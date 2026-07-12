@@ -1,9 +1,5 @@
-import type {
-  AppDownloadCtaItem,
-  AppDownloadStorePlatform,
-} from "../../shared/ui/primitives";
+import {activeMarket} from "@content/markets";
 
-export type StorePlatform = AppDownloadStorePlatform;
 export interface OrganizerEventHighlight {
   id: string;
   title: string;
@@ -12,10 +8,6 @@ export interface OrganizerEventHighlight {
   href: string;
   activityToken: string;
 }
-export interface StoreCta extends AppDownloadCtaItem {
-  shortLabel: string;
-}
-
 export interface ActivityMeta {
   label: string;
   token: string;
@@ -244,23 +236,6 @@ export const hostProofRows = [
   },
 ];
 
-export const storeCtas: StoreCta[] = [
-  {
-    platform: "ios",
-    kicker: "Download on the",
-    label: "App Store",
-    shortLabel: "iOS",
-    href: import.meta.env.VITE_APP_STORE_URL?.trim() ?? "",
-  },
-  {
-    platform: "android",
-    kicker: "Get it on",
-    label: "Google Play",
-    shortLabel: "Play",
-    href: import.meta.env.VITE_PLAY_STORE_URL?.trim() ?? "",
-  },
-];
-
 export const activityMeta: Record<string, ActivityMeta> = {
   socialRun: {
     label: "Social run",
@@ -316,7 +291,7 @@ export const hostCreateSteps: HostCreateStep[] = [
     captureId: "host-create-basics",
     outcome: "Turns a rough idea into a reusable event shell.",
     fields: [
-      {label: "Event name", value: "Sunday Table Club", wide: true},
+      {label: "Event name", value: activeMarket.exampleEvent.name, wide: true},
       {label: "Activity format", value: "Dinner"},
       {label: "Guest promise", value: "Conversation-first"},
       {label: "Interaction model", value: "Seated table rotation", wide: true},
@@ -329,7 +304,7 @@ export const hostCreateSteps: HostCreateStep[] = [
     captureId: "host-create-location",
     outcome: "Keeps the public listing simple while preserving exact arrival context.",
     fields: [
-      {label: "Location name", value: "Pali Village Cafe"},
+      {label: "Location name", value: activeMarket.exampleEvent.venue},
       {label: "Address release", value: "After booking"},
       {label: "Meeting point", value: "Host greets guests at the door", wide: true},
       {label: "Arrival note", value: "Seat together at 8:30 sharp", wide: true},
@@ -356,7 +331,7 @@ export const hostCreateSteps: HostCreateStep[] = [
     outcome: "Protects the room composition before demand starts building.",
     fields: [
       {label: "Max attendees", value: "20"},
-      {label: "Base price", value: "₹1,200"},
+      {label: "Base price", value: `${activeMarket.currencySymbol}1,200`},
       {
         label: "Admission format",
         value: "Balanced",
@@ -460,15 +435,7 @@ export const hostComparisonRows = [
   ["Post-event host report", "yes", "partial", "yes", "partial", "partial", "no", "partial"],
 ];
 
-export const hostComparisonColumns = [
-  "Catch",
-  "Luma",
-  "Eventbrite",
-  "District",
-  "BookMyShow",
-  "Instagram + WhatsApp",
-  "Forms + sheets",
-];
+export const hostComparisonColumns = activeMarket.comparisonColumns;
 
 export const hostPreviewFormats = [
   "Social runs",

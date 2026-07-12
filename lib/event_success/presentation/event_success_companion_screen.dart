@@ -32,6 +32,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_arrival_miss
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -50,6 +51,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -72,7 +74,8 @@ PreferredSizeWidget _companionAppBar(BuildContext context) {
   final t = CatchTokens.of(context);
   final canPop = _companionCanPop(context);
   return CatchTopBar(
-    title: 'Event companion',
+    title:
+        context.l10n.eventSuccessEventSuccessCompanionScreenTitleEventCompanion,
     border: true,
     leading: CatchIconAction(
       tooltip: MaterialLocalizations.of(context).backButtonTooltip,
@@ -311,6 +314,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         ? null
         : ref.watch(watchEventParticipationProvider(eventId, watchedUid));
     var routeState = EventSuccessCompanionRouteState.resolveCore(
+      l10n: context.l10n,
       eventState: _catchAsyncState(eventAsync),
       initialEvent: initialEvent,
       uidState: _catchAsyncState(uidAsync),

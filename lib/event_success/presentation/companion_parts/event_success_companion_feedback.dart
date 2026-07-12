@@ -59,8 +59,12 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
             children: [
               Text(
                 widget.existingFeedback == null
-                    ? 'How did it feel?'
-                    : 'Your feedback is saved',
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionFeedbackTextHowDidItFeel
+                    : context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionFeedbackTextYourFeedbackIsSaved,
                 style: CatchTextStyles.titleL(context),
               ),
               const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
@@ -68,18 +72,24 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
           ),
           gapH4,
           Text(
-            'This is private-first: hosts see aggregate trends, while private notes and safety concerns stay with Catch.',
+            context
+                .l10n
+                .eventSuccessEventSuccessCompanionFeedbackTextThisIsPrivateFirst,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
           RatingRow(
-            label: 'Welcome',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessCompanionFeedbackLabelWelcome,
             value: _welcome,
             onChanged: (value) => setState(() => _welcome = value),
           ),
           gapH8,
           RatingRow(
-            label: 'Structure',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessCompanionFeedbackLabelStructure,
             value: _structure,
             onChanged: (value) => setState(() => _structure = value),
           ),
@@ -90,7 +100,9 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
           ),
           gapH8,
           CatchField.toggle(
-            title: 'I want Catch to review a safety or comfort concern',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessCompanionFeedbackTitleIWantCatchTo,
             titleMaxLines: 2,
             value: _safetyConcern,
             onChanged: (value) => setState(() => _safetyConcern = value),
@@ -98,7 +110,9 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
           gapH8,
           StageSoftBand(
             child: CatchField.input(
-              title: 'Private note to Catch',
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionFeedbackTitlePrivateNoteToCatch,
               controller: _noteController,
               maxLines: 3,
               inputFormatters: [LengthLimitingTextInputFormatter(500)],
@@ -108,8 +122,12 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
           StageActionDock(
             child: CatchButton(
               label: widget.existingFeedback == null
-                  ? 'Submit feedback'
-                  : 'Update feedback',
+                  ? context
+                        .l10n
+                        .eventSuccessEventSuccessCompanionFeedbackLabelSubmitFeedback
+                  : context
+                        .l10n
+                        .eventSuccessEventSuccessCompanionFeedbackLabelUpdateFeedback,
               isLoading: saving,
               onPressed: saving ? null : _submit,
               fullWidth: true,
@@ -191,7 +209,11 @@ class RatingRow extends StatelessWidget {
         for (var i = 1; i <= 5; i++)
           CatchIconAction(
             size: CatchIconButton.defaultSize,
-            tooltip: '$label $i',
+            tooltip: context.l10n
+                .eventSuccessEventSuccessCompanionFeedbackTooltipLabelI(
+                  label: label,
+                  i: i,
+                ),
             icon: i <= value
                 ? CatchIcons.starRounded
                 : CatchIcons.starBorderRounded,
@@ -216,21 +238,32 @@ class CounterRow extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            'People I met',
+            context
+                .l10n
+                .eventSuccessEventSuccessCompanionFeedbackTextPeopleIMet,
             style: CatchTextStyles.sectionTitle(context),
           ),
         ),
         CatchIconAction(
           size: CatchIconButton.defaultSize,
-          tooltip: 'Decrease people met',
+          tooltip: context
+              .l10n
+              .eventSuccessEventSuccessCompanionFeedbackTooltipDecreasePeopleMet,
           icon: CatchIcons.removeCircleOutlineRounded,
           foregroundColor: value <= 0 ? t.ink3 : t.ink2,
           onPressed: value <= 0 ? null : () => onChanged(value - 1),
         ),
-        Text('$value', style: CatchTextStyles.sectionTitle(context)),
+        Text(
+          context.l10n.eventSuccessEventSuccessCompanionFeedbackTextValue(
+            value: value,
+          ),
+          style: CatchTextStyles.sectionTitle(context),
+        ),
         CatchIconAction(
           size: CatchIconButton.defaultSize,
-          tooltip: 'Increase people met',
+          tooltip: context
+              .l10n
+              .eventSuccessEventSuccessCompanionFeedbackTooltipIncreasePeopleMet,
           icon: CatchIcons.addCircleOutlineRounded,
           foregroundColor: t.ink2,
           onPressed: () => onChanged(value + 1),

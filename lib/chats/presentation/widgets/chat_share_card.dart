@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showChatShareCardSheet(
@@ -32,11 +33,12 @@ Future<void> showChatShareCardSheet(
         event: event,
       ),
       share: share,
-      fileName: 'catch-chat-card.png',
-      buttonLabel: 'Share card',
-      footnote: 'Names, photos, and timestamps are hidden.',
-      subject: 'Catch chat card',
-      text: 'Shared from Catch.',
+      fileName: context.l10n.chatsChatShareCardVisiblecopyCatchChatCardPng,
+      buttonLabel: context.l10n.chatsChatShareCardVisiblecopyShareCard,
+      footnote:
+          context.l10n.chatsChatShareCardVisiblecopyNamesPhotosAndTimestamps,
+      subject: context.l10n.chatsChatShareCardVisiblecopyCatchChatCard,
+      text: context.l10n.chatsChatShareCardTextSharedFromCatch,
       // ignore: avoid_redundant_argument_values
       maxWidth: CatchLayout.chatShareCardWidth,
       // ignore: avoid_redundant_argument_values

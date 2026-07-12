@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -38,10 +39,17 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Question set', style: CatchTextStyles.labelL(context)),
+        Text(
+          context
+              .l10n
+              .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet,
+          style: CatchTextStyles.labelL(context),
+        ),
         gapH6,
         Text(
-          'Choose a reusable template or write custom questions for this event.',
+          context
+              .l10n
+              .eventSuccessEventSuccessQuestionnaireConfigEditorTextChooseAReusableTemplate,
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         gapH10,
@@ -62,7 +70,9 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
                 ),
               ),
             CatchSelectChip(
-              label: 'Custom',
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessQuestionnaireConfigEditorLabelCustom,
               active: normalized.usesCustom,
               enabled: enabled,
               onTap: () => onChanged(
@@ -86,7 +96,10 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
                   : CatchIcons.styleOutlined,
             ),
             CatchBadge(
-              label: '${pack.questions.length} questions',
+              label: context.l10n
+                  .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
+                    length: pack.questions.length,
+                  ),
               icon: CatchIcons.quizOutlined,
             ),
           ],
@@ -100,7 +113,9 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
           gapH14,
           if (useBottomSheetForCustom)
             CatchButton(
-              label: 'Edit custom questions',
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessQuestionnaireConfigEditorLabelEditCustomQuestions,
               icon: Icon(CatchIcons.editNoteRounded),
               variant: CatchButtonVariant.secondary,
               onPressed: enabled
@@ -165,8 +180,12 @@ class _CustomQuestionnaireSheetState extends State<CustomQuestionnaireSheet> {
   Widget build(BuildContext context) {
     final maxHeight = MediaQuery.sizeOf(context).height * 0.78;
     return CatchBottomSheetScaffold(
-      title: 'Custom questions',
-      subtitle: 'Edit your event\'s match clue questions.',
+      title: context
+          .l10n
+          .eventSuccessEventSuccessQuestionnaireConfigEditorTitleCustomQuestions,
+      subtitle: context
+          .l10n
+          .eventSuccessEventSuccessQuestionnaireConfigEditorSubtitleEditYourEventS,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: maxHeight),
         child: SingleChildScrollView(
@@ -209,7 +228,10 @@ class QuestionnairePreview extends StatelessWidget {
         if (questions.length > 3) ...[
           gapH8,
           Text(
-            '+ ${questions.length - 3} more',
+            context.l10n
+                .eventSuccessEventSuccessQuestionnaireConfigEditorTextValue1More(
+                  value1: questions.length - 3,
+                ),
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
@@ -237,8 +259,14 @@ class CustomQuestionnaireFields extends StatelessWidget {
       children: [
         CatchField.input(
           key: const ValueKey('customQuestionnaireTitle'),
-          title: 'Custom question set name',
-          initialValue: value.customTitle ?? 'Custom question set',
+          title: context
+              .l10n
+              .eventSuccessEventSuccessQuestionnaireConfigEditorTitleCustomQuestionSetName,
+          initialValue:
+              value.customTitle ??
+              context
+                  .l10n
+                  .eventSuccessEventSuccessQuestionnaireConfigEditorVisiblecopyCustomQuestionSet,
           enabled: enabled,
           inputFormatters: [LengthLimitingTextInputFormatter(80)],
           textInputAction: TextInputAction.next,
@@ -273,7 +301,9 @@ class CustomQuestionnaireFields extends StatelessWidget {
           children: [
             Expanded(
               child: CatchButton(
-                label: 'Add question',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessQuestionnaireConfigEditorLabelAddQuestion,
                 icon: Icon(CatchIcons.addRounded),
                 variant: CatchButtonVariant.secondary,
                 onPressed: enabled && questions.length < 8
@@ -281,7 +311,7 @@ class CustomQuestionnaireFields extends StatelessWidget {
                         value.copyWith(
                           customQuestions: [
                             ...questions,
-                            _blankQuestion(questions.length),
+                            _blankQuestion(questions.length, context.l10n),
                           ],
                         ),
                       )
@@ -291,7 +321,9 @@ class CustomQuestionnaireFields extends StatelessWidget {
             gapW10,
             Expanded(
               child: CatchButton(
-                label: 'Reset',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessQuestionnaireConfigEditorLabelReset,
                 icon: Icon(CatchIcons.refreshRounded),
                 variant: CatchButtonVariant.ghost,
                 onPressed: enabled
@@ -333,13 +365,18 @@ class CustomQuestionFields extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Question ${index + 1}',
+                context.l10n
+                    .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionValue1(
+                      value1: index + 1,
+                    ),
                 style: CatchTextStyles.labelL(context),
               ),
             ),
             if (onRemove != null)
               Tooltip(
-                message: 'Remove question',
+                message: context
+                    .l10n
+                    .eventSuccessEventSuccessQuestionnaireConfigEditorMessageRemoveQuestion,
                 child: CatchIconButton(
                   onTap: enabled ? onRemove : null,
                   child: Icon(
@@ -354,7 +391,9 @@ class CustomQuestionFields extends StatelessWidget {
         gapH6,
         CatchField.input(
           key: ValueKey('customQuestionPrompt-$index'),
-          title: 'Prompt',
+          title: context
+              .l10n
+              .eventSuccessEventSuccessQuestionnaireConfigEditorTitlePrompt,
           initialValue: question.prompt,
           enabled: enabled,
           inputFormatters: [LengthLimitingTextInputFormatter(140)],
@@ -369,7 +408,10 @@ class CustomQuestionFields extends StatelessWidget {
         ) ...[
           CatchField.input(
             key: ValueKey('customQuestionOption-$index-$optionIndex'),
-            title: 'Option ${optionIndex + 1}',
+            title: context.l10n
+                .eventSuccessEventSuccessQuestionnaireConfigEditorTitleOptionValue1(
+                  value1: optionIndex + 1,
+                ),
             initialValue: question.options[optionIndex].label,
             enabled: enabled,
             inputFormatters: [LengthLimitingTextInputFormatter(60)],
@@ -391,23 +433,32 @@ class CustomQuestionFields extends StatelessWidget {
   }
 }
 
-EventSuccessCompatibilityQuestion _blankQuestion(int index) {
+EventSuccessCompatibilityQuestion _blankQuestion(
+  int index,
+  AppLocalizations l10n,
+) {
   final questionNumber = index + 1;
   return EventSuccessCompatibilityQuestion(
     id: 'custom_question_$questionNumber',
-    prompt: 'Custom question $questionNumber',
+    prompt: l10n
+        .eventSuccessEventSuccessQuestionnaireConfigEditorPromptCustomQuestionQuestionnumber(
+          questionNumber: questionNumber,
+        ),
     options: [
       EventSuccessCompatibilityOption(
         id: 'custom_question_${questionNumber}_option_1',
-        label: 'Option 1',
+        label:
+            l10n.eventSuccessEventSuccessQuestionnaireConfigEditorLabelOption1,
       ),
       EventSuccessCompatibilityOption(
         id: 'custom_question_${questionNumber}_option_2',
-        label: 'Option 2',
+        label:
+            l10n.eventSuccessEventSuccessQuestionnaireConfigEditorLabelOption2,
       ),
       EventSuccessCompatibilityOption(
         id: 'custom_question_${questionNumber}_option_3',
-        label: 'Option 3',
+        label:
+            l10n.eventSuccessEventSuccessQuestionnaireConfigEditorLabelOption3,
       ),
     ],
   );

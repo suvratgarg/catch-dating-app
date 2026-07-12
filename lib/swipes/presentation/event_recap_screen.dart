@@ -15,6 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -48,6 +49,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
     final viewModel = recapAsync.asData?.value;
     final rosterProfiles = _watchRosterProfiles(viewModel);
     final screenState = buildEventRecapScreenState(
+      l10n: context.l10n,
       eventId: widget.eventId,
       viewModel: _catchAsyncState(recapAsync),
       rosterProfiles: rosterProfiles,
@@ -57,10 +59,10 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
       appBar: CatchTopBar(
-        title: 'Event recap',
+        title: context.l10n.swipesEventRecapScreenTitleEventRecap,
         leading: CatchIconAction(
           icon: CatchIcons.closeRounded,
-          tooltip: 'Close recap',
+          tooltip: context.l10n.swipesEventRecapScreenTooltipCloseRecap,
           onPressed: () => context.pop(),
         ),
       ),
@@ -72,9 +74,9 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
             context: AppErrorContext.event,
             onRetry: () => _retry(retryIntent),
           ),
-        EventRecapMissingEvent() => const CatchErrorState(
-          title: 'Event not found',
-          message: 'This event is no longer available.',
+        EventRecapMissingEvent() => CatchErrorState(
+          title: context.l10n.swipesEventRecapScreenTitleEventNotFound,
+          message: context.l10n.swipesEventRecapScreenMessageThisEventIsNo,
         ),
         EventRecapReady ready => EventRecapReadyBody(
           state: ready,
@@ -156,21 +158,24 @@ class EventRecapReadyBody extends StatelessWidget {
                 RecapHero(state: state.hero),
                 gapH24,
                 Text(
-                  'Who brought the vibe?',
+                  context.l10n.swipesEventRecapScreenTextWhoBroughtTheVibe,
                   style: CatchTextStyles.titleL(context),
                 ),
                 gapH4,
                 Text(
-                  "Tap people you remember. They'll be easier to spot when you open the catches deck.",
+                  context.l10n.swipesEventRecapScreenTextTapPeopleYouRemember,
                   style: CatchTextStyles.proseM(context, color: t.ink2),
                 ),
                 gapH14,
                 if (!state.hasAttendees)
                   CatchEmptyState(
                     icon: CatchIcons.groupOffRounded,
-                    title: 'No attendees to tag',
-                    message:
-                        'No other checked-in attendees are attached to this event yet.',
+                    title: context
+                        .l10n
+                        .swipesEventRecapScreenTitleNoAttendeesToTag,
+                    message: context
+                        .l10n
+                        .swipesEventRecapScreenMessageNoOtherCheckedIn,
                   )
                 else
                   VibeGrid(
@@ -180,7 +185,8 @@ class EventRecapReadyBody extends StatelessWidget {
                 gapH24,
                 CatchButton(
                   key: SwipeKeys.openCatchesDeckButton,
-                  label: 'Open catches deck',
+                  label:
+                      context.l10n.swipesEventRecapScreenLabelOpenCatchesDeck,
                   onPressed: state.openDeckActionEnabled
                       ? () => onOpenCatchesDeck(state.openDeckIntent)
                       : null,
@@ -389,9 +395,18 @@ class RecapHero extends StatelessWidget {
           gapH18,
           Row(
             children: [
-              RecapStat(label: 'When', value: state.whenLabel),
-              RecapStat(label: 'Time', value: state.timeLabel),
-              RecapStat(label: 'Catches', value: state.windowLabel),
+              RecapStat(
+                label: context.l10n.swipesEventRecapScreenLabelWhen,
+                value: state.whenLabel,
+              ),
+              RecapStat(
+                label: context.l10n.swipesEventRecapScreenLabelTime,
+                value: state.timeLabel,
+              ),
+              RecapStat(
+                label: context.l10n.swipesEventRecapScreenLabelCatches,
+                value: state.windowLabel,
+              ),
             ],
           ),
         ],

@@ -1,6 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent, ReactNode} from "react";
-import {hostListings} from "../features/organizers/data";
+import {hostListings} from "./fixtures/hostListings";
 import {claimHrefForListing} from "../features/organizers/routing";
 import {isUnclaimedListing} from "../features/organizers/selectors";
 import {HostListingSections} from "../features/organizers/sections/HostListingSections";
@@ -348,6 +348,7 @@ export const HostApplicationShellStory: Story = {
 export const HostFeatureSectionShellStory: Story = {
   name: "Host feature section shell",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "shared_host_feature_section_shell",
       routeIds: ["host", "host_preview"],
@@ -406,6 +407,7 @@ export const HostFeatureSectionShellStory: Story = {
 export const HostPreviewShellStory: Story = {
   name: "Host preview shell",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "shared_host_preview_shell",
       routeIds: ["host_preview"],

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_style.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,9 @@ class ProfileReactionControls extends StatelessWidget {
     final actionsEnabled = enabled && !isPending;
     final children = [
       ReactionControlButton(
-        tooltip: 'Like ${target.label}',
+        tooltip: context.l10n.swipesProfileReactionControlsTooltipLikeLabel(
+          label: target.label,
+        ),
         icon: CatchIcons.favoriteBorderRounded,
         onPressed: actionsEnabled
             ? () => unawaited(Future.sync(() => onReact(target, null)))
@@ -51,7 +54,10 @@ class ProfileReactionControls extends StatelessWidget {
         isPending: isPending,
       ),
       ReactionControlButton(
-        tooltip: 'Comment on ${target.label}',
+        tooltip: context.l10n
+            .swipesProfileReactionControlsTooltipCommentOnLabel(
+              label: target.label,
+            ),
         icon: CatchIcons.chatBubbleOutlineRounded,
         onPressed: actionsEnabled
             ? () => unawaited(_commentThenReact(context))
@@ -144,19 +150,22 @@ class _ProfileReactionCommentSheetState
     final t = CatchTokens.of(context);
 
     return CatchBottomSheetScaffold(
-      title: 'Start with ${widget.target.label}',
-      subtitle: 'Send a comment with your like.',
+      title: context.l10n.swipesProfileReactionControlsTitleStartWithLabel(
+        label: widget.target.label,
+      ),
+      subtitle:
+          context.l10n.swipesProfileReactionControlsSubtitleSendACommentWith,
       keyboardSafe: true,
       action: Row(
         children: [
           CatchTextButton(
-            label: 'Cancel',
+            label: context.l10n.swipesProfileReactionControlsLabelCancel,
             tone: CatchTextButtonTone.neutral,
             onPressed: () => Navigator.of(context).pop(),
           ),
           const Spacer(),
           CatchButton(
-            label: 'Send like',
+            label: context.l10n.swipesProfileReactionControlsLabelSendLike,
             icon: Icon(CatchIcons.favoriteBorderRounded, size: CatchIcon.md),
             onPressed: _canSend ? _submit : null,
             size: CatchButtonSize.sm,
@@ -181,12 +190,17 @@ class _ProfileReactionCommentSheetState
           ),
           gapH14,
           CatchField.input(
-            title: 'Comment',
+            title: context.l10n.swipesProfileReactionControlsTitleComment,
             showLabel: false,
             controller: _controller,
-            placeholder: 'Write something specific...',
-            helperText:
-                '${_comment.length} / $maxSwipeReactionCommentLength characters',
+            placeholder: context
+                .l10n
+                .swipesProfileReactionControlsPlaceholderWriteSomethingSpecific,
+            helperText: context.l10n
+                .swipesProfileReactionControlsHelpertextLengthMaxswipereactioncommentlengthCharacters(
+                  length: _comment.length,
+                  maxSwipeReactionCommentLength: maxSwipeReactionCommentLength,
+                ),
             maxLines: 4,
             minLines: 3,
             autofocus: true,

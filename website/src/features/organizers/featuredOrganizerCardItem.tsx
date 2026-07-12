@@ -1,9 +1,8 @@
 import type {FeaturedOrganizerCardItem} from "../../shared/ui/primitives";
 import {trackCtaClick} from "../marketing/tracking";
 import {activityForListing} from "./publicDiscovery";
-import {listingProfileStrength} from "./selectors";
 import type {HostListing} from "./types";
-import {ActivityMark, ProfileStrength, StatusBadge} from "./OrganizerIdentity";
+import {ActivityMark, StatusBadge} from "./OrganizerIdentity";
 
 export function featuredOrganizerCardItemForListing(
   listing: HostListing
@@ -18,6 +17,5 @@ export function featuredOrganizerCardItemForListing(
     name: listing.name,
     onClick: () => trackCtaClick("featured_organizer", listing.path),
     status: <StatusBadge listing={listing} compact />,
-    strength: <ProfileStrength value={listingProfileStrength(listing)} />,
   };
 }

@@ -1,11 +1,10 @@
 import type {CSSProperties} from "react";
 import {
   ActivityMark,
-  ProfileStrength,
   StatusBadge,
 } from "../OrganizerIdentity";
 import {activityForListing} from "../publicDiscovery";
-import {isVerifiedListing, listingProfileStrength} from "../selectors";
+import {isVerifiedListing} from "../selectors";
 import type {HostListing} from "../types";
 import {
   ActionGroup,
@@ -14,7 +13,6 @@ import {
   ButtonLink,
   ListingDiagnosticList,
   ListingDiagnostics,
-  ListingDiagnosticsHead,
   ListingFormatRow,
   ListingHeroCopy,
   ListingHeroEyebrow,
@@ -145,7 +143,6 @@ export function ListingHeroSection({
 
 function ListingDiagnosticsPanel({listing}: {listing: HostListing}) {
   const verified = isVerifiedListing(listing);
-  const strength = listingProfileStrength(listing);
   const diagnostics = verified
     ? [
         {ok: true, label: "Ownership and source model verified"},
@@ -162,8 +159,6 @@ function ListingDiagnosticsPanel({listing}: {listing: HostListing}) {
 
   return (
     <ListingDiagnostics>
-      <ListingDiagnosticsHead label="Profile strength" value={`${strength}%`} />
-      <ProfileStrength value={strength} />
       <ListingDiagnosticList items={diagnostics} />
     </ListingDiagnostics>
   );

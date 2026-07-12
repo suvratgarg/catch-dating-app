@@ -30,6 +30,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
@@ -1588,7 +1589,7 @@ Widget catchNoticeHostCatalogStates(BuildContext context) {
         child: SizedBox(
           height: 220,
           child: CatchNoticeHost(
-            persistentNotices: const [CatchNoticeData.offline()],
+            persistentNotices: [CatchNoticeData.offline(context.l10n)],
             child: CatchSurface.card(
               height: 180,
               child: Center(

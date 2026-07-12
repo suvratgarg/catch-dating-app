@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 
 final class EventSuccessAssignment {
   const EventSuccessAssignment({
@@ -194,7 +195,9 @@ final class EventSuccessRotationSlot {
     return EventSuccessRotationSlot(
       slotId: json['slotId'] as String?,
       roundIndex: json['roundIndex'] as int? ?? 0,
-      label: json['label'] as String? ?? 'Round',
+      label:
+          json['label'] as String? ??
+          StructuredDomainCopy.eventSuccessAssignmentRound,
       startsAt: dateTimeFromFirestoreValue(json['startsAt'], field: 'startsAt'),
       endsAt: dateTimeFromFirestoreValue(json['endsAt'], field: 'endsAt'),
       peerUid: json['peerUid'] as String,
@@ -259,7 +262,9 @@ final class EventSuccessGroupRotationSlot {
     return EventSuccessGroupRotationSlot(
       slotId: json['slotId'] as String?,
       roundIndex: json['roundIndex'] as int? ?? 0,
-      label: json['label'] as String? ?? 'Round',
+      label:
+          json['label'] as String? ??
+          StructuredDomainCopy.eventSuccessAssignmentRound,
       unitLabel: json['unitLabel'] as String? ?? 'Group',
       unitKind: json['unitKind'] as String?,
       unitIndex: json['unitIndex'] as int?,
@@ -321,10 +326,14 @@ final class EventSuccessSitOutSlot {
   factory EventSuccessSitOutSlot.fromJson(Map<String, dynamic> json) {
     return EventSuccessSitOutSlot(
       roundIndex: json['roundIndex'] as int? ?? 0,
-      label: json['label'] as String? ?? 'Round',
+      label:
+          json['label'] as String? ??
+          StructuredDomainCopy.eventSuccessAssignmentRound,
       startsAt: dateTimeFromFirestoreValue(json['startsAt'], field: 'startsAt'),
       endsAt: dateTimeFromFirestoreValue(json['endsAt'], field: 'endsAt'),
-      whySummary: json['whySummary'] as String? ?? 'Planned break.',
+      whySummary:
+          json['whySummary'] as String? ??
+          StructuredDomainCopy.eventSuccessPlannedBreak,
       whyCodes: (json['whyCodes'] as List<dynamic>? ?? const [])
           .whereType<String>()
           .toList(growable: false),

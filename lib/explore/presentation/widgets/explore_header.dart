@@ -6,6 +6,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 /// Non-sliver browse header embeddable in [CatchSliverHeader.bottom] or a
@@ -36,6 +37,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
     final chrome = ExploreChromeState.browse(
       query: query,
       showSearchAction: showSearchAction,
+      l10n: context.l10n,
     );
     final t = CatchTokens.of(context);
     final cityPicker = ExploreCityPicker(
@@ -116,6 +118,7 @@ class _ExploreDiscoveryCoverHeaderState
       query: widget.query,
       searchRequested: searchRequested,
       hasFeaturedItem: featuredItem != null,
+      l10n: context.l10n,
     );
     final coverItem = featuredItem;
 
@@ -133,7 +136,10 @@ class _ExploreDiscoveryCoverHeaderState
       );
     }
 
-    final coverState = ExploreCoverStoryState.from(coverItem);
+    final coverState = ExploreCoverStoryState.from(
+      coverItem,
+      l10n: context.l10n,
+    );
     return CatchCoverStory(
       activityKind: coverItem.event.activityKind,
       kicker: coverState.kicker,

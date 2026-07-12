@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/celebration/celebration_effects_controller
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:flutter/material.dart';
 
@@ -34,30 +35,40 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
 
     return CatchCelebrationScreen(
       kind: CelebrationMomentKind.eventJoined,
-      eyebrow: 'Booking confirmed',
-      title: "You're in.",
-      message:
-          'Your spot is confirmed for ${event.title}${clubName == null ? '' : ' with $clubName'}.',
+      eyebrow: context
+          .l10n
+          .eventsEventJoinedCelebrationScreenEyebrowBookingConfirmed,
+      title: context.l10n.eventsEventJoinedCelebrationScreenTitleYouReIn,
+      message: context.l10n
+          .eventsEventJoinedCelebrationScreenMessageYourSpotIsConfirmed(
+            title: event.title,
+            value2: clubName == null
+                ? ''
+                : context.l10n
+                      .eventsEventJoinedCelebrationScreenMessageWithClubname(
+                        clubName: clubName!,
+                      ),
+          ),
       details: [
         CelebrationDetail(
           icon: CatchIcons.calendarMonthOutlined,
-          label: 'When',
+          label: context.l10n.eventsEventJoinedCelebrationScreenLabelWhen,
           value: '${event.longDateLabel} · ${event.timeRangeLabel}',
         ),
         CelebrationDetail(
           icon: CatchIcons.locationOnOutlined,
-          label: 'Where',
+          label: context.l10n.eventsEventJoinedCelebrationScreenLabelWhere,
           value: event.locationName,
         ),
         CelebrationDetail(
           icon: CatchIcons.directionsRunRounded,
-          label: 'Event',
+          label: context.l10n.eventsEventJoinedCelebrationScreenLabelEvent,
           value: event.activitySummaryLabel,
         ),
         if (paymentData != null) ...[
           CelebrationDetail(
             icon: CatchIcons.paymentsOutlined,
-            label: 'Paid',
+            label: context.l10n.eventsEventJoinedCelebrationScreenLabelPaid,
             value: EventFormatters.priceInPaise(
               paymentData.amountInPaise,
               currencyCode: paymentData.currency,
@@ -65,23 +76,24 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
           ),
           CelebrationDetail(
             icon: CatchIcons.receiptLongOutlined,
-            label: 'Payment ID',
+            label:
+                context.l10n.eventsEventJoinedCelebrationScreenLabelPaymentId,
             value: paymentData.paymentId,
           ),
         ],
       ],
       note:
-          'Arrive by the meeting time. Catches unlock automatically when the event finishes.',
+          context.l10n.eventsEventJoinedCelebrationScreenNoteArriveByTheMeeting,
       supplementalChildren: supplementalChildren,
       primaryAction: CelebrationAction(
         key: viewEventKey,
-        label: 'View event',
+        label: context.l10n.eventsEventJoinedCelebrationScreenLabelViewEvent,
         onPressed: onViewEvent,
         icon: Icon(CatchIcons.directionsRunRounded),
       ),
       secondaryAction: CelebrationAction(
         key: backHomeKey,
-        label: 'Back to home',
+        label: context.l10n.eventsEventJoinedCelebrationScreenLabelBackToHome,
         onPressed: onBackHome,
       ),
       onClose: onBackHome,

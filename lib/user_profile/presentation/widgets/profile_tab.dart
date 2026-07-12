@@ -12,6 +12,7 @@ import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -145,6 +146,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
     final user = widget.user;
     final uploadState = widget.uploadState;
     final editState = SelfProfileEditTabState.fromProfile(
+      l10n: context.l10n,
       user: user,
       today: DateTime.now(),
       uploadState: uploadState,
@@ -212,13 +214,16 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             },
           ),
           CatchSection.fieldRows(
-            title: 'Prompts',
-            count:
-                '${editState.completedPromptCount} of $maxProfilePromptAnswers answered',
+            title: context.l10n.userProfileProfileTabTitlePrompts,
+            count: context.l10n
+                .userProfileProfileTabVisiblecopyCompletedpromptcountOfMaxprofilepromptanswersAnswered(
+                  completedPromptCount: editState.completedPromptCount,
+                  maxProfilePromptAnswers: maxProfilePromptAnswers,
+                ),
             children: prompts,
           ),
           CatchSection.fieldRows(
-            title: 'About you',
+            title: context.l10n.userProfileProfileTabTitleAboutYou,
             children: [
               for (final row in editState.aboutSectionRows)
                 ProfileFieldRow(
@@ -231,7 +236,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             ],
           ),
           CatchSection.fieldRows(
-            title: 'Running',
+            title: context.l10n.userProfileProfileTabTitleRunning,
             children: [
               for (final row in editState.runningRows)
                 ProfileFieldRow(
@@ -244,7 +249,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             ],
           ),
           CatchSection.fieldRows(
-            title: 'Lifestyle',
+            title: context.l10n.userProfileProfileTabTitleLifestyle,
             children: [
               for (final row in editState.lifestyleRows)
                 ProfileFieldRow(
@@ -586,8 +591,12 @@ class ProfilePhotosSection extends StatelessWidget {
     final completedCount = state.profilePhotos.length;
 
     return CatchSection.divided(
-      title: 'Photos',
-      count: '$completedCount of $maximumProfilePhotoCount added',
+      title: context.l10n.userProfileProfileTabTitlePhotos,
+      count: context.l10n
+          .userProfileProfileTabVisiblecopyCompletedcountOfMaximumprofilephotocountAdded(
+            completedCount: completedCount,
+            maximumProfilePhotoCount: maximumProfilePhotoCount,
+          ),
       first: first,
       child: PhotoGrid(
         profilePhotos: state.profilePhotos,

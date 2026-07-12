@@ -121,7 +121,10 @@ void main() {
         ],
       );
 
-      expect(find.text('boom'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsWidgets,
+      );
     });
 
     testWidgets('renders the missing state', (tester) async {
@@ -491,7 +494,10 @@ void main() {
       expect(uncaughtError, isA<StateError>());
       await tester.pump();
 
-      expect(find.text('booking failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('disables paid bookings when the platform is unsupported', (
@@ -1645,7 +1651,10 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(fakeSavedEventRepository.savedUid, isNull);
-      expect(find.text('save failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsWidgets,
+      );
     });
 
     testWidgets('location tap opens the in-app event map', (tester) async {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -8,8 +9,20 @@ const repoRoot = path.resolve(
   "../.."
 );
 const websiteSrcRoot = path.join(repoRoot, "website/src");
+const websiteContentRoot = path.join(websiteSrcRoot, "content");
 const functionsGeneratedRoot = path.join(repoRoot, "functions/src/shared/generated");
 const allowedSourceExtensions = new Set([".ts", ".tsx"]);
+const args = parseArgs(process.argv.slice(2));
+
+if (args.help) {
+  printHelp();
+  process.exit(0);
+}
+
+if (args.selfTest) {
+  runSelfTest();
+  process.exit(0);
+}
 
 const allowedFeatureImports = new Map([
   ["claims", new Set(["marketing", "organizers"])],
@@ -47,6 +60,7 @@ function isInside(parent, child) {
 function layerFor(relativePath) {
   const parts = relativePath.split("/");
   if (parts[0] === "app") return {name: "app"};
+  if (parts[0] === "content") return {name: "content"};
   if (parts[0] === "features") return {name: "feature", feature: parts[1] ?? ""};
   if (parts[0] === "generated") return {name: "generated"};
   if (parts[0] === "shared") return {name: "shared"};
@@ -96,12 +110,22 @@ function allowedCrossFeatureImport(sourceLayer, targetLayer) {
 function violationFor(sourceRelativePath, sourceLayer, targetLayer) {
   if (sourceLayer.name === "story") return null;
 
+  if (sourceLayer.name === "content") {
+    if (targetLayer.name !== "content") {
+      return "content modules must remain data-only and may only import other content modules";
+    }
+    return null;
+  }
+
   if (sourceLayer.name === "shared") {
     if (targetLayer.name === "app" || targetLayer.name === "entry" || targetLayer.name === "feature") {
       return "shared modules must not import app, entry, or feature modules";
     }
     if (targetLayer.name === "generated") {
       return "shared modules must not import generated website projections directly";
+    }
+    if (targetLayer.name === "content") {
+      return "shared UI modules must not own or depend on route-specific marketing content";
     }
     return null;
   }
@@ -131,8 +155,13 @@ function violationFor(sourceRelativePath, sourceLayer, targetLayer) {
   }
 
   if (sourceLayer.name === "service") {
-    if (targetLayer.name === "app" || targetLayer.name === "feature" || targetLayer.name === "shared") {
-      return "root service modules must stay independent of app, feature, and shared UI modules";
+    if (
+      targetLayer.name === "app" ||
+      targetLayer.name === "content" ||
+      targetLayer.name === "feature" ||
+      targetLayer.name === "shared"
+    ) {
+      return "root service modules must stay independent of app, content, feature, and shared UI modules";
     }
     return null;
   }
@@ -154,10 +183,24 @@ for (const file of walkSourceFiles(websiteSrcRoot)) {
   const sourceLayer = layerFor(sourceRelativePath);
   const source = fs.readFileSync(file, "utf8");
 
-  for (const specifier of importSpecifiers(source)) {
-    if (!specifier.startsWith(".")) continue;
+  const contentSourceReason = contentSourceViolation(
+    sourceRelativePath,
+    sourceLayer,
+    source
+  );
+  if (contentSourceReason !== null) {
+    violations.push({
+      source: sourceRelativePath,
+      specifier: "<module source>",
+      reason: contentSourceReason,
+    });
+  }
 
-    const targetAbsolutePath = path.resolve(path.dirname(file), specifier);
+  for (const specifier of importSpecifiers(source)) {
+    const aliasedTarget = contentAliasTarget(specifier);
+    if (!specifier.startsWith(".") && aliasedTarget === null) continue;
+
+    const targetAbsolutePath = aliasedTarget ?? path.resolve(path.dirname(file), specifier);
     if (!isInside(websiteSrcRoot, targetAbsolutePath)) {
       if (!allowedExternalImport(sourceRelativePath, targetAbsolutePath)) {
         violations.push({
@@ -175,6 +218,17 @@ for (const file of walkSourceFiles(websiteSrcRoot)) {
       violations.push({source: sourceRelativePath, specifier, reason});
     }
   }
+}
+
+function contentSourceViolation(sourceRelativePath, sourceLayer, source) {
+  if (sourceLayer.name !== "content") return null;
+  if (sourceRelativePath.endsWith(".tsx")) {
+    return "content modules must not own JSX; render content in feature or shared UI adapters";
+  }
+  if (/\bimport\.meta\.env\b/.test(source)) {
+    return "content modules must not read import.meta.env; feature adapters own environment values";
+  }
+  return null;
 }
 
 if (violations.length > 0) {
@@ -200,4 +254,91 @@ function resolveModulePath(absolutePath) {
     if (fs.existsSync(candidate)) return candidate;
   }
   return absolutePath;
+}
+
+function contentAliasTarget(specifier) {
+  if (specifier === "@content") return websiteContentRoot;
+  if (!specifier.startsWith("@content/")) return null;
+  return path.join(websiteContentRoot, specifier.slice("@content/".length));
+}
+
+function parseArgs(argv) {
+  const parsed = {help: false, selfTest: false};
+  for (const arg of argv) {
+    if (arg === "--help" || arg === "-h") parsed.help = true;
+    else if (arg === "--self-test") parsed.selfTest = true;
+    else if (arg === "--check" || arg === "--summary") {
+      // Default scan mode; accepted for consistency with repo checkers.
+    } else {
+      console.error(`Unknown argument: ${arg}`);
+      process.exit(64);
+    }
+  }
+  return parsed;
+}
+
+function printHelp() {
+  console.log(`Usage: node tool/web/check_website_import_boundaries.mjs [--check] [--self-test]
+
+Checks marketing website import boundaries, including content imports, JSX
+ownership, and environment-access boundaries.
+`);
+}
+
+function runSelfTest() {
+  assert.deepEqual(layerFor("content/meta.json"), {name: "content"});
+  assert.equal(
+    violationFor(
+      "content/home.ts",
+      {name: "content"},
+      {name: "feature", feature: "home"}
+    ),
+    "content modules must remain data-only and may only import other content modules"
+  );
+  assert.equal(
+    violationFor("content/home.ts", {name: "content"}, {name: "content"}),
+    null
+  );
+  assert.equal(
+    violationFor(
+      "features/home/HomePage.tsx",
+      {name: "feature", feature: "home"},
+      {name: "content"}
+    ),
+    null
+  );
+  assert.equal(
+    violationFor("shared/ui/Card.tsx", {name: "shared"}, {name: "content"}),
+    "shared UI modules must not own or depend on route-specific marketing content"
+  );
+  assert.equal(
+    contentAliasTarget("@content/markets"),
+    path.join(websiteContentRoot, "markets")
+  );
+  assert.equal(contentAliasTarget("react"), null);
+  assert.equal(
+    contentSourceViolation(
+      "content/site.ts",
+      {name: "content"},
+      'export const href = import.meta.env.VITE_APP_STORE_URL;'
+    ),
+    "content modules must not read import.meta.env; feature adapters own environment values"
+  );
+  assert.equal(
+    contentSourceViolation(
+      "content/HomeCopy.tsx",
+      {name: "content"},
+      "export const copy = <span>Copy</span>;"
+    ),
+    "content modules must not own JSX; render content in feature or shared UI adapters"
+  );
+  assert.equal(
+    contentSourceViolation(
+      "content/metaContract.ts",
+      {name: "content"},
+      "export function validate() { return true; }"
+    ),
+    null
+  );
+  console.log("Website import boundary checker self-test passed.");
 }

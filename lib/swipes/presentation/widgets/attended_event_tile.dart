@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +48,7 @@ class AttendedEventTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'OPEN CATCH WINDOW',
+                    context.l10n.swipesAttendedEventTileTextOpenCatchWindow,
                     style: CatchTextStyles.kicker(context, color: t.primary),
                   ),
                   gapH4,
@@ -77,15 +78,15 @@ class AttendedEventTile extends StatelessWidget {
                 ),
                 gapH4,
                 CatchButton(
-                  label: 'Recap',
+                  label: context.l10n.swipesAttendedEventTileLabelRecap,
                   onPressed: onOpenRecap,
                   variant: CatchButtonVariant.ghost,
                   size: CatchButtonSize.sm,
                   foregroundColor: t.primary,
                 ),
                 gapH4,
-                const CatchBadge(
-                  label: 'Catch',
+                CatchBadge(
+                  label: context.l10n.swipesAttendedEventTileLabelCatch,
                   tone: CatchBadgeTone.solid,
                   size: CatchBadgeSize.md,
                 ),

@@ -1,13 +1,17 @@
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
 
+final _l10n = AppLocalizationsEn();
+
 void main() {
   group('buildSwipeEmptyContent', () {
     test('explains why an event is unavailable when missing', () {
       final content = buildSwipeEmptyContent(
+        l10n: _l10n,
         event: null,
         currentUser: buildUser(),
         currentUserParticipation: null,
@@ -19,6 +23,7 @@ void main() {
     test('explains that Catches opens after the event ends', () {
       final event = buildEvent();
       final content = buildSwipeEmptyContent(
+        l10n: _l10n,
         event: event,
         currentUser: buildUser(),
         currentUserParticipation: buildEventParticipation(
@@ -43,6 +48,7 @@ void main() {
         checkedInCount: 1,
       );
       final content = buildSwipeEmptyContent(
+        l10n: _l10n,
         event: event,
         currentUser: buildUser(),
         currentUserParticipation: buildEventParticipation(
@@ -65,6 +71,7 @@ void main() {
         endTime: endedAt,
       );
       final content = buildSwipeEmptyContent(
+        l10n: _l10n,
         event: event,
         currentUser: buildUser(),
         currentUserParticipation: buildEventParticipation(
@@ -86,6 +93,7 @@ void main() {
           endTime: endedAt,
         );
         final content = buildSwipeEmptyContent(
+          l10n: _l10n,
           event: event,
           currentUser: buildUser(),
           currentUserParticipation: buildEventParticipation(
@@ -95,7 +103,8 @@ void main() {
           ),
         );
 
-        expect(content, defaultSwipeEmptyContent);
+        expect(content.title, defaultSwipeEmptyContent(_l10n).title);
+        expect(content.message, defaultSwipeEmptyContent(_l10n).message);
       },
     );
   });

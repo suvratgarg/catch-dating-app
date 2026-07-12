@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
@@ -116,16 +117,16 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
       child: Scaffold(
         backgroundColor: t.bg,
         appBar: CatchTopBar(
-          title: 'Filters',
+          title: context.l10n.swipesFiltersScreenTitleFilters,
           leading: CatchIconAction(
             icon: CatchIcons.closeRounded,
-            tooltip: 'Close filters',
+            tooltip: context.l10n.swipesFiltersScreenTooltipCloseFilters,
             onPressed: () => context.pop(),
           ),
           actions: [
             CatchTopBarTextAction(
               key: SwipeKeys.resetFiltersButton,
-              label: 'Reset',
+              label: context.l10n.swipesFiltersScreenLabelReset,
               onPressed: onReset,
             ),
           ],
@@ -200,13 +201,18 @@ class FiltersContent extends StatelessWidget {
             ),
             children: [
               FiltersSection(
-                title: 'Age',
+                title: context.l10n.swipesFiltersScreenTitleAge,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FiltersValue(
-                      value:
-                          '${ageRange.start.round()} – ${formatPreferredMatchAge(ageRange.end.round())}',
+                      value: context.l10n
+                          .swipesFiltersScreenVisiblecopyRoundFormatpreferredmatchage(
+                            round: ageRange.start.round(),
+                            formatPreferredMatchAge: formatPreferredMatchAge(
+                              ageRange.end.round(),
+                            ),
+                          ),
                     ),
                     CatchRangeSlider(
                       key: SwipeKeys.ageRangeSlider,
@@ -222,7 +228,7 @@ class FiltersContent extends StatelessWidget {
                 ),
               ),
               FiltersSection(
-                title: 'Interested in',
+                title: context.l10n.swipesFiltersScreenTitleInterestedIn,
                 child: Wrap(
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s2,
@@ -248,7 +254,7 @@ class FiltersContent extends StatelessWidget {
           ),
           child: CatchButton(
             key: SwipeKeys.applyFiltersButton,
-            label: 'Apply filters',
+            label: context.l10n.swipesFiltersScreenLabelApplyFilters,
             onPressed: saving ? null : onApply,
             isLoading: saving,
             fullWidth: true,
@@ -272,10 +278,13 @@ class FiltersContentSkeleton extends StatelessWidget {
               top: CatchSpacing.s2,
               bottom: CatchSpacing.s5,
             ),
-            children: const [
-              FiltersSection(title: 'Age', child: AgeFilterSkeleton()),
+            children: [
               FiltersSection(
-                title: 'Interested in',
+                title: context.l10n.swipesFiltersScreenTitleAge,
+                child: AgeFilterSkeleton(),
+              ),
+              FiltersSection(
+                title: context.l10n.swipesFiltersScreenTitleInterestedIn,
                 child: CatchSkeletonChips(),
               ),
             ],

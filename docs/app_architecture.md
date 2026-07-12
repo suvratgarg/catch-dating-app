@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.21
-updated: 2026-07-11
+version: 1.4.23
+updated: 2026-07-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -1231,6 +1231,128 @@ Use an application service/coordinator when:
 
 When ownership is unclear, start with the narrowest owner and document the
 promotion trigger. Do not create a broad cross-feature service preemptively.
+
+## Product Copy And Localization
+
+User-facing prose is product content, not widget structure. Flutter product copy
+must be authored in `lib/l10n/app_en.arb` and consumed through generated
+`AppLocalizations`; `lib/l10n/l10n.dart` is the single context access seam.
+Consumer and Host share the same catalog and locale lifecycle while keys carry
+an explicit `consumer`, `host`, or `shared` audience in ARB metadata.
+
+Every ARB message requires:
+
+- a stable semantic key rather than a value-derived or line-derived key;
+- a translator-facing `description`;
+- `x-audience`, `x-owner`, and `x-surface` review metadata;
+- `x-max-chars` when the layout has a real copy budget; and
+- named ICU placeholders with types when content varies.
+
+Presentation resolves copy as late as possible with `context.l10n`. Domain,
+repository, controller, and view-model layers return semantic enum values,
+validation codes, error codes, and interpolation data rather than English
+sentences. Shared widgets may accept already-localized strings when the caller
+owns the wording, or accept a semantic value when the widget owns a fixed
+product concept. They must not import an English singleton or cache localized
+messages globally.
+
+Developer-only deterministic fixtures and exact canonical geographic
+proper-noun catalogs may declare
+`// copy:allow-file(<specific reason>)` in the first twelve lines. The scanner
+accepts that directive only for exact fixture/preview/manual-QA/reference-data
+surfaces it knows about; production screens cannot use it. A single intentional
+technical literal elsewhere uses the narrower
+`copy:allow-inline(<reason>)` marker.
+
+The English ARB is the canonical mobile review file. Marketing can edit it
+directly as JSON or request a spreadsheet-shaped review deck with:
+
+```sh
+node tool/copy/check_mobile_copy_catalog.mjs \
+  --export-csv build/copy/mobile_copy_review.csv
+```
+
+The CSV is an export, never a second source of truth. After edits, run
+`flutter gen-l10n`, the catalog check, focused app-role tests, and the ownership
+ratchet. ICU apostrophes are doubled because `l10n.yaml` enables escaping.
+
+Copy outside Flutter has explicit catalogs rather than being forced through a
+runtime Flutter dependency:
+
+- iOS permission prose is owned by `copy/native_en.json`; the native sync writes
+  the base plist values and the localized `InfoPlist.strings` resource;
+- server notification templates are owned by `copy/notifications_en.json`; the
+  notification sync generates the typed Functions catalog; and
+- synchronous structured domain content is owned by
+  `copy/structured_domain_copy_en.json`; its generator writes typed Event
+  Success/event-policy templates plus small Flutter-independent constants;
+- Event Success questionnaire packs and normalization fallbacks are owned by
+  `copy/event_success_questionnaires_en.json`; and
+- `pushInstallations` records the device locale and timezone so notification
+  selection can become recipient-aware without changing producer contracts.
+
+Remote-config or CMS copy may later serve reversible campaign content, but it
+must have a bundled fallback, schema/version validation, cache policy, and
+rollback. Authentication, safety, legal, permission, error, and navigation copy
+must remain bundled and release-reviewed.
+
+### Exhibit ARCH-COPY-001: Product Copy Boundary
+
+<!-- exhibit-freshness: ARCH-COPY-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference implementation:
+
+- `l10n.yaml` — deterministic `gen_l10n` configuration;
+- `lib/l10n/app_en.arb` — canonical typed English Flutter catalog;
+- `lib/l10n/l10n.dart` — presentation access seam and isolated-preview fallback;
+- `lib/app.dart` — shared locale delegates, supported locales, and role-aware
+  app title;
+- `lib/core/presentation/app_shell.dart` and
+  `lib/core/presentation/host_app_shell.dart` — semantic navigation destinations
+  localized at render time;
+- `lib/core/widgets/catch_notice.dart` — semantic offline notice factory;
+- presentation-state factories such as
+  `lib/onboarding/presentation/onboarding_flow_state.dart`,
+  `lib/events/presentation/event_detail_screen_state.dart`, and
+  `lib/event_success/presentation/event_success_companion_screen_state.dart`
+  — receive `AppLocalizations` explicitly and return resolved display copy;
+- `lib/core/widgets/event_activity_visuals.dart` — resolves semantic taxonomy
+  labels from localization at the render boundary while domain activity kinds
+  remain stable identifiers;
+- `copy/native_en.json` and `tool/copy/sync_native_copy.mjs` — native copy lane;
+- `copy/notifications_en.json` and
+  `functions/src/shared/notificationCopy.ts` — server notification lane; and
+- `copy/structured_domain_copy_en.json` and
+  `tool/copy/sync_structured_domain_copy.dart` — schema-checked synchronous
+  content lane for domain models that cannot depend on `BuildContext`;
+- `lib/core/app_error_message.dart` — semantic exception-code localization at
+  widget build time; and
+- `tool/copy/check_mobile_copy_ownership.dart` — zero-debt ownership gate.
+
+Required checks:
+
+```sh
+flutter gen-l10n
+node tool/run.mjs check copy:mobile-catalog
+node tool/run.mjs check copy:mobile-ownership
+node tool/run.mjs check copy:native-sync
+node tool/run.mjs check copy:notification-sync
+node tool/run.mjs check copy:event-success-questionnaires
+node tool/run.mjs check copy:structured-domain-content
+```
+
+The baseline in `tool/copy/mobile_copy_baseline.json` must remain empty. New
+inline findings fail immediately. An allowlist entry is only appropriate
+for a technical identifier, test/demo fixture, or user-authored value and must
+contain a narrow reason.
+
+Presentation models may contain resolved `String` fields, but any factory that
+creates user-visible prose must accept `AppLocalizations` explicitly. Widgets
+pass `context.l10n`; tests use `AppLocalizationsEn`. Domain entities,
+repositories, controllers, and persisted records keep semantic enums, ids,
+counts, dates, and user-authored data instead of localized strings. This makes
+copy reviewable without coupling domain logic to Flutter context or hiding a
+second English source inside state classes.
 
 ## Installable App Roles
 

@@ -27,6 +27,7 @@ import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart'
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,6 +35,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../clubs/clubs_test_helpers.dart';
 import '../events/events_test_helpers.dart' as event_test;
 import '../test_pump_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 CityData _city(String name) => cityOptionByName(name)!.toCityData();
 
@@ -123,6 +126,7 @@ void main() {
       final search = ExploreEventsEmptyState.from(
         filters: const ExploreFilterSelection(),
         searchQuery: 'tempo',
+        l10n: _l10n,
       );
       expect(search.title, 'No events match this search');
       expect(search.clearSearch, true);
@@ -134,6 +138,7 @@ void main() {
           timeFilter: ExploreTimeFilter.thisWeek,
         ),
         searchQuery: '',
+        l10n: _l10n,
       );
       expect(thisWeek.title, 'Nothing this week');
       expect(thisWeek.nextFilter, ExploreTimeFilter.anytime);
@@ -144,6 +149,7 @@ void main() {
           timeFilter: ExploreTimeFilter.anytime,
         ),
         searchQuery: '',
+        l10n: _l10n,
       );
       expect(anytime.title, 'No upcoming events match this view');
       expect(anytime.clearFilters, true);
@@ -152,12 +158,18 @@ void main() {
 
     test('ExploreMapLauncherState derives provider-free map labels', () {
       expect(
-        ExploreMapLauncherState.from(mappableEventCount: null).label,
+        ExploreMapLauncherState.from(
+          mappableEventCount: null,
+          l10n: _l10n,
+        ).label,
         'Map',
       );
-      expect(ExploreMapLauncherState.from(mappableEventCount: 0).label, 'Map');
       expect(
-        ExploreMapLauncherState.from(mappableEventCount: 3).label,
+        ExploreMapLauncherState.from(mappableEventCount: 0, l10n: _l10n).label,
+        'Map',
+      );
+      expect(
+        ExploreMapLauncherState.from(mappableEventCount: 3, l10n: _l10n).label,
         'Map · 3',
       );
     });
@@ -166,6 +178,7 @@ void main() {
       final idle = ExploreCityTriggerState.from(
         city: _city('mumbai'),
         focused: false,
+        l10n: _l10n,
       );
       expect(idle.tooltipLabel, 'Choose city: Mumbai');
       expect(idle.semanticLabel, 'Choose city: Mumbai');
@@ -175,6 +188,7 @@ void main() {
       final focused = ExploreCityTriggerState.from(
         city: _city('mumbai'),
         focused: true,
+        l10n: _l10n,
       );
       expect(focused.icon, CatchIcons.locationOnRounded);
     });
@@ -215,6 +229,7 @@ void main() {
       final state = ExploreChromeState.browse(
         query: 'pickleball dinner',
         showSearchAction: true,
+        l10n: _l10n,
       );
 
       expect(state.title, 'Explore');
@@ -230,6 +245,7 @@ void main() {
       final cityOnly = ExploreChromeState.browse(
         query: '',
         showSearchAction: false,
+        l10n: _l10n,
       );
       expect(cityOnly.showSearchAction, false);
     });
@@ -239,6 +255,7 @@ void main() {
         query: '',
         searchRequested: false,
         hasFeaturedItem: true,
+        l10n: _l10n,
       );
       expect(cover.showCoverStory, true);
       expect(cover.searchExpanded, false);
@@ -248,6 +265,7 @@ void main() {
         query: '',
         searchRequested: true,
         hasFeaturedItem: true,
+        l10n: _l10n,
       );
       expect(requestedSearch.showCoverStory, false);
       expect(requestedSearch.searchExpanded, true);
@@ -257,6 +275,7 @@ void main() {
         query: 'tempo',
         searchRequested: false,
         hasFeaturedItem: true,
+        l10n: _l10n,
       );
       expect(activeSearch.showCoverStory, false);
       expect(activeSearch.searchExpanded, true);
@@ -266,12 +285,16 @@ void main() {
         query: '',
         searchRequested: false,
         hasFeaturedItem: false,
+        l10n: _l10n,
       );
       expect(noFeaturedItem.showCoverStory, false);
     });
 
     test('ExploreFilterRailState derives active count and semantics', () {
-      final empty = ExploreFilterRailState.from(const ExploreFilterSelection());
+      final empty = ExploreFilterRailState.from(
+        const ExploreFilterSelection(),
+        l10n: _l10n,
+      );
       expect(empty.activeCount, 0);
       expect(empty.filterButtonSemanticLabel, 'Open explore filters');
 
@@ -283,6 +306,7 @@ void main() {
           activityTag: 'dinner',
           area: 'Bandra',
         ),
+        l10n: _l10n,
       );
       expect(active.activeCount, 5);
       expect(
@@ -298,6 +322,7 @@ void main() {
           buildClub(id: 'area-khar', area: 'Khar'),
           buildClub(id: 'area-empty', area: ''),
         ],
+        l10n: _l10n,
       );
 
       expect(sheetState.distanceOptions.map((option) => option.label), [
@@ -322,6 +347,7 @@ void main() {
 
       final state = ExploreCoverStoryState.from(
         item,
+        l10n: _l10n,
         now: DateTime(2026, 7, 2, 10),
       );
 
@@ -352,6 +378,7 @@ void main() {
         );
 
         final state = ExploreFeedSectionState.from(
+          l10n: _l10n,
           viewModel: ExploreFeedViewModel(
             items: [
               _exploreItem(
@@ -400,6 +427,7 @@ void main() {
         expect(state.cardGroups.first.label, startsWith('Tomorrow ·'));
 
         final searchState = ExploreFeedSectionState.from(
+          l10n: _l10n,
           viewModel: ExploreFeedViewModel(
             items: [
               _exploreItem(
@@ -452,6 +480,7 @@ void main() {
       ];
 
       final promoted = ExploreFeedSectionState.from(
+        l10n: _l10n,
         viewModel: ExploreFeedViewModel(items: [featured, ...weekItems]),
         candidateClubs: const [],
         joinedClubIds: const {},
@@ -463,6 +492,7 @@ void main() {
       expect(promoted.isEmpty, false);
 
       final twoDayStrip = ExploreFeedSectionState.from(
+        l10n: _l10n,
         viewModel: ExploreFeedViewModel(
           items: [
             featured,
@@ -478,6 +508,7 @@ void main() {
       expect(twoDayStrip.cards, isEmpty);
 
       final oneDayFallback = ExploreFeedSectionState.from(
+        l10n: _l10n,
         viewModel: ExploreFeedViewModel(items: [featured, weekItems.first]),
         candidateClubs: const [],
         joinedClubIds: const {},
@@ -547,6 +578,7 @@ void main() {
 
         final groups = groupExploreMixedFeedCards(
           cards,
+          l10n: _l10n,
           now: DateTime(2026, 7, 1, 10),
         );
         expect(groups, hasLength(2));
@@ -704,7 +736,7 @@ void main() {
         isJoinedClubMember: true,
       );
 
-      final state = ExploreEventRowState.from(item);
+      final state = ExploreEventRowState.from(item, l10n: _l10n);
 
       expect(state.kicker, 'Row Club');
       expect(state.supportingLabel, contains('Start'));
@@ -723,7 +755,10 @@ void main() {
         isFollowedClubSignal: true,
       );
 
-      expect(ExploreEventRowState.from(item).kicker, 'FROM ONE OF YOUR CLUBS');
+      expect(
+        ExploreEventRowState.from(item, l10n: _l10n).kicker,
+        'FROM ONE OF YOUR CLUBS',
+      );
     });
 
     test('ExploreExternalEventRowState derives provider-free row labels', () {
@@ -738,7 +773,7 @@ void main() {
         distanceFromUserKm: 2.4,
       );
 
-      final state = ExploreExternalEventRowState.from(item);
+      final state = ExploreExternalEventRowState.from(item, l10n: _l10n);
 
       expect(state.sourceLabel, 'FROM LUMA');
       expect(
@@ -764,6 +799,7 @@ void main() {
         ).copyWith(canonicalHostId: '', compatibilityClubId: '');
         final state = ExploreExternalEventRowState.from(
           ExploreExternalEventItem(event: event),
+          l10n: _l10n,
         );
 
         expect(state.actionLabel, 'No link');
@@ -782,8 +818,16 @@ void main() {
         nextEventLabel: 'Fri 8 PM',
       );
 
-      final state = ExploreClubCardState.from(club, isSynthetic: false);
-      final previewState = ExploreClubCardState.from(club, isSynthetic: true);
+      final state = ExploreClubCardState.from(
+        club,
+        isSynthetic: false,
+        l10n: _l10n,
+      );
+      final previewState = ExploreClubCardState.from(
+        club,
+        isSynthetic: true,
+        l10n: _l10n,
+      );
 
       expect(state.memberCountLabel, '42 members');
       expect(state.caption, 'FRI 8 PM');
@@ -868,6 +912,7 @@ void main() {
     test('ExploreDiscoveryScreenState derives route display state', () {
       const emptyViewModel = ExploreViewModel(joinedClubs: [], allClubs: []);
       final state = ExploreDiscoveryScreenState.from(
+        l10n: _l10n,
         cityLabel: 'Mumbai',
         query: 'padel',
         filters: const ExploreFilterSelection(
@@ -894,6 +939,7 @@ void main() {
       expect(state.bodyState.emptyState, state.emptyState);
 
       final content = ExploreDiscoveryScreenState.from(
+        l10n: _l10n,
         cityLabel: 'Mumbai',
         query: '',
         filters: const ExploreFilterSelection(),

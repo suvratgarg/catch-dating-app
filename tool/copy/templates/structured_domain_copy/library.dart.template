@@ -1,0 +1,543 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_playbooks/metrics.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_playbooks/modules.dart';
+
+abstract final class EventSuccessPlaybookLibrary {
+  static const socialRun = EventSuccessPlaybook(
+    id: 'social_run_light',
+    title: {{library.socialRun.title.1}},
+    activityType: ActivityKind.socialRun,
+    socialIntensity: EventSocialIntensity.light,
+    summary:
+        {{library.socialRun.summary.1}},
+    attendeePromise:
+        {{library.socialRun.attendeePromise.1}},
+    hostPromise:
+        {{library.socialRun.hostPromise.1}},
+    capacity: EventCapacityGuidance(
+      min: 8,
+      max: 36,
+      rationale: {{library.socialRun.rationale.1}},
+    ),
+    modules: [
+      EventSuccessModuleCatalog.crowdBalance,
+      EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
+      EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.microPods,
+      EventSuccessModuleCatalog.compatibilityQuestionnaire,
+      EventSuccessModuleCatalog.socialMissions,
+      EventSuccessModuleCatalog.wingmanRequests,
+      EventSuccessModuleCatalog.contextualOpeners,
+      EventSuccessModuleCatalog.decomposedFeedback,
+      EventSuccessModuleCatalog.hostAnalytics,
+      EventSuccessModuleCatalog.safetyControls,
+    ],
+    runOfShow: [
+      EventRunOfShowStep(
+        stage: EventSuccessStage.arrival,
+        title: {{library.socialRun.title.2}},
+        durationMinutes: 10,
+        hostInstruction: {{library.socialRun.hostInstruction.1}},
+        attendeeExperience: {{library.socialRun.attendeeExperience.1}},
+        moduleIds: ['qr_check_in', 'micro_pods'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.opening,
+        title: {{library.socialRun.title.3}},
+        durationMinutes: 2,
+        hostInstruction: {{library.socialRun.hostInstruction.2}},
+        attendeeExperience:
+            {{library.socialRun.attendeeExperience.2}},
+        moduleIds: ['host_script', 'safety_controls'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.activity,
+        title: {{library.socialRun.title.4}},
+        durationMinutes: 35,
+        hostInstruction: {{library.socialRun.hostInstruction.3}},
+        attendeeExperience: {{library.socialRun.attendeeExperience.3}},
+        moduleIds: ['micro_pods'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.mixing,
+        title: {{library.socialRun.title.5}},
+        durationMinutes: 12,
+        hostInstruction:
+            {{library.socialRun.hostInstruction.4}},
+        attendeeExperience: {{library.socialRun.attendeeExperience.4}},
+        moduleIds: ['social_missions'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.closing,
+        title: {{library.socialRun.title.6}},
+        durationMinutes: 3,
+        hostInstruction:
+            {{library.socialRun.hostInstruction.5}},
+        attendeeExperience:
+            {{library.socialRun.attendeeExperience.5}},
+        moduleIds: ['wingman_requests'],
+      ),
+    ],
+    metrics: EventSuccessMetricCatalog.core,
+    antiPatterns: [
+      {{library.socialRun.antiPatterns.1}},
+      {{library.socialRun.antiPatterns.2}},
+      {{library.socialRun.antiPatterns.3}},
+    ],
+    iterationQuestions: [
+      {{library.socialRun.iterationQuestions.1}},
+      {{library.socialRun.iterationQuestions.2}},
+      {{library.socialRun.iterationQuestions.3}},
+    ],
+    wiringNotes: [
+      {{library.socialRun.wiringNotes.1}},
+      {{library.socialRun.wiringNotes.2}},
+    ],
+  );
+
+  static const pickleball = EventSuccessPlaybook(
+    id: 'pickleball_rotations',
+    title: {{library.pickleball.title.1}},
+    activityType: ActivityKind.pickleball,
+    socialIntensity: EventSocialIntensity.structured,
+    summary:
+        {{library.pickleball.summary.1}},
+    attendeePromise:
+        {{library.pickleball.attendeePromise.1}},
+    hostPromise:
+        {{library.pickleball.hostPromise.1}},
+    capacity: EventCapacityGuidance(
+      min: 12,
+      max: 32,
+      rationale: {{library.pickleball.rationale.1}},
+    ),
+    modules: [
+      EventSuccessModuleCatalog.crowdBalance,
+      EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
+      EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.compatibilityQuestionnaire,
+      EventSuccessModuleCatalog.guidedRotations,
+      EventSuccessModuleCatalog.liveReveal,
+      EventSuccessModuleCatalog.socialMissions,
+      EventSuccessModuleCatalog.wingmanRequests,
+      EventSuccessModuleCatalog.contextualOpeners,
+      EventSuccessModuleCatalog.decomposedFeedback,
+      EventSuccessModuleCatalog.hostAnalytics,
+      EventSuccessModuleCatalog.safetyControls,
+    ],
+    runOfShow: [
+      EventRunOfShowStep(
+        stage: EventSuccessStage.arrival,
+        title: {{library.pickleball.title.2}},
+        durationMinutes: 10,
+        hostInstruction: {{library.pickleball.hostInstruction.1}},
+        attendeeExperience: {{library.pickleball.attendeeExperience.1}},
+        moduleIds: ['qr_check_in', 'guided_rotations'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.opening,
+        title: {{library.pickleball.title.3}},
+        durationMinutes: 5,
+        hostInstruction: {{library.pickleball.hostInstruction.2}},
+        attendeeExperience: {{library.pickleball.attendeeExperience.2}},
+        moduleIds: ['host_script', 'safety_controls', 'live_reveal'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.activity,
+        title: {{library.pickleball.title.4}},
+        durationMinutes: 50,
+        hostInstruction: {{library.pickleball.hostInstruction.3}},
+        attendeeExperience:
+            {{library.pickleball.attendeeExperience.3}},
+        moduleIds: ['guided_rotations', 'live_reveal'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.closing,
+        title: {{library.pickleball.title.5}},
+        durationMinutes: 8,
+        hostInstruction: {{library.pickleball.hostInstruction.4}},
+        attendeeExperience: {{library.pickleball.attendeeExperience.4}},
+        moduleIds: ['social_missions'],
+      ),
+    ],
+    metrics: EventSuccessMetricCatalog.core,
+    antiPatterns: [
+      {{library.pickleball.antiPatterns.1}},
+      {{library.pickleball.antiPatterns.2}},
+    ],
+    iterationQuestions: [
+      {{library.pickleball.iterationQuestions.1}},
+      {{library.pickleball.iterationQuestions.2}},
+    ],
+    wiringNotes: [
+      {{library.pickleball.wiringNotes.1}},
+    ],
+  );
+
+  static const pubQuiz = EventSuccessPlaybook(
+    id: 'pub_quiz_team_mixer',
+    title: {{library.pubQuiz.title.1}},
+    activityType: ActivityKind.pubQuiz,
+    socialIntensity: EventSocialIntensity.guided,
+    summary:
+        {{library.pubQuiz.summary.1}},
+    attendeePromise:
+        {{library.pubQuiz.attendeePromise.1}},
+    hostPromise:
+        {{library.pubQuiz.hostPromise.1}},
+    capacity: EventCapacityGuidance(
+      min: 16,
+      max: 60,
+      rationale: {{library.pubQuiz.rationale.1}},
+    ),
+    modules: [
+      EventSuccessModuleCatalog.crowdBalance,
+      EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
+      EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.microPods,
+      EventSuccessModuleCatalog.compatibilityQuestionnaire,
+      EventSuccessModuleCatalog.liveReveal,
+      EventSuccessModuleCatalog.socialMissions,
+      EventSuccessModuleCatalog.wingmanRequests,
+      EventSuccessModuleCatalog.contextualOpeners,
+      EventSuccessModuleCatalog.decomposedFeedback,
+      EventSuccessModuleCatalog.hostAnalytics,
+      EventSuccessModuleCatalog.safetyControls,
+    ],
+    runOfShow: [
+      EventRunOfShowStep(
+        stage: EventSuccessStage.arrival,
+        title: {{library.pubQuiz.title.2}},
+        durationMinutes: 12,
+        hostInstruction:
+            {{library.pubQuiz.hostInstruction.1}},
+        attendeeExperience: {{library.pubQuiz.attendeeExperience.1}},
+        moduleIds: ['qr_check_in', 'micro_pods', 'live_reveal'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.activity,
+        title: {{library.pubQuiz.title.3}},
+        durationMinutes: 60,
+        hostInstruction: {{library.pubQuiz.hostInstruction.2}},
+        attendeeExperience: {{library.pubQuiz.attendeeExperience.2}},
+        moduleIds: ['social_missions'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.closing,
+        title: {{library.pubQuiz.title.4}},
+        durationMinutes: 4,
+        hostInstruction:
+            {{library.pubQuiz.hostInstruction.3}},
+        attendeeExperience:
+            {{library.pubQuiz.attendeeExperience.3}},
+        moduleIds: ['wingman_requests'],
+      ),
+    ],
+    metrics: EventSuccessMetricCatalog.core,
+    antiPatterns: [
+      {{library.pubQuiz.antiPatterns.1}},
+      {{library.pubQuiz.antiPatterns.2}},
+    ],
+    iterationQuestions: [
+      {{library.pubQuiz.iterationQuestions.1}},
+      {{library.pubQuiz.iterationQuestions.2}},
+    ],
+    wiringNotes: [
+      {{library.pubQuiz.wiringNotes.1}},
+    ],
+  );
+
+  static const dinner = EventSuccessPlaybook(
+    id: 'dinner_table_mixer',
+    title: {{library.dinner.title.1}},
+    activityType: ActivityKind.dinner,
+    socialIntensity: EventSocialIntensity.structured,
+    summary:
+        {{library.dinner.summary.1}},
+    attendeePromise:
+        {{library.dinner.attendeePromise.1}},
+    hostPromise:
+        {{library.dinner.hostPromise.1}},
+    capacity: EventCapacityGuidance(
+      min: 12,
+      max: 48,
+      rationale: {{library.dinner.rationale.1}},
+    ),
+    modules: [
+      EventSuccessModuleCatalog.crowdBalance,
+      EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
+      EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.compatibilityQuestionnaire,
+      EventSuccessModuleCatalog.guidedRotations,
+      EventSuccessModuleCatalog.liveReveal,
+      EventSuccessModuleCatalog.socialMissions,
+      EventSuccessModuleCatalog.wingmanRequests,
+      EventSuccessModuleCatalog.contextualOpeners,
+      EventSuccessModuleCatalog.decomposedFeedback,
+      EventSuccessModuleCatalog.hostAnalytics,
+      EventSuccessModuleCatalog.safetyControls,
+    ],
+    runOfShow: [
+      EventRunOfShowStep(
+        stage: EventSuccessStage.arrival,
+        title: {{library.dinner.title.2}},
+        durationMinutes: 12,
+        hostInstruction:
+            {{library.dinner.hostInstruction.1}},
+        attendeeExperience: {{library.dinner.attendeeExperience.1}},
+        moduleIds: ['qr_check_in', 'live_reveal'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.opening,
+        title: {{library.dinner.title.3}},
+        durationMinutes: 4,
+        hostInstruction: {{library.dinner.hostInstruction.2}},
+        attendeeExperience: {{library.dinner.attendeeExperience.2}},
+        moduleIds: ['host_script', 'social_missions', 'safety_controls'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.activity,
+        title: {{library.dinner.title.4}},
+        durationMinutes: 30,
+        hostInstruction:
+            {{library.dinner.hostInstruction.3}},
+        attendeeExperience: {{library.dinner.attendeeExperience.3}},
+        moduleIds: ['guided_rotations', 'live_reveal'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.closing,
+        title: {{library.dinner.title.5}},
+        durationMinutes: 5,
+        hostInstruction:
+            {{library.dinner.hostInstruction.4}},
+        attendeeExperience:
+            {{library.dinner.attendeeExperience.4}},
+        moduleIds: ['wingman_requests'],
+      ),
+    ],
+    metrics: EventSuccessMetricCatalog.core,
+    antiPatterns: [
+      {{library.dinner.antiPatterns.1}},
+      {{library.dinner.antiPatterns.2}},
+      {{library.dinner.antiPatterns.3}},
+    ],
+    iterationQuestions: [
+      {{library.dinner.iterationQuestions.1}},
+      {{library.dinner.iterationQuestions.2}},
+      {{library.dinner.iterationQuestions.3}},
+    ],
+    wiringNotes: [
+      {{library.dinner.wiringNotes.1}},
+    ],
+  );
+
+  static const hostLedSocial = EventSuccessPlaybook(
+    id: 'host_led_social',
+    title: {{library.hostLedSocial.title.1}},
+    activityType: ActivityKind.openActivity,
+    socialIntensity: EventSocialIntensity.light,
+    summary:
+        {{library.hostLedSocial.summary.1}},
+    attendeePromise:
+        {{library.hostLedSocial.attendeePromise.1}},
+    hostPromise:
+        {{library.hostLedSocial.hostPromise.1}},
+    capacity: EventCapacityGuidance(
+      min: 6,
+      max: 80,
+      rationale: {{library.hostLedSocial.rationale.1}},
+    ),
+    modules: [
+      EventSuccessModuleCatalog.crowdBalance,
+      EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
+      EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.compatibilityQuestionnaire,
+      EventSuccessModuleCatalog.microPods,
+      EventSuccessModuleCatalog.socialMissions,
+      EventSuccessModuleCatalog.guidedRotations,
+      EventSuccessModuleCatalog.liveReveal,
+      EventSuccessModuleCatalog.wingmanRequests,
+      EventSuccessModuleCatalog.contextualOpeners,
+      EventSuccessModuleCatalog.decomposedFeedback,
+      EventSuccessModuleCatalog.hostAnalytics,
+      EventSuccessModuleCatalog.safetyControls,
+    ],
+    runOfShow: [
+      EventRunOfShowStep(
+        stage: EventSuccessStage.arrival,
+        title: {{library.hostLedSocial.title.2}},
+        durationMinutes: 10,
+        hostInstruction: {{library.hostLedSocial.hostInstruction.1}},
+        attendeeExperience: {{library.hostLedSocial.attendeeExperience.1}},
+        moduleIds: ['qr_check_in'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.opening,
+        title: {{library.hostLedSocial.title.3}},
+        durationMinutes: 3,
+        hostInstruction:
+            {{library.hostLedSocial.hostInstruction.2}},
+        attendeeExperience:
+            {{library.hostLedSocial.attendeeExperience.2}},
+        moduleIds: ['host_script', 'safety_controls'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.mixing,
+        title: {{library.hostLedSocial.title.4}},
+        durationMinutes: 8,
+        hostInstruction:
+            {{library.hostLedSocial.hostInstruction.3}},
+        attendeeExperience:
+            {{library.hostLedSocial.attendeeExperience.3}},
+        moduleIds: ['social_missions'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.closing,
+        title: {{library.hostLedSocial.title.5}},
+        durationMinutes: 3,
+        hostInstruction:
+            {{library.hostLedSocial.hostInstruction.4}},
+        attendeeExperience:
+            {{library.hostLedSocial.attendeeExperience.4}},
+        moduleIds: ['wingman_requests'],
+      ),
+    ],
+    metrics: EventSuccessMetricCatalog.core,
+    antiPatterns: [
+      {{library.hostLedSocial.antiPatterns.1}},
+      {{library.hostLedSocial.antiPatterns.2}},
+      {{library.hostLedSocial.antiPatterns.3}},
+    ],
+    iterationQuestions: [
+      {{library.hostLedSocial.iterationQuestions.1}},
+      {{library.hostLedSocial.iterationQuestions.2}},
+      {{library.hostLedSocial.iterationQuestions.3}},
+    ],
+    wiringNotes: [
+      {{library.hostLedSocial.wiringNotes.1}},
+    ],
+  );
+
+  static const algorithmicMixer = EventSuccessPlaybook(
+    id: 'algorithmic_mixer_reveal',
+    title: {{library.algorithmicMixer.title.1}},
+    activityType: ActivityKind.singlesMixer,
+    socialIntensity: EventSocialIntensity.algorithmic,
+    summary:
+        {{library.algorithmicMixer.summary.1}},
+    attendeePromise:
+        {{library.algorithmicMixer.attendeePromise.1}},
+    hostPromise:
+        {{library.algorithmicMixer.hostPromise.1}},
+    capacity: EventCapacityGuidance(
+      min: 20,
+      max: 80,
+      rationale:
+          {{library.algorithmicMixer.rationale.1}},
+    ),
+    modules: [
+      EventSuccessModuleCatalog.crowdBalance,
+      EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
+      EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.compatibilityQuestionnaire,
+      EventSuccessModuleCatalog.guidedRotations,
+      EventSuccessModuleCatalog.liveReveal,
+      EventSuccessModuleCatalog.socialMissions,
+      EventSuccessModuleCatalog.wingmanRequests,
+      EventSuccessModuleCatalog.contextualOpeners,
+      EventSuccessModuleCatalog.decomposedFeedback,
+      EventSuccessModuleCatalog.hostAnalytics,
+      EventSuccessModuleCatalog.safetyControls,
+    ],
+    runOfShow: [
+      EventRunOfShowStep(
+        stage: EventSuccessStage.before,
+        title: {{library.algorithmicMixer.title.2}},
+        durationMinutes: 4,
+        hostInstruction:
+            {{library.algorithmicMixer.hostInstruction.1}},
+        attendeeExperience: {{library.algorithmicMixer.attendeeExperience.1}},
+        moduleIds: ['compatibility_questionnaire'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.arrival,
+        title: {{library.algorithmicMixer.title.3}},
+        durationMinutes: 12,
+        hostInstruction: {{library.algorithmicMixer.hostInstruction.2}},
+        attendeeExperience: {{library.algorithmicMixer.attendeeExperience.2}},
+        moduleIds: ['qr_check_in', 'compatibility_questionnaire'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.mixing,
+        title: {{library.algorithmicMixer.title.4}},
+        durationMinutes: 45,
+        hostInstruction: {{library.algorithmicMixer.hostInstruction.3}},
+        attendeeExperience: {{library.algorithmicMixer.attendeeExperience.3}},
+        moduleIds: ['guided_rotations', 'live_reveal', 'social_missions'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.closing,
+        title: {{library.algorithmicMixer.title.5}},
+        durationMinutes: 5,
+        hostInstruction:
+            {{library.algorithmicMixer.hostInstruction.4}},
+        attendeeExperience:
+            {{library.algorithmicMixer.attendeeExperience.4}},
+        moduleIds: ['wingman_requests'],
+      ),
+    ],
+    metrics: EventSuccessMetricCatalog.core,
+    antiPatterns: [
+      {{library.algorithmicMixer.antiPatterns.1}},
+      {{library.algorithmicMixer.antiPatterns.2}},
+      {{library.algorithmicMixer.antiPatterns.3}},
+    ],
+    iterationQuestions: [
+      {{library.algorithmicMixer.iterationQuestions.1}},
+      {{library.algorithmicMixer.iterationQuestions.2}},
+      {{library.algorithmicMixer.iterationQuestions.3}},
+    ],
+    wiringNotes: [
+      {{library.algorithmicMixer.wiringNotes.1}},
+    ],
+  );
+
+  static const all = <EventSuccessPlaybook>[
+    socialRun,
+    pickleball,
+    pubQuiz,
+    dinner,
+    hostLedSocial,
+    algorithmicMixer,
+  ];
+
+  static Iterable<EventSuccessPlaybook> forActivity(ActivityKind type) =>
+      all.where((playbook) => playbook.activityType == type);
+
+  static EventSuccessPlaybook byIdOrDefault(String id) =>
+      all.firstWhere((playbook) => playbook.id == id, orElse: () => socialRun);
+
+  static EventSuccessPlaybook recommendedFor({
+    required ActivityKind activityType,
+    EventSocialIntensity? preferredIntensity,
+  }) {
+    final matches = forActivity(activityType).toList();
+    if (matches.isEmpty) {
+      final id = activityType.defaultPlaybookId;
+      if (id != null) return byIdOrDefault(id);
+      return hostLedSocial;
+    }
+    if (preferredIntensity == null) return matches.first;
+    return matches.firstWhere(
+      (playbook) => playbook.socialIntensity == preferredIntensity,
+      orElse: () => matches.first,
+    );
+  }
+}

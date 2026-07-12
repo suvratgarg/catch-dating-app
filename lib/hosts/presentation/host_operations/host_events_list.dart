@@ -93,7 +93,7 @@ class HostEventsClubSection extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Events',
+                context.l10n.hostsHostEventsListTextEvents,
                 style: CatchTextStyles.headline(context, color: t.ink),
               ),
             ),
@@ -112,7 +112,7 @@ class HostEventsClubSection extends StatelessWidget {
           children: [
             Expanded(
               child: CatchButton(
-                label: 'New event',
+                label: context.l10n.hostsHostEventsListLabelNewEvent,
                 icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
                 onPressed: () => onCreateEvent(club),
               ),
@@ -120,7 +120,7 @@ class HostEventsClubSection extends StatelessWidget {
             gapW10,
             Expanded(
               child: CatchButton(
-                label: state.repeatLabel,
+                label: state.repeatLabel(context.l10n),
                 variant: CatchButtonVariant.secondary,
                 icon: Icon(CatchIcons.refresh, size: CatchIcon.sm),
                 onPressed: repeatSource == null
@@ -156,11 +156,11 @@ class HostEventsClubSection extends StatelessWidget {
             padding: const EdgeInsets.only(top: CatchSpacing.s8),
             child: CatchEmptyState(
               icon: CatchIcons.eventBusy,
-              title: state.emptyTitle,
-              message: state.emptyBody,
+              title: state.emptyTitle(context.l10n),
+              message: state.emptyBody(context.l10n),
               action: state.selectedFilter == HostEventsLifecycleFilter.upcoming
                   ? CatchButton(
-                      label: 'New event',
+                      label: context.l10n.hostsHostEventsListLabelNewEvent,
                       size: CatchButtonSize.sm,
                       onPressed: () => onCreateEvent(club),
                     )
@@ -327,7 +327,9 @@ class HostEventLifecycleDateBlock extends StatelessWidget {
                 Icon(CatchIcons.eventLive, color: accent, size: CatchIcon.sm),
                 gapH3,
                 Text(
-                  data.isLive ? 'LIVE' : 'TODAY',
+                  data.isLive
+                      ? context.l10n.hostsHostEventsListTextLive
+                      : context.l10n.hostsHostEventsListTextToday,
                   style: CatchTextStyles.monoLabelS(context, color: t.ink3),
                 ),
               ],

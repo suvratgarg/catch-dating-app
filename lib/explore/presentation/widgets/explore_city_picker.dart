@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 enum ExploreCityPickerPresentation { icon, scopeLabel }
@@ -96,7 +97,11 @@ class CityTrigger extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final effectiveForeground = foregroundColor ?? t.ink;
-    final state = ExploreCityTriggerState.from(city: city, focused: focused);
+    final state = ExploreCityTriggerState.from(
+      city: city,
+      focused: focused,
+      l10n: context.l10n,
+    );
 
     if (presentation == ExploreCityPickerPresentation.scopeLabel) {
       final labelColor = enabled ? effectiveForeground : t.ink3;
@@ -224,7 +229,7 @@ class ExploreCityPickerSheet extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'City',
+                        context.l10n.exploreExploreCityPickerTextCity,
                         style: CatchTextStyles.sectionTitle(context),
                       ),
                     ),
@@ -287,7 +292,9 @@ class CityOptionTile extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label: 'Select ${city.label}',
+      label: context.l10n.exploreExploreCityPickerLabelSelectLabel(
+        label: city.label,
+      ),
       child: Material(
         color: selected ? t.primarySoft : Colors.transparent,
         borderRadius: BorderRadius.circular(CatchRadius.sm),

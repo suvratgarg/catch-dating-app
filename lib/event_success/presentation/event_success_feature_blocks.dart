@@ -5,10 +5,12 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 const EdgeInsets _moduleToggleRowGap = EdgeInsets.only(bottom: CatchSpacing.s2);
@@ -73,13 +75,19 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
         children: [
           BlockHeader(
             icon: CatchIcons.tuneRounded,
-            title: 'Host setup flow',
-            subtitle:
-                'Choose the format, event structure, assignment tools, and safety gates before an event goes live.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksTitleHostSetupFlow,
+            subtitle: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksSubtitleChooseTheFormatEvent,
             badge: CatchBadge(label: _draft.status.label, tone: readinessTone),
           ),
           const SizedBox(height: CatchSpacing.s4),
-          Text('Format', style: CatchTextStyles.sectionTitle(context)),
+          Text(
+            context.l10n.eventSuccessEventSuccessFeatureBlocksTextFormat,
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           const SizedBox(height: CatchSpacing.s2),
           Wrap(
             spacing: CatchSpacing.s2,
@@ -100,7 +108,12 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
           const SizedBox(height: CatchSpacing.s4),
           PlaybookSummaryCard(draft: _draft),
           const SizedBox(height: CatchSpacing.s4),
-          Text('Event structure', style: CatchTextStyles.sectionTitle(context)),
+          Text(
+            context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksTextEventStructure,
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           const SizedBox(height: CatchSpacing.s2),
           EventSuccessStructureConfigEditor(
             value: _draft.structureConfig,
@@ -112,7 +125,9 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
           ),
           const SizedBox(height: CatchSpacing.s4),
           Text(
-            'Experience architecture',
+            context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksTextExperienceArchitecture,
             style: CatchTextStyles.sectionTitle(context),
           ),
           const SizedBox(height: CatchSpacing.s2),
@@ -157,27 +172,42 @@ class EventSuccessLiveHostMode extends StatelessWidget {
         children: [
           BlockHeader(
             icon: CatchIcons.playCircleOutlineRounded,
-            title: 'Live host mode',
-            subtitle:
-                'A phone-friendly guide for check-in, welcome, the current instruction, and the next social cue.',
-            badge: const CatchBadge(
-              label: 'Host only',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksTitleLiveHostMode,
+            subtitle: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksSubtitleAPhoneFriendlyGuide,
+            badge: CatchBadge(
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessFeatureBlocksLabelHostOnly,
               tone: CatchBadgeTone.brand,
             ),
           ),
           const SizedBox(height: CatchSpacing.s4),
           ProgressRow(
-            label: 'Checked in',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksLabelCheckedIn,
             value: resolvedPlan.checkInProgress,
-            detail:
-                '${resolvedPlan.checkedInCount}/${resolvedPlan.bookedCount}',
+            detail: context.l10n
+                .eventSuccessEventSuccessFeatureBlocksDetailCheckedincountBookedcount(
+                  checkedInCount: resolvedPlan.checkedInCount,
+                  bookedCount: resolvedPlan.bookedCount,
+                ),
           ),
           const SizedBox(height: CatchSpacing.s3),
           ProgressRow(
-            label: 'Run of show',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksLabelRunOfShow,
             value: resolvedPlan.runOfShowProgress,
-            detail:
-                '${resolvedPlan.activeStepIndex + 1}/${resolvedPlan.steps.length}',
+            detail: context.l10n
+                .eventSuccessEventSuccessFeatureBlocksDetailValue1Length(
+                  value1: resolvedPlan.activeStepIndex + 1,
+                  length: resolvedPlan.steps.length,
+                ),
           ),
           const SizedBox(height: CatchSpacing.s4),
           CatchSurface(
@@ -204,7 +234,11 @@ class EventSuccessLiveHostMode extends StatelessWidget {
                 ),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(
-                  'Attendee experience: ${resolvedPlan.activeStep.attendeeExperience}',
+                  context.l10n
+                      .eventSuccessEventSuccessFeatureBlocksTextAttendeeExperienceAttendeeexperience(
+                        attendeeExperience:
+                            resolvedPlan.activeStep.attendeeExperience,
+                      ),
                   style: CatchTextStyles.supporting(context),
                 ),
               ],
@@ -243,11 +277,16 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
         children: [
           BlockHeader(
             icon: CatchIcons.phoneIphoneRounded,
-            title: 'Attendee companion',
-            subtitle:
-                'The attendee sees only what helps them participate: check-in, assignment, prompt, and host help.',
-            badge: const CatchBadge(
-              label: 'Attendee',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksTitleAttendeeCompanion,
+            subtitle: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksSubtitleTheAttendeeSeesOnly,
+            badge: CatchBadge(
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessFeatureBlocksLabelAttendee,
               tone: CatchBadgeTone.success,
             ),
           ),
@@ -260,7 +299,13 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CatchBadge(
-                  label: resolvedState.checkedIn ? 'Checked in' : 'Check in',
+                  label: resolvedState.checkedIn
+                      ? context
+                            .l10n
+                            .eventSuccessEventSuccessFeatureBlocksLabelCheckedIn
+                      : context
+                            .l10n
+                            .eventSuccessEventSuccessFeatureBlocksLabelCheckIn,
                   tone: resolvedState.checkedIn
                       ? CatchBadgeTone.success
                       : CatchBadgeTone.warning,
@@ -283,7 +328,9 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
           EventSuccessPromptCard(prompt: resolvedState.prompt),
           const SizedBox(height: CatchSpacing.s4),
           Text(
-            'Ask host for help',
+            context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksTextAskHostForHelp,
             style: CatchTextStyles.sectionTitle(context),
           ),
           const SizedBox(height: CatchSpacing.s2),
@@ -313,12 +360,18 @@ class EventSuccessPostEventReport extends StatelessWidget {
         children: [
           BlockHeader(
             icon: CatchIcons.insightsOutlined,
-            title: 'Post-event host report',
-            subtitle:
-                'A concrete report surface that turns event outcomes into the next change the host should make.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksTitlePostEventHostReport,
+            subtitle: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksSubtitleAConcreteReportSurface,
             badge: CatchBadge(
-              label:
-                  '${(resolvedBrief.scorecard.experienceScore * 100).round()}%',
+              label: context.l10n
+                  .eventSuccessEventSuccessFeatureBlocksLabelRound(
+                    round: (resolvedBrief.scorecard.experienceScore * 100)
+                        .round(),
+                  ),
               tone: CatchBadgeTone.brand,
             ),
           ),
@@ -328,30 +381,43 @@ class EventSuccessPostEventReport extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               EventSuccessMetricPill(
-                label: 'Check-in',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104,
                 value: resolvedBrief.scorecard.checkInRate,
               ),
               EventSuccessMetricPill(
-                label: 'Intro coverage',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessFeatureBlocksLabelIntroCoverage,
                 value: resolvedBrief.scorecard.introCoverageRate,
               ),
               EventSuccessMetricPill(
-                label: 'Caught someone',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone,
                 value: resolvedBrief.scorecard.caughtSomeoneRate,
               ),
               EventSuccessMetricPill(
-                label: 'Host help',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessFeatureBlocksLabelHostHelp,
                 value: resolvedBrief.scorecard.wingmanRequestRate,
               ),
               EventSuccessMetricPill(
-                label: 'Chat start',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessFeatureBlocksLabelChatStart,
                 value: resolvedBrief.scorecard.chatStartRate,
               ),
             ],
           ),
           if (resolvedBrief.strengths.isNotEmpty) ...[
             const SizedBox(height: CatchSpacing.s4),
-            Text('Working well', style: CatchTextStyles.sectionTitle(context)),
+            Text(
+              context.l10n.eventSuccessEventSuccessFeatureBlocksTextWorkingWell,
+              style: CatchTextStyles.sectionTitle(context),
+            ),
             const SizedBox(height: CatchSpacing.s2),
             Wrap(
               spacing: CatchSpacing.s2,
@@ -446,7 +512,10 @@ class PlaybookSummaryCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               CatchBadge(
-                label: '${draft.targetAttendeeCount} target attendees',
+                label: context.l10n
+                    .eventSuccessEventSuccessFeatureBlocksLabelTargetattendeecountTargetAttendees(
+                      targetAttendeeCount: draft.targetAttendeeCount,
+                    ),
                 icon: CatchIcons.confirmationNumberOutlined,
               ),
               CatchBadge(
@@ -454,7 +523,10 @@ class PlaybookSummaryCard extends StatelessWidget {
                 tone: CatchBadgeTone.brand,
               ),
               CatchBadge(
-                label: '${draft.livePhoneModules.length} live phone tools',
+                label: context.l10n
+                    .eventSuccessEventSuccessFeatureBlocksLabelLengthLivePhoneTools(
+                      length: draft.livePhoneModules.length,
+                    ),
                 tone: draft.livePhoneModules.length > 2
                     ? CatchBadgeTone.warning
                     : CatchBadgeTone.neutral,
@@ -510,7 +582,10 @@ class ModuleToggleRow extends StatelessWidget {
               ),
             ),
             Semantics(
-              label: '${module.title} tool',
+              label: context.l10n
+                  .eventSuccessEventSuccessFeatureBlocksLabelTitleTool(
+                    title: module.title,
+                  ),
               toggled: selected,
               child: Material(
                 type: MaterialType.transparency,
@@ -543,7 +618,9 @@ class IssueList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchBadge(
-            label: 'Before launch',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksLabelBeforeLaunch,
             tone: CatchBadgeTone.warning,
             icon: CatchIcons.warningAmberRounded,
           ),
@@ -644,7 +721,11 @@ class LiveStepRow extends StatelessWidget {
                 Text(step.title, style: CatchTextStyles.sectionTitle(context)),
                 const SizedBox(height: CatchSpacing.s1),
                 Text(
-                  '${step.durationMinutes} min · ${step.stage.label}',
+                  context.l10n
+                      .eventSuccessEventSuccessFeatureBlocksTextDurationminutesMinLabel(
+                        durationMinutes: step.durationMinutes,
+                        label: step.stage.label,
+                      ),
                   style: CatchTextStyles.supporting(context),
                 ),
               ],
@@ -745,7 +826,7 @@ class EventSuccessConversationCueCard extends StatelessWidget {
                           style: CatchTextStyles.sectionTitle(context),
                         ),
                         CatchBadge(
-                          label: moment.label,
+                          label: moment.label(context.l10n),
                           tone: moment == EventSuccessConversationCueMoment.live
                               ? CatchBadgeTone.live
                               : CatchBadgeTone.brand,
@@ -859,7 +940,13 @@ class WingmanCandidateRow extends StatelessWidget {
             ),
           ),
           CatchBadge(
-            label: candidate.marked ? 'Requested' : 'Host visible',
+            label: candidate.marked
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessFeatureBlocksLabelRequested
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessFeatureBlocksLabelHostVisible,
             tone: candidate.marked
                 ? CatchBadgeTone.brand
                 : CatchBadgeTone.neutral,
@@ -937,7 +1024,10 @@ class EventSuccessMetricPill extends StatelessWidget {
       borderColor: t.line,
       padding: CatchInsets.compactControlContent,
       child: Text(
-        '$label ${(value * 100).round()}%',
+        context.l10n.eventSuccessEventSuccessFeatureBlocksTextLabelRound(
+          label: label,
+          round: (value * 100).round(),
+        ),
         style: CatchTextStyles.labelL(context),
       ),
     );

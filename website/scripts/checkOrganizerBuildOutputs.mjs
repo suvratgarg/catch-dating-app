@@ -79,6 +79,11 @@ export function checkOrganizerBuildOutputs({
   let legacyRoutes = 0;
 
   for (const listing of hostListings) {
+    if (listing?.dataOrigin === "catchDemo") {
+      errors.push(
+        `${listing.id ?? "unknown"}: production organizer output must not include catchDemo records`
+      );
+    }
     if (!listing?.path) {
       errors.push(`${listing?.id ?? "unknown"}: missing listing path`);
       continue;

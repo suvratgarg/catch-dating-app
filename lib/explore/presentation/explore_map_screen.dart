@@ -10,6 +10,7 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -108,7 +109,8 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                 ),
                 child: CatchIconButton(
                   variant: CatchIconButtonVariant.float,
-                  tooltip: 'Back to Explore',
+                  tooltip:
+                      context.l10n.exploreExploreMapScreenTooltipBackToExplore,
                   onTap: () {
                     catchSelectionHaptic();
                     if (context.canPop()) context.pop();
@@ -132,8 +134,12 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                   switchOutCurve: Curves.easeInCubic,
                   transitionBuilder: _selectedCardTransition,
                   child: selectedItem == null
-                      ? const SizedBox.shrink(
-                          key: ValueKey<String>('no-selected-map-event'),
+                      ? SizedBox.shrink(
+                          key: ValueKey<String>(
+                            context
+                                .l10n
+                                .exploreExploreMapScreenBodyNoSelectedMapEvent,
+                          ),
                         )
                       : _ExploreMapSelectedEventCard(
                           key: ValueKey<String>(selectedItem.event.id),
@@ -209,8 +215,11 @@ class _ExploreMapSelectedEventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = ExploreEventRowState.from(item);
-    final heroTag = eventTicketHeroTag(item.event.id, 'map');
+    final state = ExploreEventRowState.from(item, l10n: context.l10n);
+    final heroTag = eventTicketHeroTag(
+      item.event.id,
+      context.l10n.exploreExploreMapScreenVisiblecopyMap,
+    );
     return DecoratedBox(
       decoration: const BoxDecoration(boxShadow: CatchElevation.overlay),
       child: EventDateRailCard(

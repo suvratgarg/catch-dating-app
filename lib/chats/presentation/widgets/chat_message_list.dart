@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -105,8 +106,8 @@ class ChatMessageList extends StatelessWidget {
         );
       },
       errorBuilder: (_, e, _) => CatchErrorState(
-        title: 'Messages unavailable',
-        message: 'Unable to load messages.',
+        title: context.l10n.chatsChatMessageListTitleMessagesUnavailable,
+        message: context.l10n.chatsChatMessageListMessageUnableToLoadMessages,
         icon: CatchIcons.chatBubbleOutlineRounded,
         onRetry: onRetry,
       ),
@@ -115,7 +116,7 @@ class ChatMessageList extends StatelessWidget {
           return Center(
             child: CatchEmptyState(
               icon: CatchIcons.chatBubbleOutlineRounded,
-              title: 'Say hi',
+              title: context.l10n.chatsChatMessageListTitleSayHi,
               message: chatEmptyThreadMessageFor(
                 event: event,
                 otherName: otherName,

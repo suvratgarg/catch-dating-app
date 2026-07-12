@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/src/catch_inline_message_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 
@@ -23,11 +24,11 @@ class CatchErrorBanner extends StatelessWidget {
     AppErrorContext context = AppErrorContext.generic,
     VoidCallback? onRetry,
   }) {
-    final descriptor = appErrorDescriptor(error, context: context);
-    return CatchErrorBanner(
+    return _LocalizedCatchErrorBanner(
       key: key,
-      message: descriptor.message,
-      onRetry: descriptor.retryable ? onRetry : null,
+      error: error,
+      errorContext: context,
+      retry: onRetry,
     );
   }
 
@@ -67,13 +68,39 @@ class CatchErrorBanner extends StatelessWidget {
       actions: [
         if (onRetry != null)
           CatchTextButton(
-            label: 'Try again',
+            label: context.l10n.coreCatchErrorBannerLabelTryAgain,
             onPressed: onRetry,
             foregroundColor: colorScheme.error,
             minimumSize: const Size(CatchSpacing.s0, CatchSpacing.s8),
             padding: EdgeInsets.zero,
           ),
       ],
+    );
+  }
+}
+
+class _LocalizedCatchErrorBanner extends CatchErrorBanner {
+  const _LocalizedCatchErrorBanner({
+    super.key,
+    required this.error,
+    required this.errorContext,
+    required this.retry,
+  }) : super(message: '');
+
+  final Object error;
+  final AppErrorContext errorContext;
+  final VoidCallback? retry;
+
+  @override
+  Widget build(BuildContext context) {
+    final descriptor = appErrorDescriptor(
+      error,
+      l10n: context.l10n,
+      context: errorContext,
+    );
+    return CatchErrorBanner(
+      message: descriptor.message,
+      onRetry: descriptor.retryable ? retry : null,
     );
   }
 }

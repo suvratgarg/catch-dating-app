@@ -33,7 +33,9 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
     final compactTextScale = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     final uidAsync = ref.watch(uidProvider);
     if (uidAsync.isLoading) {
-      return const HostLoadingScreen(title: 'Professional profile');
+      return HostLoadingScreen(
+        title: context.l10n.hostsHostProfileScreenTitleProfessionalProfile,
+      );
     }
     if (uidAsync.hasError) {
       return CatchErrorScaffold.fromError(
@@ -68,8 +70,10 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
           border: true,
           titleWidget: compactTextScale
               ? Text(
-                  'Professional profile',
-                  semanticsLabel: 'Host profile. Professional profile',
+                  context.l10n.hostsHostProfileScreenTextProfessionalProfile,
+                  semanticsLabel: context
+                      .l10n
+                      .hostsHostProfileScreenTextHostProfileProfessionalProfile,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.titleL(context, color: t.ink),
@@ -79,12 +83,14 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'HOST PROFILE',
+                      context.l10n.hostsHostProfileScreenTextHostProfile,
                       style: CatchTextStyles.kicker(context, color: t.ink3),
                     ),
                     gapH2,
                     Text(
-                      'Professional profile',
+                      context
+                          .l10n
+                          .hostsHostProfileScreenTextProfessionalProfile,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: CatchTextStyles.titleL(context, color: t.ink),
@@ -124,12 +130,13 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
         padding: CatchInsets.pageBodyUnderHeader,
         children: [
           HostEmptyActionCard(
-            title: 'No host profile yet',
+            title: context.l10n.hostsHostProfileScreenTitleNoHostProfileYet,
             body:
-                'Create a professional host identity before editing profile details.',
+                context.l10n.hostsHostProfileScreenBodyCreateAProfessionalHost,
             actions: [
               CatchButton(
-                label: 'Create host profile',
+                label:
+                    context.l10n.hostsHostProfileScreenLabelCreateHostProfile,
                 icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
                 isLoading: creatingProfile,
                 onPressed: creatingProfile
@@ -195,7 +202,10 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
             ),
       );
       if (!mounted) return;
-      showCatchSnackBar(context, 'Host profile saved.');
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsHostProfileScreenVisiblecopyHostProfileSaved,
+      );
     } catch (_) {
       // CatchMutationErrorListener owns user-facing error display.
     }
@@ -252,7 +262,7 @@ class HostProfileForm extends StatelessWidget {
               ),
               gapH18,
               CatchButton(
-                label: 'Save profile',
+                label: context.l10n.hostsHostProfileScreenLabelSaveProfile,
                 icon: Icon(CatchIcons.checkRounded, size: CatchIcon.md),
                 isLoading: saving,
                 fullWidth: true,
@@ -300,7 +310,7 @@ class HostProfileFields extends StatelessWidget {
           gapH14,
         ],
         CatchField.input(
-          title: 'Display name',
+          title: context.l10n.hostsHostProfileScreenTitleDisplayName,
           controller: displayNameController,
           textInputAction: TextInputAction.next,
           textCapitalization: TextCapitalization.words,
@@ -308,7 +318,7 @@ class HostProfileFields extends StatelessWidget {
         ),
         gapH14,
         CatchField.input(
-          title: 'Role title',
+          title: context.l10n.hostsHostProfileScreenTitleRoleTitle,
           isOptional: true,
           controller: roleTitleController,
           textInputAction: TextInputAction.next,
@@ -316,7 +326,7 @@ class HostProfileFields extends StatelessWidget {
         ),
         gapH14,
         CatchField.input(
-          title: 'Bio',
+          title: context.l10n.hostsHostProfileScreenTitleBio,
           isOptional: true,
           controller: bioController,
           minLines: 4,

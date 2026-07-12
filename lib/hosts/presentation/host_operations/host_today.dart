@@ -33,6 +33,7 @@ class HostTodayDashboardCard extends ConsumerWidget {
     final dashboardState = buildHostHomeTodayDashboardState(
       eventsAsync,
       now: now,
+      l10n: context.l10n,
     );
 
     return HostTodayDashboardSection(
@@ -104,17 +105,18 @@ class HostTodayDashboardSection extends StatelessWidget {
             onRetry: onRetryEvents,
           ),
           HostHomeTodayStatus.empty => HostEmptyActionCard(
-            title: 'No active events yet',
-            body:
-                'Create an event for ${club.name} to start filling the host dashboard.',
+            title: context.l10n.hostsHostTodayTitleNoActiveEventsYet,
+            body: context.l10n.hostsHostTodayBodyCreateAnEventFor(
+              name: club.name,
+            ),
             actions: [
               CatchButton(
-                label: 'New event',
+                label: context.l10n.hostsHostTodayLabelNewEvent,
                 icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
                 onPressed: () => onCreateEvent(club),
               ),
               CatchButton(
-                label: 'Events',
+                label: context.l10n.hostsHostTodayLabelEvents,
                 variant: CatchButtonVariant.secondary,
                 size: CatchButtonSize.sm,
                 onPressed: onViewEvents,
@@ -145,12 +147,12 @@ class HostTodayDashboardSection extends StatelessWidget {
         ),
         gapH24,
         CatchSection.plain(
-          title: 'Needs you',
+          title: context.l10n.hostsHostTodayTitleNeedsYou,
           count: tasks.isEmpty ? null : tasks.length,
           titleColor: CatchTokens.of(context).ink3,
           child: tasks.isEmpty
               ? Text(
-                  'Nothing needs you right now.',
+                  context.l10n.hostsHostTodayTextNothingNeedsYouRight,
                   style: CatchTextStyles.bodyM(context),
                 )
               : Column(
@@ -169,11 +171,11 @@ class HostTodayDashboardSection extends StatelessWidget {
         if (state.laterEvents.isNotEmpty) ...[
           gapH24,
           CatchSection.plain(
-            title: 'Later this week',
+            title: context.l10n.hostsHostTodayTitleLaterThisWeek,
             count: state.laterEvents.length,
             titleColor: CatchTokens.of(context).ink3,
             trailing: CatchButton(
-              label: 'All events',
+              label: context.l10n.hostsHostTodayLabelAllEvents,
               variant: CatchButtonVariant.ghost,
               size: CatchButtonSize.sm,
               onPressed: onViewEvents,
@@ -219,9 +221,9 @@ class HostTodayHeader extends StatelessWidget {
     final t = CatchTokens.of(context);
     final hostName = _hostFirstName(club, currentUid);
     final daypart = switch (now.hour) {
-      < 12 => 'morning',
-      < 17 => 'afternoon',
-      _ => 'evening',
+      < 12 => context.l10n.hostsHostTodayVisiblecopyMorning,
+      < 17 => context.l10n.hostsHostTodayVisiblecopyAfternoon,
+      _ => context.l10n.hostsHostTodayVisiblecopyEvening,
     };
 
     return Row(
@@ -232,12 +234,20 @@ class HostTodayHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${EventFormatters.longWeekday(now)} $daypart'.toUpperCase(),
+                context.l10n
+                    .hostsHostTodayTextLongweekdayDaypart(
+                      longWeekday: EventFormatters.longWeekday(now),
+                      daypart: daypart,
+                    )
+                    .toUpperCase(),
                 style: CatchTextStyles.kicker(context, color: t.ink3),
               ),
               gapH8,
               Text(
-                'Good $daypart,\n$hostName',
+                context.l10n.hostsHostTodayTextGoodDaypartHostname(
+                  daypart: daypart,
+                  hostName: hostName,
+                ),
                 style: CatchTextStyles.headlineS(context, color: t.ink),
               ),
             ],
@@ -314,15 +324,18 @@ class HostTodayClubPill extends StatelessWidget {
           if (showClubPicker) ...[
             gapW4,
             CatchTopBarMenuAction<int>(
-              tooltip: 'Switch club',
+              tooltip: context.l10n.hostsHostTodayTooltipSwitchClub,
               icon: CatchIcons.expandMoreRounded,
               items: [
                 for (var index = 0; index < clubs.length; index++)
                   CatchActionMenuItem(
                     value: index,
-                    label:
-                        '${clubs[index].name} · '
-                        '${clubs[index].isOwnedBy(currentUid) ? 'Owner' : 'Host team'}',
+                    label: context.l10n.hostsHostTodayLabelNameValue2(
+                      name: clubs[index].name,
+                      value2: clubs[index].isOwnedBy(currentUid)
+                          ? context.l10n.hostsHostTodayLabelOwner
+                          : context.l10n.hostsHostTodayLabelHostTeam,
+                    ),
                   ),
               ],
               onSelected: onSwitchClubIndex,
@@ -398,7 +411,10 @@ class HostTodayEventHero extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  '${_eventDayLabel(event)} · ${EventFormatters.time(event.startTime)}',
+                  context.l10n.hostsHostTodayTextEventdaylabelTime(
+                    eventDayLabel: _eventDayLabel(event),
+                    time: EventFormatters.time(event.startTime),
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.supporting(
@@ -438,18 +454,24 @@ class HostTodayEventHero extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               HostTodayHeroMetric(
-                value: '${event.signedUpCount}',
-                label: 'Going',
+                value: context.l10n.hostsHostTodayVisiblecopySignedupcount(
+                  signedUpCount: event.signedUpCount,
+                ),
+                label: context.l10n.hostsHostTodayLabelGoing,
               ),
               gapW20,
               HostTodayHeroMetric(
-                value: '${event.waitlistCount}',
-                label: 'Waiting',
+                value: context.l10n.hostsHostTodayVisiblecopyWaitlistcount(
+                  waitlistCount: event.waitlistCount,
+                ),
+                label: context.l10n.hostsHostTodayLabelWaiting,
               ),
               gapW20,
               HostTodayHeroMetric(
-                value: '$taskCount',
-                label: 'Needs you',
+                value: context.l10n.hostsHostTodayVisiblecopyTaskcount(
+                  taskCount: taskCount,
+                ),
+                label: context.l10n.hostsHostTodayLabelNeedsYou,
                 valueColor: activity.accent,
               ),
               const Spacer(),
@@ -458,8 +480,8 @@ class HostTodayEventHero extends StatelessWidget {
           gapH20,
           CatchButton(
             label: !event.startTime.isAfter(now) && event.endTime.isAfter(now)
-                ? 'Open run-of-show'
-                : 'Set up & run',
+                ? context.l10n.hostsHostTodayLabelOpenRunOfShow
+                : context.l10n.hostsHostTodayLabelSetUpRun,
             fullWidth: true,
             backgroundColor: activity.accent,
             foregroundColor: CatchTokens.editorialWhite,
@@ -566,12 +588,12 @@ class HostTodayAvatarStack extends StatelessWidget {
           HostTodayAvatarDot(
             left: CatchSpacing.s5,
             fill: t.surface,
-            label: 'D',
+            label: context.l10n.hostsHostTodayLabelD,
           ),
           HostTodayAvatarDot(
             left: CatchSpacing.s10,
             fill: activity.soft,
-            label: 'M',
+            label: context.l10n.hostsHostTodayLabelM,
           ),
         ],
       ),

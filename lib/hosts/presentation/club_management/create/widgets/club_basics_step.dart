@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class ClubBasicsStep extends StatelessWidget {
@@ -68,7 +69,7 @@ class ClubBasicsStep extends StatelessWidget {
             ),
             gapH20,
             CatchField.input(
-              title: 'Club name',
+              title: context.l10n.hostsClubBasicsStepTitleClubName,
               controller: nameController,
               prefixIcon: Icon(CatchIcons.groupOutlined),
               enabled: detailsEnabled,
@@ -76,14 +77,16 @@ class ClubBasicsStep extends StatelessWidget {
               textInputAction: TextInputAction.next,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter a club name';
+                  return context
+                      .l10n
+                      .hostsClubBasicsStepVisiblecopyPleaseEnterAClub;
                 }
                 return null;
               },
             ),
             gapH16,
             CatchField.select<CityOption>(
-              title: 'City',
+              title: context.l10n.hostsClubBasicsStepTitleCity,
               values: defaultCityOptions
                   .where((city) => city.hostCreatable)
                   .toList(growable: false),
@@ -92,21 +95,26 @@ class ClubBasicsStep extends StatelessWidget {
               value: selectedCity,
               enabled: detailsEnabled,
               onChanged: onCityChanged,
-              validator: (_) =>
-                  selectedCity == null ? 'Please select a city' : null,
+              validator: (_) => selectedCity == null
+                  ? context.l10n.hostsClubBasicsStepVisiblecopyPleaseSelectACity
+                  : null,
             ),
             gapH16,
             CatchField.input(
-              title: 'Area / neighbourhood',
+              title: context.l10n.hostsClubBasicsStepTitleAreaNeighbourhood,
               controller: areaController,
               prefixIcon: Icon(CatchIcons.locationOnOutlined),
               enabled: detailsEnabled,
-              placeholder: 'e.g. Bandra, Koramangala',
+              placeholder: context
+                  .l10n
+                  .hostsClubBasicsStepPlaceholderEGBandraKoramangala,
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter an area';
+                  return context
+                      .l10n
+                      .hostsClubBasicsStepVisiblecopyPleaseEnterAnArea;
                 }
                 return null;
               },

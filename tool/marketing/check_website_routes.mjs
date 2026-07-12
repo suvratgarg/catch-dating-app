@@ -3,6 +3,11 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {
+  formatContentTemplate,
+  readWebsiteMeta,
+  validateWebsiteMeta,
+} from "./website_meta_contract.mjs";
 
 const args = parseArgs(process.argv.slice(2));
 
@@ -30,6 +35,26 @@ const errors = [];
 const warnings = [];
 
 const contract = readJson(routesPath, "website route contract");
+const hostingConfigPath = contract.sourceOfTruth?.hostingConfig
+  ? fromRepo(contract.sourceOfTruth.hostingConfig)
+  : null;
+const hostingConfig = hostingConfigPath
+  ? readJson(hostingConfigPath, "Firebase Hosting config")
+  : null;
+const metaContentPath = contract.sourceOfTruth?.metadataContent
+  ? fromRepo(contract.sourceOfTruth.metadataContent)
+  : null;
+const metaSchemaPath = contract.sourceOfTruth?.metadataSchema
+  ? fromRepo(contract.sourceOfTruth.metadataSchema)
+  : null;
+let websiteMeta = null;
+if (metaContentPath) {
+  try {
+    websiteMeta = readWebsiteMeta(metaContentPath);
+  } catch (error) {
+    errors.push(error.message);
+  }
+}
 const hostListings = readJson(hostListingsPath, "generated host listings");
 const pageMetaSource = readText(pageMetaPath);
 const postbuildSource = readText(postbuildPath);
@@ -42,6 +67,7 @@ const routeStoryDeclarations = collectStoryRouteDeclarations(storiesRoot);
 validateContractShape(contract);
 validateRoutes(contract.routes ?? [], routeStoryDeclarations);
 validateGeneratedListingFamilies(contract.routes ?? [], hostListings);
+validateMarketingNotFoundHosting(contract.routes ?? [], hostingConfig);
 
 if (errors.length > 0) {
   console.error("Website route contract check failed:");
@@ -79,6 +105,26 @@ function validateContractShape(value) {
   }
   if (!Array.isArray(value.routes) || value.routes.length === 0) {
     errors.push("routes.json must declare at least one route.");
+  }
+  for (const key of ["metadataContent", "metadataSchema", "hostingConfig"]) {
+    const sourcePath = value.sourceOfTruth?.[key];
+    if (typeof sourcePath !== "string" || sourcePath.length === 0) {
+      errors.push(`routes.json sourceOfTruth.${key} must name a repo-relative file.`);
+    } else if (!fs.existsSync(fromRepo(sourcePath))) {
+      errors.push(`routes.json sourceOfTruth.${key} does not exist: ${sourcePath}.`);
+    }
+  }
+  if (metaSchemaPath && !fs.existsSync(metaSchemaPath)) {
+    errors.push("missing website metadata JSON schema.");
+  }
+  if (!pageMetaSource.includes('../content/meta.json')) {
+    errors.push("pageMeta.ts must read website/src/content/meta.json.");
+  }
+  if (!pageMetaSource.includes("validatedWebsiteMeta(metaContent)")) {
+    errors.push("pageMeta.ts must runtime-validate the shared metadata content.");
+  }
+  if (!postbuildSource.includes("readWebsiteMeta")) {
+    errors.push("postbuild.mjs must read the validated website metadata content source.");
   }
 }
 
@@ -141,6 +187,10 @@ function validateRoute(route, storyDeclarations) {
   if (!allowedSitemap.has(route.sitemap)) {
     errors.push(`${label}: invalid sitemap ${route.sitemap}.`);
   }
+  const expectedHttpStatus = route.id === "not_found" ? 404 : 200;
+  if ((route.httpStatus ?? 200) !== expectedHttpStatus) {
+    errors.push(`${label}: httpStatus must be ${expectedHttpStatus}.`);
+  }
 
   if (route.kind === "generatedFamily") {
     if (!route.pathPattern && !Array.isArray(route.pathPatterns)) {
@@ -162,6 +212,36 @@ function validateRoute(route, storyDeclarations) {
   validateMeta(route);
   validateStaticOutput(route);
   validateReview(route, storyDeclarations);
+}
+
+function validateMarketingNotFoundHosting(routes, config) {
+  const notFoundRoute = routes.find((route) => route.id === "not_found");
+  if (!notFoundRoute || notFoundRoute.httpStatus !== 404) {
+    errors.push("not_found: route contract must declare httpStatus 404.");
+  }
+  for (const error of marketingNotFoundHostingErrors(config)) {
+    errors.push(`not_found: ${error}`);
+  }
+}
+
+function marketingNotFoundHostingErrors(config) {
+  const findings = [];
+  const targets = Array.isArray(config?.hosting) ? config.hosting : [];
+  const marketing = targets.find((target) => target?.target === "marketing");
+  if (!marketing) {
+    return ["firebase.json must declare the marketing Hosting target."];
+  }
+  if (marketing.public !== "website/dist") {
+    findings.push("marketing Hosting public directory must be website/dist.");
+  }
+  const rewrites = Array.isArray(marketing.rewrites) ? marketing.rewrites : [];
+  const catchAll = rewrites.find((rewrite) => rewrite?.source === "**");
+  if (catchAll) {
+    findings.push(
+      "marketing Hosting must not use a ** rewrite; it bypasses the generated custom 404.html response."
+    );
+  }
+  return findings;
 }
 
 function validatePageKey(route) {
@@ -211,24 +291,22 @@ function validatePageKey(route) {
 
 function validateMeta(route) {
   if (route.metaKey) {
-    const block = pageMetaBlock(route.metaKey);
-    if (!block) {
-      errors.push(`${route.id}: pageMeta missing key ${route.metaKey}.`);
+    const meta = websiteMeta?.routes?.[route.metaKey];
+    if (!meta) {
+      errors.push(`${route.id}: metadata content missing key ${route.metaKey}.`);
       return;
     }
     if (route.path && route.staticOutput === "postbuild") {
-      const canonicalPattern = new RegExp(
-        `canonicalPath:\\s*"${escapeRegExp(route.path)}"`,
-        "u"
-      );
-      if (!canonicalPattern.test(block)) {
-        errors.push(`${route.id}: pageMeta.${route.metaKey} canonicalPath must be ${route.path}.`);
+      if (meta.canonicalPath !== route.path) {
+        errors.push(
+          `${route.id}: metadata ${route.metaKey} canonicalPath must be ${route.path}.`
+        );
       }
     }
-    if (route.indexing === "noindex-follow" && !block.includes('robots: "noindex, follow"')) {
-      errors.push(`${route.id}: pageMeta.${route.metaKey} must declare noindex, follow.`);
+    if (route.indexing === "noindex-follow" && meta.robots !== "noindex, follow") {
+      errors.push(`${route.id}: metadata ${route.metaKey} must declare noindex, follow.`);
     }
-    if (route.indexing === "index" && block.includes("robots:")) {
+    if (route.indexing === "index" && meta.robots !== undefined) {
       warnings.push(`${route.id}: index route has explicit robots metadata.`);
     }
   }
@@ -484,11 +562,6 @@ function storyRouteDeclarations(source, storyPath) {
   return declarations;
 }
 
-function pageMetaBlock(key) {
-  const match = pageMetaSource.match(new RegExp(`\\b${escapeRegExp(key)}:\\s*\\{([\\s\\S]*?)\\n\\s{2}\\},`, "u"));
-  return match?.[1] ?? null;
-}
-
 function matchesRoutePattern(routePath, pattern) {
   if (!pattern || !pattern.startsWith("/")) return true;
   const normalizedPattern = normalizeRoutePath(pattern);
@@ -642,6 +715,68 @@ export const OrganizerSearch = {
       storyPath,
     },
   ]);
+  const validMeta = {
+    $schema: "./meta.schema.json",
+    routes: Object.fromEntries(
+      ["home", "host", "organizers", "claim", "not_found"].map((key) => [
+        key,
+        {
+          title: `${key} title`,
+          description: `${key} description`,
+          canonicalPath: key === "home" ? "/" : `/${key}/`,
+          twitterDescription: `${key} social description`,
+        },
+      ])
+    ),
+    listing: {
+      titleTemplate: "{name} | {city} organizer profile | Catch",
+      staticLabels: {
+        profileEyebrow: "Organizer profile",
+        formatsHeading: "Formats",
+        factsHeading: "Profile facts",
+        sourcesHeading: "Public sources",
+        lastVerifiedPrefix: "Last verified",
+        notRecorded: "not recorded",
+        homeBreadcrumb: "Catch",
+        organizersBreadcrumb: "Organizers",
+      },
+    },
+  };
+  assert.deepEqual(validateWebsiteMeta(validMeta), []);
+  assert.match(
+    validateWebsiteMeta({
+      ...validMeta,
+      listing: {...validMeta.listing, titleTemplate: "{name} profile"},
+    }).join("\n"),
+    /must contain \{city\}/u
+  );
+  assert.equal(
+    formatContentTemplate(validMeta.listing.titleTemplate, {
+      name: "AFTER FLY",
+      city: "Indore",
+    }),
+    "AFTER FLY | Indore organizer profile | Catch"
+  );
+  assert.throws(
+    () => formatContentTemplate("{name} in {market}", {name: "Catch"}),
+    /Invalid content template values \(missing: market\)/u
+  );
+  assert.deepEqual(
+    marketingNotFoundHostingErrors({
+      hosting: [{target: "marketing", public: "website/dist", rewrites: []}],
+    }),
+    []
+  );
+  assert.match(
+    marketingNotFoundHostingErrors({
+      hosting: [{
+        target: "marketing",
+        public: "website/dist",
+        rewrites: [{source: "**", destination: "/index.html"}],
+      }],
+    }).join("\n"),
+    /must not use a \*\* rewrite/u
+  );
   console.log("Website route checker self-test passed.");
 }
 

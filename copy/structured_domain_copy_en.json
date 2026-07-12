@@ -1,0 +1,1313 @@
+{
+  "version": 1,
+  "locale": "en",
+  "owner": "marketing",
+  "constants": {
+    "eventTitleMorning": {
+      "value": "Morning",
+      "description": "Time-of-day label used in derived event titles."
+    },
+    "eventTitleAfternoon": {
+      "value": "Afternoon",
+      "description": "Time-of-day label used in derived event titles."
+    },
+    "eventTitleEvening": {
+      "value": "Evening",
+      "description": "Time-of-day label used in derived event titles."
+    },
+    "eventTitleDateSeparator": {
+      "value": " · ",
+      "description": "Separator between a derived event title and its short date in external descriptions."
+    },
+    "chatTitle": {
+      "value": "Chat",
+      "description": "Fallback title for a standard conversation."
+    },
+    "chatHostConversationTitle": {
+      "value": "Host conversation",
+      "description": "Fallback title for a club-host inquiry conversation."
+    },
+    "chatSuvbotTitle": {
+      "value": "Suvbot",
+      "description": "Display name for the built-in Suvbot conversation."
+    },
+    "chatUnknownDisplayName": {
+      "value": "Unknown",
+      "description": "Fallback display name when a conversation identity is unavailable."
+    },
+    "eventSuccessAssignmentRound": {
+      "value": "Round",
+      "description": "Fallback assignment label for an Event Success round."
+    },
+    "eventSuccessPlannedBreak": {
+      "value": "Planned break.",
+      "description": "Fallback explanation for an Event Success sit-out round."
+    },
+    "eventSuccessSampleRaceTrainingPrompt": {
+      "value": "Find someone training for a race and ask what they are building toward.",
+      "description": "Default sample prompt used by the Event Success feature preview."
+    },
+    "profilePromptFallbackAnswer": {
+      "value": "Answer this prompt.",
+      "description": "Fallback placeholder when a profile prompt definition is unavailable."
+    },
+    "photoPromptFallbackChoose": {
+      "value": "Choose a prompt.",
+      "description": "Fallback placeholder when a photo prompt definition is unavailable."
+    },
+    "profileValidationDisplayName": {
+      "value": "Display name",
+      "description": "Field label used by profile display-name validation."
+    },
+    "profileValidationEmail": {
+      "value": "Email",
+      "description": "Field label used by profile email validation."
+    },
+    "onboardingFirstName": {
+      "value": "First name",
+      "description": "Field label used by onboarding name validation."
+    },
+    "onboardingLastName": {
+      "value": "Last name",
+      "description": "Field label used by onboarding name validation."
+    },
+    "profileInsightComplete": {
+      "value": "Complete profile",
+      "description": "Confidence signal for a sufficiently complete public profile."
+    },
+    "profileInsightSharedEventPrefix": {
+      "value": "Met at",
+      "description": "Prefix for the shared-event public-profile confidence signal."
+    },
+    "profileInsightEasyOpeners": {
+      "value": "Easy openers",
+      "description": "Confidence signal for a profile with complete prompts."
+    }
+  },
+  "messages": {
+    "library.socialRun.title.1": {
+      "value": "Social Event Lite",
+      "description": "Event Success library copy for socialRun.title."
+    },
+    "library.socialRun.summary.1": {
+      "value": "An event-first format that adds arrival structure, pace pods, optional prompts, and post-event Catches follow-up.",
+      "description": "Event Success library copy for socialRun.summary."
+    },
+    "library.socialRun.attendeePromise.1": {
+      "value": "You can run naturally, meet people at your pace, and follow up privately afterward.",
+      "description": "Event Success library copy for socialRun.attendeePromise."
+    },
+    "library.socialRun.hostPromise.1": {
+      "value": "Use check-in, pace pods, and a short cooldown prompt without turning the event into speed dating.",
+      "description": "Event Success library copy for socialRun.hostPromise."
+    },
+    "library.socialRun.rationale.1": {
+      "value": "Large enough for choice, small enough for pace groups.",
+      "description": "Event Success library copy for socialRun.rationale."
+    },
+    "library.socialRun.title.2": {
+      "value": "Check in and pace sort",
+      "description": "Event Success library copy for socialRun.title."
+    },
+    "library.socialRun.hostInstruction.1": {
+      "value": "Scan arrivals and confirm pace groups.",
+      "description": "Event Success library copy for socialRun.hostInstruction."
+    },
+    "library.socialRun.attendeeExperience.1": {
+      "value": "Arrive, check in, and see your pace pod.",
+      "description": "Event Success library copy for socialRun.attendeeExperience."
+    },
+    "library.socialRun.title.3": {
+      "value": "Two-minute welcome",
+      "description": "Event Success library copy for socialRun.title."
+    },
+    "library.socialRun.hostInstruction.2": {
+      "value": "Name the route, safety note, and social permission.",
+      "description": "Event Success library copy for socialRun.hostInstruction."
+    },
+    "library.socialRun.attendeeExperience.2": {
+      "value": "Know what is happening and that talking is welcome.",
+      "description": "Event Success library copy for socialRun.attendeeExperience."
+    },
+    "library.socialRun.title.4": {
+      "value": "Run in pace pods",
+      "description": "Event Success library copy for socialRun.title."
+    },
+    "library.socialRun.hostInstruction.3": {
+      "value": "Keep pods visible and avoid mid-event phone use.",
+      "description": "Event Success library copy for socialRun.hostInstruction."
+    },
+    "library.socialRun.attendeeExperience.3": {
+      "value": "Event with a small group that matches your pace.",
+      "description": "Event Success library copy for socialRun.attendeeExperience."
+    },
+    "library.socialRun.title.5": {
+      "value": "Cooldown social mission",
+      "description": "Event Success library copy for socialRun.title."
+    },
+    "library.socialRun.hostInstruction.4": {
+      "value": "Offer one optional prompt before coffee or dispersal.",
+      "description": "Event Success library copy for socialRun.hostInstruction."
+    },
+    "library.socialRun.attendeeExperience.4": {
+      "value": "Get a natural reason to speak to one more person.",
+      "description": "Event Success library copy for socialRun.attendeeExperience."
+    },
+    "library.socialRun.title.6": {
+      "value": "Host-help last call",
+      "description": "Event Success library copy for socialRun.title."
+    },
+    "library.socialRun.hostInstruction.5": {
+      "value": "Invite checked-in attendees to ask for help with one natural introduction.",
+      "description": "Event Success library copy for socialRun.hostInstruction."
+    },
+    "library.socialRun.attendeeExperience.5": {
+      "value": "Ask the host for help while there is still time to be introduced.",
+      "description": "Event Success library copy for socialRun.attendeeExperience."
+    },
+    "library.socialRun.antiPatterns.1": {
+      "value": "Do not interrupt the actual event with phone-heavy prompts.",
+      "description": "Event Success library copy for socialRun.antiPatterns."
+    },
+    "library.socialRun.antiPatterns.2": {
+      "value": "Do not make one-to-one romantic pairing the headline for beginner events.",
+      "description": "Event Success library copy for socialRun.antiPatterns."
+    },
+    "library.socialRun.antiPatterns.3": {
+      "value": "Do not publish attendee interest unless it is mutual.",
+      "description": "Event Success library copy for socialRun.antiPatterns."
+    },
+    "library.socialRun.iterationQuestions.1": {
+      "value": "Did pace pods improve first conversations?",
+      "description": "Event Success library copy for socialRun.iterationQuestions."
+    },
+    "library.socialRun.iterationQuestions.2": {
+      "value": "Did cooldown prompts feel useful or awkward?",
+      "description": "Event Success library copy for socialRun.iterationQuestions."
+    },
+    "library.socialRun.iterationQuestions.3": {
+      "value": "Did host-help requests create useful live introductions?",
+      "description": "Event Success library copy for socialRun.iterationQuestions."
+    },
+    "library.socialRun.wiringNotes.1": {
+      "value": "Could reuse booking and attendance once approved.",
+      "description": "Event Success library copy for socialRun.wiringNotes."
+    },
+    "library.socialRun.wiringNotes.2": {
+      "value": "Should not change current event booking until check-in behavior is validated.",
+      "description": "Event Success library copy for socialRun.wiringNotes."
+    },
+    "library.pickleball.title.1": {
+      "value": "Pickleball Partner Rotations",
+      "description": "Event Success library copy for pickleball.title."
+    },
+    "library.pickleball.summary.1": {
+      "value": "A court-based mixer with rotating partners, skill-aware teams, and a post-game interest loop.",
+      "description": "Event Success library copy for pickleball.summary."
+    },
+    "library.pickleball.attendeePromise.1": {
+      "value": "Play real games while meeting multiple partners without awkward logistics.",
+      "description": "Event Success library copy for pickleball.attendeePromise."
+    },
+    "library.pickleball.hostPromise.1": {
+      "value": "The app handles pairings, sit-outs, timing, and post-event matching context.",
+      "description": "Event Success library copy for pickleball.hostPromise."
+    },
+    "library.pickleball.rationale.1": {
+      "value": "Works best with enough players for court rotation variety.",
+      "description": "Event Success library copy for pickleball.rationale."
+    },
+    "library.pickleball.title.2": {
+      "value": "Check in and skill confirm",
+      "description": "Event Success library copy for pickleball.title."
+    },
+    "library.pickleball.hostInstruction.1": {
+      "value": "Confirm courts, arrivals, and beginner support.",
+      "description": "Event Success library copy for pickleball.hostInstruction."
+    },
+    "library.pickleball.attendeeExperience.1": {
+      "value": "Know your first court and partner.",
+      "description": "Event Success library copy for pickleball.attendeeExperience."
+    },
+    "library.pickleball.title.3": {
+      "value": "Rules and first rotation",
+      "description": "Event Success library copy for pickleball.title."
+    },
+    "library.pickleball.hostInstruction.2": {
+      "value": "Explain rotation timing and sportsmanship norms.",
+      "description": "Event Success library copy for pickleball.hostInstruction."
+    },
+    "library.pickleball.attendeeExperience.2": {
+      "value": "Start with a clear partner assignment.",
+      "description": "Event Success library copy for pickleball.attendeeExperience."
+    },
+    "library.pickleball.title.4": {
+      "value": "Timed partner rounds",
+      "description": "Event Success library copy for pickleball.title."
+    },
+    "library.pickleball.hostInstruction.3": {
+      "value": "Advance rotations and handle sit-outs fairly.",
+      "description": "Event Success library copy for pickleball.hostInstruction."
+    },
+    "library.pickleball.attendeeExperience.3": {
+      "value": "Play with several people at a matched skill level.",
+      "description": "Event Success library copy for pickleball.attendeeExperience."
+    },
+    "library.pickleball.title.5": {
+      "value": "Final rally and wrap",
+      "description": "Event Success library copy for pickleball.title."
+    },
+    "library.pickleball.hostInstruction.4": {
+      "value": "Close with a low-pressure social prompt.",
+      "description": "Event Success library copy for pickleball.hostInstruction."
+    },
+    "library.pickleball.attendeeExperience.4": {
+      "value": "Get one more chance to talk off court.",
+      "description": "Event Success library copy for pickleball.attendeeExperience."
+    },
+    "library.pickleball.antiPatterns.1": {
+      "value": "Do not strand beginners in repeated sit-outs.",
+      "description": "Event Success library copy for pickleball.antiPatterns."
+    },
+    "library.pickleball.antiPatterns.2": {
+      "value": "Do not let rotation logistics consume the social energy.",
+      "description": "Event Success library copy for pickleball.antiPatterns."
+    },
+    "library.pickleball.iterationQuestions.1": {
+      "value": "Were rotations fair across skill levels?",
+      "description": "Event Success library copy for pickleball.iterationQuestions."
+    },
+    "library.pickleball.iterationQuestions.2": {
+      "value": "Did people remember enough names to follow up?",
+      "description": "Event Success library copy for pickleball.iterationQuestions."
+    },
+    "library.pickleball.wiringNotes.1": {
+      "value": "Needs an activity-specific rotation engine before production routing.",
+      "description": "Event Success library copy for pickleball.wiringNotes."
+    },
+    "library.pubQuiz.title.1": {
+      "value": "Pub Quiz Team Mixer",
+      "description": "Event Success library copy for pubQuiz.title."
+    },
+    "library.pubQuiz.summary.1": {
+      "value": "A team-based format that uses role prompts and team reshuffles to make conversation easy.",
+      "description": "Event Success library copy for pubQuiz.summary."
+    },
+    "library.pubQuiz.attendeePromise.1": {
+      "value": "You have teammates, prompts, and trivia as a reason to talk.",
+      "description": "Event Success library copy for pubQuiz.attendeePromise."
+    },
+    "library.pubQuiz.hostPromise.1": {
+      "value": "Balance teams, avoid friend clumps, and measure whether teams actually mixed.",
+      "description": "Event Success library copy for pubQuiz.hostPromise."
+    },
+    "library.pubQuiz.rationale.1": {
+      "value": "Team formats need enough people for variety but can scale.",
+      "description": "Event Success library copy for pubQuiz.rationale."
+    },
+    "library.pubQuiz.title.2": {
+      "value": "Check in and team assignment",
+      "description": "Event Success library copy for pubQuiz.title."
+    },
+    "library.pubQuiz.hostInstruction.1": {
+      "value": "Assign mixed teams and name one lightweight role per person.",
+      "description": "Event Success library copy for pubQuiz.hostInstruction."
+    },
+    "library.pubQuiz.attendeeExperience.1": {
+      "value": "Join a table with a reason to contribute.",
+      "description": "Event Success library copy for pubQuiz.attendeeExperience."
+    },
+    "library.pubQuiz.title.3": {
+      "value": "Quiz rounds with role prompts",
+      "description": "Event Success library copy for pubQuiz.title."
+    },
+    "library.pubQuiz.hostInstruction.2": {
+      "value": "Use prompts between rounds, not during questions.",
+      "description": "Event Success library copy for pubQuiz.hostInstruction."
+    },
+    "library.pubQuiz.attendeeExperience.2": {
+      "value": "Talk through trivia without forced dating rounds.",
+      "description": "Event Success library copy for pubQuiz.attendeeExperience."
+    },
+    "library.pubQuiz.title.4": {
+      "value": "Host-help last call",
+      "description": "Event Success library copy for pubQuiz.title."
+    },
+    "library.pubQuiz.hostInstruction.3": {
+      "value": "Offer to help with one introduction before people leave.",
+      "description": "Event Success library copy for pubQuiz.hostInstruction."
+    },
+    "library.pubQuiz.attendeeExperience.3": {
+      "value": "Ask the host for help while the room is still together.",
+      "description": "Event Success library copy for pubQuiz.attendeeExperience."
+    },
+    "library.pubQuiz.antiPatterns.1": {
+      "value": "Do not let existing friend groups sit together unchanged.",
+      "description": "Event Success library copy for pubQuiz.antiPatterns."
+    },
+    "library.pubQuiz.antiPatterns.2": {
+      "value": "Do not over-script conversation during the actual game.",
+      "description": "Event Success library copy for pubQuiz.antiPatterns."
+    },
+    "library.pubQuiz.iterationQuestions.1": {
+      "value": "Did team assignment reduce awkward arrivals?",
+      "description": "Event Success library copy for pubQuiz.iterationQuestions."
+    },
+    "library.pubQuiz.iterationQuestions.2": {
+      "value": "Were people willing to follow up across tables?",
+      "description": "Event Success library copy for pubQuiz.iterationQuestions."
+    },
+    "library.pubQuiz.wiringNotes.1": {
+      "value": "Can launch as a host-only playbook before full team assignment automation.",
+      "description": "Event Success library copy for pubQuiz.wiringNotes."
+    },
+    "library.dinner.title.1": {
+      "value": "Dinner Table Mixer",
+      "description": "Event Success library copy for dinner.title."
+    },
+    "library.dinner.summary.1": {
+      "value": "A seated format that uses table assignments, optional course changes, prompts, and a private follow-up loop.",
+      "description": "Event Success library copy for dinner.summary."
+    },
+    "library.dinner.attendeePromise.1": {
+      "value": "You know where to sit, who to start with, and how to follow up without public pressure.",
+      "description": "Event Success library copy for dinner.attendeePromise."
+    },
+    "library.dinner.hostPromise.1": {
+      "value": "Balance tables, reveal seating moments, and keep conversation moving without over-facilitating dinner.",
+      "description": "Event Success library copy for dinner.hostPromise."
+    },
+    "library.dinner.rationale.1": {
+      "value": "Table formats need enough mix while staying host-manageable.",
+      "description": "Event Success library copy for dinner.rationale."
+    },
+    "library.dinner.title.2": {
+      "value": "Check in and seating reveal",
+      "description": "Event Success library copy for dinner.title."
+    },
+    "library.dinner.hostInstruction.1": {
+      "value": "Confirm arrivals and send attendees to their first table.",
+      "description": "Event Success library copy for dinner.hostInstruction."
+    },
+    "library.dinner.attendeeExperience.1": {
+      "value": "Know the first table and who to start with.",
+      "description": "Event Success library copy for dinner.attendeeExperience."
+    },
+    "library.dinner.title.3": {
+      "value": "Welcome and table prompt",
+      "description": "Event Success library copy for dinner.title."
+    },
+    "library.dinner.hostInstruction.2": {
+      "value": "Set the tone and give one easy table prompt.",
+      "description": "Event Success library copy for dinner.hostInstruction."
+    },
+    "library.dinner.attendeeExperience.2": {
+      "value": "Have a natural first line at the table.",
+      "description": "Event Success library copy for dinner.attendeeExperience."
+    },
+    "library.dinner.title.4": {
+      "value": "Course or seat change",
+      "description": "Event Success library copy for dinner.title."
+    },
+    "library.dinner.hostInstruction.3": {
+      "value": "Only rotate when the dinner format has a planned course or seat-change moment.",
+      "description": "Event Success library copy for dinner.hostInstruction."
+    },
+    "library.dinner.attendeeExperience.3": {
+      "value": "Meet a new table without managing logistics.",
+      "description": "Event Success library copy for dinner.attendeeExperience."
+    },
+    "library.dinner.title.5": {
+      "value": "Wrap and host help",
+      "description": "Event Success library copy for dinner.title."
+    },
+    "library.dinner.hostInstruction.4": {
+      "value": "Offer help with one introduction before people leave the table format.",
+      "description": "Event Success library copy for dinner.hostInstruction."
+    },
+    "library.dinner.attendeeExperience.4": {
+      "value": "Ask the host for help with a natural introduction before leaving.",
+      "description": "Event Success library copy for dinner.attendeeExperience."
+    },
+    "library.dinner.antiPatterns.1": {
+      "value": "Do not make people move tables without a clear course or transition.",
+      "description": "Event Success library copy for dinner.antiPatterns."
+    },
+    "library.dinner.antiPatterns.2": {
+      "value": "Do not expose compatibility answers to hosts or tablemates.",
+      "description": "Event Success library copy for dinner.antiPatterns."
+    },
+    "library.dinner.antiPatterns.3": {
+      "value": "Do not make the table plan feel like a verdict on chemistry.",
+      "description": "Event Success library copy for dinner.antiPatterns."
+    },
+    "library.dinner.iterationQuestions.1": {
+      "value": "Did the seating plan create balanced conversation?",
+      "description": "Event Success library copy for dinner.iterationQuestions."
+    },
+    "library.dinner.iterationQuestions.2": {
+      "value": "Did table changes feel energizing or disruptive?",
+      "description": "Event Success library copy for dinner.iterationQuestions."
+    },
+    "library.dinner.iterationQuestions.3": {
+      "value": "Did attendees follow up after the dinner?",
+      "description": "Event Success library copy for dinner.iterationQuestions."
+    },
+    "library.dinner.wiringNotes.1": {
+      "value": "Table assignment generation should eventually become a dedicated assignment engine; V1 can use host-reviewed structure and reveal controls.",
+      "description": "Event Success library copy for dinner.wiringNotes."
+    },
+    "library.hostLedSocial.title.1": {
+      "value": "Host-led Social",
+      "description": "Event Success library copy for hostLedSocial.title."
+    },
+    "library.hostLedSocial.summary.1": {
+      "value": "A simple wrapper for classes, bar crawls, open activities, and host-led formats where the activity stays primary.",
+      "description": "Event Success library copy for hostLedSocial.summary."
+    },
+    "library.hostLedSocial.attendeePromise.1": {
+      "value": "The event stays natural, with enough structure to arrive, talk, and follow up.",
+      "description": "Event Success library copy for hostLedSocial.attendeePromise."
+    },
+    "library.hostLedSocial.hostPromise.1": {
+      "value": "Use check-in, a short script, prompts, wingman requests, feedback, and coaching without forcing rotations.",
+      "description": "Event Success library copy for hostLedSocial.hostPromise."
+    },
+    "library.hostLedSocial.rationale.1": {
+      "value": "Flexible formats need light defaults that can scale.",
+      "description": "Event Success library copy for hostLedSocial.rationale."
+    },
+    "library.hostLedSocial.title.2": {
+      "value": "Check in",
+      "description": "Event Success library copy for hostLedSocial.title."
+    },
+    "library.hostLedSocial.hostInstruction.1": {
+      "value": "Confirm arrivals and keep the room easy to enter.",
+      "description": "Event Success library copy for hostLedSocial.hostInstruction."
+    },
+    "library.hostLedSocial.attendeeExperience.1": {
+      "value": "Arrive and know the host has you checked in.",
+      "description": "Event Success library copy for hostLedSocial.attendeeExperience."
+    },
+    "library.hostLedSocial.title.3": {
+      "value": "Welcome",
+      "description": "Event Success library copy for hostLedSocial.title."
+    },
+    "library.hostLedSocial.hostInstruction.2": {
+      "value": "Explain the format, safety expectations, and social permission.",
+      "description": "Event Success library copy for hostLedSocial.hostInstruction."
+    },
+    "library.hostLedSocial.attendeeExperience.2": {
+      "value": "Know what is happening and that talking is welcome.",
+      "description": "Event Success library copy for hostLedSocial.attendeeExperience."
+    },
+    "library.hostLedSocial.title.4": {
+      "value": "Prompted pause",
+      "description": "Event Success library copy for hostLedSocial.title."
+    },
+    "library.hostLedSocial.hostInstruction.3": {
+      "value": "Use one prompt at a natural pause, not during the core activity.",
+      "description": "Event Success library copy for hostLedSocial.hostInstruction."
+    },
+    "library.hostLedSocial.attendeeExperience.3": {
+      "value": "Get one easy reason to start another conversation.",
+      "description": "Event Success library copy for hostLedSocial.attendeeExperience."
+    },
+    "library.hostLedSocial.title.5": {
+      "value": "Host-help last call",
+      "description": "Event Success library copy for hostLedSocial.title."
+    },
+    "library.hostLedSocial.hostInstruction.4": {
+      "value": "Offer to help attendees make one introduction before the room disperses.",
+      "description": "Event Success library copy for hostLedSocial.hostInstruction."
+    },
+    "library.hostLedSocial.attendeeExperience.4": {
+      "value": "Ask the host for help with a specific person from the event.",
+      "description": "Event Success library copy for hostLedSocial.attendeeExperience."
+    },
+    "library.hostLedSocial.antiPatterns.1": {
+      "value": "Do not add phone-heavy mechanics to class or open formats by default.",
+      "description": "Event Success library copy for hostLedSocial.antiPatterns."
+    },
+    "library.hostLedSocial.antiPatterns.2": {
+      "value": "Do not imply compatibility scoring is part of every activity.",
+      "description": "Event Success library copy for hostLedSocial.antiPatterns."
+    },
+    "library.hostLedSocial.antiPatterns.3": {
+      "value": "Do not show assignment controls unless the host opts into structure.",
+      "description": "Event Success library copy for hostLedSocial.antiPatterns."
+    },
+    "library.hostLedSocial.iterationQuestions.1": {
+      "value": "Did the host script make the format clearer?",
+      "description": "Event Success library copy for hostLedSocial.iterationQuestions."
+    },
+    "library.hostLedSocial.iterationQuestions.2": {
+      "value": "Did prompts feel natural at the pause points?",
+      "description": "Event Success library copy for hostLedSocial.iterationQuestions."
+    },
+    "library.hostLedSocial.iterationQuestions.3": {
+      "value": "Did host-help requests create more live introductions?",
+      "description": "Event Success library copy for hostLedSocial.iterationQuestions."
+    },
+    "library.hostLedSocial.wiringNotes.1": {
+      "value": "This playbook is the fallback for activities whose default flow keeps everyone together.",
+      "description": "Event Success library copy for hostLedSocial.wiringNotes."
+    },
+    "library.algorithmicMixer.title.1": {
+      "value": "Singles Mixer",
+      "description": "Event Success library copy for algorithmicMixer.title."
+    },
+    "library.algorithmicMixer.summary.1": {
+      "value": "A mixer format with short questions, clues, reveal moments, host help, and explanations.",
+      "description": "Event Success library copy for algorithmicMixer.summary."
+    },
+    "library.algorithmicMixer.attendeePromise.1": {
+      "value": "The event has a shared ritual, but chemistry is still yours to judge.",
+      "description": "Event Success library copy for algorithmicMixer.attendeePromise."
+    },
+    "library.algorithmicMixer.hostPromise.1": {
+      "value": "Create a memorable reveal flow while measuring whether the structure actually improved outcomes.",
+      "description": "Event Success library copy for algorithmicMixer.hostPromise."
+    },
+    "library.algorithmicMixer.rationale.1": {
+      "value": "Needs enough density for matching but not so many that reveal loses intimacy.",
+      "description": "Event Success library copy for algorithmicMixer.rationale."
+    },
+    "library.algorithmicMixer.title.2": {
+      "value": "Quick questions",
+      "description": "Event Success library copy for algorithmicMixer.title."
+    },
+    "library.algorithmicMixer.hostInstruction.1": {
+      "value": "Use questions that set up conversation, not permanence.",
+      "description": "Event Success library copy for algorithmicMixer.hostInstruction."
+    },
+    "library.algorithmicMixer.attendeeExperience.1": {
+      "value": "Answer a few prompts before arrival.",
+      "description": "Event Success library copy for algorithmicMixer.attendeeExperience."
+    },
+    "library.algorithmicMixer.title.3": {
+      "value": "Check in and clue card",
+      "description": "Event Success library copy for algorithmicMixer.title."
+    },
+    "library.algorithmicMixer.hostInstruction.2": {
+      "value": "Confirm attendance and issue first clue.",
+      "description": "Event Success library copy for algorithmicMixer.hostInstruction."
+    },
+    "library.algorithmicMixer.attendeeExperience.2": {
+      "value": "Enter with a playful search prompt.",
+      "description": "Event Success library copy for algorithmicMixer.attendeeExperience."
+    },
+    "library.algorithmicMixer.title.4": {
+      "value": "Rounds and reveal",
+      "description": "Event Success library copy for algorithmicMixer.title."
+    },
+    "library.algorithmicMixer.hostInstruction.3": {
+      "value": "Run two or three rounds before any match reveal.",
+      "description": "Event Success library copy for algorithmicMixer.hostInstruction."
+    },
+    "library.algorithmicMixer.attendeeExperience.3": {
+      "value": "Meet people before seeing suggested matches.",
+      "description": "Event Success library copy for algorithmicMixer.attendeeExperience."
+    },
+    "library.algorithmicMixer.title.5": {
+      "value": "Host-help and openers",
+      "description": "Event Success library copy for algorithmicMixer.title."
+    },
+    "library.algorithmicMixer.hostInstruction.4": {
+      "value": "Use compatibility as conversation context and offer help with one introduction.",
+      "description": "Event Success library copy for algorithmicMixer.hostInstruction."
+    },
+    "library.algorithmicMixer.attendeeExperience.4": {
+      "value": "Ask for host help while the room is live, then use shared context after matching.",
+      "description": "Event Success library copy for algorithmicMixer.attendeeExperience."
+    },
+    "library.algorithmicMixer.antiPatterns.1": {
+      "value": "Do not sell compatibility as a guarantee of spark.",
+      "description": "Event Success library copy for algorithmicMixer.antiPatterns."
+    },
+    "library.algorithmicMixer.antiPatterns.2": {
+      "value": "Do not reveal too early; people should meet before match framing.",
+      "description": "Event Success library copy for algorithmicMixer.antiPatterns."
+    },
+    "library.algorithmicMixer.antiPatterns.3": {
+      "value": "Do not make phone use dominate the room.",
+      "description": "Event Success library copy for algorithmicMixer.antiPatterns."
+    },
+    "library.algorithmicMixer.iterationQuestions.1": {
+      "value": "Did the reveal create energy or pressure?",
+      "description": "Event Success library copy for algorithmicMixer.iterationQuestions."
+    },
+    "library.algorithmicMixer.iterationQuestions.2": {
+      "value": "Did questionnaire answers improve conversations?",
+      "description": "Event Success library copy for algorithmicMixer.iterationQuestions."
+    },
+    "library.algorithmicMixer.iterationQuestions.3": {
+      "value": "Did matches chat at a higher rate than non-reveal formats?",
+      "description": "Event Success library copy for algorithmicMixer.iterationQuestions."
+    },
+    "library.algorithmicMixer.wiringNotes.1": {
+      "value": "Keep this behind WIP until consent, privacy, and explanation copy are approved.",
+      "description": "Event Success library copy for algorithmicMixer.wiringNotes."
+    },
+    "modules.crowdBalance.title.1": {
+      "value": "Booking balance preview",
+      "description": "Event Success modules copy for crowdBalance.title."
+    },
+    "modules.crowdBalance.attendeePromise.1": {
+      "value": "The room feels intentional instead of random.",
+      "description": "Event Success modules copy for crowdBalance.attendeePromise."
+    },
+    "modules.crowdBalance.hostPromise.1": {
+      "value": "Shows waitlist, cohort, skill, and pace gaps before the event.",
+      "description": "Event Success modules copy for crowdBalance.hostPromise."
+    },
+    "modules.crowdBalance.setupSteps.1": {
+      "value": "Collect only the fields needed for balance decisions.",
+      "description": "Event Success modules copy for crowdBalance.setupSteps."
+    },
+    "modules.crowdBalance.setupSteps.2": {
+      "value": "Show balance risk before the host confirms additional attendees.",
+      "description": "Event Success modules copy for crowdBalance.setupSteps."
+    },
+    "modules.crowdBalance.setupSteps.3": {
+      "value": "Use waitlist offers instead of silent rejection when possible.",
+      "description": "Event Success modules copy for crowdBalance.setupSteps."
+    },
+    "modules.crowdBalance.riskControls.1": {
+      "value": "Do not expose private cohort counts to attendees.",
+      "description": "Event Success modules copy for crowdBalance.riskControls."
+    },
+    "modules.crowdBalance.riskControls.2": {
+      "value": "Keep non-binary and queer formats explicit instead of forcing binary caps.",
+      "description": "Event Success modules copy for crowdBalance.riskControls."
+    },
+    "modules.checkIn.title.1": {
+      "value": "Attendance and live roster",
+      "description": "Event Success modules copy for checkIn.title."
+    },
+    "modules.checkIn.attendeePromise.1": {
+      "value": "Arrival is quick and the right people enter the loop.",
+      "description": "Event Success modules copy for checkIn.attendeePromise."
+    },
+    "modules.checkIn.hostPromise.1": {
+      "value": "Confirms who actually attended before matching and reviews.",
+      "description": "Event Success modules copy for checkIn.hostPromise."
+    },
+    "modules.checkIn.setupSteps.1": {
+      "value": "Use the shared event attendance system as the source of truth.",
+      "description": "Event Success modules copy for checkIn.setupSteps."
+    },
+    "modules.checkIn.setupSteps.2": {
+      "value": "Support QR check-in as one arrival method, not a separate product loop.",
+      "description": "Event Success modules copy for checkIn.setupSteps."
+    },
+    "modules.checkIn.setupSteps.3": {
+      "value": "Let hosts mark manual arrivals when phones fail.",
+      "description": "Event Success modules copy for checkIn.setupSteps."
+    },
+    "modules.checkIn.setupSteps.4": {
+      "value": "Use checked-in attendees as the eligible pool for post-event Catches.",
+      "description": "Event Success modules copy for checkIn.setupSteps."
+    },
+    "modules.checkIn.riskControls.1": {
+      "value": "Never publish the full roster by default.",
+      "description": "Event Success modules copy for checkIn.riskControls."
+    },
+    "modules.checkIn.riskControls.2": {
+      "value": "Keep host overrides auditable.",
+      "description": "Event Success modules copy for checkIn.riskControls."
+    },
+    "modules.firstHelloCheckIn.title.1": {
+      "value": "First Hello check-in",
+      "description": "Event Success modules copy for firstHelloCheckIn.title."
+    },
+    "modules.firstHelloCheckIn.attendeePromise.1": {
+      "value": "A clear arrival mission gives someone permission to start talking.",
+      "description": "Event Success modules copy for firstHelloCheckIn.attendeePromise."
+    },
+    "modules.firstHelloCheckIn.hostPromise.1": {
+      "value": "Turns location-verified arrival into one guided first interaction before the room gets moving.",
+      "description": "Event Success modules copy for firstHelloCheckIn.hostPromise."
+    },
+    "modules.firstHelloCheckIn.setupSteps.1": {
+      "value": "Verify the attendee is at the venue before assigning a mission.",
+      "description": "Event Success modules copy for firstHelloCheckIn.setupSteps."
+    },
+    "modules.firstHelloCheckIn.setupSteps.2": {
+      "value": "Assign one safe target and one short question, then complete check-in.",
+      "description": "Event Success modules copy for firstHelloCheckIn.setupSteps."
+    },
+    "modules.firstHelloCheckIn.setupSteps.3": {
+      "value": "Always provide reassignment, skip, and host manual check-in fallbacks.",
+      "description": "Event Success modules copy for firstHelloCheckIn.setupSteps."
+    },
+    "modules.firstHelloCheckIn.riskControls.1": {
+      "value": "Do not write peer answers into the target attendee questionnaire.",
+      "description": "Event Success modules copy for firstHelloCheckIn.riskControls."
+    },
+    "modules.firstHelloCheckIn.riskControls.2": {
+      "value": "Never assign blocked or reported pairs.",
+      "description": "Event Success modules copy for firstHelloCheckIn.riskControls."
+    },
+    "modules.firstHelloCheckIn.riskControls.3": {
+      "value": "Do not reveal precise live location or individual answers to hosts.",
+      "description": "Event Success modules copy for firstHelloCheckIn.riskControls."
+    },
+    "modules.hostScript.title.1": {
+      "value": "Welcome script",
+      "description": "Event Success modules copy for hostScript.title."
+    },
+    "modules.hostScript.attendeePromise.1": {
+      "value": "The room gets clear social permission to talk.",
+      "description": "Event Success modules copy for hostScript.attendeePromise."
+    },
+    "modules.hostScript.hostPromise.1": {
+      "value": "Gives non-professional hosts a simple live guide.",
+      "description": "Event Success modules copy for hostScript.hostPromise."
+    },
+    "modules.hostScript.setupSteps.1": {
+      "value": "Prepare a welcome line, safety note, and first prompt.",
+      "description": "Event Success modules copy for hostScript.setupSteps."
+    },
+    "modules.hostScript.setupSteps.2": {
+      "value": "Keep the script short enough to use live.",
+      "description": "Event Success modules copy for hostScript.setupSteps."
+    },
+    "modules.microPods.title.1": {
+      "value": "Small starter groups",
+      "description": "Event Success modules copy for microPods.title."
+    },
+    "modules.microPods.attendeePromise.1": {
+      "value": "Meet a small group before needing to approach strangers.",
+      "description": "Event Success modules copy for microPods.attendeePromise."
+    },
+    "modules.microPods.hostPromise.1": {
+      "value": "Creates mixing without forcing one-to-one pressure.",
+      "description": "Event Success modules copy for microPods.hostPromise."
+    },
+    "modules.microPods.setupSteps.1": {
+      "value": "Group attendees into four to six person pods.",
+      "description": "Event Success modules copy for microPods.setupSteps."
+    },
+    "modules.microPods.setupSteps.2": {
+      "value": "Prefer pace, skill, geography, or interests over hidden romance scoring.",
+      "description": "Event Success modules copy for microPods.setupSteps."
+    },
+    "modules.microPods.setupSteps.3": {
+      "value": "Let hosts reshuffle pods when real arrivals differ from signups.",
+      "description": "Event Success modules copy for microPods.setupSteps."
+    },
+    "modules.microPods.riskControls.1": {
+      "value": "Offer an opt-out for attendees who arrive with friends.",
+      "description": "Event Success modules copy for microPods.riskControls."
+    },
+    "modules.socialMissions.title.1": {
+      "value": "Live prompts",
+      "description": "Event Success modules copy for socialMissions.title."
+    },
+    "modules.socialMissions.attendeePromise.1": {
+      "value": "There is an easy excuse to start one more conversation.",
+      "description": "Event Success modules copy for socialMissions.attendeePromise."
+    },
+    "modules.socialMissions.hostPromise.1": {
+      "value": "Improves room energy without heavy facilitation.",
+      "description": "Event Success modules copy for socialMissions.hostPromise."
+    },
+    "modules.socialMissions.setupSteps.1": {
+      "value": "Generate three activity-specific prompts.",
+      "description": "Event Success modules copy for socialMissions.setupSteps."
+    },
+    "modules.socialMissions.setupSteps.2": {
+      "value": "Keep missions optional and non-performative.",
+      "description": "Event Success modules copy for socialMissions.setupSteps."
+    },
+    "modules.socialMissions.setupSteps.3": {
+      "value": "End each mission with a natural transition back to the activity.",
+      "description": "Event Success modules copy for socialMissions.setupSteps."
+    },
+    "modules.guidedRotations.title.1": {
+      "value": "Timed partner rotations",
+      "description": "Event Success modules copy for guidedRotations.title."
+    },
+    "modules.guidedRotations.attendeePromise.1": {
+      "value": "Everyone meets more people without doing the logistics.",
+      "description": "Event Success modules copy for guidedRotations.attendeePromise."
+    },
+    "modules.guidedRotations.hostPromise.1": {
+      "value": "Creates predictable mixing for games, tables, and teams.",
+      "description": "Event Success modules copy for guidedRotations.hostPromise."
+    },
+    "modules.guidedRotations.setupSteps.1": {
+      "value": "Set round length and rotation count.",
+      "description": "Event Success modules copy for guidedRotations.setupSteps."
+    },
+    "modules.guidedRotations.setupSteps.2": {
+      "value": "Avoid back-to-back repeats.",
+      "description": "Event Success modules copy for guidedRotations.setupSteps."
+    },
+    "modules.guidedRotations.setupSteps.3": {
+      "value": "Show the next partner, table, or team only when needed.",
+      "description": "Event Success modules copy for guidedRotations.setupSteps."
+    },
+    "modules.guidedRotations.riskControls.1": {
+      "value": "Do not use timed rotations for movement-heavy events unless there is a pause.",
+      "description": "Event Success modules copy for guidedRotations.riskControls."
+    },
+    "modules.liveReveal.title.1": {
+      "value": "Synchronized partner reveal",
+      "description": "Event Success modules copy for liveReveal.title."
+    },
+    "modules.liveReveal.attendeePromise.1": {
+      "value": "The next assignment lands as a shared reveal, not a buried schedule.",
+      "description": "Event Success modules copy for liveReveal.attendeePromise."
+    },
+    "modules.liveReveal.hostPromise.1": {
+      "value": "Runs countdowns, clues, and round-by-round reveal control from the live plan.",
+      "description": "Event Success modules copy for liveReveal.hostPromise."
+    },
+    "modules.liveReveal.setupSteps.1": {
+      "value": "Generate or edit assignments before starting the first reveal.",
+      "description": "Event Success modules copy for liveReveal.setupSteps."
+    },
+    "modules.liveReveal.setupSteps.2": {
+      "value": "Use the saved countdown to create a synchronized room moment.",
+      "description": "Event Success modules copy for liveReveal.setupSteps."
+    },
+    "modules.liveReveal.setupSteps.3": {
+      "value": "Reveal only the current round so the next transition still has tension.",
+      "description": "Event Success modules copy for liveReveal.setupSteps."
+    },
+    "modules.liveReveal.riskControls.1": {
+      "value": "Frame compatibility clues as conversation context, not certainty.",
+      "description": "Event Success modules copy for liveReveal.riskControls."
+    },
+    "modules.liveReveal.riskControls.2": {
+      "value": "Do not expose normal post-event catch targets to hosts.",
+      "description": "Event Success modules copy for liveReveal.riskControls."
+    },
+    "modules.compatibilityQuestionnaire.title.1": {
+      "value": "Match clue questions",
+      "description": "Event Success modules copy for compatibilityQuestionnaire.title."
+    },
+    "modules.compatibilityQuestionnaire.attendeePromise.1": {
+      "value": "Matching moments have a reason beyond looks.",
+      "description": "Event Success modules copy for compatibilityQuestionnaire.attendeePromise."
+    },
+    "modules.compatibilityQuestionnaire.hostPromise.1": {
+      "value": "Creates reveal clues and optional pairing context without promising chemistry.",
+      "description": "Event Success modules copy for compatibilityQuestionnaire.hostPromise."
+    },
+    "modules.compatibilityQuestionnaire.setupSteps.1": {
+      "value": "Ask fewer than ten questions in the first version.",
+      "description": "Event Success modules copy for compatibilityQuestionnaire.setupSteps."
+    },
+    "modules.compatibilityQuestionnaire.setupSteps.2": {
+      "value": "Tie questions to the event vibe, not a permanent personality score.",
+      "description": "Event Success modules copy for compatibilityQuestionnaire.setupSteps."
+    },
+    "modules.compatibilityQuestionnaire.setupSteps.3": {
+      "value": "Explain compatibility as conversation context, not destiny.",
+      "description": "Event Success modules copy for compatibilityQuestionnaire.setupSteps."
+    },
+    "modules.compatibilityQuestionnaire.riskControls.1": {
+      "value": "Avoid implying Catch can predict chemistry.",
+      "description": "Event Success modules copy for compatibilityQuestionnaire.riskControls."
+    },
+    "modules.compatibilityQuestionnaire.riskControls.2": {
+      "value": "Do not block organic interaction before the reveal.",
+      "description": "Event Success modules copy for compatibilityQuestionnaire.riskControls."
+    },
+    "modules.wingmanRequests.title.1": {
+      "value": "\"Help me say hi\" requests",
+      "description": "Event Success modules copy for wingmanRequests.title."
+    },
+    "modules.wingmanRequests.attendeePromise.1": {
+      "value": "Ask the host for help with a specific introduction while the event is still live.",
+      "description": "Event Success modules copy for wingmanRequests.attendeePromise."
+    },
+    "modules.wingmanRequests.hostPromise.1": {
+      "value": "Shows only explicit, consented requests so the host can create natural introductions.",
+      "description": "Event Success modules copy for wingmanRequests.hostPromise."
+    },
+    "modules.wingmanRequests.setupSteps.1": {
+      "value": "Open host-assisted requests after check-in or attendance confirmation.",
+      "description": "Event Success modules copy for wingmanRequests.setupSteps."
+    },
+    "modules.wingmanRequests.setupSteps.2": {
+      "value": "Limit candidates to compatible checked-in attendees.",
+      "description": "Event Success modules copy for wingmanRequests.setupSteps."
+    },
+    "modules.wingmanRequests.setupSteps.3": {
+      "value": "Use requests while the room is still active.",
+      "description": "Event Success modules copy for wingmanRequests.setupSteps."
+    },
+    "modules.wingmanRequests.riskControls.1": {
+      "value": "Show hosts only requests where the attendee explicitly opted in.",
+      "description": "Event Success modules copy for wingmanRequests.riskControls."
+    },
+    "modules.wingmanRequests.riskControls.2": {
+      "value": "Do not notify the requested attendee automatically.",
+      "description": "Event Success modules copy for wingmanRequests.riskControls."
+    },
+    "modules.wingmanRequests.riskControls.3": {
+      "value": "Respect blocks, reports, and profile visibility settings.",
+      "description": "Event Success modules copy for wingmanRequests.riskControls."
+    },
+    "modules.contextualOpeners.title.1": {
+      "value": "Suggested first-message openers",
+      "description": "Event Success modules copy for contextualOpeners.title."
+    },
+    "modules.contextualOpeners.attendeePromise.1": {
+      "value": "A match starts with shared context instead of a cold hi.",
+      "description": "Event Success modules copy for contextualOpeners.attendeePromise."
+    },
+    "modules.contextualOpeners.hostPromise.1": {
+      "value": "Improves downstream chat starts without host involvement.",
+      "description": "Event Success modules copy for contextualOpeners.hostPromise."
+    },
+    "modules.contextualOpeners.setupSteps.1": {
+      "value": "Use event, team, route, prompt, or table context.",
+      "description": "Event Success modules copy for contextualOpeners.setupSteps."
+    },
+    "modules.contextualOpeners.setupSteps.2": {
+      "value": "Let either person ignore the suggested opener.",
+      "description": "Event Success modules copy for contextualOpeners.setupSteps."
+    },
+    "modules.contextualOpeners.riskControls.1": {
+      "value": "Do not reveal private questionnaire answers unless both people consented.",
+      "description": "Event Success modules copy for contextualOpeners.riskControls."
+    },
+    "modules.decomposedFeedback.title.1": {
+      "value": "After-event attendee feedback",
+      "description": "Event Success modules copy for decomposedFeedback.title."
+    },
+    "modules.decomposedFeedback.attendeePromise.1": {
+      "value": "Feedback is specific and private.",
+      "description": "Event Success modules copy for decomposedFeedback.attendeePromise."
+    },
+    "modules.decomposedFeedback.hostPromise.1": {
+      "value": "Separates welcome, balance, structure, safety, and chemistry.",
+      "description": "Event Success modules copy for decomposedFeedback.hostPromise."
+    },
+    "modules.decomposedFeedback.setupSteps.1": {
+      "value": "Ask short dimension-level questions after the event.",
+      "description": "Event Success modules copy for decomposedFeedback.setupSteps."
+    },
+    "modules.decomposedFeedback.setupSteps.2": {
+      "value": "Use private summaries before drawing public conclusions.",
+      "description": "Event Success modules copy for decomposedFeedback.setupSteps."
+    },
+    "modules.hostAnalytics.title.1": {
+      "value": "Host recap",
+      "description": "Event Success modules copy for hostAnalytics.title."
+    },
+    "modules.hostAnalytics.attendeePromise.1": {
+      "value": "The next event should feel better because this one taught us something.",
+      "description": "Event Success modules copy for hostAnalytics.attendeePromise."
+    },
+    "modules.hostAnalytics.hostPromise.1": {
+      "value": "Turns check-in, mixing, crushes, reviews, and repeats into advice.",
+      "description": "Event Success modules copy for hostAnalytics.hostPromise."
+    },
+    "modules.hostAnalytics.setupSteps.1": {
+      "value": "Show a short post-event brief.",
+      "description": "Event Success modules copy for hostAnalytics.setupSteps."
+    },
+    "modules.hostAnalytics.setupSteps.2": {
+      "value": "Recommend one or two changes, not a dashboard wall.",
+      "description": "Event Success modules copy for hostAnalytics.setupSteps."
+    },
+    "modules.hostAnalytics.setupSteps.3": {
+      "value": "Track improvement over repeated events by the same host.",
+      "description": "Event Success modules copy for hostAnalytics.setupSteps."
+    },
+    "modules.safetyControls.title.1": {
+      "value": "Safety layer",
+      "description": "Event Success modules copy for safetyControls.title."
+    },
+    "modules.safetyControls.attendeePromise.1": {
+      "value": "Attendees can participate without losing control.",
+      "description": "Event Success modules copy for safetyControls.attendeePromise."
+    },
+    "modules.safetyControls.hostPromise.1": {
+      "value": "Gives hosts escalation and boundary tools.",
+      "description": "Event Success modules copy for safetyControls.hostPromise."
+    },
+    "modules.safetyControls.setupSteps.1": {
+      "value": "Respect block and report state everywhere.",
+      "description": "Event Success modules copy for safetyControls.setupSteps."
+    },
+    "modules.safetyControls.setupSteps.2": {
+      "value": "Let attendees opt out of live intros or visibility modules.",
+      "description": "Event Success modules copy for safetyControls.setupSteps."
+    },
+    "modules.safetyControls.setupSteps.3": {
+      "value": "Expose host help and report affordances without drama.",
+      "description": "Event Success modules copy for safetyControls.setupSteps."
+    },
+    "modules.safetyControls.riskControls.1": {
+      "value": "Treat safety as a launch prerequisite for live event features.",
+      "description": "Event Success modules copy for safetyControls.riskControls."
+    },
+    "metrics.checkInRate.label.1": {
+      "value": "Check-in rate",
+      "description": "Event Success metrics copy for checkInRate.label."
+    },
+    "metrics.checkInRate.description.1": {
+      "value": "Share of booked attendees who actually arrive.",
+      "description": "Event Success metrics copy for checkInRate.description."
+    },
+    "metrics.checkInRate.target.1": {
+      "value": "85 percent or higher for repeatable events.",
+      "description": "Event Success metrics copy for checkInRate.target."
+    },
+    "metrics.introCoverage.label.1": {
+      "value": "Intro coverage",
+      "description": "Event Success metrics copy for introCoverage.label."
+    },
+    "metrics.introCoverage.description.1": {
+      "value": "Share of attendees who met at least two new people.",
+      "description": "Event Success metrics copy for introCoverage.description."
+    },
+    "metrics.introCoverage.target.1": {
+      "value": "70 percent or higher for guided formats.",
+      "description": "Event Success metrics copy for introCoverage.target."
+    },
+    "metrics.wingmanRequestRate.label.1": {
+      "value": "Wingman request rate",
+      "description": "Event Success metrics copy for wingmanRequestRate.label."
+    },
+    "metrics.wingmanRequestRate.description.1": {
+      "value": "Share of checked-in attendees who asked the host for help.",
+      "description": "Event Success metrics copy for wingmanRequestRate.description."
+    },
+    "metrics.wingmanRequestRate.target.1": {
+      "value": "Use as a live facilitation signal, not a success target.",
+      "description": "Event Success metrics copy for wingmanRequestRate.target."
+    },
+    "metrics.mutualMatchRate.label.1": {
+      "value": "Mutual match rate",
+      "description": "Event Success metrics copy for mutualMatchRate.label."
+    },
+    "metrics.mutualMatchRate.description.1": {
+      "value": "Share of attendees who convert into at least one mutual match.",
+      "description": "Event Success metrics copy for mutualMatchRate.description."
+    },
+    "metrics.mutualMatchRate.target.1": {
+      "value": "Measure by format; optimize trend, not one-event spikes.",
+      "description": "Event Success metrics copy for mutualMatchRate.target."
+    },
+    "metrics.chatStartRate.label.1": {
+      "value": "Chat start rate",
+      "description": "Event Success metrics copy for chatStartRate.label."
+    },
+    "metrics.chatStartRate.description.1": {
+      "value": "Share of mutual matches where someone sends a first message.",
+      "description": "Event Success metrics copy for chatStartRate.description."
+    },
+    "metrics.chatStartRate.target.1": {
+      "value": "60 percent or higher when contextual openers are available.",
+      "description": "Event Success metrics copy for chatStartRate.target."
+    },
+    "metrics.dimensionRatings.label.1": {
+      "value": "Dimension ratings",
+      "description": "Event Success metrics copy for dimensionRatings.label."
+    },
+    "metrics.dimensionRatings.description.1": {
+      "value": "Welcome, crowd balance, structure, safety, and venue scores.",
+      "description": "Event Success metrics copy for dimensionRatings.description."
+    },
+    "metrics.dimensionRatings.target.1": {
+      "value": "Use private coaching before public host-quality labels.",
+      "description": "Event Success metrics copy for dimensionRatings.target."
+    },
+    "coach.analyze.title.1": {
+      "value": "Review comfort and safety before the next event",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.1": {
+      "value": "Safety incidents should block optimization work until the host has a clear escalation and prevention plan.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.title.2": {
+      "value": "Tighten arrival and attendance capture",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.2": {
+      "value": "Low check-in makes assignments, reviews, and host coaching less trustworthy.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.strength.1": {
+      "value": "Arrival data is reliable enough for matching and reports.",
+      "description": "Event Success coach copy for analyze.strength."
+    },
+    "coach.analyze.title.3": {
+      "value": "Decide pending requests before demand goes cold",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.3": {
+      "value": "Request-to-join works only if people hear back while the event still feels timely.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.title.4": {
+      "value": "Make waitlist offers easier to accept",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.4": {
+      "value": "Offers are being sent, but not enough people are converting. Shorter expiry windows and clearer arrival expectations usually help.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.strength.2": {
+      "value": "A meaningful share of attendees came back.",
+      "description": "Event Success coach copy for analyze.strength."
+    },
+    "coach.analyze.title.5": {
+      "value": "Create more social permission during the event",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.5": {
+      "value": "Movement-heavy events need light pods and cooldown prompts instead of phone-heavy live tasks.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.rationale.6": {
+      "value": "Stationary events can use teams, rotations, or prompts to reduce approach anxiety.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.strength.3": {
+      "value": "Most attendees met multiple people.",
+      "description": "Event Success coach copy for analyze.strength."
+    },
+    "coach.analyze.strength.4": {
+      "value": "Assignments reached most active attendees.",
+      "description": "Event Success coach copy for analyze.strength."
+    },
+    "coach.analyze.title.6": {
+      "value": "Refresh assignments from the live roster",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.7": {
+      "value": "Low assignment coverage means attendees may be missing the structured moments that make the event feel intentional.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.title.7": {
+      "value": "Make structured participation feel easier to opt into",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.8": {
+      "value": "A high opt-out rate usually means pods or rotations need clearer framing, shorter rounds, or softer host facilitation.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.strength.5": {
+      "value": "Some attendees trusted the host enough to ask for help live.",
+      "description": "Event Success coach copy for analyze.strength."
+    },
+    "coach.analyze.title.8": {
+      "value": "Use wingman requests before the final reveal",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.9": {
+      "value": "Host-visible help requests are strongest while the room is still live, before attendees lose momentum.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.title.9": {
+      "value": "Give matches event-specific openers",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.10": {
+      "value": "Matches are forming, but chat is not starting reliably. Shared event context should make the first message easier.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.strength.6": {
+      "value": "Mutual matches are converting into chat starts.",
+      "description": "Event Success coach copy for analyze.strength."
+    },
+    "coach.analyze.title.10": {
+      "value": "Make the host opening clearer and warmer",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.11": {
+      "value": "A weak welcome can make attendees feel like strangers sharing space instead of participants in the same event.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.title.11": {
+      "value": "Adjust the amount of live structure",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.12": {
+      "value": "Structure should create permission to connect without making the event feel controlled or artificial.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "coach.analyze.strength.7": {
+      "value": "Feedback response is strong enough to trust the report.",
+      "description": "Event Success coach copy for analyze.strength."
+    },
+    "coach.analyze.title.12": {
+      "value": "Ask for feedback while the event is still fresh",
+      "description": "Event Success coach copy for analyze.title."
+    },
+    "coach.analyze.rationale.13": {
+      "value": "A thin feedback sample makes the coach less reliable. Prompting checked-in attendees sooner gives the host a clearer read.",
+      "description": "Event Success coach copy for analyze.rationale."
+    },
+    "eventPolicyCancellation.quoteFor.userLabel.1": {
+      "value": "Free waitlist removal",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.userLabel."
+    },
+    "eventPolicyCancellation.quoteFor.explanation.1": {
+      "value": "Waitlisted attendees have not paid and can leave freely.",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.explanation."
+    },
+    "eventPolicyCancellation.quoteFor.userLabel.2": {
+      "value": "Made complete",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.userLabel."
+    },
+    "eventPolicyCancellation.quoteFor.explanation.2": {
+      "value": "Host or platform cancellation overrides host policy; the attendee gets a full refund before any host payout.",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.explanation."
+    },
+    "eventPolicyCancellation.quoteFor.userLabel.3": {
+      "value": "Free cancellation",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.userLabel."
+    },
+    "eventPolicyCancellation.quoteFor.explanation.3": {
+      "value": "No payment was collected for this event.",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.explanation."
+    },
+    "eventPolicyCancellation.quoteFor.userLabel.4": {
+      "value": "Full refund",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.userLabel."
+    },
+    "eventPolicyCancellation.quoteFor.explanation.4": {
+      "value": "The attendee cancelled before the full-refund cutoff for this policy.",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.explanation."
+    },
+    "eventPolicyCancellation.quoteFor.explanation.5": {
+      "value": "The cash refund window has closed, but this policy still returns platform credit.",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.explanation."
+    },
+    "eventPolicyCancellation.quoteFor.userLabel.5": {
+      "value": "No refund",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.userLabel."
+    },
+    "eventPolicyCancellation.quoteFor.explanation.6": {
+      "value": "The attendee cancelled after the final cancellation window for this policy.",
+      "description": "Structured domain copy for eventPolicyCancellation.quoteFor.explanation."
+    },
+    "eventPolicyCohort.menInterestedInWomen.label.1": {
+      "value": "Men interested in women",
+      "description": "Structured domain copy for eventPolicyCohort.menInterestedInWomen.label."
+    },
+    "eventPolicyCohort.womenInterestedInMen.label.1": {
+      "value": "Women interested in men",
+      "description": "Structured domain copy for eventPolicyCohort.womenInterestedInMen.label."
+    },
+    "eventPolicyCohort.queerOrOpen.label.1": {
+      "value": "Queer or open",
+      "description": "Structured domain copy for eventPolicyCohort.queerOrOpen.label."
+    },
+    "eventPolicyCohort.nonBinaryOrOther.label.1": {
+      "value": "Non-binary or other",
+      "description": "Structured domain copy for eventPolicyCohort.nonBinaryOrOther.label."
+    }
+  }
+}

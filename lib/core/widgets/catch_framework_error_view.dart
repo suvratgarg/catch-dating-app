@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -53,14 +54,17 @@ class CatchFrameworkErrorView extends StatelessWidget {
                       const CatchErrorIcon(),
                       gapH18,
                       Text(
-                        'Something went wrong',
+                        context
+                            .l10n
+                            .coreCatchFrameworkErrorViewTextSomethingWentWrong,
                         style: CatchTextStyles.headlineS(context),
                         textAlign: TextAlign.center,
                       ),
                       gapH8,
                       Text(
-                        'This screen hit a temporary app error. Please go back '
-                        'or try again in a moment.',
+                        context
+                            .l10n
+                            .coreCatchFrameworkErrorViewTextThisScreenHitA,
                         style: CatchTextStyles.bodyLead(
                           context,
                           color: tokens.ink2,
@@ -136,7 +140,9 @@ class _CatchFrameworkErrorDebugDetailsState
               children: [
                 Expanded(
                   child: Text(
-                    'Developer details',
+                    context
+                        .l10n
+                        .coreCatchFrameworkErrorViewTextDeveloperDetails,
                     style: CatchTextStyles.labelM(
                       context,
                       color: tokens.danger,

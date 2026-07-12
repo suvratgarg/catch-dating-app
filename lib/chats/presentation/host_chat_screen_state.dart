@@ -3,6 +3,7 @@ import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/domain/suvbot_identity.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 
@@ -91,10 +92,12 @@ class HostChatScreenState {
     final isSuvbot = isSuvbotConversation(matchId: matchId, otherUid: otherUid);
     final isHostInquiry = match?.isClubHostInquiry == true;
     final name = isSuvbot
-        ? 'Suvbot'
+        ? StructuredDomainCopy.chatSuvbotTitle
         : hostProfile?.displayName ??
               profile?.name ??
-              (isHostInquiry ? 'Host conversation' : 'Chat');
+              (isHostInquiry
+                  ? StructuredDomainCopy.chatHostConversationTitle
+                  : StructuredDomainCopy.chatTitle);
     final photoUrl = isSuvbot
         ? null
         : hostProfile?.avatarUrl ?? profile?.primaryPhotoThumbnailUrl;
@@ -129,7 +132,7 @@ class HostChatScreenState {
       },
       safetyTargetName: profile?.name ?? 'this person',
       messageOtherName: isSuvbot
-          ? 'Suvbot'
+          ? StructuredDomainCopy.chatSuvbotTitle
           : isHostInquiry
           ? name
           : profile?.name ?? 'your match',

@@ -190,7 +190,6 @@ export type FeaturedOrganizerCardItem = {
   name: ReactNode;
   onClick?: AnchorHTMLAttributes<HTMLAnchorElement>["onClick"];
   status: ReactNode;
-  strength: ReactNode;
 };
 type ListingSuccessMetricGridItem = {
   label: ReactNode;
@@ -1544,7 +1543,6 @@ export function FeaturedOrganizerCardGrid({
             <h3>{item.name}</h3>
             <p>{item.detail}</p>
           </div>
-          {item.strength}
         </PlainLink>
       ))}
     </FeaturedOrganizersGrid>
@@ -3729,14 +3727,12 @@ export function ChipRail({
       data-reveal={reveal || undefined}
     >
       {items.map((item, index) => {
-        const itemProps = {
-          className: item.active ? "is-active" : undefined,
-          key: item.key ?? index,
-        };
+        const itemKey = item.key ?? index;
+        const itemClassName = item.active ? "is-active" : undefined;
         return itemElement === "b" ? (
-          <b {...itemProps}>{item.label}</b>
+          <b className={itemClassName} key={itemKey}>{item.label}</b>
         ) : (
-          <span {...itemProps}>{item.label}</span>
+          <span className={itemClassName} key={itemKey}>{item.label}</span>
         );
       })}
     </div>

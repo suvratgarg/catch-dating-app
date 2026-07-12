@@ -1,7 +1,7 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.1.2
-updated: 2026-06-30
+version: 0.1.4
+updated: 2026-07-12
 owner: marketing_website
 status: active
 ---
@@ -30,6 +30,9 @@ Website:
   accepts analytics consent.
 - `functions/src/waitlist/joinWaitlist.ts` normalizes marketing attribution and
   analytics metadata into Firestore.
+- Every website `dataLayer` event carries
+  `content_version: "website_copy_v2"`; the central analytics adapter owns the
+  field so individual call sites cannot omit or override it.
 
 App:
 
@@ -60,7 +63,7 @@ Warehouse:
 
 | Event | Primary conversion? | Source | Required parameters | Ad-platform use |
 | --- | --- | --- | --- | --- |
-| `page_view` | No | `trackPageView` | `page_name`, `page_path`, `page_location`, `page_title` | Retargeting and funnel denominator. |
+| `page_view` | No | `trackPageView` | `page_name`, `page_path`, `page_location`, `page_title`, `content_version` | Retargeting and funnel denominator. |
 | `city_selected` | No | Waitlist form city field | `city`, `form_variant` when available | Audience learning. |
 | `role_selected` | No | Waitlist form role field | `role`, `form_variant` when available | Audience learning. |
 | `waitlist_started` | No | Waitlist form focus | `form_variant` | Lead-start funnel. |
@@ -80,7 +83,28 @@ Warehouse:
 | `organizer_listingView` | No | Direct organizer analytics callable mirror | `club_id`, `page_path`, `source` | Organizer page denominator. |
 | `organizer_claimClick` | No | Organizer claim CTA | `club_id`, `page_path`, `source` | Claim-intent retargeting. |
 | `organizer_outboundClick` | No | Organizer external links | `club_id`, `page_path`, `platform` | Host demand proof. |
-| `cta_click` | No | Shared CTA helper | `cta_id`, `href`, `page_path` | Debug and audience learning. |
+| `cta_click` | No | Shared CTA helper | `cta_label`, `cta_href`, `page_path`, `content_version` | Debug and audience learning. |
+
+All website events inherit `content_version` from `trackMarketingEvent`; event
+rows do not repeat it unless the version is especially relevant to the row's
+measurement role.
+Both website CTA wrappers delegate their payload shape to
+`marketingCtaClickParameters`; the pretypecheck analytics contract asserts
+`cta_label`, `cta_href`, and `page_path` exactly and rejects a `cta_id` field.
+
+## Website Copy v2 Launch Measurement Set
+
+Use `content_version = website_copy_v2` to segment the migration launch. The
+initial readout covers:
+
+- store CTA click-through rate;
+- event-browse click-through rate;
+- member waitlist completion;
+- host-application start and completion;
+- organizer-claim conversion; and
+- indexing guardrails for canonical, noindex, sitemap, and 404 behavior.
+
+This is an observational launch readout, not an A/B testing framework.
 
 ## App Event Map
 

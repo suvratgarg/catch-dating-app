@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 enum EventAdmissionPreset {
   openCapacity,
@@ -10,29 +11,37 @@ enum EventAdmissionPreset {
 }
 
 extension EventAdmissionPresetX on EventAdmissionPreset {
-  String get label => switch (this) {
-    EventAdmissionPreset.openCapacity => 'OPEN',
-    EventAdmissionPreset.inviteOnly => 'INVITE',
-    EventAdmissionPreset.requestToJoin => 'REQUEST',
-    EventAdmissionPreset.balancedSingles => 'BALANCED',
-  };
-
-  String get title => switch (this) {
-    EventAdmissionPreset.openCapacity => 'Open capacity',
-    EventAdmissionPreset.inviteOnly => 'Invite only',
-    EventAdmissionPreset.requestToJoin => 'Request to join',
-    EventAdmissionPreset.balancedSingles => 'Balanced singles',
-  };
-
-  String get description => switch (this) {
+  String label(AppLocalizations l10n) => switch (this) {
     EventAdmissionPreset.openCapacity =>
-      'Anyone eligible can book until the event reaches capacity.',
+      l10n.hostsCreateEventPolicyStateLabelOpen,
     EventAdmissionPreset.inviteOnly =>
-      'Only people with the invite code or private link can book. Waitlist is off by default.',
+      l10n.hostsCreateEventPolicyStateLabelInvite,
     EventAdmissionPreset.requestToJoin =>
-      'People request a spot first. The host reviews their public profile before confirming who gets in.',
+      l10n.hostsCreateEventPolicyStateLabelRequest,
     EventAdmissionPreset.balancedSingles =>
-      'Straight men and women are kept within one spot of each other. Queer, open, non-binary, and other attendees can book within total capacity.',
+      l10n.hostsCreateEventPolicyStateLabelBalanced,
+  };
+
+  String title(AppLocalizations l10n) => switch (this) {
+    EventAdmissionPreset.openCapacity =>
+      l10n.hostsCreateEventPolicyStateTitleOpenCapacity,
+    EventAdmissionPreset.inviteOnly =>
+      l10n.hostsCreateEventPolicyStateTitleInviteOnly,
+    EventAdmissionPreset.requestToJoin =>
+      l10n.hostsCreateEventPolicyStateTitleRequestToJoin,
+    EventAdmissionPreset.balancedSingles =>
+      l10n.hostsCreateEventPolicyStateTitleBalancedSingles,
+  };
+
+  String description(AppLocalizations l10n) => switch (this) {
+    EventAdmissionPreset.openCapacity =>
+      l10n.hostsCreateEventPolicyStateDescriptionAnyoneEligibleCanBook,
+    EventAdmissionPreset.inviteOnly =>
+      l10n.hostsCreateEventPolicyStateDescriptionOnlyPeopleWithThe,
+    EventAdmissionPreset.requestToJoin =>
+      l10n.hostsCreateEventPolicyStateDescriptionPeopleRequestASpot,
+    EventAdmissionPreset.balancedSingles =>
+      l10n.hostsCreateEventPolicyStateDescriptionStraightMenAndWomen,
   };
 }
 

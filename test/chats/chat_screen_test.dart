@@ -1451,7 +1451,7 @@ void main() {
         );
         expect(find.byIcon(CatchIcons.sendRounded), findsOneWidget);
         expect(
-          find.text('Unable to send text message right now. Please try again.'),
+          find.text('Something went wrong. Please try again.'),
           findsOneWidget,
         );
       },
@@ -1518,7 +1518,10 @@ void main() {
       expect(safetyRepository.reportCalls, [
         (targetUserId: 'runner-2', contextId: 'match-1'),
       ]);
-      expect(find.text('report failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
       expect(find.text('Report submitted for Taylor.'), findsNothing);
     });
 
@@ -1945,7 +1948,10 @@ void main() {
       expect(safetyRepository.reportCalls, [
         (targetUserId: 'guest-1', contextId: 'host-inquiry-1'),
       ]);
-      expect(find.text('report failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('surfaces failed block mutations through chat feedback', (
@@ -2011,7 +2017,10 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(safetyRepository.blockCalls, ['guest-1']);
-      expect(find.text('block failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('retries failed Suvbot controls through the typed target', (

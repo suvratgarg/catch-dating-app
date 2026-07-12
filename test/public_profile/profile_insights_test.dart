@@ -78,10 +78,10 @@ void main() {
       final summary = profileQualitySummary(buildPublicProfile());
 
       expect(summary.score, lessThan(85));
-      expect(summary.suggestions.map((suggestion) => suggestion.title), [
-        'Add 3 clear photos',
-        'Answer all 3 prompts',
-        'Add photo prompts',
+      expect(summary.suggestions.map((suggestion) => suggestion.kind), [
+        ProfileQualitySuggestionKind.photos,
+        ProfileQualitySuggestionKind.profilePrompts,
+        ProfileQualitySuggestionKind.photoPrompts,
       ]);
     });
   });

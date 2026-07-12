@@ -6,24 +6,29 @@
     "function": "Roboto",
     "data": "IBM Plex Mono"
   },
-  "opszAxis": {
-    "serif": [
-      6,
-      72
-    ],
-    "sans": [
-      14,
-      32
-    ]
+  "variableAxes": {
+    "voice": {
+      "wght": {
+        "min": 100,
+        "max": 900
+      },
+      "wdth": {
+        "min": 62,
+        "max": 125,
+        "lockedValue": 78.0
+      }
+    }
   },
   "rules": {
-    "monoLabels": "Render text pre-uppercased; tracking 0.12-0.18em.",
-    "displayVoice": "Archivo w600, zero tracking, centralized through CatchFonts.",
+    "familyRoles": "Archivo is display/brand voice; platform system is prose, user content, and UI; IBM Plex Mono is data.",
+    "tracking": "Zero by default. Caps-only mono roles own 0.08-0.18em; welcomeReelHeadline owns the -0.5px display exception.",
+    "uppercase": "Use uppercase-enforcing owners with kicker, monoCapsLabel, and badgeCaps.",
+    "displayVoice": "Archivo is roman-only at the locked 78% width and is centralized through CatchFonts.",
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 54,
-    "covered": 53,
+    "publicStaticTextStyleMethods": 55,
+    "covered": 54,
     "excluded": 1
   },
   "excluded": {
@@ -51,7 +56,8 @@
           "axis": "wdth",
           "value": 78.0
         }
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "headline": {
       "role": "voice",
@@ -74,7 +80,8 @@
           "axis": "wdth",
           "value": 78.0
         }
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "headlineS": {
       "role": "voice",
@@ -97,7 +104,56 @@
           "axis": "wdth",
           "value": 78.0
         }
-      ]
+      ],
+      "casePolicy": "mixed"
+    },
+    "welcomeReelHeadline": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 36.0,
+      "weight": 600,
+      "lineHeight": 1.02,
+      "tracking": -0.5,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 600.0
+        },
+        {
+          "axis": "wdth",
+          "value": 78.0
+        }
+      ],
+      "casePolicy": "mixed"
+    },
+    "welcomeIntroBody": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 15.0,
+      "weight": 400,
+      "lineHeight": 1.48,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 400.0
+        },
+        {
+          "axis": "wdth",
+          "value": 78.0
+        }
+      ],
+      "casePolicy": "mixed"
     },
     "titleL": {
       "role": "function",
@@ -110,7 +166,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "profileAnswer": {
       "role": "function",
@@ -123,7 +180,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "proseL": {
       "role": "function",
@@ -136,7 +194,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "proseM": {
       "role": "function",
@@ -149,10 +208,12 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "clubDisplay": {
       "role": "voice",
+      "casePolicy": "mixed",
       "parametric": true,
       "samples": {
         "24": {
@@ -228,6 +289,7 @@
     },
     "eventDisplay": {
       "role": "voice",
+      "casePolicy": "mixed",
       "parametric": true,
       "samples": {
         "24": {
@@ -322,7 +384,8 @@
           "axis": "wdth",
           "value": 78.0
         }
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "consoleTitle": {
       "role": "voice",
@@ -345,7 +408,8 @@
           "axis": "wdth",
           "value": 78.0
         }
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "hint": {
       "role": "voice",
@@ -368,7 +432,8 @@
           "axis": "wdth",
           "value": 78.0
         }
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "name": {
       "role": "function",
@@ -381,7 +446,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "sectionTitle": {
       "role": "function",
@@ -394,7 +460,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "titleS": {
       "role": "function",
@@ -407,7 +474,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "fieldRowTitle": {
       "role": "function",
@@ -420,7 +488,9 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed",
+      "aliasOf": "titleS"
     },
     "bodyLead": {
       "role": "function",
@@ -433,7 +503,8 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "bodyL": {
       "role": "function",
@@ -446,7 +517,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "bodyM": {
       "role": "function",
@@ -459,7 +531,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "bodyS": {
       "role": "function",
@@ -472,7 +545,8 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "appBarSubtitle": {
       "role": "function",
@@ -485,7 +559,9 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      }
+      },
+      "casePolicy": "mixed",
+      "aliasOf": "bodyS"
     },
     "supporting": {
       "role": "function",
@@ -498,7 +574,8 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "labelL": {
       "role": "function",
@@ -511,7 +588,9 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed",
+      "aliasOf": "titleS"
     },
     "fieldLabel": {
       "role": "function",
@@ -524,7 +603,8 @@
       "defaultColor": {
         "light": "#9C958A",
         "dark": "#7E776D"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "labelM": {
       "role": "function",
@@ -537,7 +617,8 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "labelS": {
       "role": "function",
@@ -550,7 +631,8 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "statusLabel": {
       "role": "function",
@@ -563,7 +645,8 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "buttonSm": {
       "role": "function",
@@ -576,7 +659,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "buttonMd": {
       "role": "function",
@@ -589,20 +673,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
-    },
-    "button": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 15.0,
-      "weight": 600,
-      "lineHeight": 1.0,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "buttonLg": {
       "role": "function",
@@ -615,10 +687,12 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "avatarCount": {
       "role": "function",
+      "casePolicy": "mixed",
       "parametric": true,
       "samples": {
         "12": {
@@ -662,8 +736,80 @@
         }
       }
     },
+    "avatarInitials": {
+      "role": "data",
+      "casePolicy": "uppercase-initials",
+      "parametric": true,
+      "samples": {
+        "12": {
+          "role": "data",
+          "family": "IBM Plex Mono",
+          "size": 12.0,
+          "weight": 700,
+          "lineHeight": 1.0,
+          "tracking": 0.0,
+          "fontStyle": "normal",
+          "defaultColor": {
+            "light": "#16140F",
+            "dark": "#F4F0E8"
+          },
+          "fontFeatures": [
+            "FontFeature('tnum', 1)"
+          ]
+        },
+        "18": {
+          "role": "data",
+          "family": "IBM Plex Mono",
+          "size": 18.0,
+          "weight": 700,
+          "lineHeight": 1.0,
+          "tracking": 0.0,
+          "fontStyle": "normal",
+          "defaultColor": {
+            "light": "#16140F",
+            "dark": "#F4F0E8"
+          },
+          "fontFeatures": [
+            "FontFeature('tnum', 1)"
+          ]
+        },
+        "24": {
+          "role": "data",
+          "family": "IBM Plex Mono",
+          "size": 24.0,
+          "weight": 700,
+          "lineHeight": 1.0,
+          "tracking": 0.0,
+          "fontStyle": "normal",
+          "defaultColor": {
+            "light": "#16140F",
+            "dark": "#F4F0E8"
+          },
+          "fontFeatures": [
+            "FontFeature('tnum', 1)"
+          ]
+        }
+      }
+    },
+    "statusBarTime": {
+      "role": "data",
+      "family": "IBM Plex Mono",
+      "size": 14.0,
+      "weight": 700,
+      "lineHeight": 1.0,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
+      ],
+      "casePolicy": "numeric"
+    },
     "otpDigit": {
-      "role": "function",
+      "role": "data",
       "family": "IBM Plex Mono",
       "size": 26.0,
       "weight": 600,
@@ -676,7 +822,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "numeric"
     },
     "chatMessage": {
       "role": "function",
@@ -689,20 +836,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
-    },
-    "chat": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 15.0,
-      "weight": 400,
-      "lineHeight": 1.4,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "chatPreview": {
       "role": "function",
@@ -715,7 +850,9 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      }
+      },
+      "casePolicy": "mixed",
+      "aliasOf": "bodyS"
     },
     "chatThreadContext": {
       "role": "function",
@@ -728,7 +865,8 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "statCompact": {
       "role": "function",
@@ -744,45 +882,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
-    },
-    "mapPinTime": {
-      "role": "map",
-      "parametric": true,
-      "samples": {
-        "1.0": {
-          "role": "map",
-          "family": "Roboto",
-          "size": 13.0,
-          "weight": 700,
-          "lineHeight": 1.2,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          }
-        }
-      }
-    },
-    "mapPinCluster": {
-      "role": "map",
-      "parametric": true,
-      "samples": {
-        "1.0": {
-          "role": "map",
-          "family": "Roboto",
-          "size": 14.0,
-          "weight": 800,
-          "lineHeight": 1.2,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          }
-        }
-      }
+      ],
+      "casePolicy": "mixed"
     },
     "kicker": {
       "role": "data",
@@ -790,7 +891,7 @@
       "size": 11.0,
       "weight": 700,
       "lineHeight": 1.15,
-      "tracking": 0.0,
+      "tracking": 1.76,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#544F47",
@@ -798,7 +899,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "uppercase"
     },
     "kickerLg": {
       "role": "data",
@@ -806,7 +908,7 @@
       "size": 12.0,
       "weight": 700,
       "lineHeight": 1.1,
-      "tracking": 0.0,
+      "tracking": 2.16,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -814,7 +916,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "uppercase"
     },
     "monoLabel": {
       "role": "data",
@@ -830,7 +933,25 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "mixed"
+    },
+    "monoCapsLabel": {
+      "role": "data",
+      "family": "IBM Plex Mono",
+      "size": 11.0,
+      "weight": 600,
+      "lineHeight": 1.15,
+      "tracking": 1.43,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#544F47",
+        "dark": "#BAB2A7"
+      },
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
+      ],
+      "casePolicy": "uppercase"
     },
     "monoLabelS": {
       "role": "data",
@@ -846,7 +967,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "mono": {
       "role": "data",
@@ -862,7 +984,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "numericLarge": {
       "role": "data",
@@ -878,7 +1001,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "numericMeta": {
       "role": "data",
@@ -894,7 +1018,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "meta": {
       "role": "data",
@@ -910,7 +1035,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "badge": {
       "role": "data",
@@ -926,15 +1052,16 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "mixed"
     },
-    "code": {
+    "badgeCaps": {
       "role": "data",
       "family": "IBM Plex Mono",
-      "size": 26.0,
-      "weight": 600,
-      "lineHeight": 1.0,
-      "tracking": 0.0,
+      "size": 9.0,
+      "weight": 700,
+      "lineHeight": 1.1,
+      "tracking": 0.72,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -942,7 +1069,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "uppercase"
     },
     "statDisplay": {
       "role": "data",
@@ -958,7 +1086,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "mixed"
     },
     "clubMemberSeal": {
       "role": "function",
@@ -971,7 +1100,8 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      }
+      },
+      "casePolicy": "mixed"
     },
     "debugDetails": {
       "role": "debug",
@@ -987,7 +1117,8 @@
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"
-      ]
+      ],
+      "casePolicy": "mixed"
     }
   }
 }

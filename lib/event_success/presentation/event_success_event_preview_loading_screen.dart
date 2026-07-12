@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class EventSuccessEventPreviewLoadingScreen extends StatelessWidget {
   const EventSuccessEventPreviewLoadingScreen({super.key});
@@ -15,7 +16,12 @@ class EventSuccessEventPreviewLoadingScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: const CatchTopBar(title: 'Event success preview', border: true),
+      appBar: CatchTopBar(
+        title: context
+            .l10n
+            .eventSuccessEventSuccessEventPreviewLoadingScreenTitleEventSuccessPreview,
+        border: true,
+      ),
       body: const SafeArea(child: EventSuccessEventPreviewLoadingBody()),
     );
   }

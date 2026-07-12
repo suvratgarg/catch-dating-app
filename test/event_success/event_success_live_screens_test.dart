@@ -29,6 +29,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -43,6 +44,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../events/events_test_helpers.dart'
     show buildEvent, buildEventParticipation, buildPublicProfile, buildUser;
 import '../test_pump_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   testWidgets('question progress rail uses stage press without Material ink', (
@@ -531,6 +534,7 @@ void main() {
       );
 
       final loading = EventSuccessCompanionRouteState.resolveCore(
+        l10n: _l10n,
         eventState: const CatchAsyncState<Event?>.loading(),
         initialEvent: null,
         uidState: const CatchAsyncState<String?>.data('runner-1'),
@@ -542,6 +546,7 @@ void main() {
       expect(loading.status, EventSuccessCompanionRouteStatus.loading);
 
       final signedOut = EventSuccessCompanionRouteState.resolveCore(
+        l10n: _l10n,
         eventState: CatchAsyncState<Event?>.data(event),
         initialEvent: null,
         uidState: const CatchAsyncState<String?>.data(null),
@@ -554,6 +559,7 @@ void main() {
       expect(signedOut.message?.title, 'Sign in required');
 
       final missingPlan = EventSuccessCompanionRouteState.resolveCore(
+        l10n: _l10n,
         eventState: CatchAsyncState<Event?>.data(event),
         initialEvent: null,
         uidState: const CatchAsyncState<String?>.data('runner-1'),
@@ -568,6 +574,7 @@ void main() {
       expect(missingPlan.message?.title, 'Companion not available');
 
       final ready = EventSuccessCompanionRouteState.resolveCore(
+        l10n: _l10n,
         eventState: CatchAsyncState<Event?>.data(event),
         initialEvent: null,
         uidState: const CatchAsyncState<String?>.data('runner-1'),
@@ -597,6 +604,7 @@ void main() {
     );
     final ready =
         EventSuccessCompanionRouteState.resolveCore(
+              l10n: _l10n,
               eventState: CatchAsyncState<Event?>.data(event),
               initialEvent: null,
               uidState: const CatchAsyncState<String?>.data('runner-1'),

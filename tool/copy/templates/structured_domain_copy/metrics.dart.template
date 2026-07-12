@@ -1,0 +1,55 @@
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
+
+abstract final class EventSuccessMetricCatalog {
+  static const checkInRate = EventSuccessMetric(
+    id: 'check_in_rate',
+    label: {{metrics.checkInRate.label.1}},
+    description: {{metrics.checkInRate.description.1}},
+    target: {{metrics.checkInRate.target.1}},
+  );
+
+  static const introCoverage = EventSuccessMetric(
+    id: 'intro_coverage',
+    label: {{metrics.introCoverage.label.1}},
+    description: {{metrics.introCoverage.description.1}},
+    target: {{metrics.introCoverage.target.1}},
+  );
+
+  static const wingmanRequestRate = EventSuccessMetric(
+    id: 'wingman_requests_rate',
+    label: {{metrics.wingmanRequestRate.label.1}},
+    description: {{metrics.wingmanRequestRate.description.1}},
+    target: {{metrics.wingmanRequestRate.target.1}},
+  );
+
+  static const mutualMatchRate = EventSuccessMetric(
+    id: 'mutual_match_rate',
+    label: {{metrics.mutualMatchRate.label.1}},
+    description:
+        {{metrics.mutualMatchRate.description.1}},
+    target: {{metrics.mutualMatchRate.target.1}},
+  );
+
+  static const chatStartRate = EventSuccessMetric(
+    id: 'chat_start_rate',
+    label: {{metrics.chatStartRate.label.1}},
+    description: {{metrics.chatStartRate.description.1}},
+    target: {{metrics.chatStartRate.target.1}},
+  );
+
+  static const dimensionRatings = EventSuccessMetric(
+    id: 'dimension_ratings',
+    label: {{metrics.dimensionRatings.label.1}},
+    description: {{metrics.dimensionRatings.description.1}},
+    target: {{metrics.dimensionRatings.target.1}},
+  );
+
+  static const core = <EventSuccessMetric>[
+    checkInRate,
+    introCoverage,
+    wingmanRequestRate,
+    mutualMatchRate,
+    chatStartRate,
+    dimensionRatings,
+  ];
+}

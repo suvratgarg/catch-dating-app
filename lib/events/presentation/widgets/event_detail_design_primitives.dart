@@ -18,6 +18,7 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailTicketStubBand extends StatelessWidget {
@@ -33,7 +34,7 @@ class EventDetailTicketStubBand extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final cells = _ticketStubCells(event);
+    final cells = _ticketStubCells(event, context.l10n);
 
     return ColoredBox(
       color: t.surface,
@@ -93,7 +94,7 @@ class EventDetailHintList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hints = _hintsFor(event);
+    final hints = _hintsFor(event, context.l10n);
     final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, event.activityKind);
 
@@ -145,7 +146,7 @@ class EventDetailItinerary extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, event.activityKind);
-    final steps = _itineraryFor(event);
+    final steps = _itineraryFor(event, context.l10n);
 
     return Column(
       children: [
@@ -184,8 +185,10 @@ class EventDetailMapCard extends StatelessWidget {
     final activity = ActivityPalette.resolve(context, event.activityKind);
     final canOpen = event.hasExactStartingPoint && onTap != null;
     final note = event.hasExactStartingPoint
-        ? 'PIN READY'
-        : 'PIN DROPS MORNING-OF';
+        ? context.l10n.eventsEventDetailDesignPrimitivesVisiblecopyPinReady
+        : context
+              .l10n
+              .eventsEventDetailDesignPrimitivesVisiblecopyPinDropsMorningOf;
 
     return Semantics(
       button: canOpen,
@@ -261,7 +264,7 @@ class EventDetailMechanismList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rows = _mechanismsFor(event);
+    final rows = _mechanismsFor(event, context.l10n);
     final activity = ActivityPalette.resolve(context, event.activityKind);
 
     return HairlineList(
@@ -316,12 +319,14 @@ class EventDetailPhotoStrip extends StatelessWidget {
         Row(
           children: [
             Text(
-              'EVENT PHOTOS',
+              context.l10n.eventsEventDetailDesignPrimitivesTextEventPhotos,
               style: CatchTextStyles.monoLabelS(context, color: t.ink),
             ),
             const Spacer(),
             Text(
-              '${event.eventPhotos.length} UPLOADED',
+              context.l10n.eventsEventDetailDesignPrimitivesTextLengthUploaded(
+                length: event.eventPhotos.length,
+              ),
               style: CatchTextStyles.monoLabelS(context, color: t.ink3),
             ),
           ],
@@ -728,71 +733,83 @@ class _MapGridPainter extends CustomPainter {
       oldDelegate.routeColor != routeColor;
 }
 
-List<TicketStubCellData> _ticketStubCells(Event event) {
+List<TicketStubCellData> _ticketStubCells(Event event, AppLocalizations l10n) {
   final locationDetail = event.locationNotes;
   return [
     TicketStubCellData(
-      label: 'When',
+      label: l10n.eventsEventDetailDesignPrimitivesLabelWhen,
       value: event.shortDateLabel,
       detail: event.compactTimeRangeLabel,
       icon: CatchIcons.calendarAdd,
     ),
     TicketStubCellData(
-      label: 'Where',
+      label: l10n.eventsEventDetailDesignPrimitivesLabelWhere,
       value: event.locationName,
       detail: locationDetail == null || locationDetail.isEmpty
           ? null
           : locationDetail,
     ),
     TicketStubCellData(
-      label: _levelLabelFor(event.activityKind),
+      label: _levelLabelFor(event.activityKind, l10n),
       value: event.pace.label,
       detail: event.activitySummaryLabel,
     ),
   ];
 }
 
-List<String> _hintsFor(Event event) {
+List<String> _hintsFor(Event event, AppLocalizations l10n) {
   final remaining = event.spotsRemaining;
   final capacityHint = remaining == 0
-      ? 'This event is currently full; the waitlist keeps priority order.'
+      ? l10n.eventsEventDetailDesignPrimitivesVisiblecopyThisEventIsCurrently
       : remaining <= 3
-      ? 'Only $remaining ${remaining == 1 ? 'spot' : 'spots'} left before sign-ups move to waitlist.'
-      : '${event.spotsLabel} spots are already spoken for.';
-  return [capacityHint, _interactionHint(event.eventFormat.interactionModel)];
+      ? l10n.eventsEventDetailDesignPrimitivesVisiblecopyOnlyRemainingValue2Left(
+          remaining: remaining,
+          value2: remaining == 1
+              ? l10n.eventsEventDetailDesignPrimitivesVisiblecopySpot
+              : l10n.eventsEventDetailDesignPrimitivesVisiblecopySpots,
+        )
+      : l10n.eventsEventDetailDesignPrimitivesVisiblecopySpotslabelSpotsAreAlready(
+          spotsLabel: event.spotsLabel,
+        );
+  return [
+    capacityHint,
+    _interactionHint(event.eventFormat.interactionModel, l10n),
+  ];
 }
 
-List<ItineraryStep> _itineraryFor(Event event) {
+List<ItineraryStep> _itineraryFor(Event event, AppLocalizations l10n) {
   final warmupTime = event.startTime.add(const Duration(minutes: 15));
   return [
     ItineraryStep(
       time: EventFormatters.time(event.startTime),
-      title: 'Gather at ${event.locationName}',
-      detail: 'Quick hellos, host check-in, and the plan for the group.',
+      title: l10n.eventsEventDetailDesignPrimitivesTitleGatherAtLocationname(
+        locationName: event.locationName,
+      ),
+      detail: l10n.eventsEventDetailDesignPrimitivesDetailQuickHellosHostCheck,
     ),
     ItineraryStep(
       time: EventFormatters.time(warmupTime),
       title: event.eventFormat.label,
-      detail: _activityPlanDetail(event),
+      detail: _activityPlanDetail(event, l10n),
     ),
     ItineraryStep(
       time: EventFormatters.time(event.endTime),
-      title: 'Wrap up',
-      detail:
-          'Attendees can linger naturally; private follow-up unlocks after.',
+      title: l10n.eventsEventDetailDesignPrimitivesTitleWrapUp,
+      detail: l10n
+          .eventsEventDetailDesignPrimitivesDetailAttendeesCanLingerNaturally,
     ),
   ];
 }
 
-List<_MechanismRow> _mechanismsFor(Event event) {
+List<_MechanismRow> _mechanismsFor(Event event, AppLocalizations l10n) {
   final policy = event.effectiveEventPolicy;
   final rows = <_MechanismRow>[
     _MechanismRow(
       icon: policy.admissionPolicy.manualApprovalRequired
           ? CatchIcons.pendingActionsOutlined
           : CatchIcons.groupOutlined,
-      title: _admissionTitle(policy.admissionPolicy),
-      detail: _admissionSummary(policy.admissionPolicy),
+      title: _admissionTitle(policy.admissionPolicy, l10n),
+      detail: _admissionSummary(policy.admissionPolicy, l10n),
     ),
   ];
 
@@ -800,8 +817,8 @@ List<_MechanismRow> _mechanismsFor(Event event) {
     rows.add(
       _MechanismRow(
         icon: CatchIcons.pendingActionsOutlined,
-        title: 'If it fills, a waitlist',
-        detail: 'Spots free up in order as capacity changes or people cancel.',
+        title: l10n.eventsEventDetailDesignPrimitivesTitleIfItFillsA,
+        detail: l10n.eventsEventDetailDesignPrimitivesDetailSpotsFreeUpIn,
       ),
     );
   }
@@ -809,7 +826,9 @@ List<_MechanismRow> _mechanismsFor(Event event) {
   rows.add(
     _MechanismRow(
       icon: CatchIcons.receiptLongOutlined,
-      title: '${policy.cancellationPolicy.title} cancellation',
+      title: l10n.eventsEventDetailDesignPrimitivesTitleTitleCancellation(
+        title: policy.cancellationPolicy.title,
+      ),
       detail: policy.cancellationPolicy.attendeeSummary,
     ),
   );
@@ -817,90 +836,105 @@ List<_MechanismRow> _mechanismsFor(Event event) {
   return rows;
 }
 
-String _interactionHint(EventInteractionModel model) {
+String _interactionHint(EventInteractionModel model, AppLocalizations l10n) {
   return switch (model) {
     EventInteractionModel.pacePods =>
-      'The format keeps the pace conversational, with regroup points so nobody gets stranded.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheFormatKeepsThe,
     EventInteractionModel.pairedRotations =>
-      'Rotations give you natural one-on-one moments without managing the room yourself.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyRotationsGiveYouNatural,
     EventInteractionModel.teamRotations =>
-      'Team structure creates low-pressure reasons to talk throughout the event.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyTeamStructureCreatesLow,
     EventInteractionModel.seatedTable =>
-      'A seated format and host cues make the first conversation easier.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyASeatedFormatAnd,
     EventInteractionModel.freeFormMixer =>
-      'Host nudges keep the room moving when it needs a little structure.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyHostNudgesKeepThe,
     EventInteractionModel.hostLedProgram =>
-      'The host runs the arc, so you can just show up and follow the moment.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheHostRunsThe,
     EventInteractionModel.openFormat =>
-      'The host shapes the format around the room and venue.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheHostShapesThe,
   };
 }
 
-String _activityPlanDetail(Event event) {
+String _activityPlanDetail(Event event, AppLocalizations l10n) {
   return switch (event.eventFormat.interactionModel) {
     EventInteractionModel.pacePods =>
-      '${EventFormatters.distanceKm(event.distanceKm)} at a ${event.pace.label.toLowerCase()} pace, with host-led regroup points.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyDistancekmAtATolowercase(
+        distanceKm: EventFormatters.distanceKm(event.distanceKm),
+        toLowerCase: event.pace.label.toLowerCase(),
+      ),
     EventInteractionModel.pairedRotations =>
-      'Paired or court-based rotations keep the activity moving and social.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyPairedOrCourtBased,
     EventInteractionModel.teamRotations =>
-      'Host-led teams and rotations create a clear rhythm for the group.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyHostLedTeamsAnd,
     EventInteractionModel.seatedTable =>
-      'A table-led format with built-in prompts and host cues.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyATableLedFormat,
     EventInteractionModel.freeFormMixer =>
-      'A looser mixer with host nudges when the room needs direction.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyALooserMixerWith,
     EventInteractionModel.hostLedProgram =>
-      'A host-led activity with clear arrival, activity, and follow-up moments.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyAHostLedActivity,
     EventInteractionModel.openFormat =>
-      'The host adapts the format to the group and venue.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheHostAdaptsThe,
   };
 }
 
-String _levelLabelFor(ActivityKind activityKind) {
+String _levelLabelFor(ActivityKind activityKind, AppLocalizations l10n) {
   return switch (activityKind) {
     ActivityKind.socialRun ||
     ActivityKind.running ||
     ActivityKind.walking ||
-    ActivityKind.cycling => 'Pace',
+    ActivityKind.cycling =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyPace,
     ActivityKind.pickleball ||
     ActivityKind.padel ||
     ActivityKind.tennis ||
-    ActivityKind.badminton => 'Skill',
+    ActivityKind.badminton =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopySkill,
     ActivityKind.spinClass ||
     ActivityKind.yoga ||
-    ActivityKind.strengthTraining => 'Intensity',
+    ActivityKind.strengthTraining =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyIntensity,
     ActivityKind.pubQuiz ||
     ActivityKind.barCrawl ||
     ActivityKind.dinner ||
     ActivityKind.singlesMixer ||
-    ActivityKind.openActivity => 'Energy',
+    ActivityKind.openActivity =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyEnergy,
   };
 }
 
-String _admissionTitle(EventAdmissionPolicy policy) {
-  return switch (policy.format) {
-    EventAdmissionFormat.open => 'Open sign-up',
-    EventAdmissionFormat.inviteOnly => 'Invite only',
-    EventAdmissionFormat.manualApproval => 'Host approval',
-    EventAdmissionFormat.fixedCohortCaps => 'Cohort caps',
-    EventAdmissionFormat.balancedRatio => 'Balanced singles',
-    EventAdmissionFormat.membersOnly => 'Members only',
-  };
-}
-
-String _admissionSummary(EventAdmissionPolicy policy) {
+String _admissionTitle(EventAdmissionPolicy policy, AppLocalizations l10n) {
   return switch (policy.format) {
     EventAdmissionFormat.open =>
-      'No approval needed; RSVP until ${policy.capacityLimit} spots are filled.',
-    EventAdmissionFormat.fixedCohortCaps =>
-      'Book within total capacity while cohort caps keep the room balanced.',
-    EventAdmissionFormat.balancedRatio =>
-      'Straight men and women are balanced within a small tolerance; other cohorts book within total capacity.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyOpenSignUp,
     EventAdmissionFormat.inviteOnly =>
-      'Only attendees with the host invite can book this event.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyInviteOnly,
     EventAdmissionFormat.manualApproval =>
-      'Request a spot first; the host reviews requests before confirming.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyHostApproval,
+    EventAdmissionFormat.fixedCohortCaps =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyCohortCaps,
+    EventAdmissionFormat.balancedRatio =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyBalancedSingles,
     EventAdmissionFormat.membersOnly =>
-      'Only active club members can book this event.',
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyMembersOnly,
+  };
+}
+
+String _admissionSummary(EventAdmissionPolicy policy, AppLocalizations l10n) {
+  return switch (policy.format) {
+    EventAdmissionFormat.open =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyNoApprovalNeededRsvp(
+        capacityLimit: policy.capacityLimit,
+      ),
+    EventAdmissionFormat.fixedCohortCaps =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyBookWithinTotalCapacity,
+    EventAdmissionFormat.balancedRatio =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyStraightMenAndWomen,
+    EventAdmissionFormat.inviteOnly =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyOnlyAttendeesWithThe,
+    EventAdmissionFormat.manualApproval =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyRequestASpotFirst,
+    EventAdmissionFormat.membersOnly =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveClubMembers,
   };
 }
 

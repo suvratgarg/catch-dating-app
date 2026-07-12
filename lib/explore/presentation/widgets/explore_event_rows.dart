@@ -12,6 +12,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_support_widgets.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 typedef ExploreEventSelected =
@@ -34,7 +35,7 @@ class ExploreFeedEventRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final event = item.event;
-    final state = ExploreEventRowState.from(item);
+    final state = ExploreEventRowState.from(item, l10n: context.l10n);
     final heroTag = isSyntheticExploreItem(item)
         ? null
         : eventTicketHeroTag(event.id, analyticsSource);
@@ -69,7 +70,7 @@ class ExploreExternalEventRow extends StatelessWidget {
     final event = item.event;
     final t = CatchTokens.of(context);
     final visual = eventActivityVisual(event.activityKind, context: context);
-    final state = ExploreExternalEventRowState.from(item);
+    final state = ExploreExternalEventRowState.from(item, l10n: context.l10n);
     return CatchSurface(
       radius: CatchRadius.md,
       borderColor: t.line2,
@@ -167,12 +168,14 @@ class ThisWeekRecommendationsSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         ExploreMonoLabel(
-          'COMING UP · ${items.length}',
+          context.l10n.exploreExploreEventRowsVisiblecopyComingUpLength(
+            length: items.length,
+          ),
           color: CatchTokens.of(context).ink3,
         ),
         gapH2,
         CatchSectionHeader(
-          title: 'This week',
+          title: context.l10n.exploreExploreEventRowsTitleThisWeek,
           padding: EdgeInsets.zero,
           titleStyle: CatchTextStyles.clubDisplay(
             context,

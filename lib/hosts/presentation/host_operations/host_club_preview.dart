@@ -23,8 +23,8 @@ class HostClubPreviewPane extends StatelessWidget {
         ),
         gapH18,
         CatchField.nav(
-          title: 'Open public preview',
-          valueText: 'Preview',
+          title: context.l10n.hostsHostClubPreviewTitleOpenPublicPreview,
+          valueText: context.l10n.hostsHostClubPreviewVisiblecopyPreview,
           icon: CatchIcons.visibilityOutlined,
           onTap: () => onPreviewClub(club),
         ),

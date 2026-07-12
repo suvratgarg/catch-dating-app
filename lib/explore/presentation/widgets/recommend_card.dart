@@ -6,6 +6,7 @@ import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dar
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 /// Explore recommendation card.
 ///
@@ -64,7 +65,7 @@ class RecommendCard extends StatelessWidget {
       timeLabel: EventFormatters.time(event.startTime),
       countdownLabel: _countdownLabel(),
       priceLabel: event.isFree
-          ? 'Free'
+          ? context.l10n.exploreRecommendCardVisiblecopyFree
           : EventFormatters.priceInPaise(
               event.priceInPaise,
               currencyCode: event.currency,

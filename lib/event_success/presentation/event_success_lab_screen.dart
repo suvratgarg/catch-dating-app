@@ -12,6 +12,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_models.dart'
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 const EdgeInsets _labRunStepContentGap = EdgeInsets.only(
@@ -48,14 +49,20 @@ class EventSuccessLabScreen extends StatelessWidget {
         : playbooks.first;
 
     return Scaffold(
-      appBar: const CatchTopBar(title: 'Event success lab', border: true),
+      appBar: CatchTopBar(
+        title:
+            context.l10n.eventSuccessEventSuccessLabScreenTitleEventSuccessLab,
+        border: true,
+      ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(child: LabHero(playbookCount: playbooks.length)),
             SliverToBoxAdapter(
               child: Section(
-                title: 'Actual WIP feature blocks',
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenTitleActualWipFeatureBlocks,
                 child: Column(
                   children: [
                     const EventSuccessHostSetupFlow(),
@@ -71,13 +78,17 @@ class EventSuccessLabScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: Section(
-                title: 'Product promise',
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenTitleProductPromise,
                 child: PromiseGrid(playbook: featured),
               ),
             ),
             SliverToBoxAdapter(
               child: Section(
-                title: 'Playbooks',
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenTitlePlaybooks,
                 child: Column(
                   children: [
                     for (final playbook in playbooks) ...[
@@ -90,7 +101,9 @@ class EventSuccessLabScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: Section(
-                title: 'Architecture layers',
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenTitleArchitectureLayers,
                 child: ModuleGrid(
                   moduleGroups: EventSuccessModuleCatalog.allByProductLayer,
                 ),
@@ -98,7 +111,9 @@ class EventSuccessLabScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: Section(
-                title: 'Host coach sample',
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenTitleHostCoachSample,
                 child: CoachPanel(brief: resolvedBrief),
               ),
             ),
@@ -135,12 +150,16 @@ class LabHero extends StatelessWidget {
                   runSpacing: CatchSpacing.s2,
                   children: [
                     CatchBadge(
-                      label: 'Work in progress',
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessLabScreenLabelWorkInProgress,
                       tone: CatchBadgeTone.live,
                       icon: CatchIcons.constructionRounded,
                     ),
                     CatchBadge(
-                      label: 'Preview only',
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessLabScreenLabelPreviewOnly,
                       tone: CatchBadgeTone.solid,
                       icon: CatchIcons.visibilityOutlined,
                     ),
@@ -148,12 +167,16 @@ class LabHero extends StatelessWidget {
                 ),
                 const SizedBox(height: CatchSpacing.s5),
                 Text(
-                  'Event Success Layer',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessLabScreenTextEventSuccessLayer,
                   style: CatchTextStyles.headline(context, color: t.accentInk),
                 ),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(
-                  'A first-pass workspace for improving what happens during events: structure, attendance, assignments, live reveal moments, host help, feedback, and coaching.',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessLabScreenTextAFirstPassWorkspace,
                   style: CatchTextStyles.proseL(
                     context,
                     color: t.accentInk.withValues(
@@ -166,10 +189,27 @@ class LabHero extends StatelessWidget {
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s2,
                   children: [
-                    EventSuccessDarkPill(label: '$playbookCount playbooks'),
-                    const EventSuccessDarkPill(label: 'Dev/staging route'),
-                    const EventSuccessDarkPill(label: 'No Firestore writes'),
-                    const EventSuccessDarkPill(label: 'No booking changes'),
+                    EventSuccessDarkPill(
+                      label: context.l10n
+                          .eventSuccessEventSuccessLabScreenLabelPlaybookcountPlaybooks(
+                            playbookCount: playbookCount,
+                          ),
+                    ),
+                    EventSuccessDarkPill(
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessLabScreenLabelDevStagingRoute,
+                    ),
+                    EventSuccessDarkPill(
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessLabScreenLabelNoFirestoreWrites,
+                    ),
+                    EventSuccessDarkPill(
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessLabScreenLabelNoBookingChanges,
+                    ),
                   ],
                 ),
               ],
@@ -206,7 +246,9 @@ class PromiseGrid extends StatelessWidget {
               width: width,
               child: PromiseCard(
                 icon: CatchIcons.favoriteBorderRounded,
-                title: 'Attendees',
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenTitleAttendees,
                 body: playbook.attendeePromise,
               ),
             ),
@@ -214,7 +256,7 @@ class PromiseGrid extends StatelessWidget {
               width: width,
               child: PromiseCard(
                 icon: CatchIcons.groups2Outlined,
-                title: 'Hosts',
+                title: context.l10n.eventSuccessEventSuccessLabScreenTitleHosts,
                 body: playbook.hostPromise,
               ),
             ),
@@ -222,9 +264,10 @@ class PromiseGrid extends StatelessWidget {
               width: width,
               child: PromiseCard(
                 icon: CatchIcons.scienceOutlined,
-                title: 'Catch',
-                body:
-                    'Learn which live structures improve check-in, mixing, matches, chat starts, repeats, and safety.',
+                title: context.l10n.eventSuccessEventSuccessLabScreenTitleCatch,
+                body: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenBodyLearnWhichLiveStructures,
               ),
             ),
           ],
@@ -291,8 +334,10 @@ class PlaybookCard extends StatelessWidget {
               ),
               CatchBadge(label: playbook.socialIntensity.label),
               if (playbook.hasLivePhoneUse)
-                const CatchBadge(
-                  label: 'some live phone use',
+                CatchBadge(
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessLabScreenLabelSomeLivePhoneUse,
                   tone: CatchBadgeTone.warning,
                 ),
             ],
@@ -313,16 +358,27 @@ class PlaybookCard extends StatelessWidget {
               for (final module in playbook.modules.take(6))
                 CatchBadge(label: module.title),
               if (playbook.modules.length > 6)
-                CatchBadge(label: '+${playbook.modules.length - 6} more'),
+                CatchBadge(
+                  label: context.l10n
+                      .eventSuccessEventSuccessLabScreenLabelValue1More(
+                        value1: playbook.modules.length - 6,
+                      ),
+                ),
             ],
           ),
           const SizedBox(height: CatchSpacing.s4),
           NotesList(
-            title: 'Iteration questions',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessLabScreenTitleIterationQuestions,
             items: playbook.iterationQuestions,
           ),
           const SizedBox(height: CatchSpacing.s3),
-          NotesList(title: 'Anti-patterns', items: playbook.antiPatterns),
+          NotesList(
+            title:
+                context.l10n.eventSuccessEventSuccessLabScreenTitleAntiPatterns,
+            items: playbook.antiPatterns,
+          ),
         ],
       ),
     );
@@ -352,7 +408,11 @@ class CapacityRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${capacity.min}-${capacity.max} attendees',
+                  context.l10n
+                      .eventSuccessEventSuccessLabScreenTextMinMaxAttendees(
+                        min: capacity.min,
+                        max: capacity.max,
+                      ),
                   style: CatchTextStyles.sectionTitle(context),
                 ),
                 const SizedBox(height: CatchSpacing.s1),
@@ -380,7 +440,10 @@ class RunOfShow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Run of show', style: CatchTextStyles.sectionTitle(context)),
+        Text(
+          context.l10n.eventSuccessEventSuccessLabScreenTextRunOfShow,
+          style: CatchTextStyles.sectionTitle(context),
+        ),
         const SizedBox(height: CatchSpacing.s3),
         for (final step in playbook.runOfShow) ...[
           Row(
@@ -396,7 +459,10 @@ class RunOfShow extends StatelessWidget {
                     borderWidth: 0,
                     child: Center(
                       child: Text(
-                        '${step.durationMinutes}',
+                        context.l10n
+                            .eventSuccessEventSuccessLabScreenTextDurationminutes(
+                              durationMinutes: step.durationMinutes,
+                            ),
                         style: CatchTextStyles.labelL(
                           context,
                           color: t.primary,
@@ -544,12 +610,18 @@ class ModuleCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               if (module.requiresLivePhoneUse)
-                const CatchBadge(
-                  label: 'live phone',
+                CatchBadge(
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessLabScreenLabelLivePhone,
                   tone: CatchBadgeTone.warning,
                 ),
               if (!module.enabledByDefault)
-                const CatchBadge(label: 'later experiment'),
+                CatchBadge(
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessLabScreenLabelLaterExperiment,
+                ),
             ],
           ),
         ],
@@ -578,12 +650,16 @@ class CoachPanel extends StatelessWidget {
               const SizedBox(width: CatchSpacing.s2),
               Expanded(
                 child: Text(
-                  'Sample debrief',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessLabScreenTextSampleDebrief,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchBadge(
-                label: '${(brief.scorecard.experienceScore * 100).round()}%',
+                label: context.l10n.eventSuccessEventSuccessLabScreenLabelRound(
+                  round: (brief.scorecard.experienceScore * 100).round(),
+                ),
                 tone: CatchBadgeTone.brand,
               ),
             ],
@@ -594,23 +670,31 @@ class CoachPanel extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               EventSuccessMetricPill(
-                label: 'Check-in',
+                label:
+                    context.l10n.eventSuccessEventSuccessLabScreenLabelCheckIn,
                 value: brief.scorecard.checkInRate,
               ),
               EventSuccessMetricPill(
-                label: 'Intro coverage',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenLabelIntroCoverage,
                 value: brief.scorecard.introCoverageRate,
               ),
               EventSuccessMetricPill(
-                label: 'Caught someone',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenLabelCaughtSomeone,
                 value: brief.scorecard.caughtSomeoneRate,
               ),
               EventSuccessMetricPill(
-                label: 'Host help',
+                label:
+                    context.l10n.eventSuccessEventSuccessLabScreenLabelHostHelp,
                 value: brief.scorecard.wingmanRequestRate,
               ),
               EventSuccessMetricPill(
-                label: 'Chat start',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessLabScreenLabelChatStart,
                 value: brief.scorecard.chatStartRate,
               ),
             ],
@@ -626,7 +710,11 @@ class CoachPanel extends StatelessWidget {
           ],
           if (brief.strengths.isNotEmpty) ...[
             const SizedBox(height: CatchSpacing.s4),
-            NotesList(title: 'Strengths', items: brief.strengths),
+            NotesList(
+              title:
+                  context.l10n.eventSuccessEventSuccessLabScreenTitleStrengths,
+              items: brief.strengths,
+            ),
           ],
         ],
       ),

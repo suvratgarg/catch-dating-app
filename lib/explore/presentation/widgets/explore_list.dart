@@ -10,6 +10,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -112,9 +113,8 @@ class ExploreListEmptyState extends ConsumerWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.groupsOutlined,
-            title: 'No clubs match this search',
-            message:
-                'Clear the search or filters to bring nearby clubs back into view.',
+            title: context.l10n.exploreExploreListTitleNoClubsMatchThis,
+            message: context.l10n.exploreExploreListMessageClearTheSearchOr,
             action: ExploreClearAction(
               clearSearch: true,
               clearFilters: true,
@@ -134,8 +134,10 @@ class ExploreListEmptyState extends ConsumerWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.groupsOutlined,
-            title: 'No clubs match this search',
-            message: 'Try another club, neighborhood, host, or tag.',
+            title: context.l10n.exploreExploreListTitleNoClubsMatchThis,
+            message: context
+                .l10n
+                .exploreExploreListMessageTryAnotherClubNeighborhood,
             action: ExploreClearAction(
               clearSearch: true,
               clearFilters: false,
@@ -153,9 +155,8 @@ class ExploreListEmptyState extends ConsumerWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.groupsOutlined,
-            title: 'No clubs match these filters',
-            message:
-                'Clear one or more filters to bring nearby clubs back into view.',
+            title: context.l10n.exploreExploreListTitleNoClubsMatchThese,
+            message: context.l10n.exploreExploreListMessageClearOneOrMore,
             action: ExploreClearAction(
               clearSearch: false,
               clearFilters: true,
@@ -172,10 +173,10 @@ class ExploreListEmptyState extends ConsumerWidget {
         padding: CatchInsets.contentRelaxed,
         child: CatchEmptyState(
           icon: CatchIcons.groupsOutlined,
-          title: 'No clubs in $cityLabel yet',
-          message:
-              'Try another city from the location control, or create the first '
-              'club when you are ready to host.',
+          title: context.l10n.exploreExploreListTitleNoClubsInCitylabel(
+            cityLabel: cityLabel,
+          ),
+          message: context.l10n.exploreExploreListMessageTryAnotherCityFrom,
         ),
       ),
     );

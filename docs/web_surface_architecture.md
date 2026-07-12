@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.133
+version: 0.7.135
 updated: 2026-07-12
 owner: web_platform
 status: active
@@ -33,6 +33,8 @@ React + TypeScript stack where practical.
 - `website/src/app/App.tsx` uses React Router for the client route shell and
   `website/src/app/routeRegistry.ts` for runtime route patterns; the route
   contract and postbuild output remain the public SEO source of truth.
+- `website/src/content/meta.json` is the validated static metadata source read
+  by both `website/src/app/pageMeta.ts` and `website/scripts/postbuild.mjs`.
 - `website/src/shared/ui/**`, `website/src/shared/site/**`, and
   `admin/src/shared/ui/**` are the React shared primitive owners. Feature,
   app, and story code must compose these primitives rather than hand-rolling
@@ -108,9 +110,10 @@ node tool/run.mjs check marketing:website-routes
 ```
 
 The checker compares the route contract with `website/src/app/App.tsx`,
-`website/src/app/routeRegistry.ts`, `website/src/app/pageMeta.ts`,
-`website/scripts/postbuild.mjs`, generated organizer listings, and source
-component paths. It is also wired into
+`website/src/app/routeRegistry.ts`, `website/src/content/meta.json`,
+`website/src/app/pageMeta.ts`, `website/scripts/postbuild.mjs`, generated
+organizer listings, and source component paths. It also validates the metadata
+content contract and is wired into
 `npm --workspace catch-marketing run typecheck` and the marketing GitHub
 workflow so public-route changes cannot ship as prose-only decisions.
 
@@ -154,9 +157,15 @@ Custom-domain ownership remains:
 pipeline:
 
 - pull requests validate generated web tokens, app-derived screenshot assets,
-  marketing screenshot design context, and the Vite production build;
+  marketing screenshot design context, the Vite production build, and all
+  Storybook stories through a Playwright Chromium axe gate;
 - pushes to `main` that touch marketing-site inputs deploy only
   `hosting:marketing` to the production Firebase project;
+- generated public routes are served as static files; only explicit host,
+  claim, and API rewrites remain, so unknown paths use `dist/404.html` with an
+  actual HTTP 404 instead of the root SPA shell;
+- the deploy job probes a unique unknown `catchdates.com` URL and fails unless
+  the response status is 404;
 - deployment uses the checked `prod` Firebase alias plus the repo's existing
   Google Cloud Workload Identity environment variables.
 

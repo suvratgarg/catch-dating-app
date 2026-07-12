@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/core/backend_error_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -39,14 +39,15 @@ class AppErrorDescriptor {
 
 AppErrorDescriptor appErrorDescriptor(
   Object error, {
+  required AppLocalizations l10n,
   AppErrorContext context = AppErrorContext.generic,
 }) {
   final appException = _normalizeForPresentation(error);
   return AppErrorDescriptor(
-    title: _titleFor(error, appException, context),
-    message: _messageFor(error, appException, context),
+    title: _titleFor(l10n, error, appException, context),
+    message: _messageFor(l10n, error, appException, context),
     icon: _iconFor(error, appException),
-    retryLabel: _retryLabelFor(appException, context),
+    retryLabel: _retryLabelFor(l10n, appException, context),
     retryable: _isRetryable(error, appException),
     severity: appException?.severity ?? AppErrorSeverity.error,
   );
@@ -54,16 +55,18 @@ AppErrorDescriptor appErrorDescriptor(
 
 String appErrorMessage(
   Object error, {
+  required AppLocalizations l10n,
   AppErrorContext context = AppErrorContext.generic,
 }) {
-  return appErrorDescriptor(error, context: context).message;
+  return appErrorDescriptor(error, l10n: l10n, context: context).message;
 }
 
 String appErrorTitle(
   Object error, {
+  required AppLocalizations l10n,
   AppErrorContext context = AppErrorContext.generic,
 }) {
-  return appErrorDescriptor(error, context: context).title;
+  return appErrorDescriptor(error, l10n: l10n, context: context).title;
 }
 
 AppException? _normalizeForPresentation(Object error) {
@@ -78,69 +81,190 @@ AppException? _normalizeForPresentation(Object error) {
 }
 
 String _messageFor(
+  AppLocalizations l10n,
   Object error,
   AppException? appException,
   AppErrorContext context,
 ) {
   if (context == AppErrorContext.explore &&
       _isFirestoreIndexPrecondition(appException)) {
-    return 'Explore is still getting set up. Please try again in a moment.';
+    return l10n.coreAppErrorMessageVisiblecopyExploreIsStillGetting;
   }
-  if (appException == null) return backendErrorMessage(error);
-  return appException.message;
+  if (appException == null) {
+    return l10n.coreAppErrorMessageVisiblecopySomethingWentWrongPlease;
+  }
+  return _localizedExceptionMessage(l10n, appException);
+}
+
+String _localizedExceptionMessage(
+  AppLocalizations l10n,
+  AppException exception,
+) {
+  final service = exception.context?.service;
+  if (service == BackendService.remoteConfig) {
+    return l10n.coreAppErrorMessageVisiblecopyUnableToCheckThe;
+  }
+  if (service == BackendService.appCheck) {
+    return l10n.coreAppErrorMessageVisiblecopyUnableToVerifyThis;
+  }
+  if (service == BackendService.messaging) {
+    return l10n.coreAppErrorMessageVisiblecopyUnableToUpdateNotification;
+  }
+  if (exception is SignInRequiredException) {
+    return l10n.coreAppErrorMessageVisiblecopyPleaseSignInTo;
+  }
+  if (exception is PaymentCancelledException)
+    return l10n.coreAppErrorMessageVisiblecopyPaymentWasCancelled;
+  if (exception is PaymentFailedException) {
+    return l10n.coreAppErrorMessageVisiblecopyPaymentFailedPleaseTry;
+  }
+  if (exception is PaymentVerificationFailedException) {
+    return l10n.coreAppErrorMessageVisiblecopyPaymentCouldNotBe;
+  }
+  if (exception is PaidBookingUnsupportedException) {
+    return l10n.coreAppErrorMessageVisiblecopyPaidBookingsAreOnly;
+  }
+  if (exception is DocumentNotFoundException) {
+    return l10n.coreAppErrorMessageVisiblecopyWeCouldNotFind;
+  }
+  if (exception is StorageUploadPreflightException) {
+    return switch (exception.constraint) {
+      'max-bytes' => l10n.coreAppErrorMessageVisiblecopyThatImageIsToo,
+      'content-type' => l10n.coreAppErrorMessageVisiblecopyPleaseChooseAnImage,
+      _ => l10n.coreAppErrorMessageVisiblecopyThatImageCouldNot,
+    };
+  }
+  return switch (exception.code) {
+    'invalid-phone-number' =>
+      l10n.coreAppErrorMessageVisiblecopyPleaseEnterAValid,
+    'invalid-verification-code' =>
+      l10n.coreAppErrorMessageVisiblecopyThatCodeIsInvalid,
+    'session-expired' ||
+    'code-expired' => l10n.coreAppErrorMessageVisiblecopyThatCodeExpiredPlease,
+    'connection-failed' ||
+    'offline' => l10n.coreAppErrorMessageVisiblecopyWeAreHavingTrouble,
+    'timeout' => l10n.coreAppErrorMessageVisiblecopyTheRequestTimedOut,
+    'too-many-requests' =>
+      l10n.coreAppErrorMessageVisiblecopyTooManyAttemptsPlease,
+    'permission-denied' ||
+    'unauthorized' => l10n.coreAppErrorMessageVisiblecopyYouDoNotHave,
+    'already-exists' => l10n.coreAppErrorMessageVisiblecopyThisAlreadyExists,
+    'aborted' => l10n.coreAppErrorMessageVisiblecopyTheOperationCouldNot,
+    'failed-precondition' => l10n.coreAppErrorMessageVisiblecopyThisDataIsStill,
+    'operation-not-allowed' =>
+      l10n.coreAppErrorMessageVisiblecopyThisSignInMethod,
+    'user-disabled' => l10n.coreAppErrorMessageVisiblecopyThisAccountHasBeen,
+    'keychain-error' => l10n.coreAppErrorMessageVisiblecopyUnableToFinishSign,
+    'web-context-canceled' || 'web-context-cancelled' =>
+      l10n.coreAppErrorMessageVisiblecopyVerificationWasCancelledPlease,
+    'captcha-check-failed' || 'web-context-already-present' =>
+      l10n.coreAppErrorMessageVisiblecopyUnableToCompleteThe,
+    'onboarding-incomplete-profile' =>
+      l10n.coreAppErrorMessageVisiblecopyPleaseCompleteYourBasic,
+    'onboarding-missing-gender' =>
+      l10n.coreAppErrorMessageVisiblecopyPleaseChooseYourDating,
+    'onboarding-missing-interest' =>
+      l10n.coreAppErrorMessageVisiblecopyPleaseChooseWhoYou,
+    'onboarding-invalid-phone' =>
+      l10n.coreAppErrorMessageVisiblecopyPleaseAddAValid,
+    'onboarding-phone-unverified' =>
+      l10n.coreAppErrorMessageVisiblecopyPleaseVerifyYourPhone,
+    'launch-access-incomplete' =>
+      l10n.coreAppErrorMessageVisiblecopyPleaseCompleteYourAccess,
+    'launch-access-locked' =>
+      l10n.coreAppErrorMessageVisiblecopyThisAccessApplicationIs,
+    'club-host-edit-required' =>
+      l10n.coreAppErrorMessageVisiblecopyOnlyAClubHost,
+    'club-owner-edit-required' =>
+      l10n.coreAppErrorMessageVisiblecopyOnlyTheClubOwner,
+    'event-club-required' =>
+      l10n.coreAppErrorMessageVisiblecopyChooseAClubBefore,
+    'event-meeting-location-required' =>
+      l10n.coreAppErrorMessageVisiblecopyAddAMeetingLocation,
+    'swipe-candidates-timeout' =>
+      l10n.coreAppErrorMessageVisiblecopyProfilesAreTakingToo,
+    'profile-edit-session-changed' =>
+      l10n.coreAppErrorMessageVisiblecopyProfileChangedWhileSaving,
+    'validation-failed' =>
+      l10n.coreAppErrorMessageVisiblecopyCheckTheHighlightedDetails,
+    _ => l10n.coreAppErrorMessageVisiblecopySomethingWentWrongPlease,
+  };
 }
 
 String _titleFor(
+  AppLocalizations l10n,
   Object error,
   AppException? appException,
   AppErrorContext context,
 ) {
-  if (_isNetworkError(error, appException)) return 'Connection issue';
-  if (_isAuthError(error, appException)) return 'Sign in required';
-  if (_isPermissionError(error, appException)) return 'Action unavailable';
-  if (_isNotFoundError(error, appException)) return _notFoundTitle(context);
-  if (appException is ValidationException) return 'Check your details';
-  if (appException is PaymentCancelledException) return 'Payment cancelled';
-  if (appException is PaymentVerificationFailedException) {
-    return 'Payment verification failed';
+  if (_isNetworkError(error, appException))
+    return l10n.coreAppErrorMessageVisiblecopyConnectionIssue;
+  if (_isAuthError(error, appException))
+    return l10n.coreAppErrorMessageVisiblecopySignInRequired;
+  if (_isPermissionError(error, appException))
+    return l10n.coreAppErrorMessageVisiblecopyActionUnavailable;
+  if (_isNotFoundError(error, appException)) {
+    return _notFoundTitle(l10n, context);
   }
-  if (appException is PaymentFailedException) return 'Payment failed';
+  if (appException is ValidationException)
+    return l10n.coreAppErrorMessageVisiblecopyCheckYourDetails;
+  if (appException is PaymentCancelledException)
+    return l10n.coreAppErrorMessageVisiblecopyPaymentCancelled;
+  if (appException is PaymentVerificationFailedException) {
+    return l10n.coreAppErrorMessageVisiblecopyPaymentVerificationFailed;
+  }
+  if (appException is PaymentFailedException)
+    return l10n.coreAppErrorMessageVisiblecopyPaymentFailed;
   if (appException is PaidBookingUnsupportedException) {
-    return 'Payment unavailable';
+    return l10n.coreAppErrorMessageVisiblecopyPaymentUnavailable;
   }
   if (appException is EventBookingFailedException) {
-    return 'Event signup unavailable';
+    return l10n.coreAppErrorMessageVisiblecopyEventSignupUnavailable;
   }
-  if (appException is StorageException) return 'Upload failed';
-  if (appException is ExternalActionException) return 'Action failed';
+  if (appException is StorageException)
+    return l10n.coreAppErrorMessageVisiblecopyUploadFailed;
+  if (appException is ExternalActionException)
+    return l10n.coreAppErrorMessageVisiblecopyActionFailed;
   if (appException is BackendOperationException) {
     final backendContext = appException.context;
     return switch (backendContext?.service) {
-      BackendService.appCheck => 'Session verification failed',
-      BackendService.messaging => 'Notifications unavailable',
-      BackendService.remoteConfig => 'Update check unavailable',
-      BackendService.storage => 'Upload failed',
-      BackendService.auth => 'Sign in problem',
-      BackendService.payments => 'Payment failed',
-      _ => _contextTitle(context),
+      BackendService.appCheck =>
+        l10n.coreAppErrorMessageVisiblecopySessionVerificationFailed,
+      BackendService.messaging =>
+        l10n.coreAppErrorMessageVisiblecopyNotificationsUnavailable,
+      BackendService.remoteConfig =>
+        l10n.coreAppErrorMessageVisiblecopyUpdateCheckUnavailable,
+      BackendService.storage => l10n.coreAppErrorMessageVisiblecopyUploadFailed,
+      BackendService.auth => l10n.coreAppErrorMessageVisiblecopySignInProblem,
+      BackendService.payments =>
+        l10n.coreAppErrorMessageVisiblecopyPaymentFailed,
+      _ => _contextTitle(l10n, context),
     };
   }
 
-  return _contextTitle(context);
+  return _contextTitle(l10n, context);
 }
 
-String _contextTitle(AppErrorContext context) {
+String _contextTitle(AppLocalizations l10n, AppErrorContext context) {
   return switch (context) {
-    AppErrorContext.dashboard => 'Dashboard unavailable',
-    AppErrorContext.explore => 'Explore unavailable',
-    AppErrorContext.profile => 'Profile unavailable',
-    AppErrorContext.event => 'Event unavailable',
-    AppErrorContext.club => 'Club unavailable',
-    AppErrorContext.chat => 'Messages unavailable',
-    AppErrorContext.swipes => 'Catches unavailable',
-    AppErrorContext.payments => 'Payments unavailable',
-    AppErrorContext.auth => 'Sign in problem',
-    AppErrorContext.generic => 'Something went wrong',
+    AppErrorContext.dashboard =>
+      l10n.coreAppErrorMessageVisiblecopyDashboardUnavailable,
+    AppErrorContext.explore =>
+      l10n.coreAppErrorMessageVisiblecopyExploreUnavailable,
+    AppErrorContext.profile =>
+      l10n.coreAppErrorMessageVisiblecopyProfileUnavailable,
+    AppErrorContext.event =>
+      l10n.coreAppErrorMessageVisiblecopyEventUnavailable,
+    AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyClubUnavailable,
+    AppErrorContext.chat =>
+      l10n.coreAppErrorMessageVisiblecopyMessagesUnavailable,
+    AppErrorContext.swipes =>
+      l10n.coreAppErrorMessageVisiblecopyCatchesUnavailable,
+    AppErrorContext.payments =>
+      l10n.coreAppErrorMessageVisiblecopyPaymentsUnavailable,
+    AppErrorContext.auth => l10n.coreAppErrorMessageVisiblecopySignInProblem,
+    AppErrorContext.generic =>
+      l10n.coreAppErrorMessageVisiblecopySomethingWentWrong,
   };
 }
 
@@ -179,22 +303,29 @@ IconData _iconFor(Object error, AppException? appException) {
   return CatchIcons.errorOutlineRounded;
 }
 
-String _retryLabelFor(AppException? appException, AppErrorContext context) {
-  if (appException is SignInRequiredException) return 'Sign in';
-  if (appException is StorageException) return 'Try upload again';
+String _retryLabelFor(
+  AppLocalizations l10n,
+  AppException? appException,
+  AppErrorContext context,
+) {
+  if (appException is SignInRequiredException)
+    return l10n.coreAppErrorMessageVisiblecopySignIn;
+  if (appException is StorageException)
+    return l10n.coreAppErrorMessageVisiblecopyTryUploadAgain;
   if (appException is PaymentFailedException ||
       appException is PaymentVerificationFailedException) {
-    return 'Try payment again';
+    return l10n.coreAppErrorMessageVisiblecopyTryPaymentAgain;
   }
   return switch (context) {
-    AppErrorContext.chat => 'Reload messages',
-    AppErrorContext.explore => 'Reload Explore',
-    AppErrorContext.profile => 'Reload profile',
-    AppErrorContext.event => 'Reload event',
-    AppErrorContext.club => 'Reload club',
-    AppErrorContext.swipes => 'Reload catches',
-    AppErrorContext.payments => 'Reload payments',
-    _ => 'Try again',
+    AppErrorContext.chat => l10n.coreAppErrorMessageVisiblecopyReloadMessages,
+    AppErrorContext.explore => l10n.coreAppErrorMessageVisiblecopyReloadExplore,
+    AppErrorContext.profile => l10n.coreAppErrorMessageVisiblecopyReloadProfile,
+    AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyReloadEvent,
+    AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyReloadClub,
+    AppErrorContext.swipes => l10n.coreAppErrorMessageVisiblecopyReloadCatches,
+    AppErrorContext.payments =>
+      l10n.coreAppErrorMessageVisiblecopyReloadPayments,
+    _ => l10n.coreAppErrorMessageVisiblecopyTryAgain,
   };
 }
 
@@ -232,16 +363,20 @@ bool _isNotFoundError(Object error, AppException? appException) =>
     appException is DocumentNotFoundException ||
     (error is FirebaseException && error.code == 'not-found');
 
-String _notFoundTitle(AppErrorContext context) {
+String _notFoundTitle(AppLocalizations l10n, AppErrorContext context) {
   return switch (context) {
-    AppErrorContext.profile => 'Profile not found',
-    AppErrorContext.explore => 'Explore item not found',
-    AppErrorContext.event => 'Event not found',
-    AppErrorContext.club => 'Club not found',
-    AppErrorContext.chat => 'Chat not found',
-    AppErrorContext.swipes => 'Catches not found',
-    AppErrorContext.payments => 'Payment not found',
-    _ => 'Not found',
+    AppErrorContext.profile =>
+      l10n.coreAppErrorMessageVisiblecopyProfileNotFound,
+    AppErrorContext.explore =>
+      l10n.coreAppErrorMessageVisiblecopyExploreItemNotFound,
+    AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyEventNotFound,
+    AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyClubNotFound,
+    AppErrorContext.chat => l10n.coreAppErrorMessageVisiblecopyChatNotFound,
+    AppErrorContext.swipes =>
+      l10n.coreAppErrorMessageVisiblecopyCatchesNotFound,
+    AppErrorContext.payments =>
+      l10n.coreAppErrorMessageVisiblecopyPaymentNotFound,
+    _ => l10n.coreAppErrorMessageVisiblecopyNotFound,
   };
 }
 

@@ -1,3 +1,6 @@
+// GENERATED CODE - DO NOT EDIT.
+// Source: copy/structured_domain_copy_en.json and tool/copy/templates/structured_domain_copy/eventPolicyCancellation.dart.template
+
 part of '../event_policy.dart';
 
 enum EventCancellationPolicyId { flexible, standard, strict }

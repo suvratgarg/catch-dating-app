@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
@@ -390,9 +391,15 @@ class OnboardingController extends _$OnboardingController {
     final gender = draft.gender;
     final today = DateTime.now();
 
-    if (validateRequiredProfileName(draft.firstName, label: 'First name') !=
+    if (validateRequiredProfileName(
+              draft.firstName,
+              label: StructuredDomainCopy.onboardingFirstName,
+            ) !=
             null ||
-        validateRequiredProfileName(draft.lastName, label: 'Last name') !=
+        validateRequiredProfileName(
+              draft.lastName,
+              label: StructuredDomainCopy.onboardingLastName,
+            ) !=
             null ||
         validateRequiredDateOfBirth(dateOfBirth, today: today) != null) {
       throw const ValidationException(

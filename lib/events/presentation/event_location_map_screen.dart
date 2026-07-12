@@ -15,6 +15,7 @@ import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 export 'package:catch_dating_app/events/presentation/event_location_map_body_screen.dart';
 
@@ -46,10 +47,12 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
       builder: (context, vm) {
         final event = vm?.event;
         if (event == null) {
-          return const ChromelessMapScaffold(
+          return ChromelessMapScaffold(
             child: CatchErrorState(
-              title: 'Event not found',
-              message: 'This event is no longer available.',
+              title:
+                  context.l10n.eventsEventLocationMapScreenTitleEventNotFound,
+              message:
+                  context.l10n.eventsEventLocationMapScreenMessageThisEventIsNo,
             ),
           );
         }
@@ -59,11 +62,14 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
         );
 
         if (!state.hasExactStartingPoint) {
-          return const ChromelessMapScaffold(
+          return ChromelessMapScaffold(
             child: CatchErrorState(
-              title: 'Location unavailable',
-              message:
-                  'This event does not have an exact pinned starting point yet.',
+              title: context
+                  .l10n
+                  .eventsEventLocationMapScreenTitleLocationUnavailable,
+              message: context
+                  .l10n
+                  .eventsEventLocationMapScreenMessageThisEventDoesNot,
             ),
           );
         }

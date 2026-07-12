@@ -188,7 +188,9 @@ class AttendeeCountdown extends StatelessWidget {
                     alignment: WrapAlignment.center,
                     children: [
                       CatchBadge(
-                        label: 'Room hold',
+                        label: context
+                            .l10n
+                            .eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold,
                         tone: CatchBadgeTone.live,
                         icon: CatchIcons.lockClockRounded,
                         backgroundColor: t.ink.withValues(
@@ -200,7 +202,7 @@ class AttendeeCountdown extends StatelessWidget {
                         ),
                       ),
                       CatchBadge(
-                        label: kind.label,
+                        label: kind.label(context.l10n),
                         icon: kind.icon,
                         backgroundColor: t.gold.withValues(
                           alpha: CatchOpacity.revealSurfaceBorder,
@@ -229,7 +231,10 @@ class AttendeeCountdown extends StatelessWidget {
                   ),
                   gapH8,
                   Text(
-                    'Everyone gets this ${kind.assignmentNoun} at the same time. No names shown yet.',
+                    context.l10n
+                        .eventSuccessEventSuccessLiveRevealWidgetsTextEveryoneGetsThisAssignmentnoun(
+                          assignmentNoun: kind.assignmentNoun,
+                        ),
                     textAlign: TextAlign.center,
                     style: CatchTextStyles.proseM(
                       context,
@@ -323,7 +328,10 @@ class CountdownStageDial extends StatelessWidget {
                           );
                         },
                         child: Text(
-                          '$seconds',
+                          context.l10n
+                              .eventSuccessEventSuccessLiveRevealWidgetsTextSeconds(
+                                seconds: seconds,
+                              ),
                           key: ValueKey(seconds),
                           style: CatchTextStyles.headline(context, color: t.ink)
                               .copyWith(
@@ -346,7 +354,9 @@ class CountdownStageDial extends StatelessWidget {
                     Positioned(
                       bottom: side * 0.18,
                       child: Text(
-                        'SECONDS',
+                        context
+                            .l10n
+                            .eventSuccessEventSuccessLiveRevealWidgetsTextSeconds3fb8f1,
                         style: CatchTextStyles.labelS(
                           context,
                           color: t.ink.withValues(
@@ -381,9 +391,22 @@ class CountdownBeatRail extends StatelessWidget {
     return Row(
       children: [
         for (final entry in [
-          (label: 'Hold', icon: CatchIcons.panToolAltOutlined),
-          (label: 'Watch', icon: CatchIcons.visibilityOutlined),
-          (label: 'Move', icon: CatchIcons.boltRounded),
+          (
+            label:
+                context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelHold,
+            icon: CatchIcons.panToolAltOutlined,
+          ),
+          (
+            label: context
+                .l10n
+                .eventSuccessEventSuccessLiveRevealWidgetsLabelWatch,
+            icon: CatchIcons.visibilityOutlined,
+          ),
+          (
+            label:
+                context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelMove,
+            icon: CatchIcons.boltRounded,
+          ),
         ].indexed) ...[
           Expanded(
             child: CountdownBeatPill(
@@ -461,13 +484,19 @@ class CountdownCueStack extends StatelessWidget {
       children: [
         CountdownCuePill(
           icon: CatchIcons.visibilityOffOutlined,
-          title: 'No names shown yet',
-          body: 'Partner details stay locked until the shared release.',
+          title: context
+              .l10n
+              .eventSuccessEventSuccessLiveRevealWidgetsTitleNoNamesShownYet,
+          body: context
+              .l10n
+              .eventSuccessEventSuccessLiveRevealWidgetsBodyPartnerDetailsStayLocked,
         ),
         gapH8,
         CountdownCuePill(
           icon: CatchIcons.tipsAndUpdatesOutlined,
-          title: 'Clue is live',
+          title: context
+              .l10n
+              .eventSuccessEventSuccessLiveRevealWidgetsTitleClueIsLive,
           body: clue,
         ),
       ],
@@ -731,12 +760,17 @@ class WaitingRevealCue extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'The room is holding for the reveal.',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessLiveRevealWidgetsTextTheRoomIsHolding,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
                 gapH2,
                 Text(
-                  'The host controls the ${kind.assignmentNoun} unlock from live mode.',
+                  context.l10n
+                      .eventSuccessEventSuccessLiveRevealWidgetsTextTheHostControlsThe(
+                        assignmentNoun: kind.assignmentNoun,
+                      ),
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
@@ -762,18 +796,25 @@ class VisiblePodAssignment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AssignmentUnlockedShell(
-      title: 'Unlocked together',
+      title: context
+          .l10n
+          .eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether,
       child: Wrap(
         spacing: CatchSpacing.s2,
         runSpacing: CatchSpacing.s2,
         children: [
           CatchBadge(
-            label: '${assignment.peerUids.length + 1} people',
+            label: context.l10n
+                .eventSuccessEventSuccessLiveRevealWidgetsLabelValue1People(
+                  value1: assignment.peerUids.length + 1,
+                ),
             icon: CatchIcons.groupOutlined,
           ),
           if (peersLoading)
             CatchBadge(
-              label: 'Loading podmates',
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPodmates,
               icon: CatchIcons.hourglassEmptyRounded,
             )
           else
@@ -803,18 +844,26 @@ class VisibleRotationSlots extends StatelessWidget {
   Widget build(BuildContext context) {
     if (peersLoading) {
       return CatchBadge(
-        label: 'Loading partners',
+        label: context
+            .l10n
+            .eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPartners,
         icon: CatchIcons.hourglassEmptyRounded,
       );
     }
     return AssignmentUnlockedShell(
-      title: 'Unlocked together',
+      title: context
+          .l10n
+          .eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether,
       child: Column(
         children: [
           for (final slot in slots)
             RevealSlotRow(
               slot: slot,
-              peerName: profilesByUid[slot.peerUid]?.name ?? 'Partner',
+              peerName:
+                  profilesByUid[slot.peerUid]?.name ??
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyPartner,
             ),
         ],
       ),
@@ -837,12 +886,16 @@ class VisibleGroupRotationSlots extends StatelessWidget {
   Widget build(BuildContext context) {
     if (peersLoading) {
       return CatchBadge(
-        label: 'Loading group members',
+        label: context
+            .l10n
+            .eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingGroupMembers,
         icon: CatchIcons.hourglassEmptyRounded,
       );
     }
     return AssignmentUnlockedShell(
-      title: 'Unlocked together',
+      title: context
+          .l10n
+          .eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether,
       child: Column(
         children: [
           for (final slot in slots)
@@ -894,9 +947,11 @@ class RevealGroupSlotRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final timeRange =
-        '${TimeOfDay.fromDateTime(slot.startsAt).format(context)}-'
-        '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
+    final timeRange = context.l10n
+        .eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyFormatFormat2(
+          format: TimeOfDay.fromDateTime(slot.startsAt).format(context),
+          format2: TimeOfDay.fromDateTime(slot.endsAt).format(context),
+        );
     final peerNames = slot.peerUids
         .map((uid) => profilesByUid[uid]?.name)
         .whereType<String>()
@@ -940,7 +995,10 @@ class RevealGroupSlotRow extends StatelessWidget {
               runSpacing: CatchSpacing.s2,
               children: [
                 CatchBadge(
-                  label: '${slot.peerUids.length + 1} people',
+                  label: context.l10n
+                      .eventSuccessEventSuccessLiveRevealWidgetsLabelValue1People(
+                        value1: slot.peerUids.length + 1,
+                      ),
                   icon: CatchIcons.groupOutlined,
                 ),
                 for (final name in peerNames)
@@ -950,7 +1008,9 @@ class RevealGroupSlotRow extends StatelessWidget {
                   ),
                 if (peerNames.isEmpty)
                   CatchBadge(
-                    label: 'Names loading',
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessLiveRevealWidgetsLabelNamesLoading,
                     icon: CatchIcons.hourglassEmptyRounded,
                   ),
               ],
@@ -971,9 +1031,11 @@ class RevealSlotRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final timeRange =
-        '${TimeOfDay.fromDateTime(slot.startsAt).format(context)}-'
-        '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
+    final timeRange = context.l10n
+        .eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyFormatFormat2(
+          format: TimeOfDay.fromDateTime(slot.startsAt).format(context),
+          format2: TimeOfDay.fromDateTime(slot.endsAt).format(context),
+        );
     return Padding(
       padding: _revealAssignmentRowGap,
       child: CatchSurface(
@@ -994,7 +1056,11 @@ class RevealSlotRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$timeRange · $peerName',
+                    context.l10n
+                        .eventSuccessEventSuccessLiveRevealWidgetsTextTimerangePeername(
+                          timeRange: timeRange,
+                          peerName: peerName,
+                        ),
                     style: CatchTextStyles.sectionTitle(context),
                   ),
                   gapH2,
@@ -1087,11 +1153,28 @@ class RevealRoundRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final hidden = state == _RevealRoundState.hidden;
     final label =
-        pairs ?? (hidden ? 'Hidden until reveal' : 'Round ${index + 1}');
+        pairs ??
+        (hidden
+            ? context
+                  .l10n
+                  .eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal
+            : context.l10n
+                  .eventSuccessEventSuccessLiveRevealWidgetsLabelRoundValue1(
+                    value1: index + 1,
+                  ));
     final (badgeLabel, tone) = switch (state) {
-      _RevealRoundState.done => ('Done', CatchBadgeTone.success),
-      _RevealRoundState.now => ('Now', CatchBadgeTone.solid),
-      _RevealRoundState.hidden => ('Hidden', CatchBadgeTone.neutral),
+      _RevealRoundState.done => (
+        context.l10n.eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone,
+        CatchBadgeTone.success,
+      ),
+      _RevealRoundState.now => (
+        context.l10n.eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow,
+        CatchBadgeTone.solid,
+      ),
+      _RevealRoundState.hidden => (
+        context.l10n.eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden,
+        CatchBadgeTone.neutral,
+      ),
     };
     return Container(
       padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
@@ -1107,7 +1190,9 @@ class RevealRoundRow extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'R${index + 1}',
+            context.l10n.eventSuccessEventSuccessLiveRevealWidgetsTextRValue1(
+              value1: index + 1,
+            ),
             style: CatchTextStyles.monoLabel(
               context,
               color: foreground.withValues(
@@ -1176,7 +1261,10 @@ class RevealRoundRail extends StatelessWidget {
       children: [
         for (var index = 0; index < roundCount; index++)
           CatchBadge(
-            label: 'R${index + 1}',
+            label: context.l10n
+                .eventSuccessEventSuccessLiveRevealWidgetsLabelRValue1(
+                  value1: index + 1,
+                ),
             tone: index <= revealedThrough
                 ? CatchBadgeTone.success
                 : index == activeRoundIndex

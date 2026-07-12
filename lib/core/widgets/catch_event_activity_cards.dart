@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 /// Production event card backed by the shared activity visual schema.
 ///
@@ -131,7 +132,11 @@ class CatchEventCard extends StatelessWidget {
                             gapW10,
                             Expanded(
                               child: CatchMonoLabel(
-                                '$timeLabel / $countdownLabel',
+                                context.l10n
+                                    .coreCatchEventActivityCardsVisiblecopyTimelabelCountdownlabel(
+                                      timeLabel: timeLabel,
+                                      countdownLabel: countdownLabel,
+                                    ),
                                 color: t.primary,
                               ),
                             ),
@@ -182,7 +187,6 @@ class CatchEventCard extends StatelessWidget {
         ? card
         : catchHeroSurface(tag: heroTag!, child: card);
   }
-
 }
 
 Widget _buildOutlineStamp(BuildContext context, String label) {
@@ -199,7 +203,7 @@ Widget _buildOutlineStamp(BuildContext context, String label) {
           horizontal: CatchSpacing.s2,
           vertical: CatchSpacing.s1,
         ),
-        child: CatchMonoLabel(label.toUpperCase(), color: t.accent),
+        child: CatchMonoLabel(label, color: t.accent, uppercase: true),
       ),
     ),
   );

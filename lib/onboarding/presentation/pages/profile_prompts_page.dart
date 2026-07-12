@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
@@ -104,7 +105,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
     final state = _stateFor(
       isCompleting: mutation.isPending,
       completeErrorMessage: mutation.hasError
-          ? mutationErrorMessage(mutation)
+          ? mutationErrorMessage(mutation, l10n: context.l10n)
           : null,
     );
 
@@ -152,7 +153,7 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
           ),
           gapW12,
           CatchButton(
-            label: 'Continue',
+            label: context.l10n.onboardingProfilePromptsPageLabelContinue,
             onPressed: state.canSubmit ? callbacks.onContinue : null,
             isLoading: state.isCompleting,
           ),
@@ -209,7 +210,7 @@ class PromptField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchField.select<String>(
-            title: 'Profile prompt',
+            title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
             values: availablePromptIds,
             value: selectedPromptId,
             itemLabel: (promptId) => profilePromptDefinition(promptId).title,
@@ -226,8 +227,12 @@ class PromptField extends StatelessWidget {
             showLabel: false,
             controller: controller,
             placeholder: definition.placeholder,
-            helperText:
-                '${controller.text.length} / $maximumProfilePromptAnswerLength',
+            helperText: context.l10n
+                .onboardingProfilePromptsPageHelpertextLengthMaximumprofilepromptanswerlength(
+                  length: controller.text.length,
+                  maximumProfilePromptAnswerLength:
+                      maximumProfilePromptAnswerLength,
+                ),
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.newline,
             textCapitalization: TextCapitalization.sentences,

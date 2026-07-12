@@ -117,6 +117,21 @@ class AppConfig {
     return 'Catch Host (${environment.bannerLabel})';
   }
 
+  /// Resolves a localized product title while preserving non-production build
+  /// identity. The supplied base titles come from the generated copy catalog;
+  /// environment suffixes remain developer-facing target metadata.
+  static String appTitleFor({
+    required String consumerTitle,
+    required String hostTitle,
+  }) {
+    final baseTitle = appRole.isHost ? hostTitle : consumerTitle;
+    return switch (environment) {
+      AppEnvironment.dev => '$baseTitle (Dev)',
+      AppEnvironment.staging => '$baseTitle (Staging)',
+      AppEnvironment.prod => baseTitle,
+    };
+  }
+
   @visibleForTesting
   static Duration remoteConfigMinimumFetchIntervalFor({
     required AppEnvironment environment,

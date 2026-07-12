@@ -1,11 +1,10 @@
-import {trackMarketingEvent} from "../../analytics";
+import {
+  marketingCtaClickParameters,
+  trackMarketingEvent,
+} from "../../analytics";
 
 export function trackSiteCtaClick(label: string, href: string) {
-  trackMarketingEvent("cta_click", {
-    cta_href: href,
-    cta_label: label,
-    page_path: `${window.location.pathname}${window.location.search}`,
-  });
+  trackMarketingEvent("cta_click", marketingCtaClickParameters(label, href));
 }
 
 export function slugForTracking(value: string) {

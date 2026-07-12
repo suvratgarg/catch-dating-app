@@ -150,7 +150,7 @@ to device; when in doubt match `reference/Splash-prototype.html`):
   REQUIRES the condensed Archivo cut. Check `splash-welcome-handoff/
   assets/fonts` for the exact cut the prototype uses; bundle it under
   `assets/fonts/` + pubspec (bundled-fonts doctrine — no google_fonts),
-  register a `_WelcomeType`/CatchFonts entry for it. If the app currently
+  register a semantic `CatchTextStyles` entry for it. If the app currently
   renders the reel in regular-width Archivo, this is the single biggest
   visible parity break — fix first.
 - **Geometry** (scaled): ROW 90; WHEEL_TOP 50; WHEEL_H 540; FOCUS 230
@@ -208,7 +208,7 @@ record as a backlog note only.
 | Part 2 remove native splash after force-update gate resolves | aligned | `lib/app.dart` schedules one post-frame `FlutterNativeSplash.remove()` on allowed/update-required/error branches |
 | Part 3 startup screen retone and delayed spinner | aligned | `CatchStartupLoadingScreen` uses `t.bg`, brightness-matched transparent splash marks, and `CatchMotion.startupIndicatorDelay`; covered by `test/core/catch_primitives_test.dart` |
 | Part 3 route-level loading no longer reuses startup screen | aligned | Host club create/edit loading routes use `HostClubEditorLoadingScreen`; widget catalog records startup as boot-only |
-| Part 4 Archivo type and motion/layout tokenization | aligned | `CatchFonts.archivoWidth`, `_WelcomeType`, `CatchLayout`, and `CatchMotion` own the reel typography, geometry, and timing constants |
+| Part 4 Archivo type and motion/layout tokenization | aligned | `CatchTextStyles.welcomeReelHeadline`, `CatchTextStyles.welcomeIntroBody`, `CatchLayout`, and `CatchMotion` own the reel typography, geometry, and timing constants |
 | Part 4 geometry anchors | aligned with accepted drift | `test/onboarding/onboarding_widgets_test.dart` covers Catch/focus/CTA anchors; `SPLASH-WELCOME-DEBT-001` defers only the single-line `108` inset |
 | Part 4 reel mechanics and phrase bank | aligned | `welcomePhraseBank` is the runtime bank; `test/onboarding/onboarding_widgets_test.dart` verifies object, activity kind, pigment, landing index, and 2x rendered rows against `strings.json` |
 | Part 4 focus/color math and band mask | aligned | `ReelRow` and `ReelBand` implement focus threshold, pigment mix, period opacity, dimming, and mask stops through tokens |

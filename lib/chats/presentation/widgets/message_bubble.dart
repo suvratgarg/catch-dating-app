@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 // Public for Widgetbook.
 class MessageBubble extends StatelessWidget {
@@ -32,7 +33,7 @@ class MessageBubble extends StatelessWidget {
     final t = CatchTokens.of(context);
     final sentAt = this.sentAt;
     final timeStr = sentAt == null
-        ? 'Sending...'
+        ? context.l10n.chatsMessageBubbleVisiblecopySending
         : AppTimeFormatters.time(sentAt);
     final messageStyle = CatchTextStyles.chatMessage(
       context,

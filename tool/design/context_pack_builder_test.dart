@@ -301,18 +301,29 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
       'version': 1,
       'source': 'lib/core/theme/catch_text_styles.dart',
       'families': {
-        'voice': CatchFonts.serifFamily,
-        'function': CatchFonts.sansFamily,
+        'voice': CatchFonts.voiceFamily,
+        'function': CatchFonts.functionFamily,
         'data': CatchFonts.monoFamily,
       },
-      'opszAxis': {
-        'serif': [6, 72],
-        'sans': [14, 32],
+      'variableAxes': {
+        'voice': {
+          'wght': {'min': 100, 'max': 900},
+          'wdth': {
+            'min': 62,
+            'max': 125,
+            'lockedValue': CatchFonts.archivoWidth,
+          },
+        },
       },
       'rules': {
-        'monoLabels': 'Render text pre-uppercased; tracking 0.12-0.18em.',
+        'familyRoles':
+            'Archivo is display/brand voice; platform system is prose, user content, and UI; IBM Plex Mono is data.',
+        'tracking':
+            'Zero by default. Caps-only mono roles own 0.08-0.18em; welcomeReelHeadline owns the -0.5px display exception.',
+        'uppercase':
+            'Use uppercase-enforcing owners with kicker, monoCapsLabel, and badgeCaps.',
         'displayVoice':
-            'Archivo w600, zero tracking, centralized through CatchFonts.',
+            'Archivo is roman-only at the locked 78% width and is centralized through CatchFonts.',
         'color':
             'Base UI is paper and ink; chroma is reserved for activity meaning.',
       },
@@ -369,6 +380,8 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
     if (entry.parametric) {
       return {
         'role': entry.role,
+        'casePolicy': entry.casePolicy,
+        if (entry.aliasOf != null) 'aliasOf': entry.aliasOf,
         'parametric': true,
         'samples': {
           for (final sample in light.samples.entries)
@@ -380,11 +393,15 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
         },
       };
     }
-    return _styleMetrics(
-      light.samples.values.single,
-      role: entry.role,
-      darkStyle: dark.samples.values.single,
-    );
+    return {
+      ..._styleMetrics(
+        light.samples.values.single,
+        role: entry.role,
+        darkStyle: dark.samples.values.single,
+      ),
+      'casePolicy': entry.casePolicy,
+      if (entry.aliasOf != null) 'aliasOf': entry.aliasOf,
+    };
   }
 
   Map<String, Object?> _styleMetrics(
@@ -564,7 +581,7 @@ h1 { ${sampleStyle('display')} max-width: 760px; margin: 14px 0 18px; }
 }
 .headline { ${sampleStyle('headline')} margin: 0 0 12px; }
 .body { ${sampleStyle('bodyM')} color: var(--ink2); }
-.mono { ${sampleStyle('monoLabel')} color: var(--ink2); text-transform: uppercase; }
+    .mono { ${sampleStyle('monoCapsLabel')} color: var(--ink2); text-transform: uppercase; }
 .button {
   ${sampleStyle('buttonMd')}
   display: inline-block;
@@ -586,7 +603,7 @@ h1 { ${sampleStyle('display')} max-width: 760px; margin: 14px 0 18px; }
   align-items: end;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.24);
 }
-.activity span { ${sampleStyle('monoLabel')} color: #fff; text-transform: uppercase; }
+.activity span { ${sampleStyle('monoCapsLabel')} color: #fff; text-transform: uppercase; }
 .dark {
   --bg: ${color('bg', 'dark')};
   --surface: ${color('surface', 'dark')};
@@ -609,7 +626,7 @@ h1 { ${sampleStyle('display')} max-width: 760px; margin: 14px 0 18px; }
 <body>
 <main>
   <div class="kicker">Catch design system</div>
-  <h1>Editorial restraint, a serif voice, and activity color only where it means something.</h1>
+  <h1>Editorial restraint, a typographic voice, and activity color only where it means something.</h1>
   <p class="lead">Catch is paper and ink by default. Typography carries personality; color appears as an event, tied to the activity and never used as decoration.</p>
   <section class="grid">
     <div class="panel">
@@ -751,20 +768,32 @@ class _StyleEntry {
     required this.role,
     required this.samples,
     this.parametric = false,
+    this.casePolicy = 'mixed',
+    this.aliasOf,
   });
 
   factory _StyleEntry.single(
     String name,
     String role,
-    _StyleResolver resolver,
-  ) {
-    return _StyleEntry(name: name, role: role, samples: {'default': resolver});
+    _StyleResolver resolver, {
+    String casePolicy = 'mixed',
+    String? aliasOf,
+  }) {
+    return _StyleEntry(
+      name: name,
+      role: role,
+      samples: {'default': resolver},
+      casePolicy: casePolicy,
+      aliasOf: aliasOf,
+    );
   }
 
   final String name;
   final String role;
   final Map<String, _StyleResolver> samples;
   final bool parametric;
+  final String casePolicy;
+  final String? aliasOf;
 
   _ResolvedStyleEntry resolve(BuildContext context) {
     return _ResolvedStyleEntry(
@@ -792,6 +821,16 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('display', 'voice', CatchTextStyles.display),
   _StyleEntry.single('headline', 'voice', CatchTextStyles.headline),
   _StyleEntry.single('headlineS', 'voice', CatchTextStyles.headlineS),
+  _StyleEntry.single(
+    'welcomeReelHeadline',
+    'voice',
+    CatchTextStyles.welcomeReelHeadline,
+  ),
+  _StyleEntry.single(
+    'welcomeIntroBody',
+    'voice',
+    CatchTextStyles.welcomeIntroBody,
+  ),
   _StyleEntry.single('titleL', 'function', CatchTextStyles.titleL),
   _StyleEntry.single(
     'profileAnswer',
@@ -830,6 +869,7 @@ final _styleRegistry = <_StyleEntry>[
     'fieldRowTitle',
     'function',
     CatchTextStyles.fieldRowTitle,
+    aliasOf: 'titleS',
   ),
   _StyleEntry.single('bodyLead', 'function', CatchTextStyles.bodyLead),
   _StyleEntry.single('bodyL', 'function', CatchTextStyles.bodyL),
@@ -839,16 +879,21 @@ final _styleRegistry = <_StyleEntry>[
     'appBarSubtitle',
     'function',
     CatchTextStyles.appBarSubtitle,
+    aliasOf: 'bodyS',
   ),
   _StyleEntry.single('supporting', 'function', CatchTextStyles.supporting),
-  _StyleEntry.single('labelL', 'function', CatchTextStyles.labelL),
+  _StyleEntry.single(
+    'labelL',
+    'function',
+    CatchTextStyles.labelL,
+    aliasOf: 'titleS',
+  ),
   _StyleEntry.single('fieldLabel', 'function', CatchTextStyles.fieldLabel),
   _StyleEntry.single('labelM', 'function', CatchTextStyles.labelM),
   _StyleEntry.single('labelS', 'function', CatchTextStyles.labelS),
   _StyleEntry.single('statusLabel', 'function', CatchTextStyles.statusLabel),
   _StyleEntry.single('buttonSm', 'function', CatchTextStyles.buttonSm),
   _StyleEntry.single('buttonMd', 'function', CatchTextStyles.buttonMd),
-  _StyleEntry.single('button', 'function', CatchTextStyles.button),
   _StyleEntry.single('buttonLg', 'function', CatchTextStyles.buttonLg),
   _StyleEntry(
     name: 'avatarCount',
@@ -860,48 +905,73 @@ final _styleRegistry = <_StyleEntry>[
       '20': (context) => CatchTextStyles.avatarCount(context, size: 20),
     },
   ),
-  _StyleEntry.single('otpDigit', 'function', CatchTextStyles.otpDigit),
+  _StyleEntry(
+    name: 'avatarInitials',
+    role: 'data',
+    parametric: true,
+    casePolicy: 'uppercase-initials',
+    samples: {
+      '12': (context) => CatchTextStyles.avatarInitials(context, size: 12),
+      '18': (context) => CatchTextStyles.avatarInitials(context, size: 18),
+      '24': (context) => CatchTextStyles.avatarInitials(context, size: 24),
+    },
+  ),
+  _StyleEntry.single(
+    'statusBarTime',
+    'data',
+    CatchTextStyles.statusBarTime,
+    casePolicy: 'numeric',
+  ),
+  _StyleEntry.single(
+    'otpDigit',
+    'data',
+    CatchTextStyles.otpDigit,
+    casePolicy: 'numeric',
+  ),
   _StyleEntry.single('chatMessage', 'function', CatchTextStyles.chatMessage),
-  _StyleEntry.single('chat', 'function', CatchTextStyles.chat),
-  _StyleEntry.single('chatPreview', 'function', CatchTextStyles.chatPreview),
+  _StyleEntry.single(
+    'chatPreview',
+    'function',
+    CatchTextStyles.chatPreview,
+    aliasOf: 'bodyS',
+  ),
   _StyleEntry.single(
     'chatThreadContext',
     'function',
     CatchTextStyles.chatThreadContext,
   ),
   _StyleEntry.single('statCompact', 'function', CatchTextStyles.statCompact),
-  _StyleEntry(
-    name: 'mapPinTime',
-    role: 'map',
-    parametric: true,
-    samples: {
-      '1.0': (context) => CatchTextStyles.mapPinTime(
-        scale: 1,
-        color: CatchTokens.of(context).ink,
-      ),
-    },
+  _StyleEntry.single(
+    'kicker',
+    'data',
+    CatchTextStyles.kicker,
+    casePolicy: 'uppercase',
   ),
-  _StyleEntry(
-    name: 'mapPinCluster',
-    role: 'map',
-    parametric: true,
-    samples: {
-      '1.0': (context) => CatchTextStyles.mapPinCluster(
-        scale: 1,
-        color: CatchTokens.of(context).ink,
-      ),
-    },
+  _StyleEntry.single(
+    'kickerLg',
+    'data',
+    CatchTextStyles.kickerLg,
+    casePolicy: 'uppercase',
   ),
-  _StyleEntry.single('kicker', 'data', CatchTextStyles.kicker),
-  _StyleEntry.single('kickerLg', 'data', CatchTextStyles.kickerLg),
   _StyleEntry.single('monoLabel', 'data', CatchTextStyles.monoLabel),
+  _StyleEntry.single(
+    'monoCapsLabel',
+    'data',
+    CatchTextStyles.monoCapsLabel,
+    casePolicy: 'uppercase',
+  ),
   _StyleEntry.single('monoLabelS', 'data', CatchTextStyles.monoLabelS),
   _StyleEntry.single('mono', 'data', CatchTextStyles.mono),
   _StyleEntry.single('numericLarge', 'data', CatchTextStyles.numericLarge),
   _StyleEntry.single('numericMeta', 'data', CatchTextStyles.numericMeta),
   _StyleEntry.single('meta', 'data', CatchTextStyles.meta),
   _StyleEntry.single('badge', 'data', CatchTextStyles.badge),
-  _StyleEntry.single('code', 'data', CatchTextStyles.code),
+  _StyleEntry.single(
+    'badgeCaps',
+    'data',
+    CatchTextStyles.badgeCaps,
+    casePolicy: 'uppercase',
+  ),
   _StyleEntry.single('statDisplay', 'data', CatchTextStyles.statDisplay),
   _StyleEntry.single(
     'clubMemberSeal',

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 enum HostHomeTab { today, events }
@@ -71,10 +72,7 @@ class HostHomeScreenState {
   bool get hasClubs => clubs.isNotEmpty;
   bool get showClubPicker => clubs.length > 1;
   Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
-  String get title => selectedClub?.name ?? 'Host events';
   bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
-  String get selectedClubRoleLabel =>
-      selectedClubIsOwner ? 'Owner' : 'Host team';
 
   HostHomeScreenState selectClubIndex(int index) {
     return HostHomeScreenState.resolve(
@@ -176,26 +174,32 @@ class HostEventsWorkspaceState {
 
   bool get canRepeat => repeatSource != null;
 
-  String get repeatLabel {
+  String repeatLabel(AppLocalizations l10n) {
     final event = repeatSource;
-    if (event == null) return 'Repeat last';
+    if (event == null)
+      return l10n.hostsHostHomeScreenStateVisiblecopyRepeatLast;
     final label = event.eventFormat.label.trim();
-    return label.isEmpty ? 'Repeat last' : 'Repeat ‘$label’';
+    return label.isEmpty
+        ? l10n.hostsHostHomeScreenStateVisiblecopyRepeatLast
+        : l10n.hostsHostHomeScreenStateVisiblecopyRepeatLabel(label: label);
   }
 
-  String get emptyTitle => switch (selectedFilter) {
-    HostEventsLifecycleFilter.upcoming => 'No upcoming events',
-    HostEventsLifecycleFilter.live => 'Nothing live right now',
-    HostEventsLifecycleFilter.past => 'No past events yet',
+  String emptyTitle(AppLocalizations l10n) => switch (selectedFilter) {
+    HostEventsLifecycleFilter.upcoming =>
+      l10n.hostsHostHomeScreenStateEmptytitleNoUpcomingEvents,
+    HostEventsLifecycleFilter.live =>
+      l10n.hostsHostHomeScreenStateEmptytitleNothingLiveRightNow,
+    HostEventsLifecycleFilter.past =>
+      l10n.hostsHostHomeScreenStateEmptytitleNoPastEventsYet,
   };
 
-  String get emptyBody => switch (selectedFilter) {
+  String emptyBody(AppLocalizations l10n) => switch (selectedFilter) {
     HostEventsLifecycleFilter.upcoming =>
-      'Create your next event to start filling this list.',
+      l10n.hostsHostHomeScreenStateEmptybodyCreateYourNextEvent,
     HostEventsLifecycleFilter.live =>
-      'Your next event appears here when it starts.',
+      l10n.hostsHostHomeScreenStateEmptybodyYourNextEventAppears,
     HostEventsLifecycleFilter.past =>
-      'Completed events and their attendance will appear here.',
+      l10n.hostsHostHomeScreenStateEmptybodyCompletedEventsAndTheir,
   };
 }
 
@@ -300,33 +304,50 @@ class HostHomeTodayTaskData {
     required this.destination,
   });
 
-  factory HostHomeTodayTaskData.reviewWaitlist(Event event) {
+  factory HostHomeTodayTaskData.reviewWaitlist(
+    Event event,
+    AppLocalizations l10n,
+  ) {
     final waitlistCount = event.waitlistCount;
     final availability = event.spotsRemaining > 0
-        ? '${event.spotsRemaining} spots open'
-        : 'event full';
+        ? l10n.hostsHostHomeScreenStateVisiblecopySpotsremainingSpotsOpen(
+            spotsRemaining: event.spotsRemaining,
+          )
+        : l10n.hostsHostHomeScreenStateVisiblecopyEventFull;
     return HostHomeTodayTaskData(
       id: 'waitlist:${event.id}',
       event: event,
-      title: 'Review waitlist',
-      body: '${event.title}\n$waitlistCount waiting · $availability',
-      primaryActionLabel: 'Review',
+      title: l10n.hostsHostHomeScreenStateTitleReviewWaitlist,
+      body: l10n
+          .hostsHostHomeScreenStateBodyTitleWaitlistcountWaitingAvailability(
+            title: event.title,
+            waitlistCount: waitlistCount,
+            availability: availability,
+          ),
+      primaryActionLabel: l10n.hostsHostHomeScreenStateVisiblecopyReview,
       icon: CatchIcons.personSearchOutlined,
       destination: HostHomeTodayTaskDestination.guests,
     );
   }
 
-  static List<HostHomeTodayTaskData> forEvent(Event event) {
+  static List<HostHomeTodayTaskData> forEvent(
+    Event event,
+    AppLocalizations l10n,
+  ) {
     return event.waitlistCount > 0 &&
             !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired
-        ? <HostHomeTodayTaskData>[HostHomeTodayTaskData.reviewWaitlist(event)]
+        ? <HostHomeTodayTaskData>[
+            HostHomeTodayTaskData.reviewWaitlist(event, l10n),
+          ]
         : const <HostHomeTodayTaskData>[];
   }
 
-  static List<HostHomeTodayTaskData> forEvents(Iterable<Event> events) =>
-      List<HostHomeTodayTaskData>.unmodifiable(
-        events.expand(HostHomeTodayTaskData.forEvent),
-      );
+  static List<HostHomeTodayTaskData> forEvents(
+    Iterable<Event> events,
+    AppLocalizations l10n,
+  ) => List<HostHomeTodayTaskData>.unmodifiable(
+    events.expand((event) => HostHomeTodayTaskData.forEvent(event, l10n)),
+  );
 
   final String id;
   final Event event;

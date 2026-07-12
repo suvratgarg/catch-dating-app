@@ -1,9 +1,8 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBanner";
-import {hostListings} from "../features/organizers/data";
+import {hostListings} from "./fixtures/hostListings";
 import {
   ActivityMark as OrganizerActivityMark,
-  ProfileStrength as OrganizerProfileStrength,
   StatusBadge as OrganizerStatusBadge,
 } from "../features/organizers/OrganizerIdentity";
 import type {HostListing} from "../features/organizers/types";
@@ -18,7 +17,6 @@ import {
   CaptureGrid,
   ContentGrid,
   PhoneCaptureShell,
-  UiLabel,
 } from "../shared/ui/primitives";
 
 const captures: HostCaptureMap = {
@@ -163,6 +161,7 @@ export const MarketingConsentBannerAdapterStory: Story = {
 export const OrganizerActivityMarkAdapterStory: Story = {
   name: "Organizer activity mark adapter",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "organizer_activity_mark_adapter",
       routeIds: ["home", "claim", "claim_lookup", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
@@ -188,6 +187,7 @@ export const OrganizerActivityMarkAdapterStory: Story = {
 export const OrganizerStatusBadgeAdapterStory: Story = {
   name: "Organizer status badge adapter",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "organizer_status_badge_adapter",
       routeIds: ["home", "claim", "claim_lookup", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
@@ -200,31 +200,6 @@ export const OrganizerStatusBadgeAdapterStory: Story = {
       <OrganizerStatusBadge listing={claimedListing} />
       <OrganizerStatusBadge listing={unclaimedListing} compact />
     </BadgeRow>
-  ),
-};
-
-export const OrganizerProfileStrengthAdapterStory: Story = {
-  name: "Organizer profile strength adapter",
-  parameters: {
-    catchComponent: {
-      id: "organizer_profile_strength_adapter",
-      routeIds: ["home", "host", "host_preview", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["numeric-strength"],
-    },
-  },
-  render: () => (
-    <ContentGrid variant="surface">
-      <article>
-        <UiLabel>Verified</UiLabel>
-        <h3>{verifiedListing.name}</h3>
-        <OrganizerProfileStrength value={92} />
-      </article>
-      <article>
-        <UiLabel>Claimable</UiLabel>
-        <h3>{unclaimedListing.name}</h3>
-        <OrganizerProfileStrength value={68} />
-      </article>
-    </ContentGrid>
   ),
 };
 

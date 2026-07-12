@@ -103,29 +103,46 @@ class _SetupTabState extends State<SetupTab> {
           NoticeCard(
             icon: CatchIcons.lockClockRounded,
             title: eventHasStarted
-                ? 'Event started without a saved guide'
-                : 'Live guide can no longer be saved',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo,
             body: eventHasStarted
-                ? 'This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won\'t have any guided controls for this event.'
-                : 'Bookings have already started. Attendance and check-in still work, but the Live tab won\'t have guided controls unless a guide was saved first.',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted,
           ),
           gapH16,
         ] else if (!widget.planIsPersisted) ...[
           NoticeCard(
             icon: CatchIcons.cloudUploadOutlined,
-            title: 'Setup not saved yet',
-            body:
-                'This default plan is visible here only. Save it so the Live tab is ready when the event starts.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet,
+            body: context
+                .l10n
+                .eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs,
           ),
           gapH16,
         ],
         if (setupFrozen && widget.planIsPersisted) ...[
           NoticeCard(
             icon: CatchIcons.lockClockRounded,
-            title: 'Settings are locked',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostSetupTitleSettingsAreLocked,
             body: hasParticipantActivity
-                ? 'Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.'
-                : 'The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessHostSetupBodyTheEventHasStarted,
           ),
           gapH16,
         ],
@@ -142,12 +159,15 @@ class _SetupTabState extends State<SetupTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CatchSectionHeader(
+              CatchSectionHeader(
                 heavy: true,
                 padding: EdgeInsets.zero,
-                title: 'Recommended setup',
-                subtitle:
-                    'Review the essentials first. Format controls and advanced timing stay available below.',
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessHostSetupTitleRecommendedSetup,
+                subtitle: context
+                    .l10n
+                    .eventSuccessEventSuccessHostSetupSubtitleReviewTheEssentialsFirst,
               ),
               gapH12,
               HostActivitySummary(profile: profile, draft: presentedDraft),
@@ -191,10 +211,20 @@ class _SetupTabState extends State<SetupTab> {
         if (_isDirty && !setupFrozen) ...[const UnsavedChangesPill(), gapH8],
         CatchButton(
           label: !widget.planIsPersisted && setupFrozen
-              ? 'Save unavailable'
+              ? context
+                    .l10n
+                    .eventSuccessEventSuccessHostSetupLabelSaveUnavailable
               : widget.planIsPersisted
-              ? (_isDirty ? 'Save changes' : 'Save setup')
-              : 'Save live guide',
+              ? (_isDirty
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessHostSetupLabelSaveChanges
+                    : context
+                          .l10n
+                          .eventSuccessEventSuccessHostSetupLabelSaveSetup)
+              : context
+                    .l10n
+                    .eventSuccessEventSuccessHostSetupLabelSaveLiveGuide,
           isLoading: widget.actionState.isSaving,
           onPressed:
               widget.actionState.isSaving ||
@@ -248,12 +278,18 @@ class TargetAttendeeControl extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Target attendees',
+                context
+                    .l10n
+                    .eventSuccessEventSuccessHostSetupTextTargetAttendees,
                 style: CatchTextStyles.sectionTitle(context),
               ),
               gapH2,
               Text(
-                'Recommended range: $recommendedMin-$recommendedMax',
+                context.l10n
+                    .eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax(
+                      recommendedMin: recommendedMin,
+                      recommendedMax: recommendedMax,
+                    ),
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
@@ -267,10 +303,17 @@ class TargetAttendeeControl extends StatelessWidget {
               value: value,
               min: 1,
               max: 1000,
-              formatValue: (number) => '${number.toInt()}',
+              formatValue: (number) => context.l10n
+                  .eventSuccessEventSuccessHostSetupVisiblecopyToint(
+                    toInt: number.toInt(),
+                  ),
               enabled: enabled,
-              decreaseTooltip: 'Decrease target attendees',
-              increaseTooltip: 'Increase target attendees',
+              decreaseTooltip: context
+                  .l10n
+                  .eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees,
+              increaseTooltip: context
+                  .l10n
+                  .eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees,
               onChanged: (number) => onChanged(number.toInt()),
             ),
           );
@@ -314,7 +357,10 @@ class ReadinessIssues extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Before launch', style: CatchTextStyles.sectionTitle(context)),
+          Text(
+            context.l10n.eventSuccessEventSuccessHostSetupTextBeforeLaunch,
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           gapH6,
           for (final issue in issues)
             Padding(
@@ -368,7 +414,7 @@ class UnsavedChangesPill extends StatelessWidget {
         ),
         gapW6,
         Text(
-          'Unsaved changes',
+          context.l10n.eventSuccessEventSuccessHostSetupTextUnsavedChanges,
           style: CatchTextStyles.supporting(context, color: t.warning),
         ),
       ],

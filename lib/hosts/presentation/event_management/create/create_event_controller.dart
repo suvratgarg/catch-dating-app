@@ -87,7 +87,7 @@ class CreateEventController extends _$CreateEventController {
     final normalizedClubId = _requireNonBlank(
       clubId,
       fieldName: 'clubId',
-      message: 'Club id is required.',
+      code: 'event-club-required',
     );
     final normalizedMeetingLocation = _requireMeetingLocation(meetingLocation);
     final normalizedDescription = description.trim();
@@ -180,32 +180,36 @@ class CreateEventController extends _$CreateEventController {
     final imageUploadRepository = ref.read(imageUploadRepositoryProvider);
     final uploadedPhotos = <UploadedPhoto>[];
     try {
-      return await withBackendErrorContext(() async {
-        for (final indexedImage in selectedPhotoImages.indexed) {
-          final upload = await imageUploadRepository.uploadEventPhotoWithMetadata(
-            eventId: eventId,
-            position: indexedImage.$1,
-            image: indexedImage.$2,
+      return await withBackendErrorContext(
+        () async {
+          for (final indexedImage in selectedPhotoImages.indexed) {
+            final upload = await imageUploadRepository
+                .uploadEventPhotoWithMetadata(
+                  eventId: eventId,
+                  position: indexedImage.$1,
+                  image: indexedImage.$2,
+                );
+            uploadedPhotos.add(
+              UploadedPhoto.fromUpload(
+                url: upload.url,
+                storagePath: upload.storagePath,
+                position: indexedImage.$1,
+              ),
+            );
+          }
+          final updatedEvent = event.copyWith(
+            photoUrl: uploadedPhotos.first.url,
+            eventPhotos: uploadedPhotos,
           );
-          uploadedPhotos.add(
-            UploadedPhoto.fromUpload(
-              url: upload.url,
-              storagePath: upload.storagePath,
-              position: indexedImage.$1,
-            ),
-          );
-        }
-        final updatedEvent = event.copyWith(
-          photoUrl: uploadedPhotos.first.url,
-          eventPhotos: uploadedPhotos,
-        );
-        await eventRepo.updateEventDetails(event: updatedEvent);
-        return updatedEvent;
-      }, context: const BackendErrorContext(
-        service: BackendService.storage,
-        action: 'upload event photos',
-        resource: 'events',
-      ));
+          await eventRepo.updateEventDetails(event: updatedEvent);
+          return updatedEvent;
+        },
+        context: const BackendErrorContext(
+          service: BackendService.storage,
+          action: 'upload event photos',
+          resource: 'events',
+        ),
+      );
     } catch (_) {
       for (final photo in uploadedPhotos) {
         await imageUploadRepository.deleteByPath(photo.storagePath);
@@ -220,7 +224,7 @@ EventMeetingLocation _requireMeetingLocation(EventMeetingLocation location) {
   _requireNonBlank(
     normalized.name,
     fieldName: 'meetingLocation.name',
-    message: 'Meeting location is required.',
+    code: 'event-meeting-location-required',
   );
   _requireStartingPoint(
     latitude: normalized.latitude,
@@ -252,11 +256,15 @@ void _requireStartingPoint({
 String _requireNonBlank(
   String value, {
   required String fieldName,
-  required String message,
+  required String code,
 }) {
   final normalized = value.trim();
   if (normalized.isEmpty) {
-    throw ArgumentError.value(value, fieldName, message);
+    throw ValidationException(
+      'Required event field was empty: $fieldName.',
+      code: code,
+      debugMessage: 'Required event field was empty: $fieldName.',
+    );
   }
   return normalized;
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_flow_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -74,6 +75,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget build(BuildContext context) {
     final data = ref.watch(onboardingControllerProvider);
     final flowState = OnboardingFlowState.from(
+      l10n: context.l10n,
       data: data,
       profileCompletionOnly: widget.profileCompletionOnly,
       runPreferencesOnly: widget.runPreferencesOnly,

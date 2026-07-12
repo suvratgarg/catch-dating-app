@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/entities/reorderable_animation_config.dart';
 import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
@@ -176,9 +177,13 @@ class OrderedPhotoTile extends StatelessWidget {
 
     return Semantics(
       image: true,
-      label: 'Photo ${index + 1}',
+      label: context.l10n.coreOrderedPhotoPickerLabelPhotoValue1(
+        value1: index + 1,
+      ),
       child: Tooltip(
-        message: 'Photo ${index + 1}',
+        message: context.l10n.coreOrderedPhotoPickerMessagePhotoValue1(
+          value1: index + 1,
+        ),
         excludeFromSemantics: true,
         child: CatchSurface(
           tone: CatchSurfaceTone.raised,
@@ -209,7 +214,10 @@ class OrderedPhotoTile extends StatelessWidget {
                   top: CatchSpacing.s1,
                   right: CatchSpacing.s1,
                   child: Tooltip(
-                    message: 'Remove photo ${index + 1}',
+                    message: context.l10n
+                        .coreOrderedPhotoPickerMessageRemovePhotoValue1(
+                          value1: index + 1,
+                        ),
                     child: Material(
                       color: t.surface.withValues(
                         alpha: CatchOpacity.photoSlotDeleteChrome,
@@ -246,7 +254,7 @@ class OrderedPhotoTile extends StatelessWidget {
                       vertical: CatchSpacing.micro3,
                     ),
                     child: Text(
-                      'COVER',
+                      context.l10n.coreOrderedPhotoPickerTextCover,
                       style: CatchTextStyles.monoLabel(
                         context,
                         color: t.surface,

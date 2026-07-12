@@ -285,7 +285,7 @@ String _firestoreFailedPreconditionDebugMessage(
     final state = message.toLowerCase().contains('currently building')
         ? 'required index is still building'
         : 'required index is missing';
-    return '${context.service.label}.${context.action} failed '
+    return '${context.service.logKey}.${context.action} failed '
         'with ${error.plugin}/${error.code}: $state.';
   }
   return _firebaseDebugMessage(error, context);
@@ -595,7 +595,7 @@ String _firebaseDebugMessage(
 ) {
   final plugin = error.plugin.isEmpty ? 'unknown-plugin' : error.plugin;
   final message = error.message;
-  return '${context.service.label}.${context.action} failed '
+  return '${context.service.logKey}.${context.action} failed '
       'with $plugin/${error.code}'
       '${message == null || message.isEmpty ? '' : ': $message'}';
 }

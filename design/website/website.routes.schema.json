@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Catch marketing website route contract",
   "type": "object",
-  "required": ["version", "updated", "owner", "routes"],
+  "required": ["version", "updated", "owner", "sourceOfTruth", "routes"],
   "additionalProperties": false,
   "properties": {
     "$schema": {"type": "string"},
@@ -11,7 +11,27 @@
     "owner": {"type": "string"},
     "sourceOfTruth": {
       "type": "object",
-      "additionalProperties": {"type": "string"}
+      "required": [
+        "architecture",
+        "runtimeShell",
+        "runtimeRouter",
+        "metadataRuntime",
+        "metadataContent",
+        "metadataSchema",
+        "staticOutput",
+        "hostingConfig"
+      ],
+      "additionalProperties": {"type": "string"},
+      "properties": {
+        "architecture": {"type": "string"},
+        "runtimeShell": {"type": "string"},
+        "runtimeRouter": {"type": "string"},
+        "metadataRuntime": {"type": "string"},
+        "metadataContent": {"type": "string"},
+        "metadataSchema": {"type": "string"},
+        "staticOutput": {"type": "string"},
+        "hostingConfig": {"type": "string"}
+      }
     },
     "routes": {
       "type": "array",
@@ -54,6 +74,7 @@
             "type": "string",
             "enum": ["postbuild", "generated-postbuild", "spa-rewrite"]
           },
+          "httpStatus": {"type": "integer", "enum": [200, 404]},
           "indexing": {
             "type": "string",
             "enum": ["index", "noindex-follow", "listing-controlled"]

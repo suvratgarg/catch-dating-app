@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui' show PlatformDispatcher;
 
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
@@ -221,6 +222,8 @@ class FcmService {
         'platform': _platformName,
         'appVersion': packageInfo.version,
         'buildNumber': packageInfo.buildNumber,
+        'locale': PlatformDispatcher.instance.locale.toLanguageTag(),
+        'timeZone': DateTime.now().timeZoneName,
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 

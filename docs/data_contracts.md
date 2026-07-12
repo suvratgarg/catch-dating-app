@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.9
-updated: 2026-07-10
+version: 1.1.10
+updated: 2026-07-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -204,6 +204,16 @@ Direct client writes are still allowed only for narrow owner-owned actions that
 rules can prove locally: onboarding drafts, saved events, outgoing profile decisions,
 match-scoped chat messages, own unread reset, own notification `readAt`, and
 own FCM token. Multi-document product writes belong in callables or triggers.
+
+Each device push token lives at
+`users/{uid}/pushInstallations/{installationId}` with `token`, `appRole`,
+`environment`, `platform`, optional app version/build, `locale`, `timeZone`, and
+`updatedAt`. The client owns this device metadata and rules restrict writes to
+the authenticated user plus the known role/environment/platform vocabulary.
+Notification producers select reviewed templates by stable message id and use
+the installation locale when the delivery path supports per-installation
+fan-out. English remains the bundled server fallback; notification prose must
+not be stored as an unversioned remote document.
 
 ## Club Follower Posts
 

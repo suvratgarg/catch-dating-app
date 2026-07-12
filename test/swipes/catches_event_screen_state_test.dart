@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_event_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
@@ -8,6 +9,8 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   group('CatchesEventScreenState', () {
@@ -48,7 +51,10 @@ void main() {
       );
 
       expect(state, isA<CatchesEventEmpty>());
-      expect((state as CatchesEventEmpty).content, defaultSwipeEmptyContent);
+      expect(
+        (state as CatchesEventEmpty).content.title,
+        defaultSwipeEmptyContent(_l10n).title,
+      );
     });
 
     test('keeps sign-in copy explicit when user data is unavailable', () {
@@ -93,6 +99,7 @@ CatchesEventScreenState _state({
   DateTime? now,
 }) {
   return buildCatchesEventScreenState(
+    l10n: _l10n,
     queue: queue,
     event: event,
     currentUser: currentUser,

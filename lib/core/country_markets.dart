@@ -1,3 +1,4 @@
+// copy:allow-file(Canonical geographic proper-noun country catalog)
 import 'package:catch_dating_app/core/labelled.dart';
 
 const defaultCountryIsoCode = 'IN';

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
@@ -68,6 +69,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
   OnboardingNameDobState _stateFor(OnboardingData data) {
     return OnboardingNameDobState.fromDraft(
+      l10n: context.l10n,
       firstName: _firstNameController.text,
       lastName: _lastNameController.text,
       phoneNumber: _phoneController.text,
@@ -144,46 +146,50 @@ class OnboardingNameDobStep extends StatelessWidget {
       key: formKey,
       child: OnboardingStepLayout(
         footer: CatchButton(
-          label: 'Continue',
+          label: context.l10n.onboardingNameDobPageLabelContinue,
           onPressed: callbacks.onContinue,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),
         children: [
           CatchField.input(
-            title: 'FIRST NAME',
+            title: context.l10n.onboardingNameDobPageTitleFirstName,
             controller: controllers.firstName,
             autofocus: state.shouldAutofocus,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             autofillHints: const [AutofillHints.givenName],
-            helperText: 'Displayed on your profile.',
+            helperText: context
+                .l10n
+                .onboardingNameDobPageHelpertextDisplayedOnYourProfile,
             validator: state.validateFirstName,
           ),
           gapH16,
           CatchField.input(
-            title: 'LAST NAME',
+            title: context.l10n.onboardingNameDobPageTitleLastName,
             controller: controllers.lastName,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             autofillHints: const [AutofillHints.familyName],
-            helperText: 'Private. We never show this on your public profile.',
+            helperText:
+                context.l10n.onboardingNameDobPageHelpertextPrivateWeNeverShow,
             validator: state.validateLastName,
           ),
           gapH16,
           CatchField.input(
-            title: 'DATE OF BIRTH',
+            title: context.l10n.onboardingNameDobPageTitleDateOfBirth,
             controller: controllers.date,
             readOnly: true,
             onTap: () => callbacks.onPickDate(state.datePickerRequest),
             prefixIcon: Icon(CatchIcons.calendarTodayOutlined),
             suffixText: state.ageSuffix,
-            helperText: 'We never show your birth year.',
+            helperText:
+                context.l10n.onboardingNameDobPageHelpertextWeNeverShowYour,
             validator: (_) => state.validateDateOfBirth(),
           ),
           gapH16,
           CatchField.input(
-            title: 'PHONE',
+            title: context.l10n.onboardingNameDobPageTitlePhone,
             controller: controllers.phone,
             readOnly: true,
             keyboardType: TextInputType.phone,
@@ -192,7 +198,8 @@ class OnboardingNameDobStep extends StatelessWidget {
             prefixIcon: Icon(CatchIcons.phoneOutlined),
             prefixText: state.phonePrefix,
             suffixIcon: Icon(CatchIcons.verifiedRounded),
-            helperText: 'Verified via OTP.',
+            helperText:
+                context.l10n.onboardingNameDobPageHelpertextVerifiedViaOtp,
             helperTone: CatchFieldSupportTone.success,
             validator: state.validatePhoneNumber,
           ),

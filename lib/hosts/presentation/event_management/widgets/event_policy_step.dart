@@ -11,6 +11,7 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -75,7 +76,7 @@ class EventPolicyStep extends StatelessWidget {
             radius: CatchRadius.md,
             borderWidth: 0,
             child: Text(
-              'Configure who can book, how waitlists open, what attendees pay, and what happens if plans change.',
+              context.l10n.hostsEventPolicyStepTextConfigureWhoCanBook,
               style: CatchTextStyles.supporting(context, color: t.primary),
             ),
           ),
@@ -85,7 +86,7 @@ class EventPolicyStep extends StatelessWidget {
               Expanded(
                 child: CatchField.input(
                   key: CreateEventFormKeys.capacity,
-                  title: 'Max attendees',
+                  title: context.l10n.hostsEventPolicyStepTitleMaxAttendees,
                   controller: capacityController,
                   placeholder: '20',
                   prefixIcon: Icon(CatchIcons.peopleOutline),
@@ -93,9 +94,13 @@ class EventPolicyStep extends StatelessWidget {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Required';
+                    if (v == null || v.trim().isEmpty)
+                      return context
+                          .l10n
+                          .hostsEventPolicyStepVisiblecopyRequired;
                     final n = int.tryParse(v.trim());
-                    if (n == null || n < 1) return 'Min 1';
+                    if (n == null || n < 1)
+                      return context.l10n.hostsEventPolicyStepVisiblecopyMin1;
                     return null;
                   },
                 ),
@@ -104,7 +109,10 @@ class EventPolicyStep extends StatelessWidget {
               Expanded(
                 child: CatchField.input(
                   key: CreateEventFormKeys.price,
-                  title: 'Base price ($currencyCode)',
+                  title: context.l10n
+                      .hostsEventPolicyStepTitleBasePriceCurrencycode(
+                        currencyCode: currencyCode,
+                      ),
                   controller: priceController,
                   placeholder: '0',
                   prefixIcon: Icon(CatchIcons.paymentsOutlined),
@@ -112,16 +120,24 @@ class EventPolicyStep extends StatelessWidget {
                     decimal: true,
                   ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                    FilteringTextInputFormatter.allow(
+                      RegExp(context.l10n.hostsEventPolicyStepVisiblecopyDD),
+                    ),
                   ],
                   textInputAction: TextInputAction.next,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Required';
+                    if (v == null || v.trim().isEmpty)
+                      return context
+                          .l10n
+                          .hostsEventPolicyStepVisiblecopyRequired;
                     final amount = parseMajorCurrencyAmountToMinorUnits(
                       v,
                       currencyCode: currencyCode,
                     );
-                    if (amount == null) return 'Invalid';
+                    if (amount == null)
+                      return context
+                          .l10n
+                          .hostsEventPolicyStepVisiblecopyInvalid;
                     return null;
                   },
                 ),
@@ -129,7 +145,10 @@ class EventPolicyStep extends StatelessWidget {
             ],
           ),
           gapH20,
-          const CatchFormFieldLabel(label: 'Admission format', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
+            large: true,
+          ),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -138,16 +157,16 @@ class EventPolicyStep extends StatelessWidget {
               for (final preset in EventAdmissionPreset.values)
                 CatchSelectChip(
                   key: CreateEventFormKeys.admissionPreset(preset.name),
-                  label: preset.label,
+                  label: preset.label(context.l10n),
                   active: admissionPreset == preset,
-                  semanticsLabel: preset.title,
+                  semanticsLabel: preset.title(context.l10n),
                   onTap: () => onAdmissionPresetChanged(preset),
                 ),
             ],
           ),
           gapH8,
           Text(
-            admissionPreset.description,
+            admissionPreset.description(context.l10n),
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
@@ -170,7 +189,7 @@ class EventPolicyStep extends StatelessWidget {
                       gapW8,
                       Expanded(
                         child: Text(
-                          'The code is stored in the host-only private access document. Public event listings only show that an invite is required.',
+                          context.l10n.hostsEventPolicyStepTextTheCodeIsStored,
                           style: CatchTextStyles.supporting(
                             context,
                             color: t.ink2,
@@ -182,14 +201,17 @@ class EventPolicyStep extends StatelessWidget {
                   gapH12,
                   CatchField.input(
                     key: CreateEventFormKeys.inviteCode,
-                    title: 'Invite code',
+                    title: context.l10n.hostsEventPolicyStepTitleInviteCode,
                     controller: inviteCodeController,
-                    placeholder: 'CATCH-DELHI',
+                    placeholder:
+                        context.l10n.hostsEventPolicyStepPlaceholderCatchDelhi,
                     prefixIcon: Icon(CatchIcons.lockOutlineRounded),
                     textInputAction: TextInputAction.next,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
-                        RegExp(r'[A-Za-z0-9_-]'),
+                        RegExp(
+                          context.l10n.hostsEventPolicyStepVisiblecopyAZaZ09,
+                        ),
                       ),
                     ],
                     validator:
@@ -212,9 +234,10 @@ class EventPolicyStep extends StatelessWidget {
                 children: [
                   CatchField.toggle(
                     key: CreateEventFormKeys.cohortCapsToggle,
-                    title: 'Cohort caps',
-                    body:
-                        'Optionally cap straight men and straight women without making this a separate admission format.',
+                    title: context.l10n.hostsEventPolicyStepTitleCohortCaps,
+                    body: context
+                        .l10n
+                        .hostsEventPolicyStepBodyOptionallyCapStraightMen,
                     value: cohortCapsEnabled,
                     onChanged: onCohortCapsEnabledChanged,
                   ),
@@ -225,10 +248,14 @@ class EventPolicyStep extends StatelessWidget {
                         Expanded(
                           child: CatchField.input(
                             key: CreateEventFormKeys.maxMen,
-                            title: 'Max straight men',
+                            title: context
+                                .l10n
+                                .hostsEventPolicyStepTitleMaxStraightMen,
                             isOptional: true,
                             controller: maxMenController,
-                            placeholder: 'Max men',
+                            placeholder: context
+                                .l10n
+                                .hostsEventPolicyStepPlaceholderMaxMen,
                             prefixIcon: Icon(CatchIcons.maleOutlined),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -244,10 +271,14 @@ class EventPolicyStep extends StatelessWidget {
                         Expanded(
                           child: CatchField.input(
                             key: CreateEventFormKeys.maxWomen,
-                            title: 'Max straight women',
+                            title: context
+                                .l10n
+                                .hostsEventPolicyStepTitleMaxStraightWomen,
                             isOptional: true,
                             controller: maxWomenController,
-                            placeholder: 'Max women',
+                            placeholder: context
+                                .l10n
+                                .hostsEventPolicyStepPlaceholderMaxWomen,
                             prefixIcon: Icon(CatchIcons.femaleOutlined),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -283,7 +314,7 @@ class EventPolicyStep extends StatelessWidget {
                   gapW8,
                   Expanded(
                     child: Text(
-                      'Requests appear in host manage with each person\'s public profile so the host can review fit before confirming spots.',
+                      context.l10n.hostsEventPolicyStepTextRequestsAppearInHost,
                       style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ),
@@ -302,9 +333,10 @@ class EventPolicyStep extends StatelessWidget {
                 children: [
                   CatchField.toggle(
                     key: CreateEventFormKeys.dynamicPricingToggle,
-                    title: 'Demand pricing',
-                    body:
-                        'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.',
+                    title: context.l10n.hostsEventPolicyStepTitleDemandPricing,
+                    body: context
+                        .l10n
+                        .hostsEventPolicyStepBodyIncreaseTheStraightMen,
                     value: dynamicPricingEnabled,
                     onChanged: onDynamicPricingChanged,
                   ),
@@ -315,7 +347,10 @@ class EventPolicyStep extends StatelessWidget {
                         Expanded(
                           child: CatchField.input(
                             key: CreateEventFormKeys.dynamicPricingStep,
-                            title: 'Step ($currencyCode)',
+                            title: context.l10n
+                                .hostsEventPolicyStepTitleStepCurrencycode(
+                                  currencyCode: currencyCode,
+                                ),
                             controller: dynamicPricingStepController,
                             placeholder: '250',
                             prefixIcon: Icon(CatchIcons.trendingUpRounded),
@@ -333,7 +368,10 @@ class EventPolicyStep extends StatelessWidget {
                         Expanded(
                           child: CatchField.input(
                             key: CreateEventFormKeys.dynamicPricingMax,
-                            title: 'Max ($currencyCode)',
+                            title: context.l10n
+                                .hostsEventPolicyStepTitleMaxCurrencycode(
+                                  currencyCode: currencyCode,
+                                ),
                             controller: dynamicPricingMaxController,
                             placeholder: '1500',
                             prefixIcon: Icon(CatchIcons.priceChangeOutlined),
@@ -355,17 +393,20 @@ class EventPolicyStep extends StatelessWidget {
             ),
           ],
           gapH20,
-          const CatchFormFieldLabel(label: 'Age range', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsEventPolicyStepLabelAgeRange,
+            large: true,
+          ),
           gapH8,
           Row(
             children: [
               Expanded(
                 child: CatchField.input(
                   key: CreateEventFormKeys.minAge,
-                  title: 'Min age',
+                  title: context.l10n.hostsEventPolicyStepTitleMinAge,
                   isOptional: true,
                   controller: minAgeController,
-                  placeholder: 'Min',
+                  placeholder: context.l10n.hostsEventPolicyStepPlaceholderMin,
                   prefixIcon: Icon(CatchIcons.cakeOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -381,10 +422,10 @@ class EventPolicyStep extends StatelessWidget {
               Expanded(
                 child: CatchField.input(
                   key: CreateEventFormKeys.maxAge,
-                  title: 'Max age',
+                  title: context.l10n.hostsEventPolicyStepTitleMaxAge,
                   isOptional: true,
                   controller: maxAgeController,
-                  placeholder: 'Max',
+                  placeholder: context.l10n.hostsEventPolicyStepPlaceholderMax,
                   prefixIcon: Icon(CatchIcons.cakeOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -399,7 +440,10 @@ class EventPolicyStep extends StatelessWidget {
             ],
           ),
           gapH20,
-          const CatchFormFieldLabel(label: 'Cancellation policy', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsEventPolicyStepLabelCancellationPolicy,
+            large: true,
+          ),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -424,7 +468,7 @@ class EventPolicyStep extends StatelessWidget {
             padding: CatchInsets.contentDense,
             radius: CatchRadius.md,
             child: Text(
-              'Host payout is released after event completion. If the host cancels, attendees are made complete before any host payout.',
+              context.l10n.hostsEventPolicyStepTextHostPayoutIsReleased,
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),

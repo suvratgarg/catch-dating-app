@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -112,15 +113,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       body: SafeArea(
         bottom: false,
         child: Semantics(
-          label: 'Profile tabs',
-          hint:
-              'Drag left or right to switch between Edit, Preview, and Insights.',
+          label: context.l10n.userProfileProfileScreenLabelProfileTabs,
+          hint: context.l10n.userProfileProfileScreenBodyDragLeftOrRight,
           child: NestedScrollView(
             controller: _outerScrollController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               final headerSlivers = CatchSliverHeader(
-                title: const CatchScreenHeaderTitle.block(
-                  title: 'Your profile',
+                title: CatchScreenHeaderTitle.block(
+                  title: context.l10n.userProfileProfileScreenTitleYourProfile,
                   actions: [ProfileSettingsButton()],
                 ),
                 bottomHeight: CatchLayout.tabRailHeight,
@@ -220,8 +220,11 @@ class SelfProfileTabBody extends StatelessWidget {
         return Center(
           child: CatchEmptyState(
             icon: CatchIcons.personOffOutlined,
-            title: 'Profile not available',
-            message: 'Finish onboarding or sign in again to load your profile.',
+            title:
+                context.l10n.userProfileProfileScreenTitleProfileNotAvailable,
+            message: context
+                .l10n
+                .userProfileProfileScreenMessageFinishOnboardingOrSign,
           ),
         );
       case SelfProfileRouteStatus.ready:

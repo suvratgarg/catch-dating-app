@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 /// Handoff `StepHeader`: wizard header built from the shared large AppBar plus
 /// a 2px progress hairline.
@@ -41,7 +42,10 @@ class CatchStepHeader extends StatelessWidget {
         trailing ??
         (hasProgress
             ? Text(
-                'STEP $clampedStep OF $total',
+                context.l10n.coreCatchStepFlowHeaderTextStepClampedstepOfTotal(
+                  clampedStep: clampedStep!,
+                  total: total!,
+                ),
                 style: CatchTextStyles.monoLabel(context, color: t.ink3),
               )
             : null);

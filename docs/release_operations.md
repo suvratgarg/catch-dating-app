@@ -49,6 +49,7 @@ The current workflows are:
 | `.github/workflows/firebase-dev-deploy.yml` | Automatic dev Firebase deploy after `main` is green. |
 | `.github/workflows/firebase-deploy.yml` | Manual deploy of selected Firebase targets to dev, staging, or prod. Keep staging/prod explicit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
+| `.github/workflows/marketing-website.yml` | Validates the marketing build and Playwright/axe Storybook accessibility contract, deploys the production Firebase Hosting `marketing` target, then requires a unique unknown production URL to return HTTP 404. |
 | `.github/workflows/admin-website.yml` | Validates and deploys the production Firebase Hosting `admin` target after matching changes land on `main`. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
 | `.github/workflows/mobile-internal-release.yml` | Canonical Consumer/Host mobile release matrix: signed iOS uploads to TestFlight and signed Android AABs with guarded Play internal upload. |
@@ -277,7 +278,10 @@ Marketing and admin Hosting deploys require explicit Vite Firebase/App Check
 environment variables. Firebase Hosting predeploy runs
 `tool/env/check_web_hosting_env.mjs` for both targets so a deployment fails
 before build if the site would fall back to dev Firebase config, sample admin
-mode, or missing App Check.
+mode, or missing App Check. Marketing production deploys also require validated
+HTTPS `VITE_APP_STORE_URL` and `VITE_PLAY_STORE_URL` product links on
+`apps.apple.com` and `play.google.com`; local preview builds may leave them
+unset and use the preview-only fallback state.
 
 Both Hosting workflows use the approval-free `prod-hosting` GitHub Environment
 and deploy automatically after their validation job succeeds on a matching
@@ -296,6 +300,7 @@ variables into Firebase Hosting predeploys when `hosting` is selected:
 `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`,
 `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`,
 `VITE_FIREBASE_MEASUREMENT_ID`, `VITE_WEBSITE_APPCHECK_SITE_KEY`,
+`VITE_APP_STORE_URL`, `VITE_PLAY_STORE_URL`,
 `VITE_ADMIN_DATA_MODE`, `VITE_ADMIN_FIREBASE_ENV`, and
 `VITE_ADMIN_APPCHECK_SITE_KEY`. `VITE_GTM_ID` is optional until the production
 GTM container exists; paid-acquisition readiness still requires setting it and

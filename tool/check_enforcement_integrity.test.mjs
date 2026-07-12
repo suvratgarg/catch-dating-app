@@ -284,6 +284,28 @@ test("fails satisfied baseline-empty sunset signals without review", () => {
   );
 });
 
+test("counts entry-list baselines for sunset signals", () => {
+  const root = createFixture({
+    rules: {
+      "RULE-001": {
+        ...manualRule(),
+        sunset_signals: [
+          {
+            type: "baseline-empty",
+            baseline: "tool/sample_baseline.json",
+            countKey: "entries",
+          },
+        ],
+      },
+    },
+    files: {
+      "tool/sample_baseline.json": JSON.stringify({entries: ["known debt"]}),
+    },
+  });
+
+  assert.deepEqual(checkEnforcementIntegrity({root}).errors, []);
+});
+
 test("fails missing doc anchors and missing vacuity proof text", () => {
   const root = createFixture({
     rules: {

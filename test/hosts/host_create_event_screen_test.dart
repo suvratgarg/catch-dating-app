@@ -705,7 +705,10 @@ void main() {
 
       await _submitValidEvent(tester);
 
-      expect(find.text('create failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
       expect(find.text('Schedule event'), findsOneWidget);
     });
 
@@ -737,7 +740,7 @@ void main() {
       await _submitValidEvent(tester);
 
       expect(
-        find.text('Unable to create event right now. Please try again.'),
+        find.text('Something went wrong. Please try again.'),
         findsOneWidget,
       );
       expect(find.textContaining('[DEBUG]'), findsNothing);

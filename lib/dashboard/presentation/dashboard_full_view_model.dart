@@ -7,6 +7,7 @@ import 'package:catch_dating_app/explore/data/explore_recommendations_repository
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -114,32 +115,37 @@ enum DashboardHomeRetryTarget { userProfile, memberships, signedUpEvents }
 class DashboardHomeLoadError {
   const DashboardHomeLoadError({
     required this.error,
-    required this.fallbackMessage,
     required this.retryTarget,
     this.uid,
   });
 
   final Object error;
-  final String fallbackMessage;
   final DashboardHomeRetryTarget retryTarget;
   final String? uid;
 }
 
 class DashboardHomeHeaderModel {
-  const DashboardHomeHeaderModel({required this.title});
+  const DashboardHomeHeaderModel._({this.userName, this.now});
 
-  final String title;
+  final String? userName;
+  final DateTime? now;
 
-  factory DashboardHomeHeaderModel.empty() {
-    return const DashboardHomeHeaderModel(title: "Let's find your first event");
-  }
+  const factory DashboardHomeHeaderModel.empty() = DashboardHomeHeaderModel._;
 
   factory DashboardHomeHeaderModel.full({
     required UserProfile user,
     required DateTime now,
-  }) {
-    return DashboardHomeHeaderModel(
-      title: '${dashboardGreeting(now)}, ${user.greetingDisplayName}',
+  }) =>
+      DashboardHomeHeaderModel._(userName: user.greetingDisplayName, now: now);
+
+  String title(AppLocalizations l10n) {
+    final name = userName;
+    final timestamp = now;
+    if (name == null || timestamp == null)
+      return l10n.dashboardDashboardFullViewModelTitleLetSFindYour;
+    return l10n.dashboardDashboardFullViewModelTitleDashboardgreetingName(
+      dashboardGreeting: dashboardGreeting(l10n, timestamp),
+      name: name,
     );
   }
 }
@@ -198,11 +204,12 @@ class DashboardHomeScreenState {
   final String? notificationUid;
 }
 
-String dashboardGreeting(DateTime now) {
+String dashboardGreeting(AppLocalizations l10n, DateTime now) {
   final hour = now.hour;
-  if (hour < 12) return 'Morning';
-  if (hour < 17) return 'Afternoon';
-  return 'Evening';
+  if (hour < 12) return l10n.dashboardDashboardFullViewModelVisiblecopyMorning;
+  if (hour < 17)
+    return l10n.dashboardDashboardFullViewModelVisiblecopyAfternoon;
+  return l10n.dashboardDashboardFullViewModelVisiblecopyEvening;
 }
 
 DashboardHomeLiveState dashboardHomeLiveStateFor(
@@ -453,7 +460,7 @@ WeeklyActivitySnapshot buildDashboardWeeklyActivitySnapshot({
       summary: catchSummary,
       activities: catchActivities,
       source: WeeklyActivitySource.catchFallback,
-      message: 'Catch check-ins only.',
+      messageKind: WeeklyActivityMessageKind.catchOnly,
     );
   }
 
@@ -481,8 +488,8 @@ WeeklyActivitySnapshot buildDashboardWeeklyActivitySnapshot({
     activities: mergedActivities,
     source: source,
     clearMessage: source != WeeklyActivitySource.catchFallback,
-    message: source == WeeklyActivitySource.catchFallback
-        ? 'Catch check-ins only.'
+    messageKind: source == WeeklyActivitySource.catchFallback
+        ? WeeklyActivityMessageKind.catchOnly
         : null,
   );
 }
@@ -609,7 +616,6 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
     error: (error, stackTrace) => DashboardHomeScreenState.error(
       DashboardHomeLoadError(
         error: error,
-        fallbackMessage: 'Unable to load your dashboard.',
         retryTarget: DashboardHomeRetryTarget.userProfile,
       ),
     ),
@@ -632,7 +638,6 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
         return DashboardHomeScreenState.error(
           DashboardHomeLoadError(
             error: followedClubIdsAsync.error!,
-            fallbackMessage: 'Unable to load your clubs.',
             retryTarget: DashboardHomeRetryTarget.memberships,
             uid: user.uid,
           ),
@@ -642,7 +647,6 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
         return DashboardHomeScreenState.error(
           DashboardHomeLoadError(
             error: signedUpEventsAsync.error!,
-            fallbackMessage: 'Unable to load your booked events.',
             retryTarget: DashboardHomeRetryTarget.signedUpEvents,
             uid: user.uid,
           ),

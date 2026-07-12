@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 // ── Data model ────────────────────────────────────────────────────────────────
@@ -216,7 +217,9 @@ class CatchPersonChatLayout extends StatelessWidget {
         ],
         gapH4,
         Text(
-          data.isTyping ? 'Typing...' : data.lastMessage!,
+          data.isTyping
+              ? context.l10n.coreCatchPersonRowTextTyping
+              : data.lastMessage!,
           style: CatchTextStyles.chatPreview(
             context,
             color: data.isTyping
@@ -281,7 +284,9 @@ class CatchPersonUnreadCountPill extends StatelessWidget {
     final label = catchCountLabel(count);
 
     return Semantics(
-      label: count == 1 ? 'Unread chat' : '$label unread chats',
+      label: count == 1
+          ? context.l10n.coreCatchPersonRowLabelUnreadChat
+          : context.l10n.coreCatchPersonRowLabelLabelUnreadChats(label: label),
       child: CatchBadge(
         label: label,
         tone: CatchBadgeTone.brand,
@@ -299,7 +304,7 @@ class CatchPersonNewMatchDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'New match',
+      label: context.l10n.coreCatchPersonRowLabelNewMatch,
       child: ClipOval(
         child: ColoredBox(
           color: CatchTokens.of(context).primary,

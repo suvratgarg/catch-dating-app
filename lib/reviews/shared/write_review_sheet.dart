@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/shared/review_keys.dart';
 import 'package:catch_dating_app/reviews/shared/star_rating.dart';
@@ -111,8 +112,8 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
 
     final confirmed = await showConfirmDangerDialog(
       context: context,
-      title: 'Delete review?',
-      message: 'This removes your review from this event.',
+      title: context.l10n.reviewsWriteReviewSheetTitleDeleteReview,
+      message: context.l10n.reviewsWriteReviewSheetMessageThisRemovesYourReview,
       confirmLabel: 'Delete',
     );
     if (confirmed != true || !mounted) return;
@@ -144,7 +145,9 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
     });
 
     return CatchBottomSheetScaffold(
-      title: _isEdit ? 'Edit review' : 'Write a review',
+      title: _isEdit
+          ? context.l10n.reviewsWriteReviewSheetTitleEditReview
+          : context.l10n.reviewsWriteReviewSheetTitleWriteAReview,
       keyboardSafe: true,
       padding: EdgeInsets.fromLTRB(
         CatchSpacing.s4,
@@ -158,7 +161,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
           if (_isEdit) ...[
             CatchButton(
               key: ReviewKeys.deleteReviewButton,
-              label: 'Delete review',
+              label: context.l10n.reviewsWriteReviewSheetLabelDeleteReview,
               onPressed: submitting ? null : _confirmDelete,
               isLoading: deleteMutation.isPending,
               variant: CatchButtonVariant.danger,
@@ -168,7 +171,9 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
           ],
           CatchButton(
             key: ReviewKeys.submitReviewButton,
-            label: _isEdit ? 'Save' : 'Submit',
+            label: _isEdit
+                ? context.l10n.reviewsWriteReviewSheetLabelSave
+                : context.l10n.reviewsWriteReviewSheetLabelSubmit,
             onPressed: _rating == 0 || submitting ? null : _submit,
             isLoading: mutation.isPending,
             fullWidth: true,
@@ -187,11 +192,13 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
           gapH16,
           CatchField.input(
             key: ReviewKeys.commentField,
-            title: 'Review',
+            title: context.l10n.reviewsWriteReviewSheetTitleReview,
             isOptional: true,
             controller: _commentController,
             maxLines: 3,
-            placeholder: 'Share your experience',
+            placeholder: context
+                .l10n
+                .reviewsWriteReviewSheetPlaceholderShareYourExperience,
             textCapitalization: TextCapitalization.sentences,
             // Mirror the backend review-comment maxLength so the user can't type
             // past the limit and hit a server rejection on submit.
@@ -199,11 +206,15 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
           ),
           if (mutation.hasError) ...[
             gapH12,
-            CatchErrorBanner(message: mutationErrorMessage(mutation)),
+            CatchErrorBanner(
+              message: mutationErrorMessage(mutation, l10n: context.l10n),
+            ),
           ],
           if (deleteMutation.hasError) ...[
             gapH12,
-            CatchErrorBanner(message: mutationErrorMessage(deleteMutation)),
+            CatchErrorBanner(
+              message: mutationErrorMessage(deleteMutation, l10n: context.l10n),
+            ),
           ],
         ],
       ),

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/celebration/celebration_effects_controller
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class EventCheckInCelebrationScreen extends StatelessWidget {
@@ -21,34 +22,35 @@ class EventCheckInCelebrationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchCelebrationScreen(
       kind: CelebrationMomentKind.eventCheckedIn,
-      eyebrow: 'Checked in',
-      title: 'Checked in.',
-      message: "You're on the roster. Have a great event.",
+      eyebrow: context.l10n.eventsEventCheckInCelebrationScreenEyebrowCheckedIn,
+      title: context.l10n.eventsEventCheckInCelebrationScreenTitleCheckedIn,
+      message:
+          context.l10n.eventsEventCheckInCelebrationScreenMessageYouReOnThe,
       icon: CatchIcons.locationOnRounded,
       details: [
         CelebrationDetail(
           icon: CatchIcons.directionsRunRounded,
-          label: 'Event',
+          label: context.l10n.eventsEventCheckInCelebrationScreenLabelEvent,
           value: event.title,
         ),
         CelebrationDetail(
           icon: CatchIcons.scheduleRounded,
-          label: 'Starts',
+          label: context.l10n.eventsEventCheckInCelebrationScreenLabelStarts,
           value: event.timeRangeLabel,
         ),
         CelebrationDetail(
           icon: CatchIcons.locationOnOutlined,
-          label: 'Meet point',
+          label: context.l10n.eventsEventCheckInCelebrationScreenLabelMeetPoint,
           value: event.locationName,
         ),
       ],
       primaryAction: CelebrationAction(
-        label: 'View event',
+        label: context.l10n.eventsEventCheckInCelebrationScreenLabelViewEvent,
         onPressed: onViewEvent,
         icon: Icon(CatchIcons.directionsRunRounded),
       ),
       secondaryAction: CelebrationAction(
-        label: 'Back to home',
+        label: context.l10n.eventsEventCheckInCelebrationScreenLabelBackToHome,
         onPressed: onBackHome,
       ),
       onClose: onBackHome,

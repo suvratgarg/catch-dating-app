@@ -19,6 +19,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -78,10 +79,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _confirmDeleteAccount() async {
     final confirmed = await showConfirmDangerDialog(
       context: context,
-      title: 'Delete account?',
-      message:
-          'This removes your public profile, signs you out, and keeps only '
-          'the minimal records required for safety and payment history.',
+      title: context.l10n.safetySettingsScreenTitleDeleteAccount,
+      message: context.l10n.safetySettingsScreenMessageThisRemovesYourPublic,
       confirmLabel: 'Delete',
     );
     if (confirmed != true || !mounted) return;
@@ -182,7 +181,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         SettingsController.unblockUserMutation,
       ],
       child: Scaffold(
-        appBar: const CatchScreenTopBar(title: 'Settings'),
+        appBar: CatchScreenTopBar(
+          title: context.l10n.safetySettingsScreenTitleSettings,
+        ),
         body: CatchScreenBody(
           pt: CatchSpacing.s2,
           pb: CatchSpacing.s7,
@@ -196,48 +197,59 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: [
                   CatchSection.fieldRows(
                     first: true,
-                    title: 'Account',
+                    title: context.l10n.safetySettingsScreenTitleAccount,
                     footer: AccountProfileStatus(
                       profile: state.profile,
                       onRetry: () => ref.invalidate(watchUserProfileProvider),
                     ),
                     children: [
                       CatchField.read(
-                        title: 'Phone number',
+                        title:
+                            context.l10n.safetySettingsScreenTitlePhoneNumber,
                         valueText: state.profile.phoneNumber,
                         icon: CatchIcons.phoneOutlined,
                       ),
                       CatchField.read(
-                        title: 'Email',
+                        title: context.l10n.safetySettingsScreenTitleEmail,
                         valueText: state.profile.email,
                         icon: CatchIcons.emailOutlined,
                       ),
                       CatchField.nav(
-                        title: 'Edit profile',
+                        title:
+                            context.l10n.safetySettingsScreenTitleEditProfile,
                         icon: CatchIcons.personOutlined,
                         onTap: () =>
                             context.pushNamed(Routes.profileScreen.name),
                       ),
                       CatchField.nav(
                         key: SettingsKeys.reviewHistoryRow,
-                        title: 'Review history',
-                        valueText: 'Events you reviewed',
+                        title:
+                            context.l10n.safetySettingsScreenTitleReviewHistory,
+                        valueText: context
+                            .l10n
+                            .safetySettingsScreenBodyEventsYouReviewed,
                         icon: CatchIcons.rateReviewOutlined,
                         onTap: () =>
                             context.pushNamed(Routes.reviewsHistoryScreen.name),
                       ),
                       CatchField.nav(
                         key: SettingsKeys.paymentHistoryRow,
-                        title: 'Payment history',
-                        valueText: 'Bookings and receipts',
+                        title: context
+                            .l10n
+                            .safetySettingsScreenTitlePaymentHistory,
+                        valueText: context
+                            .l10n
+                            .safetySettingsScreenBodyBookingsAndReceipts,
                         icon: CatchIcons.receiptLongOutlined,
                         onTap: () =>
                             context.pushNamed(Routes.paymentHistoryScreen.name),
                       ),
                       CatchField.nav(
                         key: SettingsKeys.hostAppRow,
-                        title: 'Catch Host',
-                        valueText: 'Manage events and clubs',
+                        title: context.l10n.safetySettingsScreenTitleCatchHost,
+                        valueText: context
+                            .l10n
+                            .safetySettingsScreenBodyManageEventsAndClubs,
                         icon: CatchIcons.workOutlineRounded,
                         onTap: _openHostApp,
                       ),
@@ -246,13 +258,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   if (AppConfig.enableEventPolicyLab ||
                       AppConfig.enableEventSuccessPreview) ...[
                     CatchSection.fieldRows(
-                      title: 'Development',
+                      title: context.l10n.safetySettingsScreenTitleDevelopment,
                       children: [
                         if (AppConfig.enableEventPolicyLab)
                           CatchField.nav(
                             key: SettingsKeys.eventPolicyLabRow,
-                            title: 'Event policy lab',
-                            valueText: 'Static booking policy previews',
+                            title: context
+                                .l10n
+                                .safetySettingsScreenTitleEventPolicyLab,
+                            valueText: context
+                                .l10n
+                                .safetySettingsScreenBodyStaticBookingPolicyPreviews,
                             icon: CatchIcons.scienceOutlined,
                             onTap: () => context.pushNamed(
                               Routes.eventPolicyLabScreen.name,
@@ -261,8 +277,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         if (AppConfig.enableEventSuccessPreview)
                           CatchField.nav(
                             key: SettingsKeys.eventSuccessLabRow,
-                            title: 'Event success lab',
-                            valueText: 'Host, attendee, and report previews',
+                            title: context
+                                .l10n
+                                .safetySettingsScreenTitleEventSuccessLab,
+                            valueText: context
+                                .l10n
+                                .safetySettingsScreenBodyHostAttendeeAndReport,
                             icon: CatchIcons.autoGraphRounded,
                             onTap: () => context.pushNamed(
                               Routes.eventSuccessLabScreen.name,
@@ -271,8 +291,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         if (AppConfig.enableEventSuccessPreview)
                           CatchField.nav(
                             key: SettingsKeys.eventSuccessManualQaRow,
-                            title: 'Event success manual QA',
-                            valueText: 'Host and attendee side by side',
+                            title: context
+                                .l10n
+                                .safetySettingsScreenTitleEventSuccessManualQa,
+                            valueText: context
+                                .l10n
+                                .safetySettingsScreenBodyHostAndAttendeeSide,
                             icon: CatchIcons.splitscreenRounded,
                             onTap: () => context.pushNamed(
                               Routes.eventSuccessManualQaScreen.name,
@@ -282,11 +306,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                   ],
                   CatchSection.fieldRows(
-                    title: 'Notifications',
+                    title: context.l10n.safetySettingsScreenTitleNotifications,
                     children: [
                       CatchField.toggle(
                         key: SettingsKeys.newCatchesSwitch,
-                        title: 'Push notifications',
+                        title: context
+                            .l10n
+                            .safetySettingsScreenTitlePushNotifications,
                         icon: CatchIcons.favoriteOutline,
                         value: state.preferences.newCatches,
                         onChanged: state.mutations.savingPreference
@@ -298,7 +324,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.messagesSwitch,
-                        title: 'Messages',
+                        title: context.l10n.safetySettingsScreenTitleMessages,
                         icon: CatchIcons.chatBubbleOutlineRounded,
                         value: state.preferences.messages,
                         onChanged: state.mutations.savingPreference
@@ -310,7 +336,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.eventRemindersSwitch,
-                        title: 'Event reminders',
+                        title: context
+                            .l10n
+                            .safetySettingsScreenTitleEventReminders,
                         icon: CatchIcons.directionsRunOutlined,
                         value: state.preferences.eventReminders,
                         onChanged: state.mutations.savingPreference
@@ -322,7 +350,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.eventStatusUpdatesSwitch,
-                        title: 'Event changes and cancellations',
+                        title: context
+                            .l10n
+                            .safetySettingsScreenTitleEventChangesAndCancellations,
                         icon: CatchIcons.eventRepeatOutlined,
                         value: state.preferences.eventStatusUpdates,
                         onChanged: state.mutations.savingPreference
@@ -335,7 +365,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.clubUpdatesSwitch,
-                        title: 'Club announcements',
+                        title: context
+                            .l10n
+                            .safetySettingsScreenTitleClubAnnouncements,
                         icon: CatchIcons.notificationsActiveOutlined,
                         value: state.preferences.clubUpdates,
                         onChanged: state.mutations.savingPreference
@@ -347,7 +379,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.weeklyDigestSwitch,
-                        title: 'Email updates',
+                        title:
+                            context.l10n.safetySettingsScreenTitleEmailUpdates,
                         icon: CatchIcons.markEmailReadOutlined,
                         value: state.preferences.weeklyDigest,
                         onChanged: state.mutations.savingPreference
@@ -360,7 +393,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ],
                   ),
                   CatchSection.fieldRows(
-                    title: 'Privacy & safety',
+                    title: context.l10n.safetySettingsScreenTitlePrivacySafety,
                     footer: BlockedAccountsSection(
                       state: state.blockedAccounts,
                       unblocking: state.mutations.unblocking,
@@ -369,18 +402,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     children: [
                       CatchField.read(
-                        title: 'Blocked users',
+                        title:
+                            context.l10n.safetySettingsScreenTitleBlockedUsers,
                         valueText: state.blockedAccounts.count?.toString(),
                         icon: CatchIcons.shieldOutlined,
                       ),
                       CatchField.read(
-                        title: 'Who can see you',
-                        valueText: 'Runners on my events',
+                        title:
+                            context.l10n.safetySettingsScreenTitleWhoCanSeeYou,
+                        valueText: context
+                            .l10n
+                            .safetySettingsScreenBodyRunnersOnMyEvents,
                         icon: CatchIcons.visibilityOutlined,
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.showOnMapSwitch,
-                        title: 'Show me on map',
+                        title:
+                            context.l10n.safetySettingsScreenTitleShowMeOnMap,
                         icon: CatchIcons.mapOutlined,
                         value: state.preferences.showOnMap,
                         onChanged: state.mutations.savingPreference
@@ -391,15 +429,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               ),
                       ),
                       CatchField.nav(
-                        title: 'Privacy policy',
+                        title:
+                            context.l10n.safetySettingsScreenTitlePrivacyPolicy,
                         icon: CatchIcons.lockOutline,
                         onTap: () => _openExternal(
-                          Uri.parse('https://catchdates.com/privacy'),
+                          Uri.parse(
+                            context
+                                .l10n
+                                .safetySettingsScreenBodyHttpsCatchdatesComPrivacy,
+                          ),
                         ),
                       ),
                       CatchField.nav(
                         key: SettingsKeys.deleteAccountRow,
-                        title: 'Delete account',
+                        title: context
+                            .l10n
+                            .safetySettingsScreenTitleDeleteAccount658588,
                         icon: CatchIcons.deleteOutline,
                         tone: CatchFieldTone.danger,
                         action: state.mutations.deletingAccount
@@ -415,26 +460,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ],
                   ),
                   CatchSection.fieldRows(
-                    title: 'About',
+                    title: context.l10n.safetySettingsScreenTitleAbout,
                     children: [
                       CatchField.nav(
-                        title: 'Help & support',
-                        valueText: 'Contact us',
+                        title:
+                            context.l10n.safetySettingsScreenTitleHelpSupport,
+                        valueText:
+                            context.l10n.safetySettingsScreenBodyContactUs,
                         icon: CatchIcons.helpOutline,
                         onTap: () => _openExternal(
-                          Uri.parse('https://catchdates.com/help'),
+                          Uri.parse(
+                            context
+                                .l10n
+                                .safetySettingsScreenBodyHttpsCatchdatesComHelp,
+                          ),
                         ),
                       ),
                       CatchField.nav(
-                        title: 'Terms',
-                        valueText: 'Legal',
+                        title: context.l10n.safetySettingsScreenTitleTerms,
+                        valueText: context.l10n.safetySettingsScreenBodyLegal,
                         icon: CatchIcons.descriptionOutlined,
                         onTap: () => _openExternal(
-                          Uri.parse('https://catchdates.com/terms'),
+                          Uri.parse(
+                            context
+                                .l10n
+                                .safetySettingsScreenBodyHttpsCatchdatesComTerms,
+                          ),
                         ),
                       ),
                       CatchField.read(
-                        title: 'Version',
+                        title: context.l10n.safetySettingsScreenTitleVersion,
                         valueText: '1.0',
                         icon: CatchIcons.infoOutline,
                       ),
@@ -444,7 +499,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     children: [
                       CatchField.nav(
                         key: SettingsKeys.signOutRow,
-                        title: 'Log out',
+                        title: context.l10n.safetySettingsScreenTitleLogOut,
                         icon: CatchIcons.logoutRounded,
                         tone: CatchFieldTone.danger,
                         action: state.mutations.signingOut
@@ -460,7 +515,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   gapH20,
                   Center(
                     child: Text(
-                      'Catch 1.0 · made in Bombay',
+                      context.l10n.safetySettingsScreenTextCatch10Made,
                       style: CatchTextStyles.statusLabel(
                         context,
                         color: t.ink3,
@@ -501,11 +556,11 @@ class AccountProfileStatus extends StatelessWidget {
     }
 
     if (profile.isMissing) {
-      return const Padding(
+      return Padding(
         padding: CatchInsets.content,
         child: CatchInlineErrorState(
-          title: 'Account unavailable',
-          message: 'Sign out and sign back in if this keeps happening.',
+          title: context.l10n.safetySettingsScreenTitleAccountUnavailable,
+          message: context.l10n.safetySettingsScreenMessageSignOutAndSign,
           compact: true,
         ),
       );
@@ -552,8 +607,9 @@ class BlockedAccountsSection extends StatelessWidget {
             padding: CatchInsets.content,
             child: CatchEmptyState(
               icon: CatchIcons.verifiedUserOutlined,
-              title: 'No blocked accounts',
-              message: 'People you block will appear here.',
+              title: context.l10n.safetySettingsScreenTitleNoBlockedAccounts,
+              message:
+                  context.l10n.safetySettingsScreenMessagePeopleYouBlockWill,
               iconSize: CatchIcon.tile,
               titleStyle: CatchTextStyles.sectionTitle(context),
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
@@ -652,7 +708,7 @@ class BlockedAccountTile extends StatelessWidget {
       divider: divider,
       trailing: CatchButton(
         key: SettingsKeys.unblockButton(row.uid),
-        label: 'Unblock',
+        label: context.l10n.safetySettingsScreenLabelUnblock,
         isLoading: unblocking,
         onPressed: unblocking ? null : () => onUnblock(row.uid),
         variant: CatchButtonVariant.ghost,

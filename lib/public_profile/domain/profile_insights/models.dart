@@ -27,10 +27,9 @@ class CompatibilityReason {
 }
 
 class ProfileQualitySuggestion {
-  const ProfileQualitySuggestion({required this.title, required this.detail});
+  const ProfileQualitySuggestion(this.kind);
 
-  final String title;
-  final String detail;
+  final ProfileQualitySuggestionKind kind;
 }
 
 class ProfileQualitySummary {

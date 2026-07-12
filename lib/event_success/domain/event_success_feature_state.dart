@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_compatibilit
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 
 enum EventSuccessSetupStatus {
   needsWork('Needs work'),
@@ -345,8 +346,7 @@ abstract final class EventSuccessFeatureSamples {
     eventTitle: 'Saturday Social 5K',
     attendeeName: 'Aarav',
     podLabel: 'Pace pod B · 6:15-6:45/km',
-    prompt:
-        'Find someone training for a race and ask what they are building toward.',
+    prompt: StructuredDomainCopy.eventSuccessSampleRaceTrainingPrompt,
     wingmanRequestCandidates: [
       WingmanRequestCandidate(
         displayName: 'Naina',

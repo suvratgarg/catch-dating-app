@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,16 +74,19 @@ class HostClubManagementPanel extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Wrap(
+                Wrap(
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s1,
                   children: [
                     CatchBadge(
-                      label: 'Host tools',
+                      label: context.l10n.hostsHostClubToolsLabelHostTools,
                       tone: CatchBadgeTone.brand,
                       uppercase: true,
                     ),
-                    CatchBadge(label: 'Club', uppercase: true),
+                    CatchBadge(
+                      label: context.l10n.hostsHostClubToolsLabelClub,
+                      uppercase: true,
+                    ),
                   ],
                 ),
                 gapH8,
@@ -94,7 +98,7 @@ class HostClubManagementPanel extends StatelessWidget {
                 ),
                 gapH4,
                 Text(
-                  'Manage this club, publish events, and track upcoming demand.',
+                  context.l10n.hostsHostClubToolsTextManageThisClubPublish,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 gapH12,
@@ -102,23 +106,31 @@ class HostClubManagementPanel extends StatelessWidget {
                   children: [
                     Expanded(
                       child: HostStatChip(
-                        label: 'Booked',
-                        value: '$totalBooked',
+                        label: context.l10n.hostsHostClubToolsLabelBooked,
+                        value: context.l10n
+                            .hostsHostClubToolsVisiblecopyTotalbooked(
+                              totalBooked: totalBooked,
+                            ),
                         icon: CatchIcons.checkCircleOutlineRounded,
                       ),
                     ),
                     gapW8,
                     Expanded(
                       child: HostStatChip(
-                        label: 'Waitlist',
-                        value: '$totalWaitlist',
+                        label: context.l10n.hostsHostClubToolsLabelWaitlist,
+                        value: context.l10n
+                            .hostsHostClubToolsVisiblecopyTotalwaitlist(
+                              totalWaitlist: totalWaitlist,
+                            ),
                         icon: CatchIcons.accessTimeRounded,
                       ),
                     ),
                     gapW8,
                     Expanded(
                       child: HostStatChip(
-                        label: usesDemandPricing ? 'Base est.' : 'Revenue',
+                        label: usesDemandPricing
+                            ? context.l10n.hostsHostClubToolsLabelBaseEst
+                            : context.l10n.hostsHostClubToolsLabelRevenue,
                         value: baseRevenueEstimate > 0
                             ? EventFormatters.priceInPaise(
                                 baseRevenueEstimate,
@@ -135,14 +147,14 @@ class HostClubManagementPanel extends StatelessWidget {
                 if (usesDemandPricing) ...[
                   gapH8,
                   Text(
-                    'Base estimate uses starting prices; demand-priced bookings may settle higher.',
+                    context.l10n.hostsHostClubToolsTextBaseEstimateUsesStarting,
                     style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                 ],
                 gapH12,
                 CatchButton(
                   key: ClubActionKeys.addEventButton,
-                  label: 'Add event',
+                  label: context.l10n.hostsHostClubToolsLabelAddEvent,
                   onPressed: onCreateEvent,
                   icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
                   fullWidth: true,
@@ -160,8 +172,8 @@ class HostClubManagementPanel extends StatelessWidget {
                       final quotaExhausted = remainingQuota <= 0;
                       return CatchButton(
                         label: quotaExhausted
-                            ? 'Post quota used'
-                            : 'Post update',
+                            ? context.l10n.hostsHostClubToolsLabelPostQuotaUsed
+                            : context.l10n.hostsHostClubToolsLabelPostUpdate,
                         onPressed: quotaExhausted
                             ? null
                             : () => _showClubPostComposer(
@@ -192,7 +204,7 @@ class HostClubManagementPanel extends StatelessWidget {
                 gapH10,
                 CatchButton(
                   key: ClubActionKeys.editButton,
-                  label: 'Edit club',
+                  label: context.l10n.hostsHostClubToolsLabelEditClub,
                   onPressed: onEditClub,
                   icon: Icon(CatchIcons.editOutlined, size: CatchIcon.md),
                   variant: CatchButtonVariant.secondary,
@@ -227,12 +239,17 @@ Future<void> _showClubPostComposer({
             final canSubmit = !pending && remainingQuota > 0 && text.isNotEmpty;
 
             return CatchBottomSheetScaffold(
-              title: 'Post to followers',
-              subtitle:
-                  '$remainingQuota of ${ClubPostsRepository.weeklyQuota} posts left this week.',
+              title: context.l10n.hostsHostClubToolsTitlePostToFollowers,
+              subtitle: context.l10n
+                  .hostsHostClubToolsSubtitleRemainingquotaOfWeeklyquotaPosts(
+                    remainingQuota: remainingQuota,
+                    weeklyQuota: ClubPostsRepository.weeklyQuota,
+                  ),
               keyboardSafe: true,
               action: CatchButton(
-                label: pending ? 'Posting...' : 'Post update',
+                label: pending
+                    ? context.l10n.hostsHostClubToolsLabelPosting
+                    : context.l10n.hostsHostClubToolsLabelPostUpdate,
                 onPressed: canSubmit
                     ? () async {
                         setSheetState(() {
@@ -244,7 +261,12 @@ Future<void> _showClubPostComposer({
                           if (!sheetContext.mounted) return;
                           Navigator.of(sheetContext).pop();
                           if (!context.mounted) return;
-                          showCatchSnackBar(context, 'Posted to followers.');
+                          showCatchSnackBar(
+                            context,
+                            context
+                                .l10n
+                                .hostsHostClubToolsCatchbuttonPostedToFollowers,
+                          );
                         } catch (caught) {
                           setSheetState(() {
                             pending = false;
@@ -260,24 +282,27 @@ Future<void> _showClubPostComposer({
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CatchField.input(
-                    title: 'Update',
+                    title: context.l10n.hostsHostClubToolsTitleUpdate,
                     controller: controller,
-                    placeholder:
-                        'Share a route note, meetup detail, or club update.',
+                    placeholder: context
+                        .l10n
+                        .hostsHostClubToolsPlaceholderShareARouteNote,
                     keyboardType: TextInputType.multiline,
                     textInputAction: TextInputAction.newline,
                     textCapitalization: TextCapitalization.sentences,
                     maxLines: 5,
                     minLines: 3,
                     inputFormatters: [LengthLimitingTextInputFormatter(500)],
-                    helperText:
-                        '${500 - controller.text.length} characters left',
+                    helperText: context.l10n
+                        .hostsHostClubToolsHelpertextValue1CharactersLeft(
+                          value1: 500 - controller.text.length,
+                        ),
                     onChanged: (_) => setSheetState(() {}),
                   ),
                   if (error != null) ...[
                     gapH10,
                     Text(
-                      'Could not post this update. Please try again.',
+                      context.l10n.hostsHostClubToolsTextCouldNotPostThis,
                       style: CatchTextStyles.supporting(
                         context,
                         color: CatchTokens.of(context).danger,

@@ -6,15 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../test_pump_helpers.dart';
 
-/// google_fonts cannot fetch in `flutter test` and throws "Failed to load font";
-/// our FontLoader-registered files already render, so that throw is pure noise.
-bool _isGoogleFontsFetchNoise(Object error) {
-  final s = error.toString();
-  return s.contains('Failed to load font') ||
-      s.contains('allowRuntimeFetching') ||
-      s.contains('google_fonts');
-}
-
 /// Decode an image fixture into the cache (no BuildContext needed). Done inside
 /// `runAsync` BEFORE the guarded pump loop so photo goldens paint without
 /// calling runAsync inside `runZonedGuarded` (which throws).
@@ -41,9 +32,8 @@ Future<void> _warmImage(ImageProvider<Object> provider) {
 /// [precache] to warm image fixtures so photo-bearing goldens paint.
 ///
 /// devicePixelRatio is pinned to 1.0 and the surface is fixed for crisp,
-/// deterministic PNGs. Real failures (golden mismatch, layout/overflow errors)
-/// are preserved and re-thrown; only google_fonts' offline-fetch noise is
-/// suppressed.
+/// deterministic PNGs. Bundled app fonts are loaded by the suite's
+/// `flutter_test_config.dart`, so font failures remain real test failures.
 Future<void> matchCatchGolden(
   WidgetTester tester,
   String name, {
@@ -65,32 +55,14 @@ Future<void> matchCatchGolden(
     });
   }
 
-  Object? realFailure;
-  StackTrace? realStack;
-
-  await runZonedGuarded(
-    () async {
-      for (final brightness in Brightness.values) {
-        await tester.pumpWidget(_frame(brightness, textScale, builder));
-        await pumpFeatureUi(tester);
-        final mode = brightness == Brightness.light ? 'light' : 'dark';
-        await expectLater(
-          find.byType(MaterialApp),
-          matchesGoldenFile('baseline/$name.$mode.png'),
-        );
-      }
-      // Flush late google_fonts load-failure microtasks into this guarded zone.
-      await pumpFeatureUiFor(tester, const Duration(milliseconds: 50));
-    },
-    (error, stack) {
-      if (_isGoogleFontsFetchNoise(error)) return;
-      realFailure ??= error;
-      realStack ??= stack;
-    },
-  );
-
-  if (realFailure != null) {
-    Error.throwWithStackTrace(realFailure!, realStack ?? StackTrace.current);
+  for (final brightness in Brightness.values) {
+    await tester.pumpWidget(_frame(brightness, textScale, builder));
+    await pumpFeatureUi(tester);
+    final mode = brightness == Brightness.light ? 'light' : 'dark';
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('baseline/$name.$mode.png'),
+    );
   }
 }
 

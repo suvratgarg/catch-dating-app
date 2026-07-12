@@ -1,3 +1,4 @@
+// copy:allow-file(Debug-only deterministic Explore visual-fill fixture)
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';

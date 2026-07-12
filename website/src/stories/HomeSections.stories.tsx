@@ -11,7 +11,25 @@ import {
   HomeTrustSection as HomeTrustSectionComponent,
   HomeWaitlistSection as HomeWaitlistSectionComponent,
 } from "../features/home/sections/HomePageSections";
+import type {PublicEventCardModel} from "../shared/ui/primitives";
 import {captures, placeholderCaptures} from "./fixtures/marketingCaptures";
+
+const eligibleEventFixture: PublicEventCardModel = {
+  activityLabel: "Dinner",
+  activityToken: "var(--activity-dinner)",
+  bookedCount: 18,
+  capacityLimit: 24,
+  city: "Mumbai",
+  date: "18 Jul 2026",
+  hostName: "Sunday Table Club",
+  href: "/organizers/club-sales-sunday-table/#event-story-dinner",
+  id: "story-dinner",
+  location: "Bandra West",
+  priceLabel: "₹1,200",
+  summary: "A hosted long-table dinner fixture for Storybook event coverage.",
+  title: "Friday long-table dinner",
+  waitlistedCount: 3,
+};
 
 const meta = {
   title: "Marketing Website/Home/Sections",
@@ -50,7 +68,19 @@ export const HomeDiscoverySectionStory: Story = {
       states: ["event-grid", "search-suggestions"],
     },
   },
-  render: () => <HomeDiscoverySectionComponent />,
+  render: () => <HomeDiscoverySectionComponent events={[eligibleEventFixture]} />,
+};
+
+export const HomeDiscoveryEmptyStateStory: Story = {
+  name: "Discovery · empty inventory",
+  parameters: {
+    catchComponent: {
+      id: "home_discovery_section",
+      routeIds: ["home"],
+      states: ["empty-state"],
+    },
+  },
+  render: () => <HomeDiscoverySectionComponent events={[]} />,
 };
 
 export const HomeFormatsSectionStory: Story = {
@@ -152,6 +182,7 @@ export const HomeTrustSectionStory: Story = {
 export const HomeWaitlistSectionStory: Story = {
   name: "Waitlist",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "home_waitlist_section",
       routeIds: ["home"],

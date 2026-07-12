@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -52,21 +53,33 @@ class SuvbotActionBar extends StatelessWidget {
           final colors = Theme.of(context).colorScheme;
           final byId = {for (final action in items) action.id: action};
           final warmActions = [
-            byId['warmSignupState'],
-            byId['warmPostEventState'],
-            byId['warmChatState'],
-            byId['warmPaymentState'],
+            byId[context.l10n.chatsSuvbotActionBarVisiblecopyWarmsignupstate],
+            byId[context
+                .l10n
+                .chatsSuvbotActionBarVisiblecopyWarmposteventstate],
+            byId[context.l10n.chatsSuvbotActionBarVisiblecopyWarmchatstate],
+            byId[context.l10n.chatsSuvbotActionBarVisiblecopyWarmpaymentstate],
           ].whereType<SuvbotActionItem>().toList(growable: false);
           final resetActions = [
-            byId['resetChats'],
-            byId['resetBookings'],
-            byId['resetNotifications'],
-            byId['clearDemoState'],
+            byId[context.l10n.chatsSuvbotActionBarVisiblecopyResetchats],
+            byId[context.l10n.chatsSuvbotActionBarVisiblecopyResetbookings],
+            byId[context
+                .l10n
+                .chatsSuvbotActionBarVisiblecopyResetnotifications],
+            byId[context.l10n.chatsSuvbotActionBarVisiblecopyCleardemostate],
           ].whereType<SuvbotActionItem>().toList(growable: false);
-          final checkAction = byId['checkDemoState'];
-          final refreshAction = byId['refreshDemoState'];
-          final helpAction = byId['help'];
-          final matchAction = byId['matchTesterByPhone'];
+          final checkAction =
+              byId[context.l10n.chatsSuvbotActionBarVisiblecopyCheckdemostate];
+          final refreshAction =
+              byId[context
+                  .l10n
+                  .chatsSuvbotActionBarVisiblecopyRefreshdemostate];
+          final helpAction =
+              byId[context.l10n.chatsSuvbotActionBarVisiblecopyHelp];
+          final matchAction =
+              byId[context
+                  .l10n
+                  .chatsSuvbotActionBarVisiblecopyMatchtesterbyphone];
 
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -79,7 +92,7 @@ class SuvbotActionBar extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Suvbot controls',
+                          context.l10n.chatsSuvbotActionBarTextSuvbotControls,
                           style: CatchTextStyles.sectionTitle(
                             context,
                             color: t.ink,
@@ -87,7 +100,7 @@ class SuvbotActionBar extends StatelessWidget {
                         ),
                         gapH2,
                         Text(
-                          'No typing needed',
+                          context.l10n.chatsSuvbotActionBarTextNoTypingNeeded,
                           style: CatchTextStyles.statusLabel(
                             context,
                             color: t.ink2,
@@ -146,7 +159,7 @@ class SuvbotActionBar extends StatelessWidget {
                   if (refreshAction != null)
                     Expanded(
                       child: CatchButton(
-                        label: 'Refresh all',
+                        label: context.l10n.chatsSuvbotActionBarLabelRefreshAll,
                         onPressed: pending
                             ? null
                             : () => unawaited(onAction(refreshAction)),
@@ -167,7 +180,7 @@ class SuvbotActionBar extends StatelessWidget {
               if (warmActions.isNotEmpty) ...[
                 const SizedBox(height: CatchSpacing.s3),
                 Text(
-                  'Create a test state',
+                  context.l10n.chatsSuvbotActionBarTextCreateATestState,
                   style: CatchTextStyles.kicker(context),
                 ),
                 const SizedBox(height: CatchSpacing.s1),
@@ -224,7 +237,7 @@ class SuvbotActionBar extends StatelessWidget {
                   if (resetActions.isNotEmpty)
                     Expanded(
                       child: CatchButton(
-                        label: 'Reset...',
+                        label: context.l10n.chatsSuvbotActionBarLabelReset,
                         onPressed: pending
                             ? null
                             : () => _showResetSheet(
@@ -257,7 +270,7 @@ class SuvbotActionBar extends StatelessWidget {
         error: (_, _) {
           final t = CatchTokens.of(context);
           return CatchButton(
-            label: 'Reload controls',
+            label: context.l10n.chatsSuvbotActionBarLabelReloadControls,
             onPressed: onRetry,
             variant: CatchButtonVariant.secondary,
             size: CatchButtonSize.sm,
@@ -284,8 +297,9 @@ Future<void> _showResetSheet(
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
         child: CatchBottomSheetScaffold(
-          title: 'Reset demo state',
-          subtitle: 'These actions only touch demo-owned data.',
+          title: context.l10n.chatsSuvbotActionBarTitleResetDemoState,
+          subtitle:
+              context.l10n.chatsSuvbotActionBarSubtitleTheseActionsOnlyTouch,
           child: Builder(
             builder: (context) {
               return Column(
@@ -444,15 +458,18 @@ class _MatchTesterSheetState extends State<MatchTesterSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Match tester', style: CatchTextStyles.titleL(context)),
+          Text(
+            context.l10n.chatsSuvbotActionBarTextMatchTester,
+            style: CatchTextStyles.titleL(context),
+          ),
           const SizedBox(height: CatchSpacing.s1),
           Text(
-            'Enter an allowlisted beta tester phone number.',
+            context.l10n.chatsSuvbotActionBarTextEnterAnAllowlistedBeta,
             style: CatchTextStyles.supporting(context),
           ),
           const SizedBox(height: CatchSpacing.s3),
           CatchField.input(
-            title: 'Phone number',
+            title: context.l10n.chatsSuvbotActionBarTitlePhoneNumber,
             controller: _controller,
             keyboardType: TextInputType.phone,
             autofocus: true,
@@ -462,7 +479,7 @@ class _MatchTesterSheetState extends State<MatchTesterSheet> {
           CatchButton(
             onPressed: widget.pending ? null : _submit,
             icon: Icon(CatchIcons.personAddAlt1Rounded),
-            label: 'Create match',
+            label: context.l10n.chatsSuvbotActionBarLabelCreateMatch,
             fullWidth: true,
           ),
         ],

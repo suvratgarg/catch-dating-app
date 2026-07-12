@@ -11,6 +11,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_featur
 import 'package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,12 @@ class EventSuccessEventPreviewScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: const CatchTopBar(title: 'Event success preview', border: true),
+      appBar: CatchTopBar(
+        title: context
+            .l10n
+            .eventSuccessEventSuccessEventPreviewBodyScreenTitleEventSuccessPreview,
+        border: true,
+      ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -96,7 +102,11 @@ class EventPreviewHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final event = preview.event;
-    final clubName = preview.club?.name ?? 'This club';
+    final clubName =
+        preview.club?.name ??
+        context
+            .l10n
+            .eventSuccessEventSuccessEventPreviewBodyScreenVisiblecopyThisClub;
 
     return EventSuccessHeroSurface(
       child: Column(
@@ -107,12 +117,16 @@ class EventPreviewHero extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               CatchBadge(
-                label: 'Preview only',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessEventPreviewBodyScreenLabelPreviewOnly,
                 tone: CatchBadgeTone.solid,
                 icon: CatchIcons.visibilityOutlined,
               ),
               CatchBadge(
-                label: 'Dev/staging',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessEventPreviewBodyScreenLabelDevStaging,
                 tone: CatchBadgeTone.live,
                 icon: CatchIcons.scienceOutlined,
               ),
@@ -125,7 +139,11 @@ class EventPreviewHero extends StatelessWidget {
           ),
           gapH8,
           Text(
-            '$clubName · ${preview.playbook.title}',
+            context.l10n
+                .eventSuccessEventSuccessEventPreviewBodyScreenTextClubnameTitle(
+                  clubName: clubName,
+                  title: preview.playbook.title,
+                ),
             style: CatchTextStyles.bodyL(
               context,
               color: t.accentInk.withValues(
@@ -139,15 +157,24 @@ class EventPreviewHero extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               EventSuccessDarkPill(
-                label: '${event.capacityLimit} target',
+                label: context.l10n
+                    .eventSuccessEventSuccessEventPreviewBodyScreenLabelCapacitylimitTarget(
+                      capacityLimit: event.capacityLimit,
+                    ),
                 foregroundColor: t.accentInk,
               ),
               EventSuccessDarkPill(
-                label: '${preview.livePlan.bookedCount} booked',
+                label: context.l10n
+                    .eventSuccessEventSuccessEventPreviewBodyScreenLabelBookedcountBooked(
+                      bookedCount: preview.livePlan.bookedCount,
+                    ),
                 foregroundColor: t.accentInk,
               ),
               EventSuccessDarkPill(
-                label: '${preview.livePlan.checkedInCount} checked in',
+                label: context.l10n
+                    .eventSuccessEventSuccessEventPreviewBodyScreenLabelCheckedincountCheckedIn(
+                      checkedInCount: preview.livePlan.checkedInCount,
+                    ),
                 foregroundColor: t.accentInk,
               ),
               EventSuccessDarkPill(
@@ -183,7 +210,9 @@ class IntegrationNotesCard extends StatelessWidget {
               gapW10,
               Expanded(
                 child: Text(
-                  'How this maps to the live app',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessEventPreviewBodyScreenTextHowThisMapsTo,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
               ),

@@ -12,6 +12,7 @@ import 'package:catch_dating_app/health_activity/data/health_activity_repository
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -21,6 +22,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
 import '../support/dashboard_test_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 PhysicalActivity _platformActivity({
   required String id,
@@ -55,7 +58,7 @@ void main() {
         final state = container.read(dashboardHomeScreenStateProvider);
         expect(state.status, DashboardHomeScreenStatus.empty);
         expect(state.notificationUid, isNull);
-        expect(state.header.title, "Let's find your first event");
+        expect(state.header.title(_l10n), "Let's find your first event");
       },
     );
 
@@ -79,7 +82,7 @@ void main() {
       expect(state.status, DashboardHomeScreenStatus.error);
       expect(state.error?.retryTarget, DashboardHomeRetryTarget.memberships);
       expect(state.error?.uid, user.uid);
-      expect(state.error?.fallbackMessage, 'Unable to load your clubs.');
+      expect(state.error?.error, 'clubs');
     });
 
     test('normalizes provider loading waves into one loading state', () {
@@ -188,7 +191,7 @@ void main() {
 
       final state = container.read(dashboardHomeScreenStateProvider);
       expect(state.status, DashboardHomeScreenStatus.full);
-      expect(state.header.title, 'Morning, Runner');
+      expect(state.header.title(_l10n), 'Morning, Runner');
       expect(state.followedClubIds, ['club-a']);
       expect(state.viewModel?.nextEvent?.id, event.id);
     });

@@ -96,7 +96,9 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               CatchBadge(
-                label: 'Synchronized partner reveal',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal,
                 tone: CatchBadgeTone.live,
                 icon: CatchIcons.boltRounded,
                 backgroundColor: t.surface.withValues(
@@ -106,7 +108,7 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
               ),
               gapW8,
               CatchBadge(
-                label: revealSet.kind.label,
+                label: revealSet.kind.label(context.l10n),
                 icon: revealSet.kind.icon,
                 backgroundColor: t.surface.withValues(
                   alpha: CatchOpacity.subtleFill,
@@ -120,8 +122,16 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
               ),
               CatchBadge(
                 label: roundCount == 0
-                    ? 'No assignments'
-                    : '${plan.revealedThroughRoundIndex(referenceNow) + 1}/$roundCount shown',
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessLiveRevealHostLabelNoAssignments
+                    : context.l10n
+                          .eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown(
+                            value1:
+                                plan.revealedThroughRoundIndex(referenceNow) +
+                                1,
+                            roundCount: roundCount,
+                          ),
                 backgroundColor: t.surface.withValues(
                   alpha: CatchOpacity.subtleFill,
                 ),
@@ -142,15 +152,29 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
                   ComponentBreakpoints.eventSuccessRevealHostCompactBreakpoint;
               final number = CountdownNumber(
                 value: isCountingDown
-                    ? '$remainingSeconds'
+                    ? context.l10n
+                          .eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds(
+                            remainingSeconds: remainingSeconds,
+                          )
                     : allRevealed
-                    ? 'OK'
-                    : '${targetRound + 1}',
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessLiveRevealHostVisiblecopyOk
+                    : context.l10n
+                          .eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1(
+                            value1: targetRound + 1,
+                          ),
                 caption: isCountingDown
-                    ? 'seconds'
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessLiveRevealHostCaptionSeconds
                     : allRevealed
-                    ? 'revealed'
-                    : 'next round',
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessLiveRevealHostCaptionRevealed
+                    : context
+                          .l10n
+                          .eventSuccessEventSuccessLiveRevealHostCaptionNextRound,
               );
               final copy = RevealHostCopy(
                 headline: headline,
@@ -204,6 +228,7 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
             Text(
               appErrorMessage(
                 actionState.error!,
+                l10n: context.l10n,
                 context: AppErrorContext.event,
               ),
               style: CatchTextStyles.supporting(context, color: t.surface),

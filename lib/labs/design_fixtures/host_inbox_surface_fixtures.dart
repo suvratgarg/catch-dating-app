@@ -1,3 +1,4 @@
+// copy:allow-file(Developer-only deterministic design fixture data)
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';

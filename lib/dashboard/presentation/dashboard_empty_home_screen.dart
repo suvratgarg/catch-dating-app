@@ -12,7 +12,7 @@ class DashboardEmptyHomeScreen extends StatelessWidget {
       body: SafeArea(
         bottom: false,
         child: Semantics(
-          label: 'Home',
+          label: context.l10n.dashboardDashboardEmptyHomeScreenLabelHome,
           child: const CustomScrollView(slivers: [DashboardEmptySliverBody()]),
         ),
       ),

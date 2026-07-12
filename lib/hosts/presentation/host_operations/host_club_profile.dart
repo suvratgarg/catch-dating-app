@@ -63,52 +63,61 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
       children: [
         HostMetaRow(
           club: club,
-          roleLabel: isOwner ? 'Owner' : 'Host team',
+          roleLabel: isOwner
+              ? context.l10n.hostsHostClubProfileVisiblecopyOwner
+              : context.l10n.hostsHostClubProfileVisiblecopyHostTeam,
           owner: isOwner,
         ),
         gapH24,
         CatchSection.fieldRows(
-          title: 'Identity',
+          title: context.l10n.hostsHostClubProfileTitleIdentity,
           first: true,
           children: [
             _textEntry(
               club: club,
-              fieldName: 'name',
-              label: 'Club name',
+              fieldName: context.l10n.hostsHostClubProfileVisiblecopyName,
+              label: context.l10n.hostsHostClubProfileLabelClubName,
               value: club.name,
               currentValue: club.name,
               icon: CatchIcons.groups3Outlined,
-              validator: _requiredHostFieldValidator('Club name'),
+              validator: _requiredHostFieldValidator(
+                context.l10n.hostsHostClubProfileVisiblecopyClubName,
+              ),
               normalizeInput: _normalizeSingleLineInput,
               patchForValue: (value) => UpdateClubPatch(name: value as String),
             ),
             _textEntry(
               club: club,
-              fieldName: 'location',
-              label: 'City',
+              fieldName: context.l10n.hostsHostClubProfileVisiblecopyLocation,
+              label: context.l10n.hostsHostClubProfileLabelCity,
               value: _valueOrDash(club.location),
               currentValue: club.location,
               icon: CatchIcons.locationCityOutlined,
-              validator: _requiredHostFieldValidator('City'),
+              validator: _requiredHostFieldValidator(
+                context.l10n.hostsHostClubProfileVisiblecopyCity,
+              ),
               normalizeInput: _normalizeSingleLineInput,
               patchForValue: (value) =>
                   UpdateClubPatch(location: value as String),
             ),
             _textEntry(
               club: club,
-              fieldName: 'area',
-              label: 'Area / neighbourhood',
+              fieldName: context.l10n.hostsHostClubProfileVisiblecopyArea,
+              label: context.l10n.hostsHostClubProfileLabelAreaNeighbourhood,
               value: _valueOrDash(club.area),
               currentValue: club.area,
               icon: CatchIcons.locationOnOutlined,
-              validator: _requiredHostFieldValidator('Area / neighbourhood'),
+              validator: _requiredHostFieldValidator(
+                context.l10n.hostsHostClubProfileVisiblecopyAreaNeighbourhood,
+              ),
               normalizeInput: _normalizeSingleLineInput,
               patchForValue: (value) => UpdateClubPatch(area: value as String),
             ),
             _textEntry(
               club: club,
-              fieldName: 'description',
-              label: 'Description',
+              fieldName:
+                  context.l10n.hostsHostClubProfileVisiblecopyDescription,
+              label: context.l10n.hostsHostClubProfileLabelDescription,
               value: _valueOrDash(club.description),
               currentValue: club.description,
               icon: CatchIcons.descriptionOutlined,
@@ -117,7 +126,9 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
               maxLength: 280,
               showCounter: true,
               keyboardType: TextInputType.multiline,
-              validator: _requiredHostFieldValidator('Description'),
+              validator: _requiredHostFieldValidator(
+                context.l10n.hostsHostClubProfileVisiblecopyDescription8d3ca8,
+              ),
               normalizeInput: _normalizeMultilineInput,
               patchForValue: (value) =>
                   UpdateClubPatch(description: value as String),
@@ -125,14 +136,15 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
           ],
         ),
         CatchSection.fieldRows(
-          title: 'Contact',
+          title: context.l10n.hostsHostClubProfileTitleContact,
           children: [
             _textEntry(
               club: club,
-              fieldName: 'instagramHandle',
-              label: 'Instagram',
+              fieldName:
+                  context.l10n.hostsHostClubProfileVisiblecopyInstagramhandle,
+              label: context.l10n.hostsHostClubProfileLabelInstagram,
               value: _valueOrDash(club.instagramHandle),
-              placeholder: '@yourclub',
+              placeholder: context.l10n.hostsHostClubProfilePlaceholderYourclub,
               currentValue: club.instagramHandle ?? '',
               currentFieldValue: club.instagramHandle,
               icon: CatchIcons.alternateEmailRounded,
@@ -143,8 +155,9 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
             ),
             _textEntry(
               club: club,
-              fieldName: 'phoneNumber',
-              label: 'Phone',
+              fieldName:
+                  context.l10n.hostsHostClubProfileVisiblecopyPhonenumber,
+              label: context.l10n.hostsHostClubProfileLabelPhone,
               value: _valueOrDash(club.phoneNumber),
               placeholder: '98765 43210',
               currentValue: club.phoneNumber ?? '',
@@ -157,10 +170,11 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
             ),
             _textEntry(
               club: club,
-              fieldName: 'email',
-              label: 'Email',
+              fieldName: context.l10n.hostsHostClubProfileVisiblecopyEmail,
+              label: context.l10n.hostsHostClubProfileLabelEmail,
               value: _valueOrDash(club.email),
-              placeholder: 'hello@yourclub.com',
+              placeholder:
+                  context.l10n.hostsHostClubProfilePlaceholderHelloYourclubCom,
               currentValue: club.email ?? '',
               currentFieldValue: club.email,
               icon: CatchIcons.emailOutlined,
@@ -173,7 +187,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
           ],
         ),
         CatchSection.fieldRows(
-          title: 'Event defaults',
+          title: context.l10n.hostsHostClubProfileTitleEventDefaults,
           children: [
             _activityDefaultEntry(club),
             _admissionDefaultEntry(club),
@@ -182,11 +196,11 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
           ],
         ),
         CatchSection.fieldRows(
-          title: 'Public profile',
+          title: context.l10n.hostsHostClubProfileTitlePublicProfile,
           children: [
             CatchField.nav(
-              title: 'Preview club page',
-              valueText: 'Preview',
+              title: context.l10n.hostsHostClubProfileTitlePreviewClubPage,
+              valueText: context.l10n.hostsHostClubProfileVisiblecopyPreview,
               icon: CatchIcons.visibilityOutlined,
               onTap: () => widget.onPreviewClub(club),
             ),
@@ -259,11 +273,12 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
   }
 
   Widget _activityDefaultEntry(Club club) {
-    const fieldName = 'primaryActivityKind';
+    final fieldName =
+        context.l10n.hostsHostClubProfileVisiblecopyPrimaryactivitykind;
     final selected = club.hostDefaults.primaryActivityKind;
     if (!widget.isOwner) {
       return CatchField.read(
-        title: 'Default activity',
+        title: context.l10n.hostsHostClubProfileTitleDefaultActivity,
         valueText: selected.label,
         icon: CatchIcons.eventOutlined,
       );
@@ -273,7 +288,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
       key: const ValueKey('host-inline-primaryActivityKind'),
       clubId: club.id,
       icon: CatchIcons.eventOutlined,
-      label: 'Default activity',
+      label: context.l10n.hostsHostClubProfileLabelDefaultActivity,
       value: selected.label,
       currentValue: selected,
       fieldName: fieldName,
@@ -299,11 +314,12 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
   }
 
   Widget _admissionDefaultEntry(Club club) {
-    const fieldName = 'admissionPreset';
+    final fieldName =
+        context.l10n.hostsHostClubProfileVisiblecopyAdmissionpreset;
     final selected = club.hostDefaults.eventPolicy.admissionPreset;
     if (!widget.isOwner) {
       return CatchField.read(
-        title: 'Admission',
+        title: context.l10n.hostsHostClubProfileTitleAdmission,
         valueText: _admissionDefaultLabel(selected),
         icon: CatchIcons.eventSeatOutlined,
       );
@@ -313,7 +329,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
       key: const ValueKey('host-inline-admissionPreset'),
       clubId: club.id,
       icon: CatchIcons.eventSeatOutlined,
-      label: 'Admission',
+      label: context.l10n.hostsHostClubProfileLabelAdmission,
       value: _admissionDefaultLabel(selected),
       currentValue: selected,
       fieldName: fieldName,
@@ -347,12 +363,15 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
   }
 
   Widget _ageRangeDefaultEntry(Club club) {
-    const fieldName = 'ageRange';
+    final fieldName = context.l10n.hostsHostClubProfileVisiblecopyAgerange;
     final policy = club.hostDefaults.eventPolicy;
-    final value = '${policy.minAge}–${policy.maxAge}';
+    final value = context.l10n.hostsHostClubProfileVisiblecopyMinageMaxage(
+      minAge: policy.minAge,
+      maxAge: policy.maxAge,
+    );
     if (!widget.isOwner) {
       return CatchField.read(
-        title: 'Age range',
+        title: context.l10n.hostsHostClubProfileTitleAgeRange,
         valueText: value,
         icon: CatchIcons.cakeOutlined,
       );
@@ -362,7 +381,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
       key: const ValueKey('host-inline-ageRange'),
       clubId: club.id,
       icon: CatchIcons.cakeOutlined,
-      label: 'Age range',
+      label: context.l10n.hostsHostClubProfileLabelAgeRange,
       value: value,
       fieldName: fieldName,
       hostDefaults: club.hostDefaults,
@@ -374,12 +393,13 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
   }
 
   Widget _cancellationDefaultEntry(Club club) {
-    const fieldName = 'cancellationPolicyId';
+    final fieldName =
+        context.l10n.hostsHostClubProfileVisiblecopyCancellationpolicyid;
     final selected = club.hostDefaults.eventPolicy.cancellationPolicyId;
     final selectedPolicy = club.hostDefaults.eventPolicy.cancellationPolicy;
     if (!widget.isOwner) {
       return CatchField.read(
-        title: 'Cancellation policy',
+        title: context.l10n.hostsHostClubProfileTitleCancellationPolicy,
         valueText: selectedPolicy.title,
         icon: CatchIcons.eventBusyOutlined,
       );
@@ -389,7 +409,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
       key: const ValueKey('host-inline-cancellationPolicyId'),
       clubId: club.id,
       icon: CatchIcons.eventBusyOutlined,
-      label: 'Cancellation policy',
+      label: context.l10n.hostsHostClubProfileLabelCancellationPolicy,
       value: selectedPolicy.title,
       currentValue: selected,
       fieldName: fieldName,

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
@@ -146,6 +147,7 @@ class EventDetailBookingDockMutationState {
 }
 
 EventDetailBookingDockState eventDetailBookingDockStateFrom({
+  required AppLocalizations l10n,
   required Event event,
   required UserProfile userProfile,
   required EventParticipation? participation,
@@ -187,10 +189,10 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
     final paidUnsupported = !isFreeForViewer && !supportsPaidBookings;
     return EventDetailBookingDockState(
       label: paidUnsupported
-          ? 'Paid booking unavailable'
+          ? l10n.eventsEventDetailScreenStateLabelPaidBookingUnavailable
           : isFreeForViewer
-          ? 'Accept spot'
-          : 'Accept spot and pay',
+          ? l10n.eventsEventDetailScreenStateLabelAcceptSpot
+          : l10n.eventsEventDetailScreenStateLabelAcceptSpotAndPay,
       primaryAction: paidUnsupported
           ? EventDetailBookingDockAction.none
           : EventDetailBookingDockAction.acceptWaitlistOffer,
@@ -206,7 +208,9 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
 
   if (canRequestHostApproval) {
     return EventDetailBookingDockState(
-      label: needsRunPreferences ? 'Set run preferences' : 'Request to join',
+      label: needsRunPreferences
+          ? l10n.eventsEventDetailScreenStateLabelSetRunPreferences
+          : l10n.eventsEventDetailScreenStateLabelRequestToJoin,
       primaryAction: needsRunPreferences
           ? EventDetailBookingDockAction.openRunPreferences
           : EventDetailBookingDockAction.joinWaitlist,
@@ -219,6 +223,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
 
   return switch (signUpStatus) {
     EventSignUpStatus.eligible => _eligibleBookingDockState(
+      l10n: l10n,
       event: event,
       quotedPriceInPaise: quotedPriceInPaise,
       isFreeForViewer: isFreeForViewer,
@@ -228,6 +233,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       mutationState: mutationState,
     ),
     EventSignUpStatus.signedUp => _signedUpBookingDockState(
+      l10n: l10n,
       event: event,
       participation: participation,
       now: now,
@@ -235,10 +241,10 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
     ),
     EventSignUpStatus.full => EventDetailBookingDockState(
       label: needsRunPreferences
-          ? 'Set run preferences'
+          ? l10n.eventsEventDetailScreenStateLabelSetRunPreferences
           : requiresHostApproval
-          ? 'Request to join'
-          : 'Join waitlist',
+          ? l10n.eventsEventDetailScreenStateLabelRequestToJoin
+          : l10n.eventsEventDetailScreenStateLabelJoinWaitlist,
       primaryAction: needsRunPreferences
           ? EventDetailBookingDockAction.openRunPreferences
           : EventDetailBookingDockAction.joinWaitlist,
@@ -247,32 +253,37 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       error: mutationState.error,
     ),
     EventSignUpStatus.waitlisted => EventDetailBookingDockState(
-      label: requiresHostApproval ? 'Withdraw request' : 'Leave waitlist',
+      label: requiresHostApproval
+          ? l10n.eventsEventDetailScreenStateLabelWithdrawRequest
+          : l10n.eventsEventDetailScreenStateLabelLeaveWaitlist,
       primaryAction: EventDetailBookingDockAction.leaveWaitlist,
       isLoading: mutationState.leaveWaitlistPending,
       error: mutationState.error,
     ),
     EventSignUpStatus.attended => EventDetailBookingDockState(
-      label: 'You attended this event',
+      label: l10n.eventsEventDetailScreenStateLabelYouAttendedThisEvent,
       primaryAction: EventDetailBookingDockAction.none,
       leadingKind: EventDetailBookingDockLeadingKind.attended,
       error: mutationState.error,
     ),
     EventSignUpStatus.past => EventDetailBookingDockState(
-      label: 'This event has ended',
+      label: l10n.eventsEventDetailScreenStateLabelThisEventHasEnded,
       primaryAction: EventDetailBookingDockAction.none,
       error: mutationState.error,
     ),
     EventSignUpStatus.ineligible => EventDetailBookingDockState(
       label: switch (eligibility) {
-        AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
-        AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
-        EventInviteRequired() => 'Invite required',
+        AgeTooYoung(:final minAge) =>
+          l10n.eventsEventDetailScreenStateLabelMustBeMinageTo(minAge: minAge),
+        AgeTooOld(:final maxAge) =>
+          l10n.eventsEventDetailScreenStateLabelMustBeMaxageOr(maxAge: maxAge),
+        EventInviteRequired() =>
+          l10n.eventsEventDetailScreenStateLabelInviteRequired,
         GenderCapacityReached() =>
           requiresHostApproval
-              ? 'Request required'
-              : 'Spots for your gender are full',
-        _ => 'Not eligible for this event',
+              ? l10n.eventsEventDetailScreenStateLabelRequestRequired
+              : l10n.eventsEventDetailScreenStateLabelSpotsForYourGender,
+        _ => l10n.eventsEventDetailScreenStateLabelNotEligibleForThis,
       },
       primaryAction: EventDetailBookingDockAction.none,
       error: mutationState.error,
@@ -281,6 +292,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
 }
 
 EventDetailBookingDockState _eligibleBookingDockState({
+  required AppLocalizations l10n,
   required Event event,
   required int quotedPriceInPaise,
   required bool isFreeForViewer,
@@ -296,16 +308,18 @@ EventDetailBookingDockState _eligibleBookingDockState({
 
   return EventDetailBookingDockState(
     label: paidUnsupported
-        ? 'Paid booking unavailable'
+        ? l10n.eventsEventDetailScreenStateLabelPaidBookingUnavailable
         : needsRunPreferences
-        ? 'Set run preferences'
+        ? l10n.eventsEventDetailScreenStateLabelSetRunPreferences
         : hasApprovedJoinRequest
         ? isFreeForViewer
-              ? 'Join approved event'
-              : 'Complete approved booking'
+              ? l10n.eventsEventDetailScreenStateLabelJoinApprovedEvent
+              : l10n.eventsEventDetailScreenStateLabelCompleteApprovedBooking
         : isFreeForViewer
-        ? 'Join event — ${presenter.joinCtaAvailabilityLabel}'
-        : 'Book event',
+        ? l10n.eventsEventDetailScreenStateLabelJoinEventJoinctaavailabilitylabel(
+            joinCtaAvailabilityLabel: presenter.joinCtaAvailabilityLabel,
+          )
+        : l10n.eventsEventDetailScreenStateLabelBookEvent,
     primaryAction: paidUnsupported
         ? EventDetailBookingDockAction.none
         : needsRunPreferences
@@ -322,17 +336,21 @@ EventDetailBookingDockState _eligibleBookingDockState({
             currencyCode: event.currency,
           ),
     priceNote: !isFreeForViewer && isScarce
-        ? '$spotsRemaining spots left'
+        ? l10n.eventsEventDetailScreenStateVisiblecopySpotsremainingSpotsLeft(
+            spotsRemaining: spotsRemaining,
+          )
         : null,
     priceWarn: !isFreeForViewer && isScarce,
     isLoading: mutationState.bookPending,
     useAccent: true,
-    catchLine: 'Matching opens for everyone who goes',
+    catchLine:
+        l10n.eventsEventDetailScreenStateVisiblecopyMatchingOpensForEveryone,
     error: mutationState.error,
   );
 }
 
 EventDetailBookingDockState _signedUpBookingDockState({
+  required AppLocalizations l10n,
   required Event event,
   required EventParticipation? participation,
   required DateTime now,
@@ -347,7 +365,7 @@ EventDetailBookingDockState _signedUpBookingDockState({
   }
 
   return EventDetailBookingDockState(
-    label: 'Cancel booking',
+    label: l10n.eventsEventDetailScreenStateLabelCancelBooking,
     primaryAction: EventDetailBookingDockAction.cancelBooking,
     buttonKey: EventDetailBookingDockButtonKey.cancelBooking,
     leadingKind: EventDetailBookingDockLeadingKind.booked,
@@ -443,6 +461,7 @@ bool eventDetailCanOpenCompanion({
 }
 
 EventDetailHostState eventDetailHostStateFrom({
+  required AppLocalizations l10n,
   required CatchAsyncState<Club?> clubState,
   required String? currentUid,
   required bool canMessageHost,
@@ -467,7 +486,7 @@ EventDetailHostState eventDetailHostStateFrom({
         photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
         meta: _hostMeta(club),
         verified: club.ownerOrPrimaryHostUserId != null,
-        stats: _hostStats(club),
+        stats: _hostStats(club, l10n),
         canMessage: canMessage,
       );
     }(),
@@ -499,11 +518,16 @@ String _hostMeta(Club club) {
   return parts.join(' · ');
 }
 
-List<EventDetailHostStat> _hostStats(Club club) {
+List<EventDetailHostStat> _hostStats(Club club, AppLocalizations l10n) {
   final stats = <EventDetailHostStat>[];
   if (club.memberCount > 0) {
     stats.add(
-      EventDetailHostStat(value: '${club.memberCount}', label: 'Members'),
+      EventDetailHostStat(
+        value: l10n.eventsEventDetailScreenStateVisiblecopyMembercount(
+          memberCount: club.memberCount,
+        ),
+        label: l10n.eventsEventDetailScreenStateLabelMembers,
+      ),
     );
   }
   if (club.reviewCount > 0) {
@@ -511,11 +535,16 @@ List<EventDetailHostStat> _hostStats(Club club) {
       ..add(
         EventDetailHostStat(
           value: club.rating.toStringAsFixed(1),
-          label: 'Rating',
+          label: l10n.eventsEventDetailScreenStateLabelRating,
         ),
       )
       ..add(
-        EventDetailHostStat(value: '${club.reviewCount}', label: 'Reviews'),
+        EventDetailHostStat(
+          value: l10n.eventsEventDetailScreenStateVisiblecopyReviewcount(
+            reviewCount: club.reviewCount,
+          ),
+          label: l10n.eventsEventDetailScreenStateLabelReviews,
+        ),
       );
   }
   return stats;

@@ -21,7 +21,7 @@ class ClubIndexRow extends StatelessWidget {
 
     return Semantics(
       button: onTap != null,
-      label: 'Open ${club.name} club',
+      label: context.l10n.clubsDirectoryCardLabelOpenNameClub(name: club.name),
       child: CatchSurface(
         onTap: onTap,
         borderColor: t.line,
@@ -187,7 +187,7 @@ class MembershipTrailing extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isJoined) {
       return CatchBadge(
-        label: 'Joined',
+        label: context.l10n.clubsDirectoryCardLabelJoined,
         tone: CatchBadgeTone.success,
         icon: CatchIcons.joinedCheck,
       );
@@ -195,7 +195,7 @@ class MembershipTrailing extends StatelessWidget {
 
     final t = CatchTokens.of(context);
     return CatchButton(
-      label: 'Join',
+      label: context.l10n.clubsDirectoryCardLabelJoin,
       icon: Icon(CatchIcons.groupAddOutlined),
       onPressed: isPending ? null : onJoinPressed,
       size: CatchButtonSize.sm,

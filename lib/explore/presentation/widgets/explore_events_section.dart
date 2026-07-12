@@ -11,6 +11,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_support_widgets.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
     show AsyncData, AsyncError, AsyncLoading, AsyncValue;
@@ -32,6 +33,7 @@ final EdgeInsets _exploreEventsErrorPadding = CatchInsets.pageBody.copyWith(
 /// compact event rows and club recommendations.
 List<Widget> buildExploreEventsSlivers(
   AsyncValue<ExploreFeedViewModel> feedAsync, {
+  required AppLocalizations l10n,
   required ExploreFilterSelection filters,
   required String searchQuery,
   VoidCallback? onRetry,
@@ -91,6 +93,7 @@ List<Widget> buildExploreEventsSlivers(
                 state: ExploreEventsEmptyState.from(
                   filters: filters,
                   searchQuery: searchQuery,
+                  l10n: l10n,
                 ),
                 onClearSearch: onClearSearch,
                 onClearFilters: onClearFilters,
@@ -99,6 +102,7 @@ List<Widget> buildExploreEventsSlivers(
             ]
           : _exploreContentSlivers(
               value,
+              l10n: l10n,
               candidateClubs: candidateClubs,
               joinedClubIds: joinedClubIds,
               pinnedDayHeaders: pinnedDayHeaders,
@@ -149,6 +153,7 @@ class ExploreEventsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final slivers = buildExploreEventsSlivers(
       feedAsync,
+      l10n: context.l10n,
       filters: filters,
       searchQuery: searchQuery,
       onRetry: onRetry,
@@ -167,6 +172,7 @@ class ExploreEventsSection extends StatelessWidget {
 
 List<Widget> _exploreContentSlivers(
   ExploreFeedViewModel viewModel, {
+  required AppLocalizations l10n,
   required List<Club> candidateClubs,
   required Set<String> joinedClubIds,
   required bool pinnedDayHeaders,
@@ -195,6 +201,7 @@ List<Widget> _exploreContentSlivers(
           externalItems: viewModel.externalItems,
         );
   final sectionState = ExploreFeedSectionState.from(
+    l10n: l10n,
     viewModel: layoutViewModel,
     candidateClubs: effectiveCandidateClubs,
     joinedClubIds: joinedClubIds,

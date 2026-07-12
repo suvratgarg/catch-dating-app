@@ -59,6 +59,30 @@ test("checkOrganizerBuildOutputs rejects stale route and sitemap state", () => {
   assert.match(result.errors.join("\n"), /references a public source map/);
 });
 
+test("checkOrganizerBuildOutputs rejects demo listings in production input", () => {
+  const distRoot = createDist({
+    sitemapUrls: [
+      "https://example.test/",
+      "https://example.test/host/",
+      "https://example.test/organizers/afterfly/",
+    ],
+    withStaticProfiles: true,
+  });
+  const listings = hostListings();
+  listings[0].dataOrigin = "catchDemo";
+
+  const result = checkOrganizerBuildOutputs({
+    baseUrl: "https://example.test",
+    distRoot,
+    hostListings: listings,
+  });
+
+  assert.match(
+    result.errors.join("\n"),
+    /afterfly: production organizer output must not include catchDemo records/u
+  );
+});
+
 function createDist({
   afterflyRobots = "index, follow",
   includeLegacyInSitemap = false,

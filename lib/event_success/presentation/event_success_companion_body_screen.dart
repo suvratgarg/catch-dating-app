@@ -103,6 +103,7 @@ class _EventSuccessCompanionScreenState
     final plan = widget.plan;
     final referenceNow = widget.now ?? DateTime.now();
     final screenState = EventSuccessCompanionScreenState.from(
+      l10n: context.l10n,
       event: event,
       plan: plan,
       userProfile: widget.userProfile,
@@ -164,7 +165,11 @@ class _EventSuccessCompanionScreenState
           actionState: selfCheckInActionState,
           onSelfCheckIn: widget.onSelfCheckIn ?? _noopFuture,
         ),
-        momentKey: screenState.transitionKey('self-check-in'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopySelfCheckIn,
+        ),
       );
     }
     if (attendeeMoment.showFirstHelloCheckIn) {
@@ -177,7 +182,11 @@ class _EventSuccessCompanionScreenState
           onSkip: widget.onSkipArrivalMission,
           onPlayCompleteEffect: _playCompleteGuideEffect,
         ),
-        momentKey: screenState.transitionKey('first-hello'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyFirstHello,
+        ),
       );
     }
     if (attendeeMoment.showPreCheckInPlanning) {
@@ -189,7 +198,11 @@ class _EventSuccessCompanionScreenState
           socialMissionsEnabled: runtime.socialMissionsEnabled,
           wingmanRequestsEnabled: runtime.wingmanRequestsEnabled,
         ),
-        momentKey: screenState.transitionKey('pre-arrival'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyPreArrival,
+        ),
       );
     }
     if (attendeeMoment.showCompatibilityQuestionnaire) {
@@ -203,16 +216,26 @@ class _EventSuccessCompanionScreenState
               widget.onSaveCompatibilityAnswers ??
               _noopSaveCompatibilityAnswers,
         ),
-        momentKey: screenState.transitionKey('questionnaire'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyQuestionnaire,
+        ),
       );
     }
     if (attendeeMoment.showPrompt) {
       addMomentContent(
         StagePromptCard(
-          title: 'Social prompt',
+          title: context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenTitleSocialPrompt,
           prompt: plan.attendeePromptFor(event),
         ),
-        momentKey: screenState.transitionKey('prompt'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyPrompt,
+        ),
       );
     }
     if (attendeeMoment.kind == EventSuccessAttendeeMomentKind.postEvent) {
@@ -223,7 +246,11 @@ class _EventSuccessCompanionScreenState
           feedbackEnabled: attendeeMoment.showFeedback,
           feedback: widget.existingFeedback,
         ),
-        momentKey: screenState.transitionKey('afterglow-recap'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyAfterglowRecap,
+        ),
       );
     }
     if (attendeeMoment.showConversationCues) {
@@ -231,28 +258,50 @@ class _EventSuccessCompanionScreenState
       addMomentContent(
         StageConversationCueCard(
           title: isPostEvent
-              ? 'Suggested first-message openers'
-              : 'Conversation cues',
+              ? context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionBodyScreenTitleSuggestedFirstMessageOpeners
+              : context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionBodyScreenTitleConversationCues,
           subtitle: isPostEvent
-              ? 'Use one after a mutual match opens.'
-              : 'Pick one when the room needs an easy next line.',
+              ? context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionBodyScreenSubtitleUseOneAfterA
+              : context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionBodyScreenSubtitlePickOneWhenThe,
           cues: isPostEvent
-              ? EventSuccessConversationCueLibrary.postEventOpenersFor(event)
+              ? EventSuccessConversationCueLibrary.postEventOpenersFor(
+                  event,
+                  l10n: context.l10n,
+                )
               : EventSuccessConversationCueLibrary.liveCuesFor(
                   event: event,
                   plan: plan,
+                  l10n: context.l10n,
                   activeStep: attendeeMoment.activeStep,
                 ),
         ),
         momentKey: screenState.transitionKey(
-          isPostEvent ? 'post-openers' : 'live-cues',
+          isPostEvent
+              ? context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyPostOpeners
+              : context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyLiveCues,
         ),
       );
     }
     if (attendeeMoment.showLiveStepContext) {
       addMomentContent(
         LiveStepContextCard(step: attendeeMoment.activeStep),
-        momentKey: screenState.transitionKey('live-step'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyLiveStep,
+        ),
       );
     }
     // `showPodAssignment` and `showRotationSchedule` are mutually exclusive
@@ -269,7 +318,11 @@ class _EventSuccessCompanionScreenState
           actionState: microPodsActionState,
           onIncludeChanged: setMicroPodsIncluded,
         ),
-        momentKey: screenState.transitionKey('micro-pod'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyMicroPod,
+        ),
       );
     }
     if (attendeeMoment.showRotationSchedule) {
@@ -284,7 +337,11 @@ class _EventSuccessCompanionScreenState
           actionState: guidedRotationsActionState,
           onIncludeChanged: setGuidedRotationsIncluded,
         ),
-        momentKey: screenState.transitionKey('rotation-schedule'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyRotationSchedule,
+        ),
       );
     }
     if (attendeeMoment.showLiveReveal && screenState.revealKind != null) {
@@ -317,7 +374,11 @@ class _EventSuccessCompanionScreenState
               : setMicroPodsIncluded,
           now: widget.now,
         ),
-        momentKey: screenState.transitionKey('live-reveal'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyLiveReveal,
+        ),
       );
     }
     if (attendeeMoment.showWingmanRequest) {
@@ -330,7 +391,11 @@ class _EventSuccessCompanionScreenState
           onSaveRequest: widget.onSaveWingmanRequest ?? _noopSaveWingmanRequest,
           onWithdrawRequest: widget.onWithdrawWingmanRequest ?? _noopFuture,
         ),
-        momentKey: screenState.transitionKey('wingman'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyWingman,
+        ),
       );
     }
     if (attendeeMoment.showFeedback) {
@@ -342,13 +407,21 @@ class _EventSuccessCompanionScreenState
           actionState: feedbackActionState,
           onSubmitFeedback: widget.onSubmitFeedback ?? _noopSubmitFeedback,
         ),
-        momentKey: screenState.transitionKey('feedback'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyFeedback,
+        ),
       );
     }
     if (!attendeeMoment.hasVisibleModule) {
       addMomentContent(
         const NoCompanionActionsCard(),
-        momentKey: screenState.transitionKey('empty'),
+        momentKey: screenState.transitionKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyEmpty,
+        ),
       );
     }
 
@@ -372,7 +445,11 @@ class _EventSuccessCompanionScreenState
       attended: screenState.attended,
       showSelfCheckIn: attendeeMoment.showSelfCheckIn,
       eventEnded: screenState.eventEnded,
-      momentKey: screenState.transitionKey('stage'),
+      momentKey: screenState.transitionKey(
+        context
+            .l10n
+            .eventSuccessEventSuccessCompanionBodyScreenVisiblecopyStage,
+      ),
       momentKind: attendeeMoment.kind,
       referenceNow: referenceNow,
       content: CompanionMomentStageContent(children: momentContents),

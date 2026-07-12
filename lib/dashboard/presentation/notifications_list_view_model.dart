@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +7,7 @@ NotificationsListState buildNotificationsListState({
   required AsyncValue<String?> uid,
   required AsyncValue<List<ActivityNotification>>? notifications,
   required DateTime now,
+  required AppLocalizations l10n,
   bool markAllReadPending = false,
 }) {
   if (uid.isLoading && !uid.hasValue) {
@@ -40,8 +42,13 @@ NotificationsListState buildNotificationsListState({
     uid: userId,
     visibleNotifications: visibleNotifications,
     groups: groupNotificationRows(
-      notificationRowsFromNotifications(visibleNotifications, now: now),
+      notificationRowsFromNotifications(
+        visibleNotifications,
+        now: now,
+        l10n: l10n,
+      ),
       now: now,
+      l10n: l10n,
     ),
     markAllReadPending: markAllReadPending,
   );

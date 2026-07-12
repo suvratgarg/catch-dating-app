@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldRow;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: CatchLayout.maxContentWidth,
             ),
-            child: const SizedBox(
+            child: SizedBox(
               width: double.infinity,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -32,12 +33,29 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
                     children: [
                       ProfilePhotosSkeletonSection(),
                       ProfileInfoSkeletonSection(
-                        title: 'Prompts',
+                        title: context
+                            .l10n
+                            .userProfileProfileTabSkeletonTitlePrompts,
                         rows: maxProfilePromptAnswers,
                       ),
-                      ProfileInfoSkeletonSection(title: 'About you', rows: 5),
-                      ProfileInfoSkeletonSection(title: 'Running', rows: 4),
-                      ProfileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
+                      ProfileInfoSkeletonSection(
+                        title: context
+                            .l10n
+                            .userProfileProfileTabSkeletonTitleAboutYou,
+                        rows: 5,
+                      ),
+                      ProfileInfoSkeletonSection(
+                        title: context
+                            .l10n
+                            .userProfileProfileTabSkeletonTitleRunning,
+                        rows: 4,
+                      ),
+                      ProfileInfoSkeletonSection(
+                        title: context
+                            .l10n
+                            .userProfileProfileTabSkeletonTitleLifestyle,
+                        rows: 4,
+                      ),
                     ],
                   ),
                   gapH32,
@@ -57,8 +75,8 @@ class ProfilePhotosSkeletonSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
-      title: 'Photos',
-      count: 'loading',
+      title: context.l10n.userProfileProfileTabSkeletonTitlePhotos,
+      count: context.l10n.userProfileProfileTabSkeletonVisiblecopyLoading,
       first: true,
       child: GridView.builder(
         shrinkWrap: true,

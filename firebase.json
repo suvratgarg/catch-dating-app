@@ -106,10 +106,6 @@
         {
           "source": "/claim/**",
           "destination": "/claim/index.html"
-        },
-        {
-          "source": "**",
-          "destination": "/index.html"
         }
       ]
     },
@@ -190,7 +186,7 @@
     },
     "singleProjectMode": true,
     "hosting": {
-      "port": 5000
+      "port": 5050
     }
   },
   "functions": {

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
@@ -108,7 +109,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
     final state = _stateFor(
       isCompleting: mutation.isPending,
       completeErrorMessage: mutation.hasError
-          ? mutationErrorMessage(mutation)
+          ? mutationErrorMessage(mutation, l10n: context.l10n)
           : null,
     );
 
@@ -175,7 +176,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
       children: [
         // ── Pace ──────────────────────────────────────────────────────────
         Text(
-          'TYPICAL PACE · PER KM',
+          context.l10n.onboardingRunningPrefsPageTextTypicalPacePerKm,
           style: CatchTextStyles.monoLabel(context, color: t.ink2),
         ),
         gapH8,
@@ -221,11 +222,11 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '4:00 FAST',
+                    context.l10n.onboardingRunningPrefsPageText400Fast,
                     style: CatchTextStyles.badge(context, color: t.ink3),
                   ),
                   Text(
-                    '9:00 EASY',
+                    context.l10n.onboardingRunningPrefsPageText900Easy,
                     style: CatchTextStyles.badge(context, color: t.ink3),
                   ),
                 ],
@@ -237,7 +238,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
 
         // ── Distances ─────────────────────────────────────────────────────
         CatchChipField<PreferredDistance>(
-          label: 'FAVOURITE DISTANCES',
+          label: context.l10n.onboardingRunningPrefsPageLabelFavouriteDistances,
           isOptional: true,
           values: PreferredDistance.values,
           selected: state.distances,

@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
     show CatchLayout, CatchIcon, CatchOpacity, CatchSpacing, CatchTokens;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
 import 'package:flutter/material.dart';
@@ -73,8 +74,14 @@ class _ProfileInlineHeightEditorState
   @override
   Widget build(BuildContext context) {
     final body = widget.isExpanded
-        ? '$_heightCm cm'
-        : (widget.isAddAffordance ? '+ ${widget.value}' : widget.value);
+        ? context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
+            heightCm: _heightCm,
+          )
+        : (widget.isAddAffordance
+              ? context.l10n.userProfileInlineEditorHeightBodyValue(
+                  value: widget.value,
+                )
+              : widget.value);
     return CatchField.actions(
       icon: widget.icon,
       title: widget.label,
@@ -87,7 +94,8 @@ class _ProfileInlineHeightEditorState
       error: _errorMessage(),
       onTap: isSaving ? null : widget.onTap,
       control: const SizedBox.shrink(),
-      actionLeading: ProfileHeightStepperControls(value: _heightCm,
+      actionLeading: ProfileHeightStepperControls(
+        value: _heightCm,
         enabled: !isSaving,
         onChanged: (value) => setState(() => _heightCm = value),
       ),
@@ -99,7 +107,11 @@ class _ProfileInlineHeightEditorState
   String? _errorMessage() {
     final error = saveError;
     if (error == null) return null;
-    return appErrorMessage(error, context: AppErrorContext.profile);
+    return appErrorMessage(
+      error,
+      l10n: context.l10n,
+      context: AppErrorContext.profile,
+    );
   }
 }
 
@@ -118,23 +130,27 @@ class ProfileHeightStepperControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final canDecrease = enabled && value > minimumHeightCm;
-  final canIncrease = enabled && value < maximumHeightCm;
-  return Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      ProfileHeightStepButton(tooltip: 'Decrease height',
-        icon: CatchIcons.removeRounded,
-        enabled: canDecrease,
-        onPressed: () => onChanged(value - 1),
-      ),
-      gapW4,
-      ProfileHeightStepButton(tooltip: 'Increase height',
-        icon: CatchIcons.addRounded,
-        enabled: canIncrease,
-        onPressed: () => onChanged(value + 1),
-      ),
-    ],
-  );
+    final canIncrease = enabled && value < maximumHeightCm;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ProfileHeightStepButton(
+          tooltip:
+              context.l10n.userProfileInlineEditorHeightTooltipDecreaseHeight,
+          icon: CatchIcons.removeRounded,
+          enabled: canDecrease,
+          onPressed: () => onChanged(value - 1),
+        ),
+        gapW4,
+        ProfileHeightStepButton(
+          tooltip:
+              context.l10n.userProfileInlineEditorHeightTooltipIncreaseHeight,
+          icon: CatchIcons.addRounded,
+          enabled: canIncrease,
+          onPressed: () => onChanged(value + 1),
+        ),
+      ],
+    );
   }
 }
 
@@ -155,27 +171,27 @@ class ProfileHeightStepButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-  return Tooltip(
-    message: tooltip,
-    child: Material(
-      color: t.raised,
-      shape: const CircleBorder(),
-      child: InkResponse(
-        onTap: enabled ? onPressed : null,
-        radius: CatchSpacing.micro18,
-        customBorder: const CircleBorder(),
-        child: SizedBox.square(
-          dimension: CatchLayout.profileHeightStepButtonExtent,
-          child: Icon(
-            icon,
-            size: CatchIcon.profileHeightStep,
-            color: enabled
-                ? t.ink
-                : t.ink3.withValues(alpha: CatchOpacity.profileDisabledIcon),
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: t.raised,
+        shape: const CircleBorder(),
+        child: InkResponse(
+          onTap: enabled ? onPressed : null,
+          radius: CatchSpacing.micro18,
+          customBorder: const CircleBorder(),
+          child: SizedBox.square(
+            dimension: CatchLayout.profileHeightStepButtonExtent,
+            child: Icon(
+              icon,
+              size: CatchIcon.profileHeightStep,
+              color: enabled
+                  ? t.ink
+                  : t.ink3.withValues(alpha: CatchOpacity.profileDisabledIcon),
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
   }
 }

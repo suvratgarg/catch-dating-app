@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_view_model.dart';
@@ -120,11 +121,14 @@ class CatchesHubContent extends StatelessWidget {
                   ),
                   gapH24,
                   CatchSectionHeader(
-                    title: 'Open catch windows',
+                    title:
+                        context.l10n.swipesSwipeHubScreenTitleOpenCatchWindows,
                     heavy: true,
                     padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
                     trailing: Text(
-                      '${state.rows.length}',
+                      context.l10n.swipesSwipeHubScreenTextLength(
+                        length: state.rows.length,
+                      ),
                       style: CatchTextStyles.mono(context, color: t.primary),
                     ),
                   ),
@@ -162,9 +166,15 @@ class CatchesHubHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CatchSectionHeader(title: 'Catches', heavy: true),
+              CatchSectionHeader(
+                title: context.l10n.swipesSwipeHubScreenTitleCatches,
+                heavy: true,
+              ),
               gapH2,
-              Text('After the event', style: CatchTextStyles.headline(context)),
+              Text(
+                context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
+                style: CatchTextStyles.headline(context),
+              ),
             ],
           ),
         ),
@@ -193,7 +203,7 @@ class CatchesIntroCard extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Semantics(
-      label: 'Start catching',
+      label: context.l10n.swipesSwipeHubScreenLabelStartCatching,
       button: true,
       child: CatchSurface(
         key: SwipeKeys.activeCatchWindowCard,
@@ -217,12 +227,12 @@ class CatchesIntroCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '24H WINDOW OPEN',
+                  context.l10n.swipesSwipeHubScreenText24hWindowOpen,
                   style: CatchTextStyles.kicker(context, color: t.ink),
                 ),
                 gapH10,
                 Text(
-                  'You ran together.\nNow you can catch.',
+                  context.l10n.swipesSwipeHubScreenTextYouRanTogetherNow,
                   style: CatchTextStyles.headline(context, color: t.ink),
                 ),
                 gapH10,
@@ -239,16 +249,19 @@ class CatchesIntroCard extends StatelessWidget {
                 Row(
                   children: [
                     PillStat(
-                      label: 'Closes in',
+                      label: context.l10n.swipesSwipeHubScreenLabelClosesIn,
                       value: row.introCountdownLabel,
                     ),
                     gapW10,
-                    PillStat(label: 'Roster', value: row.attendedCountLabel),
+                    PillStat(
+                      label: context.l10n.swipesSwipeHubScreenLabelRoster,
+                      value: row.attendedCountLabel,
+                    ),
                   ],
                 ),
                 gapH18,
-                const CatchButton(
-                  label: 'Start catching',
+                CatchButton(
+                  label: context.l10n.swipesSwipeHubScreenLabelStartCatching,
                   onPressed: null,
                   variant: CatchButtonVariant.light,
                   fullWidth: true,
@@ -354,11 +367,16 @@ class CatchesHubEmptyState extends StatelessWidget {
                           children: [
                             CatchEmptyState(
                               icon: CatchIcons.directionsRunRounded,
-                              title: 'No active catches',
-                              message:
-                                  'Book a group event, show up, and your 24-hour catch window opens here after check-in.',
+                              title: context
+                                  .l10n
+                                  .swipesSwipeHubScreenTitleNoActiveCatches,
+                              message: context
+                                  .l10n
+                                  .swipesSwipeHubScreenMessageBookAGroupEvent,
                               action: CatchButton(
-                                label: 'Find an event',
+                                label: context
+                                    .l10n
+                                    .swipesSwipeHubScreenLabelFindAnEvent,
                                 onPressed: onFindEvent,
                                 variant: CatchButtonVariant.secondary,
                               ),
@@ -379,7 +397,9 @@ class CatchesHubEmptyState extends StatelessWidget {
                                   gapW10,
                                   Expanded(
                                     child: Text(
-                                      'Dating stays locked until you actually run together. No cold stranger browsing.',
+                                      context
+                                          .l10n
+                                          .swipesSwipeHubScreenTextDatingStaysLockedUntil,
                                       style: CatchTextStyles.proseM(
                                         context,
                                         color: t.ink2,

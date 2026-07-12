@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 const EdgeInsets _contextHeaderOuterPadding = EdgeInsets.fromLTRB(
@@ -36,7 +37,9 @@ class ChatEventContextHeader extends StatelessWidget {
         ? null
         : eventActivityVisual(event.activityKind, context: context);
     final accent = visual?.accent ?? t.primary;
-    final title = event?.title ?? 'the same event';
+    final title =
+        event?.title ??
+        context.l10n.chatsChatEventContextHeaderTitleTheSameEvent;
     final date = event == null
         ? null
         : AppTimeFormatters.weekdayDayMonth(event.startTime);
@@ -79,7 +82,12 @@ class ChatEventContextHeader extends StatelessWidget {
                   ),
                   gapH2,
                   Text(
-                    date == null ? title : '$title · $date',
+                    date == null
+                        ? title
+                        : context.l10n.chatsChatEventContextHeaderTextTitleDate(
+                            title: title,
+                            date: date,
+                          ),
                     style: CatchTextStyles.chatThreadContext(
                       context,
                       color: t.ink,

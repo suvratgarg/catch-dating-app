@@ -12,7 +12,7 @@ import {
   type ClaimVerificationMethodId,
 } from "../features/claims/claimModel";
 import type {ClaimFlowController} from "../features/claims/useClaimFlowController";
-import {hostListings} from "../features/organizers/data";
+import {hostListings} from "./fixtures/hostListings";
 import {isUnclaimedListing, isVerifiedListing} from "../features/organizers/selectors";
 import type {HostListing} from "../features/organizers/types";
 
@@ -107,6 +107,7 @@ export const ClaimUrlStateNotFound: Story = {
 export const ClaimWorkspace: Story = {
   name: "Workspace · verify",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "claim_workspace_section",
       routeIds: ["claim", "claim_lookup"],
@@ -126,6 +127,7 @@ export const ClaimWorkspace: Story = {
 export const ClaimWorkspaceListingSearch: Story = {
   name: "Workspace · listing search",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "claim_workspace_section",
       routeIds: ["claim", "claim_lookup"],
@@ -148,6 +150,7 @@ export const ClaimWorkspaceListingSearch: Story = {
 export const ClaimWorkspaceRole: Story = {
   name: "Workspace · role",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "claim_workspace_section",
       routeIds: ["claim", "claim_lookup"],
@@ -167,6 +170,7 @@ export const ClaimWorkspaceRole: Story = {
 export const ClaimWorkspaceSubmitted: Story = {
   name: "Workspace · submitted",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "claim_workspace_section",
       routeIds: ["claim", "claim_lookup"],

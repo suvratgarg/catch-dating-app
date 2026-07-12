@@ -1,7 +1,17 @@
-import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/app_error_message.dart'
+    hide appErrorDescriptor;
+import 'package:catch_dating_app/core/app_error_message.dart' as error_copy;
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+final _l10n = AppLocalizationsEn();
+
+AppErrorDescriptor appErrorDescriptor(
+  Object error, {
+  AppErrorContext context = AppErrorContext.generic,
+}) => error_copy.appErrorDescriptor(error, l10n: _l10n, context: context);
 
 void main() {
   group('appErrorDescriptor', () {
@@ -30,7 +40,10 @@ void main() {
       );
 
       expect(descriptor.title, 'Check your details');
-      expect(descriptor.message, 'Please enter a valid phone number.');
+      expect(
+        descriptor.message,
+        'Check the highlighted details and try again.',
+      );
       expect(descriptor.icon, CatchIcons.editNoteRounded);
       expect(descriptor.retryable, isFalse);
     });
@@ -76,10 +89,7 @@ void main() {
         context: AppErrorContext.event,
       );
 
-      expect(
-        descriptor.message,
-        'Unable to create event right now. Please try again.',
-      );
+      expect(descriptor.message, 'Something went wrong. Please try again.');
       expect(descriptor.message, isNot(contains('[DEBUG]')));
       expect(descriptor.message, isNot(contains('firebase_functions')));
       expect(descriptor.message, isNot(contains('additional properties')));

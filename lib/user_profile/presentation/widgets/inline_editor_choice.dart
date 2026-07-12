@@ -12,6 +12,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 // ── Single-choice editor ──────────────────────────────────────────────────────
 
@@ -108,7 +109,9 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
       icon: widget.icon,
       title: widget.label,
       body: _selected == null
-          ? '+ ${widget.label}'
+          ? context.l10n.userProfileInlineEditorChoiceBodyLabel(
+              label: widget.label,
+            )
           : headerValue,
       tone: widget.isAddAffordance || _selected == null
           ? CatchFieldTone.primary
@@ -150,7 +153,11 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
   String? _errorMessage() {
     final error = saveError;
     if (error == null) return null;
-    return appErrorMessage(error, context: AppErrorContext.profile);
+    return appErrorMessage(
+      error,
+      l10n: context.l10n,
+      context: AppErrorContext.profile,
+    );
   }
 }
 
@@ -261,7 +268,9 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
       icon: widget.icon,
       title: widget.label,
       body: _selected.isEmpty
-          ? '+ ${widget.label}'
+          ? context.l10n.userProfileInlineEditorChoiceBodyLabel(
+              label: widget.label,
+            )
           : headerValue,
       tone: widget.isAddAffordance || _selected.isEmpty
           ? CatchFieldTone.primary
@@ -302,7 +311,11 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
   String? _errorMessage() {
     final error = saveError;
     if (error == null) return null;
-    return appErrorMessage(error, context: AppErrorContext.profile);
+    return appErrorMessage(
+      error,
+      l10n: context.l10n,
+      context: AppErrorContext.profile,
+    );
   }
 }
 
@@ -341,10 +354,7 @@ class ProfileSingleChipValue<T extends Labelled> extends StatelessWidget {
 
     final currentSelected = selected;
     if (currentSelected == null) {
-      return ProfileChipPlaceholder(
-        value: emptyValue,
-        isAddAffordance: true,
-      );
+      return ProfileChipPlaceholder(value: emptyValue, isAddAffordance: true);
     }
 
     return Align(
@@ -353,7 +363,9 @@ class ProfileSingleChipValue<T extends Labelled> extends StatelessWidget {
         label: currentSelected.label,
         active: true,
         enabled: enabled,
-        onTap: allowEmptySelection ? () => onSelectedTap(currentSelected) : null,
+        onTap: allowEmptySelection
+            ? () => onSelectedTap(currentSelected)
+            : null,
       ),
     );
   }
@@ -389,10 +401,7 @@ class ProfileMultiChipValue<T extends Labelled> extends StatelessWidget {
     }
 
     if (selected.isEmpty) {
-      return ProfileChipPlaceholder(
-        value: emptyValue,
-        isAddAffordance: true,
-      );
+      return ProfileChipPlaceholder(value: emptyValue, isAddAffordance: true);
     }
 
     return Wrap(
@@ -426,7 +435,9 @@ class ProfileChipPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Text(
-      isAddAffordance ? '+ $value' : value,
+      isAddAffordance
+          ? context.l10n.userProfileInlineEditorChoiceTextValue(value: value)
+          : value,
       style: CatchTextStyles.profileAnswer(
         context,
         color: isAddAffordance ? t.ink3 : null,

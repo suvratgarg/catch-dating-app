@@ -42,7 +42,7 @@ flutter:
   fonts:
     - family: Archivo
       fonts:
-        - asset: ../assets/fonts/Archivo-Roman-VF.woff2
+        - asset: ../assets/fonts/Archivo-Roman-VF.ttf
     - family: IBM Plex Mono
       fonts:
         - asset: ../assets/fonts/IBMPlexMono-Regular.ttf

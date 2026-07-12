@@ -28,6 +28,7 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,12 +74,17 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final featuredItem = feedAsync.asData?.value.featuredItem;
     final showFeaturedCover =
         featuredItem != null && !_searchRequested && query.isEmpty;
-    final filterRailState = ExploreFilterRailState.from(filters);
+    final filterRailState = ExploreFilterRailState.from(
+      filters,
+      l10n: context.l10n,
+    );
     final filterSheetState = ExploreFilterSheetState.from(
       filters: filters,
       sourceClubs: sourceClubs,
+      l10n: context.l10n,
     );
     final screenState = ExploreDiscoveryScreenState.from(
+      l10n: context.l10n,
       cityLabel: city.label,
       query: query,
       filters: filters,
@@ -112,7 +118,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             parameters: {
               AnalyticsParameters.eventId: item.event.id,
               AnalyticsParameters.clubId: item.event.clubId,
-              AnalyticsParameters.exploreSource: 'cover_header',
+              AnalyticsParameters.exploreSource:
+                  context.l10n.exploreExploreScreenVisiblecopyCoverHeader,
             },
           );
       context.pushNamed(
@@ -163,10 +170,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             AnalyticsEvents.exploreEventOpened,
             parameters: {
               AnalyticsParameters.eventId: item.event.id,
-              AnalyticsParameters.exploreSource: 'external_supply',
+              AnalyticsParameters.exploreSource:
+                  context.l10n.exploreExploreScreenVisiblecopyExternalSupply,
               AnalyticsParameters.activityKind: item.event.activityKind.name,
-              AnalyticsParameters.availabilityStatus: 'external_outbound',
-              'external_platform': item.event.platformLabel,
+              AnalyticsParameters.availabilityStatus:
+                  context.l10n.exploreExploreScreenVisiblecopyExternalOutbound,
+              context.l10n.exploreExploreScreenVisiblecopyExternalPlatform:
+                  item.event.platformLabel,
               AnalyticsParameters.distanceKm: item.distanceFromUserKm == null
                   ? null
                   : double.parse(item.distanceFromUserKm!.toStringAsFixed(2)),
@@ -186,7 +196,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     Widget savedEventsAction({bool onDarkBackdrop = false}) {
       return CatchIconAction(
         icon: CatchIcons.bookmarkBorderRounded,
-        tooltip: 'Saved events',
+        tooltip: context.l10n.exploreExploreScreenTooltipSavedEvents,
         onPressed: () => context.push(Routes.savedEventsScreen.path),
         variant: onDarkBackdrop
             ? CatchIconButtonVariant.plain
@@ -278,7 +288,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           CatchMutationErrorListener(
             mutation: ClubMembershipController.joinMutation,
             child: CustomScrollView(
-              key: const ValueKey('explore-list-scroll-view'),
+              key: ValueKey(
+                context.l10n.exploreExploreScreenBodyExploreListScrollView,
+              ),
               slivers: [
                 SliverToBoxAdapter(
                   child: ExploreDiscoveryCoverHeader(
@@ -389,10 +401,10 @@ class ExploreScreenEmptyState extends StatelessWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.groupsOutlined,
-            title: 'No clubs in ${state.cityLabel} yet',
-            message:
-                'Try another city from the location control, or create the '
-                'first club when you are ready to host.',
+            title: context.l10n.exploreExploreScreenTitleNoClubsInCitylabel(
+              cityLabel: state.cityLabel,
+            ),
+            message: context.l10n.exploreExploreScreenMessageTryAnotherCityFrom,
             action: action,
           ),
         ),
@@ -402,9 +414,8 @@ class ExploreScreenEmptyState extends StatelessWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.groupsOutlined,
-            title: 'No clubs match this search',
-            message:
-                'Clear the search or filters to bring nearby clubs back into view.',
+            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
+            message: context.l10n.exploreExploreScreenMessageClearTheSearchOr,
             action: action,
           ),
         ),
@@ -414,8 +425,10 @@ class ExploreScreenEmptyState extends StatelessWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.groupsOutlined,
-            title: 'No clubs match this search',
-            message: 'Try another club, neighborhood, host, or tag.',
+            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
+            message: context
+                .l10n
+                .exploreExploreScreenMessageTryAnotherClubNeighborhood,
             action: action,
           ),
         ),
@@ -425,9 +438,8 @@ class ExploreScreenEmptyState extends StatelessWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.groupsOutlined,
-            title: 'No clubs match these filters',
-            message:
-                'Clear one or more filters to bring nearby clubs back into view.',
+            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThese,
+            message: context.l10n.exploreExploreScreenMessageClearOneOrMore,
             action: action,
           ),
         ),
@@ -457,10 +469,11 @@ class ExploreClearAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = switch ((clearSearch, clearFilters)) {
-      (true, true) => 'Clear search and filters',
-      (true, false) => 'Clear search',
-      (false, true) => 'Clear filters',
-      (false, false) => 'Clear',
+      (true, true) =>
+        context.l10n.exploreExploreScreenLabelClearSearchAndFilters,
+      (true, false) => context.l10n.exploreExploreScreenLabelClearSearch,
+      (false, true) => context.l10n.exploreExploreScreenLabelClearFilters,
+      (false, false) => context.l10n.exploreExploreScreenLabelClear,
     };
     return CatchButton(
       label: label,

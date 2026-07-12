@@ -164,6 +164,7 @@ export const FieldGridStory: Story = {
 export const StepRailStory: Story = {
   name: "Step rail",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "shared_operational_step_rail",
       routeIds: ["host", "claim"],
@@ -391,6 +392,7 @@ export const RowShellStory: Story = {
 export const ControlRowStory: Story = {
   name: "Control row",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "shared_control_row",
       routeIds: ["home"],

@@ -32,8 +32,8 @@ class AuthOtpEntryViewState {
     required this.canVerify,
     required this.verifyButtonLoading,
     required this.canResend,
-    required this.resendCooldownLabel,
-    required this.resendButtonLabel,
+    required this.secondsUntilResend,
+    required this.isSendPending,
     required this.canChangeNumber,
   });
 
@@ -44,8 +44,8 @@ class AuthOtpEntryViewState {
   final bool canVerify;
   final bool verifyButtonLoading;
   final bool canResend;
-  final String resendCooldownLabel;
-  final String resendButtonLabel;
+  final int secondsUntilResend;
+  final bool isSendPending;
   final bool canChangeNumber;
 
   factory AuthOtpEntryViewState.from({
@@ -71,21 +71,9 @@ class AuthOtpEntryViewState {
           data.phoneNumber.isNotEmpty &&
           !isVerifyPending &&
           !isSendPending,
-      resendCooldownLabel: resendCooldownLabelFor(secondsUntilResend),
-      resendButtonLabel: resendButtonLabelFor(isSendPending),
+      secondsUntilResend: secondsUntilResend,
+      isSendPending: isSendPending,
       canChangeNumber: !isVerifyPending && !isSendPending,
     );
-  }
-
-  static String resendCooldownLabelFor(int secondsUntilResend) {
-    if (secondsUntilResend <= 0) return 'RESEND NOW';
-    final minutes = secondsUntilResend ~/ 60;
-    final seconds = (secondsUntilResend % 60).toString().padLeft(2, '0');
-    return 'RESEND IN $minutes:$seconds';
-  }
-
-  static String resendButtonLabelFor(bool isSending) {
-    if (isSending) return 'Sending OTP...';
-    return 'Resend OTP';
   }
 }

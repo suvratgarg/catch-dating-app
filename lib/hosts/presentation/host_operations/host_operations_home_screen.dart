@@ -28,8 +28,8 @@ class HostOperationsHomeScreen extends ConsumerWidget {
 
     return switch (routeState.status) {
       HostHomeRouteStatus.authRequired => const HostAuthRequiredScreen(),
-      HostHomeRouteStatus.loading => const HostLoadingScreen(
-        title: 'Host events',
+      HostHomeRouteStatus.loading => HostLoadingScreen(
+        title: context.l10n.hostsHostOperationsHomeScreenTitleHostEvents,
       ),
       HostHomeRouteStatus.error => CatchErrorScaffold.fromError(
         routeState.error!,

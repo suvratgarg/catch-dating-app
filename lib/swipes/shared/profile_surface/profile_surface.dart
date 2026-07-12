@@ -9,6 +9,7 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapper.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 enum ProfileSurfaceMode { catches, preview, publicProfile }
 
@@ -51,11 +52,13 @@ class ProfileSurface extends StatelessWidget {
 
     final content = ProfileCardContent.fromProfile(
       profile,
+      l10n: context.l10n,
       viewerProfile: viewerProfile,
       sharedRunTitle: sharedRunTitle,
     );
     final view = profileViewFromCardContent(
       content,
+      l10n: context.l10n,
       name: profile.name,
       age: profile.age,
       running: profile.activityPreferences.running,
@@ -65,7 +68,10 @@ class ProfileSurface extends StatelessWidget {
     );
 
     return Semantics(
-      label: 'Profile of ${profile.name}, ${profile.age}',
+      label: context.l10n.swipesProfileSurfaceLabelProfileOfNameAge(
+        name: profile.name,
+        age: profile.age,
+      ),
       hint: _semanticHint(mode),
       child: CatchProfileView(
         data: view,

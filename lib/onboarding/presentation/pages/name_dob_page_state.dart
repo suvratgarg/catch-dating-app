@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,9 @@ class OnboardingNameDobState {
     required this.dateOfBirth,
     required this.step,
     required this.today,
+    required this.datePickerTitle,
+    required this.firstNameValidationLabel,
+    required this.lastNameValidationLabel,
   });
 
   factory OnboardingNameDobState.fromDraft({
@@ -21,6 +25,7 @@ class OnboardingNameDobState {
     required DateTime? dateOfBirth,
     required OnboardingStep step,
     required DateTime today,
+    required AppLocalizations l10n,
   }) {
     return OnboardingNameDobState(
       firstName: firstName,
@@ -30,6 +35,11 @@ class OnboardingNameDobState {
       dateOfBirth: dateOfBirth,
       step: step,
       today: today,
+      datePickerTitle: l10n.onboardingNameDobPageStateVisiblecopyDateOfBirth,
+      firstNameValidationLabel:
+          l10n.onboardingNameDobPageStateVisiblecopyFirstName,
+      lastNameValidationLabel:
+          l10n.onboardingNameDobPageStateVisiblecopyLastName,
     );
   }
 
@@ -40,6 +50,9 @@ class OnboardingNameDobState {
   final DateTime? dateOfBirth;
   final OnboardingStep step;
   final DateTime today;
+  final String datePickerTitle;
+  final String firstNameValidationLabel;
+  final String lastNameValidationLabel;
 
   bool get shouldAutofocus => step == OnboardingStep.nameDob;
 
@@ -57,15 +70,15 @@ class OnboardingNameDobState {
       initialDate: dateOfBirth ?? DateTime(2000),
       firstDate: DateTime(1920),
       lastDate: latestAllowedDateOfBirth(today: today),
-      title: 'Date of birth',
+      title: datePickerTitle,
     );
   }
 
   String? validateFirstName(String? value) =>
-      validateRequiredProfileName(value, label: 'First name');
+      validateRequiredProfileName(value, label: firstNameValidationLabel);
 
   String? validateLastName(String? value) =>
-      validateRequiredProfileName(value, label: 'Last name');
+      validateRequiredProfileName(value, label: lastNameValidationLabel);
 
   String? validateDateOfBirth() =>
       validateRequiredDateOfBirth(dateOfBirth, today: today);

@@ -21,6 +21,8 @@ node tool/run.mjs run demo:ops --help
   work.
 - `branding/`: native launcher and splash branding generators.
 - `contracts/`: Firestore, schema, business-rule, and generated contract gates.
+- `copy/`: typed locale-catalog validation, ownership scanners, and generated
+  structured product-copy sync tools.
 - `data/`: Firestore data validators, repair scripts, and backfills.
 - `demo/`: demo seeding, demo operations, and demo seed fixtures.
 - `design/`: visual review and design-preview entrypoints.
@@ -225,13 +227,19 @@ node tool/marketing/export_app_screenshots.mjs --update-design-json
 ## Marketing Website Route Contracts
 
 Public marketing website routes are tracked in `design/website/routes.json` and
-validated against the React route shell, metadata registry, postbuild static
-output, and generated organizer listings.
+validated against the React route shell, `website/src/content/meta.json`, its
+runtime validator, postbuild static output, and generated organizer listings.
 
 ```sh
 node tool/marketing/check_website_routes.mjs --check
+node --test tool/marketing/website_meta_contract.test.mjs
 node tool/run.mjs check marketing:website-routes
 ```
+
+Organizer listing generation produces two explicit projections: deployable
+`website/src/generated/hostListings.json` excludes `catchDemo`, while
+`hostListings.demo.json` includes demo records for Storybook and sales tooling.
+`npm --workspace catch-marketing run check:organizer-listings` validates both.
 
 ## React Web Architecture Gates
 
@@ -350,6 +358,30 @@ or muscle memory already depend on them:
 - `tool/validate_firebase_environment.sh`
 - `tool/widget_cleanup_scan.sh`
 - `tool/write_ios_maps_key_xcconfig.sh`
+
+## Product Copy
+
+Short Flutter UI copy is owned by `lib/l10n/app_en.arb`. Structured content
+that must remain usable by synchronous domain models is owned by locale JSON
+under `copy/` and generates deterministic Dart. For Event Success
+questionnaires:
+
+```sh
+node tool/copy/sync_event_success_questionnaires.mjs --write
+node tool/run.mjs check copy:event-success-questionnaires
+```
+
+Event Success playbooks, coach guidance, and event-policy descriptions use the
+same ownership model. Marketing edits `copy/structured_domain_copy_en.json`;
+engineers edit typed structure templates only when the data model changes:
+
+```sh
+dart run tool/copy/sync_structured_domain_copy.dart --write
+node tool/run.mjs check copy:structured-domain-content
+```
+
+Edit the JSON source, never the generated Dart file. The check validates stable
+ids, non-empty text, and exact generated output.
 
 ## Adding Or Moving A Tool
 

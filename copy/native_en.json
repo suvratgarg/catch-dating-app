@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "locale": "en",
+  "owner": "product",
+  "iosInfoPlist": {
+    "NSCalendarsUsageDescription": "Catch uses calendar access to let you review and save booked events to your calendar.",
+    "NSCalendarsWriteOnlyAccessUsageDescription": "Catch uses calendar access to let you review and save booked events to your calendar.",
+    "NSCameraUsageDescription": "Catch uses the camera to scan host QR codes for event check-in.",
+    "NSHealthShareUsageDescription": "Catch uses read-only access to your workouts to show optional activity insights.",
+    "NSHealthUpdateUsageDescription": "Catch does not write to Apple Health; HealthKit is enabled only to read workouts for optional activity insights.",
+    "NSLocationWhenInUseUsageDescription": "Catch uses your location to find nearby events and show distance to event locations.",
+    "NSMotionUsageDescription": "Catch uses motion on Explore to let a quick wrist lift reveal the nearby event map.",
+    "NSPhotoLibraryAddUsageDescription": "Catch needs permission to save and manage photos you add to your profile or events.",
+    "NSPhotoLibraryUsageDescription": "Catch needs access to your photo library so you can upload profile and event photos."
+  }
+}

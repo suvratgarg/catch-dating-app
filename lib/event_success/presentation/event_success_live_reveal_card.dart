@@ -17,6 +17,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_preference.d
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter/material.dart';
 
@@ -32,9 +33,11 @@ enum EventSuccessRevealAssignmentKind {
   microPods,
   rotations;
 
-  String get label => switch (this) {
-    EventSuccessRevealAssignmentKind.microPods => 'Pod reveal',
-    EventSuccessRevealAssignmentKind.rotations => 'Rotation reveal',
+  String label(AppLocalizations l10n) => switch (this) {
+    EventSuccessRevealAssignmentKind.microPods =>
+      l10n.eventSuccessEventSuccessLiveRevealCardLabelPodReveal,
+    EventSuccessRevealAssignmentKind.rotations =>
+      l10n.eventSuccessEventSuccessLiveRevealCardLabelRotationReveal,
   };
 
   String get assignmentNoun => switch (this) {

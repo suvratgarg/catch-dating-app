@@ -1,0 +1,317 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
+
+abstract final class EventSuccessModuleCatalog {
+  static const crowdBalance = EventSuccessModule(
+    id: 'crowd_balance',
+    title: {{modules.crowdBalance.title.1}},
+    type: EventSuccessModuleType.crowdBalance,
+    productLayer: EventSuccessProductLayer.rosterAttendance,
+    stage: EventSuccessStage.before,
+    attendeePromise: {{modules.crowdBalance.attendeePromise.1}},
+    hostPromise:
+        {{modules.crowdBalance.hostPromise.1}},
+    setupSteps: [
+      {{modules.crowdBalance.setupSteps.1}},
+      {{modules.crowdBalance.setupSteps.2}},
+      {{modules.crowdBalance.setupSteps.3}},
+    ],
+    riskControls: [
+      {{modules.crowdBalance.riskControls.1}},
+      {{modules.crowdBalance.riskControls.2}},
+    ],
+  );
+
+  static const checkIn = EventSuccessModule(
+    id: 'qr_check_in',
+    title: {{modules.checkIn.title.1}},
+    type: EventSuccessModuleType.checkIn,
+    productLayer: EventSuccessProductLayer.rosterAttendance,
+    stage: EventSuccessStage.arrival,
+    attendeePromise: {{modules.checkIn.attendeePromise.1}},
+    hostPromise: {{modules.checkIn.hostPromise.1}},
+    requiresLivePhoneUse: true,
+    setupSteps: [
+      {{modules.checkIn.setupSteps.1}},
+      {{modules.checkIn.setupSteps.2}},
+      {{modules.checkIn.setupSteps.3}},
+      {{modules.checkIn.setupSteps.4}},
+    ],
+    riskControls: [
+      {{modules.checkIn.riskControls.1}},
+      {{modules.checkIn.riskControls.2}},
+    ],
+  );
+
+  static const firstHelloCheckIn = EventSuccessModule(
+    id: 'first_hello_check_in',
+    title: {{modules.firstHelloCheckIn.title.1}},
+    type: EventSuccessModuleType.firstHelloCheckIn,
+    productLayer: EventSuccessProductLayer.rosterAttendance,
+    stage: EventSuccessStage.arrival,
+    attendeePromise:
+        {{modules.firstHelloCheckIn.attendeePromise.1}},
+    hostPromise:
+        {{modules.firstHelloCheckIn.hostPromise.1}},
+    enabledByDefault: false,
+    requiresLivePhoneUse: true,
+    recommendedFor: {
+      ActivityKind.pickleball,
+      ActivityKind.pubQuiz,
+      ActivityKind.dinner,
+      ActivityKind.singlesMixer,
+    },
+    setupSteps: [
+      {{modules.firstHelloCheckIn.setupSteps.1}},
+      {{modules.firstHelloCheckIn.setupSteps.2}},
+      {{modules.firstHelloCheckIn.setupSteps.3}},
+    ],
+    riskControls: [
+      {{modules.firstHelloCheckIn.riskControls.1}},
+      {{modules.firstHelloCheckIn.riskControls.2}},
+      {{modules.firstHelloCheckIn.riskControls.3}},
+    ],
+  );
+
+  static const hostScript = EventSuccessModule(
+    id: 'host_script',
+    title: {{modules.hostScript.title.1}},
+    type: EventSuccessModuleType.formatTemplate,
+    productLayer: EventSuccessProductLayer.eventStructure,
+    stage: EventSuccessStage.opening,
+    attendeePromise: {{modules.hostScript.attendeePromise.1}},
+    hostPromise: {{modules.hostScript.hostPromise.1}},
+    setupSteps: [
+      {{modules.hostScript.setupSteps.1}},
+      {{modules.hostScript.setupSteps.2}},
+    ],
+  );
+
+  static const microPods = EventSuccessModule(
+    id: 'micro_pods',
+    title: {{modules.microPods.title.1}},
+    type: EventSuccessModuleType.microPods,
+    productLayer: EventSuccessProductLayer.assignments,
+    stage: EventSuccessStage.opening,
+    attendeePromise: {{modules.microPods.attendeePromise.1}},
+    hostPromise: {{modules.microPods.hostPromise.1}},
+    setupSteps: [
+      {{modules.microPods.setupSteps.1}},
+      {{modules.microPods.setupSteps.2}},
+      {{modules.microPods.setupSteps.3}},
+    ],
+    riskControls: [{{modules.microPods.riskControls.1}}],
+  );
+
+  static const socialMissions = EventSuccessModule(
+    id: 'social_missions',
+    title: {{modules.socialMissions.title.1}},
+    type: EventSuccessModuleType.socialMissions,
+    productLayer: EventSuccessProductLayer.conversation,
+    stage: EventSuccessStage.mixing,
+    attendeePromise: {{modules.socialMissions.attendeePromise.1}},
+    hostPromise: {{modules.socialMissions.hostPromise.1}},
+    setupSteps: [
+      {{modules.socialMissions.setupSteps.1}},
+      {{modules.socialMissions.setupSteps.2}},
+      {{modules.socialMissions.setupSteps.3}},
+    ],
+  );
+
+  static const guidedRotations = EventSuccessModule(
+    id: 'guided_rotations',
+    title: {{modules.guidedRotations.title.1}},
+    type: EventSuccessModuleType.guidedRotations,
+    productLayer: EventSuccessProductLayer.assignments,
+    stage: EventSuccessStage.activity,
+    attendeePromise: {{modules.guidedRotations.attendeePromise.1}},
+    hostPromise: {{modules.guidedRotations.hostPromise.1}},
+    setupSteps: [
+      {{modules.guidedRotations.setupSteps.1}},
+      {{modules.guidedRotations.setupSteps.2}},
+      {{modules.guidedRotations.setupSteps.3}},
+    ],
+    requiresLivePhoneUse: true,
+    recommendedFor: {
+      ActivityKind.pickleball,
+      ActivityKind.pubQuiz,
+      ActivityKind.dinner,
+      ActivityKind.singlesMixer,
+    },
+    riskControls: [
+      {{modules.guidedRotations.riskControls.1}},
+    ],
+  );
+
+  static const liveReveal = EventSuccessModule(
+    id: 'live_reveal',
+    title: {{modules.liveReveal.title.1}},
+    type: EventSuccessModuleType.liveReveal,
+    productLayer: EventSuccessProductLayer.liveReveal,
+    stage: EventSuccessStage.activity,
+    attendeePromise:
+        {{modules.liveReveal.attendeePromise.1}},
+    hostPromise:
+        {{modules.liveReveal.hostPromise.1}},
+    requiresLivePhoneUse: true,
+    recommendedFor: {
+      ActivityKind.pickleball,
+      ActivityKind.pubQuiz,
+      ActivityKind.dinner,
+      ActivityKind.singlesMixer,
+    },
+    setupSteps: [
+      {{modules.liveReveal.setupSteps.1}},
+      {{modules.liveReveal.setupSteps.2}},
+      {{modules.liveReveal.setupSteps.3}},
+    ],
+    riskControls: [
+      {{modules.liveReveal.riskControls.1}},
+      {{modules.liveReveal.riskControls.2}},
+    ],
+  );
+
+  static const compatibilityQuestionnaire = EventSuccessModule(
+    id: 'compatibility_questionnaire',
+    title: {{modules.compatibilityQuestionnaire.title.1}},
+    type: EventSuccessModuleType.compatibilityQuestionnaire,
+    productLayer: EventSuccessProductLayer.compatibility,
+    stage: EventSuccessStage.before,
+    attendeePromise: {{modules.compatibilityQuestionnaire.attendeePromise.1}},
+    hostPromise:
+        {{modules.compatibilityQuestionnaire.hostPromise.1}},
+    enabledByDefault: false,
+    setupSteps: [
+      {{modules.compatibilityQuestionnaire.setupSteps.1}},
+      {{modules.compatibilityQuestionnaire.setupSteps.2}},
+      {{modules.compatibilityQuestionnaire.setupSteps.3}},
+    ],
+    riskControls: [
+      {{modules.compatibilityQuestionnaire.riskControls.1}},
+      {{modules.compatibilityQuestionnaire.riskControls.2}},
+    ],
+  );
+
+  static const wingmanRequests = EventSuccessModule(
+    id: 'wingman_requests',
+    title: {{modules.wingmanRequests.title.1}},
+    type: EventSuccessModuleType.wingmanRequests,
+    productLayer: EventSuccessProductLayer.hostFacilitation,
+    stage: EventSuccessStage.mixing,
+    attendeePromise:
+        {{modules.wingmanRequests.attendeePromise.1}},
+    hostPromise:
+        {{modules.wingmanRequests.hostPromise.1}},
+    setupSteps: [
+      {{modules.wingmanRequests.setupSteps.1}},
+      {{modules.wingmanRequests.setupSteps.2}},
+      {{modules.wingmanRequests.setupSteps.3}},
+    ],
+    riskControls: [
+      {{modules.wingmanRequests.riskControls.1}},
+      {{modules.wingmanRequests.riskControls.2}},
+      {{modules.wingmanRequests.riskControls.3}},
+    ],
+  );
+
+  static const contextualOpeners = EventSuccessModule(
+    id: 'contextual_openers',
+    title: {{modules.contextualOpeners.title.1}},
+    type: EventSuccessModuleType.contextualOpeners,
+    productLayer: EventSuccessProductLayer.conversation,
+    stage: EventSuccessStage.after,
+    attendeePromise: {{modules.contextualOpeners.attendeePromise.1}},
+    hostPromise: {{modules.contextualOpeners.hostPromise.1}},
+    setupSteps: [
+      {{modules.contextualOpeners.setupSteps.1}},
+      {{modules.contextualOpeners.setupSteps.2}},
+    ],
+    riskControls: [
+      {{modules.contextualOpeners.riskControls.1}},
+    ],
+  );
+
+  static const decomposedFeedback = EventSuccessModule(
+    id: 'decomposed_feedback',
+    title: {{modules.decomposedFeedback.title.1}},
+    type: EventSuccessModuleType.decomposedFeedback,
+    productLayer: EventSuccessProductLayer.hostCoach,
+    stage: EventSuccessStage.after,
+    attendeePromise: {{modules.decomposedFeedback.attendeePromise.1}},
+    hostPromise:
+        {{modules.decomposedFeedback.hostPromise.1}},
+    setupSteps: [
+      {{modules.decomposedFeedback.setupSteps.1}},
+      {{modules.decomposedFeedback.setupSteps.2}},
+    ],
+  );
+
+  static const hostAnalytics = EventSuccessModule(
+    id: 'host_analytics',
+    title: {{modules.hostAnalytics.title.1}},
+    type: EventSuccessModuleType.hostAnalytics,
+    productLayer: EventSuccessProductLayer.hostCoach,
+    stage: EventSuccessStage.hostDebrief,
+    attendeePromise:
+        {{modules.hostAnalytics.attendeePromise.1}},
+    hostPromise:
+        {{modules.hostAnalytics.hostPromise.1}},
+    setupSteps: [
+      {{modules.hostAnalytics.setupSteps.1}},
+      {{modules.hostAnalytics.setupSteps.2}},
+      {{modules.hostAnalytics.setupSteps.3}},
+    ],
+  );
+
+  static const safetyControls = EventSuccessModule(
+    id: 'safety_controls',
+    title: {{modules.safetyControls.title.1}},
+    type: EventSuccessModuleType.safetyControls,
+    productLayer: EventSuccessProductLayer.safety,
+    stage: EventSuccessStage.before,
+    attendeePromise: {{modules.safetyControls.attendeePromise.1}},
+    hostPromise: {{modules.safetyControls.hostPromise.1}},
+    setupSteps: [
+      {{modules.safetyControls.setupSteps.1}},
+      {{modules.safetyControls.setupSteps.2}},
+      {{modules.safetyControls.setupSteps.3}},
+    ],
+    riskControls: [
+      {{modules.safetyControls.riskControls.1}},
+    ],
+  );
+
+  static const all = <EventSuccessModule>[
+    crowdBalance,
+    checkIn,
+    firstHelloCheckIn,
+    hostScript,
+    microPods,
+    socialMissions,
+    guidedRotations,
+    liveReveal,
+    compatibilityQuestionnaire,
+    wingmanRequests,
+    contextualOpeners,
+    decomposedFeedback,
+    hostAnalytics,
+    safetyControls,
+  ];
+
+  static Map<EventSuccessProductLayer, List<EventSuccessModule>>
+  get allByProductLayer {
+    final grouped = <EventSuccessProductLayer, List<EventSuccessModule>>{};
+    for (final layer in EventSuccessProductLayer.values) {
+      final modules = all
+          .where((module) => module.productLayer == layer)
+          .toList(growable: false);
+      if (modules.isNotEmpty) grouped[layer] = modules;
+    }
+    return grouped;
+  }
+
+  static EventSuccessModule byId(String id) => all.firstWhere(
+    (module) => module.id == id,
+    orElse: () => throw ArgumentError.value(id, 'id', 'Unknown module id'),
+  );
+}

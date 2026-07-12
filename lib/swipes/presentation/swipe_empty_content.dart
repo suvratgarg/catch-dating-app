@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -17,13 +18,15 @@ class SwipeEmptyContent {
   final IconData icon;
 }
 
-final defaultSwipeEmptyContent = SwipeEmptyContent(
-  title: 'No more attendees',
-  message: 'Join more events to meet new people',
-  icon: CatchIcons.directionsRunRounded,
-);
+SwipeEmptyContent defaultSwipeEmptyContent(AppLocalizations l10n) =>
+    SwipeEmptyContent(
+      title: l10n.swipesSwipeEmptyContentTitleNoMoreAttendees,
+      message: l10n.swipesSwipeEmptyContentMessageJoinMoreEventsTo,
+      icon: CatchIcons.directionsRunRounded,
+    );
 
 SwipeEmptyContent buildSwipeEmptyContent({
+  required AppLocalizations l10n,
   required Event? event,
   required UserProfile? currentUser,
   required EventParticipation? currentUserParticipation,
@@ -32,43 +35,43 @@ SwipeEmptyContent buildSwipeEmptyContent({
   final referenceNow = now ?? DateTime.now();
   if (event == null) {
     return SwipeEmptyContent(
-      title: 'Catch unavailable',
-      message: 'This event could not be found.',
+      title: l10n.swipesSwipeEmptyContentTitleCatchUnavailable,
+      message: l10n.swipesSwipeEmptyContentMessageThisEventCouldNot,
       icon: CatchIcons.searchOffRounded,
     );
   }
 
   if (currentUser == null) {
     return SwipeEmptyContent(
-      title: 'Sign in required',
-      message: 'Sign in again to catch fellow attendees.',
+      title: l10n.swipesSwipeEmptyContentTitleSignInRequired,
+      message: l10n.swipesSwipeEmptyContentMessageSignInAgainTo,
       icon: CatchIcons.lockOutlineRounded,
     );
   }
 
   if (currentUserParticipation?.status != EventParticipationStatus.attended) {
     return SwipeEmptyContent(
-      title: 'Catch unavailable',
-      message: 'You can only catch attendees from events you attended.',
+      title: l10n.swipesSwipeEmptyContentTitleCatchUnavailable,
+      message: l10n.swipesSwipeEmptyContentMessageYouCanOnlyCatch,
       icon: CatchIcons.verifiedUserOutlined,
     );
   }
 
   if (event.isUpcomingAt(referenceNow)) {
     return SwipeEmptyContent(
-      title: 'Event in progress',
-      message: 'Catches unlock for 24 hours after the event finishes.',
+      title: l10n.swipesSwipeEmptyContentTitleEventInProgress,
+      message: l10n.swipesSwipeEmptyContentMessageCatchesUnlockFor24,
       icon: CatchIcons.scheduleRounded,
     );
   }
 
   if (!hasOpenSwipeWindow(event, now: referenceNow)) {
     return SwipeEmptyContent(
-      title: 'Catch window closed',
-      message: 'This event is past the 24-hour catch window.',
+      title: l10n.swipesSwipeEmptyContentTitleCatchWindowClosed,
+      message: l10n.swipesSwipeEmptyContentMessageThisEventIsPast,
       icon: CatchIcons.hourglassDisabledRounded,
     );
   }
 
-  return defaultSwipeEmptyContent;
+  return defaultSwipeEmptyContent(l10n);
 }

@@ -1,4 +1,5 @@
 import {SectionHeader} from "../../../shared/site";
+import {activeMarket} from "@content/markets";
 import {
   ActionGroup,
   ButtonLink,
@@ -68,7 +69,7 @@ export function HostHeroSection() {
         </HostHeroCopy>
 
         <ProductShell variant="host-console" aria-label="Host console" reveal>
-          <HostConsoleHeader label="Host console" title="West Village mixer" />
+          <HostConsoleHeader label="Host console" title={activeMarket.exampleEvent.name} />
           <HostConsoleGrid items={hostConsoleSummaryItems} />
           <HostConsoleTimeline items={hostEvidenceMetrics} />
         </ProductShell>

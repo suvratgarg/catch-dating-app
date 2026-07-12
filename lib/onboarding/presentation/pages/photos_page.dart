@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page_state.dart';
@@ -43,7 +44,10 @@ class PhotosPage extends ConsumerWidget {
       if (state.uploadError != null) {
         final messenger = ScaffoldMessenger.of(context);
         messenger.clearSnackBars();
-        showCatchSnackBar(context, 'Upload failed. Please try again.');
+        showCatchSnackBar(
+          context,
+          context.l10n.onboardingPhotosPageVisiblecopyUploadFailedPleaseTry,
+        );
       }
     });
 
@@ -109,12 +113,12 @@ class OnboardingPhotosStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchButton(
-            label: 'Continue',
+            label: context.l10n.onboardingPhotosPageLabelContinue,
             onPressed: callbacks.onContinue,
             fullWidth: true,
             size: CatchButtonSize.lg,
           ),
-          if (state.continueHint case final continueHint?) ...[
+          if (state.continueHint(context.l10n) case final continueHint?) ...[
             gapH12,
             Text(
               continueHint,
@@ -144,7 +148,7 @@ class OnboardingPhotosStep extends StatelessWidget {
             gapW8,
             Expanded(
               child: Text(
-                state.supportingCopy,
+                state.supportingCopy(context.l10n),
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ),

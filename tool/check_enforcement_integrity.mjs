@@ -304,6 +304,9 @@ function evaluateSunsetSignal({signal, rule, root, toolsById, errors}) {
 }
 
 function baselineCountForSignal(baseline, countKey) {
+  if (countKey === "entries") {
+    return Array.isArray(baseline.entries) ? baseline.entries.length : null;
+  }
   if (countKey === "allowedFindings") {
     return Array.isArray(baseline.allowedFindings)
       ? baseline.allowedFindings.length

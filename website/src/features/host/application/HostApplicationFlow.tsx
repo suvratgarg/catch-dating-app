@@ -1,4 +1,4 @@
-import {cities} from "../../../shared/lib/cities";
+import {activeHostApplicationCityOptions} from "@content/markets";
 import {
   Button,
   ActionGroup,
@@ -97,7 +97,7 @@ export function HostApplicationFlow() {
                 onChange={(event) => updateDraft("city", event.currentTarget.value)}
                 required
               >
-                {cities.map((city) => (
+                {activeHostApplicationCityOptions.map((city) => (
                   <option key={city}>{city}</option>
                 ))}
               </SelectField>

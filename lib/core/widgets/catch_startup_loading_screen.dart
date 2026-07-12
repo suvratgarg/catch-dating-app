@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class CatchStartupLoadingScreen extends StatefulWidget {
@@ -58,7 +59,9 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
                 iconAsset,
                 width: CatchLayout.startupLogoExtent,
                 height: CatchLayout.startupLogoExtent,
-                semanticLabel: 'Catch',
+                semanticLabel: context
+                    .l10n
+                    .coreCatchStartupLoadingScreenSemanticlabelCatch,
               ),
             ),
             Center(
@@ -69,8 +72,10 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
                   switchInCurve: CatchMotion.standardCurve,
                   child: _showIndicator
                       ? SizedBox.square(
-                          key: const ValueKey<String>(
-                            'startup-loading-indicator',
+                          key: ValueKey<String>(
+                            context
+                                .l10n
+                                .coreCatchStartupLoadingScreenBodyStartupLoadingIndicator,
                           ),
                           dimension: CatchLayout.startupIndicatorExtent,
                           child: CatchLoadingIndicator(
@@ -78,8 +83,12 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
                             color: t.ink,
                           ),
                         )
-                      : const SizedBox.shrink(
-                          key: ValueKey<String>('startup-loading-delay'),
+                      : SizedBox.shrink(
+                          key: ValueKey<String>(
+                            context
+                                .l10n
+                                .coreCatchStartupLoadingScreenBodyStartupLoadingDelay,
+                          ),
                         ),
                 ),
               ),

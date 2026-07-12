@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
@@ -91,7 +92,13 @@ class PublicProfileScreen extends ConsumerWidget {
     ref.listen(PublicProfileController.blockUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
         if (profile != null) {
-          showCatchSnackBar(context, '${profile.name} has been blocked.');
+          showCatchSnackBar(
+            context,
+            context.l10n
+                .publicProfilePublicProfileScreenVisiblecopyNameHasBeenBlocked(
+                  name: profile.name,
+                ),
+          );
         }
         Navigator.of(context).maybePop();
       }
@@ -99,7 +106,12 @@ class PublicProfileScreen extends ConsumerWidget {
 
     ref.listen(PublicProfileController.reportUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
-        showCatchSnackBar(context, 'Report submitted.');
+        showCatchSnackBar(
+          context,
+          context
+              .l10n
+              .publicProfilePublicProfileScreenVisiblecopyReportSubmitted,
+        );
       }
     });
 
@@ -109,28 +121,44 @@ class PublicProfileScreen extends ConsumerWidget {
         mutation: PublicProfileController.reportUserMutation,
         child: Scaffold(
           appBar: CatchTopBar(
-            title: screenState.title,
+            title: screenState.title(context.l10n),
             actions: [
               if (screenState.showSafetyActions)
                 CatchTopBarMenuAction<String>(
-                  tooltip: 'Profile actions',
+                  tooltip: context
+                      .l10n
+                      .publicProfilePublicProfileScreenTooltipProfileActions,
                   enabled: screenState.enableSafetyActions,
                   onSelected: (value) {
-                    if (value == 'report') {
+                    if (value ==
+                        context
+                            .l10n
+                            .publicProfilePublicProfileScreenVisiblecopyReport) {
                       report(profile!);
-                    } else if (value == 'block') {
+                    } else if (value ==
+                        context
+                            .l10n
+                            .publicProfilePublicProfileScreenVisiblecopyBlock) {
                       confirmBlock(profile!);
                     }
                   },
                   items: [
                     CatchActionMenuItem(
-                      value: 'report',
-                      label: 'Report',
+                      value: context
+                          .l10n
+                          .publicProfilePublicProfileScreenVisiblecopyReport,
+                      label: context
+                          .l10n
+                          .publicProfilePublicProfileScreenLabelReport,
                       icon: CatchIcons.flagOutlined,
                     ),
                     CatchActionMenuItem(
-                      value: 'block',
-                      label: 'Block',
+                      value: context
+                          .l10n
+                          .publicProfilePublicProfileScreenVisiblecopyBlock,
+                      label: context
+                          .l10n
+                          .publicProfilePublicProfileScreenLabelBlock,
                       icon: CatchIcons.blockRounded,
                       isDestructive: true,
                     ),
@@ -175,8 +203,12 @@ class PublicProfileScreenBody extends StatelessWidget {
         return Center(
           child: CatchEmptyState(
             icon: CatchIcons.personOffOutlined,
-            title: 'Profile unavailable',
-            message: 'This profile is no longer available on Catch.',
+            title: context
+                .l10n
+                .publicProfilePublicProfileScreenTitleProfileUnavailable,
+            message: context
+                .l10n
+                .publicProfilePublicProfileScreenMessageThisProfileIsNo,
           ),
         );
       case PublicProfileRouteStatus.ready:
@@ -245,7 +277,10 @@ class PublicProfileReportSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchBottomSheetScaffold(
-      title: 'Report $profileName',
+      title: context.l10n
+          .publicProfilePublicProfileScreenTitleReportProfilename(
+            profileName: profileName,
+          ),
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s4,
         CatchSpacing.s3,
@@ -256,23 +291,38 @@ class PublicProfileReportSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           PublicProfileReportReasonTile(
-            label: 'Harassment or abuse',
-            value: 'harassment_or_abuse',
+            label: context
+                .l10n
+                .publicProfilePublicProfileScreenLabelHarassmentOrAbuse,
+            value: context
+                .l10n
+                .publicProfilePublicProfileScreenVisiblecopyHarassmentOrAbuse,
             onSelected: onReasonSelected,
           ),
           PublicProfileReportReasonTile(
-            label: 'Fake or misleading profile',
-            value: 'fake_or_misleading_profile',
+            label: context
+                .l10n
+                .publicProfilePublicProfileScreenLabelFakeOrMisleadingProfile,
+            value: context
+                .l10n
+                .publicProfilePublicProfileScreenVisiblecopyFakeOrMisleadingProfile,
             onSelected: onReasonSelected,
           ),
           PublicProfileReportReasonTile(
-            label: 'Inappropriate content',
-            value: 'inappropriate_content',
+            label: context
+                .l10n
+                .publicProfilePublicProfileScreenLabelInappropriateContent,
+            value: context
+                .l10n
+                .publicProfilePublicProfileScreenVisiblecopyInappropriateContent,
             onSelected: onReasonSelected,
           ),
           PublicProfileReportReasonTile(
-            label: 'Other safety concern',
-            value: 'other',
+            label: context
+                .l10n
+                .publicProfilePublicProfileScreenLabelOtherSafetyConcern,
+            value:
+                context.l10n.publicProfilePublicProfileScreenVisiblecopyOther,
             onSelected: onReasonSelected,
           ),
         ],

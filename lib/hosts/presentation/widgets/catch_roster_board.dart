@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 /// Maps a [CatchBadgeTone] to its functional colour for roster tiles.
@@ -327,7 +328,7 @@ class CatchRosterActionCell extends StatelessWidget {
                 icon: CatchIcons.eye,
                 color: t.ink2,
                 onTap: onProfile,
-                label: 'Open profile',
+                label: context.l10n.hostsCatchRosterBoardLabelOpenProfile,
               ),
               const SizedBox(width: CatchSpacing.micro6),
             ],
@@ -335,14 +336,14 @@ class CatchRosterActionCell extends StatelessWidget {
               icon: CatchIcons.check,
               color: t.success,
               onTap: onApprove,
-              label: 'Approve request',
+              label: context.l10n.hostsCatchRosterBoardLabelApproveRequest,
             ),
             const SizedBox(width: CatchSpacing.micro6),
             CatchRosterDecideTarget(
               icon: CatchIcons.close,
               color: t.danger,
               onTap: onDecline,
-              label: 'Decline request',
+              label: context.l10n.hostsCatchRosterBoardLabelDeclineRequest,
             ),
           ],
         ),

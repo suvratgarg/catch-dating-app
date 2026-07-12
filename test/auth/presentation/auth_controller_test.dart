@@ -117,10 +117,10 @@ void main() {
         await expectLater(
           container.read(authControllerProvider.notifier).sendOtp('123', '+91'),
           throwsA(
-            isA<StateError>().having(
-              (error) => error.message,
-              'message',
-              AuthInput.invalidPhoneNumberMessage,
+            isA<AuthInputException>().having(
+              (error) => error.issue,
+              'issue',
+              AuthInputIssue.invalidPhoneNumber,
             ),
           ),
         );
@@ -143,10 +143,10 @@ void main() {
               .read(authControllerProvider.notifier)
               .sendOtp('9999999999', '91'),
           throwsA(
-            isA<StateError>().having(
-              (error) => error.message,
-              'message',
-              AuthInput.invalidCountryCodeMessage,
+            isA<AuthInputException>().having(
+              (error) => error.issue,
+              'issue',
+              AuthInputIssue.invalidCountryCode,
             ),
           ),
         );
@@ -251,10 +251,10 @@ void main() {
       await expectLater(
         notifier.verifyOtp('12345a'),
         throwsA(
-          isA<StateError>().having(
-            (error) => error.message,
-            'message',
-            AuthInput.invalidOtpCodeMessage,
+          isA<AuthInputException>().having(
+            (error) => error.issue,
+            'issue',
+            AuthInputIssue.invalidOtpCode,
           ),
         ),
       );

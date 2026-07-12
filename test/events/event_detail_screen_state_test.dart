@@ -5,10 +5,13 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../clubs/clubs_test_helpers.dart' as clubs;
 import 'events_test_helpers.dart' as events;
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   group('EventDetail booking dock state', () {
@@ -17,6 +20,7 @@ void main() {
       final user = events.buildUser();
 
       final state = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
         event: event,
         userProfile: user,
         participation: null,
@@ -38,6 +42,7 @@ void main() {
       expect(state.isPrimaryActionEnabled, true);
 
       final unsupported = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
         event: event,
         userProfile: user,
         participation: null,
@@ -56,6 +61,7 @@ void main() {
       final event = events.buildEvent();
 
       final state = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
         event: event,
         userProfile: events.buildUser(),
         participation: null,
@@ -84,6 +90,7 @@ void main() {
       );
 
       final request = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
         event: event,
         userProfile: events.buildUser(),
         participation: null,
@@ -98,6 +105,7 @@ void main() {
       expect(request.useAccent, true);
 
       final gated = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
         event: event,
         userProfile: events.buildUser(runPreferencesVersion: 0),
         participation: null,
@@ -121,6 +129,7 @@ void main() {
       final expiresAt = now.add(const Duration(hours: 1));
 
       final state = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
         event: event,
         userProfile: events.buildUser(),
         participation: events.buildEventParticipation(
@@ -162,6 +171,7 @@ void main() {
       );
 
       final state = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
         event: event,
         userProfile: events.buildUser(),
         participation: events.buildEventParticipation(
@@ -186,6 +196,7 @@ void main() {
       final event = events.buildEvent(startTime: startTime, bookedCount: 1);
 
       final state = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
         event: event,
         userProfile: events.buildUser(),
         participation: events.buildEventParticipation(
@@ -434,6 +445,7 @@ void main() {
     test('maps missing, loading, and error host branches', () {
       expect(
         eventDetailHostStateFrom(
+          l10n: _l10n,
           clubState: const CatchAsyncState<Club?>.data(null),
           currentUid: 'runner-1',
           canMessageHost: true,
@@ -442,6 +454,7 @@ void main() {
       );
       expect(
         eventDetailHostStateFrom(
+          l10n: _l10n,
           clubState: const CatchAsyncState<Club?>.loading(),
           currentUid: 'runner-1',
           canMessageHost: true,
@@ -451,6 +464,7 @@ void main() {
 
       final error = StateError('club failed');
       final errored = eventDetailHostStateFrom(
+        l10n: _l10n,
         clubState: CatchAsyncState<Club?>.error(error),
         currentUid: 'runner-1',
         canMessageHost: true,
@@ -472,6 +486,7 @@ void main() {
       );
 
       final state = eventDetailHostStateFrom(
+        l10n: _l10n,
         clubState: CatchAsyncState<Club?>.data(club),
         currentUid: 'runner-1',
         canMessageHost: true,
@@ -492,6 +507,7 @@ void main() {
       ]);
 
       final self = eventDetailHostStateFrom(
+        l10n: _l10n,
         clubState: CatchAsyncState<Club?>.data(club),
         currentUid: 'host-1',
         canMessageHost: true,

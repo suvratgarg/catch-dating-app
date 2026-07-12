@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class WelcomePage extends ConsumerStatefulWidget {
   const WelcomePage({super.key, this.playIntro = true});
@@ -57,9 +58,9 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
     _logShown(
       renderLandedImmediately
           ? MediaQuery.of(context).disableAnimations
-                ? 'reduced_motion'
-                : 'direct'
-          : 'animated',
+                ? context.l10n.onboardingWelcomePageVisiblecopyReducedMotion
+                : context.l10n.onboardingWelcomePageVisiblecopyDirect
+          : context.l10n.onboardingWelcomePageVisiblecopyAnimated,
     );
     if (renderLandedImmediately) {
       _land(immediate: true, notify: _started);
@@ -138,7 +139,10 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
         .read(appAnalyticsProvider)
         .logEvent(
           AnalyticsEvents.welcomeSplashSkipped,
-          parameters: {AnalyticsParameters.splashMotion: 'animated'},
+          parameters: {
+            AnalyticsParameters.splashMotion:
+                context.l10n.onboardingWelcomePageVisiblecopyAnimated,
+          },
         );
   }
 
@@ -165,7 +169,9 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
         color: d.bg,
         child: Semantics(
           button: !_landed,
-          label: _landed ? null : 'Skip welcome animation',
+          label: _landed
+              ? null
+              : context.l10n.onboardingWelcomePageLabelSkipWelcomeAnimation,
           onTap: _landed ? null : _skip,
           child: GestureDetector(
             key: WelcomePage.splashTapTargetKey,
@@ -202,11 +208,19 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                           landingValue: _landingController.value,
                           landed: _landed,
                           onContinue: () {
-                            _logCta('continue_phone');
+                            _logCta(
+                              context
+                                  .l10n
+                                  .onboardingWelcomePageVisiblecopyContinuePhone,
+                            );
                             context.go(_authLocation(context));
                           },
                           onExplore: () {
-                            _logCta('see_whats_on');
+                            _logCta(
+                              context
+                                  .l10n
+                                  .onboardingWelcomePageVisiblecopySeeWhatsOn,
+                            );
                             context.goNamed(
                               app_router.Routes.exploreScreen.name,
                             );
@@ -292,7 +306,13 @@ class WelcomeScene extends StatelessWidget {
         Positioned(
           left: CatchLayout.welcomeReelCatchLeft,
           top: catchTop,
-          child: Text('Catch', style: _WelcomeType.headline(tokens.ink)),
+          child: Text(
+            context.l10n.onboardingWelcomePageTextCatch,
+            style: CatchTextStyles.welcomeReelHeadline(
+              context,
+              color: tokens.ink,
+            ),
+          ),
         ),
         if (landed) ...[
           Positioned(
@@ -303,10 +323,13 @@ class WelcomeScene extends StatelessWidget {
               landingValue: landingValue,
               order: 0,
               child: Text(
-                'Show up to something you\'d do anyway \u2014 a long run, '
-                'a long table, trivia night. Match only with the people who '
-                'were actually there.',
-                style: _WelcomeType.body(tokens.ink),
+                context.l10n.onboardingWelcomePageTextShowUpToSomething,
+                style: CatchTextStyles.welcomeIntroBody(
+                  context,
+                  color: tokens.ink.withValues(
+                    alpha: CatchOpacity.welcomeIntroBody,
+                  ),
+                ),
               ),
             ),
           ),
@@ -323,7 +346,9 @@ class WelcomeScene extends StatelessWidget {
                     landingValue: landingValue,
                     order: 1,
                     child: CatchButton(
-                      label: 'Continue with phone',
+                      label: context
+                          .l10n
+                          .onboardingWelcomePageLabelContinueWithPhone,
                       onPressed: onContinue,
                       size: CatchButtonSize.lg,
                       fullWidth: true,
@@ -336,7 +361,7 @@ class WelcomeScene extends StatelessWidget {
                     landingValue: landingValue,
                     order: 2,
                     child: CatchButton(
-                      label: 'See what\'s on',
+                      label: context.l10n.onboardingWelcomePageLabelSeeWhatSOn,
                       onPressed: onExplore,
                       variant: CatchButtonVariant.secondary,
                       size: CatchButtonSize.lg,
@@ -488,12 +513,13 @@ class ReelRow extends StatelessWidget {
         ? dimOpacity * (1 - nonFocusFade)
         : dimOpacity;
     final periodOpacity = inFocus ? 1.0 : 0.0;
-    final style = _WelcomeType.headline(textColor).copyWith(
-      decoration: inFocus ? TextDecoration.underline : TextDecoration.none,
-      decorationColor: pigment,
-      decorationThickness: 4,
-      decorationStyle: TextDecorationStyle.solid,
-    );
+    final style = CatchTextStyles.welcomeReelHeadline(context, color: textColor)
+        .copyWith(
+          decoration: inFocus ? TextDecoration.underline : TextDecoration.none,
+          decorationColor: pigment,
+          decorationThickness: 4,
+          decorationStyle: TextDecorationStyle.solid,
+        );
 
     return SizedBox(
       height: CatchLayout.welcomeReelRowHeight,
@@ -591,22 +617,6 @@ class WelcomePhrase {
   final ActivityKind activityKind;
 }
 
-abstract final class _WelcomeType {
-  static TextStyle headline(Color color) => CatchFonts.voice(
-    fontSize: 36,
-    height: 1.02,
-    color: color,
-    letterSpacing: -0.5,
-  );
-
-  static TextStyle body(Color color) => CatchFonts.voice(
-    fontSize: 15,
-    height: 1.48,
-    color: color.withValues(alpha: CatchOpacity.welcomeIntroBody),
-    fontWeight: FontWeight.w400,
-  );
-}
-
 double _durationProgress(double value, Duration duration) {
   final end =
       duration.inMilliseconds / CatchMotion.welcomeLandingReveal.inMilliseconds;
@@ -631,10 +641,17 @@ const welcomePhraseBank = <WelcomePhrase>[
 const welcomeLandingIndex = 11;
 
 String _authLocation(BuildContext context) {
-  final from = _safeFrom(GoRouterState.of(context).uri.queryParameters['from']);
-  if (from == null) return '/auth';
+  final from = _safeFrom(
+    GoRouterState.of(
+      context,
+    ).uri.queryParameters[context.l10n.onboardingWelcomePageVisiblecopyFrom],
+  );
+  if (from == null) return context.l10n.onboardingWelcomePageVisiblecopyAuth;
 
-  return Uri(path: '/auth', queryParameters: {'from': from}).toString();
+  return Uri(
+    path: context.l10n.onboardingWelcomePageVisiblecopyAuth,
+    queryParameters: {'from': from},
+  ).toString();
 }
 
 String? _safeFrom(String? from) {

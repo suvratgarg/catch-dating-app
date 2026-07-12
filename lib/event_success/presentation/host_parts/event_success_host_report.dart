@@ -31,9 +31,12 @@ class ReportTab extends StatelessWidget {
         children: [
           NoticeCard(
             icon: CatchIcons.insightsOutlined,
-            title: 'No event report yet',
-            body:
-                'The live event guide was not saved for this event, so there is no post-event report to review. Attendance reporting remains available on this screen.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostReportTitleNoEventReportYet,
+            body: context
+                .l10n
+                .eventSuccessEventSuccessHostReportBodyTheLiveEventGuide,
           ),
         ],
       );
@@ -50,9 +53,12 @@ class ReportTab extends StatelessWidget {
         children: [
           NoticeCard(
             icon: CatchIcons.insightsOutlined,
-            title: 'Post-event insights are off',
-            body:
-                'This event guide does not include post-event coaching for the host.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostReportTitlePostEventInsightsAre,
+            body: context
+                .l10n
+                .eventSuccessEventSuccessHostReportBodyThisEventGuideDoes,
           ),
         ],
       );
@@ -65,10 +71,12 @@ class ReportTab extends StatelessWidget {
         children: [
           NoticeCard(
             icon: CatchIcons.insightsOutlined,
-            title: 'Waiting for attendee feedback',
-            body:
-                'The post-event report appears once checked-in attendees '
-                'share feedback. There is no signal to summarize yet.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback,
+            body: context
+                .l10n
+                .eventSuccessEventSuccessHostReportBodyThePostEventReport,
           ),
         ],
       );
@@ -89,10 +97,16 @@ class ReportTab extends StatelessWidget {
       children: [
         NoticeCard(
           icon: CatchIcons.assignmentTurnedInOutlined,
-          title:
-              '$feedbackCount attendee feedback response${feedbackCount == 1 ? '' : 's'}',
-          body:
-              'The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests. Private notes, safety concerns, and individual opener choices are not shown to hosts.',
+          title: context.l10n
+              .eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse(
+                feedbackCount: feedbackCount,
+                value2: feedbackCount == 1
+                    ? ''
+                    : context.l10n.eventSuccessEventSuccessHostReportTitleS,
+              ),
+          body: context
+              .l10n
+              .eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance,
         ),
         gapH16,
         HostReportSignalGrid(brief: brief),
@@ -130,12 +144,16 @@ class HostReportSignalGrid extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'How reliable is this report?',
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessHostReportTextHowReliableIsThis,
                       style: CatchTextStyles.sectionTitle(context),
                     ),
                     gapH4,
                     Text(
-                      'Shows whether the report is based on enough live data to trust.',
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessHostReportTextShowsWhetherTheReport,
                       style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
@@ -149,23 +167,33 @@ class HostReportSignalGrid extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               EventSuccessMetricPill(
-                label: 'Feedback',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelFeedback,
                 value: scorecard.feedbackResponseRate,
               ),
               EventSuccessMetricPill(
-                label: 'Caught someone',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelCaughtSomeone,
                 value: scorecard.caughtSomeoneRate,
               ),
               EventSuccessMetricPill(
-                label: 'People included',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelPeopleIncluded,
                 value: scorecard.assignmentCoverageRate,
               ),
               EventSuccessMetricPill(
-                label: 'Opted out',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelOptedOut,
                 value: scorecard.assignmentOptOutRate,
               ),
               EventSuccessMetricPill(
-                label: 'Wingman help',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelWingmanHelp,
                 value: scorecard.wingmanRequestRate,
               ),
             ],
@@ -176,28 +204,48 @@ class HostReportSignalGrid extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               CatchBadge(
-                label:
-                    '${scorecard.feedbackResponseCount}/${scorecard.checkedInCount} feedback',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback(
+                      feedbackResponseCount: scorecard.feedbackResponseCount,
+                      checkedInCount: scorecard.checkedInCount,
+                    ),
                 icon: CatchIcons.rateReviewOutlined,
               ),
               CatchBadge(
-                label: '${scorecard.attendeesWhoCaughtSomeone} caught someone',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone(
+                      attendeesWhoCaughtSomeone:
+                          scorecard.attendeesWhoCaughtSomeone,
+                    ),
                 icon: CatchIcons.favoriteOutlineRounded,
               ),
               CatchBadge(
-                label: '${scorecard.catchSentCount} catches sent',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelCatchsentcountCatchesSent(
+                      catchSentCount: scorecard.catchSentCount,
+                    ),
                 icon: CatchIcons.favoriteRounded,
               ),
               CatchBadge(
-                label: '${scorecard.assignmentParticipantCount} assigned',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned(
+                      assignmentParticipantCount:
+                          scorecard.assignmentParticipantCount,
+                    ),
                 icon: CatchIcons.groups2Outlined,
               ),
               CatchBadge(
-                label: '${scorecard.assignmentOptOutCount} opted out',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut(
+                      assignmentOptOutCount: scorecard.assignmentOptOutCount,
+                    ),
                 icon: CatchIcons.visibilityOffOutlined,
               ),
               CatchBadge(
-                label: '${scorecard.wingmanRequestCount} host-help requests',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests(
+                      wingmanRequestCount: scorecard.wingmanRequestCount,
+                    ),
                 icon: CatchIcons.volunteerActivismOutlined,
               ),
             ],
@@ -233,7 +281,9 @@ class HostFunnelSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Event funnel',
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessHostReportTextEventFunnel,
                       style: CatchTextStyles.sectionTitle(context),
                     ),
                     gapH4,
@@ -252,23 +302,33 @@ class HostFunnelSummary extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               EventSuccessMetricPill(
-                label: 'Demand to booked',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelDemandToBooked,
                 value: funnel.demandConversionRate,
               ),
               EventSuccessMetricPill(
-                label: 'Requests approved',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelRequestsApproved,
                 value: funnel.requestApprovalRate,
               ),
               EventSuccessMetricPill(
-                label: 'Offers accepted',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelOffersAccepted,
                 value: funnel.waitlistOfferAcceptanceRate,
               ),
               EventSuccessMetricPill(
-                label: 'Payment complete',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelPaymentComplete,
                 value: funnel.paymentCompletionRate,
               ),
               EventSuccessMetricPill(
-                label: 'Repeat attendees',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostReportLabelRepeatAttendees,
                 value: funnel.repeatAttendeeRate,
               ),
             ],
@@ -279,27 +339,45 @@ class HostFunnelSummary extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               CatchBadge(
-                label: '${funnel.inviteOpenCount} invite opens',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelInviteopencountInviteOpens(
+                      inviteOpenCount: funnel.inviteOpenCount,
+                    ),
                 icon: CatchIcons.linkRounded,
               ),
               CatchBadge(
-                label: '${funnel.totalDemandCount} people in demand',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand(
+                      totalDemandCount: funnel.totalDemandCount,
+                    ),
                 icon: CatchIcons.personAddAlt1Rounded,
               ),
               CatchBadge(
-                label: '${funnel.waitlistJoinCount} waitlisted',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted(
+                      waitlistJoinCount: funnel.waitlistJoinCount,
+                    ),
                 icon: CatchIcons.hourglassEmptyRounded,
               ),
               CatchBadge(
-                label: '${funnel.paymentCompletedCount} paid',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid(
+                      paymentCompletedCount: funnel.paymentCompletedCount,
+                    ),
                 icon: CatchIcons.paymentsOutlined,
               ),
               CatchBadge(
-                label: '${funnel.noShowCount} no-show',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelNoshowcountNoShow(
+                      noShowCount: funnel.noShowCount,
+                    ),
                 icon: CatchIcons.visibilityOffOutlined,
               ),
               CatchBadge(
-                label: '${funnel.chatStartedCount} chats started',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted(
+                      chatStartedCount: funnel.chatStartedCount,
+                    ),
                 icon: CatchIcons.chatBubbleOutlineRounded,
               ),
             ],

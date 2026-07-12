@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_state.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_view_model.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -20,7 +21,7 @@ void main() {
     );
 
     expect(state.status, PublicProfileRouteStatus.loading);
-    expect(state.title, 'Profile');
+    expect(state.title(AppLocalizationsEn()), 'Profile');
     expect(state.profile, isNull);
     expect(state.viewerProfileForSurface, isNull);
     expect(state.showSafetyActions, isFalse);
@@ -44,7 +45,7 @@ void main() {
 
       expect(state.status, PublicProfileRouteStatus.ready);
       expect(state.profile, same(initialProfile));
-      expect(state.title, 'Riya');
+      expect(state.title(AppLocalizationsEn()), 'Riya');
       expect(state.isInitialProfileFallback, isTrue);
       expect(state.viewerProfileForSurface, same(viewer));
       expect(state.sharedRunTitle, 'Sundowner 5K');

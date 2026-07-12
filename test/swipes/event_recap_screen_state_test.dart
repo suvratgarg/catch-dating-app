@@ -1,10 +1,13 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   group('EventRecapScreenState', () {
@@ -110,6 +113,7 @@ EventRecapScreenState _state({
   DateTime? now,
 }) {
   return buildEventRecapScreenState(
+    l10n: _l10n,
     eventId: eventId,
     viewModel: viewModel,
     rosterProfiles: rosterProfiles,

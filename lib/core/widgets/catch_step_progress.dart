@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class CatchStepProgress extends StatelessWidget {
   const CatchStepProgress({
@@ -41,7 +42,10 @@ class CatchStepProgress extends StatelessWidget {
                 const Spacer(),
               if (showCounter)
                 Text(
-                  '${clampedStep + 1}/$totalSteps',
+                  context.l10n.coreCatchStepProgressTextValue1Totalsteps(
+                    value1: clampedStep + 1,
+                    totalSteps: totalSteps,
+                  ),
                   style: CatchTextStyles.labelL(context, color: t.ink2),
                 ),
             ],

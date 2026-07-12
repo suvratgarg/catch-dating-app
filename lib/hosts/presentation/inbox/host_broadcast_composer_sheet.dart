@@ -15,6 +15,7 @@ import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,26 +26,37 @@ typedef HostBroadcastSendAction = HostInboxBroadcastSendOperation;
 enum HostBroadcastTemplate { reminder, meetingPoint, change }
 
 extension HostBroadcastTemplateX on HostBroadcastTemplate {
-  String get label => switch (this) {
-    HostBroadcastTemplate.reminder => 'Reminder',
-    HostBroadcastTemplate.meetingPoint => 'Meeting point',
-    HostBroadcastTemplate.change => 'Change',
+  String label(AppLocalizations l10n) => switch (this) {
+    HostBroadcastTemplate.reminder =>
+      l10n.hostsHostBroadcastComposerSheetLabelReminder,
+    HostBroadcastTemplate.meetingPoint =>
+      l10n.hostsHostBroadcastComposerSheetLabelMeetingPoint,
+    HostBroadcastTemplate.change =>
+      l10n.hostsHostBroadcastComposerSheetLabelChange,
   };
 
-  String get description => switch (this) {
+  String description(AppLocalizations l10n) => switch (this) {
     HostBroadcastTemplate.reminder =>
-      'Confirm timing and help everyone arrive ready.',
+      l10n.hostsHostBroadcastComposerSheetDescriptionConfirmTimingAndHelp,
     HostBroadcastTemplate.meetingPoint =>
-      'Share arrival notes, parking, or table details.',
-    HostBroadcastTemplate.change => 'Call out an important update to the plan.',
+      l10n.hostsHostBroadcastComposerSheetDescriptionShareArrivalNotesParking,
+    HostBroadcastTemplate.change =>
+      l10n.hostsHostBroadcastComposerSheetDescriptionCallOutAnImportant,
   };
 
-  String bodyFor(Event event) => switch (this) {
+  String bodyFor(Event event, AppLocalizations l10n) => switch (this) {
     HostBroadcastTemplate.reminder =>
-      'Reminder for ${event.title}: doors open shortly before the start. See you there!',
+      l10n.hostsHostBroadcastComposerSheetBodyforReminderForTitleDoors(
+        title: event.title,
+      ),
     HostBroadcastTemplate.meetingPoint =>
-      'We are meeting at ${event.locationName}. Please arrive a few minutes early.',
-    HostBroadcastTemplate.change => 'Quick update for ${event.title}: ',
+      l10n.hostsHostBroadcastComposerSheetBodyforWeAreMeetingAt(
+        locationName: event.locationName,
+      ),
+    HostBroadcastTemplate.change =>
+      l10n.hostsHostBroadcastComposerSheetBodyforQuickUpdateForTitle(
+        title: event.title,
+      ),
   };
 }
 
@@ -81,6 +93,7 @@ class _HostBroadcastComposerSheetState
   late EventBroadcastAudience _audience;
   HostBroadcastTemplate? _template;
   late String _requestId;
+  bool _seededInitialTemplate = false;
 
   @override
   void initState() {
@@ -90,10 +103,17 @@ class _HostBroadcastComposerSheetState
         ? EventBroadcastAudience.booked
         : EventBroadcastAudience.prospective;
     _template = widget.initialTemplate;
-    if (_template case final template?) {
-      _bodyController.text = template.bodyFor(widget.event);
-    }
     _requestId = _generateRequestId();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_seededInitialTemplate) return;
+    _seededInitialTemplate = true;
+    if (_template case final template?) {
+      _bodyController.text = template.bodyFor(widget.event, context.l10n);
+    }
   }
 
   @override
@@ -118,29 +138,42 @@ class _HostBroadcastComposerSheetState
       top: false,
       child: SingleChildScrollView(
         child: CatchBottomSheetScaffold(
-          title: 'New broadcast',
+          title: context.l10n.hostsHostBroadcastComposerSheetTitleNewBroadcast,
           subtitle: widget.event.title,
           keyboardSafe: true,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Audience', style: CatchTextStyles.fieldRowTitle(context)),
+              Text(
+                context.l10n.hostsHostBroadcastComposerSheetTextAudience,
+                style: CatchTextStyles.fieldRowTitle(context),
+              ),
               gapH8,
               CatchOptionGroup<EventBroadcastAudience>(
                 options: [
                   CatchOption(
                     value: EventBroadcastAudience.booked,
-                    label: 'Booked · ${widget.bookedCount}',
+                    label: context.l10n
+                        .hostsHostBroadcastComposerSheetLabelBookedBookedcount(
+                          bookedCount: widget.bookedCount,
+                        ),
                   ),
                   CatchOption(
                     value: EventBroadcastAudience.prospective,
-                    label: 'Waitlist · ${widget.prospectiveCount}',
+                    label: context.l10n
+                        .hostsHostBroadcastComposerSheetLabelWaitlistProspectivecount(
+                          prospectiveCount: widget.prospectiveCount,
+                        ),
                   ),
                   CatchOption(
                     value: EventBroadcastAudience.everyone,
-                    label:
-                        'Everyone · ${_recipientCount(EventBroadcastAudience.everyone)}',
+                    label: context.l10n
+                        .hostsHostBroadcastComposerSheetLabelEveryoneRecipientcount(
+                          recipientCount: _recipientCount(
+                            EventBroadcastAudience.everyone,
+                          ),
+                        ),
                   ),
                 ],
                 selected: _audience,
@@ -148,12 +181,15 @@ class _HostBroadcastComposerSheetState
                 onChanged: mutation.isPending ? null : _selectAudience,
               ),
               gapH20,
-              Text('Template', style: CatchTextStyles.fieldRowTitle(context)),
+              Text(
+                context.l10n.hostsHostBroadcastComposerSheetTextTemplate,
+                style: CatchTextStyles.fieldRowTitle(context),
+              ),
               gapH8,
               for (final template in HostBroadcastTemplate.values) ...[
                 CatchOptionCard(
-                  title: template.label,
-                  description: template.description,
+                  title: template.label(context.l10n),
+                  description: template.description(context.l10n),
                   selected: _template == template,
                   onTap: mutation.isPending
                       ? null
@@ -163,9 +199,11 @@ class _HostBroadcastComposerSheetState
               ],
               gapH20,
               CatchField.input(
-                title: 'Message',
+                title: context.l10n.hostsHostBroadcastComposerSheetTitleMessage,
                 controller: _bodyController,
-                placeholder: 'Write a clear update for attendees',
+                placeholder: context
+                    .l10n
+                    .hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate,
                 minLines: 3,
                 maxLines: 5,
                 enabled: !mutation.isPending,
@@ -176,14 +214,18 @@ class _HostBroadcastComposerSheetState
               if (!_sendingEnabled) ...[
                 gapH12,
                 Text(
-                  'Sending stays off in this build until the production callable passes the release preflight.',
+                  context
+                      .l10n
+                      .hostsHostBroadcastComposerSheetTextSendingStaysOffIn,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
               if (recipientCount == 0) ...[
                 gapH12,
                 Text(
-                  'This audience has no eligible recipients yet.',
+                  context
+                      .l10n
+                      .hostsHostBroadcastComposerSheetTextThisAudienceHasNo,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
@@ -198,8 +240,13 @@ class _HostBroadcastComposerSheetState
               gapH20,
               CatchButton(
                 label: recipientCount == 1
-                    ? 'Send to 1 person'
-                    : 'Send to $recipientCount people',
+                    ? context
+                          .l10n
+                          .hostsHostBroadcastComposerSheetLabelSendTo1Person
+                    : context.l10n
+                          .hostsHostBroadcastComposerSheetLabelSendToRecipientcountPeople(
+                            recipientCount: recipientCount,
+                          ),
                 onPressed: enabled ? _send : null,
                 isLoading: mutation.isPending,
                 fullWidth: true,
@@ -229,7 +276,7 @@ class _HostBroadcastComposerSheetState
   void _selectTemplate(HostBroadcastTemplate template) {
     setState(() {
       _template = template;
-      _bodyController.text = template.bodyFor(widget.event);
+      _bodyController.text = template.bodyFor(widget.event, context.l10n);
       _bodyController.selection = TextSelection.collapsed(
         offset: _bodyController.text.length,
       );

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class ProfileInlineRangeEditor extends ConsumerStatefulWidget {
   const ProfileInlineRangeEditor({
@@ -106,7 +107,10 @@ class _ProfileInlineRangeEditorState
   @override
   Widget build(BuildContext context) {
     final body = widget.isExpanded
-        ? '${widget.labelText(_range.start)} - ${widget.labelText(_range.end)}'
+        ? context.l10n.userProfileInlineEditorRangeBodyLabeltextLabeltext2(
+            labelText: widget.labelText(_range.start),
+            labelText2: widget.labelText(_range.end),
+          )
         : widget.value;
     return CatchField.actions(
       icon: widget.icon,
@@ -133,6 +137,10 @@ class _ProfileInlineRangeEditorState
   String? _errorMessage() {
     final error = saveError;
     if (error == null) return null;
-    return appErrorMessage(error, context: AppErrorContext.profile);
+    return appErrorMessage(
+      error,
+      l10n: context.l10n,
+      context: AppErrorContext.profile,
+    );
   }
 }

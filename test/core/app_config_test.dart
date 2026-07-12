@@ -16,6 +16,13 @@ void main() {
       expect(AppConfig.appRole, AppRole.host);
       expect(AppConfig.environment, AppEnvironment.prod);
       expect(AppConfig.appTitle, 'Catch Host');
+      expect(
+        AppConfig.appTitleFor(
+          consumerTitle: 'Consumer title',
+          hostTitle: 'Host title',
+        ),
+        'Host title',
+      );
     },
   );
 

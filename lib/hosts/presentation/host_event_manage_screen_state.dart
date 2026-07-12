@@ -7,6 +7,7 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 enum HostEventManageSection { setup, guests, live, report }
 
@@ -155,6 +156,7 @@ class HostPrivateLinkActionState {
   });
 
   factory HostPrivateLinkActionState.resolve({
+    required AppLocalizations l10n,
     required CatchAsyncState<EventPrivateAccess?>? accessState,
     required CatchAsyncState<List<EventInviteLink>>? inviteLinksState,
     required String? inviteLink,
@@ -165,6 +167,7 @@ class HostPrivateLinkActionState {
       inviteCode: inviteCode,
       inviteLink: inviteLink,
       shareDetail: hostPrivateShareDetail(
+        l10n: l10n,
         accessState: accessState,
         inviteLinksState: inviteLinksState,
         sharePending: sharePending,
@@ -188,12 +191,14 @@ class HostPrivateAccessDisplayState {
   });
 
   factory HostPrivateAccessDisplayState.resolve({
+    required AppLocalizations l10n,
     required EventPrivateAccess? access,
     required CatchAsyncState<List<EventInviteLink>>? inviteLinksState,
     required String? inviteLink,
     required bool sharePending,
   }) {
     final linkAction = HostPrivateLinkActionState.resolve(
+      l10n: l10n,
       accessState: CatchAsyncState<EventPrivateAccess?>.data(access),
       inviteLinksState: inviteLinksState,
       inviteLink: inviteLink,
@@ -201,8 +206,8 @@ class HostPrivateAccessDisplayState {
     );
     return HostPrivateAccessDisplayState(
       description: linkAction.hasInviteCode
-          ? 'This event can stay listed; only people with this code or private link can book.'
-          : 'This event requires an invite, but no host-readable access code was found.',
+          ? l10n.hostsHostEventManageScreenStateDescriptionThisEventCanStay
+          : l10n.hostsHostEventManageScreenStateDescriptionThisEventRequiresAn,
       linkAction: linkAction,
     );
   }
@@ -313,7 +318,7 @@ class HostReportSummaryDisplayState {
     required this.checkedInCount,
     required this.noShowCount,
     required this.waitlistCount,
-    required this.summary,
+    required this.currencyCode,
   });
 
   factory HostReportSummaryDisplayState.resolve({
@@ -330,8 +335,7 @@ class HostReportSummaryDisplayState {
       checkedInCount: checkedInCount,
       noShowCount: noShowCount,
       waitlistCount: waitlistCount,
-      summary:
-          '${EventFormatters.priceInPaise(grossEstimateInPaise, currencyCode: currencyCode)} gross estimate · $checkedInCount attended · $noShowCount no-shows · $waitlistCount waitlisted.',
+      currencyCode: currencyCode,
     );
   }
 
@@ -339,7 +343,18 @@ class HostReportSummaryDisplayState {
   final int checkedInCount;
   final int noShowCount;
   final int waitlistCount;
-  final String summary;
+  final String currencyCode;
+
+  String summary(AppLocalizations l10n) => l10n
+      .hostsHostEventManageScreenStateVisiblecopyPriceinpaiseGrossEstimateCheckedincount(
+        priceInPaise: EventFormatters.priceInPaise(
+          grossEstimateInPaise,
+          currencyCode: currencyCode,
+        ),
+        checkedInCount: checkedInCount,
+        noShowCount: noShowCount,
+        waitlistCount: waitlistCount,
+      );
 }
 
 enum HostParticipantProfilesLookupStatus { ready, loading, error }
@@ -504,6 +519,7 @@ class HostRosterDisplayState {
        offerableWaitlistIds = List.unmodifiable(offerableWaitlistIds);
 
   factory HostRosterDisplayState.setup({
+    required AppLocalizations l10n,
     required bool usesRequestApproval,
     required List<String> attendeeIds,
     required List<String> waitlistedIds,
@@ -535,13 +551,13 @@ class HostRosterDisplayState {
     final filters = [
       HostRosterFilterSpec(
         filter: HostRosterFilter.all,
-        label: 'All',
+        label: l10n.hostsHostEventManageScreenStateLabelAll,
         value: allIds.length,
         tone: CatchBadgeTone.solid,
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.booked,
-        label: 'Booked',
+        label: l10n.hostsHostEventManageScreenStateLabelBooked,
         value: bookedIds.length,
         tone: CatchBadgeTone.success,
       ),
@@ -549,7 +565,9 @@ class HostRosterDisplayState {
         filter: usesRequestApproval
             ? HostRosterFilter.requests
             : HostRosterFilter.waitlist,
-        label: usesRequestApproval ? 'Requests' : 'Waitlist',
+        label: usesRequestApproval
+            ? l10n.hostsHostEventManageScreenStateLabelRequests
+            : l10n.hostsHostEventManageScreenStateLabelWaitlist,
         value: waitlistCount,
         tone: usesRequestApproval
             ? CatchBadgeTone.brand
@@ -557,7 +575,7 @@ class HostRosterDisplayState {
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.slots,
-        label: 'Slots',
+        label: l10n.hostsHostEventManageScreenStateLabelSlots,
         value: remainingSlots,
         tone: CatchBadgeTone.neutral,
       ),
@@ -583,19 +601,20 @@ class HostRosterDisplayState {
       offerableWaitlistIds: offerableWaitlistIds,
       bulkOfferCount: bulkOfferCount,
       emptyTitle: hasSearch
-          ? 'No matches'
+          ? l10n.hostsHostEventManageScreenStateEmptytitleNoMatches
           : activeFilter == HostRosterFilter.slots
-          ? 'Open slots are not people'
-          : 'No participants yet',
+          ? l10n.hostsHostEventManageScreenStateEmptytitleOpenSlotsAreNot
+          : l10n.hostsHostEventManageScreenStateEmptytitleNoParticipantsYet,
       emptyMessage: hasSearch
-          ? 'No people match this search.'
+          ? l10n.hostsHostEventManageScreenStateVisiblecopyNoPeopleMatchThis
           : activeFilter == HostRosterFilter.slots
-          ? 'Slots show capacity left after booked people. New people appear here once they book or request access.'
-          : 'Booked and waitlisted people will appear here.',
+          ? l10n.hostsHostEventManageScreenStateVisiblecopySlotsShowCapacityLeft
+          : l10n.hostsHostEventManageScreenStateVisiblecopyBookedAndWaitlistedPeople,
     );
   }
 
   factory HostRosterDisplayState.live({
+    required AppLocalizations l10n,
     required bool usesRequestApproval,
     required List<String> attendeeIds,
     required Set<String> attendedIds,
@@ -632,19 +651,19 @@ class HostRosterDisplayState {
     final filters = [
       HostRosterFilterSpec(
         filter: HostRosterFilter.all,
-        label: 'All',
+        label: l10n.hostsHostEventManageScreenStateLabelAll,
         value: allBaseIds.length,
         tone: CatchBadgeTone.solid,
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.due,
-        label: 'Due',
+        label: l10n.hostsHostEventManageScreenStateLabelDue,
         value: needsCheckInBaseIds.length,
         tone: CatchBadgeTone.brand,
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.checkedIn,
-        label: 'In',
+        label: l10n.hostsHostEventManageScreenStateLabelIn,
         value: checkedInBaseIds.length,
         tone: CatchBadgeTone.success,
       ),
@@ -652,7 +671,9 @@ class HostRosterDisplayState {
         filter: usesRequestApproval
             ? HostRosterFilter.requests
             : HostRosterFilter.waitlist,
-        label: usesRequestApproval ? 'Requests' : 'Waitlist',
+        label: usesRequestApproval
+            ? l10n.hostsHostEventManageScreenStateLabelRequests
+            : l10n.hostsHostEventManageScreenStateLabelWaitlist,
         value: waitlistedIds.length,
         tone: CatchBadgeTone.warning,
       ),
@@ -678,15 +699,16 @@ class HostRosterDisplayState {
       offerableWaitlistIds: offerableWaitlistIds,
       bulkOfferCount: bulkOfferCount,
       emptyTitle: hasSearch
-          ? 'No matches'
-          : _liveEmptyTitle(activeFilter, hasRoster),
+          ? l10n.hostsHostEventManageScreenStateEmptytitleNoMatches
+          : _liveEmptyTitle(activeFilter, hasRoster, l10n),
       emptyMessage: hasSearch
-          ? 'No live roster rows match this search.'
-          : _liveEmptyMessage(activeFilter, hasRoster),
+          ? l10n.hostsHostEventManageScreenStateVisiblecopyNoLiveRosterRows
+          : _liveEmptyMessage(activeFilter, hasRoster, l10n),
     );
   }
 
   factory HostRosterDisplayState.report({
+    required AppLocalizations l10n,
     required List<String> attendeeIds,
     required Set<String> attendedIds,
     required List<String> waitlistedIds,
@@ -707,25 +729,25 @@ class HostRosterDisplayState {
     final filters = [
       HostRosterFilterSpec(
         filter: HostRosterFilter.all,
-        label: 'All',
+        label: l10n.hostsHostEventManageScreenStateLabelAll,
         value: allBaseIds.length,
         tone: CatchBadgeTone.solid,
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.attended,
-        label: 'Attended',
+        label: l10n.hostsHostEventManageScreenStateLabelAttended,
         value: attendedBaseIds.length,
         tone: CatchBadgeTone.success,
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.noShow,
-        label: 'No-show',
+        label: l10n.hostsHostEventManageScreenStateLabelNoShow,
         value: noShowCount,
         tone: CatchBadgeTone.neutral,
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.waitlist,
-        label: 'Waitlist',
+        label: l10n.hostsHostEventManageScreenStateLabelWaitlist,
         value: waitlistCount,
         tone: CatchBadgeTone.warning,
       ),
@@ -749,10 +771,12 @@ class HostRosterDisplayState {
       rowIds: rowIds,
       offerableWaitlistIds: const [],
       bulkOfferCount: 0,
-      emptyTitle: hasSearch ? 'No matches' : _reportEmptyTitle(activeFilter),
+      emptyTitle: hasSearch
+          ? l10n.hostsHostEventManageScreenStateEmptytitleNoMatches
+          : _reportEmptyTitle(activeFilter, l10n),
       emptyMessage: hasSearch
-          ? 'No report rows match this search.'
-          : _reportEmptyMessage(activeFilter),
+          ? l10n.hostsHostEventManageScreenStateVisiblecopyNoReportRowsMatch
+          : _reportEmptyMessage(activeFilter, l10n),
     );
   }
 
@@ -780,14 +804,15 @@ class HostSetupRosterRowDisplayState {
   });
 
   factory HostSetupRosterRowDisplayState.resolve({
+    required AppLocalizations l10n,
     required EventParticipation? participation,
     required bool usesRequestApproval,
   }) {
     final status = participation?.status;
     return HostSetupRosterRowDisplayState(
-      meta: _setupMeta(participation, usesRequestApproval),
-      signal: _setupSignal(participation, usesRequestApproval).label,
-      tone: _setupSignal(participation, usesRequestApproval).tone,
+      meta: _setupMeta(participation, usesRequestApproval, l10n),
+      signal: _setupSignal(participation, usesRequestApproval, l10n).label,
+      tone: _setupSignal(participation, usesRequestApproval, l10n).tone,
       showRequestActions:
           usesRequestApproval && status == EventParticipationStatus.waitlisted,
       showWaitlistOfferAction:
@@ -814,25 +839,33 @@ class HostLiveRosterRowDisplayState {
   });
 
   factory HostLiveRosterRowDisplayState.resolve({
+    required AppLocalizations l10n,
     required EventParticipation? participation,
     required bool attended,
     required bool usesRequestApproval,
   }) {
     final status = participation?.status;
-    final signal = _liveSignal(participation, attended, usesRequestApproval);
+    final signal = _liveSignal(
+      participation,
+      attended,
+      usesRequestApproval,
+      l10n,
+    );
     final showAttendanceToggle =
         status == EventParticipationStatus.signedUp ||
         status == EventParticipationStatus.attended;
     return HostLiveRosterRowDisplayState(
       meta: attended
           ? participation?.attendedAt == null
-                ? 'Checked in'
+                ? l10n.hostsHostEventManageScreenStateVisiblecopyCheckedIn
                 : EventFormatters.time(participation!.attendedAt!)
-          : _reportMeta(participation),
+          : _reportMeta(participation, l10n),
       signal: signal.label,
       tone: signal.tone,
       showAttendanceToggle: showAttendanceToggle,
-      attendanceButtonLabel: attended ? 'Undo' : 'Check in',
+      attendanceButtonLabel: attended
+          ? l10n.hostsHostEventManageScreenStateVisiblecopyUndo
+          : l10n.hostsHostEventManageScreenStateVisiblecopyCheckIn,
       attendanceButtonPrimary: !attended,
       showWaitlistOfferAction:
           status == EventParticipationStatus.waitlisted && !usesRequestApproval,
@@ -857,21 +890,22 @@ class HostReportRosterRowDisplayState {
   });
 
   factory HostReportRosterRowDisplayState.resolve({
+    required AppLocalizations l10n,
     required EventParticipation? participation,
     required bool attended,
     required int priceInPaise,
     required String currencyCode,
   }) {
-    final attendance = _reportAttendance(participation, attended);
+    final attendance = _reportAttendance(participation, attended, l10n);
     final status = participation?.status;
     return HostReportRosterRowDisplayState(
-      meta: _reportMeta(participation),
+      meta: _reportMeta(participation, l10n),
       signal: attendance.label,
       tone: attendance.tone,
       payment: status == EventParticipationStatus.waitlisted
           ? '-'
           : priceInPaise == 0
-          ? 'Free'
+          ? l10n.hostsHostEventManageScreenStateVisiblecopyFree
           : EventFormatters.priceInPaise(
               priceInPaise,
               currencyCode: currencyCode,
@@ -886,12 +920,16 @@ class HostReportRosterRowDisplayState {
 }
 
 extension HostEventManageSectionLabel on HostEventManageSection {
-  String get label {
+  String label(AppLocalizations l10n) {
     return switch (this) {
-      HostEventManageSection.setup => 'Setup',
-      HostEventManageSection.guests => 'Guests',
-      HostEventManageSection.live => 'Live',
-      HostEventManageSection.report => 'Report',
+      HostEventManageSection.setup =>
+        l10n.hostsHostEventManageScreenStateLabelSetup,
+      HostEventManageSection.guests =>
+        l10n.hostsHostEventManageScreenStateLabelGuests,
+      HostEventManageSection.live =>
+        l10n.hostsHostEventManageScreenStateLabelLive,
+      HostEventManageSection.report =>
+        l10n.hostsHostEventManageScreenStateLabelReport,
     };
   }
 }
@@ -921,28 +959,37 @@ int hostManageWaitlistedCount(Event event, EventParticipationRoster? roster) {
 }
 
 String hostPrivateShareDetail({
+  required AppLocalizations l10n,
   required CatchAsyncState<EventPrivateAccess?>? accessState,
   required CatchAsyncState<List<EventInviteLink>>? inviteLinksState,
   required bool sharePending,
 }) {
-  if (sharePending) return 'Sharing...';
-  if (accessState == null) return 'Public event link';
-  if (accessState.status == CatchAsyncStatus.loading) return 'Loading link';
+  if (sharePending)
+    return l10n.hostsHostEventManageScreenStateVisiblecopySharing;
+  if (accessState == null)
+    return l10n.hostsHostEventManageScreenStateVisiblecopyPublicEventLink;
+  if (accessState.status == CatchAsyncStatus.loading)
+    return l10n.hostsHostEventManageScreenStateVisiblecopyLoadingLink;
   if (accessState.status == CatchAsyncStatus.error ||
       accessState.value == null) {
-    return 'Invite setup unavailable';
+    return l10n
+        .hostsHostEventManageScreenStateVisiblecopyInviteSetupUnavailable;
   }
 
   if (inviteLinksState == null ||
       inviteLinksState.status == CatchAsyncStatus.loading) {
-    return 'Private invite link';
+    return l10n.hostsHostEventManageScreenStateVisiblecopyPrivateInviteLink;
   }
   if (inviteLinksState.status == CatchAsyncStatus.error) {
-    return 'Invite links unavailable';
+    return l10n
+        .hostsHostEventManageScreenStateVisiblecopyInviteLinksUnavailable;
   }
   final count = inviteLinksState.value?.length ?? 0;
-  if (count == 1) return '1 invite link';
-  return '$count invite links';
+  if (count == 1)
+    return l10n.hostsHostEventManageScreenStateVisiblecopy1InviteLink;
+  return l10n.hostsHostEventManageScreenStateVisiblecopyCountInviteLinks(
+    count: count,
+  );
 }
 
 String hostInviteLinkStats(EventInviteLink link) {
@@ -1010,47 +1057,61 @@ List<String> _matchingIds(
 String _profileName(Map<String, (String, String?)> profiles, String uid) =>
     profiles[uid]?.$1 ?? 'Runner';
 
-String _liveEmptyTitle(HostRosterFilter filter, bool hasRoster) {
-  return switch (filter) {
-    HostRosterFilter.due when hasRoster => 'Everyone visible is checked in',
-    HostRosterFilter.checkedIn => 'No checked-in people yet',
-    HostRosterFilter.waitlist ||
-    HostRosterFilter.requests => 'No waitlisted people',
-    _ => 'Roster is empty',
-  };
-}
-
-String _liveEmptyMessage(HostRosterFilter filter, bool hasRoster) {
+String _liveEmptyTitle(
+  HostRosterFilter filter,
+  bool hasRoster,
+  AppLocalizations l10n,
+) {
   return switch (filter) {
     HostRosterFilter.due when hasRoster =>
-      'Switch to In to review arrivals or All to see the full roster.',
+      l10n.hostsHostEventManageScreenStateVisiblecopyEveryoneVisibleIsChecked,
     HostRosterFilter.checkedIn =>
-      'Checked-in people will appear here during the event.',
+      l10n.hostsHostEventManageScreenStateVisiblecopyNoCheckedInPeople,
     HostRosterFilter.waitlist || HostRosterFilter.requests =>
-      'Waitlisted people will appear here for context.',
-    _ => 'Signed-up participants will appear here when they book.',
+      l10n.hostsHostEventManageScreenStateVisiblecopyNoWaitlistedPeople,
+    _ => l10n.hostsHostEventManageScreenStateVisiblecopyRosterIsEmpty,
   };
 }
 
-String _reportEmptyTitle(HostRosterFilter filter) {
+String _liveEmptyMessage(
+  HostRosterFilter filter,
+  bool hasRoster,
+  AppLocalizations l10n,
+) {
   return switch (filter) {
-    HostRosterFilter.attended => 'No attended people yet',
-    HostRosterFilter.noShow => 'No no-shows yet',
-    HostRosterFilter.waitlist => 'No waitlisted people',
-    _ => 'No participants yet',
+    HostRosterFilter.due when hasRoster =>
+      l10n.hostsHostEventManageScreenStateVisiblecopySwitchToInTo,
+    HostRosterFilter.checkedIn =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill,
+    HostRosterFilter.waitlist || HostRosterFilter.requests =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyWaitlistedPeopleWillAppear,
+    _ =>
+      l10n.hostsHostEventManageScreenStateVisiblecopySignedUpParticipantsWill,
   };
 }
 
-String _reportEmptyMessage(HostRosterFilter filter) {
+String _reportEmptyTitle(HostRosterFilter filter, AppLocalizations l10n) {
   return switch (filter) {
     HostRosterFilter.attended =>
-      'Checked-in people will appear here after the event.',
+      l10n.hostsHostEventManageScreenStateVisiblecopyNoAttendedPeopleYet,
     HostRosterFilter.noShow =>
-      'Booked people who did not check in will appear here.',
+      l10n.hostsHostEventManageScreenStateVisiblecopyNoNoShowsYet,
     HostRosterFilter.waitlist =>
-      'Waitlist history will appear here when people queue for this event.',
+      l10n.hostsHostEventManageScreenStateVisiblecopyNoWaitlistedPeople,
+    _ => l10n.hostsHostEventManageScreenStateVisiblecopyNoParticipantsYet,
+  };
+}
+
+String _reportEmptyMessage(HostRosterFilter filter, AppLocalizations l10n) {
+  return switch (filter) {
+    HostRosterFilter.attended =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill186cb6,
+    HostRosterFilter.noShow =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyBookedPeopleWhoDid,
+    HostRosterFilter.waitlist =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyWaitlistHistoryWillAppear,
     _ =>
-      'Attendance and waitlist history will appear here once people sign up.',
+      l10n.hostsHostEventManageScreenStateVisiblecopyAttendanceAndWaitlistHistory,
   };
 }
 
@@ -1058,130 +1119,177 @@ String _reportEmptyMessage(HostRosterFilter filter) {
   EventParticipation? participation,
   bool attended,
   bool usesRequestApproval,
+  AppLocalizations l10n,
 ) {
   final status = participation?.status;
   return switch (status) {
     EventParticipationStatus.waitlisted
         when participation?.waitlistOfferStatus ==
             EventWaitlistOfferStatus.active =>
-      (label: 'Offered', tone: CatchBadgeTone.brand),
+      (
+        label: l10n.hostsHostEventManageScreenStateLabelOffered,
+        tone: CatchBadgeTone.brand,
+      ),
     EventParticipationStatus.waitlisted
         when participation?.waitlistOfferStatus ==
             EventWaitlistOfferStatus.accepted =>
-      (label: 'Accepted', tone: CatchBadgeTone.success),
+      (
+        label: l10n.hostsHostEventManageScreenStateLabelAccepted,
+        tone: CatchBadgeTone.success,
+      ),
     EventParticipationStatus.waitlisted when usesRequestApproval => (
-      label: 'Request',
+      label: l10n.hostsHostEventManageScreenStateLabelRequest,
       tone: CatchBadgeTone.brand,
     ),
     EventParticipationStatus.waitlisted => (
-      label: 'Wait',
+      label: l10n.hostsHostEventManageScreenStateLabelWait,
       tone: CatchBadgeTone.warning,
     ),
-    _ when attended => (label: 'In', tone: CatchBadgeTone.success),
-    _ => (label: 'Due', tone: CatchBadgeTone.neutral),
+    _ when attended => (
+      label: l10n.hostsHostEventManageScreenStateLabelIn,
+      tone: CatchBadgeTone.success,
+    ),
+    _ => (
+      label: l10n.hostsHostEventManageScreenStateLabelDue,
+      tone: CatchBadgeTone.neutral,
+    ),
   };
 }
 
 ({String label, CatchBadgeTone tone}) _reportAttendance(
   EventParticipation? participation,
   bool attended,
+  AppLocalizations l10n,
 ) {
   final status = participation?.status;
   final offerStatus = participation?.waitlistOfferStatus;
   return switch (status) {
     EventParticipationStatus.waitlisted
         when offerStatus == EventWaitlistOfferStatus.active =>
-      (label: 'Offered', tone: CatchBadgeTone.brand),
+      (
+        label: l10n.hostsHostEventManageScreenStateLabelOffered,
+        tone: CatchBadgeTone.brand,
+      ),
     EventParticipationStatus.waitlisted
         when offerStatus == EventWaitlistOfferStatus.accepted =>
-      (label: 'Accepted', tone: CatchBadgeTone.success),
+      (
+        label: l10n.hostsHostEventManageScreenStateLabelAccepted,
+        tone: CatchBadgeTone.success,
+      ),
     EventParticipationStatus.waitlisted
         when offerStatus == EventWaitlistOfferStatus.expired =>
-      (label: 'Expired', tone: CatchBadgeTone.neutral),
+      (
+        label: l10n.hostsHostEventManageScreenStateLabelExpired,
+        tone: CatchBadgeTone.neutral,
+      ),
     EventParticipationStatus.waitlisted => (
-      label: 'Wait',
+      label: l10n.hostsHostEventManageScreenStateLabelWait,
       tone: CatchBadgeTone.warning,
     ),
-    _ when attended => (label: 'Attended', tone: CatchBadgeTone.success),
-    _ => (label: 'No-show', tone: CatchBadgeTone.neutral),
+    _ when attended => (
+      label: l10n.hostsHostEventManageScreenStateLabelAttended,
+      tone: CatchBadgeTone.success,
+    ),
+    _ => (
+      label: l10n.hostsHostEventManageScreenStateLabelNoShow,
+      tone: CatchBadgeTone.neutral,
+    ),
   };
 }
 
 ({String label, CatchBadgeTone tone}) _setupSignal(
   EventParticipation? participation,
   bool usesRequestApproval,
+  AppLocalizations l10n,
 ) {
   final offerStatus = participation?.waitlistOfferStatus;
   if (participation?.status == EventParticipationStatus.waitlisted &&
       offerStatus == EventWaitlistOfferStatus.active) {
-    return (label: 'Offered', tone: CatchBadgeTone.brand);
+    return (
+      label: l10n.hostsHostEventManageScreenStateLabelOffered,
+      tone: CatchBadgeTone.brand,
+    );
   }
   if (participation?.status == EventParticipationStatus.waitlisted &&
       offerStatus == EventWaitlistOfferStatus.accepted) {
-    return (label: 'Accepted', tone: CatchBadgeTone.success);
+    return (
+      label: l10n.hostsHostEventManageScreenStateLabelAccepted,
+      tone: CatchBadgeTone.success,
+    );
   }
   return switch (participation?.status) {
     EventParticipationStatus.attended || EventParticipationStatus.signedUp => (
-      label: 'Booked',
+      label: l10n.hostsHostEventManageScreenStateLabelBooked,
       tone: CatchBadgeTone.success,
     ),
     EventParticipationStatus.waitlisted when usesRequestApproval => (
-      label: 'Request',
+      label: l10n.hostsHostEventManageScreenStateLabelRequest,
       tone: CatchBadgeTone.brand,
     ),
     EventParticipationStatus.waitlisted => (
-      label: 'Wait',
+      label: l10n.hostsHostEventManageScreenStateLabelWait,
       tone: CatchBadgeTone.warning,
     ),
-    _ => (label: 'New', tone: CatchBadgeTone.neutral),
+    _ => (
+      label: l10n.hostsHostEventManageScreenStateLabelNew,
+      tone: CatchBadgeTone.neutral,
+    ),
   };
 }
 
-String _setupMeta(EventParticipation? participation, bool usesRequestApproval) {
+String _setupMeta(
+  EventParticipation? participation,
+  bool usesRequestApproval,
+  AppLocalizations l10n,
+) {
   final offerStatus = participation?.waitlistOfferStatus;
   if (participation?.status == EventParticipationStatus.waitlisted &&
       offerStatus == EventWaitlistOfferStatus.active) {
-    return 'Offer sent';
+    return l10n.hostsHostEventManageScreenStateVisiblecopyOfferSent;
   }
   if (participation?.status == EventParticipationStatus.waitlisted &&
       offerStatus == EventWaitlistOfferStatus.accepted) {
-    return 'Accepted offer';
+    return l10n.hostsHostEventManageScreenStateVisiblecopyAcceptedOffer;
   }
   if (participation?.status == EventParticipationStatus.waitlisted &&
       offerStatus == EventWaitlistOfferStatus.expired) {
-    return 'Offer expired';
+    return l10n.hostsHostEventManageScreenStateVisiblecopyOfferExpired;
   }
   return switch (participation?.status) {
-    EventParticipationStatus.attended ||
-    EventParticipationStatus.signedUp => 'Approved',
+    EventParticipationStatus.attended || EventParticipationStatus.signedUp =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyApproved,
     EventParticipationStatus.waitlisted when usesRequestApproval =>
-      'View profile',
-    EventParticipationStatus.waitlisted => 'Waitlisted',
-    _ => 'Profile ready',
+      l10n.hostsHostEventManageScreenStateVisiblecopyViewProfile,
+    EventParticipationStatus.waitlisted =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyWaitlisted,
+    _ => l10n.hostsHostEventManageScreenStateVisiblecopyProfileReady,
   };
 }
 
-String _reportMeta(EventParticipation? participation) {
+String _reportMeta(EventParticipation? participation, AppLocalizations l10n) {
   final status = participation?.status;
   final offerStatus = participation?.waitlistOfferStatus;
   if (status == EventParticipationStatus.waitlisted &&
       offerStatus == EventWaitlistOfferStatus.active) {
-    return 'Offer sent';
+    return l10n.hostsHostEventManageScreenStateVisiblecopyOfferSent;
   }
   if (status == EventParticipationStatus.waitlisted &&
       offerStatus == EventWaitlistOfferStatus.accepted) {
-    return 'Accepted offer';
+    return l10n.hostsHostEventManageScreenStateVisiblecopyAcceptedOffer;
   }
   if (status == EventParticipationStatus.waitlisted &&
       offerStatus == EventWaitlistOfferStatus.expired) {
-    return 'Offer expired';
+    return l10n.hostsHostEventManageScreenStateVisiblecopyOfferExpired;
   }
   return switch (status) {
-    EventParticipationStatus.waitlisted => 'Waitlisted',
-    EventParticipationStatus.attended ||
-    EventParticipationStatus.signedUp => 'Booked',
-    EventParticipationStatus.cancelled => 'Cancelled',
-    EventParticipationStatus.deleted => 'Deleted',
-    null => 'Participant',
+    EventParticipationStatus.waitlisted =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyWaitlisted,
+    EventParticipationStatus.attended || EventParticipationStatus.signedUp =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyBooked,
+    EventParticipationStatus.cancelled =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyCancelled,
+    EventParticipationStatus.deleted =>
+      l10n.hostsHostEventManageScreenStateVisiblecopyDeleted,
+    null => l10n.hostsHostEventManageScreenStateVisiblecopyParticipant,
   };
 }

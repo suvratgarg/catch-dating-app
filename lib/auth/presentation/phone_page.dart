@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
@@ -71,13 +72,14 @@ class _PhonePageState extends ConsumerState<PhonePage> {
       data: data,
       isSendPending: mutation.isPending,
     );
+    final l10n = context.l10n;
 
     return Form(
       key: _formKey,
       child: OnboardingStepLayout(
         footer: CatchButton(
           key: AuthFormKeys.sendCode,
-          label: 'Send code',
+          label: l10n.authSendCodeAction,
           icon: Icon(CatchIcons.arrowForwardRounded),
           onPressed: _submit,
           isLoading: viewState.sendButtonLoading,
@@ -85,14 +87,14 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           size: CatchButtonSize.lg,
         ),
         children: [
-          const CatchStepHeader(
-            title: "What's your number?",
-            subtitle: "We'll send you a one-time code to verify.",
+          CatchStepHeader(
+            title: l10n.authPhoneTitle,
+            subtitle: l10n.authPhoneSubtitle,
             showBack: false,
             gutter: false,
           ),
           gapH28,
-          const CatchFormFieldLabel(label: 'Mobile number'),
+          CatchFormFieldLabel(label: l10n.authPhoneFieldLabel),
           const SizedBox(height: CatchSpacing.s2),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +112,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               Expanded(
                 child: CatchField.input(
                   key: AuthFormKeys.phoneField,
-                  title: 'Mobile number',
+                  title: l10n.authPhoneFieldLabel,
                   showLabel: false,
                   controller: _phoneController,
                   autofocus: viewState.shouldAutofocus,
@@ -124,7 +126,10 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                     LengthLimitingTextInputFormatter(AuthInput.maxPhoneDigits),
                   ],
                   placeholder: '98765 43210',
-                  validator: AuthInput.phoneNumberError,
+                  validator: (value) =>
+                      AuthInput.phoneNumberIssue(value) == null
+                      ? null
+                      : l10n.authInvalidPhoneNumber,
                 ),
               ),
             ],
@@ -134,6 +139,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             CatchErrorBanner(
               message: appErrorMessage(
                 (mutation as MutationError).error,
+                l10n: context.l10n,
                 context: AppErrorContext.auth,
               ),
             ),
@@ -190,7 +196,7 @@ class CountryCodeSelector extends StatelessWidget {
             border: Border.all(color: t.line),
           ),
           searchDecoration: InputDecoration(
-            hintText: 'Search country',
+            hintText: context.l10n.authSearchCountryHint,
             hintStyle: CatchTextStyles.bodyLead(context, color: t.ink3),
             filled: true,
             fillColor: t.raised,

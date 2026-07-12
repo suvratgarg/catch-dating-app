@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 const int _activityPreviewCount = 5;
@@ -80,7 +81,10 @@ class EventTypeBrowseContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('BY ACTIVITY', style: CatchTextStyles.kicker(context)),
+          Text(
+            context.l10n.exploreExploreEventTypeBrowseGridTextByActivity,
+            style: CatchTextStyles.kicker(context),
+          ),
           gapH16,
           ActivityTypeRows(
             slots: slots,
@@ -217,7 +221,10 @@ class ActivityTypeRow extends StatelessWidget {
     return Semantics(
       button: true,
       selected: active,
-      label: '${visual.label}, ${_countLabel(entry.count)}',
+      label: context.l10n.exploreExploreEventTypeBrowseGridLabelLabelCountlabel(
+        label: visual.label,
+        countLabel: _countLabel(entry.count),
+      ),
       child: InkWell(
         onTap: onTap,
         child: DecoratedBox(
@@ -242,7 +249,9 @@ class ActivityTypeRow extends StatelessWidget {
                 ),
                 gapW12,
                 Text(
-                  '${entry.count}',
+                  context.l10n.exploreExploreEventTypeBrowseGridTextCount(
+                    count: entry.count,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
@@ -270,10 +279,16 @@ class MoreActivityTypesRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final label = '+ $remainingCount MORE TYPES';
+    final label = context.l10n
+        .exploreExploreEventTypeBrowseGridLabelRemainingcountMoreTypes(
+          remainingCount: remainingCount,
+        );
     return Semantics(
       button: true,
-      label: 'Show $remainingCount more activity types',
+      label: context.l10n
+          .exploreExploreEventTypeBrowseGridLabelShowRemainingcountMoreActivity(
+            remainingCount: remainingCount,
+          ),
       child: InkWell(
         onTap: onTap,
         child: DecoratedBox(

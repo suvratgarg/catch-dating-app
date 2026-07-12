@@ -15,6 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 Future<void> showClubShareCardSheet(
   BuildContext context, {
@@ -77,7 +78,7 @@ class ClubShareCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'CLUB ON CATCH',
+                    context.l10n.clubsClubShareCardTextClubOnCatch,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: CatchTextStyles.kicker(context, color: t.primary),
@@ -91,14 +92,16 @@ class ClubShareCard extends StatelessWidget {
                       context,
                       size: 34,
                       height: 0.96,
-                      fontStyle: FontStyle.italic,
                       color: t.ink,
                     ),
                   ),
                   gapH8,
                   CatchMetaRow(
                     icon: CatchIcons.locationOnOutlined,
-                    label: '${club.area}, ${cityLabel(club.location)}',
+                    label: context.l10n.clubsClubShareCardLabelAreaCitylabel(
+                      area: club.area,
+                      cityLabel: cityLabel(club.location),
+                    ),
                   ),
                   gapH8,
                   CatchMetaRow(
@@ -131,7 +134,8 @@ class ClubShareArtwork extends StatelessWidget {
     if (photoUrl != null && photoUrl.trim().isNotEmpty) {
       return CatchDetailHeroBackdrop(
         imageUrl: photoUrl,
-        semanticLabel: '${club.name} cover photo',
+        semanticLabel: context.l10n
+            .clubsClubShareCardSemanticlabelNameCoverPhoto(name: club.name),
         showScrim: false,
       );
     }

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class CatchFormFieldLabel extends StatelessWidget {
@@ -30,7 +31,9 @@ class CatchFormFieldLabel extends StatelessWidget {
           );
 
     return Semantics(
-      label: isOptional ? '$label, optional' : label,
+      label: isOptional
+          ? context.l10n.coreCatchFormFieldLabelLabelLabelOptional(label: label)
+          : label,
       excludeSemantics: true,
       child: Row(
         children: [
@@ -73,7 +76,7 @@ class CatchFormFieldOptionalBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(CatchRadius.sm),
       ),
       child: Text(
-        'Optional',
+        context.l10n.coreCatchFormFieldLabelTextOptional,
         style: CatchTextStyles.supporting(
           context,
           color: color,

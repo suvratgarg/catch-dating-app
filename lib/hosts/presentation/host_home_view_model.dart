@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 HostHomeRouteState buildHostHomeRouteState({
@@ -82,6 +83,7 @@ HostEventsWorkspaceState buildHostEventsWorkspaceState(
 HostHomeTodayDashboardState buildHostHomeTodayDashboardState(
   AsyncValue<List<Event>> events, {
   required DateTime now,
+  required AppLocalizations l10n,
 }) {
   if (events.isLoading) {
     return const HostHomeTodayDashboardState(
@@ -130,6 +132,7 @@ HostHomeTodayDashboardState buildHostHomeTodayDashboardState(
       .toList(growable: false);
   final tasks = HostHomeTodayTaskData.forEvents(
     activeEvents,
+    l10n,
   ).toList(growable: false);
 
   return HostHomeTodayDashboardState(

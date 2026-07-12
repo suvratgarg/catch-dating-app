@@ -42,6 +42,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,12 +50,22 @@ import 'package:go_router/go_router.dart';
 
 DateTime _systemNow() => DateTime.now();
 
-const createEventUnsavedChangesDialogTitle = 'Unsaved changes';
-const createEventUnsavedChangesDialogMessage =
-    'You have unsaved changes. Would you like to save a draft?';
-const createEventUnsavedChangesDialogActions = <CatchDialogAction<bool>>[
-  CatchDialogAction(label: 'Discard', value: false),
-  CatchDialogAction(label: 'Save draft', value: true, isDefault: true),
+String createEventUnsavedChangesDialogTitle(AppLocalizations l10n) =>
+    l10n.hostsCreateEventScreenVisiblecopyUnsavedChanges;
+String createEventUnsavedChangesDialogMessage(AppLocalizations l10n) =>
+    l10n.hostsCreateEventScreenVisiblecopyYouHaveUnsavedChanges;
+List<CatchDialogAction<bool>> createEventUnsavedChangesDialogActions(
+  AppLocalizations l10n,
+) => [
+  CatchDialogAction(
+    label: l10n.hostsCreateEventScreenLabelDiscard,
+    value: false,
+  ),
+  CatchDialogAction(
+    label: l10n.hostsCreateEventScreenLabelSaveDraft,
+    value: true,
+    isDefault: true,
+  ),
 ];
 
 class CreateEventUnsavedChangesDialog extends StatelessWidget {
@@ -62,10 +73,10 @@ class CreateEventUnsavedChangesDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchConfirmDialog<bool>(
-      title: createEventUnsavedChangesDialogTitle,
-      message: createEventUnsavedChangesDialogMessage,
-      actions: createEventUnsavedChangesDialogActions,
+    return CatchConfirmDialog<bool>(
+      title: createEventUnsavedChangesDialogTitle(context.l10n),
+      message: createEventUnsavedChangesDialogMessage(context.l10n),
+      actions: createEventUnsavedChangesDialogActions(context.l10n),
     );
   }
 }
@@ -73,9 +84,9 @@ class CreateEventUnsavedChangesDialog extends StatelessWidget {
 Future<bool?> showCreateEventUnsavedChangesDialog(BuildContext context) {
   return showCatchAdaptiveDialog<bool>(
     context: context,
-    title: createEventUnsavedChangesDialogTitle,
-    message: createEventUnsavedChangesDialogMessage,
-    actions: createEventUnsavedChangesDialogActions,
+    title: createEventUnsavedChangesDialogTitle(context.l10n),
+    message: createEventUnsavedChangesDialogMessage(context.l10n),
+    actions: createEventUnsavedChangesDialogActions(context.l10n),
   );
 }
 
@@ -298,7 +309,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       initialDate: _selectedDate ?? today,
       firstDate: today,
       lastDate: today.add(const Duration(days: 365)),
-      title: 'Event date',
+      title: context.l10n.hostsCreateEventScreenTitleEventDate,
     );
     if (picked != null) {
       final result = _scheduleState.selectDate(picked, now: widget.now());
@@ -318,7 +329,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       initialTime:
           _selectedStartTime ??
           _scheduleState.initialStartTime(now: widget.now()),
-      title: 'Start time',
+      title: context.l10n.hostsCreateEventScreenTitleStartTime,
     );
     if (picked != null) {
       final result = _scheduleState.selectStartTime(picked, now: widget.now());
@@ -727,7 +738,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return EventFormatSnapshot.custom(
       label: _customActivityLabelController.text,
       interactionModel: _selectedInteractionModel,
-      activityDetails: const {'configuredIn': 'create_event'},
+      activityDetails: {
+        context.l10n.hostsCreateEventScreenVisiblecopyConfiguredin:
+            context.l10n.hostsCreateEventScreenVisiblecopyCreateEvent,
+      },
     );
   }
 
@@ -764,10 +778,15 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       CreateEventDraftController.saveDraftMutation,
     );
     final mutationError = submitMutation.hasError
-        ? mutationErrorMessage(submitMutation, context: AppErrorContext.event)
+        ? mutationErrorMessage(
+            submitMutation,
+            l10n: context.l10n,
+            context: AppErrorContext.event,
+          )
         : saveDraftMutation.hasError
         ? mutationErrorMessage(
             saveDraftMutation,
+            l10n: context.l10n,
             context: AppErrorContext.event,
           )
         : null;

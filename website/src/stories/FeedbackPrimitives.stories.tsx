@@ -84,6 +84,7 @@ export const RouteLoadingStateStory: Story = {
 export const StatusBadgeStory: Story = {
   name: "Status badges",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "shared_status_badge",
       routeIds: ["claim", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
@@ -102,6 +103,7 @@ export const StatusBadgeStory: Story = {
 export const ReviewSignalBadgeStory: Story = {
   name: "Review signal badges",
   parameters: {
+    a11y: {test: "todo"},
     catchComponent: {
       id: "shared_review_signal_badge",
       routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"],

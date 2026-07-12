@@ -28,7 +28,10 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
     return switch (state.status) {
       HostEventEditRouteStatus.loading => Scaffold(
         backgroundColor: CatchTokens.of(context).bg,
-        appBar: const CatchTopBar(title: 'Edit event', border: true),
+        appBar: CatchTopBar(
+          title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
+          border: true,
+        ),
         body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
       ),
       HostEventEditRouteStatus.error => CatchErrorScaffold.fromError(
@@ -39,13 +42,17 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
           ref.invalidate(watchEventProvider(eventId));
         },
       ),
-      HostEventEditRouteStatus.notFound => const CatchErrorScaffold(
-        title: 'Event not found',
-        message: 'This hosted event is no longer available.',
+      HostEventEditRouteStatus.notFound => CatchErrorScaffold(
+        title: context.l10n.hostsEditHostedEventRouteScreenTitleEventNotFound,
+        message: context
+            .l10n
+            .hostsEditHostedEventRouteScreenMessageThisHostedEventIs,
       ),
       HostEventEditRouteStatus.unauthorized => CatchErrorScaffold(
-        title: 'Action unavailable',
-        message: 'You can edit only events that you host.',
+        title:
+            context.l10n.hostsEditHostedEventRouteScreenTitleActionUnavailable,
+        message:
+            context.l10n.hostsEditHostedEventRouteScreenMessageYouCanEditOnly,
         icon: CatchIcons.blockRounded,
       ),
       HostEventEditRouteStatus.ready => EditHostedEventScreen(

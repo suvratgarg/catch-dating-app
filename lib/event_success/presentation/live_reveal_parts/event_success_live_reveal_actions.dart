@@ -31,7 +31,9 @@ class HostRevealActions extends StatelessWidget {
   Widget build(BuildContext context) {
     if (roundCount == 0) {
       return CatchButton(
-        label: 'Generate assignments first',
+        label: context
+            .l10n
+            .eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst,
         icon: Icon(CatchIcons.autoAwesomeOutlined),
         onPressed: null,
         fullWidth: true,
@@ -42,7 +44,9 @@ class HostRevealActions extends StatelessWidget {
         children: [
           Expanded(
             child: CatchButton(
-              label: 'Reveal now',
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessLiveRevealActionsLabelRevealNow,
               icon: Icon(CatchIcons.visibilityOutlined),
               isLoading: isLoading,
               onPressed: isLoading || onRevealRound == null
@@ -54,7 +58,9 @@ class HostRevealActions extends StatelessWidget {
           gapW10,
           Expanded(
             child: CatchButton(
-              label: 'Reset',
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessLiveRevealActionsLabelReset,
               icon: Icon(CatchIcons.restartAltRounded),
               variant: CatchButtonVariant.secondary,
               isLoading: isLoading,
@@ -69,7 +75,9 @@ class HostRevealActions extends StatelessWidget {
     }
     if (allRevealed) {
       return CatchButton(
-        label: 'Reset reveal',
+        label: context
+            .l10n
+            .eventSuccessEventSuccessLiveRevealActionsLabelResetReveal,
         icon: Icon(CatchIcons.restartAltRounded),
         variant: CatchButtonVariant.secondary,
         isLoading: isLoading,
@@ -88,8 +96,14 @@ class HostRevealActions extends StatelessWidget {
         Expanded(
           child: CatchButton(
             label: countdownSeconds == 0
-                ? 'Reveal round ${roundIndex + 1}'
-                : 'Drop ${countdownSeconds}s countdown',
+                ? context.l10n
+                      .eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1(
+                        value1: roundIndex + 1,
+                      )
+                : context.l10n
+                      .eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown(
+                        countdownSeconds: countdownSeconds,
+                      ),
             icon: Icon(CatchIcons.timerOutlined),
             isLoading: isLoading,
             onPressed: isLoading || !canUsePrimary
@@ -109,7 +123,9 @@ class HostRevealActions extends StatelessWidget {
         gapW10,
         Expanded(
           child: CatchButton(
-            label: 'Reveal now',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessLiveRevealActionsLabelRevealNow,
             icon: Icon(CatchIcons.visibilityOutlined),
             variant: CatchButtonVariant.secondary,
             isLoading: isLoading,

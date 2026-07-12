@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class ClubScheduleSection extends StatelessWidget {
@@ -39,7 +40,7 @@ class ClubScheduleSection extends StatelessWidget {
 
     return SliverMainAxisGroup(
       slivers: [
-        const SliverPadding(
+        SliverPadding(
           padding: EdgeInsets.fromLTRB(
             CatchLayout.detailScreenHorizontalPadding,
             0,
@@ -48,7 +49,7 @@ class ClubScheduleSection extends StatelessWidget {
           ),
           sliver: SliverToBoxAdapter(
             child: CatchSection.divided(
-              title: 'Schedule',
+              title: context.l10n.clubsClubScheduleSectionTitleSchedule,
               child: SizedBox.shrink(),
             ),
           ),
@@ -64,9 +65,11 @@ class ClubScheduleSection extends StatelessWidget {
             sliver: SliverToBoxAdapter(
               child: CatchEmptyState(
                 icon: CatchIcons.calendarMonthOutlined,
-                title: 'No events scheduled',
-                message:
-                    'Future events will appear here once the host publishes one.',
+                title:
+                    context.l10n.clubsClubScheduleSectionTitleNoEventsScheduled,
+                message: context
+                    .l10n
+                    .clubsClubScheduleSectionMessageFutureEventsWillAppear,
                 layout: CatchEmptyStateLayout.inline,
               ),
             ),

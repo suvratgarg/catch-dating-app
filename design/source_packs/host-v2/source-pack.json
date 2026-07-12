@@ -1,7 +1,7 @@
 {
   "$schema": "catch.design-source-pack/v1",
   "id": "host-v2",
-  "importedAt": "2026-07-10",
+  "importedAt": "2026-07-11",
   "upstream": {
     "label": "Catch Design System (1)",
     "kind": "local-handoff"
@@ -34,7 +34,7 @@
     },
     {
       "path": "colors_and_type.css",
-      "sha256": "c63456a4a328c8e128397518c667ce1bef62f0f5542465302c23649326f4a4ed"
+      "sha256": "cb29f70e58878f069d8b2f05fd49d4f29217cb5f5c7bb36da10daa8dac2033db"
     },
     {
       "path": "COMPOSITION.md",

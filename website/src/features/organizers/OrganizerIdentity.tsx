@@ -1,6 +1,5 @@
 import {
   ActivityMark as SharedActivityMark,
-  ProfileStrength as SharedProfileStrength,
   StatusBadge as SharedStatusBadge,
 } from "../../shared/ui/primitives";
 import {activityForListing} from "./publicDiscovery";
@@ -37,8 +36,4 @@ export function StatusBadge({
       {label}
     </SharedStatusBadge>
   );
-}
-
-export function ProfileStrength({value}: {value: number}) {
-  return <SharedProfileStrength value={value} />;
 }

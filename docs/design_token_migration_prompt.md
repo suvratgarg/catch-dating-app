@@ -79,14 +79,15 @@ or directly above the raw color expression.
 
 3. **Raw `TextStyle(...)`** → a named `CatchTextStyles.<style>(context)`
    (display/headline/headlineS/titleL/sectionTitle/bodyL/M/S/proseL/M/supporting/
-   label*/kicker/monoLabel/…). Only drop to `CatchFonts.serif|sans|mono(...)` for a
-   genuinely novel one-off, never raw `TextStyle(`.
+   label*/kicker/monoLabel/…). If no semantic role fits, add one to
+   `CatchTextStyles`; app UI must not call `CatchFonts` directly or own
+   `letterSpacing` at the call site.
    ```dart
    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)  →  style: CatchTextStyles.sectionTitle(context)
    ```
 
-4. **`GoogleFonts.*` / `getFont(`** → `CatchFonts.serif|sans|mono(...)` (bundled,
-   optically-sized). Production must have zero `GoogleFonts` outside the sandbox.
+4. **`GoogleFonts.*` / `getFont(`** → a semantic `CatchTextStyles` role backed by
+   bundled fonts. Production must have zero `GoogleFonts` outside the sandbox.
 
 5. **A "palette-owner" file** (a class holding a PARALLEL hardcoded palette, e.g.
    `ProfileCardPalette`, `ClubCoverVisualPalette`, `pace_level_theme`) → rewrite its

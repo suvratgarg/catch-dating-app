@@ -11,6 +11,7 @@ import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class HostPaymentAccountControllerCard extends ConsumerWidget {
   const HostPaymentAccountControllerCard({super.key, required this.club});
@@ -22,9 +23,10 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
     final uid = uidAsync.asData?.value;
     final accountAsync = switch (uidAsync) {
-      AsyncData(:final value) => value == null
-          ? const AsyncValue<HostPaymentAccount?>.data(null)
-          : ref.watch(watchHostPaymentAccountProvider(value)),
+      AsyncData(:final value) =>
+        value == null
+            ? const AsyncValue<HostPaymentAccount?>.data(null)
+            : ref.watch(watchHostPaymentAccountProvider(value)),
       AsyncError(:final error, :final stackTrace) =>
         AsyncValue<HostPaymentAccount?>.error(error, stackTrace),
       _ => const AsyncValue<HostPaymentAccount?>.loading(),
@@ -58,7 +60,9 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
             .logError(
               error,
               stackTrace,
-              reason: 'HostPaymentAccountControllerCard.startOnboarding failed',
+              reason: context
+                  .l10n
+                  .hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardStartonboardingFailed,
             );
       }
     }
@@ -80,7 +84,9 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
             .logError(
               error,
               stackTrace,
-              reason: 'HostPaymentAccountControllerCard.refresh failed',
+              reason: context
+                  .l10n
+                  .hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed,
             );
       }
     }
@@ -123,6 +129,7 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
     if (failedMutation == null) return null;
     return mutationErrorMessage(
       failedMutation,
+      l10n: context.l10n,
       context: AppErrorContext.payments,
     );
   }

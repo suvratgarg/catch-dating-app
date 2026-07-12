@@ -22,6 +22,8 @@ const required = target === "marketing" ? [
   ...commonFirebaseVars,
   "VITE_FIREBASE_MEASUREMENT_ID",
   "VITE_WEBSITE_APPCHECK_SITE_KEY",
+  "VITE_APP_STORE_URL",
+  "VITE_PLAY_STORE_URL",
 ] : [
   ...commonFirebaseVars,
   "VITE_FIREBASE_MEASUREMENT_ID",
@@ -35,6 +37,22 @@ for (const name of required) {
   if (!process.env[name]?.trim()) {
     errors.push(`${name} is required for ${target} hosting deploys.`);
   }
+}
+
+if (target === "marketing") {
+  validateStoreUrl({
+    name: "VITE_APP_STORE_URL",
+    hostname: "apps.apple.com",
+    pathPattern: /\/id\d+(?:$|[/?#])/u,
+    description: "an HTTPS apps.apple.com product URL containing an Apple app id",
+  });
+  validateStoreUrl({
+    name: "VITE_PLAY_STORE_URL",
+    hostname: "play.google.com",
+    pathPattern: /^\/store\/apps\/details$/u,
+    requiredSearchParam: "id",
+    description: "an HTTPS play.google.com/store/apps/details URL with an id parameter",
+  });
 }
 
 const deployEnv = process.env.CATCH_FIREBASE_DEPLOY_ENV;
@@ -140,6 +158,32 @@ function projectIdForAlias(env) {
     return typeof projectId === "string" ? projectId : null;
   } catch {
     return null;
+  }
+}
+
+function validateStoreUrl({
+  name,
+  hostname,
+  pathPattern,
+  requiredSearchParam = null,
+  description,
+}) {
+  const value = process.env[name]?.trim();
+  if (!value) return;
+  try {
+    const url = new URL(value);
+    const hasRequiredParam = requiredSearchParam === null ||
+      Boolean(url.searchParams.get(requiredSearchParam)?.trim());
+    if (
+      url.protocol !== "https:" ||
+      url.hostname !== hostname ||
+      !pathPattern.test(url.pathname) ||
+      !hasRequiredParam
+    ) {
+      errors.push(`${name} must be ${description}.`);
+    }
+  } catch {
+    errors.push(`${name} must be ${description}.`);
   }
 }
 

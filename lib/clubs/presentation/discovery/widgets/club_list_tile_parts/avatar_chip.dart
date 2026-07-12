@@ -21,7 +21,7 @@ class AvatarChip extends StatelessWidget {
 
     return Semantics(
       button: onTap != null,
-      label: 'Open ${club.name} club',
+      label: context.l10n.clubsAvatarChipLabelOpenNameClub(name: club.name),
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
@@ -56,7 +56,7 @@ class AvatarChip extends StatelessWidget {
               if (showLiveBadge) ...[
                 gapH2,
                 Text(
-                  'Event soon',
+                  context.l10n.clubsAvatarChipTextEventSoon,
                   style: CatchTextStyles.labelS(context, color: t.primary),
                   textAlign: TextAlign.center,
                   maxLines: 1,

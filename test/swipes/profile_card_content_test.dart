@@ -1,11 +1,14 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_content.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 ActivityPreferences runningPrefs({
   List<PreferredDistance> preferredDistances = const [],
@@ -23,7 +26,7 @@ void main() {
     test('does not expose exact distance on public swipe cards', () {
       final profile = buildPublicProfile();
 
-      final content = ProfileCardContent.fromProfile(profile);
+      final content = ProfileCardContent.fromProfile(profile, l10n: _l10n);
 
       final hasDistance = content.attributes.any(
         (a) => a.icon == CatchIcons.nearMeOutlined,
@@ -70,7 +73,7 @@ void main() {
         children: ChildrenStatus.wantSomeday,
       );
 
-      final content = ProfileCardContent.fromProfile(profile);
+      final content = ProfileCardContent.fromProfile(profile, l10n: _l10n);
 
       expect(content.primaryPhotoUrl, 'https://img.example/1.jpg');
       expect(content.additionalPhotos.map((photo) => photo.url), [
@@ -122,6 +125,7 @@ void main() {
 
       final content = ProfileCardContent.fromProfile(
         profile,
+        l10n: _l10n,
         viewerProfile: viewer,
         sharedRunTitle: 'Friday Evening Event',
       );
@@ -150,7 +154,7 @@ void main() {
         relationshipGoal: RelationshipGoal.casual,
       );
 
-      final content = ProfileCardContent.fromProfile(profile);
+      final content = ProfileCardContent.fromProfile(profile, l10n: _l10n);
 
       expect(content.relationshipGoal, RelationshipGoal.casual);
       expect(
@@ -170,7 +174,7 @@ void main() {
         company: '   ',
       );
 
-      final content = ProfileCardContent.fromProfile(profile);
+      final content = ProfileCardContent.fromProfile(profile, l10n: _l10n);
 
       expect(content.hasProfilePrompts, isFalse);
       expect(content.attributes, isEmpty);

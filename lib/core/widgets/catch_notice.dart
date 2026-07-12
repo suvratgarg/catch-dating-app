@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -30,10 +31,8 @@ class CatchNoticeData {
     this.dismissible = true,
   }) : _fallbackIcon = _AppNoticeFallbackIcon.status;
 
-  const CatchNoticeData.offline()
+  const CatchNoticeData._offline({required this.title, this.message})
     : id = 'connectivity.offline',
-      title = "You're offline",
-      message = 'Some content may be out of date.',
       _icon = null,
       _fallbackIcon = _AppNoticeFallbackIcon.offline,
       tone = CatchNoticeTone.warning,
@@ -43,6 +42,12 @@ class CatchNoticeData {
       dedupeKey = 'connectivity.offline',
       priority = 100,
       dismissible = false;
+
+  factory CatchNoticeData.offline(AppLocalizations l10n) =>
+      CatchNoticeData._offline(
+        title: l10n.sharedOfflineTitle,
+        message: l10n.sharedOfflineBody,
+      );
 
   final String id;
   final String title;
@@ -293,7 +298,7 @@ class CatchNotice extends StatelessWidget {
             if (onDismiss != null) ...[
               const SizedBox(width: CatchSpacing.s1),
               IconButton(
-                tooltip: 'Dismiss',
+                tooltip: context.l10n.coreCatchNoticeTooltipDismiss,
                 onPressed: onDismiss,
                 icon: Icon(
                   CatchIcons.closeRounded,

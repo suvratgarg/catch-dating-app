@@ -14,7 +14,7 @@ class EventSuccessTabPicker extends StatelessWidget {
     return CatchOptionGroup<EventSuccessHostTab>(
       options: [
         for (final tab in EventSuccessHostTab.values)
-          CatchOption(value: tab, label: tab.label),
+          CatchOption(value: tab, label: tab.label(context.l10n)),
       ],
       selected: selectedTab,
       onChanged: onChanged,
@@ -47,11 +47,14 @@ class EventSuccessHostTabBody extends StatelessWidget {
 }
 
 extension on EventSuccessHostTab {
-  String get label {
+  String label(AppLocalizations l10n) {
     return switch (this) {
-      EventSuccessHostTab.setup => 'Setup',
-      EventSuccessHostTab.live => 'Live',
-      EventSuccessHostTab.report => 'Report',
+      EventSuccessHostTab.setup =>
+        l10n.eventSuccessEventSuccessHostSharedLabelSetup,
+      EventSuccessHostTab.live =>
+        l10n.eventSuccessEventSuccessHostSharedLabelLive,
+      EventSuccessHostTab.report =>
+        l10n.eventSuccessEventSuccessHostSharedLabelReport,
     };
   }
 }
@@ -74,7 +77,12 @@ class PlanSummary extends StatelessWidget {
       runSpacing: CatchSpacing.s2,
       children: [
         CatchBadge(label: draft.playbook.title, tone: CatchBadgeTone.brand),
-        CatchBadge(label: '${draft.selectedModules.length} tools'),
+        CatchBadge(
+          label: context.l10n
+              .eventSuccessEventSuccessHostSharedLabelLengthTools(
+                length: draft.selectedModules.length,
+              ),
+        ),
         CatchBadge(
           label: draft.status.label,
           tone: draft.status == EventSuccessSetupStatus.readyForLaunch
@@ -82,7 +90,9 @@ class PlanSummary extends StatelessWidget {
               : CatchBadgeTone.warning,
         ),
         CatchBadge(
-          label: planIsPersisted ? plan.status.hostLabel : 'Not saved',
+          label: planIsPersisted
+              ? plan.status.hostLabel
+              : context.l10n.eventSuccessEventSuccessHostSharedLabelNotSaved,
           tone: planIsPersisted ? CatchBadgeTone.live : CatchBadgeTone.warning,
         ),
       ],
@@ -127,7 +137,12 @@ class HostActivitySummary extends StatelessWidget {
                 icon: CatchIcons.autoAwesomeOutlined,
               ),
               CatchBadge(label: profile.interactionModel.label),
-              CatchBadge(label: '${draft.selectedModules.length} selected'),
+              CatchBadge(
+                label: context.l10n
+                    .eventSuccessEventSuccessHostSharedLabelLengthSelected(
+                      length: draft.selectedModules.length,
+                    ),
+              ),
             ],
           ),
           gapH8,
@@ -172,11 +187,19 @@ class CompatibilitySignalHostCard extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text(
-                      'Match clue questions',
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessHostSharedTextMatchClueQuestions,
                       style: CatchTextStyles.sectionTitle(context),
                     ),
                     CatchBadge(
-                      label: rankingOn ? 'Can guide pairings' : 'Clues only',
+                      label: rankingOn
+                          ? context
+                                .l10n
+                                .eventSuccessEventSuccessHostSharedLabelCanGuidePairings
+                          : context
+                                .l10n
+                                .eventSuccessEventSuccessHostSharedLabelCluesOnly,
                       tone: rankingOn
                           ? CatchBadgeTone.success
                           : CatchBadgeTone.neutral,
@@ -192,8 +215,12 @@ class CompatibilitySignalHostCard extends StatelessWidget {
                 gapH6,
                 Text(
                   rankingOn
-                      ? 'Suggested pairings can use shared answers as one light input after interest, safety, and attendee opt-out checks.'
-                      : 'Answers can still shape reveal clues, but suggested pairings will not use them.',
+                      ? context
+                            .l10n
+                            .eventSuccessEventSuccessHostSharedTextSuggestedPairingsCanUse
+                      : context
+                            .l10n
+                            .eventSuccessEventSuccessHostSharedTextAnswersCanStillShape,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
@@ -233,19 +260,27 @@ class LiveAttendanceSummaryCard extends StatelessWidget {
               gapW10,
               Expanded(
                 child: Text(
-                  'Arrival check-in',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessHostSharedTextArrivalCheckIn,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               Text(
-                '$checkedInCount / $bookedCount',
+                context.l10n
+                    .eventSuccessEventSuccessHostSharedTextCheckedincountBookedcount(
+                      checkedInCount: checkedInCount,
+                      bookedCount: bookedCount,
+                    ),
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
           ),
           gapH8,
           Text(
-            'Attendance decides who can use assignments, wingman requests, and post-event feedback.',
+            context
+                .l10n
+                .eventSuccessEventSuccessHostSharedTextAttendanceDecidesWhoCan,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
@@ -254,21 +289,30 @@ class LiveAttendanceSummaryCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               CatchBadge(
-                label: '$bookedCount booked',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostSharedLabelBookedcountBooked(
+                      bookedCount: bookedCount,
+                    ),
                 tone: bookedCount == 0
                     ? CatchBadgeTone.neutral
                     : CatchBadgeTone.brand,
                 icon: CatchIcons.confirmationNumberOutlined,
               ),
               CatchBadge(
-                label: '$checkedInCount checked in',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostSharedLabelCheckedincountCheckedIn(
+                      checkedInCount: checkedInCount,
+                    ),
                 tone: checkedInCount == 0
                     ? CatchBadgeTone.neutral
                     : CatchBadgeTone.success,
                 icon: CatchIcons.checkCircleOutlineRounded,
               ),
               CatchBadge(
-                label: '$waitlistCount waitlist',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostSharedLabelWaitlistcountWaitlist(
+                      waitlistCount: waitlistCount,
+                    ),
                 tone: waitlistCount == 0
                     ? CatchBadgeTone.neutral
                     : CatchBadgeTone.warning,
@@ -317,10 +361,15 @@ class HostCheckInQrPanel extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Host QR', style: CatchTextStyles.sectionTitle(context)),
+                Text(
+                  context.l10n.eventSuccessEventSuccessHostSharedTextHostQr,
+                  style: CatchTextStyles.sectionTitle(context),
+                ),
                 gapH4,
                 Text(
-                  'Attendees can scan this, then location still verifies they are at the venue.',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessHostSharedTextAttendeesCanScanThis,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
@@ -362,12 +411,17 @@ class WingmanRequestsHostCard extends StatelessWidget {
               gapW10,
               Expanded(
                 child: Text(
-                  '"Help me say hi" requests',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessHostSharedTextHelpMeSayHi,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchBadge(
-                label: '${activeRequests.length} active',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostSharedLabelLengthActive(
+                      length: activeRequests.length,
+                    ),
                 tone: activeRequests.isEmpty
                     ? CatchBadgeTone.neutral
                     : CatchBadgeTone.live,
@@ -378,14 +432,20 @@ class WingmanRequestsHostCard extends StatelessWidget {
           gapH8,
           Text(
             rotationsEnabled
-                ? 'Attendees explicitly asked the host for help. Use rotation edits or live facilitation to pair them safely.'
-                : 'Attendees explicitly asked the host for help. Use this as live facilitation context.',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThe
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThef44110,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
           if (activeRequests.isEmpty)
             Text(
-              'No host-help requests yet.',
+              context
+                  .l10n
+                  .eventSuccessEventSuccessHostSharedTextNoHostHelpRequests,
               style: CatchTextStyles.supporting(context, color: t.ink2),
             )
           else
@@ -417,20 +477,30 @@ class WingmanRequestHostRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final targetName = target?.name ?? 'this attendee';
+    final targetName =
+        target?.name ??
+        context.l10n.eventSuccessEventSuccessHostSharedVisiblecopyThisAttendee;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchPersonRow(
           data: CatchPersonRowData(
-            name: requester?.name ?? 'Attendee',
+            name:
+                requester?.name ??
+                context
+                    .l10n
+                    .eventSuccessEventSuccessHostSharedVisiblecopyAttendee,
             imageUrl: requester?.primaryPhotoThumbnailUrl,
             seed: request.requesterUid,
-            metaLine: 'Asked for help meeting $targetName',
+            metaLine: context.l10n
+                .eventSuccessEventSuccessHostSharedVisiblecopyAskedForHelpMeeting(
+                  targetName: targetName,
+                ),
           ),
           avatarSize: 40,
           trailing: CatchBadge(
-            label: 'Host visible',
+            label:
+                context.l10n.eventSuccessEventSuccessHostSharedLabelHostVisible,
             tone: CatchBadgeTone.live,
             icon: CatchIcons.visibilityOutlined,
           ),

@@ -69,7 +69,9 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
             children: [
               Expanded(
                 child: Text(
-                  'Ask the host for an intro',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionWingmanTextAskTheHostFor,
                   style: CatchTextStyles.titleL(context),
                 ),
               ),
@@ -78,7 +80,9 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
           ),
           gapH4,
           Text(
-            "Tell the host who you'd like to be introduced to. The host can see this request — the other person is not notified.",
+            context
+                .l10n
+                .eventSuccessEventSuccessCompanionWingmanTextTellTheHostWho,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (requestedTargetUid != null) ...[
@@ -88,13 +92,22 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Request sent for ${requestedTargetName ?? 'this attendee'}.',
+                      context.l10n
+                          .eventSuccessEventSuccessCompanionWingmanTextRequestSentForValue1(
+                            value1:
+                                requestedTargetName ??
+                                context
+                                    .l10n
+                                    .eventSuccessEventSuccessCompanionWingmanTextThisAttendee,
+                          ),
                       style: CatchTextStyles.supporting(context),
                     ),
                   ),
                   gapW8,
                   CatchButton(
-                    label: 'Withdraw',
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessCompanionWingmanLabelWithdraw,
                     size: CatchButtonSize.sm,
                     variant: CatchButtonVariant.secondary,
                     isLoading: withdrawing,
@@ -107,7 +120,9 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
           gapH12,
           StageSoftBand(
             child: CatchField.input(
-              title: 'Private note to host',
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionWingmanTitlePrivateNoteToHost,
               controller: _noteController,
               maxLines: 2,
               inputFormatters: [LengthLimitingTextInputFormatter(240)],
@@ -116,7 +131,9 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
           gapH12,
           if (widget.candidates.isEmpty)
             Text(
-              'No checked-in attendees available yet.',
+              context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionWingmanTextNoCheckedInAttendees,
               style: CatchTextStyles.supporting(context),
             )
           else
@@ -129,16 +146,26 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
                     imageUrl: candidate.primaryPhotoThumbnailUrl,
                     seed: candidate.uid,
                     metaLine: candidate.uid == requestedTargetUid
-                        ? 'Host-help request active'
-                        : 'Checked in to this event',
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionWingmanVisiblecopyHostHelpRequestActive
+                        : context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionWingmanVisiblecopyCheckedInToThis,
                   ),
                   avatarSize: 40,
                   trailing: CatchButton(
                     label: candidate.uid == requestedTargetUid
-                        ? 'Requested'
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionWingmanLabelRequested
                         : requestedTargetUid == null
-                        ? 'Ask host'
-                        : 'Switch',
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionWingmanLabelAskHost
+                        : context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionWingmanLabelSwitch,
                     size: CatchButtonSize.sm,
                     variant: CatchButtonVariant.secondary,
                     isLoading: saving && candidate.uid != requestedTargetUid,

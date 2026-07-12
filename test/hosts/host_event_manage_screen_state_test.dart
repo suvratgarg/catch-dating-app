@@ -4,9 +4,12 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   test('HostEventManageScreenState resolves chrome display state', () {
@@ -46,10 +49,10 @@ void main() {
       collapsedTitleSemanticsLabel: null,
     );
 
-    expect(HostEventManageSection.setup.label, 'Setup');
-    expect(HostEventManageSection.guests.label, 'Guests');
-    expect(HostEventManageSection.live.label, 'Live');
-    expect(HostEventManageSection.report.label, 'Report');
+    expect(HostEventManageSection.setup.label(_l10n), 'Setup');
+    expect(HostEventManageSection.guests.label(_l10n), 'Guests');
+    expect(HostEventManageSection.live.label(_l10n), 'Live');
+    expect(HostEventManageSection.report.label(_l10n), 'Report');
     expect(
       state.selectSection(HostEventManageSection.report).selectedSection,
       HostEventManageSection.report,
@@ -149,6 +152,7 @@ void main() {
     );
 
     final ready = HostPrivateLinkActionState.resolve(
+      l10n: _l10n,
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
       inviteLink:
@@ -156,18 +160,21 @@ void main() {
       sharePending: false,
     );
     final loading = HostPrivateLinkActionState.resolve(
+      l10n: _l10n,
       accessState: const CatchAsyncState.loading(),
       inviteLinksState: null,
       inviteLink: null,
       sharePending: false,
     );
     final errored = HostPrivateLinkActionState.resolve(
+      l10n: _l10n,
       accessState: CatchAsyncState.error(StateError('missing')),
       inviteLinksState: null,
       inviteLink: null,
       sharePending: false,
     );
     final pending = HostPrivateLinkActionState.resolve(
+      l10n: _l10n,
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
       inviteLink:
@@ -202,12 +209,14 @@ void main() {
     );
 
     final ready = HostPrivateAccessDisplayState.resolve(
+      l10n: _l10n,
       access: access,
       inviteLinksState: const CatchAsyncState.data([]),
       inviteLink: 'https://catch.test/events/event-1?invite=CATCH-DELHI',
       sharePending: false,
     );
     final missing = HostPrivateAccessDisplayState.resolve(
+      l10n: _l10n,
       access: null,
       inviteLinksState: const CatchAsyncState.data([]),
       inviteLink: null,
@@ -369,7 +378,7 @@ void main() {
     expect(state.noShowCount, 2);
     expect(state.waitlistCount, 2);
     expect(
-      state.summary,
+      state.summary(_l10n),
       '₹3,000 gross estimate · 4 attended · 2 no-shows · 2 waitlisted.',
     );
   });
@@ -522,6 +531,7 @@ void main() {
     };
 
     final state = HostRosterDisplayState.setup(
+      l10n: _l10n,
       usesRequestApproval: false,
       attendeeIds: const ['booked-a'],
       waitlistedIds: const ['wait-a', 'wait-b', 'offered'],
@@ -539,6 +549,7 @@ void main() {
       selectedFilter: HostRosterFilter.waitlist,
     );
     final slotsState = HostRosterDisplayState.setup(
+      l10n: _l10n,
       usesRequestApproval: false,
       attendeeIds: const ['booked-a'],
       waitlistedIds: const ['wait-a', 'wait-b', 'offered'],
@@ -573,6 +584,7 @@ void main() {
     );
 
     final state = HostRosterDisplayState.setup(
+      l10n: _l10n,
       usesRequestApproval: true,
       attendeeIds: const ['booked-a'],
       waitlistedIds: const ['request-a'],
@@ -603,6 +615,7 @@ void main() {
     );
 
     final live = HostRosterDisplayState.live(
+      l10n: _l10n,
       usesRequestApproval: false,
       attendeeIds: const ['due-a', 'checked-a'],
       attendedIds: const {'checked-a'},
@@ -615,6 +628,7 @@ void main() {
       selectedFilter: HostRosterFilter.due,
     );
     final allCheckedIn = HostRosterDisplayState.live(
+      l10n: _l10n,
       usesRequestApproval: false,
       attendeeIds: const ['checked-a'],
       attendedIds: const {'checked-a'},
@@ -627,6 +641,7 @@ void main() {
       selectedFilter: HostRosterFilter.due,
     );
     final report = HostRosterDisplayState.report(
+      l10n: _l10n,
       attendeeIds: const ['due-a', 'checked-a'],
       attendedIds: const {'checked-a'},
       waitlistedIds: const ['wait-a'],
@@ -668,14 +683,17 @@ void main() {
     final booked = buildEventParticipation(event: event, uid: 'booked-a');
 
     final requestRow = HostSetupRosterRowDisplayState.resolve(
+      l10n: _l10n,
       participation: request,
       usesRequestApproval: true,
     );
     final offeredRow = HostSetupRosterRowDisplayState.resolve(
+      l10n: _l10n,
       participation: offered,
       usesRequestApproval: false,
     );
     final bookedRow = HostSetupRosterRowDisplayState.resolve(
+      l10n: _l10n,
       participation: booked,
       usesRequestApproval: false,
     );
@@ -707,16 +725,19 @@ void main() {
     );
 
     final due = HostLiveRosterRowDisplayState.resolve(
+      l10n: _l10n,
       participation: signedUp,
       attended: false,
       usesRequestApproval: false,
     );
     final checkedIn = HostLiveRosterRowDisplayState.resolve(
+      l10n: _l10n,
       participation: attended,
       attended: true,
       usesRequestApproval: false,
     );
     final waitlist = HostLiveRosterRowDisplayState.resolve(
+      l10n: _l10n,
       participation: waitlisted,
       attended: false,
       usesRequestApproval: false,
@@ -753,18 +774,21 @@ void main() {
     );
 
     final attendedRow = HostReportRosterRowDisplayState.resolve(
+      l10n: _l10n,
       participation: attended,
       attended: true,
       priceInPaise: event.priceInPaise,
       currencyCode: event.currency,
     );
     final noShowRow = HostReportRosterRowDisplayState.resolve(
+      l10n: _l10n,
       participation: noShow,
       attended: false,
       priceInPaise: 0,
       currencyCode: event.currency,
     );
     final waitlistRow = HostReportRosterRowDisplayState.resolve(
+      l10n: _l10n,
       participation: waitlisted,
       attended: false,
       priceInPaise: event.priceInPaise,

@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
@@ -155,9 +156,12 @@ class _ProfilePhotoEditorScreenState
     }
     final confirmed = await showConfirmDangerDialog(
       context: context,
-      title: 'Delete photo?',
-      message: 'This removes the photo from your profile.',
-      confirmLabel: 'Delete',
+      title: context.l10n.imageUploadsProfilePhotoEditorScreenTitleDeletePhoto,
+      message: context
+          .l10n
+          .imageUploadsProfilePhotoEditorScreenMessageThisRemovesThePhoto,
+      confirmLabel:
+          context.l10n.imageUploadsProfilePhotoEditorScreenVisiblecopyDelete,
     );
     if (confirmed != true || !mounted) return;
 
@@ -196,6 +200,7 @@ class _ProfilePhotoEditorScreenState
         !_loadingImage &&
         (widget.photo != null || hasEditableImage);
     final promptChoices = _PhotoPromptChoice.values(
+      l10n: context.l10n,
       usedPromptIds: usedPromptIds,
       currentPromptId: _promptId,
     );
@@ -208,7 +213,9 @@ class _ProfilePhotoEditorScreenState
     return Scaffold(
       backgroundColor: t.bg,
       appBar: CatchTopBar(
-        title: widget.photo == null ? 'Add photo' : 'Edit photo',
+        title: widget.photo == null
+            ? context.l10n.imageUploadsProfilePhotoEditorScreenTitleAddPhoto
+            : context.l10n.imageUploadsProfilePhotoEditorScreenTitleEditPhoto,
       ),
       body: SafeArea(
         child: ListView(
@@ -238,7 +245,9 @@ class _ProfilePhotoEditorScreenState
                     ),
                     gapH16,
                     CatchField.select<_PhotoPromptChoice>(
-                      title: 'Photo prompt',
+                      title: context
+                          .l10n
+                          .imageUploadsProfilePhotoEditorScreenTitlePhotoPrompt,
                       values: promptChoices,
                       value: selectedPromptChoice,
                       itemLabel: (choice) => choice.label,
@@ -249,7 +258,13 @@ class _ProfilePhotoEditorScreenState
                     ),
                     gapH20,
                     CatchButton(
-                      label: _saving ? 'Saving' : 'Save changes',
+                      label: _saving
+                          ? context
+                                .l10n
+                                .imageUploadsProfilePhotoEditorScreenLabelSaving
+                          : context
+                                .l10n
+                                .imageUploadsProfilePhotoEditorScreenLabelSaveChanges,
                       onPressed: canSave ? _save : null,
                       isLoading: _saving,
                       fullWidth: true,
@@ -257,8 +272,12 @@ class _ProfilePhotoEditorScreenState
                     gapH12,
                     CatchButton(
                       label: widget.photo == null
-                          ? 'Choose photo'
-                          : 'Change photo',
+                          ? context
+                                .l10n
+                                .imageUploadsProfilePhotoEditorScreenLabelChoosePhoto
+                          : context
+                                .l10n
+                                .imageUploadsProfilePhotoEditorScreenLabelChangePhoto,
                       onPressed: _saving || _deleting ? null : _replaceImage,
                       icon: Icon(CatchIcons.photoLibraryOutlined),
                       variant: CatchButtonVariant.secondary,
@@ -267,20 +286,35 @@ class _ProfilePhotoEditorScreenState
                     if (widget.photo != null) ...[
                       gapH12,
                       CatchButton(
-                        label: _deleting ? 'Deleting' : 'Delete photo',
+                        label: _deleting
+                            ? context
+                                  .l10n
+                                  .imageUploadsProfilePhotoEditorScreenLabelDeleting
+                            : context
+                                  .l10n
+                                  .imageUploadsProfilePhotoEditorScreenLabelDeletePhoto,
                         onPressed: canDelete ? _deletePhoto : null,
                         isLoading: _deleting,
                         icon: Icon(CatchIcons.deleteOutlineRounded),
                         variant: CatchButtonVariant.danger,
                         fullWidth: true,
                         semanticsLabel: canDelete
-                            ? 'Delete photo ${widget.index + 1}'
-                            : 'Delete photo unavailable',
+                            ? context.l10n
+                                  .imageUploadsProfilePhotoEditorScreenCatchbuttonDeletePhotoValue1(
+                                    value1: widget.index + 1,
+                                  )
+                            : context
+                                  .l10n
+                                  .imageUploadsProfilePhotoEditorScreenCatchbuttonDeletePhotoUnavailable,
                       ),
                       if (!widget.canDelete) ...[
                         gapH8,
                         Text(
-                          'Keep at least $minimumProfilePhotoCount photos on your profile.',
+                          context.l10n
+                              .imageUploadsProfilePhotoEditorScreenTextKeepAtLeastMinimumprofilephotocount(
+                                minimumProfilePhotoCount:
+                                    minimumProfilePhotoCount,
+                              ),
                           style: CatchTextStyles.supporting(
                             context,
                             color: t.ink2,
@@ -369,10 +403,14 @@ final class _PhotoPromptChoice {
   final String label;
 
   static List<_PhotoPromptChoice> values({
+    required AppLocalizations l10n,
     Set<String> usedPromptIds = const {},
     String? currentPromptId,
   }) => [
-    const _PhotoPromptChoice(id: null, label: 'No prompt'),
+    _PhotoPromptChoice(
+      id: null,
+      label: l10n.imageUploadsProfilePhotoEditorScreenLabelNoPrompt,
+    ),
     for (final definition in photoPromptCatalog)
       if (!usedPromptIds.contains(definition.id) ||
           definition.id == currentPromptId)

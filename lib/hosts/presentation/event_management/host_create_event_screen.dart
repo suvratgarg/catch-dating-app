@@ -11,6 +11,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/host_create
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 export 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
 
@@ -41,15 +42,18 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     final initialClub = this.initialClub;
     final initialPrefill = this.initialPrefill;
     if (initialClub != null && initialClub.id != clubId) {
-      return const CatchErrorScaffold(
-        title: 'Event setup unavailable',
-        message: 'That organizer does not match this event route.',
+      return CatchErrorScaffold(
+        title:
+            context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
+        message:
+            context.l10n.hostsHostCreateEventScreenMessageThatOrganizerDoesNot,
       );
     }
     if (initialPrefill != null && initialPrefill.values.clubId != clubId) {
-      return const CatchErrorScaffold(
-        title: 'Repeat unavailable',
-        message: 'That event belongs to a different organizer.',
+      return CatchErrorScaffold(
+        title: context.l10n.hostsHostCreateEventScreenTitleRepeatUnavailable,
+        message:
+            context.l10n.hostsHostCreateEventScreenMessageThatEventBelongsTo,
       );
     }
     final routeState = HostCreateEventRouteState.resolve(
@@ -96,13 +100,13 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
           }
         },
       ),
-      HostCreateEventRouteStatus.notFound => const CatchErrorScaffold(
-        title: 'Club not found',
-        message: 'This club is no longer available.',
+      HostCreateEventRouteStatus.notFound => CatchErrorScaffold(
+        title: context.l10n.hostsHostCreateEventScreenTitleClubNotFound,
+        message: context.l10n.hostsHostCreateEventScreenMessageThisClubIsNo,
       ),
-      HostCreateEventRouteStatus.forbidden => const CatchErrorScaffold(
-        title: 'Host access required',
-        message: "Only this club's host team can create events for this club.",
+      HostCreateEventRouteStatus.forbidden => CatchErrorScaffold(
+        title: context.l10n.hostsHostCreateEventScreenTitleHostAccessRequired,
+        message: context.l10n.hostsHostCreateEventScreenMessageOnlyThisClubS,
       ),
       HostCreateEventRouteStatus.ready => CreateEventScreen(
         club: state.club!,

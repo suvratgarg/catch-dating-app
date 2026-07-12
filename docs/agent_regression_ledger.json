@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 6,
   "updated": "2026-07-12",
   "owner": "agent_operating_model",
   "entries": [
@@ -366,6 +366,52 @@
       "notes": "Firestore mode must create the read-only environment receipt before website listing generation; fixture mode remains preview-only."
     },
     {
+      "id": "REG-WEB-003",
+      "title": "Demo inventory or internal organizer scores leak into public discovery",
+      "status": "active",
+      "applies_to": [
+        "website/scripts/generateOrganizerListings.mjs",
+        "website/src/generated/hostListings*.json",
+        "website/src/features/organizers/homeEventEligibility.ts",
+        "website/src/features/organizers/**",
+        "website/src/features/home/**",
+        "design/website/components.json"
+      ],
+      "symptom": "Deployable organizer data contains catchDemo records, Home renders past, external, or out-of-market events, or public organizer cards expose the internal profile-strength heuristic as a quality percentage.",
+      "guard": {
+        "type": "command",
+        "command": "node --test website/scripts/generateOrganizerListings.test.mjs && npm --workspace catch-marketing run check:event-eligibility && npm --workspace catch-marketing run check:components && npm --workspace catch-marketing run build"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "design/website/components.json",
+        "website/README.md"
+      ],
+      "notes": "Production generation excludes catchDemo by default; Storybook imports the explicit demo projection. Listing strength may rank internally but must not render as public reputation evidence."
+    },
+    {
+      "id": "REG-WEB-004",
+      "title": "Production marketing deploy falls back to unavailable store links",
+      "status": "active",
+      "applies_to": [
+        "tool/env/check_web_hosting_env.mjs",
+        ".github/workflows/marketing-website.yml",
+        ".github/workflows/firebase-deploy.yml",
+        "firebase.json",
+        "website/env.example"
+      ],
+      "symptom": "A production marketing Hosting deploy succeeds with empty, placeholder, non-HTTPS, or non-official App Store and Google Play product URLs.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/env/check_web_hosting_env.test.mjs && node tool/run.mjs check env:check-web-hosting"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "website/README.md"
+      ],
+      "notes": "Local and preview builds may intentionally omit store links; production marketing predeploy requires official HTTPS product URLs and both deploy workflows forward the GitHub Environment variables."
+    },
+    {
       "id": "REG-CLAIM-001",
       "title": "Stale organizer claim decisions overwrite a newer ownership state",
       "status": "active",
@@ -385,6 +431,54 @@
         "docs/data_contracts.md"
       ],
       "notes": "The club claim state owns the single active request id. Admin decisions must match it, and stale rejection may update only the old request plus its requester notification."
+    },
+    {
+      "id": "REG-COPY-001",
+      "title": "Flutter, native, or notification product prose bypasses its reviewable catalog",
+      "status": "active",
+      "applies_to": [
+        "lib/**",
+        "lib/l10n/**",
+        "copy/**",
+        "functions/src/**",
+        "ios/Runner/**"
+      ],
+      "symptom": "A new user-visible string is authored inline, catalog metadata is incomplete, generated native or notification copy drifts, or domain/controller state carries translated English instead of a semantic code and interpolation data.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check copy:mobile-catalog && node tool/run.mjs check copy:mobile-ownership && node tool/run.mjs check copy:native-sync && node tool/run.mjs check copy:notification-sync"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "The Flutter ownership baseline is explicit migration debt and may only shrink. The ARB and copy JSON catalogs are sources; generated Dart, InfoPlist.strings, and TypeScript are outputs."
+    },
+    {
+      "id": "REG-TYPOGRAPHY-001",
+      "title": "Native font packaging or semantic typography ownership drifts",
+      "status": "active",
+      "applies_to": [
+        "assets/fonts/**",
+        "pubspec.yaml",
+        "lib/core/theme/catch_fonts.dart",
+        "lib/core/theme/catch_text_styles.dart",
+        "packages/catch_ui_lints/**",
+        "tool/design/context_pack_builder_test.dart",
+        "design_context_pack/design_system/typography.json"
+      ],
+      "symptom": "A Flutter target packages a web-only Archivo asset, app UI calls CatchFonts or owns letter spacing directly, or the generated typography contract loses family, case, alias, tracking, or variable-axis metadata.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/tooling/catch_ui_lints_typography_test.dart test/core/catch_primitives_test.dart tool/design/context_pack_builder_test.dart && flutter analyze --no-fatal-infos",
+        "guardEvidence": "finds direct CatchFonts builder calls"
+      },
+      "owner_docs": [
+        "docs/design_language.md",
+        "docs/widget_catalog.md",
+        "design_context_pack/design_system/typography.json"
+      ],
+      "notes": "Native Flutter bundles Archivo-Roman-VF.ttf and its OFL; web surfaces may retain WOFF2. Tracking is zero by default, with named uppercase roles and the welcome reel exception owned by CatchTextStyles."
     }
   ]
 }

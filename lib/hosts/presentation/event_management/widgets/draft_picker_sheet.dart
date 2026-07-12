@@ -15,6 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 Future<EventDraft?> showDraftPickerSheet({
@@ -40,14 +41,26 @@ Future<EventDraft?> showDraftPickerSheet({
   return completer.future;
 }
 
-const draftDeleteConfirmationDialogTitle = 'Delete draft?';
-const draftDeleteConfirmationDialogActions = <CatchDialogAction<bool>>[
-  CatchDialogAction(label: 'Cancel', value: false),
-  CatchDialogAction(label: 'Delete', value: true, isDestructive: true),
+String draftDeleteConfirmationDialogTitle(AppLocalizations l10n) =>
+    l10n.hostsDraftPickerSheetVisiblecopyDeleteDraft;
+List<CatchDialogAction<bool>> draftDeleteConfirmationDialogActions(
+  AppLocalizations l10n,
+) => [
+  CatchDialogAction(label: l10n.hostsDraftPickerSheetLabelCancel, value: false),
+  CatchDialogAction(
+    label: l10n.hostsDraftPickerSheetLabelDelete,
+    value: true,
+    isDestructive: true,
+  ),
 ];
 
-String draftDeleteConfirmationDialogMessage(EventDraft draft) {
-  return 'This will permanently delete "${draft.summary}".';
+String draftDeleteConfirmationDialogMessage(
+  AppLocalizations l10n,
+  EventDraft draft,
+) {
+  return l10n.hostsDraftPickerSheetVisiblecopyThisWillPermanentlyDelete(
+    summary: draft.summary,
+  );
 }
 
 class DraftDeleteConfirmationDialog extends StatelessWidget {
@@ -58,9 +71,9 @@ class DraftDeleteConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchConfirmDialog<bool>(
-      title: draftDeleteConfirmationDialogTitle,
-      message: draftDeleteConfirmationDialogMessage(draft),
-      actions: draftDeleteConfirmationDialogActions,
+      title: draftDeleteConfirmationDialogTitle(context.l10n),
+      message: draftDeleteConfirmationDialogMessage(context.l10n, draft),
+      actions: draftDeleteConfirmationDialogActions(context.l10n),
     );
   }
 }
@@ -71,9 +84,9 @@ Future<bool?> showDraftDeleteConfirmationDialog({
 }) {
   return showCatchAdaptiveDialog<bool>(
     context: context,
-    title: draftDeleteConfirmationDialogTitle,
-    message: draftDeleteConfirmationDialogMessage(draft),
-    actions: draftDeleteConfirmationDialogActions,
+    title: draftDeleteConfirmationDialogTitle(context.l10n),
+    message: draftDeleteConfirmationDialogMessage(context.l10n, draft),
+    actions: draftDeleteConfirmationDialogActions(context.l10n),
   );
 }
 
@@ -132,7 +145,10 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
       }
     } catch (_) {
       if (!mounted) return;
-      showCatchSnackBar(context, 'Could not delete draft.');
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsDraftPickerSheetVisiblecopyCouldNotDeleteDraft,
+      );
     } finally {
       if (mounted) setState(() => _deletingDraftId = null);
     }
@@ -141,10 +157,10 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
   @override
   Widget build(BuildContext context) {
     return CatchBottomSheetScaffold(
-      title: 'Resume a draft?',
-      subtitle: 'Pick up where you left off, or start fresh.',
+      title: context.l10n.hostsDraftPickerSheetTitleResumeADraft,
+      subtitle: context.l10n.hostsDraftPickerSheetSubtitlePickUpWhereYou,
       action: CatchButton(
-        label: 'Start a fresh event',
+        label: context.l10n.hostsDraftPickerSheetLabelStartAFreshEvent,
         onPressed: _onStartFresh,
         variant: CatchButtonVariant.secondary,
         fullWidth: true,
@@ -157,8 +173,9 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
           if (_drafts.isEmpty)
             CatchEmptyState(
               icon: CatchIcons.editNoteRounded,
-              title: 'No drafts yet',
-              message: 'Saved drafts for this club will appear here.',
+              title: context.l10n.hostsDraftPickerSheetTitleNoDraftsYet,
+              message:
+                  context.l10n.hostsDraftPickerSheetMessageSavedDraftsForThis,
             )
           else
             ConstrainedBox(
@@ -230,7 +247,9 @@ class DraftCard extends StatelessWidget {
                 ),
                 gapH4,
                 Text(
-                  'SAVED ${_formatRelative(draft.savedAt).toUpperCase()}',
+                  context.l10n.hostsDraftPickerSheetTextSavedTouppercase(
+                    toUpperCase: _formatRelative(draft.savedAt).toUpperCase(),
+                  ),
                   style: CatchTextStyles.monoLabelS(context, color: t.ink3),
                 ),
               ],
@@ -238,7 +257,7 @@ class DraftCard extends StatelessWidget {
           ),
           gapW8,
           Tooltip(
-            message: 'Delete draft',
+            message: context.l10n.hostsDraftPickerSheetMessageDeleteDraft,
             child: CatchIconButton(
               key: CreateEventFormKeys.deleteDraft(draft.id),
               onTap: isDeleting ? null : onDelete,

@@ -13,6 +13,7 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +31,9 @@ class SavedEventsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: const CatchTopBar(title: 'Saved events'),
+      appBar: CatchTopBar(
+        title: context.l10n.eventsSavedEventsScreenTitleSavedEvents,
+      ),
       body: SafeArea(
         child: Builder(
           builder: (context) {
@@ -64,9 +67,12 @@ class SavedEventsScreen extends ConsumerWidget {
                   return Center(
                     child: CatchEmptyState(
                       icon: CatchIcons.bookmarkBorderRounded,
-                      title: 'No saved events yet',
-                      message:
-                          'Save events you want to revisit before booking.',
+                      title: context
+                          .l10n
+                          .eventsSavedEventsScreenTitleNoSavedEventsYet,
+                      message: context
+                          .l10n
+                          .eventsSavedEventsScreenMessageSaveEventsYouWant,
                       iconSize: CatchLayout.calendarEmptyIconSize,
                       padding: CatchInsets.contentSpacious,
                       titleStyle: CatchTextStyles.titleL(context),
@@ -137,7 +143,7 @@ class SavedEventsHeaderSliver extends StatelessWidget {
       padding: CatchInsets.pageHeaderCompact,
       sliver: SliverToBoxAdapter(
         child: Text(
-          'Events you saved',
+          context.l10n.eventsSavedEventsScreenTextEventsYouSaved,
           style: CatchTextStyles.headlineS(context),
         ),
       ),

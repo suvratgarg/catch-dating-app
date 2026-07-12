@@ -12,6 +12,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailOverviewSection extends StatelessWidget {
@@ -35,20 +36,22 @@ class EventDetailOverviewSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchSection.divided(
-          title: 'The plan',
+          title: context.l10n.eventsEventDetailOverviewSectionTitleThePlan,
           activityKind: event.activityKind,
           lead: true,
           first: true,
           dividerColor: style?.dividerColor,
           child: EventDescription(
             description: description.isEmpty
-                ? _fallbackPlan(event)
+                ? _fallbackPlan(event, context.l10n)
                 : description,
             surfaceStyle: style,
           ),
         ),
         CatchSection.divided(
-          title: 'Why you might click',
+          title: context
+              .l10n
+              .eventsEventDetailOverviewSectionTitleWhyYouMightClick,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
           child: Column(
@@ -61,7 +64,9 @@ class EventDetailOverviewSection extends StatelessWidget {
               ),
               gapH12,
               Text(
-                'Based on event format, capacity and booking rules — never shown to the group.',
+                context
+                    .l10n
+                    .eventsEventDetailOverviewSectionTextBasedOnEventFormat,
                 style: CatchTextStyles.supporting(
                   context,
                   color: style?.bodyColor,
@@ -71,7 +76,7 @@ class EventDetailOverviewSection extends StatelessWidget {
           ),
         ),
         CatchSection.divided(
-          title: 'Itinerary',
+          title: context.l10n.eventsEventDetailOverviewSectionTitleItinerary,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
           child: EventDetailItinerary(
@@ -83,13 +88,13 @@ class EventDetailOverviewSection extends StatelessWidget {
         ),
         if (event.eventPhotos.isNotEmpty)
           CatchSection.divided(
-            title: 'Photos',
+            title: context.l10n.eventsEventDetailOverviewSectionTitlePhotos,
             dividerColor: style?.dividerColor,
             titleColor: style?.headingColor,
             child: EventDetailPhotoStrip(event: event),
           ),
         CatchSection.divided(
-          title: 'Where',
+          title: context.l10n.eventsEventDetailOverviewSectionTitleWhere,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
           child: EventDetailMapCard(
@@ -99,7 +104,8 @@ class EventDetailOverviewSection extends StatelessWidget {
           ),
         ),
         CatchSection.divided(
-          title: 'How sign-ups work',
+          title:
+              context.l10n.eventsEventDetailOverviewSectionTitleHowSignUpsWork,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
           child: EventDetailMechanismList(
@@ -108,7 +114,7 @@ class EventDetailOverviewSection extends StatelessWidget {
           ),
         ),
         CatchSection.divided(
-          title: 'Good to know',
+          title: context.l10n.eventsEventDetailOverviewSectionTitleGoodToKnow,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
           child: CatchSectionList(
@@ -145,7 +151,7 @@ class EventDescription extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'About this event',
+          context.l10n.eventsEventDetailOverviewSectionTextAboutThisEvent,
           style: CatchTextStyles.sectionTitle(
             context,
             color: surfaceStyle?.headingColor,
@@ -164,11 +170,20 @@ class EventDescription extends StatelessWidget {
   }
 }
 
-String _fallbackPlan(Event event) {
+String _fallbackPlan(Event event, AppLocalizations l10n) {
   if (event.eventFormat.isDistanceBased) {
-    return 'A ${EventFormatters.distanceKm(event.distanceKm)} ${event.eventFormat.label.toLowerCase()} at a ${event.pace.label.toLowerCase()} pace from ${event.locationName}.';
+    return l10n
+        .eventsEventDetailOverviewSectionVisiblecopyADistancekmTolowercaseAt(
+          distanceKm: EventFormatters.distanceKm(event.distanceKm),
+          toLowerCase: event.eventFormat.label.toLowerCase(),
+          toLowerCase2: event.pace.label.toLowerCase(),
+          locationName: event.locationName,
+        );
   }
-  return 'A hosted ${event.eventFormat.label.toLowerCase()} built around a clear arrival, shared activity, and low-pressure follow-up.';
+  return l10n
+      .eventsEventDetailOverviewSectionVisiblecopyAHostedTolowercaseBuilt(
+        toLowerCase: event.eventFormat.label.toLowerCase(),
+      );
 }
 
 class WhatToExpectSection extends StatelessWidget {
@@ -184,10 +199,10 @@ class WhatToExpectSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final items = _expectationItems(event);
+    final items = _expectationItems(event, context.l10n);
 
     return CatchSection.contained(
-      title: 'What to expect',
+      title: context.l10n.eventsEventDetailOverviewSectionTitleWhatToExpect,
       titleColor: surfaceStyle?.headingColor,
       padding: CatchInsets.tileContentCompact,
       bodyGap: CatchLayout.detailScreenInlineRowGap,
@@ -226,7 +241,7 @@ class EventDetailPolicySummary extends StatelessWidget {
     final cancellation = policy.cancellationPolicy;
 
     return CatchSection.contained(
-      title: 'Booking policy',
+      title: context.l10n.eventsEventDetailOverviewSectionTitleBookingPolicy,
       titleColor: surfaceStyle?.headingColor,
       padding: CatchInsets.tileContentCompact,
       bodyGap: CatchLayout.detailScreenInlineRowGap,
@@ -238,21 +253,27 @@ class EventDetailPolicySummary extends StatelessWidget {
         children: [
           EventDetailPolicySummaryLine(
             icon: CatchIcons.groupOutlined,
-            title: _admissionTitle(policy.admissionPolicy),
-            body: _admissionSummary(policy.admissionPolicy),
+            title: _admissionTitle(policy.admissionPolicy, context.l10n),
+            body: _admissionSummary(policy.admissionPolicy, context.l10n),
           ),
           if (policy.usesDemandPricing)
             EventDetailPolicySummaryLine(
               icon: CatchIcons.trendingUpRounded,
-              title: 'Demand pricing',
+              title: context
+                  .l10n
+                  .eventsEventDetailOverviewSectionTitleDemandPricing,
               body: _dynamicPricingSummary(
                 policy.pricingPolicy,
                 currencyCode: event.currency,
+                l10n: context.l10n,
               ),
             ),
           EventDetailPolicySummaryLine(
             icon: CatchIcons.receiptLongOutlined,
-            title: '${cancellation.title} cancellation',
+            title: context.l10n
+                .eventsEventDetailOverviewSectionTitleTitleCancellation(
+                  title: cancellation.title,
+                ),
             body: cancellation.attendeeSummary,
           ),
           EventDetailPolicySummaryLine(
@@ -290,19 +311,18 @@ class EventDetailPolicySummaryLine extends StatelessWidget {
   }
 }
 
-List<_ExpectationItem> _expectationItems(Event event) {
+List<_ExpectationItem> _expectationItems(Event event, AppLocalizations l10n) {
   final policy = event.effectiveEventPolicy;
   final items = <_ExpectationItem>[
     _ExpectationItem(
       icon: _activityExpectationIcon(event),
-      title: _activityExpectationTitle(event),
-      body: _activityExpectationBody(event),
+      title: _activityExpectationTitle(event, l10n),
+      body: _activityExpectationBody(event, l10n),
     ),
     _ExpectationItem(
       icon: CatchIcons.qrCode2Outlined,
-      title: 'Attendance matters',
-      body:
-          'Check-in or host-marked attendance decides who can use post-event follow-up and feedback.',
+      title: l10n.eventsEventDetailOverviewSectionTitleAttendanceMatters,
+      body: l10n.eventsEventDetailOverviewSectionBodyCheckInOrHost,
     ),
   ];
 
@@ -310,9 +330,8 @@ List<_ExpectationItem> _expectationItems(Event event) {
     items.add(
       _ExpectationItem(
         icon: CatchIcons.pendingActionsOutlined,
-        title: 'Host review',
-        body:
-            'Request a spot first. The host can review your public profile before confirming the roster.',
+        title: l10n.eventsEventDetailOverviewSectionTitleHostReview,
+        body: l10n.eventsEventDetailOverviewSectionBodyRequestASpotFirst,
       ),
     );
   } else if (policy.admissionPolicy.format ==
@@ -320,18 +339,16 @@ List<_ExpectationItem> _expectationItems(Event event) {
     items.add(
       _ExpectationItem(
         icon: CatchIcons.balanceOutlined,
-        title: 'Balanced booking',
-        body:
-            'Some bookings may move through the waitlist so the event does not become too skewed.',
+        title: l10n.eventsEventDetailOverviewSectionTitleBalancedBooking,
+        body: l10n.eventsEventDetailOverviewSectionBodySomeBookingsMayMove,
       ),
     );
   } else if (policy.admissionPolicy.waitlistPolicy.isEnabled) {
     items.add(
       _ExpectationItem(
         icon: CatchIcons.pendingActionsOutlined,
-        title: 'Waitlist available',
-        body:
-            'If the event fills up, the waitlist can reopen spots when capacity changes.',
+        title: l10n.eventsEventDetailOverviewSectionTitleWaitlistAvailable,
+        body: l10n.eventsEventDetailOverviewSectionBodyIfTheEventFills,
       ),
     );
   }
@@ -345,29 +362,34 @@ IconData _activityExpectationIcon(Event event) {
       : CatchIcons.eventAvailableOutlined;
 }
 
-String _activityExpectationTitle(Event event) {
+String _activityExpectationTitle(Event event, AppLocalizations l10n) {
   if (event.eventFormat.isDistanceBased) {
-    return '${event.distanceKm.toStringAsFixed(1)} km ${event.pace.label.toLowerCase()} ${event.eventFormat.label.toLowerCase()}';
+    return l10n
+        .eventsEventDetailOverviewSectionVisiblecopyTostringasfixedKmTolowercaseTolowercase2(
+          toStringAsFixed: event.distanceKm.toStringAsFixed(1),
+          toLowerCase: event.pace.label.toLowerCase(),
+          toLowerCase2: event.eventFormat.label.toLowerCase(),
+        );
   }
   return event.eventFormat.label;
 }
 
-String _activityExpectationBody(Event event) {
+String _activityExpectationBody(Event event, AppLocalizations l10n) {
   return switch (event.eventFormat.interactionModel) {
     EventInteractionModel.pacePods =>
-      'Arrive ready for the listed pace and route. The host may split attendees into smaller groups if the crowd needs structure.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyArriveReadyForThe,
     EventInteractionModel.pairedRotations =>
-      'Expect paired or court-based rotations so attendees can meet more people without managing the logistics themselves.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyExpectPairedOrCourt,
     EventInteractionModel.teamRotations =>
-      'Expect team structure and host-led moments that create natural reasons to talk.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyExpectTeamStructureAnd,
     EventInteractionModel.seatedTable =>
-      'Expect a seated format with table-level structure and host cues for easier conversation.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyExpectASeatedFormat,
     EventInteractionModel.freeFormMixer =>
-      'Expect a looser social format with host nudges when the room needs more mixing.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyExpectALooserSocial,
     EventInteractionModel.hostLedProgram =>
-      'Expect a host-led activity with clear arrival, activity, and follow-up moments.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyExpectAHostLed,
     EventInteractionModel.openFormat =>
-      'Expect the host to shape the format around the room and venue.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyExpectTheHostTo,
   };
 }
 
@@ -383,40 +405,49 @@ class _ExpectationItem {
   final String body;
 }
 
-String _admissionTitle(EventAdmissionPolicy policy) {
+String _admissionTitle(EventAdmissionPolicy policy, AppLocalizations l10n) {
   return switch (policy.format) {
-    EventAdmissionFormat.open => 'Open capacity',
-    EventAdmissionFormat.inviteOnly => 'Invite only',
-    EventAdmissionFormat.manualApproval => 'Request to join',
-    EventAdmissionFormat.fixedCohortCaps => 'Open with cohort caps',
-    EventAdmissionFormat.balancedRatio => 'Balanced singles',
-    EventAdmissionFormat.membersOnly => 'Members only',
+    EventAdmissionFormat.open =>
+      l10n.eventsEventDetailOverviewSectionVisiblecopyOpenCapacity,
+    EventAdmissionFormat.inviteOnly =>
+      l10n.eventsEventDetailOverviewSectionVisiblecopyInviteOnly,
+    EventAdmissionFormat.manualApproval =>
+      l10n.eventsEventDetailOverviewSectionVisiblecopyRequestToJoin,
+    EventAdmissionFormat.fixedCohortCaps =>
+      l10n.eventsEventDetailOverviewSectionVisiblecopyOpenWithCohortCaps,
+    EventAdmissionFormat.balancedRatio =>
+      l10n.eventsEventDetailOverviewSectionVisiblecopyBalancedSingles,
+    EventAdmissionFormat.membersOnly =>
+      l10n.eventsEventDetailOverviewSectionVisiblecopyMembersOnly,
   };
 }
 
-String _admissionSummary(EventAdmissionPolicy policy) {
+String _admissionSummary(EventAdmissionPolicy policy, AppLocalizations l10n) {
   return switch (policy.format) {
     EventAdmissionFormat.open =>
-      'Attendees book until ${policy.capacityLimit} spots are filled.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyAttendeesBookUntilCapacitylimit(
+        capacityLimit: policy.capacityLimit,
+      ),
     EventAdmissionFormat.fixedCohortCaps =>
-      'Attendees book within total capacity, with optional straight men and straight women caps applied.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyAttendeesBookWithinTotal,
     EventAdmissionFormat.balancedRatio =>
-      'Straight men and women are balanced within a small tolerance; other cohorts book within total capacity.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyStraightMenAndWomen,
     EventAdmissionFormat.inviteOnly =>
-      'Only attendees with the host invite can book.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyOnlyAttendeesWithThe,
     EventAdmissionFormat.manualApproval =>
-      'The host reviews requests before confirming spots.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyTheHostReviewsRequests,
     EventAdmissionFormat.membersOnly =>
-      'Only active club members can book this event.',
+      l10n.eventsEventDetailOverviewSectionVisiblecopyOnlyActiveClubMembers,
   };
 }
 
 String _dynamicPricingSummary(
   EventPricingPolicy policy, {
   required String currencyCode,
+  required AppLocalizations l10n,
 }) {
   if (policy.demandPricingRules.isEmpty) {
-    return 'Price can change based on live demand.';
+    return l10n.eventsEventDetailOverviewSectionVisiblecopyPriceCanChangeBased;
   }
   final rule = policy.demandPricingRules.first;
   final step = EventFormatters.priceInPaise(
@@ -427,5 +458,8 @@ String _dynamicPricingSummary(
     rule.maxAdjustment.inPaise,
     currencyCode: currencyCode,
   );
-  return 'Price can increase by $step per demand step, capped at $max above the base price.';
+  return l10n.eventsEventDetailOverviewSectionVisiblecopyPriceCanIncreaseBy(
+    step: step,
+    max: max,
+  );
 }

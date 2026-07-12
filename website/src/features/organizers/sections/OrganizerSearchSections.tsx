@@ -27,11 +27,10 @@ import {
   UiLabel,
 } from "../../../shared/ui/primitives";
 import {trackOrganizerSearchAppearance} from "../analytics";
-import {ActivityMark, ProfileStrength, StatusBadge} from "../OrganizerIdentity";
+import {ActivityMark, StatusBadge} from "../OrganizerIdentity";
 import {activityForListing, eventHighlightsForListing} from "../publicDiscovery";
 import {claimHrefForListing} from "../routing";
 import {
-  listingProfileStrength,
   nextFutureCatchEvent,
   type OrganizerSort,
   type OrganizerStatusFilter,
@@ -306,7 +305,6 @@ function OrganizerResultCard({
           ) : null}
           <ListingFormatRow items={listing.formats.slice(0, 4)} />
           <OrganizerResultCardFooter>
-            <ProfileStrength value={listingProfileStrength(listing)} />
             <span>{isAppCreated ? "Owner-managed profile" : `${listing.missingEvidence.length} proof gaps`}</span>
           </OrganizerResultCardFooter>
         </OrganizerResultCardBody>

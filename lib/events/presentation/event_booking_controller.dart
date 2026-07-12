@@ -4,6 +4,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -73,7 +74,9 @@ class EventBookingController extends _$EventBookingController {
       return paymentRepo.processPayment(
         eventId: event.id,
         currencyCode: event.currency,
-        description: '${event.title} · ${event.shortDateLabel}',
+        description:
+            // copy:allow-inline(Composes governed event title and date separator copy)
+            '${event.title}${StructuredDomainCopy.eventTitleDateSeparator}${event.shortDateLabel}',
         userName: user.name,
         userEmail: user.email,
         userContact: user.phoneNumber,

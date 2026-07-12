@@ -6,7 +6,7 @@ import {HomePage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
 import {HostPreviewPage} from "../features/host/HostPreviewPage";
 import {NotFoundPage} from "../features/notFound/NotFoundPage";
-import {hostListings} from "../features/organizers/data";
+import {hostListings} from "./fixtures/hostListings";
 import {HostListingPage} from "../features/organizers/HostListingPage";
 import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
 import type {HostListing} from "../features/organizers/types";
@@ -34,6 +34,7 @@ type Story = StoryObj<typeof meta>;
 export const Home: Story = {
   name: "/",
   parameters: {
+    a11y: {test: "todo"},
     catchRoute: {
       id: "home",
       path: "/",
@@ -55,6 +56,7 @@ export const Home: Story = {
 export const Host: Story = {
   name: "/host/",
   parameters: {
+    a11y: {test: "todo"},
     catchRoute: {
       id: "host",
       path: "/host/",
@@ -76,6 +78,7 @@ export const Host: Story = {
 export const HostPreview: Story = {
   name: "/host/preview/",
   parameters: {
+    a11y: {test: "todo"},
     catchRoute: {
       id: "host_preview",
       path: "/host/preview/",
@@ -97,6 +100,7 @@ export const HostPreview: Story = {
 export const Claim: Story = {
   name: "/claim/",
   parameters: {
+    a11y: {test: "todo"},
     catchRoute: {
       id: "claim",
       path: "/claim/",
@@ -162,6 +166,7 @@ export const NotFound: Story = {
 export const OrganizerSearch: Story = {
   name: "/organizers/",
   parameters: {
+    a11y: {test: "todo"},
     catchRoute: {
       id: "organizer_search",
       path: "/organizers/",

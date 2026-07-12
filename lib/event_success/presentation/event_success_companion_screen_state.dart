@@ -15,6 +15,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_live_r
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/widgets.dart';
@@ -83,6 +84,7 @@ class EventSuccessCompanionRouteState {
   });
 
   factory EventSuccessCompanionRouteState.resolveCore({
+    required AppLocalizations l10n,
     required CatchAsyncState<Event?> eventState,
     required Event? initialEvent,
     required CatchAsyncState<String?> uidState,
@@ -105,8 +107,10 @@ class EventSuccessCompanionRouteState {
     }
     if (event == null) {
       return EventSuccessCompanionRouteState.message(
-        title: 'Event not found',
-        message: 'This event is no longer available.',
+        title:
+            l10n.eventSuccessEventSuccessCompanionScreenStateTitleEventNotFound,
+        message: l10n
+            .eventSuccessEventSuccessCompanionScreenStateMessageThisEventIsNo,
       );
     }
 
@@ -124,8 +128,10 @@ class EventSuccessCompanionRouteState {
     final uid = uidState.value;
     if (uid == null) {
       return EventSuccessCompanionRouteState.message(
-        title: 'Sign in required',
-        message: 'Sign in to open your event companion.',
+        title: l10n
+            .eventSuccessEventSuccessCompanionScreenStateTitleSignInRequired,
+        message: l10n
+            .eventSuccessEventSuccessCompanionScreenStateMessageSignInToOpen,
         event: event,
       );
     }
@@ -172,8 +178,10 @@ class EventSuccessCompanionRouteState {
     final eventParticipation = participation.value;
     if (userProfile == null || eventParticipation == null) {
       return EventSuccessCompanionRouteState.message(
-        title: 'No booking found',
-        message: 'Book this event before opening the companion.',
+        title: l10n
+            .eventSuccessEventSuccessCompanionScreenStateTitleNoBookingFound,
+        message: l10n
+            .eventSuccessEventSuccessCompanionScreenStateMessageBookThisEventBefore,
         event: event,
         uid: uid,
       );
@@ -182,9 +190,10 @@ class EventSuccessCompanionRouteState {
     final plan = planState.value;
     if (plan == null) {
       return EventSuccessCompanionRouteState.message(
-        title: 'Companion not available',
-        message:
-            'The host has not enabled the live event guide for this event yet.',
+        title: l10n
+            .eventSuccessEventSuccessCompanionScreenStateTitleCompanionNotAvailable,
+        message: l10n
+            .eventSuccessEventSuccessCompanionScreenStateMessageTheHostHasNot,
         event: event,
         uid: uid,
         profile: userProfile,
@@ -604,6 +613,7 @@ class EventSuccessCompanionScreenState {
   });
 
   factory EventSuccessCompanionScreenState.from({
+    required AppLocalizations l10n,
     required Event event,
     required EventSuccessPlan plan,
     required UserProfile userProfile,
@@ -631,6 +641,7 @@ class EventSuccessCompanionScreenState {
       arrivalMissionStartAvailable: arrivalMissionStartAvailable,
     );
     final presentation = EventSuccessMomentPresentation.forMoment(
+      l10n: l10n,
       event: event,
       plan: plan,
       moment: attendeeMoment,
@@ -644,8 +655,10 @@ class EventSuccessCompanionScreenState {
       plan.activeStepIndex,
       plan.revealStatus.name,
       plan.activeRevealRoundIndex,
-      attendeeMoment.activeStep?.stage.name ?? 'no-stage',
-      attendeeMoment.activeStep?.title ?? 'no-step',
+      attendeeMoment.activeStep?.stage.name ??
+          l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyNoStage,
+      attendeeMoment.activeStep?.title ??
+          l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyNoStep,
     ].join(':');
 
     return EventSuccessCompanionScreenState(
@@ -704,6 +717,7 @@ class EventSuccessMomentPresentation {
   final EventSuccessAmbientBed ambientBed;
 
   static EventSuccessMomentPresentation forMoment({
+    required AppLocalizations l10n,
     required Event event,
     required EventSuccessPlan plan,
     required EventSuccessAttendeeMoment moment,
@@ -714,111 +728,131 @@ class EventSuccessMomentPresentation {
     final step = moment.activeStep;
     return switch (moment.kind) {
       EventSuccessAttendeeMomentKind.preArrival => EventSuccessMomentPresentation(
-        badgeLabel: 'Before arrival',
-        headline: 'Your event guide is warming up.',
-        body:
-            'When check-in opens, this screen turns into the live guide for ${event.locationName}.',
-        privacyLine:
-            'Pre-event details stay informational until the host starts the room.',
+        badgeLabel: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyBeforeArrival,
+        headline: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourEventGuideIs,
+        body: l10n
+            .eventSuccessEventSuccessCompanionScreenStateBodyWhenCheckInOpens(
+              locationName: event.locationName,
+            ),
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyPreEventDetailsStay,
         icon: CatchIcons.eventAvailableOutlined,
         badgeTone: CatchBadgeTone.live,
         effectKind: EventSuccessLiveEffectKind.liveEntry,
       ),
-      EventSuccessAttendeeMomentKind.selfCheckIn =>
-        EventSuccessMomentPresentation(
-          badgeLabel: 'Arrival cue',
-          headline: 'Check in when you reach the venue.',
-          body:
-              'One tap tells the host you are in the room and ready for the live flow.',
-          privacyLine:
-              'Check-in only updates attendance and the event companion flow.',
-          icon: CatchIcons.qrCode2Rounded,
-          badgeTone: CatchBadgeTone.warning,
-          effectKind: EventSuccessLiveEffectKind.liveEntry,
-        ),
+      EventSuccessAttendeeMomentKind.selfCheckIn => EventSuccessMomentPresentation(
+        badgeLabel: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyArrivalCue,
+        headline: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInWhenYou,
+        body:
+            l10n.eventSuccessEventSuccessCompanionScreenStateBodyOneTapTellsThe,
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInOnlyUpdates,
+        icon: CatchIcons.qrCode2Rounded,
+        badgeTone: CatchBadgeTone.warning,
+        effectKind: EventSuccessLiveEffectKind.liveEntry,
+      ),
       EventSuccessAttendeeMomentKind.firstHelloCheckIn =>
         EventSuccessMomentPresentation(
-          badgeLabel: 'First Hello',
-          headline: 'Your first arrival mission is live.',
-          body:
-              'Find one person, ask one tiny question, and let the room start with permission instead of pressure.',
-          privacyLine:
-              'This checks you in. Hosts do not see the individual answer.',
+          badgeLabel: l10n
+              .eventSuccessEventSuccessCompanionScreenStateVisiblecopyFirstHello,
+          headline: l10n
+              .eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourFirstArrivalMission,
+          body: l10n
+              .eventSuccessEventSuccessCompanionScreenStateBodyFindOnePersonAsk,
+          privacyLine: l10n
+              .eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisChecksYouIn,
           icon: CatchIcons.wavingHandOutlined,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
         ),
       EventSuccessAttendeeMomentKind.compatibilityQuestionnaire =>
         EventSuccessMomentPresentation(
-          badgeLabel: 'Match clues',
-          headline: 'Add a few clues before the room moves.',
-          body:
-              'Quick answers help Catch shape prompts without turning the event into a form.',
-          privacyLine: 'Hosts do not see individual match clue answers.',
+          badgeLabel: l10n
+              .eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues,
+          headline: l10n
+              .eventSuccessEventSuccessCompanionScreenStateVisiblecopyAddAFewClues,
+          body: l10n
+              .eventSuccessEventSuccessCompanionScreenStateBodyQuickAnswersHelpCatch,
+          privacyLine: l10n
+              .eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee,
           icon: CatchIcons.tuneRounded,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
         ),
-      EventSuccessAttendeeMomentKind.liveStepContext =>
-        EventSuccessMomentPresentation(
-          badgeLabel: step?.stage.label ?? 'Live now',
-          headline: step?.title ?? 'Follow the host for the next beat.',
-          body:
-              step?.attendeeExperience ??
-              'The host is pacing the room from live mode.',
-          privacyLine:
-              'Everyone sees the same room cue; personal details stay scoped to you.',
-          icon: CatchIcons.locationOnOutlined,
-          badgeTone: CatchBadgeTone.live,
-          effectKind: EventSuccessLiveEffectKind.stepChange,
-          ambientBed: EventSuccessAmbientBed.pulse,
-        ),
-      EventSuccessAttendeeMomentKind.socialPrompt =>
-        EventSuccessMomentPresentation(
-          badgeLabel: step?.stage.label ?? 'Live prompt',
-          headline: 'A fresh prompt just dropped.',
-          body:
-              step?.attendeeExperience ??
-              'Use it if the room needs an easy next line.',
-          privacyLine:
-              'Prompts are shared guidance, not a public record of what you say.',
-          icon: CatchIcons.chatBubbleOutlineRounded,
-          badgeTone: CatchBadgeTone.live,
-          effectKind: EventSuccessLiveEffectKind.stepChange,
-          ambientBed: EventSuccessAmbientBed.pulse,
-        ),
-      EventSuccessAttendeeMomentKind.conversationCues =>
-        EventSuccessMomentPresentation(
-          badgeLabel: step?.stage.label ?? 'Conversation cues',
-          headline: 'Pick a cue and keep the room moving.',
-          body:
-              step?.attendeeExperience ??
-              'These are light nudges for the current event moment.',
-          privacyLine:
-              'Conversation cues are suggestions only; nothing is sent for you.',
-          icon: CatchIcons.forumOutlined,
-          badgeTone: CatchBadgeTone.live,
-          effectKind: EventSuccessLiveEffectKind.stepChange,
-          ambientBed: EventSuccessAmbientBed.pulse,
-        ),
-      EventSuccessAttendeeMomentKind.assignment => EventSuccessMomentPresentation(
-        badgeLabel: 'Your next group',
-        headline: 'Your assignment is ready.',
+      EventSuccessAttendeeMomentKind.liveStepContext => EventSuccessMomentPresentation(
+        badgeLabel:
+            step?.stage.label ??
+            l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyLiveNow,
+        headline:
+            step?.title ??
+            l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyFollowTheHostFor,
         body:
-            'Use it as a nudge into the next interaction, then let the room breathe.',
-        privacyLine: 'Only your own assignment details appear on this screen.',
+            step?.attendeeExperience ??
+            l10n.eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing,
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame,
+        icon: CatchIcons.locationOnOutlined,
+        badgeTone: CatchBadgeTone.live,
+        effectKind: EventSuccessLiveEffectKind.stepChange,
+        ambientBed: EventSuccessAmbientBed.pulse,
+      ),
+      EventSuccessAttendeeMomentKind.socialPrompt => EventSuccessMomentPresentation(
+        badgeLabel:
+            step?.stage.label ??
+            l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyLivePrompt,
+        headline: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyAFreshPromptJust,
+        body:
+            step?.attendeeExperience ??
+            l10n.eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe,
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyPromptsAreSharedGuidance,
+        icon: CatchIcons.chatBubbleOutlineRounded,
+        badgeTone: CatchBadgeTone.live,
+        effectKind: EventSuccessLiveEffectKind.stepChange,
+        ambientBed: EventSuccessAmbientBed.pulse,
+      ),
+      EventSuccessAttendeeMomentKind.conversationCues => EventSuccessMomentPresentation(
+        badgeLabel:
+            step?.stage.label ??
+            l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCues,
+        headline: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyPickACueAnd,
+        body:
+            step?.attendeeExperience ??
+            l10n.eventSuccessEventSuccessCompanionScreenStateBodyTheseAreLightNudges,
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCuesAreSuggestions,
+        icon: CatchIcons.forumOutlined,
+        badgeTone: CatchBadgeTone.live,
+        effectKind: EventSuccessLiveEffectKind.stepChange,
+        ambientBed: EventSuccessAmbientBed.pulse,
+      ),
+      EventSuccessAttendeeMomentKind.assignment => EventSuccessMomentPresentation(
+        badgeLabel: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourNextGroup,
+        headline: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAssignmentIsReady,
+        body: l10n.eventSuccessEventSuccessCompanionScreenStateBodyUseItAsA,
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyYourOwnAssignment,
         icon: CatchIcons.groups2Outlined,
         badgeTone: CatchBadgeTone.success,
         effectKind: EventSuccessLiveEffectKind.stepChange,
         ambientBed: EventSuccessAmbientBed.pulse,
       ),
       EventSuccessAttendeeMomentKind.liveReveal => EventSuccessMomentPresentation(
-        badgeLabel: 'Shared reveal',
+        badgeLabel: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopySharedReveal,
         headline: _revealHeroHeadline(moment, plan),
-        body:
-            'The host controls the timing so the room unlocks together instead of leaking awkwardly.',
-        privacyLine:
-            'Your details stay hidden on this screen until the shared reveal moment.',
+        body: l10n
+            .eventSuccessEventSuccessCompanionScreenStateBodyTheHostControlsThe,
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourDetailsStayHidden,
         icon: CatchIcons.boltRounded,
         badgeTone: CatchBadgeTone.live,
         effectKind: _revealHeroEffect(plan),
@@ -826,26 +860,29 @@ class EventSuccessMomentPresentation {
         // resumes from the next moment's vibe.
         ambientBed: EventSuccessAmbientBed.silent,
       ),
-      EventSuccessAttendeeMomentKind.wingmanRequest =>
-        EventSuccessMomentPresentation(
-          badgeLabel: 'Host help',
-          headline: 'Ask for one specific intro.',
-          body:
-              'Choose someone you want help meeting and the host can use that as live facilitation context.',
-          privacyLine:
-              'Only the host sees this request; the other attendee is not notified.',
-          icon: CatchIcons.volunteerActivismOutlined,
-          badgeTone: CatchBadgeTone.brand,
-          effectKind: EventSuccessLiveEffectKind.stepChange,
-          ambientBed: EventSuccessAmbientBed.pulse,
-        ),
+      EventSuccessAttendeeMomentKind.wingmanRequest => EventSuccessMomentPresentation(
+        badgeLabel: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostHelp,
+        headline: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyAskForOneSpecific,
+        body: l10n
+            .eventSuccessEventSuccessCompanionScreenStateBodyChooseSomeoneYouWant,
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyTheHostSees,
+        icon: CatchIcons.volunteerActivismOutlined,
+        badgeTone: CatchBadgeTone.brand,
+        effectKind: EventSuccessLiveEffectKind.stepChange,
+        ambientBed: EventSuccessAmbientBed.pulse,
+      ),
       EventSuccessAttendeeMomentKind.postEvent => EventSuccessMomentPresentation(
-        badgeLabel: 'Afterglow',
-        headline: 'Your afterglow is ready.',
-        body:
-            'Keep the useful parts of the room, send private feedback, and use event-specific openers when a match appears.',
-        privacyLine:
-            'This recap is private to you. Hosts only see safe aggregate coaching.',
+        badgeLabel: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow,
+        headline: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady,
+        body: l10n
+            .eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts,
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisRecapIsPrivate,
         icon: CatchIcons.nightlightRound,
         badgeTone: CatchBadgeTone.success,
         effectKind: EventSuccessLiveEffectKind.guideComplete,
@@ -853,20 +890,20 @@ class EventSuccessMomentPresentation {
       ),
       EventSuccessAttendeeMomentKind.none => EventSuccessMomentPresentation(
         badgeLabel: eventEnded
-            ? 'Wrapped'
+            ? l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyWrapped
             : attended
-            ? 'Live now'
-            : 'Booked',
+            ? l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyLiveNow
+            : l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyBooked,
         headline: _heroOrientationLine(
           event: event,
           attended: attended,
           showSelfCheckIn: showSelfCheckIn,
           eventEnded: eventEnded,
         ),
-        body:
-            'The host is running the room. Your next prompt or reveal appears here when it is time.',
-        privacyLine:
-            'Catch only shows the live details that are relevant to this event moment.',
+        body: l10n
+            .eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsRunning,
+        privacyLine: l10n
+            .eventSuccessEventSuccessCompanionScreenStateVisiblecopyCatchOnlyShowsThe,
         icon: CatchIcons.eventOutlined,
         badgeTone: CatchBadgeTone.neutral,
         effectKind: attended ? EventSuccessLiveEffectKind.liveEntry : null,

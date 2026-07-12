@@ -21,6 +21,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,6 +67,7 @@ class HostTeamManagementSection extends ConsumerWidget {
             errorMessage: addMutation.hasError
                 ? mutationErrorMessage(
                     addMutation,
+                    l10n: context.l10n,
                     context: AppErrorContext.club,
                   )
                 : null,
@@ -84,8 +86,9 @@ class HostTeamManagementSection extends ConsumerWidget {
                   .logError(
                     error,
                     stackTrace,
-                    reason:
-                        'HostTeamManagementSection._showAddHostSheet failed',
+                    reason: context
+                        .l10n
+                        .hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionShowaddhostsheetFailed,
                   );
               rethrow;
             }
@@ -93,7 +96,10 @@ class HostTeamManagementSection extends ConsumerWidget {
         ),
       );
       if (added == true && context.mounted) {
-        showCatchSnackBar(context, 'Host added.');
+        showCatchSnackBar(
+          context,
+          context.l10n.hostsHostTeamManagementSectionVisiblecopyHostAdded,
+        );
       }
     }
 
@@ -134,21 +140,23 @@ class HostTeamManagementSection extends ConsumerWidget {
             .logError(
               error,
               stackTrace,
-              reason: 'HostTeamManagementSection._confirmHostAction failed',
+              reason: context
+                  .l10n
+                  .hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionConfirmhostactionFailed,
             );
         return;
       }
       if (!context.mounted) return;
-      showCatchSnackBar(context, confirmation.successMessage);
+      showCatchSnackBar(context, confirmation.successMessage(context.l10n));
     }
 
     return CatchSection.contained(
-      title: 'Host team',
+      title: context.l10n.hostsHostTeamManagementSectionTitleHostTeam,
       borderColor: t.line,
       elevation: CatchSurfaceElevation.none,
       padding: CatchInsets.tileContentCompact,
       trailing: Tooltip(
-        message: 'Add host',
+        message: context.l10n.hostsHostTeamManagementSectionMessageAddHost,
         child: CatchIconButton(
           onTap: actionPending ? null : () => unawaited(showAddHostSheet()),
           child: Icon(
@@ -165,6 +173,7 @@ class HostTeamManagementSection extends ConsumerWidget {
             CatchErrorBanner(
               message: mutationErrorMessage(
                 actionError,
+                l10n: context.l10n,
                 context: AppErrorContext.club,
               ),
             ),
@@ -199,33 +208,42 @@ class HostTeamHostActionConfirmation {
   final HostTeamHostAction action;
   final ClubHostProfile host;
 
-  String get title {
-    return switch (action) {
-      HostTeamHostAction.remove => 'Remove host?',
-      HostTeamHostAction.transferOwnership => 'Transfer ownership?',
-    };
-  }
-
-  String get message {
+  String title(AppLocalizations l10n) {
     return switch (action) {
       HostTeamHostAction.remove =>
-        '${host.displayName} will stay a club member but will lose host tools.',
+        l10n.hostsHostTeamManagementSectionTitleRemoveHost,
       HostTeamHostAction.transferOwnership =>
-        '${host.displayName} will become the club owner. You will remain a host.',
+        l10n.hostsHostTeamManagementSectionTitleTransferOwnership,
     };
   }
 
-  List<CatchDialogAction<bool>> get actions {
+  String message(AppLocalizations l10n) {
+    return switch (action) {
+      HostTeamHostAction.remove =>
+        l10n.hostsHostTeamManagementSectionMessageDisplaynameWillStayA(
+          displayName: host.displayName,
+        ),
+      HostTeamHostAction.transferOwnership =>
+        l10n.hostsHostTeamManagementSectionMessageDisplaynameWillBecomeThe(
+          displayName: host.displayName,
+        ),
+    };
+  }
+
+  List<CatchDialogAction<bool>> actions(AppLocalizations l10n) {
     return [
-      const CatchDialogAction(label: 'Cancel', value: false),
+      CatchDialogAction(
+        label: l10n.hostsHostTeamManagementSectionLabelCancel,
+        value: false,
+      ),
       switch (action) {
-        HostTeamHostAction.remove => const CatchDialogAction(
-          label: 'Remove',
+        HostTeamHostAction.remove => CatchDialogAction(
+          label: l10n.hostsHostTeamManagementSectionLabelRemove,
           value: true,
           isDestructive: true,
         ),
-        HostTeamHostAction.transferOwnership => const CatchDialogAction(
-          label: 'Transfer',
+        HostTeamHostAction.transferOwnership => CatchDialogAction(
+          label: l10n.hostsHostTeamManagementSectionLabelTransfer,
           value: true,
           isDefault: true,
         ),
@@ -233,11 +251,16 @@ class HostTeamHostActionConfirmation {
     ];
   }
 
-  String get successMessage {
+  String successMessage(AppLocalizations l10n) {
     return switch (action) {
-      HostTeamHostAction.remove => '${host.displayName} removed.',
+      HostTeamHostAction.remove =>
+        l10n.hostsHostTeamManagementSectionSuccessmessageDisplaynameRemoved(
+          displayName: host.displayName,
+        ),
       HostTeamHostAction.transferOwnership =>
-        'Ownership transferred to ${host.displayName}.',
+        l10n.hostsHostTeamManagementSectionSuccessmessageOwnershipTransferredToDisplayname(
+          displayName: host.displayName,
+        ),
     };
   }
 }
@@ -248,9 +271,9 @@ Future<bool?> showHostTeamHostActionDialog({
 }) {
   return showCatchAdaptiveDialog<bool>(
     context: context,
-    title: confirmation.title,
-    message: confirmation.message,
-    actions: confirmation.actions,
+    title: confirmation.title(context.l10n),
+    message: confirmation.message(context.l10n),
+    actions: confirmation.actions(context.l10n),
   );
 }
 
@@ -262,9 +285,9 @@ class HostTeamHostActionDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchConfirmDialog<bool>(
-      title: confirmation.title,
-      message: confirmation.message,
-      actions: confirmation.actions,
+      title: confirmation.title(context.l10n),
+      message: confirmation.message(context.l10n),
+      actions: confirmation.actions(context.l10n),
     );
   }
 }
@@ -310,22 +333,32 @@ class HostTeamOwnerHostRow extends StatelessWidget {
         ),
         CatchActionMenu<String>(
           key: ValueKey('host-team-actions-${host.uid}'),
-          tooltip: 'Host actions',
+          tooltip:
+              context.l10n.hostsHostTeamManagementSectionTooltipHostActions,
           enabled: canManage,
           icon: CatchIcons.moreHorizRounded,
           onSelected: (value) {
-            if (value == 'transfer') onTransfer();
-            if (value == 'remove') onRemove();
+            if (value ==
+                context.l10n.hostsHostTeamManagementSectionVisiblecopyTransfer)
+              onTransfer();
+            if (value ==
+                context.l10n.hostsHostTeamManagementSectionVisiblecopyRemove)
+              onRemove();
           },
           items: [
             CatchActionMenuItem(
-              value: 'transfer',
-              label: 'Transfer ownership',
+              value: context
+                  .l10n
+                  .hostsHostTeamManagementSectionVisiblecopyTransfer,
+              label: context
+                  .l10n
+                  .hostsHostTeamManagementSectionLabelTransferOwnership,
               icon: CatchIcons.adminPanelSettingsOutlined,
             ),
             CatchActionMenuItem(
-              value: 'remove',
-              label: 'Remove host',
+              value:
+                  context.l10n.hostsHostTeamManagementSectionVisiblecopyRemove,
+              label: context.l10n.hostsHostTeamManagementSectionLabelRemoveHost,
               icon: CatchIcons.personOffOutlined,
               isDestructive: true,
             ),
@@ -387,7 +420,11 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
     } catch (error) {
       if (mounted) {
         setState(() {
-          _errorMessage = appErrorMessage(error, context: AppErrorContext.club);
+          _errorMessage = appErrorMessage(
+            error,
+            l10n: context.l10n,
+            context: AppErrorContext.club,
+          );
         });
       }
       return;
@@ -408,11 +445,13 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
     final errorMessage = _errorMessage ?? widget.actionState.errorMessage;
 
     return CatchBottomSheetScaffold(
-      title: 'Add host',
-      subtitle: 'Enter the phone number on their Catch profile.',
+      title: context.l10n.hostsHostTeamManagementSectionTitleAddHost,
+      subtitle: context
+          .l10n
+          .hostsHostTeamManagementSectionSubtitleEnterThePhoneNumber,
       keyboardSafe: true,
       action: CatchButton(
-        label: 'Add host',
+        label: context.l10n.hostsHostTeamManagementSectionLabelAddHost,
         onPressed: isSaving ? null : () => unawaited(_submit()),
         isLoading: isSaving,
         fullWidth: true,
@@ -422,7 +461,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           CatchField.input(
-            title: 'Phone number',
+            title: context.l10n.hostsHostTeamManagementSectionTitlePhoneNumber,
             controller: _controller,
             prefixIcon: Icon(CatchIcons.phoneOutlined),
             keyboardType: TextInputType.phone,

@@ -25,6 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class DashboardFullSliverBody extends ConsumerStatefulWidget {
   const DashboardFullSliverBody({
@@ -129,17 +130,23 @@ class _DashboardFullSliverBodyState
 
   String _moduleForEvent(Event event) {
     return widget.viewModel.activeSwipeEvent?.id == event.id
-        ? 'catch_window'
-        : 'focus_rail';
+        ? context.l10n.dashboardDashboardFullVisiblecopyCatchWindow
+        : context.l10n.dashboardDashboardFullVisiblecopyFocusRail;
   }
 
   void _openExplore(BuildContext context) {
-    _logAction('idle_cta', 'find_event');
+    _logAction(
+      context.l10n.dashboardDashboardFullVisiblecopyIdleCta,
+      context.l10n.dashboardDashboardFullVisiblecopyFindEvent,
+    );
     context.go(Routes.exploreScreen.path);
   }
 
   void _openClubPost(BuildContext context, ActivityNotification notification) {
-    _logAction('club_posts', 'open_post');
+    _logAction(
+      context.l10n.dashboardDashboardFullVisiblecopyClubPosts,
+      context.l10n.dashboardDashboardFullVisiblecopyOpenPost,
+    );
     final parameters = <String, Object>{};
     final clubId = notification.clubId;
     final eventId = notification.eventId;
@@ -164,7 +171,10 @@ class _DashboardFullSliverBodyState
   }
 
   void _openEvent(BuildContext context, Event event) {
-    _logAction(_moduleForEvent(event), 'view_event');
+    _logAction(
+      _moduleForEvent(event),
+      context.l10n.dashboardDashboardFullVisiblecopyViewEvent,
+    );
     context.pushNamed(
       Routes.dashboardEventDetailScreen.name,
       pathParameters: {'clubId': event.clubId, 'eventId': event.id},
@@ -173,7 +183,10 @@ class _DashboardFullSliverBodyState
   }
 
   void _openDirections(Event event) {
-    _logAction(_moduleForEvent(event), 'directions');
+    _logAction(
+      _moduleForEvent(event),
+      context.l10n.dashboardDashboardFullVisiblecopyDirections,
+    );
     unawaited(
       ref
           .read(externalLinkControllerProvider)
@@ -182,12 +195,18 @@ class _DashboardFullSliverBodyState
   }
 
   void _addToCalendar(Event event) {
-    _logAction(_moduleForEvent(event), 'add_to_calendar');
+    _logAction(
+      _moduleForEvent(event),
+      context.l10n.dashboardDashboardFullVisiblecopyAddToCalendar,
+    );
     unawaited(ref.read(eventCalendarControllerProvider).addToCalendar(event));
   }
 
   void _openSwipe(BuildContext context, Event event) {
-    _logAction(_moduleForEvent(event), 'open_catch_window');
+    _logAction(
+      _moduleForEvent(event),
+      context.l10n.dashboardDashboardFullVisiblecopyOpenCatchWindow,
+    );
     context.pushNamed(
       Routes.swipeEventScreen.name,
       pathParameters: {'eventId': event.id},
@@ -195,7 +214,10 @@ class _DashboardFullSliverBodyState
   }
 
   void _writeReview(BuildContext context, Event event) {
-    _logAction(_moduleForEvent(event), 'write_review');
+    _logAction(
+      _moduleForEvent(event),
+      context.l10n.dashboardDashboardFullVisiblecopyWriteReview,
+    );
     showWriteReviewSheet(
       context: context,
       clubId: event.clubId,
@@ -205,7 +227,10 @@ class _DashboardFullSliverBodyState
   }
 
   void _checkIn(BuildContext context, Event event) {
-    _logAction(_moduleForEvent(event), 'check_in');
+    _logAction(
+      _moduleForEvent(event),
+      context.l10n.dashboardDashboardFullVisiblecopyCheckIn,
+    );
     unawaited(_runCheckInFlow(context, event));
   }
 

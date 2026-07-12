@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventSuccessDefaultsPanel;
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class EventSuccessStep extends StatelessWidget {
@@ -37,7 +38,7 @@ class EventSuccessStep extends StatelessWidget {
           radius: CatchRadius.md,
           borderWidth: 0,
           child: Text(
-            'Prepare the host guide for this event. You can adjust it again before Live mode starts.',
+            context.l10n.hostsEventSuccessStepTextPrepareTheHostGuide,
             style: CatchTextStyles.supporting(context, color: t.primary),
           ),
         ),
@@ -48,8 +49,7 @@ class EventSuccessStep extends StatelessWidget {
           eventFormat: eventFormat,
           targetAttendeeCount: targetAttendeeCount,
           onChanged: onEventSuccessDefaultsChanged,
-          subtitle:
-              'Save a simple plan with this event so Live mode is ready when it starts.',
+          subtitle: context.l10n.hostsEventSuccessStepSubtitleSaveASimplePlan,
         ),
       ],
     );

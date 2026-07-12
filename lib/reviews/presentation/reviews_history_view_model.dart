@@ -1,26 +1,28 @@
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ReviewsHistoryState buildReviewsHistoryState({
+  required AppLocalizations l10n,
   required String? uid,
   required AsyncValue<UserProfile?> user,
   AsyncValue<List<Review>>? reviews,
   AsyncValue<List<Event>>? events,
 }) {
   if (uid == null) {
-    return const ReviewsHistoryEmpty(
-      title: 'Sign in to see reviews',
-      message: 'Your past event reviews will appear here.',
+    return ReviewsHistoryEmpty(
+      title: l10n.reviewsReviewsHistoryViewModelTitleSignInToSee,
+      message: l10n.reviewsReviewsHistoryViewModelMessageYourPastEventReviews,
     );
   }
 
   if (user case AsyncError()) {
-    return const ReviewsHistoryError(
-      title: 'Reviews unavailable',
-      message: 'Could not load your profile.',
+    return ReviewsHistoryError(
+      title: l10n.reviewsReviewsHistoryViewModelTitleReviewsUnavailable,
+      message: l10n.reviewsReviewsHistoryViewModelMessageCouldNotLoadYour,
       retryTarget: ReviewsHistoryRetryTarget.profile,
     );
   }
@@ -32,16 +34,16 @@ ReviewsHistoryState buildReviewsHistoryState({
 
   return reviews.when<ReviewsHistoryState>(
     loading: () => const ReviewsHistoryLoading(),
-    error: (_, _) => const ReviewsHistoryError(
-      title: 'Reviews unavailable',
-      message: 'Could not load your reviews.',
+    error: (_, _) => ReviewsHistoryError(
+      title: l10n.reviewsReviewsHistoryViewModelTitleReviewsUnavailable,
+      message: l10n.reviewsReviewsHistoryViewModelMessageCouldNotLoadYourb38403,
       retryTarget: ReviewsHistoryRetryTarget.reviews,
     ),
     data: (reviews) {
       if (reviews.isEmpty) {
-        return const ReviewsHistoryEmpty(
-          title: 'No reviews yet',
-          message: 'After you review a completed event, it will appear here.',
+        return ReviewsHistoryEmpty(
+          title: l10n.reviewsReviewsHistoryViewModelTitleNoReviewsYet,
+          message: l10n.reviewsReviewsHistoryViewModelMessageAfterYouReviewA,
         );
       }
 
