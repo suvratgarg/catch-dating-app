@@ -35,7 +35,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -3431,25 +3431,25 @@ void main() {
       );
       await tester.pump();
 
-      expect(_selectChip('Rated 4.5+', active: false), findsOneWidget);
+      expect(_selectChip('Rated 4.5+', selected: false), findsOneWidget);
       await tester.tap(_selectChip('Rated 4.5+'));
       await tester.pump();
       expect(filters.highRatedOnly, isTrue);
-      expect(_selectChip('Rated 4.5+', active: true), findsOneWidget);
+      expect(_selectChip('Rated 4.5+', selected: true), findsOneWidget);
 
       await tester.ensureVisible(_selectChip('Dinner'));
       await tester.pump();
       await tester.tap(_selectChip('Dinner'));
       await tester.pump();
       expect(filters.activityTag, ActivityKind.dinner.name);
-      expect(_selectChip('Dinner', active: true), findsOneWidget);
+      expect(_selectChip('Dinner', selected: true), findsOneWidget);
 
       await tester.ensureVisible(_selectChip('Juhu'));
       await tester.pump();
       await tester.tap(_selectChip('Juhu'));
       await tester.pump();
       expect(filters.area, 'Juhu');
-      expect(_selectChip('Juhu', active: true), findsOneWidget);
+      expect(_selectChip('Juhu', selected: true), findsOneWidget);
     });
 
     testWidgets('ExploreFilterRail keeps labels whole at phone width', (
@@ -4536,7 +4536,7 @@ void main() {
 
         expect(find.text('Default event policy'), findsOneWidget);
         expect(_field('Cohort caps'), findsOneWidget);
-        expect(_selectChip('OPEN', active: true), findsOneWidget);
+        expect(_selectChip('OPEN', selected: true), findsOneWidget);
 
         await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
@@ -4568,12 +4568,14 @@ Finder _topLevelSearchField() {
   );
 }
 
-Finder _selectChip(String label, {bool? active}) {
-  return find.byWidgetPredicate(
-    (widget) =>
-        widget is CatchSelectChip &&
-        widget.label == label &&
-        (active == null || widget.active == active),
+Finder _selectChip(String label, {bool? selected}) {
+  final chip = find.widgetWithText(CatchChip, label);
+  if (selected == null) return chip;
+  return find.descendant(
+    of: chip,
+    matching: find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.selected == selected,
+    ),
   );
 }
 

@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
@@ -946,48 +945,40 @@ void main() {
     );
   });
 
-  testWidgets('CatchChip supports active, tap, and removable states', (
+  testWidgets('CatchChip.removable uses one whole-chip removal action', (
     tester,
   ) async {
-    var tapped = false;
-    var removed = false;
+    var removals = 0;
 
     await tester.pumpWidget(
-      _wrap(
-        CatchChip(
-          label: 'Easy',
-          active: true,
-          onTap: () => tapped = true,
-          onRemove: () => removed = true,
-        ),
-      ),
+      _wrap(CatchChip.removable(label: 'Easy', onRemove: () => removals += 1)),
     );
 
     final chipFinder = find.byType(CatchChip);
     final tokens = CatchTokens.of(tester.element(chipFinder));
     final decoration =
         tester
-                .widget<DecoratedBox>(
+                .widget<AnimatedContainer>(
                   find.descendant(
                     of: chipFinder,
-                    matching: find.byType(DecoratedBox),
+                    matching: find.byType(AnimatedContainer),
                   ),
                 )
                 .decoration
             as BoxDecoration;
 
-    expect(decoration.color, Colors.transparent);
-    expect(decoration.border?.top.color, tokens.ink);
-    expect(decoration.border?.top.width, 1.5);
-    expect(find.byType(CatchChipRemoveButton), findsOneWidget);
+    expect(decoration.color, tokens.surface);
+    expect(decoration.border?.top.color, tokens.line2);
+    expect(decoration.border?.top.width, CatchStroke.hairline);
+    expect(find.byIcon(CatchIcons.closeRounded), findsOneWidget);
 
     await tester.tap(find.text('Easy'));
     await tester.pump();
-    expect(tapped, isTrue);
+    expect(removals, 1);
 
     await tester.tap(find.byIcon(CatchIcons.closeRounded));
     await tester.pump();
-    expect(removed, isTrue);
+    expect(removals, 2);
   });
 
   testWidgets('CatchFormFieldLabel renders optional badge leaf', (
@@ -1287,14 +1278,11 @@ void main() {
         ),
       );
 
-      final firstChip = tester.widget<CatchChip>(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is CatchChip &&
-              widget.label == defaultCityOptions.first.label,
-        ),
+      final firstChip = find.widgetWithText(
+        CatchChip,
+        defaultCityOptions.first.label,
       );
-      expect(firstChip.active, isFalse);
+      expect(_chipSelected(tester, firstChip), isFalse);
     },
   );
 
@@ -1313,21 +1301,25 @@ void main() {
       ),
     );
 
-    final selectedChip = tester.widget<CatchChip>(
-      find.byWidgetPredicate(
-        (widget) => widget is CatchChip && widget.label == cityLabel('mumbai'),
-      ),
-    );
-    final unselectedChip = tester.widget<CatchChip>(
-      find.byWidgetPredicate(
-        (widget) => widget is CatchChip && widget.label == cityLabel('delhi'),
-      ),
-    );
+    final selectedChip = find.widgetWithText(CatchChip, cityLabel('mumbai'));
+    final unselectedChip = find.widgetWithText(CatchChip, cityLabel('delhi'));
 
-    expect(selectedChip.active, isTrue);
-    expect(selectedChip.icon, isA<Icon>());
-    expect(unselectedChip.active, isFalse);
-    expect(unselectedChip.icon, isNull);
+    expect(_chipSelected(tester, selectedChip), isTrue);
+    expect(
+      find.descendant(
+        of: selectedChip,
+        matching: find.byIcon(CatchIcons.checkRounded),
+      ),
+      findsOneWidget,
+    );
+    expect(_chipSelected(tester, unselectedChip), isFalse);
+    expect(
+      find.descendant(
+        of: unselectedChip,
+        matching: find.byIcon(CatchIcons.checkRounded),
+      ),
+      findsNothing,
+    );
     expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
   });
 
@@ -1399,7 +1391,7 @@ void main() {
     expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
   });
 
-  testWidgets('CatchActivityChip renders soft and primary activity registers', (
+  testWidgets('CatchChip.activity renders soft and solid activity registers', (
     tester,
   ) async {
     var taps = 0;
@@ -1408,10 +1400,10 @@ void main() {
       _wrap(
         Wrap(
           children: [
-            const CatchActivityChip(activityKind: ActivityKind.socialRun),
-            CatchActivityChip(
+            const CatchChip.activity(activityKind: ActivityKind.socialRun),
+            CatchChip.activity(
               activityKind: ActivityKind.pickleball,
-              primary: true,
+              emphasis: CatchChipEmphasis.solid,
               label: 'Primary court',
               onTap: () => taps++,
             ),
@@ -4051,6 +4043,21 @@ Widget _wrap(Widget child, {ThemeData? theme}) {
     theme: theme ?? AppTheme.light,
     home: Scaffold(body: Center(child: child)),
   );
+}
+
+bool _chipSelected(WidgetTester tester, Finder chip) {
+  final semantics = tester.widget<Semantics>(
+    find
+        .descendant(
+          of: chip,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is Semantics && widget.properties.selected != null,
+          ),
+        )
+        .first,
+  );
+  return semantics.properties.selected!;
 }
 
 String? _requiredPublicName(String? value) {

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('setup body uses CatchSelectChip for live guide choices', (
+  testWidgets('setup body uses CatchChip for live guide choices', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -66,8 +66,8 @@ void main() {
       ),
     );
 
-    expect(_selectChip('15 min', active: true), findsOneWidget);
-    expect(_selectChip('10s', active: true), findsOneWidget);
+    expect(_selectChip('15 min', selected: true), findsOneWidget);
+    expect(_selectChip('10s', selected: true), findsOneWidget);
     expect(
       _fieldToggle(EventSuccessModuleCatalog.liveReveal.title),
       findsOneWidget,
@@ -91,18 +91,18 @@ void main() {
     await _tapSelectChip(tester, '20 min');
     await tester.pump();
     expect(draft.structureConfig.rotationIntervalMinutes, 20);
-    expect(_selectChip('20 min', active: true), findsOneWidget);
+    expect(_selectChip('20 min', selected: true), findsOneWidget);
 
     await _tapSelectChip(tester, '15s');
     await tester.pump();
     expect(draft.structureConfig.revealCountdownSeconds, 15);
-    expect(_selectChip('15s', active: true), findsOneWidget);
+    expect(_selectChip('15s', selected: true), findsOneWidget);
 
     await tester.tap(find.text('Advanced'));
     await tester.pump(kThemeAnimationDuration);
     await tester.pump();
 
-    expect(_selectChip('Clues only', active: true), findsOneWidget);
+    expect(_selectChip('Clues only', selected: true), findsOneWidget);
 
     _invokeSelectChip(tester, 'Clues + soft pairing');
     await tester.pump();
@@ -113,7 +113,7 @@ void main() {
       isTrue,
     );
     expect(draft.compatibilityAffectsRanking, isTrue);
-    expect(_selectChip('Clues + soft pairing', active: true), findsOneWidget);
+    expect(_selectChip('Clues + soft pairing', selected: true), findsOneWidget);
 
     _invokeSelectChip(tester, 'Off');
     await tester.pump();
@@ -124,7 +124,7 @@ void main() {
       isFalse,
     );
     expect(draft.compatibilityAffectsRanking, isFalse);
-    expect(_selectChip('Off', active: true), findsOneWidget);
+    expect(_selectChip('Off', selected: true), findsOneWidget);
   });
 }
 
@@ -136,7 +136,15 @@ Future<void> _tapSelectChip(WidgetTester tester, String label) async {
 }
 
 void _invokeSelectChip(WidgetTester tester, String label) {
-  tester.widgetList<CatchSelectChip>(_selectChip(label)).last.onTap!();
+  final semantics = tester.widgetList<Semantics>(
+    find.descendant(
+      of: _selectChip(label),
+      matching: find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.selected != null,
+      ),
+    ),
+  );
+  semantics.last.properties.onTap!();
 }
 
 Future<void> _tapToggle(WidgetTester tester, String label) async {
@@ -152,11 +160,13 @@ Finder _fieldToggle(String label) {
   );
 }
 
-Finder _selectChip(String label, {bool? active}) {
-  return find.byWidgetPredicate(
-    (widget) =>
-        widget is CatchSelectChip &&
-        widget.label == label &&
-        (active == null || widget.active == active),
+Finder _selectChip(String label, {bool? selected}) {
+  final chip = find.widgetWithText(CatchChip, label);
+  if (selected == null) return chip;
+  return find.descendant(
+    of: chip,
+    matching: find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.selected == selected,
+    ),
   );
 }

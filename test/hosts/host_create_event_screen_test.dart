@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -143,17 +142,9 @@ void main() {
         );
         await _openCreateEventFlow(tester);
 
-        expect(find.byType(CatchSelectChip), findsWidgets);
+        expect(find.byType(CatchChip), findsWidgets);
         await _fillBasicsStep(tester);
-        expect(
-          find.byWidgetPredicate(
-            (widget) =>
-                widget is CatchSelectChip &&
-                widget.label == 'Moderate' &&
-                widget.active,
-          ),
-          findsOneWidget,
-        );
+        expect(_selectableChip('Moderate', selected: true), findsOneWidget);
 
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
@@ -186,15 +177,7 @@ void main() {
 
         expect(find.text('Event policy'), findsOneWidget);
         expect(_fieldToggle('Cohort caps'), findsOneWidget);
-        expect(
-          find.byWidgetPredicate(
-            (widget) =>
-                widget is CatchSelectChip &&
-                widget.label == 'OPEN' &&
-                widget.active,
-          ),
-          findsOneWidget,
-        );
+        expect(_selectableChip('OPEN', selected: true), findsOneWidget);
         await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '18');
         await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
         await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '40');
@@ -1458,16 +1441,22 @@ Future<void> _tapActivityKind(WidgetTester tester, String label) async {
 }
 
 Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
-  final finder = find.byWidgetPredicate(
-    (widget) =>
-        (widget is CatchSelectChip && widget.label == label) ||
-        (widget is CatchChip && widget.label == label),
-    description: 'selectable chip labeled $label',
-    skipOffstage: false,
-  );
+  final finder = find.widgetWithText(CatchChip, label, skipOffstage: false);
   await tester.ensureVisible(finder);
   await tester.tap(finder);
   await _pumpTestAnimation(tester);
+}
+
+Finder _selectableChip(String label, {bool? selected}) {
+  final chip = find.widgetWithText(CatchChip, label, skipOffstage: false);
+  if (selected == null) return chip;
+  return find.descendant(
+    of: chip,
+    matching: find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.selected == selected,
+      skipOffstage: false,
+    ),
+  );
 }
 
 Future<void> _tapPrimaryButton(WidgetTester tester, String label) async {

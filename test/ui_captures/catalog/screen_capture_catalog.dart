@@ -1857,9 +1857,8 @@ Finder _profileCaptureInfoTile(String label) => find.byWidgetPredicate(
       widget.variant == CatchFieldVariant.row,
 );
 
-Finder _profileCaptureChip(String label) => find.byWidgetPredicate(
-  (widget) => widget is CatchChip && widget.label == label,
-);
+Finder _profileCaptureChip(String label) =>
+    find.widgetWithText(CatchChip, label);
 
 void _tapProfileCaptureDone(WidgetTester tester) {
   final doneButton = find.widgetWithText(CatchButton, 'Done');

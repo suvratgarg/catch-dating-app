@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -28,7 +28,7 @@ void main() {
 
     expect(find.text('Event success manual QA'), findsOneWidget);
     expect(find.text('Fixture scenario'), findsOneWidget);
-    expect(_selectChip('Racket pairs', active: true), findsOneWidget);
+    expect(_selectChip('Racket pairs', selected: true), findsOneWidget);
     expect(_fieldToggle('Micro-pods opt-out'), findsOneWidget);
     expect(_fieldToggle('Rotations opt-out'), findsOneWidget);
     expect(find.text('Attendee moment'), findsNothing);
@@ -323,12 +323,14 @@ void _pressCatchButton(WidgetTester tester, Finder finder) {
   button.onPressed!();
 }
 
-Finder _selectChip(String label, {bool? active}) {
-  return find.byWidgetPredicate(
-    (widget) =>
-        widget is CatchSelectChip &&
-        widget.label == label &&
-        (active == null || widget.active == active),
+Finder _selectChip(String label, {bool? selected}) {
+  final chip = find.widgetWithText(CatchChip, label);
+  if (selected == null) return chip;
+  return find.descendant(
+    of: chip,
+    matching: find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.selected == selected,
+    ),
   );
 }
 

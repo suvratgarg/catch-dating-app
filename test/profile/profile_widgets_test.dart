@@ -173,9 +173,29 @@ Finder _inlinePromptEditableText() => find.descendant(
 
 Finder _profileOptionGroup() => find.byType(CatchOptionGroup<int>);
 
-Finder _catchChip(String label) => find.byWidgetPredicate(
-  (widget) => widget is CatchChip && widget.label == label,
-);
+Finder _catchChip(String label) => find.widgetWithText(CatchChip, label);
+
+Semantics _catchChipSemantics(WidgetTester tester, String label) {
+  return tester.widget<Semantics>(
+    find
+        .descendant(
+          of: _catchChip(label),
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is Semantics && widget.properties.selected != null,
+          ),
+        )
+        .first,
+  );
+}
+
+bool _catchChipSelected(WidgetTester tester, String label) {
+  return _catchChipSemantics(tester, label).properties.selected!;
+}
+
+bool _catchChipEnabled(WidgetTester tester, String label) {
+  return _catchChipSemantics(tester, label).properties.enabled!;
+}
 
 int _loadingCatchButtonCount(WidgetTester tester) => tester
     .widgetList<CatchButton>(find.byType(CatchButton))
@@ -1392,10 +1412,11 @@ void main() {
         await tester.tap(tile);
         await _pumpProfileSheet(tester);
 
-        final firstChip = tester.widget<CatchChip>(
-          _catchChip(field.firstLabel),
+        expect(
+          _catchChipSelected(tester, field.firstLabel),
+          isFalse,
+          reason: field.tileLabel,
         );
-        expect(firstChip.active, isFalse, reason: field.tileLabel);
 
         await _tapInlineCancel(tester);
         await _pumpProfileSheet(tester);
@@ -1415,10 +1436,7 @@ void main() {
     await tester.tap(drinkingTile);
     await _pumpProfileSheet(tester);
 
-    final neverChip = tester.widget<CatchChip>(
-      _catchChip(DrinkingHabit.never.label),
-    );
-    expect(neverChip.active, isFalse);
+    expect(_catchChipSelected(tester, DrinkingHabit.never.label), isFalse);
   });
 
   testWidgets('inline chip editors do not repeat the field label', (
@@ -1510,9 +1528,7 @@ void main() {
 
     expect(repository.updatedFields, isNull);
     expect(
-      tester
-          .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
-          .active,
+      _catchChipSelected(tester, EducationLevel.values.first.label),
       isTrue,
     );
 
@@ -1540,12 +1556,7 @@ void main() {
     await _pumpProfileSheet(tester);
 
     expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
-    expect(
-      tester
-          .widget<CatchChip>(_catchChip(EducationLevel.highSchool.label))
-          .active,
-      isTrue,
-    );
+    expect(_catchChipSelected(tester, EducationLevel.highSchool.label), isTrue);
 
     await tester.tap(_catchChip(EducationLevel.highSchool.label));
     await _pumpProfileSheet(tester);
@@ -1553,9 +1564,7 @@ void main() {
     expect(find.text('+ Education'), findsWidgets);
     expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
     expect(
-      tester
-          .widget<CatchChip>(_catchChip(EducationLevel.highSchool.label))
-          .active,
+      _catchChipSelected(tester, EducationLevel.highSchool.label),
       isFalse,
     );
 
@@ -1589,9 +1598,7 @@ void main() {
     expect(relationshipTexts, findsOneWidget);
     expect(find.text('+ Looking for'), findsWidgets);
     expect(
-      tester
-          .widget<CatchChip>(_catchChip(RelationshipGoal.relationship.label))
-          .active,
+      _catchChipSelected(tester, RelationshipGoal.relationship.label),
       isFalse,
     );
   });
@@ -1611,21 +1618,20 @@ void main() {
     await _pumpProfileSheet(tester);
 
     expect(_catchChip(Language.english.label), findsOneWidget);
-    final selectedLanguageChip = tester.widget<CatchChip>(
-      _catchChip(Language.english.label),
+    expect(_catchChipSelected(tester, Language.english.label), isTrue);
+    expect(
+      find.descendant(
+        of: _catchChip(Language.english.label),
+        matching: find.byIcon(CatchIcons.checkRounded),
+      ),
+      findsOneWidget,
     );
-    expect(selectedLanguageChip.active, isTrue);
-    expect(selectedLanguageChip.icon, isA<Icon>());
-    expect((selectedLanguageChip.icon! as Icon).icon, CatchIcons.checkRounded);
 
     await tester.tap(_catchChip(Language.english.label));
     await _pumpProfileSheet(tester);
 
     expect(_catchChip(Language.english.label), findsOneWidget);
-    expect(
-      tester.widget<CatchChip>(_catchChip(Language.english.label)).active,
-      isFalse,
-    );
+    expect(_catchChipSelected(tester, Language.english.label), isFalse);
     expect(repository.updatedFields, isNull);
   });
 
@@ -1654,9 +1660,7 @@ void main() {
     });
     expect(_loadingCatchButtonCount(tester), 1);
     expect(
-      tester
-          .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
-          .enabled,
+      _catchChipEnabled(tester, EducationLevel.values.first.label),
       isFalse,
     );
 
@@ -1691,9 +1695,7 @@ void main() {
       );
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(
-        tester
-            .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
-            .active,
+        _catchChipSelected(tester, EducationLevel.values.first.label),
         isTrue,
       );
     },
@@ -1716,9 +1718,7 @@ void main() {
       await _pumpProfileSheet(tester);
 
       expect(
-        tester
-            .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
-            .active,
+        _catchChipSelected(tester, EducationLevel.values.first.label),
         isTrue,
       );
 
@@ -1730,10 +1730,7 @@ void main() {
       await tester.tap(drinkingTile);
       await _pumpProfileSheet(tester);
 
-      expect(
-        tester.widget<CatchChip>(_catchChip(DrinkingHabit.never.label)).active,
-        isFalse,
-      );
+      expect(_catchChipSelected(tester, DrinkingHabit.never.label), isFalse);
     },
   );
 

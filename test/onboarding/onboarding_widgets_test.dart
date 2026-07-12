@@ -10,7 +10,6 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -663,19 +662,17 @@ void main() {
       );
 
       expect(
-        tester
-            .widget<CatchChip>(
-              find.byKey(OnboardingFormKeys.genderChip(Gender.woman)),
-            )
-            .active,
+        _chipSelected(
+          tester,
+          find.byKey(OnboardingFormKeys.genderChip(Gender.woman)),
+        ),
         isTrue,
       );
       expect(
-        tester
-            .widget<CatchChip>(
-              find.byKey(OnboardingFormKeys.interestedInChip(Gender.man)),
-            )
-            .active,
+        _chipSelected(
+          tester,
+          find.byKey(OnboardingFormKeys.interestedInChip(Gender.man)),
+        ),
         isTrue,
       );
     });
@@ -1302,6 +1299,21 @@ void main() {
       expect(find.text('Evening'), findsOneWidget);
     });
   });
+}
+
+bool _chipSelected(WidgetTester tester, Finder chip) {
+  final semantics = tester.widget<Semantics>(
+    find
+        .descendant(
+          of: chip,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is Semantics && widget.properties.selected != null,
+          ),
+        )
+        .first,
+  );
+  return semantics.properties.selected!;
 }
 
 File _welcomeStringsSource() {
