@@ -47,7 +47,7 @@
       "priority": "P0",
       "status": "review",
       "targetContract": "catch.badge",
-      "qualityReference": "CatchBadge on light surfaces; EventSuccessDarkPill on dark surfaces",
+      "qualityReference": "CatchBadge",
       "decisionSource": "visual-triage:2026-07-12; owner review pending",
       "acceptedVisualDelta": [],
       "members": [
