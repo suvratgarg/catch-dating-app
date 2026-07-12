@@ -191,6 +191,41 @@
         }
       ]
     },
+    "WEB-COPY-001": {
+      "title": "Keep marketing-authored website copy in the content layer",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "marketing_website_architecture",
+        "version": "0.4.146"
+      },
+      "applies_to": [
+        "website/src/**",
+        "tool/web/check_website_copy_ownership.mjs",
+        "tool/web/website_copy_baseline.json",
+        "tool/web/website_copy_allowlist.json",
+        "website/package.json"
+      ],
+      "instruction": "User-visible marketing-authored strings belong under website/src/content. Existing component strings are temporary baseline debt; do not add new entries. Move strings into page-specific content modules and shrink the baseline as pages migrate. Permanent technical exceptions require an exact-string allowlist entry with a reason.",
+      "sunset_when": [
+        "The website copy baseline is empty and remains empty for five copy changes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "baseline-empty",
+          "baseline": "tool/web/website_copy_baseline.json",
+          "countKey": "entries"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "web:website-copy-ownership",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/marketing_website_architecture.md#architecture-rules",
+          "baseline": "tool/web/website_copy_baseline.json"
+        }
+      ]
+    },
     "WEB-ROUTE-001": {
       "title": "Keep marketing website route contracts ahead of visual review",
       "status": "active",
@@ -218,6 +253,16 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "marketing:website-meta-contract",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/marketing_website_architecture.md#architecture-rules"
+        },
+        {
+          "tool": "marketing:website-routes",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/marketing_website_architecture.md#architecture-rules"
+        },
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
@@ -1672,6 +1717,53 @@
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "APP-COPY-001": {
+      "title": "Product copy is owned by typed, reviewable locale catalogs",
+      "status": "active",
+    "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.21"
+      },
+      "applies_to": [
+        "lib/**",
+        "copy/**",
+        "functions/src/**",
+        "ios/Runner/**"
+      ],
+      "instruction": "Handwritten user-facing Flutter copy belongs in lib/l10n/app_en.arb with description, audience, owner, and surface metadata and is consumed through generated AppLocalizations. Domain and controller layers carry semantic ids, codes, and placeholder data rather than localized prose. Native permission copy belongs in copy/native_en.json and notification templates belong in copy/notifications_en.json; generated consumers must stay in sync. Inline technical identifiers, test fixtures, and user-authored content require narrow documented exemptions rather than broad folders.",
+      "sunset_when": [
+        "Never; copy ownership and locale-safe rendering are permanent product architecture"
+      ],
+      "sunset_signals": [
+        {
+        "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "copy:mobile-catalog",
+        "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
+        },
+        {
+          "tool": "copy:mobile-ownership",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary",
+          "baseline": "tool/copy/mobile_copy_baseline.json"
+        },
+        {
+          "tool": "copy:native-sync",
+        "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
+        },
+        {
+          "tool": "copy:notification-sync",
+        "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
         }
       ]
     },

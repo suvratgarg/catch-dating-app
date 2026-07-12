@@ -421,15 +421,176 @@
       "role": "finder"
     },
     {
+      "id": "web:website-copy-ownership",
+      "category": "lint",
+      "path": "tool/web/check_website_copy_ownership.mjs",
+      "command": "node tool/web/check_website_copy_ownership.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Ratchets user-visible marketing website strings into website/src/content without requiring a big-bang migration.",
+      "checks": [
+        "node --check tool/web/check_website_copy_ownership.mjs",
+        "node tool/web/check_website_copy_ownership.mjs --self-test",
+        "node tool/web/check_website_copy_ownership.mjs --check --summary"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "WEB-COPY-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_website_copy_ownership.mjs --self-test"
+      }
+    },
+    {
+      "id": "copy:mobile-catalog",
+      "category": "lint",
+      "path": "tool/copy/check_mobile_copy_catalog.mjs",
+      "command": "node tool/copy/check_mobile_copy_catalog.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates typed Flutter ARB copy metadata and can export a marketing review CSV.",
+      "checks": [
+        "node --check tool/copy/check_mobile_copy_catalog.mjs",
+        "node tool/copy/check_mobile_copy_catalog_test.mjs",
+        "node tool/copy/check_mobile_copy_catalog.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "APP-COPY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/copy/check_mobile_copy_catalog_test.mjs"
+      }
+    },
+    {
+      "id": "copy:mobile-ownership",
+      "category": "lint",
+      "path": "tool/copy/check_mobile_copy_ownership.dart",
+      "command": "dart run tool/copy/check_mobile_copy_ownership.dart",
+      "safety": "local",
+      "status": "active",
+      "description": "Blocks unmanaged Flutter user-facing strings; the checked baseline must remain empty.",
+      "checks": [
+        "dart run tool/copy/check_mobile_copy_ownership.dart --self-test",
+        "dart run tool/copy/check_mobile_copy_ownership.dart"
+      ],
+      "role": "gate",
+      "rules": [
+        "APP-COPY-001"
+      ],
+      "baseline": "tool/copy/mobile_copy_baseline.json",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "dart run tool/copy/check_mobile_copy_ownership.dart --self-test"
+      }
+    },
+    {
+      "id": "copy:mobile-catalog-tests",
+      "category": "test",
+      "path": "tool/copy/check_mobile_copy_catalog_test.mjs",
+      "command": "node tool/copy/check_mobile_copy_catalog_test.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Runs seeded metadata validation probes for the Flutter ARB copy catalog.",
+      "checks": [
+        "node tool/copy/check_mobile_copy_catalog_test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/copy/check_mobile_copy_catalog_test.mjs"
+      }
+    },
+    {
+      "id": "copy:mobile-simple-migration",
+      "category": "generator",
+      "path": "tool/copy/migrate_simple_mobile_copy.dart",
+      "command": "dart run tool/copy/migrate_simple_mobile_copy.dart",
+      "safety": "local",
+      "status": "active",
+      "description": "Migrates eligible user-visible literals from clean Flutter files into the typed ARB catalog while preserving copy whitespace.",
+      "checks": [
+        "dart analyze tool/copy/migrate_simple_mobile_copy.dart",
+        "dart run tool/copy/migrate_simple_mobile_copy.dart"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "copy:event-success-questionnaires",
+      "category": "generator",
+      "path": "tool/copy/sync_event_success_questionnaires.mjs",
+      "command": "node tool/copy/sync_event_success_questionnaires.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Validates marketing-owned Event Success questionnaire copy and keeps the typed Dart domain catalog generated from locale JSON.",
+      "checks": [
+        "node --check tool/copy/sync_event_success_questionnaires.mjs",
+        "node tool/copy/sync_event_success_questionnaires.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "copy:structured-domain-content",
+      "category": "generator",
+      "path": "tool/copy/sync_structured_domain_copy.dart",
+      "command": "dart run tool/copy/sync_structured_domain_copy.dart",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Validates marketing-owned structured domain copy and regenerates typed Event Success and event-policy catalogs from Dart structure templates.",
+      "checks": [
+        "dart analyze tool/copy/sync_structured_domain_copy.dart",
+        "dart run tool/copy/sync_structured_domain_copy.dart"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "copy:native-sync",
+      "category": "generator",
+      "path": "tool/copy/sync_native_copy.mjs",
+      "command": "node tool/copy/sync_native_copy.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Keeps iOS permission copy generated from the marketing-reviewable native English catalog.",
+      "checks": [
+        "node --check tool/copy/sync_native_copy.mjs",
+        "node tool/copy/sync_native_copy.mjs"
+      ],
+      "role": "generator",
+      "rules": [
+        "APP-COPY-001"
+      ]
+    },
+    {
+      "id": "copy:notification-sync",
+      "category": "generator",
+      "path": "tool/copy/sync_notification_copy.mjs",
+      "command": "node tool/copy/sync_notification_copy.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Keeps Functions notification templates generated from the marketing-reviewable English catalog.",
+      "checks": [
+        "node --check tool/copy/sync_notification_copy.mjs",
+        "node tool/copy/sync_notification_copy.mjs",
+        "npm --prefix functions run build"
+      ],
+      "role": "generator",
+      "rules": [
+        "APP-COPY-001"
+      ]
+    },
+    {
       "id": "web:website-import-boundaries",
       "category": "lint",
       "path": "tool/web/check_website_import_boundaries.mjs",
       "command": "node tool/web/check_website_import_boundaries.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Checks React marketing website app, feature, shared, generated, and service import boundaries.",
+      "description": "Checks React marketing website app, content, feature, shared, generated, and service import boundaries.",
       "checks": [
         "node --check tool/web/check_website_import_boundaries.mjs",
+        "node tool/web/check_website_import_boundaries.mjs --self-test",
         "node tool/web/check_website_import_boundaries.mjs"
       ],
       "role": "finder"
@@ -1454,9 +1615,10 @@
       "command": "node tool/env/check_web_hosting_env.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Requires explicit Vite Firebase/App Check env before web Hosting deploys.",
+      "description": "Requires explicit Vite Firebase/App Check env before web Hosting deploys and live store product URLs for production marketing deploys.",
       "checks": [
-        "node --check tool/env/check_web_hosting_env.mjs"
+        "node --check tool/env/check_web_hosting_env.mjs",
+        "node --test tool/env/check_web_hosting_env.test.mjs"
       ]
     },
     {
@@ -2502,13 +2664,125 @@
       "command": "npm --workspace catch-marketing run generate:organizer-listings",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Projects approved organizer intake and seed organizer records into website hostListings.json.",
+      "description": "Projects approved organizer intake and seed organizer records into production hostListings.json, with a separate explicit demo-inclusive Storybook projection.",
       "checks": [
         "node --check website/scripts/generateOrganizerListings.mjs",
         "node --test website/scripts/generateOrganizerListings.test.mjs",
-        "node website/scripts/generateOrganizerListings.mjs --check"
+        "node website/scripts/generateOrganizerListings.mjs --check",
+        "node website/scripts/generateOrganizerListings.mjs --include-demo --output website/src/generated/hostListings.demo.json --check"
       ],
       "role": "generator"
+    },
+    {
+      "id": "marketing:website-analytics-contract",
+      "category": "marketing",
+      "path": "website/scripts/analyticsContract.test.mjs",
+      "command": "node --experimental-strip-types --test website/scripts/analyticsContract.test.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates website copy-version event tagging and unset, essential-only, and accepted consent presentation states.",
+      "checks": [
+        "node --check website/scripts/analyticsContract.test.mjs",
+        "node --experimental-strip-types --test website/scripts/analyticsContract.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "website/scripts/analyticsContract.test.mjs"
+      }
+    },
+    {
+      "id": "marketing:website-owner-gated-content",
+      "category": "marketing",
+      "path": "website/scripts/ownerGatedContent.test.mjs",
+      "command": "node --experimental-strip-types --test website/scripts/ownerGatedContent.test.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Proves privacy, terms, help, and contact content contracts remain null, unregistered, and unlinked until owner-supplied content exists.",
+      "checks": [
+        "node --check website/scripts/ownerGatedContent.test.mjs",
+        "node --experimental-strip-types --test website/scripts/ownerGatedContent.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "website/scripts/ownerGatedContent.test.mjs"
+      }
+    },
+    {
+      "id": "marketing:website-a11y-debt",
+      "category": "marketing",
+      "path": "website/scripts/checkStorybookA11yDebt.mjs",
+      "command": "node website/scripts/checkStorybookA11yDebt.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Ratchets Storybook accessibility todo annotations against the exact reasoned WEB-A11Y-001 registry.",
+      "checks": [
+        "node --check website/scripts/checkStorybookA11yDebt.mjs",
+        "node website/scripts/checkStorybookA11yDebt.mjs --self-test",
+        "node website/scripts/checkStorybookA11yDebt.mjs"
+      ],
+      "role": "ratchet",
+      "baseline": "design/website/a11y.todo.json",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node website/scripts/checkStorybookA11yDebt.mjs --self-test"
+      }
+    },
+    {
+      "id": "marketing:website-storybook-a11y",
+      "category": "marketing",
+      "path": "website/vitest.config.ts",
+      "command": "npm --workspace catch-marketing run test:storybook:a11y",
+      "safety": "local",
+      "status": "active",
+      "description": "Runs all marketing Storybook stories in Playwright Chromium with project-default axe failures blocking CI and exact legacy todos ratcheted separately.",
+      "checks": [
+        "npm --workspace catch-marketing run test:storybook:a11y"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "website/vitest.config.ts"
+      }
+    },
+    {
+      "id": "marketing:verify-hosting-404",
+      "category": "marketing",
+      "path": "website/scripts/verifyHosting404.mjs",
+      "command": "node website/scripts/verifyHosting404.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "description": "Asserts that a unique unknown URL on a supplied marketing Hosting origin returns HTTP 404 without following redirects.",
+      "checks": [
+        "node --check website/scripts/verifyHosting404.mjs"
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "marketing:website-meta-contract",
+      "category": "marketing",
+      "path": "tool/marketing/website_meta_contract.mjs",
+      "command": "node --test tool/marketing/website_meta_contract.test.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the shared static website metadata content used by client and postbuild readers.",
+      "checks": [
+        "node --check tool/marketing/website_meta_contract.mjs",
+        "node --check website/src/content/metaContract.ts",
+        "node --test tool/marketing/website_meta_contract.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-ROUTE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/marketing/website_meta_contract.test.mjs",
+        "contains": [
+          "metadata validation rejects missing template tokens and unsupported fields"
+        ]
+      }
     },
     {
       "id": "marketing:website-routes",
@@ -2517,13 +2791,24 @@
       "command": "node tool/marketing/check_website_routes.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates marketing website route contracts against React route, metadata, postbuild, and generated organizer-listing sources.",
+      "description": "Validates marketing website route contracts against React routes, validated metadata content, postbuild, generated organizer-listing sources, and Firebase Hosting 404 behavior.",
       "checks": [
         "node --check tool/marketing/check_website_routes.mjs",
+        "node --check tool/marketing/website_meta_contract.mjs",
+        "node --check website/src/content/metaContract.ts",
+        "node --check website/scripts/verifyHosting404.mjs",
+        "node --test tool/marketing/website_meta_contract.test.mjs",
         "node tool/marketing/check_website_routes.mjs --self-test",
         "node tool/marketing/check_website_routes.mjs --check"
       ],
-      "role": "finder"
+      "role": "gate",
+      "rules": [
+        "WEB-ROUTE-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/marketing/check_website_routes.mjs --self-test"
+      }
     },
     {
       "id": "marketing:website-components",

@@ -1044,6 +1044,139 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "notes": "The target contract is authoritative for product identity. The Flutter package and Apple Runner target may remain shared only while role-specific composition and capabilities are explicit and checked."
+    },
+    {
+      "id": "ARCH-COPY-001",
+      "name": "Product copy and localization boundary",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary",
+      "prototypeFiles": [
+        "l10n.yaml",
+        "lib/l10n/app_en.arb",
+        "lib/l10n/l10n.dart",
+        "lib/app.dart",
+        "lib/core/presentation/app_shell.dart",
+        "lib/core/widgets/catch_notice.dart",
+        "copy/native_en.json",
+        "copy/notifications_en.json",
+        "copy/event_success_questionnaires_en.json",
+        "copy/structured_domain_copy_en.json",
+        "functions/src/shared/notificationCopy.ts",
+        "tool/copy/check_mobile_copy_ownership.dart",
+        "tool/copy/sync_structured_domain_copy.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/core/presentation/app_shell.dart",
+          "role": "consumer semantic navigation destination localization",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-localization-foundation"
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "role": "host semantic navigation destination localization",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-localization-foundation"
+        },
+        {
+          "path": "lib/core/widgets/catch_notice.dart",
+          "role": "shared semantic notice localization seam",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-localization-foundation"
+        },
+        {
+          "path": "lib/onboarding/presentation/onboarding_flow_state.dart",
+          "role": "consumer presentation-state localization injection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-semantic-state-migration"
+        },
+        {
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "role": "consumer profile presentation-state localization injection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-semantic-state-migration"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_screen_state.dart",
+          "role": "consumer booking presentation-state localization injection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-semantic-state-migration"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_companion_screen_state.dart",
+          "role": "consumer Event Success presentation-state localization injection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-semantic-state-migration"
+        },
+        {
+          "path": "lib/swipes/presentation/swipe_empty_content.dart",
+          "role": "consumer semantic empty-state localization factory",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-semantic-state-migration"
+        },
+        {
+          "path": "lib/payments/presentation/payment_history_screen.dart",
+          "role": "consumer payment status localization adapter",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-semantic-state-migration"
+        },
+        {
+          "path": "lib/reviews/presentation/reviews_history_view_model.dart",
+          "role": "consumer review history presentation-state localization injection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-semantic-state-migration"
+        },
+        {
+          "path": "lib/core/widgets/event_activity_visuals.dart",
+          "role": "shared semantic activity label localization at render boundary",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-semantic-state-migration"
+        },
+        {
+          "path": "lib/core/app_error_message.dart",
+          "role": "shared semantic exception-code localization at widget build time",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-zero-baseline"
+        },
+        {
+          "path": "lib/user_analytics/shared/user_analytics_copy.dart",
+          "role": "consumer analytics copy adapter with explicit AppLocalizations injection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-zero-baseline"
+        },
+        {
+          "path": "lib/public_profile/presentation/profile_quality_copy.dart",
+          "role": "consumer semantic profile-quality suggestion adapter",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-zero-baseline"
+        },
+        {
+          "path": "copy/structured_domain_copy_en.json",
+          "role": "marketing-owned synchronous Event Success and event-policy content source",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-zero-baseline"
+        },
+        {
+          "path": "functions/src/shared/notifications.ts",
+          "role": "generated server notification template consumer",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-mobile-copy-localization-foundation"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When the copy access contract changes, update the ARB metadata validator, Flutter ownership scanner, both app-role roots, native and notification sync lanes, reference adopters, and this exhibit before migrating another slice.",
+      "requiredChecks": [
+        "flutter gen-l10n",
+        "node tool/run.mjs check copy:mobile-catalog",
+        "node tool/run.mjs check copy:mobile-ownership",
+        "node tool/run.mjs check copy:native-sync",
+        "node tool/run.mjs check copy:notification-sync",
+        "node tool/run.mjs check copy:event-success-questionnaires",
+        "node tool/run.mjs check copy:structured-domain-content",
+        "flutter test test/core/app_config_test.dart test/core/app_shell_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The ARB, native JSON, and notification JSON files are the editable product sources. Generated Dart, plist strings, and TypeScript files are consumers and must not be edited by hand."
     }
   ]
 }
