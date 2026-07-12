@@ -6,7 +6,7 @@
       "title": "Core chip family",
       "intent": "One ergonomic contract for quiet tags, selectable choices, and activity-typed chips. Compact status metadata belongs to badge-status, pressable floating counters belong to floating-compact-controls, identity switching belongs to identity-switchers, and temporal or sequence state belongs to progress-cues. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",
       "priority": "P0",
-      "status": "approved",
+      "status": "implemented",
       "targetContract": "catch.chip",
       "qualityReference": "CatchSelectChip",
       "decisionSource": "user-approved:2026-07-12",
@@ -19,8 +19,7 @@
       "members": [
         {
           "symbol": "CatchChip",
-          "disposition": "repair",
-          "target": "CatchChip",
+          "disposition": "canonical",
           "preview": "required",
           "rationale": "Keep CatchChip as the public seam, but replace the weak active flag surface with semantic named constructors and the approved stronger selected treatment."
         },

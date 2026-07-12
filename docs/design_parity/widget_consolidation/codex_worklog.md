@@ -84,8 +84,8 @@ continue with the next approved family.
 
 ## PWF-001 — `chip-core` pattern family
 
-Status: approved by product review on 2026-07-12; isolated implementation in
-progress. Event Detail and its current dirty work remain explicitly excluded.
+Status: implemented on the isolated `codex/widget-pattern-core-20260712`
+branch. Event Detail and its current dirty work remain explicitly excluded.
 
 Quality decision:
 
@@ -101,18 +101,18 @@ Quality decision:
 
 Implementation order:
 
-- [ ] Repair `CatchChip` with `tag`, `selectable`, `activity`, and `removable`
+- [x] Repair `CatchChip` with `tag`, `selectable`, `activity`, and `removable`
   constructors and mutually valid interaction contracts.
-- [ ] Unify `CatchSelectChip` into `CatchChip.selectable`; migrate consumers
+- [x] Unify `CatchSelectChip` into `CatchChip.selectable`; migrate consumers
   and delete the competing public symbol/file without an alias.
-- [ ] Unify `CatchActivityChip` into `CatchChip.activity`; preserve typed
+- [x] Unify `CatchActivityChip` into `CatchChip.activity`; preserve typed
   activity emphasis and delete the competing public symbol/file.
-- [ ] Update `catch.chip` component contract, Widgetbook states, catalog,
+- [x] Update `catch.chip` component contract, Widgetbook states, catalog,
   focused tests, and generated directories/registries.
-- [ ] Rerender selectable, passive, removable, activity-soft, activity-solid,
+- [x] Rerender selectable, passive, removable, activity-soft, activity-solid,
   disabled, long-label, dark-mode, and text-scale states in the comparison
   tool.
-- [ ] Run focused analyzer/tests, design gates, widget scanners, readiness,
+- [x] Run focused analyzer/tests, design gates, widget scanners, readiness,
   audit refresh/stamp, and delegation receipts after integration.
 
 Deferred neighboring families remain independently reviewable: badge/status,
@@ -1535,9 +1535,9 @@ class SetupChoiceChips<T> extends StatelessWidget {
   // build: verbatim twin body — Padding(_setupNestedControlPadding,
   //   Column(start, [Text(label, CatchTextStyles.labelM(context)), gapH6,
   //     Wrap(spacing/runSpacing s2, [for (final option in options)
-  //       CatchSelectChip(label: option.label, active: value == option.value,
-  //         enabled: enabled,
-  //         onTap: enabled ? () => onChanged(option.value) : null)])]))
+  //       CatchChip.selectable(label: option.label,
+  //         selected: value == option.value, enabled: enabled,
+  //         onChanged: (_) => onChanged(option.value))])]))
 }
 ```
 

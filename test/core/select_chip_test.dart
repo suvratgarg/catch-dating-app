@@ -152,6 +152,81 @@ void main() {
     },
   );
 
+  testWidgets('CatchChip.selectable scales only for the active press', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchChip.selectable(
+          label: 'Press me',
+          selected: true,
+          onChanged: (_) {},
+        ),
+      ),
+    );
+
+    final chip = _chip('Press me');
+    AnimatedScale scale() => tester.widget<AnimatedScale>(
+      find.descendant(of: chip, matching: find.byType(AnimatedScale)),
+    );
+
+    expect(scale().scale, 1);
+
+    final gesture = await tester.startGesture(tester.getCenter(chip));
+    await tester.pump(CatchMotion.fast);
+    expect(scale().scale, lessThan(1));
+
+    await gesture.up();
+    await tester.pump(CatchMotion.fast);
+    expect(scale().scale, 1);
+  });
+
+  testWidgets('CatchChip.selectable keeps inverse ink legible in dark mode', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchChip.selectable(
+          label: 'Selected',
+          selected: true,
+          onChanged: (_) {},
+        ),
+        themeMode: ThemeMode.dark,
+      ),
+    );
+
+    final chip = _chip('Selected');
+    final tokens = CatchTokens.of(tester.element(chip));
+    final decoration = _chipDecoration(tester, chip);
+    final label = tester.widget<Text>(find.text('Selected'));
+
+    expect(decoration.color, tokens.primary);
+    expect(label.style?.color, tokens.primaryInk);
+    expect(label.style?.color, isNot(decoration.color));
+  });
+
+  testWidgets('CatchChip.activity lifts soft activity ink in dark mode', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchChip.activity(activityKind: ActivityKind.socialRun),
+        themeMode: ThemeMode.dark,
+      ),
+    );
+
+    final chip = _chip('Social run');
+    final activity = ActivityPalette.resolve(
+      tester.element(chip),
+      ActivityKind.socialRun,
+    );
+    final label = tester.widget<Text>(find.text('Social run'));
+
+    expect(_chipDecoration(tester, chip).color, activity.soft);
+    expect(label.style?.color, activity.accent);
+    expect(label.style?.color, isNot(activity.soft));
+  });
+
   testWidgets('CatchChip.removable exposes one whole-chip removal action', (
     tester,
   ) async {
@@ -183,9 +258,11 @@ void main() {
   });
 }
 
-Widget _wrap(Widget child) {
+Widget _wrap(Widget child, {ThemeMode themeMode = ThemeMode.light}) {
   return MaterialApp(
     theme: AppTheme.light,
+    darkTheme: AppTheme.dark,
+    themeMode: themeMode,
     home: Scaffold(body: Center(child: child)),
   );
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: widget_consolidation_receipts
-version: 0.2.0
-updated: 2026-07-02
+version: 0.3.0
+updated: 2026-07-13
 owner: widget_consolidation
 status: active
 ---
@@ -2583,6 +2583,90 @@ Known blockers / inherited debt:
 - `node tool/design/check_screen_contracts.mjs --check` still fails on inherited
   missing-symbol drift for Calendar, Saved Events, host create/edit footers,
   Host settings adapter ownership, Event edit footer, and Reviews History.
+
+## 2026-07-13 - PWF-001 chip-core pattern family
+
+Scope and isolation:
+
+- Implemented the user-approved `chip-core` family in the isolated
+  `codex/widget-pattern-core-20260712` worktree from base
+  `0704ca480e087c1db10db6817787d2998bba3b0f`.
+- Left the parent worktree and the parallel Event Detail change untouched.
+  Event Detail widgets were explicitly excluded from the family inventory and
+  migration.
+- Repaired `CatchChip` behind semantic `tag`, `selectable`, `activity`, and
+  `removable` constructors. Absorbed and deleted the competing
+  `CatchSelectChip`, `CatchActivityChip`, and public remove-button contracts
+  without aliases.
+- Consolidated all formal coverage into the single `catch.chip` component and
+  Widgetbook contract page. The implemented family remains the source for the
+  neighboring badge/status, floating-control, identity-switcher, and
+  progress-cue review queues.
+
+Visual review:
+
+- Rendered tag, selectable resting/selected/disabled/accented/leading,
+  removable, activity soft/solid/tappable, and constrained long-label states
+  side by side in light and dark themes at 1.0x and 1.5x text scale.
+- The first dark-mode pass exposed light-on-light selected ink. The canonical
+  implementation now derives legible ink from the actual fill while preserving
+  `primaryInk` for the primary selected treatment.
+- The same pass exposed weak dark-theme activity-soft contrast. Dark soft
+  activity chips now use the lifted activity accent for their ink; the solid
+  treatment continues to derive contrast from its fill.
+- Persistent selected scale and glow were removed. Selected state keeps the
+  approved solid fill and subtle shadow; `0.97` scale exists only during an
+  active press.
+
+Generated evidence:
+
+| artifact | result |
+|---|---:|
+| widget classification | 1,115 entries; 76 review items; 5 private flagged |
+| widget variants | 859 use cases; 1,739 state cards; 39 review candidates |
+| fingerprints | 999 widgets; 0 failures |
+| similarity | 999 widgets; 48 clusters; 200 ranked pairs; 208 name families; 8 absorb candidates |
+| Widgetbook coverage | 975 classes; 852 public cataloged; 123 inherited queue items; 0 stale decisions |
+| comparison artifact | 945 rows; 107 design-export members; 916 Widgetbook members; 59 contracts |
+
+Verification:
+
+- `flutter analyze --no-fatal-infos lib` exited 0 with 277 inherited
+  info-level findings and no warnings or errors. The final focused
+  `CatchChip` analysis is clean.
+- The serialized impacted Flutter suite passed 351 tests. After the visual
+  fixes, `flutter test test/core/select_chip_test.dart` passed all 7 focused
+  semantic, interaction, contrast, and removal tests.
+- Scoped Widgetbook analysis of both changed primitive use-case files reported
+  no issues. Whole-Widgetbook analysis remains blocked by 89 unrelated
+  pre-existing issues outside these primitive files.
+- Pattern-family tests passed 16/16; the live registry check passed with 5
+  families and 15 members. Component contracts, Widgetbook contract refs,
+  screen contracts, compare-server syntax, context-pack reproducibility,
+  classification, variants, similarity, seeded dedupe probes, new-widget
+  inventory, manifest validation, enforcement integrity, and the cleanup
+  scanner passed. Agent readiness finished at 100/100 (1,346/1,346 checks).
+- The Widgetbook coverage report was regenerated with 123 existing queue items
+  and zero stale decisions. Its strict check remains red by design until that
+  pre-existing project-wide queue reaches zero; this pass reduced and did not
+  expand the queue.
+- Active-source scans found no unrestricted `CatchChip(...)` construction and
+  no `CatchSelectChip`, `CatchActivityChip`, `CatchChipRemoveButton`, or deleted
+  file imports in app code, tests, contracts, Widgetbook, tools, or regenerated
+  definition/catalog artifacts. Historical ledger provenance was retained.
+
+Audit and delegation:
+
+- Recorded five parent-reviewed worker outcomes for the core migration,
+  pattern-family checker, family-first comparison surface, Widgetbook contract,
+  and test migration.
+- Regenerated the audit file inventory and definition/consolidation catalogs.
+- Stamped pass `2026-07-13-widget-consolidation-pwf-001-chip-core` with the
+  applicable audit, delegation, pattern-family, primitive, token, catalog,
+  dead-symbol, codegen, documentation, UI-lint, and Event Success rules.
+
+New debt: none. The 123-item Widgetbook coverage queue and whole-Widgetbook
+analyzer findings are inherited project debt, not introduced by PWF-001.
 - `node tool/design/check_component_contracts.mjs` and
   `node tool/run.mjs check --category design` still fail on inherited
   `catch.tab_rail` token drift:

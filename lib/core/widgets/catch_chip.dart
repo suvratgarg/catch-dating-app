@@ -100,34 +100,21 @@ class CatchChip extends StatefulWidget {
 
   const CatchChip._({
     super.key,
-    required _CatchChipVariant variant,
-    String? label,
-    Widget? leading,
-    bool selected = false,
-    bool enabled = true,
-    Color? accent,
-    Color? tintColor,
-    Color? inkColor,
-    ActivityKind? activityKind,
-    CatchChipEmphasis emphasis = CatchChipEmphasis.soft,
-    ValueChanged<bool>? onChanged,
-    VoidCallback? onTap,
-    VoidCallback? onRemove,
-    String? semanticsLabel,
-  }) : _variant = variant,
-       _label = label,
-       _leading = leading,
-       _selected = selected,
-       _enabled = enabled,
-       _accent = accent,
-       _tintColor = tintColor,
-       _inkColor = inkColor,
-       _activityKind = activityKind,
-       _emphasis = emphasis,
-       _onChanged = onChanged,
-       _onTap = onTap,
-       _onRemove = onRemove,
-       _semanticsLabel = semanticsLabel;
+    required this._variant,
+    this._label,
+    this._leading,
+    this._selected = false,
+    this._enabled = true,
+    this._accent,
+    this._tintColor,
+    this._inkColor,
+    this._activityKind,
+    this._emphasis = CatchChipEmphasis.soft,
+    this._onChanged,
+    this._onTap,
+    this._onRemove,
+    this._semanticsLabel,
+  });
 
   final _CatchChipVariant _variant;
   final String? _label;
@@ -205,6 +192,13 @@ class _CatchChipState extends State<CatchChip> {
     setState(() => _pressed = value);
   }
 
+  Color _inkForFill(CatchTokens tokens, Color fill) {
+    if (fill == tokens.primary) return tokens.primaryInk;
+    return ThemeData.estimateBrightnessForColor(fill) == Brightness.dark
+        ? CatchTokens.editorialWhite
+        : CatchTokens.editorialBlack;
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
@@ -244,7 +238,7 @@ class _CatchChipState extends State<CatchChip> {
       case _CatchChipVariant.selectable:
         final accent = widget._accent ?? t.primary;
         background = widget._selected ? accent : t.surface;
-        foreground = widget._selected ? t.onFill(accent) : t.ink;
+        foreground = widget._selected ? _inkForFill(t, accent) : t.ink;
         border = widget._selected ? Colors.transparent : t.line2;
         shadow = widget._selected
             ? CatchElevation.segmentedSelected(t)
@@ -259,7 +253,11 @@ class _CatchChipState extends State<CatchChip> {
       case _CatchChipVariant.activity:
         final solid = widget._emphasis == CatchChipEmphasis.solid;
         background = solid ? activity!.accent : activity!.soft;
-        foreground = solid ? t.onFill(activity.accent) : activity.deep;
+        foreground = solid
+            ? _inkForFill(t, activity.accent)
+            : Theme.of(context).brightness == Brightness.dark
+            ? activity.accent
+            : activity.deep;
         border = Colors.transparent;
         shadow = CatchElevation.none;
         leading = Icon(activity.glyph);
@@ -319,7 +317,7 @@ class _CatchChipState extends State<CatchChip> {
       decoration: BoxDecoration(
         color: background,
         borderRadius: radius,
-        border: Border.all(color: border, width: CatchStroke.hairline),
+        border: Border.all(color: border),
         boxShadow: shadow,
       ),
       child: _hasControlRole

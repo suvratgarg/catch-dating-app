@@ -6026,7 +6026,7 @@
       "rationale": "The approved chip-core family chose one semantic CatchChip contract while preserving the strongest behavior from each member. Quiet tags remain low emphasis, parent-owned choices gain the solid selected treatment and subtle shadow, activity identity stays registry-backed, and removable values expose one action. Event Detail remains outside this order.",
       "decidedBy": "codex-rule:PWF-001",
       "date": "2026-07-12",
-      "status": "executing-PWF-001"
+      "status": "implemented-PWF-001"
     }
   ]
 }
