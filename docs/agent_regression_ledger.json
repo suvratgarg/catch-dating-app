@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "updated": "2026-07-12",
   "owner": "agent_operating_model",
   "entries": [
@@ -188,6 +188,29 @@
         "tool/README.md"
       ],
       "notes": "Update rule enforcement entries, manifest role/rules/vacuityProof metadata, doc anchors, and baseline receipts in the same pass as enforcement changes."
+    },
+    {
+      "id": "REG-AGENT-009",
+      "title": "Widget consolidation optimizes similarity instead of UI quality",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/**",
+        "lib/**/presentation/**",
+        "widgetbook/**",
+        "docs/design_parity/widget_consolidation/**",
+        "tool/design/widgetbook_compare_server.mjs"
+      ],
+      "symptom": "A consolidation pass treats generated pairs or shared class-name stems as work orders, spends most review effort proving unrelated widgets should stay distinct, and preserves weaker visual variants because they are not strict duplicates.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:widget-pattern-families"
+      },
+      "owner_docs": [
+        "AGENTS.md",
+        "docs/design_parity/widget_consolidation/consolidation_rules.md",
+        "docs/design_parity/widget_consolidation/pattern_families.json"
+      ],
+      "notes": "Stable pattern families are the actionable queue. Review all available renderings, choose the strongest visual/API reference, record per-member dispositions and accepted visual deltas, then use K/R/D rules only to execute the approved decision."
     },
     {
       "id": "REG-EXPLORE-001",

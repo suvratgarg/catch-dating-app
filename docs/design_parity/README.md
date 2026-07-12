@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.11
-updated: 2026-07-10
+version: 0.1.12
+updated: 2026-07-12
 owner: product_design_parity
 status: active
 ---
@@ -20,6 +20,9 @@ checks in one durable matrix.
 | `claude_widgetbook_inventory.md` | Persistent inventory comparison between the Claude Design export, local Widgetbook, local component contracts, and foundation token/style sources. |
 | `comprehensive_todo.md` | Canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, features, drift prevention, and pass cadence. |
 | `composition_migration_spec.md` | Layered implementation spec for migrating screens into controller-owned state composition, registered sections, registered components, and platform-neutral design tokens/contracts. |
+| `widget_consolidation/pattern_families.json` | Stable visual-family review registry. Records quality references, target contracts, per-member dispositions, and accepted visual deltas before consolidation work orders exist. |
+| `widget_consolidation/consolidation_rules.md` | Pattern-family review gate plus post-decision K/R/D implementation tactics. Generated similarity pairs and clusters remain discovery evidence only. |
+| `widgetbook_compare_resolution_queue.md` | Human-readable summary of the current pattern-family review queue; machine state remains in the family and decision registries. |
 | `event_detail_composition_tracker.md` | First screen-level composition tracker, mapping Event Detail from Claude event primitives to current Flutter sections, states, Widgetbook gaps, and migration tasks. |
 | `design/screens/screen_coverage.json` | Exhaustive route-to-screen coverage ledger. Every generated route is contracted, aliased, planned, or excluded from baseline design parity. |
 | `design/screens/catch.screens.json` | Machine-readable screen composition registry connecting routes, controller owners, states, captures, sections, and implementation paths. |

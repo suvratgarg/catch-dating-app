@@ -26,7 +26,7 @@
       ]
     },
     "AGENTS.md": {
-      "purpose": "Short AI-agent entrypoint for source-of-truth routing, required starting loop, React surface governance, completion standards, and parent-led parallel worktree delegation.",
+      "purpose": "Short AI-agent entrypoint for source-of-truth routing, required starting loop, pattern-family-first widget consolidation, React surface governance, completion standards, and parent-led parallel worktree delegation.",
       "read_when": [
         "Starting AI-assisted repo work",
         "Choosing the required workflow loop",
@@ -476,9 +476,10 @@
       ]
     },
     "docs/design_parity/README.md": {
-      "purpose": "Design parity folder owner and workflow for state matrices, screen contracts, captures, Widgetbook, component contracts, and route-ledger hygiene.",
+      "purpose": "Design parity folder owner and workflow for stable widget pattern families, state matrices, screen contracts, captures, Widgetbook, component contracts, and route-ledger hygiene.",
       "read_when": [
         "Starting design-parity work",
+        "Reviewing or implementing widget pattern-family consolidation",
         "Changing screen contracts, capture coverage, Widgetbook references, or design parity ledgers"
       ],
       "skip_when": [

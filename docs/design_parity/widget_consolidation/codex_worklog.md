@@ -1,12 +1,14 @@
 # Widget Consolidation — Codex Work Log
 
 Living queue of mechanical work orders for the widget consolidation initiative.
-Decisions (the *why* and the API designs) are made in review sessions and
-recorded in `decisions.json`; this file is the *how*. Work top-down. Mark each
-order's checkboxes as you complete them and append a receipts line (commands +
-headline numbers) under the order. Do not make design decisions here — if an
-instruction is ambiguous or a design question appears, stop that order, note it
-under **Escalations**, and continue with the next order.
+Stable visual-family decisions (the *why*, quality reference, target API, and
+accepted visual changes) live in `pattern_families.json`; `decisions.json`
+retains the mechanical K/R/D ledger. This file is the *how*. Work top-down.
+Mark each order's checkboxes as you complete them and append a receipts line
+(commands + headline numbers) under the order. A raw similarity pair or cluster
+cannot create a work order. If a family instruction is ambiguous or a new
+design question appears, stop that order, note it under **Escalations**, and
+continue with the next approved family.
 
 ## Standing environment facts
 
@@ -69,6 +71,53 @@ under **Escalations**, and continue with the next order.
     when triaging, match candidates against `decisions.json` by MEMBER SET,
     never by cluster id. The `*-reconciled` ledger-entry pattern is the
     blessed way to record an id remap without re-deciding.
+11. **Pattern families own the queue**: similarity data proposes evidence; it
+    never selects the canonical rendering. Every actionable order names a
+    stable family id from `pattern_families.json` and carries per-member
+    dispositions plus the accepted visual delta.
+12. **Reference first**: repair the approved canonical target before migrating
+    or deleting weaker members. After migration, rerender every surviving
+    member and the representative consumers before marking the family
+    implemented.
+
+---
+
+## PWF-001 — `chip-core` pattern family
+
+Status: approved by product review on 2026-07-12; isolated implementation in
+progress. Event Detail and its current dirty work remain explicitly excluded.
+
+Quality decision:
+
+- `CatchSelectChip` supplies the stronger selectable-state reference: solid
+  selected fill with inverse ink.
+- The canonical result is one ergonomic `CatchChip` API with semantic named
+  constructors rather than boolean/callback combinations that permit invalid
+  states.
+- Persistent selected scaling and glow are removed. Selection keeps a subtle
+  shadow; scale is press feedback only.
+- Quiet tags retain the low-emphasis surface/hairline treatment, and typed
+  activity chips retain registry-owned glyph and pigment.
+
+Implementation order:
+
+- [ ] Repair `CatchChip` with `tag`, `selectable`, `activity`, and `removable`
+  constructors and mutually valid interaction contracts.
+- [ ] Unify `CatchSelectChip` into `CatchChip.selectable`; migrate consumers
+  and delete the competing public symbol/file without an alias.
+- [ ] Unify `CatchActivityChip` into `CatchChip.activity`; preserve typed
+  activity emphasis and delete the competing public symbol/file.
+- [ ] Update `catch.chip` component contract, Widgetbook states, catalog,
+  focused tests, and generated directories/registries.
+- [ ] Rerender selectable, passive, removable, activity-soft, activity-solid,
+  disabled, long-label, dark-mode, and text-scale states in the comparison
+  tool.
+- [ ] Run focused analyzer/tests, design gates, widget scanners, readiness,
+  audit refresh/stamp, and delegation receipts after integration.
+
+Deferred neighboring families remain independently reviewable: badge/status,
+floating compact controls, identity switchers, and progress/cues. A pill radius
+does not make them members of `chip-core`.
 
 ---
 

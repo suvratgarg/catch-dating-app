@@ -1,34 +1,75 @@
 ---
 doc_id: widget_consolidation_rules
-version: 0.2.0
-updated: 2026-07-03
+version: 1.0.0
+updated: 2026-07-12
 owner: widget_consolidation
 status: active
 ---
 
 # Widget Consolidation Rules
 
-Decision rules distilled from the first 34 reviewed clusters (see
-`decisions.json`). They let Codex triage candidates autonomously. Apply in
-the order given: **KEEP rules are stop-losses and run first**; a candidate
-that trips any K-rule is recorded and closed. Then the merge rules. A
-candidate matching **no rule exactly** goes to Escalations — never stretch a
-rule to fit. Record every outcome (including keeps) in `decisions.json` with
-`"decidedBy": "codex-rule:<id>"`, so the review session audits the ledger
-instead of re-reading widgets.
+The actionable unit is a stable UI pattern family, not a generated similarity
+pair or cluster. `pattern_families.json` records the family intent, approved
+quality reference, target contract, accepted visual delta, and a disposition
+for every reviewed member. Similarity pairs, name families, and structural
+clusters are discovery evidence only.
+
+The K/R/D rules below are post-decision implementation tactics. Apply them only
+after a review session has approved the family and promoted its members to one
+of `canonical`, `repair`, `unify`, `register`, or `discard`. They help execute
+the decision safely; they do not decide which rendering or API is strongest.
+Record mechanical outcomes in `decisions.json` with
+`"decidedBy": "codex-rule:<id>"` and the stable pattern-family id.
+
+## Pattern-family review gate
+
+Before creating a work order:
+
+1. Assign the candidate to a stable family in `pattern_families.json`, or
+   record an explicit boundary explaining why it belongs to another family.
+2. Render every available member side by side in Widgetbook under consistent
+   theme, viewport, and text-scale contexts. Missing previews are tracked
+   evidence, not permission to decide from a class name.
+3. Choose the best visual and API reference. Do not assume the `Catch*`, core,
+   oldest, or most-used implementation is strongest.
+4. Give each member exactly one disposition:
+   - `canonical`: approved reference; implementation, contract, and canonical
+     Widgetbook surface agree.
+   - `repair`: valid concept whose visuals, API, contract, or preview are below
+     the approved quality bar.
+   - `unify`: migrate into the named target contract; aliases are not an end
+     state.
+   - `register`: valid distinct concept that needs stable global ownership and
+     review coverage.
+   - `discard`: obsolete, redundant, or too weak/trivial to remain public.
+5. Record any intentional visual change in `acceptedVisualDelta` and the
+   decision source. Only `approved` or `implemented` families produce work
+   orders.
+6. Repair or establish the canonical reference first, then migrate siblings,
+   rerender the whole family, and close with contracts, Widgetbook, tests,
+   scanners, registries, receipts, and readiness proof.
+
+Raw `dedupe-pair-*` and `dedupe-cluster-*` ids must never be direct work-order
+owners. Cluster ids are regeneration evidence and are not stable decisions.
 
 Scope limits (apply regardless of rules):
 
-- Never invent a name for a new **core** (`Catch*`) primitive — propose one
-  in the escalation and wait.
-- Never merge a widget with **> 10 external usages** without a review
-  decision.
-- Never change visual output except (a) token standardization explicitly
-  covered by a rule/order, or (b) skeleton width/jitter noise.
+- Never invent a name for a new **core** (`Catch*`) primitive outside an
+  approved pattern-family decision.
+- Never merge a widget with **> 10 external usages** without an approved
+  family decision and explicit migration proof.
+- Never change visual output unless the family records the accepted visual
+  delta, or the change is token standardization/skeleton noise explicitly
+  covered by an existing order.
 - `scope: screen` clusters always escalate (screens embed routing/providers;
   every reviewed one so far was composition, not duplication).
 
-## KEEP rules (stop-losses)
+## KEEP rules (post-decision stop-losses)
+
+Run KEEP rules before mechanical merge rules. A K-rule may expose an incorrect
+family assignment or an unsafe implementation plan, but it does not silently
+override an approved `unify` or `discard` decision; return that conflict to the
+review session.
 
 **K1 — Composition is not duplication.**
 If widget A instantiates widget B (B appears in A's construction tree — check
@@ -125,7 +166,7 @@ receipt.
 *Evidence: `size: 11` → CatchIcon.micro; MapPill 0.93 alpha; raw skeleton
 title widths.*
 
-## What stays with the review session (no rule possible)
+## What stays with the review session (no mechanical rule possible)
 
 The judgment calls that produced the most value are exactly the ones that
 resist codification:
@@ -139,5 +180,5 @@ resist codification:
 4. **Standardization trade-offs** — accepting a visual change (RunningStat's
    label flip) versus preserving pixels.
 
-Expected split based on the ledger so far: roughly 60% of remaining
-candidates should triage under K1–K4/R1–R4; the rest escalate.
+These judgments are now made explicitly at the pattern-family gate. K1–K5 and
+R1–R4 begin only after the family target and accepted visual delta are known.

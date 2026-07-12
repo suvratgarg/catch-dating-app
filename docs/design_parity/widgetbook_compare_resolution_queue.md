@@ -27,22 +27,33 @@ Generated from live review notes saved through
    information-grouping primitive with divided, contained, and plain variants;
    the former field-group, design-section, and section-surface APIs are
    removed.
-8. Current: dedupe-assisted consolidation review. The compare tool now promotes
-   the generated `docs/audit_registry/widget_similarity.json` candidates ahead
-   of the older hand-curated backlog, ranked by detector count and similarity
-   score, while still showing the registry rank, detector evidence, similarity
-   metrics, Widgetbook previews, source tabs, and suggested actions before a
-   decision is requested.
+8. Current: pattern-family quality review. Stable families from
+   `widget_consolidation/pattern_families.json` are the actionable queue and
+   render every available member side by side. Generated similarity pairs and
+   clusters remain discovery evidence; they do not choose the canonical widget
+   or create implementation work orders directly.
+
+## Pattern Family Queue
+
+| Family | Status | Quality direction |
+| --- | --- | --- |
+| `chip-core` | approved / implementing | Repair `CatchChip`; absorb the stronger selectable treatment and typed activity treatment behind semantic named constructors. |
+| `badge-status` | review | Compare functional status, dark-overlay, live, privacy, rating, and compact metadata treatments before choosing migrations. |
+| `floating-compact-controls` | review | Review raised map/filter controls with buttons and floating actions, not with passive chips. |
+| `identity-switchers` | review | Review club/account switchers as identity/menu controls rather than metadata pills. |
+| `progress-cues` | review | Review countdown beats, timers, and stage cues as progress grammar rather than generic badges. |
+
+Event Detail members are temporarily excluded from actionable family decisions
+while its screen redesign is active in a parallel worktree.
 
 ## Focused Visual Decision Queue
 
-Status: needs review
+Status: family review
 
-The first screen of the compare tool is now the dedupe queue generated from the
-widget similarity registry. Use the evidence card to decide whether a candidate
-is an absorb, merge/extract, rename-only, keep-distinct, visual-first, or
-inline/delete case. The older focused visual decision rows below remain in the
-same tool after the dedupe candidates.
+The first screen of the compare tool is the stable pattern-family queue. Each
+member receives one of `canonical`, `repair`, `unify`, `register`, or `discard`.
+Similarity evidence remains available in a separate bucket for discovery and
+boundary checks.
 
 These are not implementation decisions yet. They are the unresolved boundaries
 that need visual review before more widget consolidation work proceeds.
