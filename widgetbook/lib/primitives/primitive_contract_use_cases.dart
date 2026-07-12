@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
@@ -1094,80 +1093,126 @@ Widget catchChipContractStates(BuildContext context) {
     title: 'CatchChip',
     contractId: 'catch.chip',
     states: const [
-      'default',
-      'active',
-      'disabled',
-      'with-icon',
+      'tag',
+      'selectable-resting',
+      'selectable-selected',
+      'selectable-disabled',
+      'selectable-accented',
+      'selectable-with-leading',
       'removable',
-      'activity-tinted',
+      'activity-soft',
+      'activity-solid',
+      'activity-tappable',
+      'truncated',
     ],
     children: [
       _StateCard(
-        label: 'default',
+        label: 'tag',
+        description: 'Passive metadata: neutral, tinted, and icon-leading.',
         child: _InlineWrap(
           children: [
-            CatchChip(label: 'Tonight', onTap: _noop),
-            CatchChip(label: 'Low key', onTap: _noop),
+            const CatchChip.tag(label: 'Tonight'),
+            CatchChip.tag(
+              label: 'Low key',
+              tintColor: t.primarySoft,
+              inkColor: t.primary,
+            ),
+            CatchChip.tag(label: 'Weekend', leading: Icon(CatchIcons.weekend)),
           ],
         ),
       ),
       _StateCard(
-        label: 'active',
-        child: CatchChip(label: 'Selected', active: true, onTap: _noop),
+        label: 'selectable states',
+        description: 'Resting, selected, and disabled shown side by side.',
+        child: _InlineWrap(
+          children: [
+            CatchChip.selectable(
+              label: 'Resting',
+              selected: false,
+              onChanged: _ignoreBool,
+            ),
+            CatchChip.selectable(
+              label: 'Selected',
+              selected: true,
+              onChanged: _ignoreBool,
+            ),
+            CatchChip.selectable(
+              label: 'Disabled',
+              selected: false,
+              enabled: false,
+              onChanged: _ignoreBool,
+            ),
+          ],
+        ),
       ),
       _StateCard(
-        label: 'disabled',
-        child: const CatchChip(label: 'Sold out', enabled: false),
-      ),
-      _StateCard(
-        label: 'with-icon',
-        child: CatchChip(
-          label: 'Weekend',
-          icon: Icon(CatchIcons.weekend),
-          onTap: _noop,
+        label: 'selectable options',
+        description: 'Optional accent and leading icon stay semantic.',
+        child: _InlineWrap(
+          children: [
+            CatchChip.selectable(
+              label: 'Accent',
+              selected: true,
+              accent: t.like,
+              onChanged: _ignoreBool,
+            ),
+            CatchChip.selectable(
+              label: 'With icon',
+              selected: false,
+              leading: Icon(CatchIcons.favoriteOutlineRounded),
+              onChanged: _ignoreBool,
+            ),
+          ],
         ),
       ),
       _StateCard(
         label: 'removable',
-        child: CatchChip(
-          label: 'Rooftop',
-          icon: Icon(CatchIcons.pinOutlined),
-          onRemove: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'activity-tinted',
-        child: CatchChip(
-          label: 'Run club',
-          tintColor: t.like.withValues(alpha: CatchOpacity.subtleFill),
-          inkColor: t.like,
-          icon: Icon(CatchIcons.directionsRunRounded),
-          onTap: _noop,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchChipRemoveButton,
-  path: '[Core primitives]/Selection',
-)
-Widget catchChipRemoveButtonContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return _ContractScreen(
-    title: 'CatchChipRemoveButton',
-    contractId: 'catch.chip.remove_button',
-    states: const ['enabled', 'disabled'],
-    children: [
-      _StateCard(
-        label: 'remove affordance',
+        description: 'One full-chip removal action; disabled is visibly inert.',
         child: _InlineWrap(
           children: [
-            CatchChipRemoveButton(color: t.ink, onRemove: _noop),
-            CatchChipRemoveButton(color: t.ink3),
+            CatchChip.removable(
+              label: 'Rooftop',
+              leading: Icon(CatchIcons.pinOutlined),
+              onRemove: _noop,
+            ),
+            CatchChip.removable(
+              label: 'Disabled',
+              enabled: false,
+              onRemove: _noop,
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'activity emphasis',
+        description: 'Soft, solid, and tappable activity identity.',
+        child: _InlineWrap(
+          children: [
+            const CatchChip.activity(activityKind: ActivityKind.socialRun),
+            const CatchChip.activity(
+              activityKind: ActivityKind.pickleball,
+              emphasis: CatchChipEmphasis.solid,
+            ),
+            CatchChip.activity(activityKind: ActivityKind.dinner, onTap: _noop),
+          ],
+        ),
+      ),
+      const _StateCard(
+        label: 'truncated',
+        description: 'Long labels ellipsize inside constrained hosts.',
+        child: _InlineWrap(
+          children: [
+            SizedBox(
+              width: 150,
+              child: CatchChip.tag(label: 'A very long passive metadata label'),
+            ),
+            SizedBox(
+              width: 160,
+              child: CatchChip.activity(
+                activityKind: ActivityKind.strengthTraining,
+                label: 'Strength training after work',
+              ),
+            ),
           ],
         ),
       ),
@@ -1371,9 +1416,21 @@ Widget catchFieldContractStates(BuildContext context) {
           initiallyExpanded: true,
           control: _InlineWrap(
             children: [
-              CatchChip(label: '16', onTap: _noop),
-              CatchChip(label: '24', active: true, onTap: _noop),
-              CatchChip(label: '32', onTap: _noop),
+              CatchChip.selectable(
+                label: '16',
+                selected: false,
+                onChanged: _ignoreBool,
+              ),
+              CatchChip.selectable(
+                label: '24',
+                selected: true,
+                onChanged: _ignoreBool,
+              ),
+              CatchChip.selectable(
+                label: '32',
+                selected: false,
+                onChanged: _ignoreBool,
+              ),
             ],
           ),
         ),
@@ -3843,56 +3900,6 @@ Widget catchNetworkImageFallbackContractStates(BuildContext context) {
           child: CatchNetworkImageFallback(
             backgroundColor: t.primarySoft,
             iconColor: t.primary,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchActivityChip,
-  path: '[Core primitives]/Activity',
-)
-Widget catchActivityChipContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchActivityChip',
-    contractId: 'catch.activity_chip',
-    states: const ['soft', 'primary', 'tappable', 'custom-label', 'truncated'],
-    children: [
-      const _StateCard(
-        label: 'soft',
-        child: CatchActivityChip(activityKind: ActivityKind.socialRun),
-      ),
-      const _StateCard(
-        label: 'primary',
-        child: CatchActivityChip(
-          activityKind: ActivityKind.pickleball,
-          primary: true,
-        ),
-      ),
-      _StateCard(
-        label: 'tappable',
-        child: CatchActivityChip(
-          activityKind: ActivityKind.dinner,
-          onTap: _noop,
-        ),
-      ),
-      const _StateCard(
-        label: 'custom-label',
-        child: CatchActivityChip(
-          activityKind: ActivityKind.openActivity,
-          label: 'Anything social',
-        ),
-      ),
-      const _StateCard(
-        label: 'truncated',
-        child: SizedBox(
-          width: 160,
-          child: CatchActivityChip(
-            activityKind: ActivityKind.strengthTraining,
-            label: 'Strength training after work',
           ),
         ),
       ),
@@ -6774,6 +6781,8 @@ Widget notificationRowContractStates(BuildContext context) {
 }
 
 void _noop() {}
+
+void _ignoreBool(bool _) {}
 
 void _ignoreString(String value) {}
 

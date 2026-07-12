@@ -53,7 +53,6 @@ import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -651,36 +650,6 @@ Widget catchOptionGroupCatalogStates(BuildContext context) {
     catalogId: 'core.widgets.catch_option_group',
     children: const [
       _StateCard(label: 'label / mono / trailing', child: _OptionGroupDemo()),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchSelectChip,
-  path: '[Core catalog]/Selection',
-)
-Widget catchSelectChipCatalogStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return _CatalogScreen(
-    title: 'CatchSelectChip',
-    catalogId: 'core.widgets.catch_select_chip',
-    children: [
-      _StateCard(
-        label: 'resting / active / disabled',
-        child: _InlineWrap(
-          children: [
-            CatchSelectChip(label: 'Low key', onTap: _noop),
-            CatchSelectChip(
-              label: 'Active',
-              active: true,
-              accentColor: t.like,
-              onTap: _noop,
-            ),
-            const CatchSelectChip(label: 'Disabled', enabled: false),
-          ],
-        ),
-      ),
     ],
   );
 }
