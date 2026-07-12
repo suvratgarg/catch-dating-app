@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.612
+version: 2.5.613
 updated: 2026-07-11
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,18 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.613
+
+- Locked the native typography contract to the bundled Archivo variable TTF,
+  platform system reading/function text, and IBM Plex Mono data roles while
+  retaining Archivo WOFF2 for web surfaces. Added runtime OFL registration.
+- Centralized welcome, avatar, status-bar, caps-label, and badge typography in
+  semantic `CatchTextStyles` roles; removed dead low-level aliases and ignored
+  Archivo italic parameters.
+- Added analyzer and scanner enforcement against direct app-facing `CatchFonts`
+  calls and call-site `letterSpacing`, plus generated design-context metadata
+  for family role, case policy, aliases, tracking, and variable axes.
 
 ### 2.5.612
 

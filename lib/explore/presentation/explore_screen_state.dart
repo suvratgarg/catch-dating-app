@@ -8,6 +8,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 enum ExploreDiscoveryEmptyKind {
@@ -39,11 +40,16 @@ const int minimumExploreThisWeekRecommendationCount = 2;
 class ExploreMapLauncherState {
   const ExploreMapLauncherState({required this.label});
 
-  factory ExploreMapLauncherState.from({required int? mappableEventCount}) {
+  factory ExploreMapLauncherState.from({
+    required int? mappableEventCount,
+    required AppLocalizations l10n,
+  }) {
     return ExploreMapLauncherState(
       label: mappableEventCount == null || mappableEventCount == 0
-          ? 'Map'
-          : 'Map · $mappableEventCount',
+          ? l10n.exploreExploreScreenStateLabelMap
+          : l10n.exploreExploreScreenStateLabelMapMappableeventcount(
+              mappableEventCount: mappableEventCount,
+            ),
     );
   }
 
@@ -61,12 +67,16 @@ class ExploreCityTriggerState {
   factory ExploreCityTriggerState.from({
     required CityData city,
     required bool focused,
+    required AppLocalizations l10n,
   }) {
-    final chooseLabel = 'Choose city: ${city.label}';
+    final chooseLabel = l10n
+        .exploreExploreScreenStateVisiblecopyChooseCityLabel(label: city.label);
     return ExploreCityTriggerState(
       tooltipLabel: chooseLabel,
       semanticLabel: chooseLabel,
-      scopeLabel: 'EXPLORE · ${city.label}'.toUpperCase(),
+      scopeLabel: l10n
+          .exploreExploreScreenStateVisiblecopyExploreLabel(label: city.label)
+          .toUpperCase(),
       icon: focused
           ? CatchIcons.locationOnRounded
           : CatchIcons.locationOnOutlined,
@@ -130,6 +140,7 @@ class ExploreChromeState {
   factory ExploreChromeState.browse({
     required String query,
     required bool showSearchAction,
+    required AppLocalizations l10n,
   }) {
     return ExploreChromeState._(
       query: query,
@@ -137,6 +148,7 @@ class ExploreChromeState {
       showCoverStory: false,
       searchExpanded: false,
       searchAutofocus: false,
+      l10n: l10n,
     );
   }
 
@@ -144,6 +156,7 @@ class ExploreChromeState {
     required String query,
     required bool searchRequested,
     required bool hasFeaturedItem,
+    required AppLocalizations l10n,
   }) {
     final searchActive = query.trim().isNotEmpty;
     final showCoverStory = hasFeaturedItem && !searchRequested && !searchActive;
@@ -153,20 +166,25 @@ class ExploreChromeState {
       showCoverStory: showCoverStory,
       searchExpanded: searchRequested || searchActive,
       searchAutofocus: searchRequested,
+      l10n: l10n,
     );
   }
 
-  const ExploreChromeState._({
+  ExploreChromeState._({
     required String query,
     required this.showSearchAction,
     required this.showCoverStory,
     required this.searchExpanded,
     required this.searchAutofocus,
-  }) : title = 'Explore',
+    required AppLocalizations l10n,
+  }) : title = l10n.exploreExploreScreenStateVisiblecopyExplore,
        searchValue = query,
-       searchPlaceholder = 'Search events or clubs',
-       searchTooltip = 'Search events or clubs',
-       searchSemanticLabel = 'Search events or clubs';
+       searchPlaceholder =
+           l10n.exploreExploreScreenStateVisiblecopySearchEventsOrClubs,
+       searchTooltip =
+           l10n.exploreExploreScreenStateVisiblecopySearchEventsOrClubs,
+       searchSemanticLabel =
+           l10n.exploreExploreScreenStateVisiblecopySearchEventsOrClubs;
 
   final String title;
   final String searchValue;
@@ -185,13 +203,18 @@ class ExploreFilterRailState {
     required this.filterButtonSemanticLabel,
   });
 
-  factory ExploreFilterRailState.from(ExploreFilterSelection filters) {
+  factory ExploreFilterRailState.from(
+    ExploreFilterSelection filters, {
+    required AppLocalizations l10n,
+  }) {
     final activeCount = activeExploreFilterCount(filters);
     return ExploreFilterRailState(
       activeCount: activeCount,
       filterButtonSemanticLabel: activeCount == 0
-          ? 'Open explore filters'
-          : 'Open explore filters, $activeCount active',
+          ? l10n.exploreExploreScreenStateVisiblecopyOpenExploreFilters
+          : l10n.exploreExploreScreenStateVisiblecopyOpenExploreFiltersActivecount(
+              activeCount: activeCount,
+            ),
     );
   }
 
@@ -209,10 +232,11 @@ class ExploreFilterSheetState {
   factory ExploreFilterSheetState.from({
     required ExploreFilterSelection filters,
     required Iterable<Club> sourceClubs,
+    required AppLocalizations l10n,
   }) {
     return ExploreFilterSheetState(
       activeCount: activeExploreFilterCount(filters),
-      distanceOptions: exploreDistanceFilterOptions,
+      distanceOptions: exploreDistanceFilterOptions(l10n),
       areaOptions: _areaOptions(sourceClubs, filters.area),
     );
   }
@@ -229,23 +253,28 @@ class ExploreDistanceFilterOption {
   final String label;
 }
 
-const exploreDistanceFilterOptions = <ExploreDistanceFilterOption>[
-  ExploreDistanceFilterOption(value: ExploreDistanceFilter.any, label: 'Any'),
+List<ExploreDistanceFilterOption> exploreDistanceFilterOptions(
+  AppLocalizations l10n,
+) => <ExploreDistanceFilterOption>[
+  ExploreDistanceFilterOption(
+    value: ExploreDistanceFilter.any,
+    label: l10n.exploreExploreScreenStateLabelAny,
+  ),
   ExploreDistanceFilterOption(
     value: ExploreDistanceFilter.oneKm,
-    label: '1 km',
+    label: l10n.exploreExploreScreenStateLabel1Km,
   ),
   ExploreDistanceFilterOption(
     value: ExploreDistanceFilter.threeKm,
-    label: '3 km',
+    label: l10n.exploreExploreScreenStateLabel3Km,
   ),
   ExploreDistanceFilterOption(
     value: ExploreDistanceFilter.fiveKm,
-    label: '5 km',
+    label: l10n.exploreExploreScreenStateLabel5Km,
   ),
   ExploreDistanceFilterOption(
     value: ExploreDistanceFilter.tenKm,
-    label: '10 km',
+    label: l10n.exploreExploreScreenStateLabel10Km,
   ),
 ];
 
@@ -269,15 +298,24 @@ class ExploreCoverStoryState {
     required this.attendanceLabel,
   });
 
-  factory ExploreCoverStoryState.from(ExploreEventItem item, {DateTime? now}) {
+  factory ExploreCoverStoryState.from(
+    ExploreEventItem item, {
+    required AppLocalizations l10n,
+    DateTime? now,
+  }) {
     return ExploreCoverStoryState(
-      kicker: _coverKicker(item, now: now),
+      kicker: _coverKicker(item, l10n: l10n, now: now),
       title: item.event.title,
-      ctaLabel: 'Claim a seat',
-      timePriceLabel:
-          '${EventFormatters.time(item.event.startTime)} - ${item.priceLabel}',
-      attendanceLabel:
-          '${item.event.signedUpCount} going - ${_coverSpotsLabel(item)}',
+      ctaLabel: l10n.exploreExploreScreenStateCtalabelClaimASeat,
+      timePriceLabel: l10n.exploreExploreScreenStateVisiblecopyTimePricelabel(
+        time: EventFormatters.time(item.event.startTime),
+        priceLabel: item.priceLabel,
+      ),
+      attendanceLabel: l10n
+          .exploreExploreScreenStateVisiblecopySignedupcountGoingCoverspotslabel(
+            signedUpCount: item.event.signedUpCount,
+            coverSpotsLabel: _coverSpotsLabel(item, l10n),
+          ),
     );
   }
 
@@ -302,6 +340,7 @@ class ExploreFeedSectionState {
     required List<Club> candidateClubs,
     required Set<String> joinedClubIds,
     required bool showThisWeekList,
+    required AppLocalizations l10n,
     bool promoteFeaturedItem = true,
     DateTime? now,
   }) {
@@ -332,9 +371,9 @@ class ExploreFeedSectionState {
     return ExploreFeedSectionState(
       bodyViewModel: bodyViewModel,
       totalCount: viewModel.count,
-      resultCountLabel: _exploreResultCountLine(viewModel),
+      resultCountLabel: _exploreResultCountLine(viewModel, l10n),
       thisWeekItems: List.unmodifiable(thisWeekItems),
-      cardGroups: groupExploreMixedFeedCards(cards, now: now),
+      cardGroups: groupExploreMixedFeedCards(cards, l10n: l10n, now: now),
     );
   }
 
@@ -379,15 +418,18 @@ class ExploreEventRowState {
     required this.statusLabel,
   });
 
-  factory ExploreEventRowState.from(ExploreEventItem item) {
+  factory ExploreEventRowState.from(
+    ExploreEventItem item, {
+    required AppLocalizations l10n,
+  }) {
     return ExploreEventRowState(
       kicker: item.isFollowedClubSignal
-          ? 'FROM ONE OF YOUR CLUBS'
+          ? l10n.exploreExploreScreenStateKickerFromOneOfYour
           : item.club.name,
       supportingLabel: _rowSupportingLabel(item),
       priceLabel: item.priceLabel,
       capacityLabel: _capacityLabel(item),
-      statusLabel: _cardStatusLabel(item),
+      statusLabel: _cardStatusLabel(item, l10n),
     );
   }
 
@@ -414,20 +456,31 @@ class ExploreExternalEventRowState {
     required this.hasExternalLink,
   });
 
-  factory ExploreExternalEventRowState.from(ExploreExternalEventItem item) {
+  factory ExploreExternalEventRowState.from(
+    ExploreExternalEventItem item, {
+    required AppLocalizations l10n,
+  }) {
     final event = item.event;
     final hasExternalLink = event.primaryExternalUri != null;
     return ExploreExternalEventRowState(
-      sourceLabel: 'FROM ${event.platformLabel.toUpperCase()}',
-      statusLabel: 'External',
+      sourceLabel: l10n.exploreExploreScreenStateVisiblecopyFromTouppercase(
+        toUpperCase: event.platformLabel.toUpperCase(),
+      ),
+      statusLabel: l10n.exploreExploreScreenStateVisiblecopyExternal,
       supportingLabel: _externalEventSupportingLabel(item),
-      timePriceLabel:
-          '${EventFormatters.time(event.startTime)} · ${event.priceLabel}',
-      actionLabel: hasExternalLink ? 'Open' : 'No link',
+      timePriceLabel: l10n
+          .exploreExploreScreenStateVisiblecopyTimePricelabelc30029(
+            time: EventFormatters.time(event.startTime),
+            priceLabel: event.priceLabel,
+          ),
+      actionLabel: hasExternalLink
+          ? l10n.exploreExploreScreenStateActionlabelOpen
+          : l10n.exploreExploreScreenStateActionlabelNoLink,
       actionSemanticsLabel: hasExternalLink
-          ? 'Open external event source'
-          : 'External event link unavailable',
-      readOnlySupplyLabel: 'READ-ONLY SUPPLY · NO CATCH BOOKING',
+          ? l10n.exploreExploreScreenStateVisiblecopyOpenExternalEventSource
+          : l10n.exploreExploreScreenStateVisiblecopyExternalEventLinkUnavailable,
+      readOnlySupplyLabel:
+          l10n.exploreExploreScreenStateVisiblecopyReadOnlySupplyNo,
       hasExternalLink: hasExternalLink,
     );
   }
@@ -453,14 +506,23 @@ class ExploreClubCardState {
     required this.tags,
   });
 
-  factory ExploreClubCardState.from(Club club, {required bool isSynthetic}) {
+  factory ExploreClubCardState.from(
+    Club club, {
+    required bool isSynthetic,
+    required AppLocalizations l10n,
+  }) {
     return ExploreClubCardState(
       memberCountLabel: clubMemberCountLabel(club),
-      caption: (club.nextEventLabel ?? 'Club to know').toUpperCase(),
+      caption:
+          (club.nextEventLabel ??
+                  l10n.exploreExploreScreenStateCaptionClubToKnow)
+              .toUpperCase(),
       title: club.name,
-      supportingLabel: _clubSupportingLabel(club),
-      actionLabel: isSynthetic ? 'Preview' : 'View club',
-      rowKicker: 'CLUB TO KNOW',
+      supportingLabel: _clubSupportingLabel(club, l10n),
+      actionLabel: isSynthetic
+          ? l10n.exploreExploreScreenStateActionlabelPreview
+          : l10n.exploreExploreScreenStateActionlabelViewClub,
+      rowKicker: l10n.exploreExploreScreenStateVisiblecopyClubToKnow,
       tags: visibleClubTags(club, limit: 2),
     );
   }
@@ -560,6 +622,7 @@ List<ExploreMixedCard> buildExploreMixedFeedCards({
 
 List<ExploreFeedCardGroup> groupExploreMixedFeedCards(
   List<ExploreMixedCard> cards, {
+  required AppLocalizations l10n,
   DateTime? now,
 }) {
   if (cards.isEmpty) return const <ExploreFeedCardGroup>[];
@@ -678,12 +741,25 @@ List<ExploreEventItem> topExploreThisWeekRecommendations(
     ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
 }
 
-String _exploreResultCountLine(ExploreFeedViewModel viewModel) {
+String _exploreResultCountLine(
+  ExploreFeedViewModel viewModel,
+  AppLocalizations l10n,
+) {
   final count = viewModel.count;
-  final noun = count == 1 ? 'PLAN' : 'PLANS';
+  final noun = count == 1
+      ? l10n.exploreExploreScreenStateVisiblecopyPlan
+      : l10n.exploreExploreScreenStateVisiblecopyPlans;
   final dateSpan = _exploreDateSpanLabel(viewModel);
-  if (dateSpan == null) return '$count $noun';
-  return '$count $noun · $dateSpan';
+  if (dateSpan == null)
+    return l10n.exploreExploreScreenStateVisiblecopyCountNoun(
+      count: count,
+      noun: noun,
+    );
+  return l10n.exploreExploreScreenStateVisiblecopyCountNounDatespan(
+    count: count,
+    noun: noun,
+    dateSpan: dateSpan,
+  );
 }
 
 String? _exploreDateSpanLabel(ExploreFeedViewModel viewModel) {
@@ -724,10 +800,11 @@ String _capacityLabel(ExploreEventItem item) {
   ).goingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
 }
 
-String? _cardStatusLabel(ExploreEventItem item) {
+String? _cardStatusLabel(ExploreEventItem item, AppLocalizations l10n) {
   return switch (item.status) {
     EventTileStatus.open => _availabilityStatusLabel(item),
-    EventTileStatus.recommended => 'Picked',
+    EventTileStatus.recommended =>
+      l10n.exploreExploreScreenStateVisiblecopyPicked,
     EventTileStatus.joined ||
     EventTileStatus.saved ||
     EventTileStatus.hosted ||
@@ -757,13 +834,19 @@ String _externalEventSupportingLabel(ExploreExternalEventItem item) {
   ]);
 }
 
-String _clubSupportingLabel(Club club) {
+String _clubSupportingLabel(Club club, AppLocalizations l10n) {
   final nextEvent = club.nextEventLabel?.trim();
   if (nextEvent != null && nextEvent.isNotEmpty) {
-    return 'Next: $nextEvent';
+    return l10n.exploreExploreScreenStateVisiblecopyNextNextevent(
+      nextEvent: nextEvent,
+    );
   }
   final area = club.area.trim();
-  if (area.isNotEmpty) return '${clubMemberCountLabel(club)} - $area';
+  if (area.isNotEmpty)
+    return l10n.exploreExploreScreenStateVisiblecopyClubmembercountlabelArea(
+      clubMemberCountLabel: clubMemberCountLabel(club),
+      area: area,
+    );
   return clubMemberCountLabel(club);
 }
 
@@ -775,27 +858,46 @@ String _joinExploreLabels(Iterable<String?> labels) {
       .join(' · ');
 }
 
-String _coverKicker(ExploreEventItem item, {DateTime? now}) {
-  return '${_coverTimeScope(item.event.startTime, now: now)} - '
-      '${item.club.name} - ${item.event.locationName}';
+String _coverKicker(
+  ExploreEventItem item, {
+  required AppLocalizations l10n,
+  DateTime? now,
+}) {
+  return l10n
+      .exploreExploreScreenStateVisiblecopyCovertimescopeNameLocationname(
+        coverTimeScope: _coverTimeScope(
+          item.event.startTime,
+          l10n: l10n,
+          now: now,
+        ),
+        name: item.club.name,
+        locationName: item.event.locationName,
+      );
 }
 
-String _coverTimeScope(DateTime start, {DateTime? now}) {
+String _coverTimeScope(
+  DateTime start, {
+  required AppLocalizations l10n,
+  DateTime? now,
+}) {
   final reference = now ?? DateTime.now();
   final today = DateUtils.dateOnly(reference);
   final eventDay = DateUtils.dateOnly(start);
   final dayOffset = eventDay.difference(today).inDays;
   return switch (dayOffset) {
-    0 => 'Tonight',
-    1 => 'Tomorrow',
-    _ when dayOffset >= 0 && dayOffset < DateTime.daysPerWeek => 'This week',
+    0 => l10n.exploreExploreScreenStateVisiblecopyTonight,
+    1 => l10n.exploreExploreScreenStateVisiblecopyTomorrow,
+    _ when dayOffset >= 0 && dayOffset < DateTime.daysPerWeek =>
+      l10n.exploreExploreScreenStateVisiblecopyThisWeek,
     _ => EventFormatters.shortWeekday(start),
   };
 }
 
-String _coverSpotsLabel(ExploreEventItem item) {
+String _coverSpotsLabel(ExploreEventItem item, AppLocalizations l10n) {
   final spots = math.max(0, item.event.spotsRemaining);
-  return spots == 1 ? '1 left' : '$spots left';
+  return spots == 1
+      ? l10n.exploreExploreScreenStateVisiblecopy1Left
+      : l10n.exploreExploreScreenStateVisiblecopySpotsLeft(spots: spots);
 }
 
 List<String> _areaOptions(Iterable<Club> clubs, String? selectedArea) {
@@ -818,6 +920,7 @@ class ExploreDiscoveryScreenState {
   });
 
   factory ExploreDiscoveryScreenState.from({
+    required AppLocalizations l10n,
     required String cityLabel,
     required String query,
     required ExploreFilterSelection filters,
@@ -839,6 +942,7 @@ class ExploreDiscoveryScreenState {
     return ExploreDiscoveryScreenState(
       mapLauncherState: ExploreMapLauncherState.from(
         mappableEventCount: mappableEventCount,
+        l10n: l10n,
       ),
       emptyState: emptyState,
       bodyState: ExploreScreenBodyState.from(
@@ -1009,12 +1113,14 @@ class ExploreEventsEmptyState {
   factory ExploreEventsEmptyState.from({
     required ExploreFilterSelection filters,
     required String searchQuery,
+    required AppLocalizations l10n,
   }) {
     if (searchQuery.trim().isNotEmpty) {
       return ExploreEventsEmptyState(
-        title: 'No events match this search',
-        message: 'Clear the search and filters to see every upcoming event.',
-        actionLabel: 'Clear search and filters',
+        title: l10n.exploreExploreScreenStateTitleNoEventsMatchThis,
+        message: l10n.exploreExploreScreenStateMessageClearTheSearchAnd,
+        actionLabel:
+            l10n.exploreExploreScreenStateActionlabelClearSearchAndFilters,
         actionIcon: CatchIcons.clear,
         clearSearch: true,
         clearFilters: true,
@@ -1023,38 +1129,37 @@ class ExploreEventsEmptyState {
 
     return switch (filters.timeFilter) {
       ExploreTimeFilter.tonight => ExploreEventsEmptyState(
-        title: 'Nothing tonight',
-        message: 'The next good fit may be over the weekend.',
-        actionLabel: 'See weekend',
+        title: l10n.exploreExploreScreenStateTitleNothingTonight,
+        message: l10n.exploreExploreScreenStateMessageTheNextGoodFit,
+        actionLabel: l10n.exploreExploreScreenStateActionlabelSeeWeekend,
         actionIcon: CatchIcons.thisWeek,
         nextFilter: ExploreTimeFilter.weekend,
       ),
       ExploreTimeFilter.tomorrow => ExploreEventsEmptyState(
-        title: 'Nothing tomorrow',
-        message: 'Open up the weekend to catch more event slots.',
-        actionLabel: 'See weekend',
+        title: l10n.exploreExploreScreenStateTitleNothingTomorrow,
+        message: l10n.exploreExploreScreenStateMessageOpenUpTheWeekend,
+        actionLabel: l10n.exploreExploreScreenStateActionlabelSeeWeekend,
         actionIcon: CatchIcons.thisWeek,
         nextFilter: ExploreTimeFilter.weekend,
       ),
       ExploreTimeFilter.weekend => ExploreEventsEmptyState(
-        title: 'Nothing this weekend',
-        message: 'This week has the broader event slate.',
-        actionLabel: 'See this week',
+        title: l10n.exploreExploreScreenStateTitleNothingThisWeekend,
+        message: l10n.exploreExploreScreenStateMessageThisWeekHasThe,
+        actionLabel: l10n.exploreExploreScreenStateActionlabelSeeThisWeek,
         actionIcon: CatchIcons.thisWeek,
         nextFilter: ExploreTimeFilter.thisWeek,
       ),
       ExploreTimeFilter.thisWeek => ExploreEventsEmptyState(
-        title: 'Nothing this week',
-        message: 'Remove the time window to see every upcoming event.',
-        actionLabel: 'See anytime',
+        title: l10n.exploreExploreScreenStateTitleNothingThisWeek,
+        message: l10n.exploreExploreScreenStateMessageRemoveTheTimeWindow,
+        actionLabel: l10n.exploreExploreScreenStateActionlabelSeeAnytime,
         actionIcon: CatchIcons.clear,
         nextFilter: ExploreTimeFilter.anytime,
       ),
       ExploreTimeFilter.anytime => ExploreEventsEmptyState(
-        title: 'No upcoming events match this view',
-        message:
-            'Try a different area, a wider distance, or check the club directory below.',
-        actionLabel: 'Clear filters',
+        title: l10n.exploreExploreScreenStateTitleNoUpcomingEventsMatch,
+        message: l10n.exploreExploreScreenStateMessageTryADifferentArea,
+        actionLabel: l10n.exploreExploreScreenStateActionlabelClearFilters,
         actionIcon: CatchIcons.clear,
         clearFilters: true,
       ),

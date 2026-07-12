@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
@@ -12,6 +13,7 @@ const PhotoUploadState _idleUploadState = (
   uploadError: null,
 );
 final _today = DateTime(2026, 6, 24);
+final _l10n = AppLocalizationsEn();
 
 void main() {
   test('SelfProfileEditTabState maps photo grid delete and loading state', () {
@@ -23,6 +25,7 @@ void main() {
     );
 
     final state = SelfProfileEditTabState.fromProfile(
+      l10n: _l10n,
       user: user,
       today: _today,
       uploadState: (loadingIndices: {2}, uploadError: null),
@@ -45,6 +48,7 @@ void main() {
     );
 
     final state = SelfProfileEditTabState.fromProfile(
+      l10n: _l10n,
       user: user,
       today: _today,
       uploadState: _idleUploadState,
@@ -69,6 +73,7 @@ void main() {
     );
 
     final state = SelfProfileEditTabState.fromProfile(
+      l10n: _l10n,
       user: user,
       today: _today,
       uploadState: _idleUploadState,
@@ -106,6 +111,7 @@ void main() {
           );
 
       final state = SelfProfileEditTabState.fromProfile(
+        l10n: _l10n,
         user: user,
         today: _today,
         uploadState: _idleUploadState,
@@ -184,6 +190,7 @@ void main() {
     () {
       const controller = SelfProfilePhotoIntentFactory();
       final state = SelfProfileEditTabState.fromProfile(
+        l10n: _l10n,
         user: buildUser(
           photoUrls: [
             'https://example.com/photo_0.jpg',

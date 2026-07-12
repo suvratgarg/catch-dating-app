@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/l10n/l10n.dart';
+
 enum OnboardingStep {
   welcome,
   nameDob,
@@ -21,72 +23,83 @@ extension OnboardingStepX on OnboardingStep {
   /// Conditional copy mirrors the `profileCompletionOnly` / `runPreferencesOnly`
   /// entry modes the onboarding screen drives.
   ({String title, String? subtitle}) headerCopy({
+    required AppLocalizations l10n,
     required bool profileCompletionOnly,
     required bool runPreferencesOnly,
   }) {
     return switch (this) {
-      OnboardingStep.welcome => (title: 'Welcome', subtitle: null),
+      OnboardingStep.welcome => (
+        title: l10n.onboardingOnboardingStepTitleWelcome,
+        subtitle: null,
+      ),
       OnboardingStep.nameDob => (
-        title: "What's your name?",
-        subtitle: 'Last name stays private until you catch.',
+        title: l10n.onboardingOnboardingStepTitleWhatSYourName,
+        subtitle: l10n.onboardingOnboardingStepSubtitleLastNameStaysPrivate,
       ),
       OnboardingStep.genderInterest => (
-        title: 'How do you identify?',
+        title: l10n.onboardingOnboardingStepTitleHowDoYouIdentify,
         subtitle: null,
       ),
       OnboardingStep.instagram => (
-        title: 'Your Instagram',
-        subtitle:
-            'Helps us verify you for early access. Your handle is never shown to other users.',
+        title: l10n.onboardingOnboardingStepTitleYourInstagram,
+        subtitle: l10n.onboardingOnboardingStepSubtitleHelpsUsVerifyYou,
       ),
-      OnboardingStep.photos => profileCompletionOnly
-          ? (
-              title: 'Complete your profile for Catches',
-              subtitle:
-                  'Catches need photos so people can decide who they want to meet. You can still book events with your current details.',
-            )
-          : (
-              title: 'Show yourself',
-              subtitle: 'Add at least 2 photos so others can find you.',
-            ),
-      OnboardingStep.prompts => profileCompletionOnly
-          ? (
-              title: 'Add prompts to start catching',
-              subtitle:
-                  'Prompts give people something real to respond to before you match.',
-            )
-          : (
-              title: 'Show your personality',
-              subtitle: 'Answer 3 prompts to complete your profile.',
-            ),
-      OnboardingStep.runningPrefs => profileCompletionOnly
-          ? (
-              title: 'Finish your Catches profile',
-              subtitle:
-                  'These are optional, but they help us rank compatible people in Catches.',
-            )
-          : runPreferencesOnly
-          ? (
-              title: 'Set your run preferences',
-              subtitle:
-                  'We only ask for these before run events so hosts can plan pace groups and distances.',
-            )
-          : (
-              title: 'Your running style',
-              subtitle: 'Help us find compatible running partners.',
-            ),
+      OnboardingStep.photos =>
+        profileCompletionOnly
+            ? (
+                title: l10n.onboardingOnboardingStepTitleCompleteYourProfileFor,
+                subtitle:
+                    l10n.onboardingOnboardingStepSubtitleCatchesNeedPhotosSo,
+              )
+            : (
+                title: l10n.onboardingOnboardingStepTitleShowYourself,
+                subtitle: l10n.onboardingOnboardingStepSubtitleAddAtLeast2,
+              ),
+      OnboardingStep.prompts =>
+        profileCompletionOnly
+            ? (
+                title: l10n.onboardingOnboardingStepTitleAddPromptsToStart,
+                subtitle: l10n
+                    .onboardingOnboardingStepSubtitlePromptsGivePeopleSomething,
+              )
+            : (
+                title: l10n.onboardingOnboardingStepTitleShowYourPersonality,
+                subtitle: l10n.onboardingOnboardingStepSubtitleAnswer3PromptsTo,
+              ),
+      OnboardingStep.runningPrefs =>
+        profileCompletionOnly
+            ? (
+                title:
+                    l10n.onboardingOnboardingStepTitleFinishYourCatchesProfile,
+                subtitle:
+                    l10n.onboardingOnboardingStepSubtitleTheseAreOptionalBut,
+              )
+            : runPreferencesOnly
+            ? (
+                title: l10n.onboardingOnboardingStepTitleSetYourRunPreferences,
+                subtitle: l10n.onboardingOnboardingStepSubtitleWeOnlyAskFor,
+              )
+            : (
+                title: l10n.onboardingOnboardingStepTitleYourRunningStyle,
+                subtitle:
+                    l10n.onboardingOnboardingStepSubtitleHelpUsFindCompatible,
+              ),
     };
   }
 
-  String get appBarTitle {
+  String appBarTitle(AppLocalizations l10n) {
     return switch (this) {
-      OnboardingStep.welcome => 'Welcome',
-      OnboardingStep.nameDob => 'Your name',
-      OnboardingStep.genderInterest => 'Gender',
-      OnboardingStep.instagram => 'Instagram',
-      OnboardingStep.photos => 'Photos',
-      OnboardingStep.prompts => 'Prompts',
-      OnboardingStep.runningPrefs => 'Running style',
+      OnboardingStep.welcome => l10n.onboardingOnboardingStepVisiblecopyWelcome,
+      OnboardingStep.nameDob =>
+        l10n.onboardingOnboardingStepVisiblecopyYourName,
+      OnboardingStep.genderInterest =>
+        l10n.onboardingOnboardingStepVisiblecopyGender,
+      OnboardingStep.instagram =>
+        l10n.onboardingOnboardingStepVisiblecopyInstagram,
+      OnboardingStep.photos => l10n.onboardingOnboardingStepVisiblecopyPhotos,
+      OnboardingStep.prompts => l10n.onboardingOnboardingStepVisiblecopyPrompts,
+      OnboardingStep.runningPrefs =>
+        l10n.onboardingOnboardingStepVisiblecopyRunningStyle,
     };
   }
 

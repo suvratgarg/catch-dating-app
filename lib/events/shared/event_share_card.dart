@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showEventShareCardSheet(
@@ -91,7 +92,7 @@ class EventShareCard extends StatelessWidget {
                       radius: CatchRadius.pill,
                       padding: CatchInsets.compactLabelContent,
                       child: Text(
-                        'CATCH INVITE',
+                        context.l10n.eventsEventShareCardTextCatchInvite,
                         style: CatchTextStyles.labelS(
                           context,
                           color: visual.accent,

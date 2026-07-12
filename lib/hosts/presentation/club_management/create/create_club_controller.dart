@@ -111,7 +111,7 @@ class CreateClubController extends _$CreateClubController {
     if (existingClub != null) {
       if (!existingClub.isHostedBy(uid)) {
         throw const BackendOperationException(
-          code: 'unauthorized',
+          code: 'club-host-edit-required',
           message: 'Only a club host can edit this club.',
           context: BackendErrorContext(
             service: BackendService.local,
@@ -157,7 +157,7 @@ class CreateClubController extends _$CreateClubController {
       if (!existingClub.isOwnedBy(uid)) {
         if (!clubPhotosChanged && !logoChanged) {
           throw const BackendOperationException(
-            code: 'unauthorized',
+            code: 'club-owner-edit-required',
             message: 'Only the club owner can edit club details.',
             context: BackendErrorContext(
               service: BackendService.local,

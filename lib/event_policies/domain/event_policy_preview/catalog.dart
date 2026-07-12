@@ -1,3 +1,4 @@
+// copy:allow-file(Developer-only event policy preview fixtures)
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_preview/attendees.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_preview/probes.dart';

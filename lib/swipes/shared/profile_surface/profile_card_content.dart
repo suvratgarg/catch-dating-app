@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -21,6 +22,7 @@ class ProfileCardContent {
 
   factory ProfileCardContent.fromProfile(
     PublicProfile profile, {
+    required AppLocalizations l10n,
     UserProfile? viewerProfile,
     String? sharedRunTitle,
   }) {
@@ -30,11 +32,21 @@ class ProfileCardContent {
 
     final attributes = <ProfileCardFact>[
       if (profile.height != null)
-        (icon: CatchIcons.straightenRounded, text: '${profile.height} cm'),
+        (
+          icon: CatchIcons.straightenRounded,
+          text: l10n.swipesProfileCardContentTextHeightCm(
+            height: profile.height!,
+          ),
+        ),
       if (occupation != null)
         (
           icon: CatchIcons.workOutlineRounded,
-          text: company != null ? '$occupation at $company' : occupation,
+          text: company != null
+              ? l10n.swipesProfileCardContentTextOccupationAtCompany(
+                  occupation: occupation,
+                  company: company,
+                )
+              : occupation,
         ),
       if (profile.education != null)
         (icon: CatchIcons.schoolOutlined, text: profile.education!.label),

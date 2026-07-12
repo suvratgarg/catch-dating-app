@@ -38,6 +38,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -79,6 +80,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../clubs/clubs_test_helpers.dart';
 import '../events/events_test_helpers.dart' as event_test;
 import '../test_pump_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 const _testCities = [
   CityData(
@@ -233,6 +236,7 @@ List<Widget> _exploreEventsSlivers({
 }) {
   return buildExploreEventsSlivers(
     feedAsync,
+    l10n: _l10n,
     filters: filters,
     searchQuery: searchQuery,
     onRetry: onRetry,
@@ -883,7 +887,7 @@ void main() {
       ]);
 
       expect(find.textContaining(bodyEvent.title), findsWidgets);
-      expect(find.byType(CatchInlineErrorState), findsOneWidget);
+      expect(find.bySubtype<CatchInlineErrorState>(), findsOneWidget);
     });
 
     testWidgets('ExploreDiscoveryCoverHeader CTA delegates featured item', (
@@ -2366,7 +2370,7 @@ void main() {
         final collapsedTitleText = tester.widget<Text>(collapsedTitle);
         expect(
           collapsedTitleText.style?.fontFamily,
-          contains(CatchFonts.serifFamily.split(' ').first),
+          contains(CatchFonts.voiceFamily.split(' ').first),
         );
       },
     );
@@ -2507,7 +2511,10 @@ void main() {
       await _pumpClubUi(tester);
 
       expect(fakeRepository.joinedClubId, isNull);
-      expect(find.text('join failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('ClubDetailBody host view stays a public club profile', (
@@ -3394,6 +3401,7 @@ void main() {
                 state: ExploreFilterSheetState.from(
                   filters: filters,
                   sourceClubs: [bandraClub, juhuClub],
+                  l10n: _l10n,
                 ),
                 onToggleHighRatedOnly: () {
                   setState(() {
@@ -3460,7 +3468,7 @@ void main() {
           home: Scaffold(
             body: ExploreFilterRail(
               filters: filters,
-              state: ExploreFilterRailState.from(filters),
+              state: ExploreFilterRailState.from(filters, l10n: _l10n),
             ),
           ),
         ),
@@ -4034,7 +4042,10 @@ void main() {
       } catch (_) {}
       await _pumpClubUi(tester);
 
-      expect(find.textContaining('join failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets(
@@ -4098,7 +4109,10 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.textContaining('detail failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('ClubDetailScreen shows a not-found state', (tester) async {
@@ -4171,7 +4185,10 @@ void main() {
       } catch (_) {}
       await tester.pump();
 
-      expect(find.textContaining('join failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
       ClubMembershipController.joinMutation.reset(container);
       await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
       container.dispose();
@@ -4226,7 +4243,10 @@ void main() {
       } catch (_) {}
       await tester.pump();
 
-      expect(find.textContaining('leave failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
       ClubMembershipController.leaveMutation.reset(container);
       await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
       container.dispose();
@@ -4302,7 +4322,10 @@ void main() {
       } catch (_) {}
       await _pumpClubUi(tester);
 
-      expect(find.textContaining('create failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('CreateClubScreen pre-fills fields in edit mode', (

@@ -133,7 +133,7 @@ class WeeklyActivitySnapshot {
     required this.summary,
     required this.activities,
     required this.source,
-    this.message,
+    this.messageKind,
     this.canRequestPermission = false,
     this.canInstallHealthConnect = false,
   });
@@ -143,7 +143,7 @@ class WeeklyActivitySnapshot {
   final WeeklyActivitySummary summary;
   final List<PhysicalActivity> activities;
   final WeeklyActivitySource source;
-  final String? message;
+  final WeeklyActivityMessageKind? messageKind;
   final bool canRequestPermission;
   final bool canInstallHealthConnect;
 
@@ -155,8 +155,6 @@ class WeeklyActivitySnapshot {
   factory WeeklyActivitySnapshot.unsupported({
     required DateTime referenceDate,
     DateTime? refreshedAt,
-    String message =
-        'Activity sync is available from Apple Health and Health Connect.',
   }) {
     return WeeklyActivitySnapshot(
       connectionStatus: HealthActivityConnectionStatus.unsupported,
@@ -167,7 +165,7 @@ class WeeklyActivitySnapshot {
       ),
       activities: const [],
       source: WeeklyActivitySource.none,
-      message: message,
+      messageKind: WeeklyActivityMessageKind.unsupported,
     );
   }
 
@@ -184,7 +182,7 @@ class WeeklyActivitySnapshot {
       ),
       activities: const [],
       source: WeeklyActivitySource.none,
-      message: 'Install or update Health Connect to show weekly activity.',
+      messageKind: WeeklyActivityMessageKind.needsHealthConnect,
       canInstallHealthConnect: true,
     );
   }
@@ -203,7 +201,7 @@ class WeeklyActivitySnapshot {
       ),
       activities: const [],
       source: WeeklyActivitySource.none,
-      message: 'Connect $platformLabel to include activity outside Catch.',
+      messageKind: WeeklyActivityMessageKind.permissionRequired,
       canRequestPermission: true,
     );
   }
@@ -234,7 +232,7 @@ class WeeklyActivitySnapshot {
     WeeklyActivitySummary? summary,
     List<PhysicalActivity>? activities,
     WeeklyActivitySource? source,
-    String? message,
+    WeeklyActivityMessageKind? messageKind,
     bool clearMessage = false,
     bool? canRequestPermission,
     bool? canInstallHealthConnect,
@@ -247,12 +245,19 @@ class WeeklyActivitySnapshot {
           ? this.activities
           : List.unmodifiable(activities),
       source: source ?? this.source,
-      message: clearMessage ? null : message ?? this.message,
+      messageKind: clearMessage ? null : messageKind ?? this.messageKind,
       canRequestPermission: canRequestPermission ?? this.canRequestPermission,
       canInstallHealthConnect:
           canInstallHealthConnect ?? this.canInstallHealthConnect,
     );
   }
+}
+
+enum WeeklyActivityMessageKind {
+  unsupported,
+  needsHealthConnect,
+  permissionRequired,
+  catchOnly,
 }
 
 @Deprecated('Use WeeklyActivitySnapshot.')

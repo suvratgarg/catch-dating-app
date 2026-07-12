@@ -89,15 +89,18 @@ class HostClubOrganizerOverview extends StatelessWidget {
           club: club,
           trailing: showClubPicker
               ? CatchTopBarMenuAction<int>(
-                  tooltip: 'Switch club',
+                  tooltip: context.l10n.hostsHostOrganizerTooltipSwitchClub,
                   icon: CatchIcons.expandMoreRounded,
                   items: [
                     for (var index = 0; index < clubs.length; index++)
                       CatchActionMenuItem(
                         value: index,
-                        label:
-                            '${clubs[index].name} · '
-                            '${clubs[index].isOwnedBy(currentUid) ? 'Owner' : 'Host team'}',
+                        label: context.l10n.hostsHostOrganizerLabelNameValue2(
+                          name: clubs[index].name,
+                          value2: clubs[index].isOwnedBy(currentUid)
+                              ? context.l10n.hostsHostOrganizerLabelOwner
+                              : context.l10n.hostsHostOrganizerLabelHostTeam,
+                        ),
                       ),
                   ],
                   onSelected: onSelectClubIndex,
@@ -123,20 +126,22 @@ class HostClubOrganizerOverview extends StatelessWidget {
           children: [
             CatchField.nav(
               icon: CatchIcons.visibilityOutlined,
-              title: 'How guests see you',
-              body: 'Public page',
+              title: context.l10n.hostsHostOrganizerTitleHowGuestsSeeYou,
+              body: context.l10n.hostsHostOrganizerBodyPublicPage,
               onTap: () => onPreviewClub(club),
             ),
           ],
         ),
         gapH24,
         CatchSectionHeader(
-          title: 'Team · ${club.displayHostProfiles.length}',
+          title: context.l10n.hostsHostOrganizerTitleTeamLength(
+            length: club.displayHostProfiles.length,
+          ),
           padding: EdgeInsets.zero,
           titleStyle: CatchTextStyles.monoLabel(context, color: t.ink2),
           trailing: isOwner
               ? CatchTextButton(
-                  label: 'Manage',
+                  label: context.l10n.hostsHostOrganizerLabelManage,
                   onPressed: () => onSelectTab(HostClubTab.edit),
                   tone: CatchTextButtonTone.neutral,
                   minimumSize: const Size(0, CatchSpacing.s8),
@@ -150,11 +155,11 @@ class HostClubOrganizerOverview extends StatelessWidget {
         ),
         gapH24,
         CatchSectionHeader(
-          title: 'Trends · last 12 weeks',
+          title: context.l10n.hostsHostOrganizerTitleTrendsLast12Weeks,
           padding: EdgeInsets.zero,
           titleStyle: CatchTextStyles.monoLabel(context, color: t.ink2),
           trailing: CatchTextButton(
-            label: 'See insights',
+            label: context.l10n.hostsHostOrganizerLabelSeeInsights,
             onPressed: () => onSelectTab(HostClubTab.insights),
             tone: CatchTextButtonTone.neutral,
             minimumSize: const Size(0, CatchSpacing.s8),
@@ -168,7 +173,7 @@ class HostClubOrganizerOverview extends StatelessWidget {
         ),
         gapH24,
         CatchSectionHeader(
-          title: 'Manage',
+          title: context.l10n.hostsHostOrganizerTitleManage,
           padding: EdgeInsets.zero,
           titleStyle: CatchTextStyles.monoLabel(context, color: t.ink2),
         ),
@@ -177,19 +182,21 @@ class HostClubOrganizerOverview extends StatelessWidget {
           children: [
             CatchField.nav(
               icon: CatchIcons.paymentsOutlined,
-              title: 'Payouts',
-              body: isOwner ? 'Manage' : 'Owner only',
+              title: context.l10n.hostsHostOrganizerTitlePayouts,
+              body: isOwner
+                  ? context.l10n.hostsHostOrganizerBodyManage
+                  : context.l10n.hostsHostOrganizerBodyOwnerOnly,
               onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
             ),
             CatchField.nav(
               icon: CatchIcons.tuneRounded,
-              title: 'Event defaults',
-              body: 'Prefill new events',
+              title: context.l10n.hostsHostOrganizerTitleEventDefaults,
+              body: context.l10n.hostsHostOrganizerBodyPrefillNewEvents,
               onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
             ),
             CatchField.nav(
               icon: CatchIcons.settingsOutlined,
-              title: 'Settings',
+              title: context.l10n.hostsHostOrganizerTitleSettings,
               onTap: onOpenSettings,
             ),
           ],
@@ -269,21 +276,23 @@ class HostOrganizerMetricGrid extends StatelessWidget {
     final items = [
       HostOrganizerMetricItem(
         value: _compactCount(club.memberCount),
-        label: 'Members',
+        label: context.l10n.hostsHostOrganizerLabelMembers,
       ),
       HostOrganizerMetricItem(
         value: _ratingValue(club),
         label: club.reviewCount > 0
-            ? 'Rating · ${club.reviewCount} reviews'
-            : 'Rating',
+            ? context.l10n.hostsHostOrganizerLabelRatingReviewcountReviews(
+                reviewCount: club.reviewCount,
+              )
+            : context.l10n.hostsHostOrganizerLabelRating,
       ),
       HostOrganizerMetricItem(
         value: eventsLoaded ? _compactCount(eventCount) : '-',
-        label: 'Events hosted',
+        label: context.l10n.hostsHostOrganizerLabelEventsHosted,
       ),
       HostOrganizerMetricItem(
         value: eventsLoaded ? _compactCount(activeEventCount) : '-',
-        label: 'Upcoming',
+        label: context.l10n.hostsHostOrganizerLabelUpcoming,
       ),
     ];
 
@@ -367,7 +376,7 @@ class HostOrganizerTeamCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     if (profiles.isEmpty) {
       return Text(
-        'No host team members yet.',
+        context.l10n.hostsHostOrganizerTextNoHostTeamMembers,
         style: CatchTextStyles.supporting(context, color: t.ink2),
       );
     }
@@ -406,7 +415,9 @@ class HostOrganizerTeamRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final isCurrentUser = profile.uid == currentUid;
-    final roleLabel = profile.role == ClubHostRole.owner ? 'Owner' : 'Host';
+    final roleLabel = profile.role == ClubHostRole.owner
+        ? context.l10n.hostsHostOrganizerVisiblecopyOwner
+        : context.l10n.hostsHostOrganizerVisiblecopyHost;
     return Stack(
       children: [
         if (divider)
@@ -441,7 +452,11 @@ class HostOrganizerTeamRow extends StatelessWidget {
                     ),
                     gapH2,
                     Text(
-                      isCurrentUser ? 'You · $roleLabel' : roleLabel,
+                      isCurrentUser
+                          ? context.l10n.hostsHostOrganizerTextYouRolelabel(
+                              roleLabel: roleLabel,
+                            )
+                          : roleLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: CatchTextStyles.supporting(context, color: t.ink2),
@@ -450,8 +465,8 @@ class HostOrganizerTeamRow extends StatelessWidget {
                 ),
               ),
               if (profile.role == ClubHostRole.owner)
-                const CatchBadge(
-                  label: 'Owner',
+                CatchBadge(
+                  label: context.l10n.hostsHostOrganizerLabelOwner,
                   tone: CatchBadgeTone.solid,
                   uppercase: true,
                 )
@@ -498,13 +513,13 @@ class HostOrganizerTrendStrip extends StatelessWidget {
               CatchStatColumn(
                 monoValue: true,
                 value: _compactCount(memberCount),
-                label: 'Members',
+                label: context.l10n.hostsHostOrganizerLabelMembers,
               ),
               gapW16,
               CatchStatColumn(
                 monoValue: true,
                 value: _compactCount(activeEventCount),
-                label: 'Active events',
+                label: context.l10n.hostsHostOrganizerLabelActiveEvents,
               ),
               const Spacer(),
               Icon(CatchIcons.chevronRightRounded, size: CatchIcon.control),

@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,7 +87,7 @@ class ClubDetailDock extends StatelessWidget {
                 DockCount(members: members!, label: membersLabel),
                 const SizedBox(width: CatchSpacing.s3),
               ],
-              ..._controls(activity),
+              ..._controls(context, activity),
             ],
           ),
           if (footnote != null && footnote!.isNotEmpty) ...[
@@ -105,13 +106,13 @@ class ClubDetailDock extends StatelessWidget {
     );
   }
 
-  List<Widget> _controls(CatchActivity activity) {
+  List<Widget> _controls(BuildContext context, CatchActivity activity) {
     switch (state) {
       case ClubDetailDockRole.guest:
         return [
           Expanded(
             child: CatchButton(
-              label: 'Sign in to join',
+              label: context.l10n.clubsClubDetailDockLabelSignInToJoin,
               icon: Icon(CatchIcons.lockOutlineRounded),
               onPressed: onSignIn,
               fullWidth: true,
@@ -123,7 +124,7 @@ class ClubDetailDock extends StatelessWidget {
           Expanded(
             child: CatchButton(
               key: joinKey,
-              label: 'Join club',
+              label: context.l10n.clubsClubDetailDockLabelJoinClub,
               icon: Icon(CatchIcons.add),
               accentColor: activity.accent,
               isLoading: isJoinLoading,
@@ -144,7 +145,7 @@ class ClubDetailDock extends StatelessWidget {
           Expanded(
             child: CatchButton(
               key: manageKey,
-              label: 'Joined',
+              label: context.l10n.clubsClubDetailDockLabelJoined,
               icon: Icon(CatchIcons.checkCircle),
               variant: CatchButtonVariant.secondary,
               isLoading: isJoinLoading,
@@ -157,7 +158,7 @@ class ClubDetailDock extends StatelessWidget {
         return [
           Expanded(
             child: CatchButton(
-              label: 'Manage',
+              label: context.l10n.clubsClubDetailDockLabelManage,
               icon: Icon(CatchIcons.settingsOutlined),
               variant: CatchButtonVariant.secondary,
               onPressed: onManage,
@@ -168,7 +169,7 @@ class ClubDetailDock extends StatelessWidget {
           Expanded(
             flex: 2,
             child: CatchButton(
-              label: 'New event',
+              label: context.l10n.clubsClubDetailDockLabelNewEvent,
               icon: Icon(CatchIcons.add),
               accentColor: activity.accent,
               onPressed: onCreate,
@@ -197,7 +198,7 @@ class DockCount extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '$members',
+          context.l10n.clubsClubDetailDockTextMembers(members: members),
           style: CatchTextStyles.numericLarge(
             context,
           ).copyWith(fontSize: 17, height: 1),
@@ -240,8 +241,8 @@ class DockBell extends StatelessWidget {
       button: true,
       toggled: active,
       label: active
-          ? 'Disable club push notifications'
-          : 'Enable club push notifications',
+          ? context.l10n.clubsClubDetailDockLabelDisableClubPushNotifications
+          : context.l10n.clubsClubDetailDockLabelEnableClubPushNotifications,
       child: CatchIconButton(
         size: CatchSpacing.s12,
         background: active ? accent : t.raised,
@@ -292,8 +293,10 @@ class ClubMembershipDock extends ConsumerWidget {
         ? ClubDetailDockRole.member
         : ClubDetailDockRole.visitor;
     final footnote = switch (state) {
-      ClubDetailDockRole.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
-      ClubDetailDockRole.member => 'MEMBER · MANAGE ANYTIME',
+      ClubDetailDockRole.visitor =>
+        context.l10n.clubsClubDetailDockVisiblecopyFreeToJoinLeave,
+      ClubDetailDockRole.member =>
+        context.l10n.clubsClubDetailDockVisiblecopyMemberManageAnytime,
       _ => null,
     };
 

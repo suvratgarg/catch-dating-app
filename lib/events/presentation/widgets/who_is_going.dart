@@ -12,6 +12,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
@@ -142,7 +143,7 @@ class WhoIsGoingContent extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  "Who's going",
+                  context.l10n.eventsWhoIsGoingTextWhoSGoing,
                   style: CatchTextStyles.titleL(
                     context,
                     color: surfaceStyle?.headingColor,
@@ -150,7 +151,10 @@ class WhoIsGoingContent extends StatelessWidget {
                 ),
               ),
               Text(
-                '$total/${event.capacityLimit}',
+                context.l10n.eventsWhoIsGoingTextTotalCapacitylimit(
+                  total: total,
+                  capacityLimit: event.capacityLimit,
+                ),
                 style: CatchTextStyles.labelL(
                   context,
                   color: surfaceStyle?.bodyColor ?? t.ink2,
@@ -162,10 +166,12 @@ class WhoIsGoingContent extends StatelessWidget {
         ],
         if (total == 0)
           EmptyRosterMessage(
-            title: isUpcoming ? 'No attendees yet' : 'No attendees booked',
+            title: isUpcoming
+                ? context.l10n.eventsWhoIsGoingTitleNoAttendeesYet
+                : context.l10n.eventsWhoIsGoingTitleNoAttendeesBooked,
             message: isUpcoming
-                ? 'Be the first to book this event.'
-                : 'This event did not have any booked attendees.',
+                ? context.l10n.eventsWhoIsGoingMessageBeTheFirstTo
+                : context.l10n.eventsWhoIsGoingMessageThisEventDidNot,
             surfaceStyle: surfaceStyle,
           )
         else ...[
@@ -184,20 +190,19 @@ class WhoIsGoingContent extends StatelessWidget {
           if (isUpcoming)
             SwipeWindowBanner(
               icon: CatchIcons.lockOutlineRounded,
-              message: 'Catches unlock for 24 hours after the event finishes.',
+              message: context.l10n.eventsWhoIsGoingMessageCatchesUnlockFor24,
               surfaceStyle: surfaceStyle,
             )
           else if (hasActiveSwipeWindow)
             SwipeWindowBanner(
               icon: CatchIcons.favoriteRounded,
-              message:
-                  'The catch window is open for 24 hours after the event finishes.',
+              message: context.l10n.eventsWhoIsGoingMessageTheCatchWindowIs,
               surfaceStyle: surfaceStyle,
             )
           else
             SwipeWindowBanner(
               icon: CatchIcons.scheduleRounded,
-              message: 'The catch window for this event has closed.',
+              message: context.l10n.eventsWhoIsGoingMessageTheCatchWindowFor,
               surfaceStyle: surfaceStyle,
             ),
         ],

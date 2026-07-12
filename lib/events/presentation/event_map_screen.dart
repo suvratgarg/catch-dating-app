@@ -14,6 +14,7 @@ import 'package:catch_dating_app/explore/explore.dart'
     show
         selectedExploreCityProvider,
         selectedExploreCityWasUserSelectedProvider;
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -105,18 +106,24 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
                   ? Center(
                       child: CatchEmptyState(
                         icon: CatchIcons.map,
-                        title: 'No mapped events yet',
-                        message:
-                            'Join clubs, book events, or save future events to see starting points here.',
+                        title: context
+                            .l10n
+                            .eventsEventMapScreenTitleNoMappedEventsYet,
+                        message: context
+                            .l10n
+                            .eventsEventMapScreenMessageJoinClubsBookEvents,
                       ),
                     )
                   : !viewModel.hasPinnedEvents
                   ? Center(
                       child: CatchEmptyState(
                         icon: CatchIcons.pinOutlined,
-                        title: 'No exact pins yet',
-                        message:
-                            'These events are visible, but none have pinned starting points.',
+                        title: context
+                            .l10n
+                            .eventsEventMapScreenTitleNoExactPinsYet,
+                        message: context
+                            .l10n
+                            .eventsEventMapScreenMessageTheseEventsAreVisible,
                       ),
                     )
                   : Stack(

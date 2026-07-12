@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter/material.dart';
 
@@ -20,9 +21,13 @@ class CatchesPassButton extends StatelessWidget {
     final isEnabled = onPressed != null && !isPending;
 
     return Tooltip(
-      message: isPending ? 'Passing' : 'Pass',
+      message: isPending
+          ? context.l10n.swipesCatchesPassButtonMessagePassing
+          : context.l10n.swipesCatchesPassButtonMessagePass,
       child: Semantics(
-        label: isPending ? 'Passing profile' : 'Pass profile',
+        label: isPending
+            ? context.l10n.swipesCatchesPassButtonLabelPassingProfile
+            : context.l10n.swipesCatchesPassButtonLabelPassProfile,
         button: true,
         enabled: isEnabled,
         child: AnimatedOpacity(

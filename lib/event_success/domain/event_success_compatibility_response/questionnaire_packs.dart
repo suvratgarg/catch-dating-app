@@ -1,6 +1,14 @@
+// GENERATED FROM copy/event_success_questionnaires_en.json. DO NOT EDIT.
+// Run: node tool/copy/sync_event_success_questionnaires.mjs --write
+
 part of '../event_success_compatibility_response.dart';
 
 abstract final class EventSuccessQuestionnairePackLibrary {
+  static const fallbackQuestion = 'Question';
+  static const fallbackOption = 'Option';
+  static const fallbackOption1 = 'Option 1';
+  static const fallbackOption2 = 'Option 2';
+
   static const balancedId = 'balanced';
   static const flirtyId = 'flirty';
   static const earnestId = 'earnest';
@@ -11,11 +19,11 @@ abstract final class EventSuccessQuestionnairePackLibrary {
     id: balancedId,
     title: 'Balanced',
     subtitle: 'Light social signal for most event formats.',
-    questions: [
+    questions: <EventSuccessCompatibilityQuestion>[
       EventSuccessCompatibilityQuestion(
         id: 'event_energy',
-        prompt: "Tonight I'm most up for",
-        options: [
+        prompt: 'Tonight I\'m most up for',
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'event_energy_easy_conversation',
             label: 'Easy conversation',
@@ -37,7 +45,7 @@ abstract final class EventSuccessQuestionnairePackLibrary {
       EventSuccessCompatibilityQuestion(
         id: 'first_conversation',
         prompt: 'My best first conversation starts with',
-        options: [
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'first_conversation_activity',
             label: 'A shared activity',
@@ -59,7 +67,7 @@ abstract final class EventSuccessQuestionnairePackLibrary {
       EventSuccessCompatibilityQuestion(
         id: 'shared_connection',
         prompt: 'I usually connect over',
-        options: [
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'shared_connection_movement',
             label: 'Movement',
@@ -80,8 +88,8 @@ abstract final class EventSuccessQuestionnairePackLibrary {
       ),
       EventSuccessCompatibilityQuestion(
         id: 'after_event',
-        prompt: "After a good event I'd rather",
-        options: [
+        prompt: 'After a good event I\'d rather',
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'after_event_coffee',
             label: 'Grab coffee',
@@ -107,11 +115,11 @@ abstract final class EventSuccessQuestionnairePackLibrary {
     id: flirtyId,
     title: 'Flirty',
     subtitle: 'More playful prompts for explicitly dating-forward events.',
-    questions: [
+    questions: <EventSuccessCompatibilityQuestion>[
       EventSuccessCompatibilityQuestion(
         id: 'flirty_energy',
         prompt: 'The kind of spark I enjoy is',
-        options: [
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'flirty_energy_banter',
             label: 'Quick banter',
@@ -129,7 +137,7 @@ abstract final class EventSuccessQuestionnairePackLibrary {
       EventSuccessCompatibilityQuestion(
         id: 'flirty_first_move',
         prompt: 'I respond best when someone',
-        options: [
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'flirty_first_move_direct',
             label: 'Is direct',
@@ -151,11 +159,11 @@ abstract final class EventSuccessQuestionnairePackLibrary {
     id: earnestId,
     title: 'Earnest',
     subtitle: 'Warmer questions for people seeking intentional connection.',
-    questions: [
+    questions: <EventSuccessCompatibilityQuestion>[
       EventSuccessCompatibilityQuestion(
         id: 'earnest_connection',
         prompt: 'I feel most connected when conversation is about',
-        options: [
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'earnest_connection_values',
             label: 'Values',
@@ -173,7 +181,7 @@ abstract final class EventSuccessQuestionnairePackLibrary {
       EventSuccessCompatibilityQuestion(
         id: 'earnest_date_energy',
         prompt: 'A good first follow-up would feel',
-        options: [
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'earnest_date_energy_calm',
             label: 'Calm and thoughtful',
@@ -195,11 +203,11 @@ abstract final class EventSuccessQuestionnairePackLibrary {
     id: intentionalId,
     title: 'Intentional',
     subtitle: 'Lower-pressure prompts for older or more deliberate groups.',
-    questions: [
+    questions: <EventSuccessCompatibilityQuestion>[
       EventSuccessCompatibilityQuestion(
         id: 'intentional_pace',
         prompt: 'I prefer new connections to move',
-        options: [
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'intentional_pace_slow',
             label: 'Slowly',
@@ -217,7 +225,7 @@ abstract final class EventSuccessQuestionnairePackLibrary {
       EventSuccessCompatibilityQuestion(
         id: 'intentional_life_fit',
         prompt: 'Compatibility means sharing',
-        options: [
+        options: <EventSuccessCompatibilityOption>[
           EventSuccessCompatibilityOption(
             id: 'intentional_life_fit_rhythm',
             label: 'A similar life rhythm',
@@ -235,11 +243,11 @@ abstract final class EventSuccessQuestionnairePackLibrary {
     ],
   );
 
-  static const customStarterQuestions = [
+  static const customStarterQuestions = <EventSuccessCompatibilityQuestion>[
     EventSuccessCompatibilityQuestion(
       id: 'custom_question_1',
       prompt: 'I usually connect with someone through',
-      options: [
+      options: <EventSuccessCompatibilityOption>[
         EventSuccessCompatibilityOption(
           id: 'custom_question_1_option_1',
           label: 'Conversation',
@@ -257,7 +265,7 @@ abstract final class EventSuccessQuestionnairePackLibrary {
     EventSuccessCompatibilityQuestion(
       id: 'custom_question_2',
       prompt: 'The best energy for this event is',
-      options: [
+      options: <EventSuccessCompatibilityOption>[
         EventSuccessCompatibilityOption(
           id: 'custom_question_2_option_1',
           label: 'Relaxed',

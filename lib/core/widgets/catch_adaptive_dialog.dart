@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class CatchDialogAction<T> {
   const CatchDialogAction({
@@ -63,8 +64,8 @@ Future<bool?> showCatchConfirmDialog({
   required BuildContext context,
   required String title,
   String message = '',
-  String confirmLabel = 'Confirm',
-  String cancelLabel = 'Cancel',
+  String? confirmLabel,
+  String? cancelLabel,
   bool danger = false,
   bool barrierDismissible = true,
 }) {
@@ -74,9 +75,16 @@ Future<bool?> showCatchConfirmDialog({
     message: message,
     barrierDismissible: barrierDismissible,
     actions: [
-      CatchDialogAction(label: cancelLabel, value: false),
       CatchDialogAction(
-        label: confirmLabel,
+        label:
+            cancelLabel ??
+            context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+        value: false,
+      ),
+      CatchDialogAction(
+        label:
+            confirmLabel ??
+            context.l10n.coreCatchAdaptiveDialogVisiblecopyConfirm,
         value: true,
         isDefault: !danger,
         isDestructive: danger,

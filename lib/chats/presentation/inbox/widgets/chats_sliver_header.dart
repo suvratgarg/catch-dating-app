@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 const double _chatsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;
@@ -56,6 +57,7 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isHostApp = AppConfig.appRole.isHost;
     final hasHeaderSubtitle = isHostApp && widget.showHostSubtitle;
     final query = widget.searchValue;
@@ -76,8 +78,8 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
             ),
           ),
           child: CatchScreenTopBar(
-            title: isHostApp ? 'Inbox' : 'Chats',
-            subtitle: hasHeaderSubtitle ? 'Attendee queries' : null,
+            title: isHostApp ? l10n.hostInboxTitle : l10n.consumerChatsTitle,
+            subtitle: hasHeaderSubtitle ? l10n.hostInboxSubtitle : null,
             leadingType: CatchTopBarLeading.none,
             applySafeArea: false,
             height: headerHeight,
@@ -92,23 +94,28 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
                 setState(() => _searchController.setExpanded(expanded)),
             searchValue: query,
             onSearch: widget.onSearchChanged ?? (_) {},
-            searchPlaceholder: 'Search by name',
+            searchPlaceholder: l10n.sharedSearchByNameHint,
             searchAutofocus: true,
             onSearchSubmitted: _closeEmptySearch,
             onSearchFocusChanged: _handleSearchFocusChanged,
-            searchTooltip: isHostApp ? 'Search attendees' : 'Search chats',
+            searchTooltip: isHostApp
+                ? l10n.hostSearchAttendeesAction
+                : l10n.consumerSearchChatsAction,
             searchSemanticLabel: isHostApp
-                ? 'Search attendees'
-                : 'Search chats',
+                ? l10n.hostSearchAttendeesAction
+                : l10n.consumerSearchChatsAction,
           ),
         ),
         if (widget.hostFilter != null)
           CatchTabRail<HostInboxFilter>(
             options: [
-              const CatchOption(value: HostInboxFilter.all, label: 'All'),
+              CatchOption(
+                value: HostInboxFilter.all,
+                label: l10n.hostInboxAllFilter,
+              ),
               CatchOption(
                 value: HostInboxFilter.unread,
-                label: 'Unread · ${widget.hostUnreadCount}',
+                label: l10n.hostInboxUnreadCount(count: widget.hostUnreadCount),
               ),
             ],
             selected: widget.hostFilter!,

@@ -13,7 +13,9 @@ class HostInsightsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
     if (uidAsync.isLoading) {
-      return const HostLoadingScreen(title: 'Insights');
+      return HostLoadingScreen(
+        title: context.l10n.hostsHostInsightsScreenTitleInsights,
+      );
     }
     if (uidAsync.hasError) {
       return CatchErrorScaffold.fromError(
@@ -29,7 +31,9 @@ class HostInsightsScreen extends ConsumerWidget {
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
     return CatchAsyncValueView<List<Club>>(
       value: clubsAsync,
-      loadingBuilder: (_) => const HostLoadingScreen(title: 'Insights'),
+      loadingBuilder: (_) => HostLoadingScreen(
+        title: context.l10n.hostsHostInsightsScreenTitleInsights,
+      ),
       errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,
         context: AppErrorContext.club,
@@ -85,8 +89,14 @@ class HostInsightsScaffold extends StatelessWidget {
               dedicated: true,
               onOpenEventReport: (eventId) => context.pushNamed(
                 Routes.hostAppEventManageScreen.name,
-                pathParameters: {'clubId': club.id, 'eventId': eventId},
-                queryParameters: const {'section': 'report'},
+                pathParameters: {
+                  context.l10n.hostsHostInsightsScreenBodyClubid: club.id,
+                  context.l10n.hostsHostInsightsScreenBodyEventid: eventId,
+                },
+                queryParameters: {
+                  context.l10n.hostsHostInsightsScreenBodySection:
+                      context.l10n.hostsHostInsightsScreenBodyReport,
+                },
               ),
             ),
             gapH24,
@@ -116,7 +126,7 @@ class HostInsightsHeader extends StatelessWidget {
           icon: CatchIcons.arrowBackRounded,
           onTap: onBack,
           size: CatchIconButton.navSize,
-          tooltip: 'Back to Organizer',
+          tooltip: context.l10n.hostsHostInsightsScreenTooltipBackToOrganizer,
         ),
         const SizedBox(width: CatchSpacing.s3),
         Expanded(
@@ -124,13 +134,18 @@ class HostInsightsHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$clubName · all events',
+                context.l10n.hostsHostInsightsScreenTextClubnameAllEvents(
+                  clubName: clubName,
+                ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.kicker(context, color: t.ink3),
               ),
               gapH2,
-              Text('Insights', style: CatchTextStyles.titleL(context)),
+              Text(
+                context.l10n.hostsHostInsightsScreenTextInsights,
+                style: CatchTextStyles.titleL(context),
+              ),
             ],
           ),
         ),
@@ -159,16 +174,21 @@ class HostInsightsUnavailableScreen extends StatelessWidget {
                 icon: CatchIcons.arrowBackRounded,
                 onTap: onBack,
                 size: CatchIconButton.navSize,
-                tooltip: 'Back to Organizer',
+                tooltip:
+                    context.l10n.hostsHostInsightsScreenTooltipBackToOrganizer,
               ),
               const Spacer(),
               CatchEmptyState(
                 icon: CatchIcons.insightsOutlined,
-                title: 'Insights unavailable',
-                message:
-                    'This organizer is not available to your Host account.',
+                title: context
+                    .l10n
+                    .hostsHostInsightsScreenTitleInsightsUnavailable,
+                message: context
+                    .l10n
+                    .hostsHostInsightsScreenMessageThisOrganizerIsNot,
                 action: CatchButton(
-                  label: 'Back to Organizer',
+                  label:
+                      context.l10n.hostsHostInsightsScreenLabelBackToOrganizer,
                   onPressed: onBack,
                   variant: CatchButtonVariant.secondary,
                 ),

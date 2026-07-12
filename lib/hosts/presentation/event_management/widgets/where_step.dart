@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 
@@ -36,12 +37,16 @@ class WhereStep extends StatelessWidget {
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [
-          const CatchFormFieldLabel(label: 'Meeting location', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsWhereStepLabelMeetingLocation,
+            large: true,
+          ),
           gapH8,
           FormField<LocationCoordinate>(
             key: ValueKey(startingPoint),
-            validator: (_) =>
-                startingPoint == null ? 'Choose a meeting location' : null,
+            validator: (_) => startingPoint == null
+                ? context.l10n.hostsWhereStepVisiblecopyChooseAMeetingLocation
+                : null,
             builder: (field) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -67,12 +72,13 @@ class WhereStep extends StatelessWidget {
           gapH16,
           CatchField.input(
             key: CreateEventFormKeys.meetingPoint,
-            title: 'Location name',
+            title: context.l10n.hostsWhereStepTitleLocationName,
             controller: meetingPointController,
-            placeholder: 'e.g. Bandstand Promenade, Bandra',
+            placeholder:
+                context.l10n.hostsWhereStepPlaceholderEGBandstandPromenade,
             helperText: startingPoint == null
-                ? 'Pick a map location first. Google Places fills this when available.'
-                : 'Edit this if attendees need a clearer name.',
+                ? context.l10n.hostsWhereStepHelpertextPickAMapLocation
+                : context.l10n.hostsWhereStepHelpertextEditThisIfAttendees,
             prefixIcon: Icon(CatchIcons.locationOnOutlined),
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
@@ -80,18 +86,19 @@ class WhereStep extends StatelessWidget {
             validator: (value) {
               if (startingPoint == null) return null;
               return value == null || value.trim().isEmpty
-                  ? 'Add a location name'
+                  ? context.l10n.hostsWhereStepVisiblecopyAddALocationName
                   : null;
             },
           ),
           gapH20,
           CatchField.input(
             key: CreateEventFormKeys.locationDetails,
-            title: 'Extra directions',
+            title: context.l10n.hostsWhereStepTitleExtraDirections,
             isOptional: true,
             controller: locationDetailsController,
-            placeholder: 'e.g. Meet outside the blue gate, third entrance',
-            helperText: 'Gate, entrance, floor, or landmark for the group.',
+            placeholder: context.l10n.hostsWhereStepPlaceholderEGMeetOutside,
+            helperText:
+                context.l10n.hostsWhereStepHelpertextGateEntranceFloorOr,
             prefixIcon: Icon(CatchIcons.infoOutline),
             maxLines: 3,
             textCapitalization: TextCapitalization.sentences,

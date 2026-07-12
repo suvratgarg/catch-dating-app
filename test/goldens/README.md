@@ -46,16 +46,17 @@ void main() {
 ```
 
 `matchCatchGolden` pumps inside the real `AppTheme`, renders **light + dark**, pins
-devicePixelRatio to 1.0 on a fixed surface, and re-throws real failures while
-swallowing only google_fonts' offline noise (see below). Avoid `Image.network` in
-goldens (it loads nothing in tests) — use activity art or inject a fake image.
+devicePixelRatio to 1.0 on a fixed surface, and leaves font/layout failures
+visible. Avoid `Image.network` in goldens (it loads nothing in tests) — use
+activity art or inject a fake image.
 
 ## How fonts work (the tricky part)
 
 Goldens load the same bundled font assets the app ships:
 
 1. `flutter_test_config.dart` registers Archivo and IBM Plex Mono via
-   `FontLoader`; the platform system font remains platform-owned.
+   `FontLoader`; deterministic Roboto files stand in for the concrete platform
+   function-family aliases.
 2. Archivo weights/widths are driven through `FontVariation` in `CatchFonts`.
 3. Mono uses the bundled per-weight statics.
 

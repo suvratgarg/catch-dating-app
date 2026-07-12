@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class ChatInputBar extends StatelessWidget {
@@ -68,11 +69,12 @@ class ChatInputBar extends StatelessWidget {
                 children: [
                   if (showImageButton)
                     Semantics(
-                      label: 'Send an image',
+                      label: context.l10n.chatsChatInputBarLabelSendAnImage,
                       button: true,
                       enabled: imageActionEnabled,
                       child: Tooltip(
-                        message: 'Send an image',
+                        message:
+                            context.l10n.chatsChatInputBarMessageSendAnImage,
                         child: CatchIconButton(
                           size: 42,
                           background: t.surface,
@@ -103,14 +105,16 @@ class ChatInputBar extends StatelessWidget {
                         vertical: CatchSpacing.micro10,
                       ),
                       child: CatchField.input(
-                        title: 'Message',
+                        title: context.l10n.chatsChatInputBarTitleMessage,
                         showLabel: false,
                         controller: controller,
                         textCapitalization: TextCapitalization.sentences,
                         textInputAction: TextInputAction.send,
                         minLines: 1,
                         maxLines: 4,
-                        placeholder: disabledReason ?? 'Message...',
+                        placeholder:
+                            disabledReason ??
+                            context.l10n.chatsChatInputBarPlaceholderMessage,
                         size: CatchFieldSize.floating,
                         variant: CatchFieldVariant.bare,
                         enabled: onSend != null && !disabled,
@@ -120,11 +124,11 @@ class ChatInputBar extends StatelessWidget {
                   ),
                   gapW8,
                   Semantics(
-                    label: 'Send message',
+                    label: context.l10n.chatsChatInputBarLabelSendMessage,
                     button: true,
                     enabled: sendActionEnabled,
                     child: Tooltip(
-                      message: 'Send message',
+                      message: context.l10n.chatsChatInputBarMessageSendMessage,
                       child: CatchIconButton(
                         size: 46,
                         variant: CatchIconButtonVariant.plain,

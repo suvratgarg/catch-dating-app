@@ -31,7 +31,11 @@ class HostOperationsTopBar extends StatelessWidget
       titleWidget: compactTextScale
           ? Text(
               title,
-              semanticsLabel: '$kicker. $title',
+              semanticsLabel: context.l10n
+                  .hostsHostOperationsTopBarTextKickerTitle(
+                    kicker: kicker,
+                    title: title,
+                  ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.titleL(context, color: t.ink),

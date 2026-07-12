@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -40,12 +40,7 @@ class CatchStatusBar extends StatelessWidget {
           children: [
             Text(
               time,
-              style: CatchFonts.mono(
-                fontSize: CatchLayout.statusBarTimeFontSize,
-                fontWeight: FontWeight.w700,
-                height: 1,
-                color: foreground,
-              ),
+              style: CatchTextStyles.statusBarTime(context, color: foreground),
             ),
             IconTheme(
               data: IconThemeData(

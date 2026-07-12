@@ -8,6 +8,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_display_state.
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -44,7 +45,7 @@ class EventDetailSocialSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchSection.divided(
-          title: "Who's going",
+          title: context.l10n.eventsEventDetailSocialSectionTitleWhoSGoing,
           count: event.signedUpCount,
           dividerColor: surfaceStyle?.dividerColor,
           titleColor: surfaceStyle?.headingColor,
@@ -59,7 +60,7 @@ class EventDetailSocialSection extends StatelessWidget {
         ),
         if (canShowMemberContext) ...[
           CatchSection.divided(
-            title: 'Reviews',
+            title: context.l10n.eventsEventDetailSocialSectionTitleReviews,
             dividerColor: surfaceStyle?.dividerColor,
             titleColor: surfaceStyle?.headingColor,
             child: EventReviewsSection(
@@ -105,7 +106,7 @@ class GuestWhoIsGoing extends StatelessWidget {
                 ),
                 const SizedBox(width: CatchSpacing.s2),
                 Text(
-                  "Who's going",
+                  context.l10n.eventsEventDetailSocialSectionTextWhoSGoing,
                   style: CatchTextStyles.titleL(
                     context,
                     color: surfaceStyle?.headingColor,
@@ -116,7 +117,7 @@ class GuestWhoIsGoing extends StatelessWidget {
             const SizedBox(height: CatchLayout.detailScreenSupportingGap),
           ],
           Text(
-            'Sign in to see who has booked this event.',
+            context.l10n.eventsEventDetailSocialSectionTextSignInToSee,
             style: CatchTextStyles.supporting(
               context,
               color: surfaceStyle?.bodyColor ?? t.ink2,

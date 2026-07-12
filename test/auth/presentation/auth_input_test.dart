@@ -11,10 +11,10 @@ void main() {
       expect(AuthInput.normalizePhoneInput('+91 98765 43210'), '+919876543210');
     });
 
-    test('rejects invalid phone numbers with shared UI message', () {
+    test('returns a semantic issue for invalid phone numbers', () {
       expect(
-        AuthInput.phoneNumberError('123'),
-        AuthInput.invalidPhoneNumberMessage,
+        AuthInput.phoneNumberIssue('123'),
+        AuthInputIssue.invalidPhoneNumber,
       );
     });
 
@@ -22,10 +22,10 @@ void main() {
       expect(
         () => AuthInput.normalizeCountryCode('91'),
         throwsA(
-          isA<StateError>().having(
-            (error) => error.message,
-            'message',
-            AuthInput.invalidCountryCodeMessage,
+          isA<AuthInputException>().having(
+            (error) => error.issue,
+            'issue',
+            AuthInputIssue.invalidCountryCode,
           ),
         ),
       );
@@ -39,10 +39,10 @@ void main() {
       expect(
         () => AuthInput.normalizeOtpCode('12345a'),
         throwsA(
-          isA<StateError>().having(
-            (error) => error.message,
-            'message',
-            AuthInput.invalidOtpCodeMessage,
+          isA<AuthInputException>().having(
+            (error) => error.issue,
+            'issue',
+            AuthInputIssue.invalidOtpCode,
           ),
         ),
       );

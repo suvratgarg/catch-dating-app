@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 /// Static handoff `CodeInput` primitive.
 ///
@@ -78,7 +79,7 @@ class CatchCodeInputRow extends StatelessWidget {
     final done = code.length >= length;
     final activeIndex =
         active ?? (code.length < length ? code.length : length - 1);
-    final textStyle = CatchTextStyles.code(context, color: tokens.ink);
+    final textStyle = CatchTextStyles.otpDigit(context, color: tokens.ink);
 
     return Row(
       children: [
@@ -121,7 +122,7 @@ class CatchCodeInputCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = CatchTokens.of(context);
     final digitStyle =
-        textStyle ?? CatchTextStyles.code(context, color: tokens.ink);
+        textStyle ?? CatchTextStyles.otpDigit(context, color: tokens.ink);
 
     return AnimatedContainer(
       duration: CatchMotion.fast,
@@ -213,7 +214,8 @@ class CatchOtpCodeField extends StatelessWidget {
             caret: caret,
             height: height,
             gap: gap,
-            cellKeyPrefix: 'otp_digit',
+            cellKeyPrefix:
+                context.l10n.coreCatchOtpCodeFieldVisiblecopyOtpDigit,
           ),
           Positioned.fill(
             child: Opacity(

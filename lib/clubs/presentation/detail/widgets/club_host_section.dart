@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 typedef ClubHostProfileHandler = void Function(String hostUid);
@@ -53,7 +54,12 @@ class ClubHostSection extends StatelessWidget {
           for (final host in hosts) ...[
             Semantics(
               button: canViewProfile,
-              label: canViewProfile ? 'View ${host.displayName} profile' : null,
+              label: canViewProfile
+                  ? context.l10n
+                        .clubsClubHostSectionLabelViewDisplaynameProfile(
+                          displayName: host.displayName,
+                        )
+                  : null,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: canViewProfile
@@ -155,7 +161,7 @@ class ClubHostRow extends StatelessWidget {
         if (onMessage != null) ...[
           gapW8,
           Tooltip(
-            message: 'Message host',
+            message: context.l10n.clubsClubHostSectionMessageMessageHost,
             child: CatchIconButton(
               onTap: onMessage,
               child: Icon(

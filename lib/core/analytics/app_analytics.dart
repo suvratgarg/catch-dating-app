@@ -143,7 +143,7 @@ class AppAnalytics {
     logEvent(
       AnalyticsEvents.backendOperationFailed,
       parameters: {
-        AnalyticsParameters.backendService: context.service.label,
+        AnalyticsParameters.backendService: context.service.logKey,
         AnalyticsParameters.backendAction: context.action,
         AnalyticsParameters.backendResource: context.resource,
         AnalyticsParameters.backendErrorCode: errorCode,

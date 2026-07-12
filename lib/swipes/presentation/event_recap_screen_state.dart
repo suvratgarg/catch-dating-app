@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
@@ -63,17 +64,25 @@ class EventRecapHeroState {
     required Event event,
     required int checkedInCount,
     required DateTime now,
+    required AppLocalizations l10n,
   }) {
     final closesAt = swipeWindowClosesAt(event);
     final windowLabel = closesAt.isAfter(now)
-        ? 'Catches open until ${EventFormatters.time(closesAt)}'
-        : 'Catch window closed';
+        ? l10n.swipesEventRecapScreenStateVisiblecopyCatchesOpenUntilTime(
+            time: EventFormatters.time(closesAt),
+          )
+        : l10n.swipesEventRecapScreenStateVisiblecopyCatchWindowClosed;
 
     return EventRecapHeroState(
-      kicker: '${event.title.toUpperCase()} · COMPLETE',
+      kicker: l10n.swipesEventRecapScreenStateKickerTouppercaseComplete(
+        toUpperCase: event.title.toUpperCase(),
+      ),
       distanceLabel: event.distanceLabel,
-      activityCheckedInLabel:
-          '${event.activitySummaryLabel} · $checkedInCount checked in',
+      activityCheckedInLabel: l10n
+          .swipesEventRecapScreenStateVisiblecopyActivitysummarylabelCheckedincountCheckedIn(
+            activitySummaryLabel: event.activitySummaryLabel,
+            checkedInCount: checkedInCount,
+          ),
       whenLabel: event.shortDateLabel,
       timeLabel: event.compactTimeRangeLabel,
       windowLabel: windowLabel,
@@ -82,21 +91,48 @@ class EventRecapHeroState {
 }
 
 class EventRecapAttendeeRow {
-  const EventRecapAttendeeRow({
+  const EventRecapAttendeeRow._({
     required this.attendeeId,
     required this.profile,
     required this.selected,
+    required this.displayName,
+    required this.semanticLabel,
+    required this.tooltip,
   });
+
+  factory EventRecapAttendeeRow.from({
+    required String attendeeId,
+    required PublicProfile? profile,
+    required bool selected,
+    required AppLocalizations l10n,
+  }) {
+    final displayName =
+        profile?.name ?? l10n.swipesEventRecapScreenStateDisplaynameGuest;
+    final tooltipName =
+        profile?.name ?? l10n.swipesEventRecapScreenStateVisiblecopyGuest;
+    return EventRecapAttendeeRow._(
+      attendeeId: attendeeId,
+      profile: profile,
+      selected: selected,
+      displayName: displayName,
+      semanticLabel: displayName,
+      tooltip: selected
+          ? l10n.swipesEventRecapScreenStateTooltipRemoveTooltipname(
+              tooltipName: tooltipName,
+            )
+          : l10n.swipesEventRecapScreenStateTooltipRememberTooltipname(
+              tooltipName: tooltipName,
+            ),
+    );
+  }
 
   final String attendeeId;
   final PublicProfile? profile;
   final bool selected;
 
-  String get displayName => profile?.name ?? 'Guest';
-  String get semanticLabel => profile?.name ?? 'Guest';
-  String get tooltipName => profile?.name ?? 'guest';
-  String get tooltip =>
-      selected ? 'Remove $tooltipName' : 'Remember $tooltipName';
+  final String displayName;
+  final String semanticLabel;
+  final String tooltip;
 }
 
 class EventRecapRetryIntent {
@@ -120,6 +156,7 @@ EventRecapScreenState buildEventRecapScreenState({
   required CatchAsyncState<EventRecapViewModel?> viewModel,
   required Map<String, PublicProfile> rosterProfiles,
   required Set<String> selectedVibeIds,
+  required AppLocalizations l10n,
   DateTime? now,
 }) {
   return switch (viewModel.status) {
@@ -132,6 +169,7 @@ EventRecapScreenState buildEventRecapScreenState({
       viewModel: viewModel.value,
       rosterProfiles: rosterProfiles,
       selectedVibeIds: selectedVibeIds,
+      l10n: l10n,
       now: now ?? DateTime.now(),
     ),
   };
@@ -142,16 +180,18 @@ EventRecapScreenState _eventRecapDataState({
   required Map<String, PublicProfile> rosterProfiles,
   required Set<String> selectedVibeIds,
   required DateTime now,
+  required AppLocalizations l10n,
 }) {
   if (viewModel == null) return const EventRecapMissingEvent();
 
   final selected = Set<String>.unmodifiable(selectedVibeIds);
   final attendeeRows = [
     for (final attendeeId in viewModel.attendeeIds)
-      EventRecapAttendeeRow(
+      EventRecapAttendeeRow.from(
         attendeeId: attendeeId,
         profile: rosterProfiles[attendeeId],
         selected: selected.contains(attendeeId),
+        l10n: l10n,
       ),
   ];
 
@@ -160,6 +200,7 @@ EventRecapScreenState _eventRecapDataState({
       event: viewModel.event,
       checkedInCount: viewModel.checkedInCount,
       now: now,
+      l10n: l10n,
     ),
     attendeeRows: List.unmodifiable(attendeeRows),
     selectedVibeIds: selected,

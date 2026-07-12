@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -141,10 +142,13 @@ class HostBroadcastComposerSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: CatchSpacing.s4),
-              Text('New blast', style: CatchTextStyles.titleL(context)),
+              Text(
+                context.l10n.chatsChatInboxScreenTextNewBlast,
+                style: CatchTextStyles.titleL(context),
+              ),
               const SizedBox(height: CatchSpacing.s1),
               Text(
-                'Broadcast sending is not connected yet. Use this as the review surface for audience and template states.',
+                context.l10n.chatsChatInboxScreenTextBroadcastSendingIsNot,
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
               const SizedBox(height: CatchSpacing.s4),
@@ -157,12 +161,12 @@ class HostBroadcastComposerSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Reminder',
+                      context.l10n.chatsChatInboxScreenTextReminder,
                       style: CatchTextStyles.fieldRowTitle(context),
                     ),
                     const SizedBox(height: CatchSpacing.micro2),
                     Text(
-                      'See you tonight at 8. Doors open at 7:45.',
+                      context.l10n.chatsChatInboxScreenTextSeeYouTonightAt,
                       style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
@@ -178,20 +182,22 @@ class HostBroadcastComposerSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Meeting point',
+                      context.l10n.chatsChatInboxScreenTextMeetingPoint,
                       style: CatchTextStyles.fieldRowTitle(context),
                     ),
                     const SizedBox(height: CatchSpacing.micro2),
                     Text(
-                      'Share arrival notes, parking, or table details.',
+                      context
+                          .l10n
+                          .chatsChatInboxScreenTextShareArrivalNotesParking,
                       style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: CatchSpacing.s4),
-              const CatchButton(
-                label: 'Send broadcast',
+              CatchButton(
+                label: context.l10n.chatsChatInboxScreenLabelSendBroadcast,
                 onPressed: null,
                 fullWidth: true,
               ),

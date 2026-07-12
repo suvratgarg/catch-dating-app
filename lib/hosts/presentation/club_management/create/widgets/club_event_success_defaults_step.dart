@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventSuccessDefaultsPanel;
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class ClubEventSuccessDefaultsStep extends StatelessWidget {
@@ -31,9 +32,12 @@ class ClubEventSuccessDefaultsStep extends StatelessWidget {
           defaults: eventSuccess,
         ),
       ),
-      title: 'Default event success',
-      subtitle:
-          'Apply activity-aware run-of-show defaults automatically when creating new events.',
+      title: context
+          .l10n
+          .hostsClubEventSuccessDefaultsStepTitleDefaultEventSuccess,
+      subtitle: context
+          .l10n
+          .hostsClubEventSuccessDefaultsStepSubtitleApplyActivityAwareRun,
     );
 
     return Form(

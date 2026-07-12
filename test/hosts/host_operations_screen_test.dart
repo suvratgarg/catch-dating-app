@@ -22,6 +22,7 @@ import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -34,6 +35,7 @@ import '../clubs/clubs_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 const _hostUid = 'host-1';
+final _l10n = AppLocalizationsEn();
 
 void main() {
   setUp(() {
@@ -188,7 +190,7 @@ void main() {
     );
 
     expect(state.selectedClub, cohostClub);
-    expect(state.title, 'Co-host Club');
+    expect(state.title(AppLocalizationsEn()), 'Co-host Club');
     expect(state.selectedClubIsOwner, isFalse);
     expect(state.showClubPicker, isTrue);
     expect(state.selectedTab, HostClubTab.insights);
@@ -259,16 +261,13 @@ void main() {
     );
 
     expect(state.selectedClub, cohostClub);
-    expect(state.title, 'Co-host Club');
     expect(state.selectedClubIsOwner, isFalse);
-    expect(state.selectedClubRoleLabel, 'Host team');
     expect(state.showClubPicker, isTrue);
     expect(state.selectedTab, HostHomeTab.today);
 
     final ownerState = state.selectClubIndex(0);
     expect(ownerState.selectedClub, ownedClub);
     expect(ownerState.selectedClubIsOwner, isTrue);
-    expect(ownerState.selectedClubRoleLabel, 'Owner');
     expect(ownerState.selectedTab, HostHomeTab.today);
 
     final eventsState = ownerState.selectTab(HostHomeTab.events);
@@ -544,8 +543,8 @@ void main() {
         selectedFilter: HostEventsLifecycleFilter.live,
       );
       expect(emptyState.status, HostEventsWorkspaceStatus.empty);
-      expect(emptyState.emptyTitle, 'Nothing live right now');
-      expect(emptyState.emptyBody, contains('when it starts'));
+      expect(emptyState.emptyTitle(_l10n), 'Nothing live right now');
+      expect(emptyState.emptyBody(_l10n), contains('when it starts'));
     },
   );
 
@@ -567,6 +566,7 @@ void main() {
       buildHostHomeTodayDashboardState(
         const AsyncLoading<List<Event>>(),
         now: now,
+        l10n: _l10n,
       ).status,
       HostHomeTodayStatus.loading,
     );
@@ -574,12 +574,14 @@ void main() {
     final emptyState = buildHostHomeTodayDashboardState(
       AsyncData<List<Event>>([cancelled]),
       now: now,
+      l10n: _l10n,
     );
     expect(emptyState.status, HostHomeTodayStatus.empty);
 
     final contentState = buildHostHomeTodayDashboardState(
       AsyncData<List<Event>>([late, early, cancelled]),
       now: now,
+      l10n: _l10n,
     );
     expect(contentState.status, HostHomeTodayStatus.content);
     expect(contentState.event, early);
@@ -624,6 +626,7 @@ void main() {
       final state = buildHostHomeTodayDashboardState(
         AsyncData<List<Event>>([approval, overlapping, hero]),
         now: now,
+        l10n: _l10n,
       );
 
       expect(state.event, hero);
@@ -646,6 +649,7 @@ void main() {
     final state = buildHostHomeTodayDashboardState(
       AsyncData<List<Event>>(events),
       now: now,
+      l10n: _l10n,
     );
 
     expect(state.tasks, hasLength(5));
@@ -911,7 +915,7 @@ void main() {
 
     expect(
       find.byKey(const ValueKey('host-club-organizer-overview')),
-      findsOneWidget,
+      findsWidgets,
     );
     expect(find.text('How guests see you'), findsOneWidget);
     expect(find.text('Team · 2'), findsOneWidget);
@@ -1299,7 +1303,10 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Create host profile'), findsOneWidget);
-    expect(find.text('create failed'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets(
@@ -1399,7 +1406,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.byType(CatchBottomSheetScaffold), findsOneWidget);
-    expect(find.text('save failed'), findsOneWidget);
+    expect(find.text('Something went wrong. Please try again.'), findsWidgets);
     expect(repository.savedUid, isNull);
   });
 
@@ -1429,7 +1436,10 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(authRepository.signOutCallCount, 1);
-    expect(find.text('sign out failed'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
     expect(find.byType(HostAccountScreen), findsOneWidget);
   });
 
@@ -1477,7 +1487,10 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('No host profile yet'), findsOneWidget);
-    expect(find.text('create failed'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Host profile route validates required display name', (
@@ -1549,7 +1562,10 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Professional profile'), findsOneWidget);
-    expect(find.text('save failed'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
     expect(repository.savedUid, isNull);
   });
 

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/events/presentation/event_location_map_state.da
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class EventLocationMapScreen extends StatelessWidget {
@@ -26,9 +27,13 @@ class EventLocationMapScreen extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     if (!state.hasExactStartingPoint) {
-      final error = const CatchErrorState(
-        title: 'Location unavailable',
-        message: 'This event does not have an exact pinned starting point yet.',
+      final error = CatchErrorState(
+        title: context
+            .l10n
+            .eventsEventLocationMapBodyScreenTitleLocationUnavailable,
+        message: context
+            .l10n
+            .eventsEventLocationMapBodyScreenMessageThisEventDoesNot,
       );
       return SafeArea(child: error);
     }
@@ -101,7 +106,9 @@ class EventLocationMapScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: CatchSpacing.s3),
                   CatchButton(
-                    label: 'Get directions',
+                    label: context
+                        .l10n
+                        .eventsEventLocationMapBodyScreenLabelGetDirections,
                     icon: Icon(
                       CatchIcons.directionsOutlined,
                       size: CatchIcon.md,

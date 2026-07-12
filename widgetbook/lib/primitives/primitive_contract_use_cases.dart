@@ -33,6 +33,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
@@ -827,9 +828,9 @@ Widget catchNoticeContractStates(BuildContext context) {
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'warning',
-        child: CatchNotice(notice: CatchNoticeData.offline()),
+        child: CatchNotice(notice: CatchNoticeData.offline(context.l10n)),
       ),
       const _StateCard(
         label: 'danger',
@@ -865,9 +866,9 @@ Widget catchNoticeContractStates(BuildContext context) {
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'persistent-offline',
-        child: CatchNotice(notice: CatchNoticeData.offline()),
+        child: CatchNotice(notice: CatchNoticeData.offline(context.l10n)),
       ),
       _StateCard(
         label: 'dismissible',

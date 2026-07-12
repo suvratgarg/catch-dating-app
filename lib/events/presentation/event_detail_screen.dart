@@ -28,6 +28,7 @@ import 'package:catch_dating_app/events/shared/event_detail_route_transition.dar
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -80,8 +81,17 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   void _recordInviteLinkOpen() {
     final inviteLinkId = widget.inviteLinkId?.trim();
     if (inviteLinkId == null || inviteLinkId.isEmpty) return;
-    if (_recordedInviteLinkId == '${widget.eventId}:$inviteLinkId') return;
-    _recordedInviteLinkId = '${widget.eventId}:$inviteLinkId';
+    if (_recordedInviteLinkId ==
+        context.l10n.eventsEventDetailScreenVisiblecopyEventidInvitelinkid(
+          eventId: widget.eventId,
+          inviteLinkId: inviteLinkId,
+        ))
+      return;
+    _recordedInviteLinkId = context.l10n
+        .eventsEventDetailScreenVisiblecopyEventidInvitelinkid(
+          eventId: widget.eventId,
+          inviteLinkId: inviteLinkId,
+        );
     unawaited(
       ref
           .read(eventDetailControllerProvider.notifier)
@@ -132,6 +142,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             : null,
       );
       final hostState = eventDetailHostStateFrom(
+        l10n: context.l10n,
         clubState: _catchAsyncState(
           ref.watch(fetchClubProvider(widget.clubId)),
         ),
@@ -151,12 +162,18 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       if (vm.isAuthenticated) {
         ref.listen(EventBookingController.bookMutation, (prev, next) {
           if (prev?.isPending == true && next.isSuccess) {
-            showCatchSnackBar(context, 'Booking confirmed!');
+            showCatchSnackBar(
+              context,
+              context.l10n.eventsEventDetailScreenVisiblecopyBookingConfirmed,
+            );
           }
         });
         ref.listen(EventBookingController.cancelMutation, (prev, next) {
           if (prev?.isPending == true && next.isSuccess) {
-            showCatchSnackBar(context, 'Booking cancelled.');
+            showCatchSnackBar(
+              context,
+              context.l10n.eventsEventDetailScreenVisiblecopyBookingCancelled,
+            );
           }
         });
       }
@@ -212,19 +229,27 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             onLocationTap: vm.event.hasExactStartingPoint
                 ? () => context.pushNamed(
                     Routes.eventLocationMapScreen.name,
-                    pathParameters: {'eventId': vm.event.id},
+                    pathParameters: {
+                      context.l10n.eventsEventDetailScreenBodyEventid:
+                          vm.event.id,
+                    },
                   )
                 : null,
             onOpenCompanion: () => context.pushNamed(
               Routes.eventSuccessCompanionScreen.name,
-              pathParameters: {'clubId': widget.clubId, 'eventId': vm.event.id},
+              pathParameters: {
+                context.l10n.eventsEventDetailScreenBodyClubid: widget.clubId,
+                context.l10n.eventsEventDetailScreenBodyEventid: vm.event.id,
+              },
               extra: vm.event,
             ),
             onRetryCompanion: () =>
                 ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
             onViewClub: (clubId) => context.pushNamed(
               Routes.clubDetailScreen.name,
-              pathParameters: {'clubId': clubId},
+              pathParameters: {
+                context.l10n.eventsEventDetailScreenBodyClubid: clubId,
+              },
             ),
             onMessageHost: (clubId, hostUid) => unawaited(
               _messageHost(
@@ -313,7 +338,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           onLocationTap: event.hasExactStartingPoint
               ? () => context.pushNamed(
                   Routes.eventLocationMapScreen.name,
-                  pathParameters: {'eventId': event.id},
+                  pathParameters: {
+                    context.l10n.eventsEventDetailScreenBodyEventid: event.id,
+                  },
                 )
               : null,
           onOpenCompanion: () {},
@@ -321,7 +348,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
               ref.invalidate(watchEventSuccessPlanProvider(event.id)),
           onViewClub: (clubId) => context.pushNamed(
             Routes.clubDetailScreen.name,
-            pathParameters: {'clubId': clubId},
+            pathParameters: {
+              context.l10n.eventsEventDetailScreenBodyClubid: clubId,
+            },
           ),
           onMessageHost: (clubId, hostUid) => unawaited(
             _messageHost(
@@ -376,9 +405,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       );
     }
 
-    return const CatchErrorScaffold(
-      title: 'Event not found',
-      message: 'This event is no longer available.',
+    return CatchErrorScaffold(
+      title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
+      message: context.l10n.eventsEventDetailScreenMessageThisEventIsNo,
     );
   }
 
@@ -413,7 +442,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             if (!context.mounted) return nowSaved;
             showCatchSnackBar(
               context,
-              nowSaved ? 'Event saved.' : 'Event removed.',
+              nowSaved
+                  ? context.l10n.eventsEventDetailScreenVisiblecopyEventSaved
+                  : context.l10n.eventsEventDetailScreenVisiblecopyEventRemoved,
             );
             return nowSaved;
           })
@@ -423,7 +454,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                 .logError(
                   error,
                   stackTrace,
-                  reason: 'EventDetailScreen._toggleSavedEvent failed',
+                  reason: context
+                      .l10n
+                      .eventsEventDetailScreenVisiblecopyEventdetailscreenTogglesavedeventFailed,
                 );
             return isSaved;
           }),
@@ -552,10 +585,13 @@ Future<void> _addEventToCalendar(
   try {
     final opened = await calendar.addToCalendar(event);
     if (!context.mounted || opened) return;
-    showCatchSnackBar(context, 'Could not open calendar.');
+    showCatchSnackBar(
+      context,
+      context.l10n.eventsEventDetailScreenVisiblecopyCouldNotOpenCalendar,
+    );
   } on Object catch (error, stackTrace) {
     final actionError = ExternalActionException(
-      'Failed to add event to calendar',
+      context.l10n.eventsEventDetailScreenVisiblecopyFailedToAddEvent,
       cause: error,
       stackTrace: stackTrace,
     );
@@ -564,10 +600,11 @@ Future<void> _addEventToCalendar(
       app_ops.logAppError(
         actionError,
         stackTrace: stackTrace,
-        context: const app_ops.AppErrorContext(
+        context: app_ops.AppErrorContext(
           operation: app_ops.AppOperation.plugin,
-          action: 'add event to calendar',
-          resource: 'calendar_link',
+          action:
+              context.l10n.eventsEventDetailScreenVisiblecopyAddEventToCalendar,
+          resource: context.l10n.eventsEventDetailScreenVisiblecopyCalendarLink,
         ),
         logError: ProviderScope.containerOf(
           context,
@@ -575,7 +612,10 @@ Future<void> _addEventToCalendar(
         ).read(errorLoggerProvider),
       );
 
-      showCatchSnackBar(context, 'Could not open calendar.');
+      showCatchSnackBar(
+        context,
+        context.l10n.eventsEventDetailScreenVisiblecopyCouldNotOpenCalendar,
+      );
     }
   }
 }

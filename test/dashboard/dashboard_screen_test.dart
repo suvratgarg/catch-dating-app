@@ -31,6 +31,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -49,6 +50,8 @@ import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart';
 import '../support/dashboard_test_helpers.dart';
 import '../test_pump_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 dynamic membershipsOverride(UserProfile user, List<String> clubIds) =>
     watchActiveClubMembershipsForUserProvider(user.uid).overrideWith(
@@ -73,6 +76,7 @@ void main() {
     test('groups visible rows with an injected clock', () {
       final now = DateTime(2026, 5, 16, 12);
       final state = buildNotificationsListState(
+        l10n: _l10n,
         uid: const AsyncData<String?>('runner-1'),
         notifications: AsyncData<List<ActivityNotification>>([
           _activityNotification(
@@ -126,7 +130,7 @@ void main() {
       expect(content.unreadNotifications, hasLength(3));
       expect(content.showMarkAllReadAction, isTrue);
       expect(content.canMarkAllRead, isFalse);
-      expect(content.markAllReadLabel, 'Marking...');
+      expect(content.markAllReadLabel(_l10n), 'Marking...');
     });
   });
 
@@ -191,7 +195,10 @@ void main() {
       await _pumpDashboardUi(tester);
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Unable to load your booked events.'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
       expect(find.text('Try again'), findsOneWidget);
       expect(find.text("Let's find your first event"), findsNothing);
     });
@@ -225,7 +232,7 @@ void main() {
       expect(find.text('Connection issue'), findsOneWidget);
       expect(
         find.text(
-          'No internet connection. Connect to the internet and try again.',
+          'We are having trouble connecting. Please check your internet and try again.',
         ),
         findsOneWidget,
       );
@@ -456,11 +463,11 @@ void main() {
       expect(find.textContaining('Next event'), findsOneWidget);
       expect(find.text('Stride Social'), findsOneWidget);
       expect(
-        find.text('${dashboardGreeting(DateTime.now())}, Subrath'),
+        find.text('${dashboardGreeting(_l10n, DateTime.now())}, Subrath'),
         findsOneWidget,
       );
       expect(
-        find.text('${dashboardGreeting(DateTime.now())}, Manan'),
+        find.text('${dashboardGreeting(_l10n, DateTime.now())}, Manan'),
         findsNothing,
       );
       expect(find.byType(TabBar), findsNothing);
@@ -687,7 +694,10 @@ void main() {
       await tester.tap(find.text('Deep link catch'));
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Could not open this activity update.'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('notification rows compose the CatchField primitive', (
@@ -945,7 +955,9 @@ void main() {
       expect(find.textContaining('After the event'), findsOneWidget);
       expect(find.text('Start catching'), findsOneWidget);
       expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
-      expect(find.text(nextEvent.title), findsNothing);
+      final rail = tester.widget<EventFocusRail>(find.byType(EventFocusRail));
+      expect(rail.activeSwipeEvent?.id, swipeRun.id);
+      expect(rail.upcomingEvents.map((event) => event.id), [nextEvent.id]);
     });
 
     testWidgets('uses the display name in the greeting header', (tester) async {
@@ -993,9 +1005,14 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      final greetingFinder = find.text('${dashboardGreeting(now)}, Subrath');
+      final greetingFinder = find.text(
+        '${dashboardGreeting(_l10n, now)}, Subrath',
+      );
       expect(greetingFinder, findsOneWidget);
-      expect(find.text('${dashboardGreeting(now)}, Manan'), findsNothing);
+      expect(
+        find.text('${dashboardGreeting(_l10n, now)}, Manan'),
+        findsNothing,
+      );
       expect(find.text('WEDNESDAY · MUMBAI'), findsNothing);
 
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
@@ -1153,7 +1170,10 @@ void main() {
       await tester.tap(find.text('Check in'));
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Check-in failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsWidgets,
+      );
       expect(find.text('Try again'), findsOneWidget);
     });
 

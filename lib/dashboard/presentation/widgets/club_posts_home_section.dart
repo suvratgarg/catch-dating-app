@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,7 +40,7 @@ class ClubPostsHomeSection extends ConsumerWidget {
     };
 
     return CatchSection.fieldRows(
-      title: 'Club updates',
+      title: context.l10n.dashboardClubPostsHomeSectionTitleClubUpdates,
       children: [
         for (final entry in notifications.indexed)
           ClubPostHomeCard(
@@ -114,7 +115,9 @@ class ClubPostHomeCard extends StatelessWidget {
                       gapW6,
                       Expanded(
                         child: Text(
-                          'Linked event',
+                          context
+                              .l10n
+                              .dashboardClubPostsHomeSectionTextLinkedEvent,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: CatchTextStyles.supporting(

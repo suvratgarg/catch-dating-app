@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class PhotoSlot extends StatelessWidget {
   const PhotoSlot({
@@ -45,11 +46,25 @@ class PhotoSlot extends StatelessWidget {
     final promptLabel = prompt?.displayPrompt.trim();
     final mainBadgeLabel = badgeLabel?.trim();
     final label = switch ((hasPhoto, isLoading, isActive)) {
-      (true, true, _) => 'Photo ${index + 1} uploading',
-      (true, false, _) => 'Edit photo ${index + 1}',
-      (false, true, _) => 'Photo ${index + 1} uploading',
-      (false, false, true) => 'Add photo ${index + 1}',
-      _ => 'Photo slot ${index + 1} unavailable',
+      (true, true, _) =>
+        context.l10n.imageUploadsPhotoSlotLabelPhotoValue1Uploading(
+          value1: index + 1,
+        ),
+      (true, false, _) =>
+        context.l10n.imageUploadsPhotoSlotLabelEditPhotoValue1(
+          value1: index + 1,
+        ),
+      (false, true, _) =>
+        context.l10n.imageUploadsPhotoSlotLabelPhotoValue1Uploading(
+          value1: index + 1,
+        ),
+      (false, false, true) =>
+        context.l10n.imageUploadsPhotoSlotLabelAddPhotoValue1(
+          value1: index + 1,
+        ),
+      _ => context.l10n.imageUploadsPhotoSlotLabelPhotoSlotValue1Unavailable(
+        value1: index + 1,
+      ),
     };
 
     final Widget content;
@@ -194,7 +209,10 @@ class PhotoSlot extends StatelessWidget {
                   top: CatchSpacing.s1,
                   right: CatchSpacing.s1,
                   child: Tooltip(
-                    message: 'Delete photo ${index + 1}',
+                    message: context.l10n
+                        .imageUploadsPhotoSlotMessageDeletePhotoValue1(
+                          value1: index + 1,
+                        ),
                     child: Material(
                       color: t.surface.withValues(
                         alpha: CatchOpacity.photoSlotDeleteChrome,
@@ -255,7 +273,9 @@ class StripedPhotoPlaceholder extends StatelessWidget {
       child: Center(
         child: ExcludeSemantics(
           child: Text(
-            'PHOTO ${(index + 1).toString().padLeft(2, '0')}',
+            context.l10n.imageUploadsPhotoSlotTextPhotoPadleft(
+              padLeft: (index + 1).toString().padLeft(2, '0'),
+            ),
             style: CatchTextStyles.monoLabelS(context, color: t.ink3),
             textAlign: TextAlign.center,
           ),

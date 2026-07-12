@@ -170,7 +170,11 @@ class _HostInlineTextEntryEditorState
       isLoading: saving,
       error:
           _validationError ??
-          mutationErrorMessage(saveMutation, context: AppErrorContext.club),
+          mutationErrorMessage(
+            saveMutation,
+            l10n: context.l10n,
+            context: AppErrorContext.club,
+          ),
       control: ProfileInlineTextValue(
         label: widget.label,
         displayValue: widget.value,
@@ -190,7 +194,10 @@ class _HostInlineTextEntryEditorState
           ? AnimatedBuilder(
               animation: _controller,
               builder: (context, _) => Text(
-                '${_controller.text.length} / ${widget.maxLength}',
+                context.l10n.hostsHostInlineEditorsTextLengthMaxlength(
+                  length: _controller.text.length,
+                  maxLength: widget.maxLength!,
+                ),
                 style: CatchTextStyles.labelM(context),
               ),
             )
@@ -298,7 +305,11 @@ class _HostInlineOptionEditorState<T>
       initiallyExpanded: widget.isExpanded,
       onTap: widget.onTap,
       isLoading: saving,
-      error: mutationErrorMessage(saveMutation, context: AppErrorContext.club),
+      error: mutationErrorMessage(
+        saveMutation,
+        l10n: context.l10n,
+        context: AppErrorContext.club,
+      ),
       control: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -465,12 +476,16 @@ class _HostInlineAgeRangeEditorState
       isLoading: saving,
       error:
           _validationError ??
-          mutationErrorMessage(saveMutation, context: AppErrorContext.club),
+          mutationErrorMessage(
+            saveMutation,
+            l10n: context.l10n,
+            context: AppErrorContext.club,
+          ),
       control: Row(
         children: [
           Expanded(
             child: CatchField.input(
-              title: 'Min age',
+              title: context.l10n.hostsHostInlineEditorsTitleMinAge,
               isOptional: true,
               controller: _minAgeController,
               keyboardType: TextInputType.number,
@@ -481,7 +496,7 @@ class _HostInlineAgeRangeEditorState
           gapW12,
           Expanded(
             child: CatchField.input(
-              title: 'Max age',
+              title: context.l10n.hostsHostInlineEditorsTitleMaxAge,
               isOptional: true,
               controller: _maxAgeController,
               keyboardType: TextInputType.number,
@@ -499,6 +514,9 @@ class _HostInlineAgeRangeEditorState
   String get _draftValue {
     final minAge = int.tryParse(_minAgeController.text.trim()) ?? 0;
     final maxAge = int.tryParse(_maxAgeController.text.trim()) ?? 99;
-    return '$minAge–$maxAge';
+    return context.l10n.hostsHostInlineEditorsVisiblecopyMinageMaxage(
+      minAge: minAge,
+      maxAge: maxAge,
+    );
   }
 }

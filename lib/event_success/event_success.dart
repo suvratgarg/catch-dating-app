@@ -4,6 +4,7 @@ export 'domain/event_success_assignment.dart';
 export 'domain/event_success_coach.dart';
 export 'domain/event_success_compatibility_response.dart';
 export 'domain/event_success_conversation_cue.dart';
+export 'presentation/event_success_conversation_cue_copy.dart'; // public-api: localized presentation copy reused across feature boundaries
 export 'domain/event_success_event_preview.dart';
 export 'domain/event_success_feature_state.dart';
 export 'domain/event_success_models.dart';

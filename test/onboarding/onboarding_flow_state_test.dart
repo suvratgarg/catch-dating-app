@@ -1,12 +1,16 @@
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_flow_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  final l10n = AppLocalizationsEn();
+
   group('OnboardingFlowState', () {
     test('keeps welcome as a body-only shell with no top bar', () {
       final state = OnboardingFlowState.from(
+        l10n: l10n,
         data: const OnboardingData(),
         profileCompletionOnly: false,
         runPreferencesOnly: false,
@@ -22,6 +26,7 @@ void main() {
 
     test('derives standard flow progress and back target', () {
       final state = OnboardingFlowState.from(
+        l10n: l10n,
         data: const OnboardingData(step: OnboardingStep.genderInterest),
         profileCompletionOnly: false,
         runPreferencesOnly: false,
@@ -38,6 +43,7 @@ void main() {
 
     test('locks profile-completion back target to the photos step', () {
       final state = OnboardingFlowState.from(
+        l10n: l10n,
         data: const OnboardingData(step: OnboardingStep.prompts),
         profileCompletionOnly: true,
         runPreferencesOnly: false,
@@ -52,6 +58,7 @@ void main() {
 
     test('locks run-preferences entry to a single-step flow', () {
       final state = OnboardingFlowState.from(
+        l10n: l10n,
         data: const OnboardingData(step: OnboardingStep.runningPrefs),
         profileCompletionOnly: false,
         runPreferencesOnly: true,

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 enum CatchCrossPathsVariant { postcard, photo }
@@ -250,7 +251,7 @@ class CrossPathsPolaroidRail extends StatelessWidget {
         ),
         const SizedBox(height: CatchSpacing.micro14),
         Text(
-          'TO: YOU',
+          context.l10n.exploreCatchCrossPathsCardTextToYou,
           textAlign: TextAlign.right,
           style: CatchTextStyles.monoLabel(
             context,
@@ -306,7 +307,7 @@ class CrossPathsCtaRow extends StatelessWidget {
         CatchIconButton.icon(
           icon: CatchIcons.favoriteOutlineRounded,
           onTap: onLike,
-          tooltip: 'Like',
+          tooltip: context.l10n.exploreCatchCrossPathsCardTooltipLike,
           size: CatchLayout.crossPathsHeartExtent,
         ),
       ],

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class BookingConflictEvent {
@@ -51,7 +52,7 @@ class BookingConflictSheet extends StatelessWidget {
 
     return Semantics(
       container: true,
-      label: 'Booking time conflict',
+      label: context.l10n.eventsBookingConflictSheetLabelBookingTimeConflict,
       child: CatchSurface(
         backgroundColor: t.surface,
         borderColor: t.line,
@@ -93,31 +94,34 @@ class BookingConflictSheet extends StatelessWidget {
               ),
               gapH14,
               Text(
-                "That's the same time slot",
+                context.l10n.eventsBookingConflictSheetTextThatSTheSame,
                 style: CatchTextStyles.headlineS(context, color: t.ink),
               ),
               gapH8,
               Text(
-                "You're already booked for something then. Keep both if you "
-                'can make it work, or swap one out.',
+                context.l10n.eventsBookingConflictSheetTextYouReAlreadyBooked,
                 style: CatchTextStyles.proseM(context, color: t.ink2),
               ),
               gapH18,
               BookingConflictEventRow(
-                tag: 'Already booked',
+                tag: context
+                    .l10n
+                    .eventsBookingConflictSheetVisiblecopyAlreadyBooked,
                 tagColor: t.ink3,
                 event: existing,
               ),
               gapH10,
               BookingConflictEventRow(
-                tag: 'New',
+                tag: context.l10n.eventsBookingConflictSheetVisiblecopyNew,
                 tagColor: t.warning,
                 event: incoming,
               ),
               gapH18,
               CatchButton(
                 key: BookingConflictSheetKeys.replaceExistingButton,
-                label: 'Cancel existing & book this',
+                label: context
+                    .l10n
+                    .eventsBookingConflictSheetLabelCancelExistingBookThis,
                 fullWidth: true,
                 icon: Icon(CatchIcons.swapHorizRounded),
                 onPressed: onReplaceExisting,
@@ -125,7 +129,7 @@ class BookingConflictSheet extends StatelessWidget {
               gapH10,
               CatchButton(
                 key: BookingConflictSheetKeys.keepBothButton,
-                label: 'Keep both',
+                label: context.l10n.eventsBookingConflictSheetLabelKeepBoth,
                 variant: CatchButtonVariant.secondary,
                 fullWidth: true,
                 onPressed: onKeepBoth,
@@ -133,7 +137,9 @@ class BookingConflictSheet extends StatelessWidget {
               gapH4,
               CatchButton(
                 key: BookingConflictSheetKeys.keepExistingButton,
-                label: 'Keep existing only',
+                label: context
+                    .l10n
+                    .eventsBookingConflictSheetLabelKeepExistingOnly,
                 variant: CatchButtonVariant.ghost,
                 fullWidth: true,
                 onPressed: onKeepExisting,

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart'
     as schema_contracts;
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -100,7 +101,7 @@ ProfilePromptDefinition profilePromptDefinition(String promptId) {
     orElse: () => ProfilePromptDefinition(
       id: promptId,
       title: promptId,
-      placeholder: 'Answer this prompt.',
+      placeholder: StructuredDomainCopy.profilePromptFallbackAnswer,
     ),
   );
 }
@@ -111,7 +112,7 @@ PhotoPromptDefinition photoPromptDefinition(String promptId) {
     orElse: () => PhotoPromptDefinition(
       id: promptId,
       title: promptId,
-      placeholder: 'Choose a prompt.',
+      placeholder: StructuredDomainCopy.photoPromptFallbackChoose,
     ),
   );
 }

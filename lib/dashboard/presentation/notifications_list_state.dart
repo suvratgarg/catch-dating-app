@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 sealed class NotificationsListState {
@@ -10,8 +11,9 @@ sealed class NotificationsListState {
 
   bool get showMarkAllReadAction => false;
   bool get canMarkAllRead => false;
-  String get markAllReadLabel =>
-      markAllReadPending ? 'Marking...' : 'Mark all read';
+  String markAllReadLabel(AppLocalizations l10n) => markAllReadPending
+      ? l10n.dashboardNotificationsListStateVisiblecopyMarking
+      : l10n.dashboardNotificationsListStateVisiblecopyMarkAllRead;
   List<ActivityNotification> get unreadNotifications =>
       const <ActivityNotification>[];
 }
@@ -92,6 +94,7 @@ final class NotificationRowDisplay {
 List<NotificationRowDisplay> notificationRowsFromNotifications(
   Iterable<ActivityNotification> notifications, {
   required DateTime now,
+  required AppLocalizations l10n,
 }) {
   return notifications
       .where((notification) => notification.isVisibleInActivity)
@@ -102,7 +105,11 @@ List<NotificationRowDisplay> notificationRowsFromNotifications(
           subtitle: notification.body,
           createdAt: notification.createdAt,
           route: notificationRoute(notification),
-          timeLabel: relativeNotificationTime(notification.createdAt, now),
+          timeLabel: relativeNotificationTime(
+            notification.createdAt,
+            now,
+            l10n,
+          ),
           isUnread: notification.isUnread,
         ),
       )
@@ -113,6 +120,7 @@ List<NotificationRowDisplay> notificationRowsFromNotifications(
 List<NotificationDayGroup> groupNotificationRows(
   List<NotificationRowDisplay> rows, {
   required DateTime now,
+  required AppLocalizations l10n,
 }) {
   final today = <NotificationRowDisplay>[];
   final yesterday = <NotificationRowDisplay>[];
@@ -136,13 +144,26 @@ List<NotificationDayGroup> groupNotificationRows(
   }
 
   return [
-    if (today.isNotEmpty) NotificationDayGroup(label: 'Today', rows: today),
+    if (today.isNotEmpty)
+      NotificationDayGroup(
+        label: l10n.dashboardNotificationsListStateLabelToday,
+        rows: today,
+      ),
     if (yesterday.isNotEmpty)
-      NotificationDayGroup(label: 'Yesterday', rows: yesterday),
+      NotificationDayGroup(
+        label: l10n.dashboardNotificationsListStateLabelYesterday,
+        rows: yesterday,
+      ),
     if (thisWeek.isNotEmpty)
-      NotificationDayGroup(label: 'This week', rows: thisWeek),
+      NotificationDayGroup(
+        label: l10n.dashboardNotificationsListStateLabelThisWeek,
+        rows: thisWeek,
+      ),
     if (earlier.isNotEmpty)
-      NotificationDayGroup(label: 'Earlier', rows: earlier),
+      NotificationDayGroup(
+        label: l10n.dashboardNotificationsListStateLabelEarlier,
+        rows: earlier,
+      ),
   ];
 }
 
@@ -162,10 +183,23 @@ String? notificationRoute(ActivityNotification notification) {
   return null;
 }
 
-String relativeNotificationTime(DateTime time, DateTime now) {
+String relativeNotificationTime(
+  DateTime time,
+  DateTime now,
+  AppLocalizations l10n,
+) {
   final difference = now.difference(time);
-  if (difference.inMinutes < 1) return 'Now';
-  if (difference.inMinutes < 60) return '${difference.inMinutes}m';
-  if (difference.inHours < 24) return '${difference.inHours}h';
-  return '${difference.inDays}d';
+  if (difference.inMinutes < 1)
+    return l10n.dashboardNotificationsListStateVisiblecopyNow;
+  if (difference.inMinutes < 60)
+    return l10n.dashboardNotificationsListStateVisiblecopyInminutesM(
+      inMinutes: difference.inMinutes,
+    );
+  if (difference.inHours < 24)
+    return l10n.dashboardNotificationsListStateVisiblecopyInhoursH(
+      inHours: difference.inHours,
+    );
+  return l10n.dashboardNotificationsListStateVisiblecopyIndaysD(
+    inDays: difference.inDays,
+  );
 }

@@ -58,36 +58,43 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
       appBar: organizerMode
           ? null
           : HostOperationsTopBar(
-              kicker: 'HOST CLUBS',
-              title: _state.title,
+              kicker: context.l10n.hostsHostClubsScaffoldKickerHostClubs,
+              title: _state.title(context.l10n),
               bottom: selectedClub == null
                   ? null
                   : CatchTabRail<HostClubTab>(
                       groupKey: _hostClubTabRailKey,
                       selected: _state.selectedTab,
                       onChanged: _selectTab,
-                      options: const [
+                      options: [
                         CatchOption(
                           value: HostClubTab.organizer,
-                          label: 'Organizer',
+                          label:
+                              context.l10n.hostsHostClubsScaffoldLabelOrganizer,
                         ),
-                        CatchOption(value: HostClubTab.edit, label: 'Edit'),
+                        CatchOption(
+                          value: HostClubTab.edit,
+                          label: context.l10n.hostsHostClubsScaffoldLabelEdit,
+                        ),
                         CatchOption(
                           value: HostClubTab.insights,
-                          label: 'Insights',
+                          label:
+                              context.l10n.hostsHostClubsScaffoldLabelInsights,
                         ),
                         CatchOption(
                           value: HostClubTab.preview,
-                          label: 'Preview',
+                          label:
+                              context.l10n.hostsHostClubsScaffoldLabelPreview,
                         ),
                       ],
                     ),
               actions: [
                 if (_state.showClubPicker)
                   CatchTopBarMenuAction<int>(
-                    tooltip: 'Switch club',
+                    tooltip:
+                        context.l10n.hostsHostClubsScaffoldTooltipSwitchClub,
                     icon: CatchIcons.expandMoreRounded,
-                    items: _hostClubSwitcherItems(_state),
+                    items: _hostClubSwitcherItems(_state, context.l10n),
                     onSelected: _selectClubIndex,
                   ),
               ],
@@ -102,12 +109,11 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
           children: [
             if (selectedClub == null)
               HostEmptyActionCard(
-                title: 'No host clubs yet',
-                body:
-                    'Create a club or accept a host invite to start managing events.',
+                title: context.l10n.hostsHostClubsScaffoldTitleNoHostClubsYet,
+                body: context.l10n.hostsHostClubsScaffoldBodyCreateAClubOr,
                 actions: [
                   CatchButton(
-                    label: 'Create club',
+                    label: context.l10n.hostsHostClubsScaffoldLabelCreateClub,
                     icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
                     onPressed: () =>
                         context.pushNamed(Routes.hostCreateClubScreen.name),
@@ -186,14 +192,23 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
 
 List<CatchActionMenuItem<int>> _hostClubSwitcherItems(
   HostClubsScreenState state,
+  AppLocalizations l10n,
 ) {
-  return [
-    for (var index = 0; index < state.clubs.length; index++)
+  final items = <CatchActionMenuItem<int>>[];
+  for (var index = 0; index < state.clubs.length; index++) {
+    final club = state.clubs[index];
+    final roleLabel = club.isOwnedBy(state.currentUid)
+        ? l10n.hostsHostClubsScaffoldVisiblecopyOwner
+        : l10n.hostsHostClubsScaffoldVisiblecopyHostTeam;
+    items.add(
       CatchActionMenuItem(
         value: index,
-        label:
-            '${state.clubs[index].name} · '
-            '${state.clubs[index].isOwnedBy(state.currentUid) ? 'Owner' : 'Host team'}',
+        label: l10n.hostsHostClubsScaffoldLabelNameRolelabel(
+          name: club.name,
+          roleLabel: roleLabel,
+        ),
       ),
-  ];
+    );
+  }
+  return items;
 }

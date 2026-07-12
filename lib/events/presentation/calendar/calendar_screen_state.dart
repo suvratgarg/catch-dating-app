@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class CalendarHomeState {
@@ -102,9 +103,10 @@ sealed class CalendarAgendaSectionState {
 class CalendarAgendaEmptyState extends CalendarAgendaSectionState {
   const CalendarAgendaEmptyState();
 
-  String get title => 'No planned events yet';
-  String get body =>
-      'Events you book or save will show up here by day and time.';
+  String title(AppLocalizations l10n) =>
+      l10n.eventsCalendarScreenStateTitleNoPlannedEventsYet;
+  String body(AppLocalizations l10n) =>
+      l10n.eventsCalendarScreenStateBodyEventsYouBookOr;
 }
 
 class CalendarAgendaClubNamesLoadingState extends CalendarAgendaSectionState {
@@ -139,11 +141,14 @@ class CalendarAgendaEventRowState {
   final String? clubName;
   final CalendarAgendaEventStatus status;
 
-  String get badgeLabel {
+  String badgeLabel(AppLocalizations l10n) {
     return switch (status) {
-      CalendarAgendaEventStatus.cancelled => 'CANCELLED',
-      CalendarAgendaEventStatus.saved => 'SAVED',
-      CalendarAgendaEventStatus.joined => 'JOINED',
+      CalendarAgendaEventStatus.cancelled =>
+        l10n.eventsCalendarScreenStateBadgelabelCancelled,
+      CalendarAgendaEventStatus.saved =>
+        l10n.eventsCalendarScreenStateBadgelabelSaved,
+      CalendarAgendaEventStatus.joined =>
+        l10n.eventsCalendarScreenStateBadgelabelJoined,
     };
   }
 }

@@ -30,3 +30,13 @@ enum CompatibilityReasonKind {
   language,
   easyOpener,
 }
+
+enum ProfileQualitySuggestionKind {
+  photos,
+  profilePrompts,
+  photoPrompts,
+  relationshipGoal,
+  runningIdentity,
+  backgroundDetail,
+  lifestyleDetail,
+}

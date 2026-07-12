@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 String clubMemberCountLabel(Club club) {
@@ -179,7 +180,9 @@ class ClubHostRoleBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchBadge(
-      label: role == ClubHostRole.owner ? 'Owner' : 'Host',
+      label: role == ClubHostRole.owner
+          ? context.l10n.clubsClubIdentityAtomsLabelOwner
+          : context.l10n.clubsClubIdentityAtomsLabelHost,
       tone: role == ClubHostRole.owner
           ? CatchBadgeTone.brand
           : CatchBadgeTone.neutral,

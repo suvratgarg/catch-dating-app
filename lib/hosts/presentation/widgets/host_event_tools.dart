@@ -10,6 +10,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class HostEventToolItem {
@@ -79,14 +80,26 @@ class _HostEventToolsCarouselState extends State<HostEventToolsCarousel> {
           return SizedBox(
             width: cardWidth,
             child: Semantics(
-              label: 'Host event tools carousel',
-              value:
-                  'Hosted event ${_selectedIndex + 1} of ${widget.tools.length}',
+              label:
+                  context.l10n.hostsHostEventToolsLabelHostEventToolsCarousel,
+              value: context.l10n
+                  .hostsHostEventToolsVisiblecopyHostedEventValue1Of(
+                    value1: _selectedIndex + 1,
+                    length: widget.tools.length,
+                  ),
               increasedValue: canAdvance
-                  ? 'Hosted event ${_selectedIndex + 2} of ${widget.tools.length}'
+                  ? context.l10n
+                        .hostsHostEventToolsVisiblecopyHostedEventValue1Of(
+                          value1: _selectedIndex + 2,
+                          length: widget.tools.length,
+                        )
                   : null,
               decreasedValue: canRetreat
-                  ? 'Hosted event $_selectedIndex of ${widget.tools.length}'
+                  ? context.l10n
+                        .hostsHostEventToolsVisiblecopyHostedEventSelectedindexOf(
+                          selectedIndex: _selectedIndex,
+                          length: widget.tools.length,
+                        )
                   : null,
               onIncrease: widget.tools.length > 1 && canAdvance
                   ? () => setState(() => _selectedIndex += 1)
@@ -179,11 +192,17 @@ class HostEventToolsPageIndicator extends StatelessWidget {
     final progress = ((selectedIndex + 1) / itemCount).clamp(0.0, 1.0);
 
     return Semantics(
-      label: 'Host event ${selectedIndex + 1} of $itemCount',
+      label: context.l10n.hostsHostEventToolsLabelHostEventValue1Of(
+        value1: selectedIndex + 1,
+        itemCount: itemCount,
+      ),
       child: Row(
         children: [
           Text(
-            '${selectedIndex + 1} of $itemCount',
+            context.l10n.hostsHostEventToolsTextValue1OfItemcount(
+              value1: selectedIndex + 1,
+              itemCount: itemCount,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: CatchTextStyles.labelS(context, color: t.ink2),
@@ -242,12 +261,12 @@ class HostEventToolCard extends StatelessWidget {
       borderColor: palette.border,
       gradientColors: palette.gradientColors,
       badges: [
-        const EventActionCardBadge(
-          label: 'Host event',
+        EventActionCardBadge(
+          label: context.l10n.hostsHostEventToolsLabelHostEvent,
           tone: CatchBadgeTone.brand,
         ),
         EventActionCardBadge(
-          label: item.attendanceState.badgeLabel,
+          label: item.attendanceState.badgeLabel(context.l10n),
           tone: item.attendanceState.badgeTone,
           icon: item.canTakeAttendance ? CatchIcons.checklistRounded : null,
         ),
@@ -263,7 +282,11 @@ class HostEventToolCard extends StatelessWidget {
         [
           CatchMetaEntry(
             icon: CatchIcons.accessTimeRounded,
-            label: '${event.shortDateLabel} · ${event.timeRangeLabel}',
+            label: context.l10n
+                .hostsHostEventToolsLabelShortdatelabelTimerangelabel(
+                  shortDateLabel: event.shortDateLabel,
+                  timeRangeLabel: event.timeRangeLabel,
+                ),
           ),
         ],
         [
@@ -275,9 +298,12 @@ class HostEventToolCard extends StatelessWidget {
         [
           CatchMetaEntry(
             icon: CatchIcons.groupsOutlined,
-            label:
-                '${event.signedUpCount}/${event.capacityLimit} booked · '
-                '${event.waitlistCount} waitlist',
+            label: context.l10n
+                .hostsHostEventToolsLabelSignedupcountCapacitylimitBookedWaitlistcount(
+                  signedUpCount: event.signedUpCount,
+                  capacityLimit: event.capacityLimit,
+                  waitlistCount: event.waitlistCount,
+                ),
           ),
         ],
       ],
@@ -288,7 +314,7 @@ class HostEventToolCard extends StatelessWidget {
               HostEventActionKeys.takeAttendanceButton,
             _ => null,
           },
-          label: action.label,
+          label: action.label(context.l10n),
           icon: action.icon,
           variant: CatchButtonVariant.primary,
           onPressed: () => _handleAction(action),
@@ -382,21 +408,25 @@ extension on _HostEventAction {
     };
   }
 
-  String get label {
+  String label(AppLocalizations l10n) {
     return switch (this) {
-      _HostEventAction.manage => 'Manage event',
-      _HostEventAction.takeAttendance => 'Take attendance',
-      _HostEventAction.viewReport => 'View report',
+      _HostEventAction.manage => l10n.hostsHostEventToolsLabelManageEvent,
+      _HostEventAction.takeAttendance =>
+        l10n.hostsHostEventToolsLabelTakeAttendance,
+      _HostEventAction.viewReport => l10n.hostsHostEventToolsLabelViewReport,
     };
   }
 }
 
 extension HostEventAttendanceStateLabels on HostEventAttendanceState {
-  String get badgeLabel {
+  String badgeLabel(AppLocalizations l10n) {
     return switch (this) {
-      HostEventAttendanceState.open => 'Attendance open',
-      HostEventAttendanceState.opensLater => 'Upcoming',
-      HostEventAttendanceState.closed => 'Attendance closed',
+      HostEventAttendanceState.open =>
+        l10n.hostsHostEventToolsBadgelabelAttendanceOpen,
+      HostEventAttendanceState.opensLater =>
+        l10n.hostsHostEventToolsBadgelabelUpcoming,
+      HostEventAttendanceState.closed =>
+        l10n.hostsHostEventToolsBadgelabelAttendanceClosed,
     };
   }
 

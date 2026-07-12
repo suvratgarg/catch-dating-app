@@ -95,7 +95,7 @@ void main() {
       expect(find.text('Bandra Social'), findsOneWidget);
       expect(
         find.text(
-          'No internet connection. Connect to the internet and try again.',
+          'We are having trouble connecting. Please check your internet and try again.',
         ),
         findsOneWidget,
       );
@@ -310,7 +310,7 @@ void main() {
 
       expect(
         find.text(
-          'No internet connection. Connect to the internet and try again.',
+          'We are having trouble connecting. Please check your internet and try again.',
         ),
         findsOneWidget,
       );
@@ -357,7 +357,7 @@ void main() {
 
       expect(
         find.text(
-          'No internet connection. Connect to the internet and try again.',
+          'We are having trouble connecting. Please check your internet and try again.',
         ),
         findsOneWidget,
       );

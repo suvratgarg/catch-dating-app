@@ -37,11 +37,6 @@ abstract final class CatchFonts {
   static String get functionFamily =>
       functionFamilyForPlatform(defaultTargetPlatform);
 
-  /// Backward-compatible names while feature code moves from serif/sans
-  /// language to voice/function/data language.
-  static const String serifFamily = voiceFamily;
-  static String get sansFamily => functionFamily;
-
   @visibleForTesting
   static String functionFamilyForPlatform(
     TargetPlatform platform, {
@@ -114,23 +109,6 @@ abstract final class CatchFonts {
     letterSpacing: letterSpacing,
   );
 
-  /// Deprecated compatibility alias for older call sites. New typography roles
-  /// should call [voice] or [head] when they genuinely need Archivo.
-  static TextStyle serif({
-    required double fontSize,
-    required double height,
-    Color? color,
-    FontWeight fontWeight = FontWeight.w600,
-    FontStyle fontStyle = FontStyle.normal,
-    double letterSpacing = 0,
-  }) => voice(
-    fontSize: fontSize,
-    height: height,
-    color: color,
-    fontWeight: fontWeight,
-    letterSpacing: letterSpacing,
-  );
-
   /// Platform system font (function). Resolves to Flutter's concrete platform
   /// family names: SF via CupertinoSystem* on iOS, Roboto on Android/Fuchsia/
   /// Linux, .AppleSystemUIFont on macOS, and Segoe UI on Windows.
@@ -176,40 +154,6 @@ abstract final class CatchFonts {
       letterSpacing: letterSpacing,
       fontFeatures: fontFeatures,
       decoration: TextDecoration.none,
-      color: color,
-    );
-  }
-
-  // -- Named role builders (backward-compatible with existing call sites) -----
-  // These use the voice family under the hood; kept as convenience wrappers
-  // for club/event identity treatments.
-
-  static TextStyle clubDisplay({
-    required double fontSize,
-    required double height,
-    required Color color,
-    FontWeight fontWeight = FontWeight.w600,
-    FontStyle fontStyle = FontStyle.normal,
-  }) {
-    return voice(
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      height: height,
-      color: color,
-    );
-  }
-
-  static TextStyle eventDisplay({
-    required double fontSize,
-    required double height,
-    required Color color,
-    FontWeight fontWeight = FontWeight.w600,
-    FontStyle fontStyle = FontStyle.normal,
-  }) {
-    return voice(
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      height: height,
       color: color,
     );
   }

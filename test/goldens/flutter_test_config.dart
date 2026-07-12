@@ -9,9 +9,10 @@ import '../support/catch_test_fonts.dart';
 ///
 /// Catch bundles its identity fonts (see `pubspec.yaml`), so goldens load the
 /// same Archivo and IBM Plex Mono assets the app ships and register them under
-/// the plain family names [CatchFonts] requests. The platform system font stays
-/// platform-owned. Icon fonts are also registered so app chrome renders as real
-/// glyphs instead of missing-glyph boxes. Test-only — adds no app assets.
+/// the plain family names [CatchFonts] requests. Deterministic Roboto files
+/// stand in for the concrete platform function-family aliases. Icon fonts are
+/// also registered so app chrome renders as real glyphs instead of
+/// missing-glyph boxes. Test-only — adds no app assets.
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   await loadCatchTestFonts();

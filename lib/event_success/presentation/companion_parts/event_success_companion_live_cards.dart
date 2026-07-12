@@ -63,22 +63,33 @@ class MicroPodCard extends StatelessWidget {
         children: [
           StageSectionLabel(
             icon: CatchIcons.groups2Outlined,
-            label: 'Starter group',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsLabelStarterGroup,
             color: t.primary,
           ),
           gapH10,
           Text(
             optedOut
-                ? 'Starter groups paused for you'
-                : assigned?.displayTitle ?? 'Your starter group is forming',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsTextStarterGroupsPausedFor
+                : assigned?.displayTitle ??
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionLiveCardsTextYourStarterGroupIs,
             style: CatchTextStyles.titleL(context),
           ),
           gapH6,
           Text(
             optedOut
-                ? 'You won\'t be included when the host runs the generator.'
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsTextYouWonTBe
                 : assigned?.displaySubtitle ??
-                      'The host will publish starter groups once everyone is checked in.',
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionLiveCardsTextTheHostWillPublish,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (assigned != null) ...[
@@ -86,7 +97,9 @@ class MicroPodCard extends StatelessWidget {
             if (groupSlots.isNotEmpty)
               if (peersLoading)
                 CatchBadge(
-                  label: 'Loading group members',
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsLabelLoadingGroupMembers,
                   icon: CatchIcons.hourglassEmptyRounded,
                 )
               else
@@ -101,16 +114,23 @@ class MicroPodCard extends StatelessWidget {
                 )
             else
               PeopleTokenRow(
-                countLabel: '${assigned.peerUids.length + 1} people',
+                countLabel: context.l10n
+                    .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyValue1People(
+                      value1: assigned.peerUids.length + 1,
+                    ),
                 loading: peersLoading,
-                loadingLabel: 'Loading group members',
+                loadingLabel: context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyLoadingGroupMembers,
                 profiles: peerProfiles,
               ),
           ],
           gapH14,
           StageActionDock(
             child: IncludeMeToggle(
-              label: 'Include me in starter groups',
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionLiveCardsLabelIncludeMeInStarter,
               included: actionState.included,
               busy: actionState.isSaving,
               onChanged: onIncludeChanged,
@@ -135,9 +155,11 @@ class GroupRotationSlotRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final timeRange =
-        '${TimeOfDay.fromDateTime(slot.startsAt).format(context)}-'
-        '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
+    final timeRange = context.l10n
+        .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyFormatFormat2(
+          format: TimeOfDay.fromDateTime(slot.startsAt).format(context),
+          format2: TimeOfDay.fromDateTime(slot.endsAt).format(context),
+        );
     final peerNames = slot.peerUids
         .map((uid) => profilesByUid[uid]?.name)
         .whereType<String>()
@@ -177,7 +199,10 @@ class GroupRotationSlotRow extends StatelessWidget {
               runSpacing: CatchSpacing.s2,
               children: [
                 CatchBadge(
-                  label: '${slot.peerUids.length + 1} people',
+                  label: context.l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsLabelValue1People(
+                        value1: slot.peerUids.length + 1,
+                      ),
                   icon: CatchIcons.groupOutlined,
                 ),
                 for (final name in peerNames)
@@ -226,29 +251,42 @@ class RotationScheduleCard extends StatelessWidget {
         children: [
           StageSectionLabel(
             icon: CatchIcons.syncAltRounded,
-            label: 'Timed rotations',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsLabelTimedRotations,
             color: t.primary,
           ),
           gapH10,
           Text(
             optedOut
-                ? 'Timed rotations paused for you'
-                : assigned?.displayTitle ?? 'Your rotation schedule is forming',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsTextTimedRotationsPausedFor
+                : assigned?.displayTitle ??
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionLiveCardsTextYourRotationScheduleIs,
             style: CatchTextStyles.titleL(context),
           ),
           gapH6,
           Text(
             optedOut
-                ? 'You won\'t be included when the host runs the generator.'
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsTextYouWonTBe
                 : assigned?.displaySubtitle ??
-                      'Your timed pairings appear once the host generates rotations.',
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionLiveCardsTextYourTimedPairingsAppear,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (assigned != null) ...[
             gapH14,
             if (peersLoading)
               CatchBadge(
-                label: 'Loading partner names',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionLiveCardsLabelLoadingPartnerNames,
                 icon: CatchIcons.hourglassEmptyRounded,
               )
             else
@@ -257,7 +295,11 @@ class RotationScheduleCard extends StatelessWidget {
                   for (final slot in assigned.rotationSlots)
                     RotationSlotRow(
                       slot: slot,
-                      peerName: profilesByUid[slot.peerUid]?.name ?? 'Partner',
+                      peerName:
+                          profilesByUid[slot.peerUid]?.name ??
+                          context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyPartner,
                     ),
                 ],
               ),
@@ -265,7 +307,9 @@ class RotationScheduleCard extends StatelessWidget {
           gapH14,
           StageActionDock(
             child: IncludeMeToggle(
-              label: 'Include me in timed rotations',
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionLiveCardsLabelIncludeMeInTimed,
               included: actionState.included,
               busy: actionState.isSaving,
               onChanged: onIncludeChanged,
@@ -290,9 +334,11 @@ class RotationSlotRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final timeRange =
-        '${TimeOfDay.fromDateTime(slot.startsAt).format(context)}-'
-        '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
+    final timeRange = context.l10n
+        .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyFormatFormat2(
+          format: TimeOfDay.fromDateTime(slot.startsAt).format(context),
+          format2: TimeOfDay.fromDateTime(slot.endsAt).format(context),
+        );
     return Padding(
       padding: _companionRotationSlotGap,
       child: CatchSurface(
@@ -311,7 +357,11 @@ class RotationSlotRow extends StatelessWidget {
             gapW8,
             Expanded(
               child: Text(
-                '$timeRange · $peerName',
+                context.l10n
+                    .eventSuccessEventSuccessCompanionLiveCardsTextTimerangePeername(
+                      timeRange: timeRange,
+                      peerName: peerName,
+                    ),
                 style: CatchTextStyles.supporting(context),
               ),
             ),
@@ -337,18 +387,28 @@ class LiveStepContextCard extends StatelessWidget {
         children: [
           StageSectionLabel(
             icon: CatchIcons.locationOnOutlined,
-            label: activeStep?.stage.label ?? 'Live cue',
+            label:
+                activeStep?.stage.label ??
+                context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionLiveCardsLabelLiveCue,
             color: t.primary,
           ),
           gapH10,
           Text(
-            activeStep == null ? 'Event is live' : activeStep.title,
+            activeStep == null
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsTextEventIsLive
+                : activeStep.title,
             style: CatchTextStyles.titleL(context),
           ),
           gapH6,
           Text(
             activeStep?.attendeeExperience ??
-                'Follow the host for the next event moment.',
+                context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionLiveCardsTextFollowTheHostFor,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
@@ -382,27 +442,37 @@ class PreCheckInPlanningCard extends StatelessWidget {
       if (microPodsEnabled)
         PreviewLine(
           icon: CatchIcons.groups2Outlined,
-          text: 'Small starter group when you check in.',
+          text: context
+              .l10n
+              .eventSuccessEventSuccessCompanionLiveCardsTextSmallStarterGroupWhen,
         ),
       if (guidedRotationsEnabled)
         PreviewLine(
           icon: CatchIcons.syncAltRounded,
-          text: 'Timed partner rotations during the event.',
+          text: context
+              .l10n
+              .eventSuccessEventSuccessCompanionLiveCardsTextTimedPartnerRotationsDuring,
         ),
       if (liveRevealEnabled)
         PreviewLine(
           icon: CatchIcons.boltRounded,
-          text: 'Synchronized partner reveals as the event unfolds.',
+          text: context
+              .l10n
+              .eventSuccessEventSuccessCompanionLiveCardsTextSynchronizedPartnerRevealsAs,
         ),
       if (socialMissionsEnabled)
         PreviewLine(
           icon: CatchIcons.chatBubbleOutlineRounded,
-          text: 'Live conversation prompts from the host.',
+          text: context
+              .l10n
+              .eventSuccessEventSuccessCompanionLiveCardsTextLiveConversationPromptsFrom,
         ),
       if (wingmanRequestsEnabled)
         PreviewLine(
           icon: CatchIcons.volunteerActivismOutlined,
-          text: 'You can ask the host for an intro to someone specific.',
+          text: context
+              .l10n
+              .eventSuccessEventSuccessCompanionLiveCardsTextYouCanAskThe,
         ),
     ];
     return StagePanel(
@@ -411,17 +481,23 @@ class PreCheckInPlanningCard extends StatelessWidget {
         children: [
           StageSectionLabel(
             icon: CatchIcons.eventAvailableOutlined,
-            label: 'Preview',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsLabelPreview,
             color: t.primary,
           ),
           gapH10,
           Text(
-            'What we\'ll guide you through',
+            context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsTextWhatWeLlGuide,
             style: CatchTextStyles.titleL(context),
           ),
           gapH6,
           Text(
-            'Live partner and group details unlock after check-in. Here\'s what to expect at the event:',
+            context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsTextLivePartnerAndGroup,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
@@ -526,14 +602,23 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
         children: [
           StageSectionLabel(
             icon: CatchIcons.qrCode2Rounded,
-            label: 'Arrival',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsLabelArrival,
             color: t.primary,
           ),
           gapH10,
-          Text('Arrival check-in', style: CatchTextStyles.titleL(context)),
+          Text(
+            context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsTextArrivalCheckIn,
+            style: CatchTextStyles.titleL(context),
+          ),
           gapH6,
           Text(
-            'Confirm you are at the event so post-event follow-up only includes actual attendees.',
+            context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsTextConfirmYouAreAt,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
@@ -542,7 +627,9 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 CatchButton(
-                  label: 'Scan host QR',
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsLabelScanHostQr,
                   icon: Icon(CatchIcons.qrCodeScannerRounded),
                   isLoading: busy,
                   onPressed: busy ? null : () => _scanHostQr(context),
@@ -550,7 +637,9 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
                 ),
                 gapH8,
                 CatchButton(
-                  label: 'Check in',
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsLabelCheckIn,
                   variant: CatchButtonVariant.ghost,
                   isLoading: busy,
                   onPressed: busy ? null : _checkIn,
@@ -616,12 +705,16 @@ class _EventCheckInQrScannerSheetState
                 gapW10,
                 Expanded(
                   child: Text(
-                    'Scan host QR',
+                    context
+                        .l10n
+                        .eventSuccessEventSuccessCompanionLiveCardsTextScanHostQr,
                     style: CatchTextStyles.sectionTitle(context),
                   ),
                 ),
                 Tooltip(
-                  message: 'Close',
+                  message: context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionLiveCardsMessageClose,
                   child: CatchIconButton(
                     onTap: () => Navigator.of(context).maybePop(false),
                     child: Icon(
@@ -677,7 +770,9 @@ class _EventCheckInQrScannerSheetState
             ),
             gapH10,
             Text(
-              'Location still verifies the venue after the QR is scanned.',
+              context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe,
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
@@ -691,9 +786,17 @@ class _EventCheckInQrScannerSheetState
       case EventCheckInQrScanResult.ignored:
         return;
       case EventCheckInQrScanResult.invalid:
-        setState(() => _errorText = 'This is not a Catch event QR.');
+        setState(
+          () => _errorText = context
+              .l10n
+              .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyThisIsNotA,
+        );
       case EventCheckInQrScanResult.wrongEvent:
-        setState(() => _errorText = 'This QR belongs to another event.');
+        setState(
+          () => _errorText = context
+              .l10n
+              .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyThisQrBelongsTo,
+        );
       case EventCheckInQrScanResult.matched:
         unawaited(HapticFeedback.lightImpact());
         Navigator.of(context).maybePop(true);
@@ -803,8 +906,12 @@ class StageCueLine extends StatelessWidget {
                 Tooltip(
                   message:
                       cue.moment == EventSuccessConversationCueMoment.postEvent
-                      ? 'Copy opener'
-                      : 'Copy cue',
+                      ? context
+                            .l10n
+                            .eventSuccessEventSuccessCompanionLiveCardsMessageCopyOpener
+                      : context
+                            .l10n
+                            .eventSuccessEventSuccessCompanionLiveCardsMessageCopyCue,
                   child: CatchIconButton(
                     onTap: () => _copyCue(context, cue),
                     child: Icon(
@@ -836,8 +943,12 @@ class StageCueLine extends StatelessWidget {
     showCatchSnackBar(
       context,
       cue.moment == EventSuccessConversationCueMoment.postEvent
-          ? 'Opener copied.'
-          : 'Cue copied.',
+          ? context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyOpenerCopied
+          : context
+                .l10n
+                .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyCueCopied,
     );
   }
 }

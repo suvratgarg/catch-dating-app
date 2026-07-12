@@ -45,6 +45,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.d
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_picker_tile.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -384,7 +385,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: const CatchTopBar(title: 'Edit event', border: true),
+      appBar: CatchTopBar(
+        title: context.l10n.hostsEditHostedEventScreenTitleEditEvent,
+        border: true,
+      ),
       body: SafeArea(
         top: false,
         child: Form(
@@ -406,7 +410,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 ),
               ],
               gapH20,
-              const CatchFormFieldLabel(label: 'Schedule', large: true),
+              CatchFormFieldLabel(
+                label: context.l10n.hostsEditHostedEventScreenLabelSchedule,
+                large: true,
+              ),
               gapH8,
               if (screenState.scheduleLocked)
                 ReadOnlyHostedEventScheduleCard(event: widget.event)
@@ -415,7 +422,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   key: CreateEventFormKeys.datePicker,
                   icon: CatchIcons.calendarTodayOutlined,
                   value: scheduleFields.dateValue,
-                  placeholder: 'Select a date',
+                  placeholder: context
+                      .l10n
+                      .hostsEditHostedEventScreenPlaceholderSelectADate,
                   onTap: () =>
                       _handleIntent(const HostEventEditPickDateIntent()),
                 ),
@@ -424,7 +433,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   key: CreateEventFormKeys.timePicker,
                   icon: CatchIcons.scheduleOutlined,
                   value: scheduleFields.startTimeValue,
-                  placeholder: 'Select start time',
+                  placeholder: context
+                      .l10n
+                      .hostsEditHostedEventScreenPlaceholderSelectStartTime,
                   onTap: () =>
                       _handleIntent(const HostEventEditPickStartTimeIntent()),
                 ),
@@ -439,15 +450,22 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   ),
                 ],
                 gapH12,
-                const CatchFormFieldLabel(label: 'Duration', large: true),
+                CatchFormFieldLabel(
+                  label: context.l10n.hostsEditHostedEventScreenLabelDuration,
+                  large: true,
+                ),
                 gapH8,
                 CatchNumberStepper(
                   value: scheduleFields.durationMinutes,
                   min: CatchBusinessRules.eventMinDurationMinutes,
                   max: CatchBusinessRules.eventMaxDurationMinutes,
                   step: CatchBusinessRules.eventDurationStepMinutes,
-                  decreaseTooltip: 'Decrease duration',
-                  increaseTooltip: 'Increase duration',
+                  decreaseTooltip: context
+                      .l10n
+                      .hostsEditHostedEventScreenBodyDecreaseDuration,
+                  increaseTooltip: context
+                      .l10n
+                      .hostsEditHostedEventScreenBodyIncreaseDuration,
                   formatValue: (value) =>
                       EventFormatters.durationMinutes(value.round()),
                   onChanged: (duration) => _handleIntent(
@@ -456,24 +474,31 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 ),
               ],
               gapH24,
-              const CatchFormFieldLabel(label: 'Where', large: true),
+              CatchFormFieldLabel(
+                label: context.l10n.hostsEditHostedEventScreenLabelWhere,
+                large: true,
+              ),
               gapH8,
               CatchField.input(
                 key: CreateEventFormKeys.meetingPoint,
-                title: 'Location name',
+                title: context.l10n.hostsEditHostedEventScreenTitleLocationName,
                 controller: _meetingPointController,
                 enabled: screenState.canEdit,
-                placeholder: 'e.g. Bandstand Promenade, Bandra',
-                helperText:
-                    'This is what attendees see in event cards and details.',
+                placeholder: context
+                    .l10n
+                    .hostsEditHostedEventScreenPlaceholderEGBandstandPromenade,
+                helperText: context
+                    .l10n
+                    .hostsEditHostedEventScreenHelpertextThisIsWhatAttendees,
                 prefixIcon: Icon(CatchIcons.locationOnOutlined),
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
                 onChanged: (value) => _handleIntent(
                   HostEventEditMeetingPointChangedIntent(value),
                 ),
-                validator: (value) =>
-                    value == null || value.trim().isEmpty ? 'Required' : null,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? context.l10n.hostsEditHostedEventScreenBodyRequired
+                    : null,
               ),
               gapH16,
               MapPinTile(
@@ -487,11 +512,14 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               gapH16,
               CatchField.input(
                 key: CreateEventFormKeys.locationDetails,
-                title: 'Extra directions',
+                title:
+                    context.l10n.hostsEditHostedEventScreenTitleExtraDirections,
                 isOptional: true,
                 controller: _locationDetailsController,
                 enabled: screenState.canEdit,
-                placeholder: 'e.g. Meet outside the blue gate, third entrance',
+                placeholder: context
+                    .l10n
+                    .hostsEditHostedEventScreenPlaceholderEGMeetOutside,
                 prefixIcon: Icon(CatchIcons.infoOutline),
                 maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
@@ -499,11 +527,15 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               ),
               if (detailsFields.isDistanceBased) ...[
                 gapH24,
-                const CatchFormFieldLabel(label: 'Event details', large: true),
+                CatchFormFieldLabel(
+                  label:
+                      context.l10n.hostsEditHostedEventScreenLabelEventDetails,
+                  large: true,
+                ),
                 gapH8,
                 CatchField.input(
                   key: CreateEventFormKeys.distance,
-                  title: 'Distance (km)',
+                  title: context.l10n.hostsEditHostedEventScreenTitleDistanceKm,
                   controller: _distanceController,
                   enabled: screenState.canEdit,
                   placeholder: '10',
@@ -512,16 +544,22 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                     decimal: true,
                   ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                    FilteringTextInputFormatter.allow(
+                      RegExp(context.l10n.hostsEditHostedEventScreenBodyDD),
+                    ),
                   ],
                   textInputAction: TextInputAction.next,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Required';
+                      return context
+                          .l10n
+                          .hostsEditHostedEventScreenBodyRequired;
                     }
                     final distance = double.tryParse(value.trim());
-                    if (distance == null) return 'Invalid';
-                    if (distance <= 0) return 'Must be > 0';
+                    if (distance == null)
+                      return context.l10n.hostsEditHostedEventScreenBodyInvalid;
+                    if (distance <= 0)
+                      return context.l10n.hostsEditHostedEventScreenBodyMustBe0;
                     return null;
                   },
                 ),
@@ -535,7 +573,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                           label: pace.label,
                           active: detailsFields.selectedPace == pace,
                           enabled: screenState.canEdit,
-                          semanticsLabel: 'Select ${pace.label} pace',
+                          semanticsLabel: context.l10n
+                              .hostsEditHostedEventScreenBodySelectLabelPace(
+                                label: pace.label,
+                              ),
                           onTap: screenState.canEdit
                               ? () => _handleIntent(
                                   HostEventEditPaceChangedIntent(pace),
@@ -549,19 +590,23 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               gapH24,
               CatchField.input(
                 key: CreateEventFormKeys.description,
-                title: 'Description',
+                title: context.l10n.hostsEditHostedEventScreenTitleDescription,
                 isOptional: true,
                 controller: _descriptionController,
                 enabled: screenState.canEdit,
-                placeholder:
-                    'What should attendees expect? Any tips for the route or venue?',
+                placeholder: context
+                    .l10n
+                    .hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect,
                 prefixIcon: Icon(CatchIcons.editNoteOutlined),
                 maxLines: 4,
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.newline,
               ),
               gapH24,
-              const CatchFormFieldLabel(label: 'Event policy', large: true),
+              CatchFormFieldLabel(
+                label: context.l10n.hostsEditHostedEventScreenLabelEventPolicy,
+                large: true,
+              ),
               gapH8,
               if (screenState.policyLocked)
                 ReadOnlyHostedEventPolicyCard(event: widget.event)
@@ -619,7 +664,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       initialDate: initialDate.isAfter(lastDate) ? lastDate : initialDate,
       firstDate: today,
       lastDate: lastDate,
-      title: 'Event date',
+      title: context.l10n.hostsEditHostedEventScreenTitleEventDate,
     );
     if (picked == null) return;
     final scheduleError = _scheduleValidationFor(
@@ -636,7 +681,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final picked = await showCatchTimePicker(
       context: context,
       initialTime: _selectedStartTime,
-      title: 'Start time',
+      title: context.l10n.hostsEditHostedEventScreenTitleStartTime,
     );
     if (picked == null) return;
     final scheduleError = _scheduleValidationFor(
@@ -837,17 +882,17 @@ class EditHostedEventScopeNotice extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final title = isCancelled
-        ? 'Cancelled event'
+        ? context.l10n.hostsEditHostedEventScreenTitleCancelledEvent
         : scheduleLocked
-        ? 'Schedule locked'
-        : 'Published event';
+        ? context.l10n.hostsEditHostedEventScreenTitleScheduleLocked
+        : context.l10n.hostsEditHostedEventScreenTitlePublishedEvent;
     final message = isCancelled
-        ? 'Cancelled events cannot be edited. Create a new event if you need to host this again.'
+        ? context.l10n.hostsEditHostedEventScreenMessageCancelledEventsCannotBe
         : scheduleLocked
-        ? 'You can still update location and descriptive details. Date, time, and duration stay locked after the event starts or once people have joined.'
+        ? context.l10n.hostsEditHostedEventScreenMessageYouCanStillUpdate
         : policyLocked
-        ? 'You can edit the schedule, location, distance, and description. Capacity, pricing, admission policy, and invite setup are locked by existing event activity.'
-        : 'You can edit schedule, location, event details, capacity, pricing, admission policy, and invite setup until the first booking or waitlist join.';
+        ? context.l10n.hostsEditHostedEventScreenMessageYouCanEditThe
+        : context.l10n.hostsEditHostedEventScreenMessageYouCanEditSchedule;
 
     return CatchSurface(
       padding: CatchInsets.content,
@@ -875,7 +920,10 @@ class EditHostedEventScopeNotice extends StatelessWidget {
                       ),
                     ),
                     if (scheduleLocked && !isCancelled)
-                      const CatchBadge(label: 'Locked'),
+                      CatchBadge(
+                        label:
+                            context.l10n.hostsEditHostedEventScreenLabelLocked,
+                      ),
                   ],
                 ),
                 gapH4,
@@ -938,7 +986,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Editable until the first booking or waitlist join.',
+            context.l10n.hostsEditHostedEventScreenTextEditableUntilTheFirst,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH16,
@@ -946,7 +994,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             children: [
               Expanded(
                 child: CatchField.input(
-                  title: 'Max attendees',
+                  title:
+                      context.l10n.hostsEditHostedEventScreenTitleMaxAttendees,
                   controller: capacityController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -956,13 +1005,20 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               gapW12,
               Expanded(
                 child: CatchField.input(
-                  title: 'Base price (${state.currencyCode})',
+                  title: context.l10n
+                      .hostsEditHostedEventScreenTitleBasePriceCurrencycode(
+                        currencyCode: state.currencyCode,
+                      ),
                   controller: priceController,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                    FilteringTextInputFormatter.allow(
+                      RegExp(
+                        context.l10n.hostsEditHostedEventScreenVisiblecopyDD,
+                      ),
+                    ),
                   ],
                   validator: (value) => _moneyRequiredValidator(
                     value,
@@ -973,7 +1029,10 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             ],
           ),
           gapH18,
-          const CatchFormFieldLabel(label: 'Admission format', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
+            large: true,
+          ),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -981,33 +1040,40 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             children: [
               for (final preset in EventAdmissionPreset.values)
                 CatchSelectChip(
-                  label: preset.label,
+                  label: preset.label(context.l10n),
                   active: state.admissionPreset == preset,
-                  semanticsLabel: preset.title,
+                  semanticsLabel: preset.title(context.l10n),
                   onTap: () => onAdmissionPresetChanged(preset),
                 ),
             ],
           ),
           gapH8,
           Text(
-            state.admissionDescription,
+            state.admissionPreset.description(context.l10n),
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (state.showInviteCode) ...[
             gapH16,
             if (privateAccessAsync.status == CatchAsyncStatus.loading)
               Text(
-                'Loading current invite code...',
+                context
+                    .l10n
+                    .hostsEditHostedEventScreenTextLoadingCurrentInviteCode,
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             gapH8,
             CatchField.input(
-              title: 'Invite code',
+              title: context.l10n.hostsEditHostedEventScreenTitleInviteCode,
               controller: inviteCodeController,
-              placeholder: 'CATCH-DELHI',
+              placeholder:
+                  context.l10n.hostsEditHostedEventScreenPlaceholderCatchDelhi,
               prefixIcon: Icon(CatchIcons.lockOutlineRounded),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9_-]')),
+                FilteringTextInputFormatter.allow(
+                  RegExp(
+                    context.l10n.hostsEditHostedEventScreenVisiblecopyAZaZ09,
+                  ),
+                ),
               ],
               validator: state.showInviteCode ? inviteCodeValidator : null,
             ),
@@ -1015,9 +1081,10 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           if (state.showCohortCapsToggle) ...[
             gapH12,
             CatchField.toggle(
-              title: 'Cohort caps',
-              body:
-                  'Optionally cap straight men and straight women without making this a separate admission format.',
+              title: context.l10n.hostsEditHostedEventScreenTitleCohortCaps,
+              body: context
+                  .l10n
+                  .hostsEditHostedEventScreenBodyOptionallyCapStraightMen,
               value: state.cohortCapsEnabled,
               onChanged: onCohortCapsEnabledChanged,
             ),
@@ -1027,7 +1094,9 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CatchField.input(
-                      title: 'Max straight men',
+                      title: context
+                          .l10n
+                          .hostsEditHostedEventScreenTitleMaxStraightMen,
                       isOptional: true,
                       controller: maxMenController,
                       keyboardType: TextInputType.number,
@@ -1038,7 +1107,9 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   gapW12,
                   Expanded(
                     child: CatchField.input(
-                      title: 'Max straight women',
+                      title: context
+                          .l10n
+                          .hostsEditHostedEventScreenTitleMaxStraightWomen,
                       isOptional: true,
                       controller: maxWomenController,
                       keyboardType: TextInputType.number,
@@ -1053,16 +1124,17 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           if (state.showRequestToJoinCopy) ...[
             gapH12,
             Text(
-              'Requests appear in host manage with each person\'s public profile so the host can review fit before confirming spots.',
+              context.l10n.hostsEditHostedEventScreenTextRequestsAppearInHost,
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
           if (state.showDynamicPricingToggle) ...[
             gapH12,
             CatchField.toggle(
-              title: 'Demand pricing',
-              body:
-                  'Increase price for the over-demand cohort while preserving the event balance.',
+              title: context.l10n.hostsEditHostedEventScreenTitleDemandPricing,
+              body: context
+                  .l10n
+                  .hostsEditHostedEventScreenBodyIncreasePriceForThe,
               value: state.dynamicPricingEnabled,
               onChanged: onDynamicPricingChanged,
             ),
@@ -1072,7 +1144,10 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CatchField.input(
-                      title: 'Step (${state.currencyCode})',
+                      title: context.l10n
+                          .hostsEditHostedEventScreenTitleStepCurrencycode(
+                            currencyCode: state.currencyCode,
+                          ),
                       controller: dynamicPricingStepController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1082,7 +1157,10 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   gapW12,
                   Expanded(
                     child: CatchField.input(
-                      title: 'Max (${state.currencyCode})',
+                      title: context.l10n
+                          .hostsEditHostedEventScreenTitleMaxCurrencycode(
+                            currencyCode: state.currencyCode,
+                          ),
                       controller: dynamicPricingMaxController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1094,13 +1172,16 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             ],
           ],
           gapH18,
-          const CatchFormFieldLabel(label: 'Age range', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsEditHostedEventScreenLabelAgeRange,
+            large: true,
+          ),
           gapH8,
           Row(
             children: [
               Expanded(
                 child: CatchField.input(
-                  title: 'Min age',
+                  title: context.l10n.hostsEditHostedEventScreenTitleMinAge,
                   isOptional: true,
                   controller: minAgeController,
                   keyboardType: TextInputType.number,
@@ -1115,7 +1196,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               gapW12,
               Expanded(
                 child: CatchField.input(
-                  title: 'Max age',
+                  title: context.l10n.hostsEditHostedEventScreenTitleMaxAge,
                   isOptional: true,
                   controller: maxAgeController,
                   keyboardType: TextInputType.number,
@@ -1130,7 +1211,11 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             ],
           ),
           gapH18,
-          const CatchFormFieldLabel(label: 'Cancellation policy', large: true),
+          CatchFormFieldLabel(
+            label:
+                context.l10n.hostsEditHostedEventScreenLabelCancellationPolicy,
+            large: true,
+          ),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -1171,32 +1256,40 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Policy locked', style: CatchTextStyles.sectionTitle(context)),
+          Text(
+            context.l10n.hostsEditHostedEventScreenTextPolicyLocked,
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           gapH4,
           Text(
-            'Capacity, pricing, admission, and cancellation policy lock once the event starts or someone books or joins the waitlist.',
+            context
+                .l10n
+                .hostsEditHostedEventScreenTextCapacityPricingAdmissionAnd,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
           ReadOnlyHostedEventPolicyRow(
-            label: 'Capacity',
-            value: '${event.capacityLimit}',
+            label: context.l10n.hostsEditHostedEventScreenLabelCapacity,
+            value: context.l10n
+                .hostsEditHostedEventScreenVisiblecopyCapacitylimit(
+                  capacityLimit: event.capacityLimit,
+                ),
           ),
           ReadOnlyHostedEventPolicyRow(
-            label: 'Price',
+            label: context.l10n.hostsEditHostedEventScreenLabelPrice,
             value: event.isFree
-                ? 'Free'
+                ? context.l10n.hostsEditHostedEventScreenVisiblecopyFree
                 : EventFormatters.priceInPaise(
                     event.priceInPaise,
                     currencyCode: event.currency,
                   ),
           ),
           ReadOnlyHostedEventPolicyRow(
-            label: 'Admission',
-            value: _admissionPresetFor(policy).title,
+            label: context.l10n.hostsEditHostedEventScreenLabelAdmission,
+            value: _admissionPresetFor(policy).title(context.l10n),
           ),
           ReadOnlyHostedEventPolicyRow(
-            label: 'Cancellation',
+            label: context.l10n.hostsEditHostedEventScreenLabelCancellation,
             value: policy.cancellationPolicy.title,
             showDivider: false,
           ),
@@ -1267,7 +1360,9 @@ class ReadOnlyHostedEventScheduleCard extends StatelessWidget {
           Text(event.timeRangeLabel, style: CatchTextStyles.bodyLead(context)),
           gapH8,
           Text(
-            'Schedule changes are blocked here to avoid changing attendee commitments.',
+            context
+                .l10n
+                .hostsEditHostedEventScreenTextScheduleChangesAreBlocked,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],

@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import {
   EventDocument,
 } from "./generated/firestoreAdminTypes";
+import {notificationCopy} from "./notificationCopy";
 
 export interface FcmParams {
   token: string;
@@ -232,58 +233,8 @@ export function eventActivityNotificationCopy(
 ): {title: string; body: string} {
   const eventLabel = `${formatDistance(event.distanceKm)} event`;
   const locationName = event.meetingLocation?.name ?? event.meetingPoint;
-  switch (type) {
-  case "eventReminder":
-    return {
-      title: "Your event starts soon",
-      body: `Your ${eventLabel} from ${locationName} starts in about ` +
-        "15 minutes.",
-    };
-  case "eventSignup":
-    return {
-      title: "You're booked",
-      body: `Your ${eventLabel} from ${locationName} is confirmed.`,
-    };
-  case "waitlistPromotion":
-    return {
-      title: "You're in",
-      body: `A spot opened for your ${eventLabel} from ${locationName}.`,
-    };
-  case "waitlistOffer":
-    return {
-      title: "A spot is available",
-      body: `You have a limited-time spot for your ${eventLabel} from ` +
-        `${locationName}.`,
-    };
-  case "waitlistOfferExpiring":
-    return {
-      title: "Your spot is expiring",
-      body: `Confirm your ${eventLabel} from ${locationName} soon to keep ` +
-        "the spot.",
-    };
-  case "waitlistOfferExpired":
-    return {
-      title: "Spot offer expired",
-      body: `Your spot offer for the ${eventLabel} from ${locationName} ` +
-        "has expired.",
-    };
-  case "eventUpdated":
-    return {
-      title: "Event details changed",
-      body: `Check the latest time and meeting point for your ${eventLabel}.`,
-    };
-  case "eventCancelled":
-    return {
-      title: "Event cancelled",
-      body: `Your ${eventLabel} from ${locationName} has been cancelled.`,
-    };
-  default:
-    return {
-      title: "Event update",
-      body: `There is an update for your ${eventLabel} from ` +
-        `${locationName}.`,
-    };
-  }
+  const key = switchEventNotificationKey(type);
+  return notificationCopy(key, {eventLabel, locationName});
 }
 
 /**
@@ -296,10 +247,32 @@ export function eventCompanionReadyNotificationCopy(
 ): {title: string; body: string} {
   const eventLabel = `${formatDistance(event.distanceKm)} event`;
   const locationName = event.meetingLocation?.name ?? event.meetingPoint;
-  return {
-    title: "Your event companion is ready",
-    body: `Open the live guide for your ${eventLabel} from ${locationName}.`,
-  };
+  return notificationCopy("eventCompanionReady", {eventLabel, locationName});
+}
+
+function switchEventNotificationKey(type: ActivityNotificationType):
+  | "eventReminder"
+  | "eventSignup"
+  | "waitlistPromotion"
+  | "waitlistOffer"
+  | "waitlistOfferExpiring"
+  | "waitlistOfferExpired"
+  | "eventUpdated"
+  | "eventCancelled"
+  | "eventUpdate" {
+  switch (type) {
+  case "eventReminder":
+  case "eventSignup":
+  case "waitlistPromotion":
+  case "waitlistOffer":
+  case "waitlistOfferExpiring":
+  case "waitlistOfferExpired":
+  case "eventUpdated":
+  case "eventCancelled":
+    return type;
+  default:
+    return "eventUpdate";
+  }
 }
 
 /**

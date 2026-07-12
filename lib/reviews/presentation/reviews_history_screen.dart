@@ -20,6 +20,7 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class ReviewsHistoryScreen extends ConsumerWidget {
   const ReviewsHistoryScreen({super.key});
@@ -47,11 +48,13 @@ class ReviewsHistoryScreen extends ConsumerWidget {
 
     final state = uidAsync.when<ReviewsHistoryState>(
       loading: () => const ReviewsHistoryLoading(),
-      error: (_, _) => const ReviewsHistoryEmpty(
-        title: 'Sign in to see reviews',
-        message: 'Your past event reviews will appear here.',
+      error: (_, _) => ReviewsHistoryEmpty(
+        title: context.l10n.reviewsReviewsHistoryScreenTitleSignInToSee,
+        message:
+            context.l10n.reviewsReviewsHistoryScreenMessageYourPastEventReviews,
       ),
       data: (uid) => buildReviewsHistoryState(
+        l10n: context.l10n,
         uid: uid,
         user: userAsync,
         reviews: reviewsAsync,
@@ -65,7 +68,10 @@ class ReviewsHistoryScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: const CatchTopBar(title: 'Review history', border: true),
+      appBar: CatchTopBar(
+        title: context.l10n.reviewsReviewsHistoryScreenTitleReviewHistory,
+        border: true,
+      ),
       body: ReviewsHistoryBody(
         state: state,
         onRetryProfile: onRetryProfile,

@@ -15,7 +15,7 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_mode
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -49,7 +49,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       DashboardHomeScreenStatus.loading => const DashboardLoadingScreen(),
       DashboardHomeScreenStatus.error => DashboardErrorScreen(
         error: state.error!.error,
-        fallbackMessage: state.error!.fallbackMessage,
         onRetry: () {
           final error = state.error!;
           switch (error.retryTarget) {
@@ -80,15 +79,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             builder: (context, ref, child) {
               return CatchIconAction(
                 icon: CatchIcons.calendarMonthOutlined,
-                tooltip: 'Calendar',
+                tooltip: context.l10n.dashboardDashboardScreenTooltipCalendar,
                 onPressed: () {
                   ref
                       .read(appAnalyticsProvider)
                       .logEvent(
                         AnalyticsEvents.homeActionTap,
                         parameters: {
-                          AnalyticsParameters.homeModule: 'header',
-                          AnalyticsParameters.homeAction: 'calendar',
+                          AnalyticsParameters.homeModule: context
+                              .l10n
+                              .dashboardDashboardScreenVisiblecopyHeader,
+                          AnalyticsParameters.homeAction: context
+                              .l10n
+                              .dashboardDashboardScreenVisiblecopyCalendar,
                         },
                       );
                   context.push(Routes.calendarScreen.path);
@@ -123,16 +126,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     for (final module in dashboardHomeModuleImpressionsFor(state)) {
-      final key = '$stateValue:$module';
+      final key = context.l10n
+          .dashboardDashboardScreenVisiblecopyStatevalueModule(
+            stateValue: stateValue,
+            module: module,
+          );
       if (!_loggedModuleImpressions.add(key)) continue;
       analytics.logEvent(
         AnalyticsEvents.homeModuleImpression,
         parameters: {AnalyticsParameters.homeModule: module},
       );
-      if (module == 'club_posts') {
+      if (module == context.l10n.dashboardDashboardScreenVisiblecopyClubPosts) {
         analytics.logEvent(
           AnalyticsEvents.clubPostImpression,
-          parameters: {AnalyticsParameters.surface: 'home'},
+          parameters: {
+            AnalyticsParameters.surface:
+                context.l10n.dashboardDashboardScreenVisiblecopyHome,
+          },
         );
       }
     }
@@ -163,8 +173,11 @@ class NotificationsAction extends ConsumerWidget {
             .logEvent(
               AnalyticsEvents.homeActionTap,
               parameters: {
-                AnalyticsParameters.homeModule: 'header',
-                AnalyticsParameters.homeAction: 'notifications',
+                AnalyticsParameters.homeModule:
+                    context.l10n.dashboardDashboardScreenVisiblecopyHeader,
+                AnalyticsParameters.homeAction: context
+                    .l10n
+                    .dashboardDashboardScreenVisiblecopyNotifications,
               },
             );
         context.pushNamed(Routes.notificationsScreen.name);
@@ -194,7 +207,7 @@ class DashboardNotificationBellButton extends StatelessWidget {
         icon: unreadCount > 0
             ? CatchIcons.notificationsRounded
             : CatchIcons.notificationsNoneRounded,
-        tooltip: 'Notifications',
+        tooltip: context.l10n.dashboardDashboardScreenTooltipNotifications,
         onPressed: onPressed,
       ),
     );

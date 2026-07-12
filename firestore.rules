@@ -372,6 +372,8 @@ service cloud.firestore {
           'platform',
           'appVersion',
           'buildNumber',
+          'locale',
+          'timeZone',
           'updatedAt'
         ])
         && data.keys().hasAll([
@@ -390,6 +392,8 @@ service cloud.firestore {
         ]
         && optionalString(data, 'appVersion')
         && optionalString(data, 'buildNumber')
+        && optionalString(data, 'locale')
+        && optionalString(data, 'timeZone')
         && data.updatedAt is timestamp;
     }
 

@@ -12,6 +12,7 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommendations.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
     show AsyncData, AsyncError, AsyncLoading, AsyncValue;
@@ -52,6 +53,7 @@ List<Widget> buildExploreBodySlivers({
   };
   final eventSlivers = buildExploreEventsSlivers(
     feedAsync,
+    l10n: context.l10n,
     filters: filters,
     searchQuery: searchQuery,
     onRetry: onRetryFeed,

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_content.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/widgets.dart';
 /// compatibility, prompts, running, photos, details, then lifestyle.
 ProfileView profileViewFromCardContent(
   ProfileCardContent content, {
+  required AppLocalizations l10n,
   required String name,
   required int age,
   required RunningPreferences running,
@@ -32,14 +34,16 @@ ProfileView profileViewFromCardContent(
       .map((reason) => reason.label)
       .toList();
   if (confidence.isNotEmpty || reasons.isNotEmpty) {
-    final title = reasons.isEmpty ? 'Profile signals' : 'Why you might click';
+    final title = reasons.isEmpty
+        ? l10n.swipesProfileViewMapperTitleProfileSignals
+        : l10n.swipesProfileViewMapperTitleWhyYouMightClick;
     sections.add(
       ProfileCompatibilitySection(
         title: title,
         reasons: reasons,
         confidence: confidence,
         reaction: _target(
-          'compatibility',
+          l10n.swipesProfileViewMapperVisiblecopyCompatibility,
           SwipeReactionTargetType.compatibility,
           title,
           [...confidence, ...reasons].join(' · '),
@@ -55,7 +59,9 @@ ProfileView profileViewFromCardContent(
         question: prompt.displayPrompt,
         answer: prompt.answer,
         reaction: _target(
-          'profile-prompt-${prompt.promptId}',
+          l10n.swipesProfileViewMapperVisiblecopyProfilePromptPromptid(
+            promptId: prompt.promptId,
+          ),
           SwipeReactionTargetType.profilePrompt,
           prompt.displayPrompt,
           prompt.answer,
@@ -79,9 +85,9 @@ ProfileView profileViewFromCardContent(
             .map((tag) => tag.label)
             .toList(),
         reaction: _target(
-          'running',
+          l10n.swipesProfileViewMapperVisiblecopyRunning,
           SwipeReactionTargetType.running,
-          'Running rhythm',
+          l10n.swipesProfileViewMapperVisiblecopyRunningRhythm,
           _runningPreview(running),
         ),
       ),
@@ -100,12 +106,12 @@ ProfileView profileViewFromCardContent(
   if (detailsFacts.isNotEmpty) {
     sections.add(
       ProfileFactsSection(
-        title: 'Details',
+        title: l10n.swipesProfileViewMapperTitleDetails,
         facts: detailsFacts,
         reaction: _target(
-          'details',
+          l10n.swipesProfileViewMapperVisiblecopyDetails,
           SwipeReactionTargetType.details,
-          'Details',
+          l10n.swipesProfileViewMapperVisiblecopyDetails4d7b56,
           detailsFacts.map((fact) => fact.text).join(' · '),
         ),
       ),
@@ -116,14 +122,14 @@ ProfileView profileViewFromCardContent(
   if (content.lifestyle.isNotEmpty) {
     sections.add(
       ProfileFactsSection(
-        title: 'Lifestyle',
+        title: l10n.swipesProfileViewMapperTitleLifestyle,
         facts: content.lifestyle
             .map((fact) => ProfileFact(icon: fact.icon, text: fact.text))
             .toList(),
         reaction: _target(
-          'lifestyle',
+          l10n.swipesProfileViewMapperVisiblecopyLifestyle,
           SwipeReactionTargetType.lifestyle,
-          'Lifestyle',
+          l10n.swipesProfileViewMapperVisiblecopyLifestyle900024,
           content.lifestyle.map((fact) => fact.text).join(' · '),
         ),
       ),
@@ -138,10 +144,14 @@ ProfileView profileViewFromCardContent(
     heroReaction: hero == null
         ? null
         : _target(
-            'hero-photo',
+            l10n.swipesProfileViewMapperVisiblecopyHeroPhoto,
             SwipeReactionTargetType.heroPhoto,
-            'Main photo',
-            _photoPreview(name, 'main profile photo', hero.prompt),
+            l10n.swipesProfileViewMapperVisiblecopyMainPhoto,
+            _photoPreview(
+              name,
+              l10n.swipesProfileViewMapperVisiblecopyMainProfilePhoto,
+              hero.prompt,
+            ),
           ),
     kicker: kicker,
     kickerActivity: kickerActivity,

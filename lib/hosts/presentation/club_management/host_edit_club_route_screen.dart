@@ -9,6 +9,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen_state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class HostEditClubRouteScreen extends ConsumerWidget {
   const HostEditClubRouteScreen({
@@ -36,9 +37,10 @@ class HostEditClubRouteScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(fetchClubProvider(clubId)),
       ),
       builder: (context, club) => club == null
-          ? const CatchErrorScaffold(
-              title: 'Club not found',
-              message: 'This club is no longer available.',
+          ? CatchErrorScaffold(
+              title: context.l10n.hostsHostEditClubRouteScreenTitleClubNotFound,
+              message:
+                  context.l10n.hostsHostEditClubRouteScreenMessageThisClubIsNo,
             )
           : HostClubEditorStateView(club: club),
     );
@@ -61,9 +63,9 @@ class HostClubEditorStateView extends ConsumerWidget {
 
     return switch (state.mode) {
       HostClubEditMode.loadingIdentity => const HostClubEditorLoadingScreen(),
-      HostClubEditMode.forbidden => const CatchErrorScaffold(
-        title: 'Host access required',
-        message: "Only this club's host team can edit this club.",
+      HostClubEditMode.forbidden => CatchErrorScaffold(
+        title: context.l10n.hostsHostEditClubRouteScreenTitleHostAccessRequired,
+        message: context.l10n.hostsHostEditClubRouteScreenMessageOnlyThisClubS,
       ),
       HostClubEditMode.ownerFull || HostClubEditMode.cohostMediaOnly =>
         CreateClubScreen(initialClub: state.club),

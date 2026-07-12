@@ -1,3 +1,14 @@
+enum AuthInputIssue { invalidCountryCode, invalidPhoneNumber, invalidOtpCode }
+
+class AuthInputException implements Exception {
+  const AuthInputException(this.issue);
+
+  final AuthInputIssue issue;
+
+  @override
+  String toString() => 'AuthInputException(${issue.name})';
+}
+
 class AuthInput {
   const AuthInput._();
 
@@ -5,16 +16,10 @@ class AuthInput {
   static const maxPhoneDigits = 15;
   static const otpCodeLength = 6;
 
-  static const invalidCountryCodeMessage =
-      'Please select a valid country code.';
-  static const invalidPhoneNumberMessage = 'Please enter a valid phone number.';
-  static const invalidOtpCodeMessage =
-      'Please enter the 6-digit code we sent you.';
-
   static String normalizeCountryCode(String countryCode) {
     final normalized = countryCode.trim();
     if (!RegExp(r'^\+\d{1,4}$').hasMatch(normalized)) {
-      throw StateError(invalidCountryCodeMessage);
+      throw const AuthInputException(AuthInputIssue.invalidCountryCode);
     }
     return normalized;
   }
@@ -23,7 +28,7 @@ class AuthInput {
     final trimmed = phoneNumber.trim();
     final digits = trimmed.replaceAll(RegExp(r'\D'), '');
     if (digits.length < minPhoneDigits || digits.length > maxPhoneDigits) {
-      throw StateError(invalidPhoneNumberMessage);
+      throw const AuthInputException(AuthInputIssue.invalidPhoneNumber);
     }
     return trimmed.startsWith('+') ? '+$digits' : digits;
   }
@@ -31,7 +36,7 @@ class AuthInput {
   static String normalizeOtpCode(String code) {
     final normalized = code.trim();
     if (!RegExp('^\\d{$otpCodeLength}\$').hasMatch(normalized)) {
-      throw StateError(invalidOtpCodeMessage);
+      throw const AuthInputException(AuthInputIssue.invalidOtpCode);
     }
     return normalized;
   }
@@ -64,7 +69,7 @@ class AuthInput {
     required String countryCode,
   }) {
     if (phoneNumber.isEmpty) {
-      return 'your number';
+      return '';
     }
     return '$countryCode $phoneNumber';
   }
@@ -78,12 +83,12 @@ class AuthInput {
 
   static bool isCompleteOtpCode(String code) => code.length == otpCodeLength;
 
-  static String? phoneNumberError(String? phoneNumber) {
+  static AuthInputIssue? phoneNumberIssue(String? phoneNumber) {
     try {
       normalizePhoneInput(phoneNumber ?? '');
       return null;
-    } on StateError catch (error) {
-      return error.message;
+    } on AuthInputException catch (error) {
+      return error.issue;
     }
   }
 }

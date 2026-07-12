@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -72,7 +73,10 @@ class EventDetailsStep extends StatelessWidget {
               onReorderPhoto: onReorderPhoto,
             ),
             gapH20,
-            const CatchFormFieldLabel(label: 'Activity type', large: true),
+            CatchFormFieldLabel(
+              label: context.l10n.hostsEventDetailsStepLabelActivityType,
+              large: true,
+            ),
             gapH8,
             Wrap(
               key: CreateEventFormKeys.activityType,
@@ -87,7 +91,10 @@ class EventDetailsStep extends StatelessWidget {
                         context,
                         activityKind,
                       ).accent,
-                      semanticsLabel: 'Select ${activityKind.label}',
+                      semanticsLabel: context.l10n
+                          .hostsEventDetailsStepVisiblecopySelectLabel(
+                            label: activityKind.label,
+                          ),
                       onTap: () => onActivityKindChanged(activityKind),
                     ),
                   )
@@ -97,22 +104,33 @@ class EventDetailsStep extends StatelessWidget {
               gapH20,
               CatchField.input(
                 key: CreateEventFormKeys.customActivityLabel,
-                title: 'Format name',
+                title: context.l10n.hostsEventDetailsStepTitleFormatName,
                 controller: customActivityLabelController,
-                placeholder: 'Salsa night',
+                placeholder:
+                    context.l10n.hostsEventDetailsStepPlaceholderSalsaNight,
                 prefixIcon: Icon(CatchIcons.eventAvailableOutlined),
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
                 validator: (value) {
                   final normalized = value?.trim() ?? '';
-                  if (normalized.isEmpty) return 'Required';
-                  if (normalized.length < 3) return 'Too short';
-                  if (normalized.length > 64) return 'Too long';
+                  if (normalized.isEmpty)
+                    return context
+                        .l10n
+                        .hostsEventDetailsStepVisiblecopyRequired;
+                  if (normalized.length < 3)
+                    return context
+                        .l10n
+                        .hostsEventDetailsStepVisiblecopyTooShort;
+                  if (normalized.length > 64)
+                    return context.l10n.hostsEventDetailsStepVisiblecopyTooLong;
                   return null;
                 },
               ),
               gapH20,
-              const CatchFormFieldLabel(label: 'Format structure', large: true),
+              CatchFormFieldLabel(
+                label: context.l10n.hostsEventDetailsStepLabelFormatStructure,
+                large: true,
+              ),
               gapH8,
               Wrap(
                 key: CreateEventFormKeys.customInteractionModel,
@@ -125,7 +143,10 @@ class EventDetailsStep extends StatelessWidget {
                         label: model.label,
                         active: selectedInteractionModel == model,
                         accentColor: activityAccent,
-                        semanticsLabel: 'Select ${model.label}',
+                        semanticsLabel: context.l10n
+                            .hostsEventDetailsStepVisiblecopySelectLabel(
+                              label: model.label,
+                            ),
                         onTap: () => onInteractionModelChanged(model),
                       ),
                     )
@@ -136,7 +157,7 @@ class EventDetailsStep extends StatelessWidget {
               gapH20,
               CatchField.input(
                 key: CreateEventFormKeys.distance,
-                title: 'Distance (km)',
+                title: context.l10n.hostsEventDetailsStepTitleDistanceKm,
                 controller: distanceController,
                 placeholder: '10',
                 prefixIcon: Icon(CatchIcons.straightenOutlined),
@@ -144,23 +165,35 @@ class EventDetailsStep extends StatelessWidget {
                   decimal: true,
                 ),
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  FilteringTextInputFormatter.allow(
+                    RegExp(context.l10n.hostsEventDetailsStepVisiblecopyDD),
+                  ),
                 ],
                 textInputAction: TextInputAction.next,
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Required';
+                  if (v == null || v.trim().isEmpty)
+                    return context
+                        .l10n
+                        .hostsEventDetailsStepVisiblecopyRequired;
                   final distance = double.tryParse(v.trim());
-                  if (distance == null) return 'Invalid';
-                  if (distance <= 0) return 'Must be > 0';
+                  if (distance == null)
+                    return context.l10n.hostsEventDetailsStepVisiblecopyInvalid;
+                  if (distance <= 0)
+                    return context.l10n.hostsEventDetailsStepVisiblecopyMustBe0;
                   return null;
                 },
               ),
               gapH20,
-              const CatchFormFieldLabel(label: 'Pace level', large: true),
+              CatchFormFieldLabel(
+                label: context.l10n.hostsEventDetailsStepLabelPaceLevel,
+                large: true,
+              ),
               gapH8,
               FormField<PaceLevel>(
                 initialValue: selectedPace,
-                validator: (v) => v == null ? 'Select a pace' : null,
+                validator: (v) => v == null
+                    ? context.l10n.hostsEventDetailsStepVisiblecopySelectAPace
+                    : null,
                 builder: (field) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -173,7 +206,10 @@ class EventDetailsStep extends StatelessWidget {
                               label: p.label,
                               active: selectedPace == p,
                               accentColor: activityAccent,
-                              semanticsLabel: 'Select ${p.label} pace',
+                              semanticsLabel: context.l10n
+                                  .hostsEventDetailsStepVisiblecopySelectLabelPace(
+                                    label: p.label,
+                                  ),
                               onTap: () {
                                 final next = selectedPace == p ? null : p;
                                 onPaceChanged(next);
@@ -201,11 +237,12 @@ class EventDetailsStep extends StatelessWidget {
             gapH20,
             CatchField.input(
               key: CreateEventFormKeys.description,
-              title: 'Description',
+              title: context.l10n.hostsEventDetailsStepTitleDescription,
               isOptional: true,
               controller: descriptionController,
-              placeholder:
-                  'What should attendees expect? Any tips for the route or venue?',
+              placeholder: context
+                  .l10n
+                  .hostsEventDetailsStepPlaceholderWhatShouldAttendeesExpect,
               prefixIcon: Icon(CatchIcons.editNoteOutlined),
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,

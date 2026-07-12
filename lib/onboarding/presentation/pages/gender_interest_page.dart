@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page_state.dart';
@@ -68,7 +69,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
     final state = _stateFor(
       isSaving: mutation.isPending,
       saveErrorMessage: mutation.hasError
-          ? mutationErrorMessage(mutation)
+          ? mutationErrorMessage(mutation, l10n: context.l10n)
           : null,
     );
 
@@ -108,7 +109,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
       key: formKey,
       child: OnboardingStepLayout(
         footer: CatchButton(
-          label: 'Continue',
+          label: context.l10n.onboardingGenderInterestPageLabelContinue,
           onPressed: callbacks.onContinue,
           isLoading: state.isSaving,
           fullWidth: true,
@@ -116,7 +117,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
         ),
         children: [
           CatchChipField<Gender>(
-            label: 'I AM A',
+            label: context.l10n.onboardingGenderInterestPageLabelIAmA,
             values: Gender.values,
             selected: state.selectedGender,
             multiSelect: false,
@@ -126,7 +127,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
           ),
           gapH28,
           CatchChipField<Gender>(
-            label: 'SHOW ME',
+            label: context.l10n.onboardingGenderInterestPageLabelShowMe,
             values: Gender.values,
             selected: state.interestedIn,
             multiSelect: true,

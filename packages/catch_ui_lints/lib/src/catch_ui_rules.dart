@@ -240,13 +240,25 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const noRawTextStyle = LintCode(
     'catch_no_raw_text_style',
-    'Use CatchTextStyles or CatchFonts instead of constructing a raw TextStyle in app UI.',
+    'Use CatchTextStyles instead of constructing a raw TextStyle in app UI.',
     severity: DiagnosticSeverity.WARNING,
   );
 
   static const noRawFontDrift = LintCode(
     'catch_no_raw_font_drift',
-    'Use the CatchFonts family constants and style builders instead of raw GoogleFonts or fontFamily strings.',
+    'Use CatchTextStyles instead of raw GoogleFonts or fontFamily strings.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noDirectFontBuilder = LintCode(
+    'catch_no_direct_font_builder',
+    'Use a semantic CatchTextStyles role instead of calling CatchFonts directly in app UI.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noRawLetterSpacing = LintCode(
+    'catch_no_raw_letter_spacing',
+    'Define letter spacing in CatchTextStyles instead of overriding it at a call site.',
     severity: DiagnosticSeverity.WARNING,
   );
 
@@ -379,6 +391,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     noRawColor,
     noRawTextStyle,
     noRawFontDrift,
+    noDirectFontBuilder,
+    noRawLetterSpacing,
     noRawRadius,
     noRawContentDimension,
     noLocalDesignConstant,
@@ -618,6 +632,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   @override
   void visitNamedExpression(NamedExpression node) {
     final name = node.name.label.name;
+    if (isCatchUiLetterSpacingArgument(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawLetterSpacing);
+    }
+
     if (_spacingNamedArguments.contains(name) &&
         _isPositiveNumberLiteral(node.expression) &&
         _isSpacingContext(node)) {
@@ -711,6 +729,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   void visitMethodInvocation(MethodInvocation node) {
     if (_isGoogleFontInvocation(node)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawFontDrift);
+    }
+    if (isCatchUiDirectFontBuilderInvocation(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.noDirectFontBuilder);
     }
   }
 
@@ -1835,6 +1856,15 @@ String _canonicalMutationExpression(Expression expression) {
 
 bool _isEdgeInsetsConstructor(String typeName) {
   return typeName == 'EdgeInsets' || typeName == 'EdgeInsetsDirectional';
+}
+
+bool isCatchUiDirectFontBuilderInvocation(MethodInvocation node) {
+  final target = node.target;
+  return target is SimpleIdentifier && target.name == 'CatchFonts';
+}
+
+bool isCatchUiLetterSpacingArgument(NamedExpression node) {
+  return node.name.label.name == 'letterSpacing';
 }
 
 bool _isPositiveNumberLiteral(Expression expression) {

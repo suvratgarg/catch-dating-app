@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 /// Presentation-only visual taxonomy for event activity surfaces.
@@ -91,16 +92,14 @@ const allActivityKindsForVisuals = <ActivityKind>[
 
 /// Resolves the presentation spec for [kind]. Colors come from the centralized,
 /// dark-aware [ActivityPalette] (design_language §3); label + pattern are
-/// mode-independent metadata. Pass [context] for the correct light/dark swatch;
-/// without it (const/preview/sandbox call sites) the light palette is used.
+/// mode-independent metadata. The required [context] resolves both the active
+/// palette and locale at the presentation boundary.
 EventActivityVisualSpec eventActivityVisual(
   ActivityKind kind, {
-  BuildContext? context,
+  required BuildContext context,
 }) {
-  final swatch = context != null
-      ? ActivityPalette.of(context).forKind(kind)
-      : ActivityPalette.light.forKind(kind);
-  final meta = _activityMeta(kind);
+  final swatch = ActivityPalette.of(context).forKind(kind);
+  final meta = _activityMeta(kind, context.l10n);
   return EventActivityVisualSpec(
     activityKind: kind,
     label: meta.label,
@@ -111,72 +110,73 @@ EventActivityVisualSpec eventActivityVisual(
 
 typedef _ActivityMeta = ({String label, EventActivityPattern pattern});
 
-_ActivityMeta _activityMeta(ActivityKind kind) => switch (kind) {
-  ActivityKind.socialRun => (
-    label: 'Social run',
-    pattern: EventActivityPattern.routeDots,
-  ),
-  ActivityKind.running => (
-    label: 'Running',
-    pattern: EventActivityPattern.routeDashes,
-  ),
-  ActivityKind.walking => (
-    label: 'Walking',
-    pattern: EventActivityPattern.stepDots,
-  ),
-  ActivityKind.pickleball => (
-    label: 'Pickleball',
-    pattern: EventActivityPattern.courtLines,
-  ),
-  ActivityKind.padel => (
-    label: 'Padel',
-    pattern: EventActivityPattern.glassGrid,
-  ),
-  ActivityKind.tennis => (
-    label: 'Tennis',
-    pattern: EventActivityPattern.courtArcs,
-  ),
-  ActivityKind.badminton => (
-    label: 'Badminton',
-    pattern: EventActivityPattern.shuttleStrokes,
-  ),
-  ActivityKind.cycling => (
-    label: 'Cycling',
-    pattern: EventActivityPattern.wheelArcs,
-  ),
-  ActivityKind.spinClass => (
-    label: 'Spin class',
-    pattern: EventActivityPattern.rhythmRings,
-  ),
-  ActivityKind.yoga => (
-    label: 'Yoga',
-    pattern: EventActivityPattern.mandalaArcs,
-  ),
-  ActivityKind.strengthTraining => (
-    label: 'Strength',
-    pattern: EventActivityPattern.barMarks,
-  ),
-  ActivityKind.dinner => (
-    label: 'Dinner',
-    pattern: EventActivityPattern.plateCircles,
-  ),
-  ActivityKind.pubQuiz => (
-    label: 'Pub quiz',
-    pattern: EventActivityPattern.quizCards,
-  ),
-  ActivityKind.barCrawl => (
-    label: 'Bar crawl',
-    pattern: EventActivityPattern.neonDots,
-  ),
-  ActivityKind.singlesMixer => (
-    label: 'Singles mixer',
-    pattern: EventActivityPattern.overlapCircles,
-  ),
-  ActivityKind.openActivity => (
-    label: 'Open format',
-    pattern: EventActivityPattern.stampGrid,
-  ),
-};
+_ActivityMeta _activityMeta(ActivityKind kind, AppLocalizations l10n) =>
+    switch (kind) {
+      ActivityKind.socialRun => (
+        label: l10n.coreEventActivityVisualsLabelSocialRun,
+        pattern: EventActivityPattern.routeDots,
+      ),
+      ActivityKind.running => (
+        label: l10n.coreEventActivityVisualsLabelRunning,
+        pattern: EventActivityPattern.routeDashes,
+      ),
+      ActivityKind.walking => (
+        label: l10n.coreEventActivityVisualsLabelWalking,
+        pattern: EventActivityPattern.stepDots,
+      ),
+      ActivityKind.pickleball => (
+        label: l10n.coreEventActivityVisualsLabelPickleball,
+        pattern: EventActivityPattern.courtLines,
+      ),
+      ActivityKind.padel => (
+        label: l10n.coreEventActivityVisualsLabelPadel,
+        pattern: EventActivityPattern.glassGrid,
+      ),
+      ActivityKind.tennis => (
+        label: l10n.coreEventActivityVisualsLabelTennis,
+        pattern: EventActivityPattern.courtArcs,
+      ),
+      ActivityKind.badminton => (
+        label: l10n.coreEventActivityVisualsLabelBadminton,
+        pattern: EventActivityPattern.shuttleStrokes,
+      ),
+      ActivityKind.cycling => (
+        label: l10n.coreEventActivityVisualsLabelCycling,
+        pattern: EventActivityPattern.wheelArcs,
+      ),
+      ActivityKind.spinClass => (
+        label: l10n.coreEventActivityVisualsLabelSpinClass,
+        pattern: EventActivityPattern.rhythmRings,
+      ),
+      ActivityKind.yoga => (
+        label: l10n.coreEventActivityVisualsLabelYoga,
+        pattern: EventActivityPattern.mandalaArcs,
+      ),
+      ActivityKind.strengthTraining => (
+        label: l10n.coreEventActivityVisualsLabelStrength,
+        pattern: EventActivityPattern.barMarks,
+      ),
+      ActivityKind.dinner => (
+        label: l10n.coreEventActivityVisualsLabelDinner,
+        pattern: EventActivityPattern.plateCircles,
+      ),
+      ActivityKind.pubQuiz => (
+        label: l10n.coreEventActivityVisualsLabelPubQuiz,
+        pattern: EventActivityPattern.quizCards,
+      ),
+      ActivityKind.barCrawl => (
+        label: l10n.coreEventActivityVisualsLabelBarCrawl,
+        pattern: EventActivityPattern.neonDots,
+      ),
+      ActivityKind.singlesMixer => (
+        label: l10n.coreEventActivityVisualsLabelSinglesMixer,
+        pattern: EventActivityPattern.overlapCircles,
+      ),
+      ActivityKind.openActivity => (
+        label: l10n.coreEventActivityVisualsLabelOpenFormat,
+        pattern: EventActivityPattern.stampGrid,
+      ),
+    };
 
 class EventActivityBackdrop extends StatelessWidget {
   const EventActivityBackdrop({

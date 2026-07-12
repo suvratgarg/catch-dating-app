@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/country_markets.dart';
+// copy:allow-file(Canonical geographic proper-noun market catalog)
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 

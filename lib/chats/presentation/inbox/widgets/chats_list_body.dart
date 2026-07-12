@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class ChatsListBody extends StatelessWidget {
@@ -35,8 +36,11 @@ class ChatsListBody extends StatelessWidget {
               ),
               child: HostInboxBroadcastCard(
                 audienceCount: viewModel.totalThreadCount,
-                audienceLabel: 'attendee',
-                subtitle: 'Reminders, the meeting point, changes',
+                audienceLabel:
+                    context.l10n.chatsChatsListBodyVisiblecopyAttendee,
+                subtitle: context
+                    .l10n
+                    .chatsChatsListBodySubtitleRemindersTheMeetingPoint,
                 onTap: onHostBroadcastSelected,
               ),
             ),
@@ -70,11 +74,20 @@ class HostInboxBroadcastCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final countLabel = audienceCount == 1
-        ? '1 $audienceLabel'
-        : '$audienceCount ${audienceLabel}s';
+        ? context.l10n.chatsChatsListBodyVisiblecopy1Audiencelabel(
+            audienceLabel: audienceLabel,
+          )
+        : context.l10n.chatsChatsListBodyVisiblecopyAudiencecountAudiencelabelS(
+            audienceCount: audienceCount,
+            audienceLabel: audienceLabel,
+          );
     final title = audienceCount == 0
-        ? 'No ${audienceLabel}s yet'
-        : 'Message $countLabel';
+        ? context.l10n.chatsChatsListBodyTitleNoAudiencelabelSYet(
+            audienceLabel: audienceLabel,
+          )
+        : context.l10n.chatsChatsListBodyTitleMessageCountlabel(
+            countLabel: countLabel,
+          );
 
     return CatchSurface(
       radius: CatchRadius.md,

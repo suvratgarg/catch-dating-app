@@ -33,11 +33,11 @@ List<EventSuccessCompatibilityOption> _fallbackOptionsFor(String questionId) {
   return [
     EventSuccessCompatibilityOption(
       id: '${safeId}_option_1',
-      label: 'Option 1',
+      label: EventSuccessQuestionnairePackLibrary.fallbackOption1,
     ),
     EventSuccessCompatibilityOption(
       id: '${safeId}_option_2',
-      label: 'Option 2',
+      label: EventSuccessQuestionnairePackLibrary.fallbackOption2,
     ),
   ];
 }

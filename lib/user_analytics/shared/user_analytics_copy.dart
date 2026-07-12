@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 
 class UserAnalyticsTipCopy {
@@ -8,87 +9,116 @@ class UserAnalyticsTipCopy {
 }
 
 abstract final class UserAnalyticsCopy {
-  static const sectionTitle = 'Profile insights';
-  static const loadingLabel = 'Loading profile insights';
-  static const emptyTitle = 'Insights are warming up';
-  static const emptyBody =
-      'You will see trends here after Catch has enough event and profile activity.';
-  static const rangeTitle = 'Range';
-  static const trendTitle = 'Trend';
-  static const tipsTitle = 'Suggestions';
-  static const dataQualityTitle = 'Data coverage';
-  static const partialBadge = 'Partial';
-  static const missingBadge = 'Missing';
+  static String sectionTitle(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyProfileInsights;
+  static String loadingLabel(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyLoadingProfileInsights;
+  static String emptyTitle(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyEmptytitleInsightsAreWarmingUp;
+  static String emptyBody(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyEmptybodyYouWillSeeTrends;
+  static String rangeTitle(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyRange;
+  static String trendTitle(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyTrend;
+  static String tipsTitle(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopySuggestions;
+  static String dataQualityTitle(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyDataCoverage;
+  static String partialBadge(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyPartial;
+  static String missingBadge(AppLocalizations l10n) =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyMissing;
 
-  static const rangeLabels = {
-    UserAnalyticsRangePreset.sevenDays: 'Last 7 days',
-    UserAnalyticsRangePreset.thirtyDays: 'Last 30 days',
-    UserAnalyticsRangePreset.ninetyDays: 'Last 90 days',
-    UserAnalyticsRangePreset.month: 'This month',
+  static String rangeLabel(
+    AppLocalizations l10n,
+    UserAnalyticsRangePreset preset,
+  ) => switch (preset) {
+    UserAnalyticsRangePreset.sevenDays =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyLast7Days,
+    UserAnalyticsRangePreset.thirtyDays =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyLast30Days,
+    UserAnalyticsRangePreset.ninetyDays =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyLast90Days,
+    UserAnalyticsRangePreset.month =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyThisMonth,
+    UserAnalyticsRangePreset.custom => preset.wireValue,
   };
 
-  static const metricLabels = {
-    'profileViews': 'Profile views',
-    'caughtYou': 'Caught you',
-    'mutualCatches': 'Mutual catches',
-    'chatsStarted': 'Chats started',
-    'eventsAttended': 'Events attended',
-    'followThroughRate': 'Follow-through',
+  static String metricLabel(
+    AppLocalizations l10n,
+    String id, {
+    required String fallback,
+  }) => switch (id) {
+    'profileViews' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyProfileViews,
+    'caughtYou' => l10n.userAnalyticsUserAnalyticsCopyVisiblecopyCaughtYou,
+    'mutualCatches' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyMutualCatches,
+    'chatsStarted' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyChatsStarted,
+    'eventsAttended' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyEventsAttended,
+    'followThroughRate' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyFollowThrough,
+    _ => fallback,
   };
 
-  static const metricCaptions = {
-    'profileViews': 'Post-event profile attention.',
-    'caughtYou': 'People who showed interest.',
-    'mutualCatches': 'Matches where interest was mutual.',
-    'chatsStarted': 'Conversations that opened after matching.',
-    'eventsAttended': 'Events you attended.',
-    'followThroughRate': 'Chats started from mutual catches.',
+  static String? metricCaption(
+    AppLocalizations l10n,
+    String id, {
+    String? fallback,
+  }) => switch (id) {
+    'profileViews' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyPostEventProfileAttention,
+    'caughtYou' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyPeopleWhoShowedInterest,
+    'mutualCatches' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyMatchesWhereInterestWas,
+    'chatsStarted' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyConversationsThatOpenedAfter,
+    'eventsAttended' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyEventsYouAttended,
+    'followThroughRate' =>
+      l10n.userAnalyticsUserAnalyticsCopyVisiblecopyChatsStartedFromMutual,
+    _ => fallback,
   };
 
-  static const trendMetricLabels = {
-    'profileViews': 'Views',
-    'caughtYou': 'Interest',
-    'mutualCatches': 'Matches',
-    'chatsStarted': 'Chats',
-    'eventsAttended': 'Attended',
+  static String trendMetricLabel(
+    AppLocalizations l10n,
+    String id,
+  ) => switch (id) {
+    'profileViews' => l10n.userAnalyticsUserAnalyticsCopyVisiblecopyViews,
+    'caughtYou' => l10n.userAnalyticsUserAnalyticsCopyVisiblecopyInterest,
+    'mutualCatches' => l10n.userAnalyticsUserAnalyticsCopyVisiblecopyMatches,
+    'chatsStarted' => l10n.userAnalyticsUserAnalyticsCopyVisiblecopyChats,
+    'eventsAttended' => l10n.userAnalyticsUserAnalyticsCopyVisiblecopyAttended,
+    _ => id,
   };
 
-  static const tipCopy = {
-    'profileAnalyticsGrowing': UserAnalyticsTipCopy(
-      title: 'Keep building signal',
-      body: 'Insights get sharper after more post-event profile views.',
+  static UserAnalyticsTipCopy tip(
+    AppLocalizations l10n,
+    String copyKey,
+  ) => switch (copyKey) {
+    'refreshProfilePrompts' => UserAnalyticsTipCopy(
+      title: l10n.userAnalyticsUserAnalyticsCopyTitleTuneYourProfile,
+      body: l10n.userAnalyticsUserAnalyticsCopyBodyAFreshPromptOr,
     ),
-    'refreshProfilePrompts': UserAnalyticsTipCopy(
-      title: 'Tune your profile',
-      body:
-          'A fresh prompt or first photo can make post-event interest easier to read.',
+    'startFirstChat' => UserAnalyticsTipCopy(
+      title: l10n.userAnalyticsUserAnalyticsCopyTitleOpenTheLoop,
+      body: l10n.userAnalyticsUserAnalyticsCopyBodyAShortMessageAfter,
     ),
-    'startFirstChat': UserAnalyticsTipCopy(
-      title: 'Open the loop',
-      body:
-          'A short message after a mutual catch is the clearest follow-through signal.',
+    'showUpToEvents' => UserAnalyticsTipCopy(
+      title: l10n.userAnalyticsUserAnalyticsCopyTitleShowUpInPerson,
+      body: l10n.userAnalyticsUserAnalyticsCopyBodyTheStrongestProfileTrends,
     ),
-    'showUpToEvents': UserAnalyticsTipCopy(
-      title: 'Show up in person',
-      body: 'The strongest profile trends start after attended events.',
+    'keepShowingUp' => UserAnalyticsTipCopy(
+      title: l10n.userAnalyticsUserAnalyticsCopyTitleKeepShowingUp,
+      body: l10n.userAnalyticsUserAnalyticsCopyBodyRepeatedEventAttendanceGives,
     ),
-    'keepShowingUp': UserAnalyticsTipCopy(
-      title: 'Keep showing up',
-      body: 'Repeated event attendance gives Catch better connection signal.',
+    _ => UserAnalyticsTipCopy(
+      title: l10n.userAnalyticsUserAnalyticsCopyTitleKeepBuildingSignal,
+      body: l10n.userAnalyticsUserAnalyticsCopyBodyInsightsGetSharperAfter,
     ),
   };
-
-  static String metricLabel(String id, {required String fallback}) =>
-      metricLabels[id] ?? fallback;
-
-  static String rangeLabel(UserAnalyticsRangePreset preset) =>
-      rangeLabels[preset] ?? preset.wireValue;
-
-  static String? metricCaption(String id, {String? fallback}) =>
-      metricCaptions[id] ?? fallback;
-
-  static String trendMetricLabel(String id) => trendMetricLabels[id] ?? id;
-
-  static UserAnalyticsTipCopy tip(String copyKey) =>
-      tipCopy[copyKey] ?? tipCopy['profileAnalyticsGrowing']!;
 }

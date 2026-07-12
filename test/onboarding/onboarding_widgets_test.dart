@@ -17,6 +17,7 @@ import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid_keys.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
@@ -46,6 +47,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../events/events_test_helpers.dart';
 import 'onboarding_test_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   group('WelcomePage', () {
@@ -340,6 +343,7 @@ void main() {
   group('NameDobPage', () {
     test('state derives draft display, date policy, and submit intent', () {
       final state = OnboardingNameDobState.fromDraft(
+        l10n: _l10n,
         firstName: ' Asha ',
         lastName: ' Runner ',
         phoneNumber: ' 9876543210 ',
@@ -369,6 +373,7 @@ void main() {
       expect(intent?.dateOfBirth, DateTime(1997, 4, 15));
 
       final missingDate = OnboardingNameDobState.fromDraft(
+        l10n: _l10n,
         firstName: 'Asha',
         lastName: 'Runner',
         phoneNumber: '9876543210',
@@ -409,6 +414,7 @@ void main() {
       addTearDown(controllers.phone.dispose);
       addTearDown(controllers.date.dispose);
       final state = OnboardingNameDobState.fromDraft(
+        l10n: _l10n,
         firstName: controllers.firstName.text,
         lastName: controllers.lastName.text,
         phoneNumber: controllers.phone.text,
@@ -802,8 +808,11 @@ void main() {
         profileCompletionOnly: false,
       );
       expect(empty.canContinue, isFalse);
-      expect(empty.continueHint, 'Add 2 more photos to continue.');
-      expect(empty.supportingCopy, 'Running photos boost catches by 2.3x.');
+      expect(empty.continueHint(_l10n), 'Add 2 more photos to continue.');
+      expect(
+        empty.supportingCopy(_l10n),
+        'Running photos boost catches by 2.3x.',
+      );
 
       final pending = OnboardingPhotosState.from(
         profilePhotos: onePhoto,
@@ -811,9 +820,12 @@ void main() {
         profileCompletionOnly: true,
       );
       expect(pending.canContinue, isFalse);
-      expect(pending.continueHint, 'Finish uploading your photos to continue.');
       expect(
-        pending.supportingCopy,
+        pending.continueHint(_l10n),
+        'Finish uploading your photos to continue.',
+      );
+      expect(
+        pending.supportingCopy(_l10n),
         'This only gates Catches. Event booking stays available.',
       );
 
@@ -823,7 +835,7 @@ void main() {
         profileCompletionOnly: false,
       );
       expect(ready.canContinue, isTrue);
-      expect(ready.continueHint, isNull);
+      expect(ready.continueHint(_l10n), isNull);
       expect(ready.slotIntent(0).photo, readyPhotos.first);
       expect(ready.slotIntent(0).canDelete, isFalse);
 

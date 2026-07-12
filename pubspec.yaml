@@ -55,7 +55,6 @@ dependencies:
   geolocator: ^14.0.2
   package_info_plus: ^9.0.1
   url_launcher: ^6.3.2
-  google_fonts: ^8.1.0
   firebase_app_check: ^0.4.3
   share_plus: ^12.0.2
   shared_preferences: ^2.3.0
@@ -144,6 +143,8 @@ flutter_native_splash:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
+
   config:
     # Keep iOS/macOS on CocoaPods while FirebaseFirestore is supplied by the
     # prebuilt Invertase pod; Flutter SPM integration links duplicate symbols.
@@ -167,6 +168,8 @@ flutter:
     - assets/fixtures/profile_portrait.jpg
     - assets/audio/event_success/
     - assets/audio/celebration/
+    - assets/fonts/OFL-Archivo.txt
+    - assets/fonts/OFL-IBMPlexMono.txt
     - tool/demo/demo_seed/scenarios/host-demo.json
     - tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json
 
@@ -182,7 +185,7 @@ flutter:
   fonts:
     - family: Archivo
       fonts:
-        - asset: assets/fonts/Archivo-Roman-VF.woff2
+        - asset: assets/fonts/Archivo-Roman-VF.ttf
     - family: IBM Plex Mono
       fonts:
         - asset: assets/fonts/IBMPlexMono-Regular.ttf

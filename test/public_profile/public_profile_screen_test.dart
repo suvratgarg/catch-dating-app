@@ -84,7 +84,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchErrorState), findsOneWidget);
+    expect(find.bySubtype<CatchErrorState>(), findsOneWidget);
     expect(find.text('Profile unavailable'), findsOneWidget);
     expect(find.text('Reload profile'), findsOneWidget);
   });
@@ -159,7 +159,10 @@ void main() {
     expect(safetyRepository.reportCalls, [
       (targetUserId: 'runner-1', reasonCode: 'fake_or_misleading_profile'),
     ]);
-    expect(find.text('report failed'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
     expect(find.text('Report submitted.'), findsNothing);
   });
 
@@ -187,7 +190,10 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(safetyRepository.blockCalls, ['runner-1']);
-      expect(find.text('block failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
       expect(find.text('Riya has been blocked.'), findsNothing);
     },
   );

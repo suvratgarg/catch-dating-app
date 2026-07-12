@@ -1,3 +1,6 @@
+// GENERATED CODE - DO NOT EDIT.
+// Source: copy/structured_domain_copy_en.json and tool/copy/templates/structured_domain_copy/eventPolicyCohort.dart.template
+
 part of '../event_policy.dart';
 
 class EventCohortIds {

@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -172,21 +173,21 @@ void main() {
             unreadCount: 4,
             items: [
               AppShellNavigationItem(
-                label: 'Today',
+                destination: AppShellNavigationDestination.hostToday,
                 materialIcon: CatchIcons.tabHome,
                 materialSelectedIcon: CatchIcons.tabHomeFilled,
                 cupertinoIcon: CatchIcons.tabHome,
                 cupertinoSelectedIcon: CatchIcons.tabHomeFilled,
               ),
               AppShellNavigationItem(
-                label: 'Events',
+                destination: AppShellNavigationDestination.hostEvents,
                 materialIcon: CatchIcons.tabEvents,
                 materialSelectedIcon: CatchIcons.tabEventsFilled,
                 cupertinoIcon: CatchIcons.tabEvents,
                 cupertinoSelectedIcon: CatchIcons.tabEventsFilled,
               ),
               AppShellNavigationItem(
-                label: 'Inbox',
+                destination: AppShellNavigationDestination.hostInbox,
                 materialIcon: CatchIcons.chatBubbleOutlineRounded,
                 materialSelectedIcon: CatchIcons.chatBubbleRounded,
                 cupertinoIcon: CupertinoIcons.chat_bubble_2,
@@ -194,7 +195,7 @@ void main() {
                 showsUnreadBadge: true,
               ),
               AppShellNavigationItem(
-                label: 'Organizer',
+                destination: AppShellNavigationDestination.hostOrganizer,
                 materialIcon: CatchIcons.tabOrganizer,
                 materialSelectedIcon: CatchIcons.tabOrganizerFilled,
                 cupertinoIcon: CatchIcons.tabOrganizer,
@@ -298,15 +299,17 @@ void main() {
       ProviderScope(
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const MediaQuery(
-            data: MediaQueryData(
+          home: MediaQuery(
+            data: const MediaQueryData(
               size: Size(393, 852),
               padding: EdgeInsets.only(top: 59),
             ),
-            child: Scaffold(
-              body: CatchNoticeHost(
-                persistentNotices: [CatchNoticeData.offline()],
-                child: SizedBox.expand(),
+            child: Builder(
+              builder: (context) => Scaffold(
+                body: CatchNoticeHost(
+                  persistentNotices: [CatchNoticeData.offline(context.l10n)],
+                  child: const SizedBox.expand(),
+                ),
               ),
             ),
           ),

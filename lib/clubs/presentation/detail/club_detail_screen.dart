@@ -21,6 +21,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
@@ -153,14 +154,16 @@ class ClubDetailScreen extends ConsumerWidget {
             onEventSelected: (event) => context.pushNamed(
               _eventDetailRouteName(bodyState.eventRouteTarget),
               pathParameters: {
-                'clubId': bodyState.club.id,
-                'eventId': event.id,
+                context.l10n.clubsClubDetailScreenBodyClubid: bodyState.club.id,
+                context.l10n.clubsClubDetailScreenBodyEventid: event.id,
               },
               extra: event,
             ),
             onViewHostProfile: (hostUid) => context.pushNamed(
               Routes.publicProfileScreen.name,
-              pathParameters: {'uid': hostUid},
+              pathParameters: {
+                context.l10n.clubsClubDetailScreenBodyUid: hostUid,
+              },
             ),
             onMessageHost: (buttonContext, host) =>
                 messageHost(buttonContext, bodyState.club, host),
@@ -186,8 +189,8 @@ class ClubDetailScreen extends ConsumerWidget {
             },
           ),
         HostClubDetailNotFound() => CatchErrorState(
-          title: 'Club not found',
-          message: 'This club is no longer available.',
+          title: context.l10n.clubsClubDetailScreenTitleClubNotFound,
+          message: context.l10n.clubsClubDetailScreenMessageThisClubIsNo,
           icon: CatchIcons.groupsOutlined,
         ),
         HostClubDetailContent() => const SizedBox.shrink(),

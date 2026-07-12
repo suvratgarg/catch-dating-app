@@ -6,6 +6,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_defaults.dar
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -233,20 +234,22 @@ void main() {
       await container.pump();
 
       await expectLater(
-        container.read(createEventControllerProvider.notifier).submit(
-          clubId: 'club-7',
-          startTime: DateTime(2025, 3, 1, 6),
-          endTime: DateTime(2025, 3, 1, 7),
-          meetingLocation: _meetingLocation(),
-          eventFormat: const EventFormatSnapshot.socialRun(),
-          distanceKm: 5,
-          pace: PaceLevel.easy,
-          description: 'Morning run',
-          currency: defaultCurrencyCode,
-          constraints: const EventConstraints(),
-          eventPolicy: _eventPolicy(),
-          photoImages: photos,
-        ),
+        container
+            .read(createEventControllerProvider.notifier)
+            .submit(
+              clubId: 'club-7',
+              startTime: DateTime(2025, 3, 1, 6),
+              endTime: DateTime(2025, 3, 1, 7),
+              meetingLocation: _meetingLocation(),
+              eventFormat: const EventFormatSnapshot.socialRun(),
+              distanceKm: 5,
+              pace: PaceLevel.easy,
+              description: 'Morning run',
+              currency: defaultCurrencyCode,
+              constraints: const EventConstraints(),
+              eventPolicy: _eventPolicy(),
+              photoImages: photos,
+            ),
         throwsA(isA<Exception>()),
       );
 
@@ -444,7 +447,7 @@ void main() {
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
           ),
-          throwsArgumentError,
+          throwsA(isA<ValidationException>()),
         );
 
         await expectLater(
@@ -495,7 +498,7 @@ void main() {
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
           ),
-          throwsArgumentError,
+          throwsA(isA<ValidationException>()),
         );
 
         await expectLater(

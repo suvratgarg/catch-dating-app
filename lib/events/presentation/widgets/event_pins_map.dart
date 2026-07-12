@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
 import 'package:flutter/material.dart';
@@ -185,8 +186,10 @@ class _EventPinsMapState extends State<EventPinsMap> {
         id: group.id,
         position: group.center,
         hue: CatchMapMarkerHue.azure,
-        infoTitle: '${group.items.length} events nearby',
-        infoSnippet: 'Tap to zoom in',
+        infoTitle: context.l10n.eventsEventPinsMapVisiblecopyLengthEventsNearby(
+          length: group.items.length,
+        ),
+        infoSnippet: context.l10n.eventsEventPinsMapVisiblecopyTapToZoomIn,
         onTap: () => _zoomToCluster(group),
       );
     }
@@ -203,7 +206,10 @@ class _EventPinsMapState extends State<EventPinsMap> {
       hue: _markerHueFor(item.status),
       bitmap: _pinBitmaps[iconKey],
       zIndex: isSelected ? 2 : 1,
-      infoTitle: '${tileData.timeLabel} · ${tileData.title}',
+      infoTitle: context.l10n.eventsEventPinsMapVisiblecopyTimelabelTitle(
+        timeLabel: tileData.timeLabel,
+        title: tileData.title,
+      ),
       infoSnippet: tileData.meetingPoint,
       onTap: onEventSelected == null ? null : () => onEventSelected(item.event),
     );
@@ -218,8 +224,10 @@ class _EventPinsMapState extends State<EventPinsMap> {
     for (final item in pinnedItems) {
       final lat = item.event.effectiveStartingPointLat!;
       final lng = item.event.effectiveStartingPointLng!;
-      final key =
-          '${(lat / cellDegrees).floor()}:${(lng / cellDegrees).floor()}';
+      final key = context.l10n.eventsEventPinsMapVisiblecopyFloorFloor2(
+        floor: (lat / cellDegrees).floor(),
+        floor2: (lng / cellDegrees).floor(),
+      );
       buckets.putIfAbsent(key, () => <EventMapItem>[]).add(item);
     }
 
@@ -315,8 +323,13 @@ class _EventPinsMapState extends State<EventPinsMap> {
                 FlutterErrorDetails(
                   exception: error,
                   stack: stackTrace,
-                  library: 'catch event map',
-                  context: ErrorDescription('building event map pin bitmap'),
+                  library:
+                      context.l10n.eventsEventPinsMapVisiblecopyCatchEventMap,
+                  context: ErrorDescription(
+                    context
+                        .l10n
+                        .eventsEventPinsMapVisiblecopyBuildingEventMapPin,
+                  ),
                 ),
               );
               if (!mounted) return;
@@ -566,7 +579,7 @@ class EventPinsMapPlaceholder extends StatelessWidget {
           return Semantics(
             container: true,
             explicitChildNodes: true,
-            label: 'Event map preview',
+            label: context.l10n.eventsEventPinsMapLabelEventMapPreview,
             button: onMapTapped != null,
             onTap: onMapTapped,
             child: Stack(
@@ -633,8 +646,14 @@ class EventPinsMapPlaceholder extends StatelessWidget {
                       button: onEventSelected != null,
                       selected: selectedEventId == indexed.$2.event.id,
                       label: onEventSelected == null
-                          ? '${indexed.$2.event.locationName} location'
-                          : 'Select ${indexed.$2.event.locationName}',
+                          ? context.l10n
+                                .eventsEventPinsMapLabelLocationnameLocation(
+                                  locationName: indexed.$2.event.locationName,
+                                )
+                          : context.l10n
+                                .eventsEventPinsMapLabelSelectLocationname(
+                                  locationName: indexed.$2.event.locationName,
+                                ),
                       child: GestureDetector(
                         onTap: onEventSelected == null
                             ? null

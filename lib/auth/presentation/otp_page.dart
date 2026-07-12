@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -124,10 +125,20 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       isSendPending: sendMutation.isPending,
     );
     final t = CatchTokens.of(context);
+    final l10n = context.l10n;
+    final resendStatus = viewState.secondsUntilResend <= 0
+        ? l10n.authResendNowStatus
+        : l10n.authResendCountdownStatus(
+            minutes: viewState.secondsUntilResend ~/ 60,
+            seconds: (viewState.secondsUntilResend % 60).toString().padLeft(
+              2,
+              '0',
+            ),
+          );
 
     return OnboardingStepLayout(
       footer: CatchButton(
-        label: 'Verify',
+        label: l10n.authVerifyAction,
         icon: Icon(CatchIcons.checkRounded),
         onPressed: viewState.canVerify
             ? () => _submit(_otpController.text)
@@ -138,8 +149,12 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       ),
       children: [
         CatchStepHeader(
-          title: 'Enter the code',
-          subtitle: 'Sent to ${viewState.displayPhoneNumber}',
+          title: l10n.authOtpTitle,
+          subtitle: l10n.authOtpSentTo(
+            phoneNumber: viewState.displayPhoneNumber.isEmpty
+                ? l10n.authYourNumber
+                : viewState.displayPhoneNumber,
+          ),
           showBack: false,
           gutter: false,
         ),
@@ -156,6 +171,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           CatchErrorBanner(
             message: appErrorMessage(
               (verifyMutation as MutationError).error,
+              l10n: context.l10n,
               context: AppErrorContext.auth,
             ),
           ),
@@ -165,13 +181,14 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           CatchErrorBanner(
             message: appErrorMessage(
               (sendMutation as MutationError).error,
+              l10n: context.l10n,
               context: AppErrorContext.auth,
             ),
           ),
         ],
         gapH20,
         Text(
-          viewState.resendCooldownLabel,
+          resendStatus,
           style: CatchTextStyles.monoLabel(context, color: t.ink3),
         ),
         gapH12,
@@ -181,7 +198,9 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           children: [
             CatchButton(
               key: AuthFormKeys.resendOtp,
-              label: viewState.resendButtonLabel,
+              label: viewState.isSendPending
+                  ? l10n.authSendingCodeAction
+                  : l10n.authResendCodeAction,
               onPressed: viewState.canResend ? _resendOtp : null,
               variant: CatchButtonVariant.ghost,
               size: CatchButtonSize.sm,
@@ -189,7 +208,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             ),
             CatchButton(
               key: AuthFormKeys.changeNumber,
-              label: 'Change number',
+              label: l10n.authChangeNumberAction,
               onPressed: viewState.canChangeNumber
                   ? () => ref
                         .read(authControllerProvider.notifier)

@@ -20,6 +20,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -54,10 +55,14 @@ class PaymentConfirmationScreen extends ConsumerWidget {
       ),
       builder: (context, event) {
         if (event == null) {
-          return const Scaffold(
+          return Scaffold(
             body: CatchErrorState(
-              title: 'Event not found',
-              message: 'This event is no longer available.',
+              title: context
+                  .l10n
+                  .paymentsPaymentConfirmationScreenTitleEventNotFound,
+              message: context
+                  .l10n
+                  .paymentsPaymentConfirmationScreenMessageThisEventIsNo,
             ),
           );
         }
@@ -226,10 +231,17 @@ class PaymentCheckoutEventBackdrop extends StatelessWidget {
             bottom: 0,
           ),
           child: Text(
-            '${event.longDateLabel} · ${event.timeRangeLabel} · '
-            '${event.locationName}. '
-            '${EventFormatters.priceInPaise(event.priceInPaise, currencyCode: event.currency)} · '
-            '${event.capacityLimit} spots.',
+            context.l10n
+                .paymentsPaymentConfirmationScreenTextLongdatelabelTimerangelabelLocationnamePriceinpaise(
+                  longDateLabel: event.longDateLabel,
+                  timeRangeLabel: event.timeRangeLabel,
+                  locationName: event.locationName,
+                  priceInPaise: EventFormatters.priceInPaise(
+                    event.priceInPaise,
+                    currencyCode: event.currency,
+                  ),
+                  capacityLimit: event.capacityLimit,
+                ),
             style: CatchTextStyles.proseM(context, color: t.ink2),
           ),
         ),
@@ -267,12 +279,19 @@ class PaymentCheckoutSheet extends StatelessWidget {
     final medallionFill = failed
         ? t.danger.withValues(alpha: CatchOpacity.dangerFill)
         : t.primarySoft;
-    final title = failed ? 'Payment not completed' : 'Checkout is waiting';
+    final title = failed
+        ? context.l10n.paymentsPaymentConfirmationScreenTitlePaymentNotCompleted
+        : context.l10n.paymentsPaymentConfirmationScreenTitleCheckoutIsWaiting;
     final message = failed
-        ? '$providerLabel did not complete this booking. If money moved, it '
-              'stays visible in payment history while support resolves it.'
-        : 'Finish payment in $providerLabel. Your spot is reserved only after '
-              '$providerLabel confirms the payment and Catch writes the booking.';
+        ? context.l10n
+              .paymentsPaymentConfirmationScreenMessageProviderlabelDidNotComplete(
+                providerLabel: providerLabel,
+              )
+        : context.l10n
+              .paymentsPaymentConfirmationScreenMessageFinishPaymentInProviderlabel(
+                providerLabel: providerLabel,
+                providerLabel2: providerLabel,
+              );
 
     return CatchSurface(
       backgroundColor: t.surface,
@@ -359,7 +378,13 @@ class PaymentCheckoutSheet extends StatelessWidget {
                   ),
                   gapW12,
                   CatchBadge(
-                    label: failed ? 'Failed' : 'Pending',
+                    label: failed
+                        ? context
+                              .l10n
+                              .paymentsPaymentConfirmationScreenLabelFailed
+                        : context
+                              .l10n
+                              .paymentsPaymentConfirmationScreenLabelPending,
                     tone: statusTone,
                   ),
                 ],
@@ -369,8 +394,14 @@ class PaymentCheckoutSheet extends StatelessWidget {
             if (onOpenCheckout != null) ...[
               CatchButton(
                 label: failed
-                    ? 'Try $providerLabel again'
-                    : 'Open $providerLabel checkout',
+                    ? context.l10n
+                          .paymentsPaymentConfirmationScreenLabelTryProviderlabelAgain(
+                            providerLabel: providerLabel,
+                          )
+                    : context.l10n
+                          .paymentsPaymentConfirmationScreenLabelOpenProviderlabelCheckout(
+                            providerLabel: providerLabel,
+                          ),
                 onPressed: onOpenCheckout,
                 icon: Icon(CatchIcons.openInNewRounded),
                 fullWidth: true,
@@ -378,7 +409,9 @@ class PaymentCheckoutSheet extends StatelessWidget {
               gapH10,
             ],
             CatchButton(
-              label: 'View payment history',
+              label: context
+                  .l10n
+                  .paymentsPaymentConfirmationScreenLabelViewPaymentHistory,
               onPressed: onViewPaymentHistory,
               variant: CatchButtonVariant.secondary,
               icon: Icon(CatchIcons.receiptLongOutlined),
@@ -386,7 +419,9 @@ class PaymentCheckoutSheet extends StatelessWidget {
             ),
             gapH4,
             CatchButton(
-              label: 'Back to event',
+              label: context
+                  .l10n
+                  .paymentsPaymentConfirmationScreenLabelBackToEvent,
               onPressed: onBackToEvent,
               variant: CatchButtonVariant.ghost,
               icon: Icon(CatchIcons.eventOutlined),
@@ -477,19 +512,19 @@ class PaymentConfirmationBody extends StatelessWidget {
       PaymentConfirmationAction(
         key: PaymentConfirmationKeys.addToCalendar,
         icon: CatchIcons.calendarMonthOutlined,
-        label: 'Add to calendar',
+        label: context.l10n.paymentsPaymentConfirmationScreenLabelAddToCalendar,
         onPressed: onAddToCalendar,
       ),
       PaymentConfirmationAction(
         key: PaymentConfirmationKeys.directions,
         icon: CatchIcons.directionsOutlined,
-        label: 'Get directions',
+        label: context.l10n.paymentsPaymentConfirmationScreenLabelGetDirections,
         onPressed: onOpenDirections,
       ),
       PaymentConfirmationAction(
         key: PaymentConfirmationKeys.inviteFriend,
         icon: CatchIcons.platformShare(platform: Theme.of(context).platform),
-        label: 'Invite friend',
+        label: context.l10n.paymentsPaymentConfirmationScreenLabelInviteFriend,
         onPressed: onInviteFriend,
       ),
     ];
@@ -588,14 +623,12 @@ class PaymentConfirmationHeadsUp extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'HEADS UP',
+            context.l10n.paymentsPaymentConfirmationScreenTextHeadsUp,
             style: CatchTextStyles.labelM(context, color: t.primary),
           ),
           gapH6,
           Text(
-            'Bring a water bottle and arrive by the meeting time. '
-            'Catches unlock automatically when the event finishes — '
-            'keep your phone charged.',
+            context.l10n.paymentsPaymentConfirmationScreenTextBringAWaterBottle,
             style: CatchTextStyles.proseM(context, color: t.ink),
           ),
         ],
@@ -647,19 +680,23 @@ class PaymentReferralBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Bring someone you actually want there',
+                  context
+                      .l10n
+                      .paymentsPaymentConfirmationScreenTextBringSomeoneYouActually,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
                 gapH2,
                 Text(
-                  'The best invites happen while the plan still feels fresh.',
+                  context
+                      .l10n
+                      .paymentsPaymentConfirmationScreenTextTheBestInvitesHappen,
                   style: CatchTextStyles.proseM(context, color: t.ink2),
                 ),
               ],
             ),
           ),
           Text(
-            'Share',
+            context.l10n.paymentsPaymentConfirmationScreenTextShare,
             style: CatchTextStyles.labelL(context, color: t.primary),
           ),
         ],

@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.4.0
-updated: 2026-07-05
+version: 1.5.0
+updated: 2026-07-11
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -133,14 +133,14 @@ Three roles, no competition:
 
 | Role | Family | Use |
 |---|---|---|
-| **Voice / head** (display + long-form body) | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | screen titles, event/club/profile names, hero moments, **and** reading text (bios, descriptions) |
-| **Function** | **Platform system font** (SF on iOS, Roboto on Android) | buttons, nav, inputs, dense UI controls |
-| **Data** | **IBM Plex Mono** | time, price, counts, kickers, uppercase labels |
+| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, screen/event/club display titles, and the welcome reel |
+| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | prose, bios, descriptions, names, buttons, nav, inputs, and dense UI controls |
+| **Data** | **IBM Plex Mono** | time, price, counts, OTP digits, kickers, and explicit uppercase labels |
 
 **Why Archivo:** the current direction is typographic, restrained, and non-serif. Archivo
-gives Catch one voice face for dramatic headlines, names, prose, and condensed event/head
-surfaces without reintroducing a decorative brand accent. Function/body text stays native
-to the platform for legibility and Dynamic Type behavior.
+gives Catch a deliberate display voice without reintroducing a decorative brand accent.
+Reading text and user-authored names stay native to the platform for legibility and
+Dynamic Type behavior.
 
 > The old serif/custom-sans direction is retired. Keep the swap centralized in
 > `CatchFonts`, `CatchTextStyles`, and `design/tokens/catch.tokens.json`.
@@ -155,12 +155,18 @@ to the platform for legibility and Dynamic Type behavior.
   Archivo half of the identity migration; the Newsreader→Archivo family swap
   completed earlier.
 - **Dramatic scale jumps** — a large display over a small mono kicker; avoid many mid sizes.
-- **Zero display tracking + near-1.0 leading**; **generous body leading (~1.55–1.62)**.
-- **Upright titles; italic reserved as a single accent** (not italic-by-default).
+- **Zero tracking by default.** Only explicit uppercase kicker/mono/badge roles add
+  tracking. `welcomeReelHeadline` owns the ratified `-0.5px` welcome exception.
+- **Near-1.0 display leading** and **generous body leading (~1.5–1.6)**.
+- **Archivo is roman-only in the app.** Do not request Archivo italics or add ignored
+  `fontStyle` parameters.
+- Flutter native bundles `Archivo-Roman-VF.ttf`; web surfaces keep the WOFF2 build.
+  Both formats are covered by the bundled Archivo OFL license.
 
 These map onto the existing `CatchTextStyles` roles — display/title styles move to
-Archivo, labels/numerics to IBM Plex Mono, and controls/body support copy to the platform
-system font.
+Archivo, sentence/data roles to untracked IBM Plex Mono, explicit caps roles to tracked
+IBM Plex Mono, and names/controls/prose to the platform system font. App UI calls semantic
+`CatchTextStyles` roles; `CatchFonts` is an internal theme implementation detail.
 
 ---
 

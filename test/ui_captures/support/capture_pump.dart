@@ -250,9 +250,9 @@ Widget _captureScaffold(WidgetBuilder builder) {
 
 ThemeData _captureTheme(ThemeData theme) {
   return theme.copyWith(
-    textTheme: theme.textTheme.apply(fontFamily: CatchFonts.sansFamily),
+    textTheme: theme.textTheme.apply(fontFamily: CatchFonts.functionFamily),
     primaryTextTheme: theme.primaryTextTheme.apply(
-      fontFamily: CatchFonts.sansFamily,
+      fontFamily: CatchFonts.functionFamily,
     ),
   );
 }

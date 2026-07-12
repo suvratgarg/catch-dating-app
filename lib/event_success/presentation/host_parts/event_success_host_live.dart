@@ -79,19 +79,30 @@ class LiveTab extends StatelessWidget {
                 ? CatchIcons.cloudUploadOutlined
                 : CatchIcons.lockClockRounded,
             title: isPreEvent
-                ? 'Live mode needs saved setup'
-                : 'Live mode was not configured',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessHostLiveTitleLiveModeNeedsSaved
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessHostLiveTitleLiveModeWasNot,
             body: isPreEvent
-                ? 'Save the live guide before the event to enable guided controls. Attendance and check-in stay available from this Live tab.'
-                : 'This event did not have a live guide saved before it started. Attendance and check-in remain available; guided live controls stay unavailable for this event.',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessHostLiveBodySaveTheLiveGuide
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessHostLiveBodyThisEventDidNot,
           ),
           if (liveRoster != null) ...[
             gapH16,
-            const CatchSectionHeader(
+            CatchSectionHeader(
               padding: EdgeInsets.zero,
-              title: 'Editable roster',
-              subtitle:
-                  'Tap a booked attendee if their check-in state is wrong.',
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessHostLiveTitleEditableRoster,
+              subtitle: context
+                  .l10n
+                  .eventSuccessEventSuccessHostLiveSubtitleTapABookedAttendee,
             ),
             gapH10,
             liveRoster!,
@@ -119,17 +130,23 @@ class LiveTab extends StatelessWidget {
         children: [
           NoticeCard(
             icon: CatchIcons.ruleFolderOutlined,
-            title: 'No live steps selected',
-            body:
-                'This saved setup does not include any tools the host can use during the event.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected,
+            body: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveBodyThisSavedSetupDoes,
           ),
           if (liveRoster != null) ...[
             gapH16,
-            const CatchSectionHeader(
+            CatchSectionHeader(
               padding: EdgeInsets.zero,
-              title: 'Editable roster',
-              subtitle:
-                  'Tap a booked attendee if their check-in state is wrong.',
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessHostLiveTitleEditableRoster,
+              subtitle: context
+                  .l10n
+                  .eventSuccessEventSuccessHostLiveSubtitleTapABookedAttendee,
             ),
             gapH10,
             liveRoster!,
@@ -168,17 +185,23 @@ class LiveTab extends StatelessWidget {
     );
 
     Widget conversationCueCard() => EventSuccessConversationCueCard(
-      title: 'Conversation cues',
+      title: context.l10n.eventSuccessEventSuccessHostLiveTitleConversationCues,
       subtitle: runtime.socialMissionsEnabled
-          ? 'Use one when the room needs a cleaner next interaction.'
-          : 'Close with one suggested first message after mutual matches.',
+          ? context.l10n.eventSuccessEventSuccessHostLiveSubtitleUseOneWhenThe
+          : context
+                .l10n
+                .eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested,
       cues: runtime.socialMissionsEnabled
           ? EventSuccessConversationCueLibrary.liveCuesFor(
               event: event,
               plan: plan,
+              l10n: context.l10n,
               activeStep: _activeRunOfShowStep(runtime),
             )
-          : EventSuccessConversationCueLibrary.postEventOpenersFor(event),
+          : EventSuccessConversationCueLibrary.postEventOpenersFor(
+              event,
+              l10n: context.l10n,
+            ),
     );
 
     Widget microPodsCard() => MicroPodsHostCard(
@@ -314,11 +337,14 @@ class LiveTab extends StatelessWidget {
         ),
         if (supportingCards.isNotEmpty) ...[
           gapH20,
-          const CatchSectionHeader(
+          CatchSectionHeader(
             padding: EdgeInsets.zero,
-            title: 'Supporting controls',
-            subtitle:
-                'Controls that stay available without competing with the current live step.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveTitleSupportingControls,
+            subtitle: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveSubtitleControlsThatStayAvailable,
           ),
           gapH10,
           CatchSectionList(gap: CatchSpacing.s4, children: supportingCards),
@@ -326,7 +352,9 @@ class LiveTab extends StatelessWidget {
         if (!compactLiveControls) ...[
           gapH20,
           CatchButton(
-            label: 'Mark live guide complete',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete,
             variant: CatchButtonVariant.secondary,
             isLoading: actionState.isCompleting,
             onPressed: actionState.isCompleting || onCompleteGuide == null
@@ -370,18 +398,27 @@ class LiveNowConsole extends StatelessWidget {
     final fg = t.primaryInk;
     final total = plan.steps.length;
     final compactPresenter = compactCopy
-        ? _CompactLiveConsolePresenter.forEvent(event, plan)
+        ? _CompactLiveConsolePresenter.forEvent(event, plan, context.l10n)
         : null;
     final activeStepTitle = compactPresenter?.title ?? plan.activeStep.title;
     final activeStepInstruction =
         compactPresenter?.instruction ?? plan.activeStep.hostInstruction;
     final attendeeExperience =
         compactPresenter?.attendeeExperience ??
-        'Attendees at ${event.locationName} see: ${plan.activeStep.attendeeExperience}';
+        context.l10n
+            .eventSuccessEventSuccessHostLiveVisiblecopyAttendeesAtLocationnameSee(
+              locationName: event.locationName,
+              attendeeExperience: plan.activeStep.attendeeExperience,
+            );
     final stepLine =
         compactPresenter?.stepLine ??
         (total > 0
-            ? 'Step ${plan.activeStepIndex + 1}/$total · ${plan.activeStep.stage.label}'
+            ? context.l10n
+                  .eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalLabel(
+                    value1: plan.activeStepIndex + 1,
+                    total: total,
+                    label: plan.activeStep.stage.label,
+                  )
             : plan.activeStep.stage.label);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -485,20 +522,28 @@ class LiveNowConsole extends StatelessWidget {
         ),
         if (liveRoster != null) ...[
           gapH14,
-          const CatchSectionHeader(
+          CatchSectionHeader(
             padding: EdgeInsets.zero,
-            title: 'Editable roster',
-            subtitle: 'Tap a booked attendee if their check-in state is wrong.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveTitleEditableRoster,
+            subtitle: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveSubtitleTapABookedAttendee,
           ),
           gapH10,
           liveRoster!,
         ],
         if (currentStepControls.isNotEmpty) ...[
           gapH14,
-          const CatchSectionHeader(
+          CatchSectionHeader(
             padding: EdgeInsets.zero,
-            title: 'Controls for this step',
-            subtitle: 'Handle these before moving the room forward.',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveTitleControlsForThisStep,
+            subtitle: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving,
           ),
           gapH10,
           CatchSectionList(gap: CatchSpacing.s4, children: currentStepControls),
@@ -524,6 +569,7 @@ class _CompactLiveConsolePresenter {
   static _CompactLiveConsolePresenter? forEvent(
     Event event,
     EventSuccessLivePlan plan,
+    AppLocalizations l10n,
   ) {
     final stage = plan.activeStep.stage;
     final isRoundLike =
@@ -534,15 +580,18 @@ class _CompactLiveConsolePresenter {
     if (!isRoundLike) return null;
     final total = plan.steps.length;
     final stepLine = total > 0
-        ? 'Step ${plan.activeStepIndex + 1}/$total · Round'
-        : 'Round';
+        ? l10n.eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalRound(
+            value1: plan.activeStepIndex + 1,
+            total: total,
+          )
+        : l10n.eventSuccessEventSuccessHostLiveVisiblecopyRound;
     return _CompactLiveConsolePresenter(
       stepLine: stepLine,
-      title: 'Round in play',
+      title: l10n.eventSuccessEventSuccessHostLiveTitleRoundInPlay,
       instruction:
-          'Keep rounds tight; reveal scores between each. Swap anyone sitting out into a team.',
+          l10n.eventSuccessEventSuccessHostLiveVisiblecopyKeepRoundsTightReveal,
       attendeeExperience:
-          'Attendees see: Guests see the current round and the live scoreboard.',
+          l10n.eventSuccessEventSuccessHostLiveVisiblecopyAttendeesSeeGuestsSee,
     );
   }
 }
@@ -561,8 +610,15 @@ class LiveCheckInSummaryStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final arrivedLabel = bookedCount <= 0
-        ? '$checkedInCount arrived'
-        : '$checkedInCount of $bookedCount arrived';
+        ? context.l10n
+              .eventSuccessEventSuccessHostLiveVisiblecopyCheckedincountArrived(
+                checkedInCount: checkedInCount,
+              )
+        : context.l10n
+              .eventSuccessEventSuccessHostLiveVisiblecopyCheckedincountOfBookedcountArrived(
+                checkedInCount: checkedInCount,
+                bookedCount: bookedCount,
+              );
     return CatchSurface(
       backgroundColor: t.ink,
       borderWidth: 0,
@@ -577,7 +633,9 @@ class LiveCheckInSummaryStrip extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Check guests in',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessHostLiveTextCheckGuestsIn,
                   style: CatchTextStyles.sectionTitle(context, color: t.bg),
                 ),
                 gapH2,
@@ -595,7 +653,9 @@ class LiveCheckInSummaryStrip extends StatelessWidget {
           ),
           gapW12,
           Text(
-            '$checkedInCount',
+            context.l10n.eventSuccessEventSuccessHostLiveTextCheckedincount(
+              checkedInCount: checkedInCount,
+            ),
             style: CatchTextStyles.display(context, color: t.bg),
           ),
         ],
@@ -624,7 +684,9 @@ class LiveCheckInQrCard extends StatelessWidget {
               gapW10,
               Expanded(
                 child: Text(
-                  'Host check-in QR',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessHostLiveTextHostCheckInQr,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
@@ -632,7 +694,7 @@ class LiveCheckInQrCard extends StatelessWidget {
           ),
           gapH8,
           Text(
-            'Use this for new arrivals; use the editable roster above for manual fixes.',
+            context.l10n.eventSuccessEventSuccessHostLiveTextUseThisForNew,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
@@ -670,7 +732,8 @@ class LiveNowPill extends StatelessWidget {
           CatchStatusDot(color: accent, size: CatchSpacing.micro6),
           gapW6,
           Text(
-            'Live now'.toUpperCase(),
+            context.l10n.eventSuccessEventSuccessHostLiveTextLiveNow
+                .toUpperCase(),
             style: CatchTextStyles.badge(context, color: foreground),
           ),
         ],
@@ -694,15 +757,21 @@ class LiveStepNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nextLabel = plan.activeStepIndex >= plan.steps.length - 1
-        ? 'Final step'
-        : 'Next: ${plan.steps[plan.activeStepIndex + 1].title}';
+        ? context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyFinalStep
+        : context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyNextTitle(
+            title: plan.steps[plan.activeStepIndex + 1].title,
+          );
     return Row(
       children: [
         Expanded(
           flex: 2,
           child: CatchButton(
-            key: const ValueKey('eventSuccessPreviousStepButton'),
-            label: 'Previous',
+            key: ValueKey(
+              context
+                  .l10n
+                  .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
+            ),
+            label: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
             icon: Icon(CatchIcons.arrowBackRounded),
             variant: CatchButtonVariant.secondary,
             onPressed: onPrevious,
@@ -713,7 +782,11 @@ class LiveStepNavigation extends StatelessWidget {
         Expanded(
           flex: 3,
           child: CatchButton(
-            key: const ValueKey('eventSuccessNextStepButton'),
+            key: ValueKey(
+              context
+                  .l10n
+                  .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
+            ),
             label: nextLabel,
             icon: Icon(CatchIcons.arrowForwardRounded),
             onPressed: onNext,

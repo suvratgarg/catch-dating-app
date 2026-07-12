@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart'
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 export 'package:catch_dating_app/core/widgets/catch_divider.dart';
 
@@ -572,7 +573,11 @@ class CatchSection extends StatelessWidget {
                       ? Text(
                           count == null
                               ? displayTitle
-                              : '$displayTitle · $count',
+                              : context.l10n
+                                    .coreCatchSectionLayoutTextDisplaytitleCount(
+                                      displayTitle: displayTitle,
+                                      count: count!,
+                                    ),
                           style: CatchTextStyles.sectionTitle(
                             context,
                             color: titleColor ?? t.ink,
@@ -719,7 +724,7 @@ Widget _buildCatchSectionKicker(
       text: text.toUpperCase(),
       children: [
         TextSpan(
-          text: ' · $count',
+          text: context.l10n.coreCatchSectionLayoutTextCount(count: count),
           style: style.copyWith(color: t.ink3, fontWeight: FontWeight.w600),
         ),
       ],

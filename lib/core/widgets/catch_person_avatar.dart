@@ -5,12 +5,12 @@ import 'dart:ui';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class CatchPersonAvatarItem {
   const CatchPersonAvatarItem({
@@ -124,7 +124,7 @@ class CatchPersonAvatar extends StatelessWidget {
           color: t.raised,
           child: Center(
             child: Text(
-              '+$_count',
+              context.l10n.coreCatchPersonAvatarTextCount(count: _count),
               style: CatchTextStyles.avatarCount(
                 context,
                 size: innerSize * 0.30,
@@ -435,11 +435,9 @@ class CatchActivityInitialsPlaceholder extends StatelessWidget {
           Center(
             child: Text(
               initials,
-              style: CatchFonts.mono(
-                fontSize: initialsSize,
-                height: 1,
-                fontWeight: FontWeight.w700,
-                letterSpacing: initialsSize * 0.02,
+              style: CatchTextStyles.avatarInitials(
+                context,
+                size: initialsSize,
                 color: CatchTokens.editorialWhite,
               ),
             ),
@@ -508,10 +506,9 @@ class CatchInitialsAvatarPlaceholder extends StatelessWidget {
           Center(
             child: Text(
               label,
-              style: CatchFonts.mono(
-                fontSize: size * 0.34,
-                height: 1,
-                fontWeight: FontWeight.w700,
+              style: CatchTextStyles.avatarInitials(
+                context,
+                size: size * 0.34,
                 color: t.ink2,
               ),
             ),

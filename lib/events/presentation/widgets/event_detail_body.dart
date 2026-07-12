@@ -16,6 +16,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_overvi
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -147,10 +148,11 @@ class EventDetailBody extends StatelessWidget {
                 leadingIcon: CatchIcons.platformShare(
                   platform: Theme.of(context).platform,
                 ),
-                title: 'Bring someone into the room',
-                body:
-                    'Your spot is booked. Invite a friend who would make this event better.',
-                actionLabel: 'Invite a friend',
+                title:
+                    context.l10n.eventsEventDetailBodyTitleBringSomeoneIntoThe,
+                body: context.l10n.eventsEventDetailBodyBodyYourSpotIsBooked,
+                actionLabel:
+                    context.l10n.eventsEventDetailBodyActionlabelInviteAFriend,
                 actionIcon: CatchIcons.sendRounded,
                 onAction: onShare,
                 surfaceStyle: style,
@@ -284,10 +286,9 @@ class EventCompanionEntry extends StatelessWidget {
       ),
       EventDetailCompanionStatus.available => EventDetailCalloutCard(
         leadingIcon: CatchIcons.autoAwesomeOutlined,
-        title: 'Event companion',
-        body:
-            'Check in, see your social prompt, and handle private follow-up after the event.',
-        actionLabel: 'Open companion',
+        title: context.l10n.eventsEventDetailBodyTitleEventCompanion,
+        body: context.l10n.eventsEventDetailBodyBodyCheckInSeeYour,
+        actionLabel: context.l10n.eventsEventDetailBodyActionlabelOpenCompanion,
         actionIcon: CatchIcons.phoneIphoneRounded,
         onAction: (_) => onOpen(),
         surfaceStyle: surfaceStyle,
@@ -315,7 +316,7 @@ class GuestBookCta extends StatelessWidget {
         child: Padding(
           padding: CatchInsets.contentBlock,
           child: CatchButton(
-            label: 'Sign in to book this event',
+            label: context.l10n.eventsEventDetailBodyLabelSignInToBook,
             onPressed: onPressed,
             icon: Icon(
               CatchIcons.lockOutlineRounded,
@@ -370,7 +371,7 @@ class EventDetailHostsSection extends StatelessWidget {
         final canMessage = state.canMessage && hostUid != null;
 
         return CatchSection.divided(
-          title: 'Your hosts',
+          title: context.l10n.eventsEventDetailBodyTitleYourHosts,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
           child: EventDetailHostCard(

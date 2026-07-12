@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/shared/review_keys.dart';
 import 'package:catch_dating_app/reviews/shared/star_rating.dart';
@@ -113,8 +114,8 @@ class EventReviewsSection extends StatelessWidget {
           CatchButton(
             key: ReviewKeys.writeReviewButton,
             label: existingReview != null
-                ? 'Edit your review'
-                : 'Write a review',
+                ? context.l10n.reviewsReviewsSectionLabelEditYourReview
+                : context.l10n.reviewsReviewsSectionLabelWriteAReview,
             onPressed: () => showWriteReviewSheet(
               context: context,
               clubId: clubId,
@@ -159,7 +160,9 @@ class ReviewsPreviewSection extends StatelessWidget {
     showCatchBottomSheet<void>(
       context: context,
       builder: (sheetContext) => CatchBottomSheetScaffold(
-        title: 'All reviews (${reviews.length})',
+        title: context.l10n.reviewsReviewsSectionTitleAllReviewsLength(
+          length: reviews.length,
+        ),
         child: SizedBox(
           height: MediaQuery.sizeOf(sheetContext).height * 0.68,
           child: ListView.separated(
@@ -202,13 +205,19 @@ class ReviewsPreviewSection extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text('Reviews', style: CatchTextStyles.titleL(context)),
+                child: Text(
+                  context.l10n.reviewsReviewsSectionTextReviews,
+                  style: CatchTextStyles.titleL(context),
+                ),
               ),
               if (avgRating != null) ...[
                 StarRating(rating: avgRating.round(), size: CatchIcon.rating),
                 gapW4,
                 Text(
-                  '${avgRating.toStringAsFixed(1)} · ${reviews.length}',
+                  context.l10n.reviewsReviewsSectionTextTostringasfixedLength(
+                    toStringAsFixed: avgRating.toStringAsFixed(1),
+                    length: reviews.length,
+                  ),
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
@@ -220,12 +229,16 @@ class ReviewsPreviewSection extends StatelessWidget {
         if (reviews.isEmpty)
           CatchEmptyState(
             icon: CatchIcons.rateReviewOutlined,
-            title: 'No reviews yet',
+            title: context.l10n.reviewsReviewsSectionTitleNoReviewsYet,
             message:
                 emptyMessage ??
                 (compactEmptyState
-                    ? 'Reviews appear after members attend an event.'
-                    : 'Reviews from attendees will appear here after an event.'),
+                    ? context
+                          .l10n
+                          .reviewsReviewsSectionMessageReviewsAppearAfterMembers
+                    : context
+                          .l10n
+                          .reviewsReviewsSectionMessageReviewsFromAttendeesWill),
             surface: compactEmptyState,
             layout: compactEmptyState
                 ? CatchEmptyStateLayout.inline
@@ -260,7 +273,9 @@ class ReviewsPreviewSection extends StatelessWidget {
             gapH4,
             CatchTextButton(
               key: ReviewKeys.seeAllReviewsButton,
-              label: 'See all ${reviews.length} reviews',
+              label: context.l10n.reviewsReviewsSectionLabelSeeAllLengthReviews(
+                length: reviews.length,
+              ),
               onPressed: () => _showAllReviews(context),
             ),
           ],
@@ -303,7 +318,9 @@ class ReviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isOwn ? 'You' : review.reviewerName,
+                      isOwn
+                          ? context.l10n.reviewsReviewsSectionTextYou
+                          : review.reviewerName,
                       style: CatchTextStyles.labelL(context),
                     ),
                     StarRating(rating: review.rating, size: CatchIcon.rating),
@@ -312,7 +329,7 @@ class ReviewCard extends StatelessWidget {
               ),
               if (isOwn && onEdit != null)
                 Tooltip(
-                  message: 'Edit review',
+                  message: context.l10n.reviewsReviewsSectionMessageEditReview,
                   child: CatchIconButton(
                     key: ReviewKeys.editReviewButton(review.id),
                     onTap: onEdit!,
@@ -326,8 +343,10 @@ class ReviewCard extends StatelessWidget {
               if (onRespond != null)
                 Tooltip(
                   message: review.ownerResponse == null
-                      ? 'Respond as host'
-                      : 'Edit host response',
+                      ? context.l10n.reviewsReviewsSectionMessageRespondAsHost
+                      : context
+                            .l10n
+                            .reviewsReviewsSectionMessageEditHostResponse,
                   child: CatchIconButton(
                     key: ReviewKeys.respondToReviewButton(review.id),
                     onTap: onRespond!,
@@ -387,7 +406,9 @@ class ReviewOwnerResponseBlock extends StatelessWidget {
               gapW8,
               Expanded(
                 child: Text(
-                  'Host response · ${response.hostName}',
+                  context.l10n.reviewsReviewsSectionTextHostResponseHostname(
+                    hostName: response.hostName,
+                  ),
                   style: CatchTextStyles.labelS(context, color: t.ink),
                 ),
               ),
@@ -477,12 +498,12 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
 
     return CatchBottomSheetScaffold(
       title: widget.review.ownerResponse == null
-          ? 'Respond to review'
-          : 'Edit response',
+          ? context.l10n.reviewsReviewsSectionTitleRespondToReview
+          : context.l10n.reviewsReviewsSectionTitleEditResponse,
       keyboardSafe: true,
       action: CatchButton(
         key: ReviewKeys.submitOwnerResponseButton,
-        label: 'Save response',
+        label: context.l10n.reviewsReviewsSectionLabelSaveResponse,
         onPressed: !canSubmit || mutation.isPending ? null : _submit,
         isLoading: mutation.isPending,
         fullWidth: true,
@@ -493,17 +514,20 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
         children: [
           CatchField.input(
             key: ReviewKeys.ownerResponseField,
-            title: 'Response',
+            title: context.l10n.reviewsReviewsSectionTitleResponse,
             controller: _messageController,
             maxLines: 4,
-            placeholder: 'Thank the attendee or clarify what happened',
+            placeholder:
+                context.l10n.reviewsReviewsSectionPlaceholderThankTheAttendeeOr,
             textCapitalization: TextCapitalization.sentences,
             inputFormatters: [LengthLimitingTextInputFormatter(1000)],
             onChanged: (_) => setState(() {}),
           ),
           if (mutation.hasError) ...[
             gapH12,
-            CatchErrorBanner(message: mutationErrorMessage(mutation)),
+            CatchErrorBanner(
+              message: mutationErrorMessage(mutation, l10n: context.l10n),
+            ),
           ],
         ],
       ),

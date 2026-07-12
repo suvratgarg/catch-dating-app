@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/dashboard/presentation/notification_route_util.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_model.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +26,8 @@ class ActivitySignedOutState extends StatelessWidget {
       padding: CatchInsets.contentRelaxed,
       child: CatchEmptyState(
         icon: CatchIcons.notificationsNoneRounded,
-        title: 'No activity yet',
-        message: 'Sign in and book an event to start seeing updates here.',
+        title: context.l10n.dashboardActivitySectionTitleNoActivityYet,
+        message: context.l10n.dashboardActivitySectionMessageSignInAndBook,
       ),
     );
   }
@@ -65,6 +66,7 @@ class ActivitySection extends ConsumerWidget {
     final sectionState =
         state ??
         buildNotificationsListState(
+          l10n: context.l10n,
           uid: AsyncData(uid!),
           notifications: ref.watch(watchActivityNotificationsProvider(uid!)),
           now: DateTime.now(),
@@ -94,8 +96,11 @@ class ActivitySection extends ConsumerWidget {
             )
           else
             CatchInlineErrorState(
-              title: 'Activity unavailable',
-              message: 'Could not load activity.',
+              title:
+                  context.l10n.dashboardActivitySectionTitleActivityUnavailable,
+              message: context
+                  .l10n
+                  .dashboardActivitySectionMessageCouldNotLoadActivity,
               compact: true,
               onRetry:
                   onRetry ??
@@ -112,9 +117,10 @@ class ActivitySection extends ConsumerWidget {
           if (showEmptyState)
             CatchEmptyState(
               icon: CatchIcons.notificationsNoneRounded,
-              title: 'No new activity',
-              message:
-                  'New catches, bookings, and event reminders will collect here.',
+              title: context.l10n.dashboardActivitySectionTitleNoNewActivity,
+              message: context
+                  .l10n
+                  .dashboardActivitySectionMessageNewCatchesBookingsAnd,
               iconSize: CatchIcon.emptyState,
               titleStyle: CatchTextStyles.titleL(context),
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
@@ -275,7 +281,12 @@ class NotificationRow extends StatelessWidget {
 
     return Semantics(
       button: onTap != null,
-      label: body.isEmpty ? title : '$title. $body',
+      label: body.isEmpty
+          ? title
+          : context.l10n.dashboardActivitySectionLabelTitleBody(
+              title: title,
+              body: body,
+            ),
       child: CatchField.nav(
         icon: visual.icon,
         iconColor: visual.accent,

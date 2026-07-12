@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class ClubPhotoStrip extends StatelessWidget {
@@ -48,12 +49,14 @@ class ClubPhotoStrip extends StatelessWidget {
         Row(
           children: [
             Text(
-              'FROM THE CLUB',
+              context.l10n.clubsClubPhotoStripTextFromTheClub,
               style: CatchTextStyles.monoLabelS(context, color: t.ink),
             ),
             const Spacer(),
             Text(
-              '${club.clubPhotos.length} PHOTOS',
+              context.l10n.clubsClubPhotoStripTextLengthPhotos(
+                length: club.clubPhotos.length,
+              ),
               style: CatchTextStyles.monoLabelS(context, color: t.ink3),
             ),
           ],

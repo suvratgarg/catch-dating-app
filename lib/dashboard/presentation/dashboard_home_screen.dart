@@ -21,12 +21,12 @@ class DashboardHomeScreen extends StatelessWidget {
       body: SafeArea(
         bottom: false,
         child: Semantics(
-          label: 'Home',
+          label: context.l10n.dashboardDashboardHomeScreenLabelHome,
           child: CustomScrollView(
             slivers: [
               ...CatchSliverHeader(
                 title: CatchScreenHeaderTitle.block(
-                  title: header.title,
+                  title: header.title(context.l10n),
                   actions: actions,
                   padding: CatchInsets.screenTitleBlockCompact,
                 ),

@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -95,7 +96,9 @@ class ClubHeroAppBar extends StatelessWidget {
       leadingWidth: CatchSpacing.s16,
       title: CatchCollapsedSliverTitle(
         title: club.name,
-        textKey: const ValueKey('club-detail-collapsed-title'),
+        textKey: ValueKey(
+          context.l10n.clubsClubHeroAppBarTitleClubDetailCollapsedTitle,
+        ),
         style: CatchTextStyles.clubDisplay(
           context,
           size: CatchLayout.clubDetailHeroCollapsedTitleSize,
@@ -107,7 +110,7 @@ class ClubHeroAppBar extends StatelessWidget {
         padding: _clubHeroLeadingPadding,
         child: CatchIconAction(
           icon: CatchIcons.arrowBackIosNewRounded,
-          tooltip: 'Back',
+          tooltip: context.l10n.clubsClubHeroAppBarTooltipBack,
           variant: CatchIconButtonVariant.float,
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -120,7 +123,7 @@ class ClubHeroAppBar extends StatelessWidget {
               icon: CatchIcons.platformShare(
                 platform: Theme.of(context).platform,
               ),
-              tooltip: 'Share club',
+              tooltip: context.l10n.clubsClubHeroAppBarTooltipShareClub,
               variant: CatchIconButtonVariant.float,
               onPressed: () => unawaited(
                 onShareClub != null
@@ -298,7 +301,10 @@ class ClubHeroModule extends StatelessWidget {
               ? ClubPolaroidArtwork(club: club)
               : CatchDetailHeroBackdrop(
                   imageUrl: photoUrl,
-                  semanticLabel: '${club.name} cover photo',
+                  semanticLabel: context.l10n
+                      .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
+                        name: club.name,
+                      ),
                   showScrim: false,
                 ),
           caption: locationLabel,
@@ -352,7 +358,9 @@ class ClubHeroModule extends StatelessWidget {
             const Spacer(),
             Text(
               club.name,
-              key: const ValueKey('club-detail-expanded-title'),
+              key: ValueKey(
+                context.l10n.clubsClubHeroAppBarTextClubDetailExpandedTitle,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.clubDisplay(
@@ -421,7 +429,10 @@ class ClubHeroModule extends StatelessWidget {
                   height: mediaHeight,
                   child: CatchDetailHeroBackdrop(
                     imageUrl: _clubHeroPrimaryPhotoUrl(club),
-                    semanticLabel: '${club.name} cover photo',
+                    semanticLabel: context.l10n
+                        .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
+                          name: club.name,
+                        ),
                     showScrim: false,
                   ),
                 ),
@@ -450,7 +461,9 @@ class ClubHeroModule extends StatelessWidget {
               gapH8,
               Text(
                 club.name,
-                key: const ValueKey('club-detail-expanded-title'),
+                key: ValueKey(
+                  context.l10n.clubsClubHeroAppBarTextClubDetailExpandedTitle,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.clubDisplay(

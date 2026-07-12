@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 enum CatchSearchFieldMode { field, expanding, expanded }
 
@@ -214,7 +215,10 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                 return SizedBox.square(
                   dimension: CatchLayout.searchFieldClearSize,
                   child: IconButton(
-                    tooltip: 'Clear ${widget.placeholder}',
+                    tooltip: context.l10n
+                        .coreCatchSearchFieldTooltipClearPlaceholder(
+                          placeholder: widget.placeholder,
+                        ),
                     padding: EdgeInsets.zero,
                     style: IconButton.styleFrom(
                       minimumSize: Size.zero,
@@ -354,7 +358,9 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                 controller: _controller,
                                 enabled: widget.enabled,
                                 placeholder: widget.placeholder,
-                                emptyTrailingTooltip: 'Close search',
+                                emptyTrailingTooltip: context
+                                    .l10n
+                                    .coreCatchSearchFieldVisiblecopyCloseSearch,
                                 foregroundColor: mutedForeground,
                                 onClear: _clear,
                                 onEmptyPressed:
@@ -430,7 +436,11 @@ class _ExpandingSearchTrailing extends StatelessWidget {
       builder: (context, value, _) {
         final isEmpty = value.text.isEmpty;
         final icon = isEmpty ? CatchIcons.close : CatchIcons.clearCircle;
-        final tooltip = isEmpty ? emptyTrailingTooltip : 'Clear $placeholder';
+        final tooltip = isEmpty
+            ? emptyTrailingTooltip
+            : context.l10n.coreCatchSearchFieldTooltipClearPlaceholder(
+                placeholder: placeholder,
+              );
         final onPressed = isEmpty ? onEmptyPressed : onClear;
         if (isEmpty && onPressed == null) {
           return const SizedBox(width: CatchLayout.searchFieldClearSize);

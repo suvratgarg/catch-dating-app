@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 /// the platform system font for *function* (body, controls, names, dense UI),
 /// and IBM Plex Mono for *data* (kickers, numerics, labels).
 ///
-/// **Fidelity rules** (the locked specimen, `docs/visual_references/catch_typography.html`):
-/// - Display voice is **Archivo w600 with zero tracking** — bold but still
-///   restrained.
-/// - Mono kickers/labels are uppercase with zero tracking. Render the text
-///   already upper-cased; the style keeps letter spacing at the Flutter default.
+/// **Fidelity rules** (`docs/design_language.md` and the generated design
+/// context pack):
+/// - Archivo is the roman-only display voice. It is not used for long-form or
+///   user-authored reading text.
+/// - Display/body tracking is zero by default. Uppercase mono roles own their
+///   explicit tracking here, and the welcome reel owns one named `-0.5` parity
+///   exception.
 /// - Body/prose roles use the platform system font with generous leading.
 ///
 /// **Scale discipline:** dramatic jumps in the display tier (no near-duplicate
@@ -20,6 +22,11 @@ import 'package:flutter/material.dart';
 /// Prefer the named styles over ad hoc [TextStyle]; use `copyWith` only for local
 /// state (unread/disabled).
 abstract final class CatchTextStyles {
+  static const double _kickerTracking = 1.76; // 0.16em at 11px.
+  static const double _kickerLargeTracking = 2.16; // 0.18em at 12px.
+  static const double _monoCapsTracking = 1.43; // 0.13em at 11px.
+  static const double _badgeCapsTracking = 0.72; // 0.08em at 9px.
+
   // ===========================================================================
   // VOICE — Archivo (brand display and deliberate poster moments)
   // ===========================================================================
@@ -51,6 +58,29 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
+  /// Welcome reel and fixed Catch word — the single approved negative-tracking
+  /// display exception from `splash_welcome_spec.md`.
+  static TextStyle welcomeReelHeadline(BuildContext context, {Color? color}) =>
+      _voice(
+        context,
+        size: 36,
+        weight: FontWeight.w600,
+        height: 1.02,
+        letterSpacing: -0.5,
+        color: color,
+      );
+
+  /// Brand-led onboarding introduction copy. This is intentionally Archivo;
+  /// ordinary app prose remains in the platform function family.
+  static TextStyle welcomeIntroBody(BuildContext context, {Color? color}) =>
+      _voice(
+        context,
+        size: 15,
+        weight: FontWeight.w400,
+        height: 1.48,
+        color: color,
+      );
+
   /// Editorial club identity treatment (parametric size) shared by Explore club
   /// cards and the club detail hero/collapsed header.
   static TextStyle clubDisplay(
@@ -59,12 +89,10 @@ abstract final class CatchTextStyles {
     double height = 1.0,
     Color? color,
     FontWeight weight = FontWeight.w600,
-    FontStyle fontStyle = FontStyle.normal,
   }) {
-    return CatchFonts.clubDisplay(
+    return CatchFonts.voice(
       fontSize: size,
       fontWeight: weight,
-      fontStyle: fontStyle,
       height: height,
       color: color ?? CatchTokens.of(context).ink,
     );
@@ -78,12 +106,10 @@ abstract final class CatchTextStyles {
     double height = 1.0,
     Color? color,
     FontWeight weight = FontWeight.w600,
-    FontStyle fontStyle = FontStyle.normal,
   }) {
-    return CatchFonts.eventDisplay(
+    return CatchFonts.voice(
       fontSize: size,
       fontWeight: weight,
-      fontStyle: fontStyle,
       height: height,
       color: color ?? CatchTokens.of(context).ink,
     );
@@ -174,22 +200,12 @@ abstract final class CatchTextStyles {
   );
 
   /// Small sans title.
-  static TextStyle titleS(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 14,
-    weight: FontWeight.w700,
-    height: 1.24,
-    color: color,
-  );
+  static TextStyle titleS(BuildContext context, {Color? color}) =>
+      _functionStrong14(context, color: color);
 
   /// CatchField primary text (`.t-title-s` in the design handoff).
-  static TextStyle fieldRowTitle(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 14,
-    weight: FontWeight.w700,
-    height: 1.24,
-    color: color,
-  );
+  static TextStyle fieldRowTitle(BuildContext context, {Color? color}) =>
+      _functionStrong14(context, color: color);
 
   /// Lead-in supporting copy (slightly heavier than [supporting]).
   static TextStyle bodyLead(BuildContext context, {Color? color}) => _sans(
@@ -237,13 +253,8 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink2,
   );
 
-  static TextStyle labelL(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 14,
-    weight: FontWeight.w700,
-    height: 1.24,
-    color: color,
-  );
+  static TextStyle labelL(BuildContext context, {Color? color}) =>
+      _functionStrong14(context, color: color);
 
   static TextStyle fieldLabel(BuildContext context, {Color? color}) => _sans(
     context,
@@ -294,9 +305,6 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink,
   );
 
-  static TextStyle button(BuildContext context, {Color? color}) =>
-      buttonMd(context, color: color);
-
   static TextStyle buttonLg(BuildContext context, {Color? color}) => _sans(
     context,
     size: 16,
@@ -318,9 +326,37 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).surface,
   );
 
+  /// Initials inside person and activity avatars. One parametric contract keeps
+  /// both avatar families aligned without feature-owned tracking expressions.
+  static TextStyle avatarInitials(
+    BuildContext context, {
+    required double size,
+    Color? color,
+  }) => _mono(
+    context,
+    size: size,
+    weight: FontWeight.w700,
+    height: 1,
+    color: color,
+  );
+
+  /// Simulated phone-frame status-bar time.
+  static TextStyle statusBarTime(BuildContext context, {Color? color}) => _mono(
+    context,
+    size: CatchLayout.statusBarTimeFontSize,
+    weight: FontWeight.w700,
+    height: 1,
+    color: color,
+  );
+
   /// OTP digit boxes (`.t-code`).
-  static TextStyle otpDigit(BuildContext context, {Color? color}) =>
-      code(context, color: color);
+  static TextStyle otpDigit(BuildContext context, {Color? color}) => _mono(
+    context,
+    size: 26,
+    weight: FontWeight.w600,
+    height: 1,
+    color: color,
+  );
 
   /// Chat message body (sans, comfortable leading).
   static TextStyle chatMessage(BuildContext context, {Color? color}) => _sans(
@@ -330,9 +366,6 @@ abstract final class CatchTextStyles {
     height: 1.40,
     color: color,
   );
-
-  static TextStyle chat(BuildContext context, {Color? color}) =>
-      chatMessage(context, color: color);
 
   /// Chat inbox preview copy (`CatchPersonRow` chat-preview secondary line).
   static TextStyle chatPreview(BuildContext context, {Color? color}) => _sans(
@@ -368,24 +401,6 @@ abstract final class CatchTextStyles {
   static TextStyle transparentInput() =>
       const TextStyle(color: Colors.transparent);
 
-  static TextStyle mapPinTime({required double scale, required Color color}) =>
-      CatchFonts.sans(
-        fontSize: 13 * scale,
-        fontWeight: FontWeight.w700,
-        height: 1.2,
-        color: color,
-      );
-
-  static TextStyle mapPinCluster({
-    required double scale,
-    required Color color,
-  }) => CatchFonts.sans(
-    fontSize: 14 * scale,
-    fontWeight: FontWeight.w800,
-    height: 1.2,
-    color: color,
-  );
-
   // ===========================================================================
   // DATA — IBM Plex Mono (kickers, numerics, labels)
   // ===========================================================================
@@ -397,6 +412,7 @@ abstract final class CatchTextStyles {
     size: 11,
     weight: FontWeight.w700,
     height: 1.15,
+    letterSpacing: _kickerTracking,
     color: color ?? CatchTokens.of(context).ink2,
   );
 
@@ -406,15 +422,27 @@ abstract final class CatchTextStyles {
     size: 12,
     weight: FontWeight.w700,
     height: 1.1,
+    letterSpacing: _kickerLargeTracking,
     color: color ?? CatchTokens.of(context).ink,
   );
 
-  /// Mono meta label — ticket meta, hero time chips, status badges.
+  /// Sentence/data mono label — ticket meta, counts, and compact phrases.
+  /// This role is deliberately untracked because its content is not caps-only.
   static TextStyle monoLabel(BuildContext context, {Color? color}) => _mono(
     context,
     size: 11,
     weight: FontWeight.w600,
     height: 1.15,
+    color: color ?? CatchTokens.of(context).ink2,
+  );
+
+  /// Uppercase mono label. Use through an owner that also enforces uppercase.
+  static TextStyle monoCapsLabel(BuildContext context, {Color? color}) => _mono(
+    context,
+    size: 11,
+    weight: FontWeight.w600,
+    height: 1.15,
+    letterSpacing: _monoCapsTracking,
     color: color ?? CatchTokens.of(context).ink2,
   );
 
@@ -471,14 +499,15 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink,
       );
 
-  /// OTP/code digit (`.t-code`).
-  static TextStyle code(BuildContext context, {Color? color}) =>
-      CatchFonts.mono(
-        fontSize: 26,
-        fontWeight: FontWeight.w600,
-        height: 1,
-        color: color ?? CatchTokens.of(context).ink,
-      );
+  /// Tiny uppercase status badge label (`.t-badge`).
+  static TextStyle badgeCaps(BuildContext context, {Color? color}) => _mono(
+    context,
+    size: 9,
+    weight: FontWeight.w700,
+    height: 1.1,
+    letterSpacing: _badgeCapsTracking,
+    color: color,
+  );
 
   /// Oversized tabular stat number.
   static TextStyle statDisplay(BuildContext context, {Color? color}) =>
@@ -500,9 +529,54 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
+  /// Material fallback slots for unstyled framework widgets.
+  ///
+  /// These remain in the platform function family and live beside the semantic
+  /// scale so ThemeData cannot become an independent typography source.
+  static TextTheme materialTextTheme(TextTheme base, CatchTokens tokens) {
+    TextStyle style(
+      double size,
+      FontWeight weight,
+      double height,
+      Color color,
+    ) => CatchFonts.sans(
+      fontSize: size,
+      fontWeight: weight,
+      height: height,
+      color: color,
+    );
+
+    return base.copyWith(
+      displayLarge: style(40, FontWeight.w800, 1.02, tokens.ink),
+      displayMedium: style(32, FontWeight.w800, 1.04, tokens.ink),
+      displaySmall: style(26, FontWeight.w800, 1.08, tokens.ink),
+      headlineLarge: style(32, FontWeight.w800, 1.05, tokens.ink),
+      headlineMedium: style(28, FontWeight.w800, 1.10, tokens.ink),
+      headlineSmall: style(20, FontWeight.w800, 1.14, tokens.ink),
+      titleLarge: style(19, FontWeight.w700, 1.20, tokens.ink),
+      titleMedium: style(16, FontWeight.w700, 1.24, tokens.ink),
+      titleSmall: style(14, FontWeight.w700, 1.26, tokens.ink),
+      bodyLarge: style(16, FontWeight.w400, 1.50, tokens.ink),
+      bodyMedium: style(14, FontWeight.w400, 1.50, tokens.ink),
+      bodySmall: style(13, FontWeight.w400, 1.45, tokens.ink2),
+      labelLarge: style(13, FontWeight.w700, 1.24, tokens.ink),
+      labelMedium: style(11, FontWeight.w700, 1.24, tokens.ink2),
+      labelSmall: style(10, FontWeight.w800, 1.15, tokens.ink2),
+    );
+  }
+
   // ===========================================================================
   // Private builders — route through CatchFonts (which applies optical sizing).
   // ===========================================================================
+
+  static TextStyle _functionStrong14(BuildContext context, {Color? color}) =>
+      _sans(
+        context,
+        size: 14,
+        weight: FontWeight.w700,
+        height: 1.24,
+        color: color,
+      );
 
   static TextStyle _tabular(TextStyle style) =>
       style.copyWith(fontFeatures: const [FontFeature.tabularFigures()]);

@@ -100,7 +100,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text('Unable to save that catch. Please try again.'),
+        find.text('Something went wrong. Please try again.'),
         findsOneWidget,
       );
       expect(find.text('Reload catches'), findsOneWidget);

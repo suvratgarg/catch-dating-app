@@ -42,6 +42,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -142,6 +143,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     final inviteLinksState = _nullableCatchAsyncState(inviteLinksAsync);
     final privateLinkActionState = isInviteOnly
         ? HostPrivateLinkActionState.resolve(
+            l10n: context.l10n,
             accessState: privateAccessState,
             inviteLinksState: inviteLinksState,
             inviteLink: _hostEventInviteUrl(
@@ -207,7 +209,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ),
       body: ListView(
-        key: const Key('host_event_manage_scroll_view'),
+        key: Key(
+          context.l10n.hostsHostEventManageScreenBodyHostEventManageScroll,
+        ),
         padding: CatchInsets.pageBodyUnderHeader,
         children: [
           ..._selectedSectionChildren(
@@ -395,13 +399,17 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   Future<void> _confirmCancelEvent(Event event) async {
     final confirmed = await showCatchAdaptiveDialog<bool>(
       context: context,
-      title: 'Cancel this event?',
+      title: context.l10n.hostsHostEventManageScreenTitleCancelThisEvent,
       message:
-          'Cancelling removes it from schedules but keeps attendee, payment, and history records. Attendees are notified and refunded per your cancellation policy.',
-      actions: const [
-        CatchDialogAction(label: 'Keep event', value: false, isDefault: true),
+          context.l10n.hostsHostEventManageScreenMessageCancellingRemovesItFrom,
+      actions: [
         CatchDialogAction(
-          label: 'Cancel event',
+          label: context.l10n.hostsHostEventManageScreenLabelKeepEvent,
+          value: false,
+          isDefault: true,
+        ),
+        CatchDialogAction(
+          label: context.l10n.hostsHostEventManageScreenLabelCancelEvent,
           value: true,
           isDestructive: true,
         ),
@@ -415,7 +423,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             .get(hostEventManageActionsProvider)
             .cancelHostedEvent(event: event);
         if (!mounted) return;
-        showCatchSnackBar(context, 'Event cancelled.');
+        showCatchSnackBar(
+          context,
+          context.l10n.hostsHostEventManageScreenVisiblecopyEventCancelled,
+        );
       }),
     );
   }
@@ -423,13 +434,16 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   Future<void> _confirmDeleteEvent(Event event, VoidCallback onDeleted) async {
     final confirmed = await showCatchAdaptiveDialog<bool>(
       context: context,
-      title: 'Delete unused event?',
-      message:
-          'Only events with no bookings, waitlist, attendance, payments, or reviews can be deleted. This permanently removes the event.',
-      actions: const [
-        CatchDialogAction(label: 'Keep event', value: false, isDefault: true),
+      title: context.l10n.hostsHostEventManageScreenTitleDeleteUnusedEvent,
+      message: context.l10n.hostsHostEventManageScreenMessageOnlyEventsWithNo,
+      actions: [
         CatchDialogAction(
-          label: 'Delete unused event',
+          label: context.l10n.hostsHostEventManageScreenLabelKeepEvent,
+          value: false,
+          isDefault: true,
+        ),
+        CatchDialogAction(
+          label: context.l10n.hostsHostEventManageScreenLabelDeleteUnusedEvent,
           value: true,
           isDestructive: true,
         ),
@@ -443,7 +457,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             .get(hostEventManageActionsProvider)
             .deleteUnusedEvent(event: event);
         if (!mounted) return;
-        showCatchSnackBar(context, 'Event deleted.');
+        showCatchSnackBar(
+          context,
+          context.l10n.hostsHostEventManageScreenVisiblecopyEventDeleted,
+        );
         onDeleted();
       }),
     );
@@ -467,14 +484,21 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 ),
           );
       if (!mounted) return;
-      showCatchSnackBar(context, '$label copied.');
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsHostEventManageScreenVisiblecopyLabelCopied(
+          label: label,
+        ),
+      );
     } catch (error, stackTrace) {
       ref
           .read(errorLoggerProvider)
           .logError(
             error,
             stackTrace,
-            reason: 'HostEventManageScreen._createNamedInviteLink failed',
+            reason: context
+                .l10n
+                .hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCreatenamedinvitelinkFailed,
           );
     }
   }
@@ -491,14 +515,21 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             .copyInviteLink(label: link.label, url: url),
       );
       if (!mounted) return;
-      showCatchSnackBar(context, '$label copied.');
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsHostEventManageScreenVisiblecopyLabelCopied(
+          label: label,
+        ),
+      );
     } catch (error, stackTrace) {
       ref
           .read(errorLoggerProvider)
           .logError(
             error,
             stackTrace,
-            reason: 'HostEventManageScreen._copyNamedInviteLink failed',
+            reason: context
+                .l10n
+                .hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCopynamedinvitelinkFailed,
           );
     }
   }
@@ -509,12 +540,21 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   }) async {
     final confirmed = await showCatchAdaptiveDialog<bool>(
       context: context,
-      title: 'Disable invite link?',
-      message:
-          'This stops new attribution for ${link.label}, but keeps its history in reporting.',
-      actions: const [
-        CatchDialogAction(label: 'Keep active', value: false),
-        CatchDialogAction(label: 'Disable', value: true, isDestructive: true),
+      title: context.l10n.hostsHostEventManageScreenTitleDisableInviteLink,
+      message: context.l10n
+          .hostsHostEventManageScreenMessageThisStopsNewAttribution(
+            label: link.label,
+          ),
+      actions: [
+        CatchDialogAction(
+          label: context.l10n.hostsHostEventManageScreenLabelKeepActive,
+          value: false,
+        ),
+        CatchDialogAction(
+          label: context.l10n.hostsHostEventManageScreenLabelDisable,
+          value: true,
+          isDestructive: true,
+        ),
       ],
     );
     if (confirmed != true) return;
@@ -528,14 +568,21 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 .disableInviteLink(event: event, link: link),
           );
       if (!mounted) return;
-      showCatchSnackBar(context, '$label disabled.');
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsHostEventManageScreenVisiblecopyLabelDisabled(
+          label: label,
+        ),
+      );
     } catch (error, stackTrace) {
       ref
           .read(errorLoggerProvider)
           .logError(
             error,
             stackTrace,
-            reason: 'HostEventManageScreen._disableNamedInviteLink failed',
+            reason: context
+                .l10n
+                .hostsHostEventManageScreenVisiblecopyHosteventmanagescreenDisablenamedinvitelinkFailed,
           );
     }
   }
@@ -570,8 +617,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   .logError(
                     error,
                     stackTrace,
-                    reason:
-                        'HostEventManageScreen._shareHostPrivateLink failed',
+                    reason: context
+                        .l10n
+                        .hostsHostEventManageScreenVisiblecopyHosteventmanagescreenSharehostprivatelinkFailed,
                   );
             },
           ),
@@ -605,8 +653,11 @@ class HostManageMetaRow extends StatelessWidget {
           flex: 5,
           child: CatchMetaRow(
             icon: CatchIcons.calendarTodayOutlined,
-            label:
-                '${event.shortDateLabel} · ${EventFormatters.time(event.startTime)}',
+            label: context.l10n
+                .hostsHostEventManageScreenLabelShortdatelabelTime(
+                  shortDateLabel: event.shortDateLabel,
+                  time: EventFormatters.time(event.startTime),
+                ),
             color: t.ink2,
           ),
         ),
@@ -650,7 +701,10 @@ class HostManageSectionPicker extends StatelessWidget {
       style: CatchSegmentedControlStyle.surface,
       segments: [
         for (final section in HostEventManageSection.values)
-          CatchSegment(value: section, label: section.label.toUpperCase()),
+          CatchSegment(
+            value: section,
+            label: section.label(context.l10n).toUpperCase(),
+          ),
       ],
       selected: selectedSection,
       onChanged: onChanged,
@@ -702,7 +756,7 @@ class HostPrivateAccessCard extends StatelessWidget {
             gapW12,
             Expanded(
               child: Text(
-                'Loading invite access...',
+                context.l10n.hostsHostEventManageScreenTextLoadingInviteAccess,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.supporting(context, color: t.ink2),
@@ -719,6 +773,7 @@ class HostPrivateAccessCard extends StatelessWidget {
       ),
       builder: (context, access) {
         final privateAccessState = HostPrivateAccessDisplayState.resolve(
+          l10n: context.l10n,
           access: access,
           inviteLinksState: _catchAsyncState(inviteLinksAsync),
           inviteLink: _hostEventInviteUrl(
@@ -840,7 +895,7 @@ class HostPrivateAccessBody extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Private access',
+                      context.l10n.hostsHostEventManageScreenTextPrivateAccess,
                       style: CatchTextStyles.sectionTitle(context),
                     ),
                     gapH4,
@@ -851,20 +906,23 @@ class HostPrivateAccessBody extends StatelessWidget {
                   ],
                 ),
               ),
-              const CatchBadge(label: 'Invite', tone: CatchBadgeTone.brand),
+              CatchBadge(
+                label: context.l10n.hostsHostEventManageScreenLabelInvite,
+                tone: CatchBadgeTone.brand,
+              ),
             ],
           ),
           if (privateAccessState.hasInviteCode) ...[
             gapH14,
             HostEventSummaryRow(
               icon: CatchIcons.passwordRounded,
-              label: 'Code',
+              label: context.l10n.hostsHostEventManageScreenLabelCode,
               value: linkAction.inviteCode!,
             ),
             if (linkAction.inviteLink != null)
               HostEventSummaryRow(
                 icon: CatchIcons.linkRounded,
-                label: 'Link',
+                label: context.l10n.hostsHostEventManageScreenLabelLink,
                 value: linkAction.inviteLink!,
                 showDivider: false,
               ),
@@ -877,7 +935,8 @@ class HostPrivateAccessBody extends StatelessWidget {
             ],
             gapH14,
             CatchButton(
-              label: 'Share private link',
+              label:
+                  context.l10n.hostsHostEventManageScreenLabelSharePrivateLink,
               onPressed: !linkAction.canShare
                   ? null
                   : () => onSharePrivateLink(linkAction.inviteLink!),
@@ -941,7 +1000,7 @@ class HostInviteLinksList extends StatelessWidget {
         LayoutBuilder(
           builder: (context, constraints) {
             final button = CatchButton(
-              label: 'New link',
+              label: context.l10n.hostsHostEventManageScreenLabelNewLink,
               onPressed: state.isMutating
                   ? null
                   : () => unawaited(_createNamedLink(context)),
@@ -954,7 +1013,7 @@ class HostInviteLinksList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Named invite links',
+                    context.l10n.hostsHostEventManageScreenTextNamedInviteLinks,
                     style: CatchTextStyles.labelL(context),
                   ),
                   gapH10,
@@ -966,7 +1025,7 @@ class HostInviteLinksList extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Named invite links',
+                    context.l10n.hostsHostEventManageScreenTextNamedInviteLinks,
                     style: CatchTextStyles.labelL(context),
                   ),
                 ),
@@ -977,7 +1036,7 @@ class HostInviteLinksList extends StatelessWidget {
         ),
         gapH6,
         Text(
-          'Track which channels create demand, bookings, arrivals, catches, and chats.',
+          context.l10n.hostsHostEventManageScreenTextTrackWhichChannelsCreate,
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         if (mutationError != null) ...[
@@ -991,7 +1050,7 @@ class HostInviteLinksList extends StatelessWidget {
         CatchAsyncValueView<List<EventInviteLink>>(
           value: linksAsync,
           loadingBuilder: (_) => Text(
-            'Loading invite links...',
+            context.l10n.hostsHostEventManageScreenTextLoadingInviteLinks,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           errorBuilder: (_, error, _) => CatchInlineErrorState.fromError(
@@ -1082,7 +1141,11 @@ class HostInviteLinkRow extends StatelessWidget {
                       style: CatchTextStyles.labelL(context),
                     ),
                     if (rowState.showDisabledBadge)
-                      const CatchBadge(label: 'Disabled'),
+                      CatchBadge(
+                        label: context
+                            .l10n
+                            .hostsHostEventManageScreenLabelDisabled,
+                      ),
                   ],
                 ),
                 if (rowState.source != null) ...[
@@ -1107,7 +1170,8 @@ class HostInviteLinkRow extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Tooltip(
-                  message: 'Copy link',
+                  message:
+                      context.l10n.hostsHostEventManageScreenMessageCopyLink,
                   child: CatchIconButton(
                     onTap: rowState.actionsDisabled
                         ? null
@@ -1122,7 +1186,9 @@ class HostInviteLinkRow extends StatelessWidget {
                 if (rowState.showDisableAction) ...[
                   gapW8,
                   Tooltip(
-                    message: 'Disable link',
+                    message: context
+                        .l10n
+                        .hostsHostEventManageScreenMessageDisableLink,
                     child: CatchIconButton(
                       onTap: rowState.actionsDisabled
                           ? null
@@ -1172,14 +1238,14 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
           final label = labelController.text.trim();
           final source = sourceController.text.trim();
           return CatchFormDialog(
-            title: 'New invite link',
+            title: context.l10n.hostsHostEventManageScreenTitleNewInviteLink,
             actions: [
               CatchTextButton(
-                label: 'Cancel',
+                label: context.l10n.hostsHostEventManageScreenLabelCancel,
                 onPressed: () => Navigator.of(context).pop(),
               ),
               CatchTextButton(
-                label: 'Create',
+                label: context.l10n.hostsHostEventManageScreenLabelCreate,
                 onPressed: label.isEmpty
                     ? null
                     : () => Navigator.of(context).pop(
@@ -1194,18 +1260,22 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CatchField.input(
-                  title: 'Label',
+                  title: context.l10n.hostsHostEventManageScreenTitleLabel,
                   controller: labelController,
-                  placeholder: 'Instagram bio',
+                  placeholder: context
+                      .l10n
+                      .hostsHostEventManageScreenPlaceholderInstagramBio,
                   textCapitalization: TextCapitalization.words,
                   onChanged: (_) => setState(() {}),
                 ),
                 gapH12,
                 CatchField.input(
-                  title: 'Source',
+                  title: context.l10n.hostsHostEventManageScreenTitleSource,
                   isOptional: true,
                   controller: sourceController,
-                  placeholder: 'instagram',
+                  placeholder: context
+                      .l10n
+                      .hostsHostEventManageScreenPlaceholderInstagram,
                   onChanged: (_) => setState(() {}),
                 ),
               ],
@@ -1237,7 +1307,7 @@ class HostFullCapacityApron extends StatelessWidget {
     final open = (event.capacityLimit - booked).clamp(0, event.capacityLimit);
     final revenueEstimate = booked * event.priceInPaise;
     final revenueLabel = event.isFree
-        ? 'Free'
+        ? context.l10n.hostsHostEventManageScreenVisiblecopyFree
         : EventFormatters.priceInPaise(
             revenueEstimate,
             currencyCode: event.currency,
@@ -1250,20 +1320,33 @@ class HostFullCapacityApron extends StatelessWidget {
           children: [
             Expanded(
               child: HostCapacityTile(
-                value: '$booked',
-                suffix: '/${event.capacityLimit}',
-                label: 'Booked',
-                detail: '$open open',
+                value: context.l10n.hostsHostEventManageScreenVisiblecopyBooked(
+                  booked: booked,
+                ),
+                suffix: context.l10n
+                    .hostsHostEventManageScreenVisiblecopyCapacitylimit(
+                      capacityLimit: event.capacityLimit,
+                    ),
+                label: context.l10n.hostsHostEventManageScreenLabelBooked,
+                detail: context.l10n.hostsHostEventManageScreenDetailOpenOpen(
+                  open: open,
+                ),
               ),
             ),
             gapW10,
             Expanded(
               child: HostCapacityTile(
-                value: '$waitlisted',
-                label: 'Waitlist',
+                value: context.l10n
+                    .hostsHostEventManageScreenVisiblecopyWaitlisted(
+                      waitlisted: waitlisted,
+                    ),
+                label: context.l10n.hostsHostEventManageScreenLabelWaitlist,
                 detail: waitlisted == 1
-                    ? '1 to review'
-                    : '$waitlisted to review',
+                    ? context.l10n.hostsHostEventManageScreenDetail1ToReview
+                    : context.l10n
+                          .hostsHostEventManageScreenDetailWaitlistedToReview(
+                            waitlisted: waitlisted,
+                          ),
               ),
             ),
           ],
@@ -1274,14 +1357,14 @@ class HostFullCapacityApron extends StatelessWidget {
             Expanded(
               child: HostCapacityTile(
                 value: revenueLabel,
-                label: 'Revenue est',
+                label: context.l10n.hostsHostEventManageScreenLabelRevenueEst,
               ),
             ),
             gapW10,
             Expanded(
               child: HostCapacityTile(
                 value: refundPolicy,
-                label: 'Refund policy',
+                label: context.l10n.hostsHostEventManageScreenLabelRefundPolicy,
               ),
             ),
           ],
@@ -1311,12 +1394,12 @@ class HostFullCapacityBanner extends StatelessWidget {
           gapW10,
           Expanded(
             child: Text(
-              'FULL - CAPACITY REACHED',
+              context.l10n.hostsHostEventManageScreenTextFullCapacityReached,
               style: CatchTextStyles.monoLabel(context, color: t.surface),
             ),
           ),
           Text(
-            'WAITLIST OPEN',
+            context.l10n.hostsHostEventManageScreenTextWaitlistOpen,
             style: CatchTextStyles.badge(context, color: t.ink3),
           ),
         ],
@@ -1419,7 +1502,7 @@ class HostEventActionsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'HOST ACTIONS',
+          context.l10n.hostsHostEventManageScreenTextHostActions,
           style: CatchTextStyles.monoLabel(context, color: t.ink2),
         ),
         gapH10,
@@ -1434,13 +1517,14 @@ class HostEventActionsSection extends StatelessWidget {
         ],
         if (actionState.showEditAction)
           HostActionRow(
-            label: 'Edit event details',
-            detail: 'Schedule · location',
+            label: context.l10n.hostsHostEventManageScreenLabelEditEventDetails,
+            detail:
+                context.l10n.hostsHostEventManageScreenDetailScheduleLocation,
             onTap: actionState.isMutating ? null : onEditEvent,
           ),
         if (privateLinkState != null)
           HostActionRow(
-            label: 'Share private link',
+            label: context.l10n.hostsHostEventManageScreenLabelSharePrivateLink,
             detail: privateLinkState.shareDetail,
             onTap: !privateLinkState.canShare
                 ? null
@@ -1449,21 +1533,22 @@ class HostEventActionsSection extends StatelessWidget {
           ),
         gapH18,
         Text(
-          'DANGER ZONE',
+          context.l10n.hostsHostEventManageScreenTextDangerZone,
           style: CatchTextStyles.monoLabel(context, color: t.ink2),
         ),
         gapH10,
         if (actionState.showCancelledState)
-          const HostActionRow(
-            label: 'Event cancelled',
-            detail: 'Records are retained',
+          HostActionRow(
+            label: context.l10n.hostsHostEventManageScreenLabelEventCancelled,
+            detail:
+                context.l10n.hostsHostEventManageScreenDetailRecordsAreRetained,
             destructive: true,
             showDivider: false,
           )
         else ...[
           if (actionState.showCancelAction)
             HostActionRow(
-              label: 'Cancel event',
+              label: context.l10n.hostsHostEventManageScreenLabelCancelEvent,
               detail: actionState.cancelDetail,
               destructive: true,
               onTap: actionState.isMutating
@@ -1473,7 +1558,8 @@ class HostEventActionsSection extends StatelessWidget {
             ),
           if (actionState.showDeleteAction)
             HostActionRow(
-              label: 'Delete unused event',
+              label:
+                  context.l10n.hostsHostEventManageScreenLabelDeleteUnusedEvent,
               detail: actionState.deleteDetail,
               destructive: true,
               onTap: actionState.isMutating
@@ -1582,7 +1668,7 @@ class HostEventSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final price = event.isFree
-        ? 'Free'
+        ? context.l10n.hostsHostEventManageScreenVisiblecopyFree
         : EventFormatters.priceInPaise(
             event.priceInPaise,
             currencyCode: event.currency,
@@ -1595,22 +1681,22 @@ class HostEventSummaryCard extends StatelessWidget {
         children: [
           HostEventSummaryRow(
             icon: CatchIcons.groupsRounded,
-            label: 'Club',
+            label: context.l10n.hostsHostEventManageScreenLabelClub,
             value: club.name,
           ),
           HostEventSummaryRow(
             icon: CatchIcons.locationOnOutlined,
-            label: 'Meet',
+            label: context.l10n.hostsHostEventManageScreenLabelMeet,
             value: event.locationName,
           ),
           HostEventSummaryRow(
             icon: CatchIcons.routeRounded,
-            label: 'Event',
+            label: context.l10n.hostsHostEventManageScreenLabelEvent,
             value: event.activitySummaryLabel,
           ),
           HostEventSummaryRow(
             icon: CatchIcons.paymentsOutlined,
-            label: 'Price',
+            label: context.l10n.hostsHostEventManageScreenLabelPrice,
             value: price,
             showDivider: false,
           ),

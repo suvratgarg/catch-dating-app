@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
 
@@ -78,10 +79,12 @@ class HostPaymentAccountCard extends StatelessWidget {
       builder: (sheetContext) {
         final sheetTokens = CatchTokens.of(sheetContext);
         return CatchBottomSheetScaffold(
-          title: 'Set up payouts',
-          subtitle: 'Powered by Stripe',
+          title: context.l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
+          subtitle:
+              context.l10n.hostsHostPaymentAccountCardSubtitlePoweredByStripe,
           action: CatchButton(
-            label: 'Continue to Stripe',
+            label:
+                context.l10n.hostsHostPaymentAccountCardLabelContinueToStripe,
             icon: Icon(CatchIcons.openInNewRounded),
             fullWidth: true,
             isLoading: onboardingPending,
@@ -104,7 +107,9 @@ class HostPaymentAccountCard extends StatelessWidget {
               ),
               gapH14,
               Text(
-                'Catch pays hosts through Stripe. Finish a short verification on Stripe, then come back here before paid non-INR events can take checkout.',
+                context
+                    .l10n
+                    .hostsHostPaymentAccountCardTextCatchPaysHostsThrough,
                 style: CatchTextStyles.supporting(
                   sheetContext,
                   color: sheetTokens.ink2,
@@ -120,13 +125,16 @@ class HostPaymentAccountCard extends StatelessWidget {
                 child: Column(
                   children: [
                     CatchField.nav(
-                      title: 'Country',
+                      title:
+                          context.l10n.hostsHostPaymentAccountCardTitleCountry,
                       valueText: _countryLabel(country),
                       icon: CatchIcons.locationOnOutlined,
                       showChevron: false,
                     ),
                     CatchField.nav(
-                      title: 'Default currency',
+                      title: context
+                          .l10n
+                          .hostsHostPaymentAccountCardTitleDefaultCurrency,
                       valueText: currency.toUpperCase(),
                       icon: CatchIcons.paymentsOutlined,
                       divider: true,
@@ -137,7 +145,7 @@ class HostPaymentAccountCard extends StatelessWidget {
               ),
               gapH12,
               Text(
-                'We will refresh your payout status when you return.',
+                context.l10n.hostsHostPaymentAccountCardTextWeWillRefreshYour,
                 textAlign: TextAlign.center,
                 style: CatchTextStyles.supporting(
                   sheetContext,
@@ -195,7 +203,7 @@ class HostPaymentAccountContentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final account = this.account;
-    final presentation = _presentation(account);
+    final presentation = _presentation(account, context.l10n);
     final t = CatchTokens.of(context);
 
     return CatchSurface(
@@ -206,7 +214,11 @@ class HostPaymentAccountContentCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Expanded(child: CatchSectionHeader(title: 'Payouts')),
+              Expanded(
+                child: CatchSectionHeader(
+                  title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
+                ),
+              ),
               CatchBadge(
                 label: presentation.badge,
                 tone: presentation.tone,
@@ -233,8 +245,9 @@ class HostPaymentAccountContentCard extends StatelessWidget {
                 CatchBadge(label: account.defaultCurrency),
                 CatchBadge(label: account.country),
                 if (account.disabledReason != null)
-                  const CatchBadge(
-                    label: 'Restricted',
+                  CatchBadge(
+                    label:
+                        context.l10n.hostsHostPaymentAccountCardLabelRestricted,
                     tone: CatchBadgeTone.warning,
                   ),
               ],
@@ -249,7 +262,13 @@ class HostPaymentAccountContentCard extends StatelessWidget {
             children: [
               Expanded(
                 child: CatchButton(
-                  label: account == null ? 'Set up payouts' : 'Continue setup',
+                  label: account == null
+                      ? context
+                            .l10n
+                            .hostsHostPaymentAccountCardLabelSetUpPayouts
+                      : context
+                            .l10n
+                            .hostsHostPaymentAccountCardLabelContinueSetup,
                   onPressed: onboardingPending
                       ? null
                       : () => unawaited(
@@ -262,7 +281,7 @@ class HostPaymentAccountContentCard extends StatelessWidget {
               if (account != null) ...[
                 gapW10,
                 CatchButton(
-                  label: 'Refresh',
+                  label: context.l10n.hostsHostPaymentAccountCardLabelRefresh,
                   onPressed: refreshPending
                       ? null
                       : () => unawaited(onRefresh()),
@@ -278,41 +297,42 @@ class HostPaymentAccountContentCard extends StatelessWidget {
     );
   }
 
-  HostPaymentPresentation _presentation(HostPaymentAccount? account) {
+  HostPaymentPresentation _presentation(
+    HostPaymentAccount? account,
+    AppLocalizations l10n,
+  ) {
     if (account == null) {
-      return const HostPaymentPresentation(
-        badge: 'Not set up',
+      return HostPaymentPresentation(
+        badge: l10n.hostsHostPaymentAccountCardVisiblecopyNotSetUp,
         tone: CatchBadgeTone.warning,
-        title: 'Set up international payouts',
-        body:
-            'Required before paid non-INR events can accept checkout through Stripe.',
+        title: l10n.hostsHostPaymentAccountCardTitleSetUpInternationalPayouts,
+        body: l10n.hostsHostPaymentAccountCardBodyRequiredBeforePaidNon,
       );
     }
     if (account.canAcceptInternationalPayments) {
-      return const HostPaymentPresentation(
-        badge: 'Ready',
+      return HostPaymentPresentation(
+        badge: l10n.hostsHostPaymentAccountCardVisiblecopyReady,
         tone: CatchBadgeTone.success,
-        title: 'International checkout is ready',
-        body:
-            'Non-INR paid bookings can route through Stripe for this host account.',
+        title:
+            l10n.hostsHostPaymentAccountCardTitleInternationalCheckoutIsReady,
+        body: l10n.hostsHostPaymentAccountCardBodyNonInrPaidBookings,
       );
     }
     if (account.onboardingStatus == HostPaymentOnboardingStatus.restricted) {
       return HostPaymentPresentation(
-        badge: 'Action needed',
+        badge: l10n.hostsHostPaymentAccountCardVisiblecopyActionNeeded,
         tone: CatchBadgeTone.warning,
-        title: 'Stripe needs more information',
+        title: l10n.hostsHostPaymentAccountCardTitleStripeNeedsMoreInformation,
         body:
             account.disabledReason ??
-            'Finish the outstanding Stripe requirements to accept payments.',
+            l10n.hostsHostPaymentAccountCardBodyFinishTheOutstandingStripe,
       );
     }
-    return const HostPaymentPresentation(
-      badge: 'Pending',
+    return HostPaymentPresentation(
+      badge: l10n.hostsHostPaymentAccountCardVisiblecopyPending,
       tone: CatchBadgeTone.warning,
-      title: 'Stripe onboarding is in progress',
-      body:
-          'Refresh after completing Stripe onboarding to update checkout readiness.',
+      title: l10n.hostsHostPaymentAccountCardTitleStripeOnboardingIsIn,
+      body: l10n.hostsHostPaymentAccountCardBodyRefreshAfterCompletingStripe,
     );
   }
 }
@@ -331,7 +351,11 @@ class HostPaymentAccountLoadingCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Expanded(child: CatchSectionHeader(title: 'Payouts')),
+              Expanded(
+                child: CatchSectionHeader(
+                  title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
+                ),
+              ),
               CatchSkeleton.box(
                 width: CatchLayout.skeletonStatusPillWidth,
                 height: CatchSpacing.s6,
@@ -373,7 +397,9 @@ class HostPaymentAccountErrorCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const CatchSectionHeader(title: 'Payouts'),
+          CatchSectionHeader(
+            title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
+          ),
           gapH12,
           CatchErrorState.fromError(
             error,

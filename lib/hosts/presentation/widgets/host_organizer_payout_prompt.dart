@@ -4,50 +4,32 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 @immutable
 class HostOrganizerPayoutPromptState {
-  const HostOrganizerPayoutPromptState._({
-    required this.visible,
-    required this.loading,
-    required this.title,
-    required this.message,
-  });
+  const HostOrganizerPayoutPromptState._(this.kind);
 
   const HostOrganizerPayoutPromptState.hidden()
-    : this._(visible: false, loading: false, title: '', message: '');
+    : this._(HostOrganizerPayoutPromptKind.hidden);
 
   const HostOrganizerPayoutPromptState.loading()
-    : this._(
-        visible: true,
-        loading: true,
-        title: 'Checking payout status',
-        message:
-            'We are checking whether this organizer can collect paid bookings.',
-      );
+    : this._(HostOrganizerPayoutPromptKind.loading);
 
   const HostOrganizerPayoutPromptState.error()
-    : this._(
-        visible: true,
-        loading: false,
-        title: 'Payout status needs attention',
-        message: 'Open payouts to retry status checks and continue setup.',
-      );
+    : this._(HostOrganizerPayoutPromptKind.error);
 
   const HostOrganizerPayoutPromptState.setupRequired()
-    : this._(
-        visible: true,
-        loading: false,
-        title: 'Connect payouts to get paid',
-        message: "Paid events can't collect until Stripe is set up.",
-      );
+    : this._(HostOrganizerPayoutPromptKind.setupRequired);
 
-  final bool visible;
-  final bool loading;
-  final String title;
-  final String message;
+  final HostOrganizerPayoutPromptKind kind;
+
+  bool get visible => kind != HostOrganizerPayoutPromptKind.hidden;
+  bool get loading => kind == HostOrganizerPayoutPromptKind.loading;
 }
+
+enum HostOrganizerPayoutPromptKind { hidden, loading, error, setupRequired }
 
 class HostOrganizerPayoutPrompt extends StatelessWidget {
   const HostOrganizerPayoutPrompt({
@@ -68,6 +50,26 @@ class HostOrganizerPayoutPrompt extends StatelessWidget {
       t.warning.withValues(alpha: CatchOpacity.calloutFill),
       t.surface,
     );
+    final title = switch (state.kind) {
+      HostOrganizerPayoutPromptKind.loading =>
+        context.l10n.hostsHostOrganizerPayoutPromptTitleCheckingPayoutStatus,
+      HostOrganizerPayoutPromptKind.error =>
+        context
+            .l10n
+            .hostsHostOrganizerPayoutPromptTitlePayoutStatusNeedsAttention,
+      HostOrganizerPayoutPromptKind.setupRequired =>
+        context.l10n.hostsHostOrganizerPayoutPromptTitleConnectPayoutsToGet,
+      HostOrganizerPayoutPromptKind.hidden => '',
+    };
+    final message = switch (state.kind) {
+      HostOrganizerPayoutPromptKind.loading =>
+        context.l10n.hostsHostOrganizerPayoutPromptMessageWeAreCheckingWhether,
+      HostOrganizerPayoutPromptKind.error =>
+        context.l10n.hostsHostOrganizerPayoutPromptMessageOpenPayoutsToRetry,
+      HostOrganizerPayoutPromptKind.setupRequired =>
+        context.l10n.hostsHostOrganizerPayoutPromptMessagePaidEventsCanT,
+      HostOrganizerPayoutPromptKind.hidden => '',
+    };
 
     return CatchSurface(
       backgroundColor: warningFill,
@@ -93,10 +95,10 @@ class HostOrganizerPayoutPrompt extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(state.title, style: CatchTextStyles.labelL(context)),
+                Text(title, style: CatchTextStyles.labelL(context)),
                 gapH2,
                 Text(
-                  state.message,
+                  message,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 if (!state.loading) ...[
@@ -104,7 +106,9 @@ class HostOrganizerPayoutPrompt extends StatelessWidget {
                   SizedBox(
                     width: CatchLayout.hostPayoutSetupButtonWidth,
                     child: CatchButton(
-                      label: 'Set up payouts',
+                      label: context
+                          .l10n
+                          .hostsHostOrganizerPayoutPromptLabelSetUpPayouts,
                       size: CatchButtonSize.sm,
                       fullWidth: true,
                       onPressed: onManagePayouts,

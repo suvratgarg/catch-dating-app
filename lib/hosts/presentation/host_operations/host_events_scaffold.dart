@@ -97,12 +97,14 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
             children: [
               if (selectedClub == null)
                 HostEmptyActionCard(
-                  title: 'Create your first club',
-                  body:
-                      'Create a club to publish events, manage attendees, and run Event Success.',
+                  title: context
+                      .l10n
+                      .hostsHostEventsScaffoldTitleCreateYourFirstClub,
+                  body: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
                   actions: [
                     CatchButton(
-                      label: 'Create club',
+                      label:
+                          context.l10n.hostsHostEventsScaffoldLabelCreateClub,
                       icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
                       onPressed: () =>
                           context.pushNamed(Routes.hostCreateClubScreen.name),
@@ -142,17 +144,18 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
           children: [
             if (selectedClub == null) ...[
               Text(
-                'Events',
+                context.l10n.hostsHostEventsScaffoldTextEvents,
                 style: CatchTextStyles.headline(context, color: t.ink),
               ),
               gapH24,
               HostEmptyActionCard(
-                title: 'Create your first club',
-                body:
-                    'Create a club to publish events, manage attendees, and run Event Success.',
+                title: context
+                    .l10n
+                    .hostsHostEventsScaffoldTitleCreateYourFirstClub,
+                body: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
                 actions: [
                   CatchButton(
-                    label: 'Create club',
+                    label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
                     icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
                     onPressed: () =>
                         context.pushNamed(Routes.hostCreateClubScreen.name),

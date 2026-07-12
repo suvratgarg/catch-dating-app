@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class EventSuccessStructureConfigEditor extends StatelessWidget {
@@ -36,12 +37,19 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             CatchBadge(
-              label: '${value.unitSize} per ${value.unitKind.singularLabel}',
+              label: context.l10n
+                  .eventSuccessEventSuccessStructureConfigEditorLabelUnitsizePerSingularlabel(
+                    unitSize: value.unitSize,
+                    singularLabel: value.unitKind.singularLabel,
+                  ),
               icon: CatchIcons.groups2Outlined,
             ),
             CatchBadge(
-              label:
-                  '$estimatedUnitCount ${value.unitKind.label.toLowerCase()}',
+              label: context.l10n
+                  .eventSuccessEventSuccessStructureConfigEditorLabelEstimatedunitcountTolowercase(
+                    estimatedUnitCount: estimatedUnitCount,
+                    toLowerCase: value.unitKind.label.toLowerCase(),
+                  ),
               icon: CatchIcons.gridViewRounded,
             ),
           ],
@@ -52,7 +60,12 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           style: CatchTextStyles.supporting(context),
         ),
         gapH12,
-        Text('Flow type', style: CatchTextStyles.labelL(context)),
+        Text(
+          context
+              .l10n
+              .eventSuccessEventSuccessStructureConfigEditorTextFlowType,
+          style: CatchTextStyles.labelL(context),
+        ),
         gapH8,
         Wrap(
           spacing: CatchSpacing.s2,
@@ -85,8 +98,13 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                   child: StructureNumberField(
                     label: value.unitKind.peoplePerLabel,
                     detail: value.unitKind == EventSuccessUnitKind.wholeGroup
-                        ? 'Whole-group formats use the target attendance.'
-                        : 'Target size for each ${value.unitKind.singularLabel}.',
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessStructureConfigEditorDetailWholeGroupFormatsUse
+                        : context.l10n
+                              .eventSuccessEventSuccessStructureConfigEditorDetailTargetSizeForEach(
+                                singularLabel: value.unitKind.singularLabel,
+                              ),
                     child: CatchNumberStepper(
                       value: value.unitSize,
                       min: value.unitKind == EventSuccessUnitKind.wholeGroup
@@ -95,7 +113,10 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                       max: value.unitKind == EventSuccessUnitKind.wholeGroup
                           ? targetAttendeeCount
                           : 12,
-                      formatValue: (number) => '${number.toInt()} people',
+                      formatValue: (number) => context.l10n
+                          .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointPeople(
+                            toInt: number.toInt(),
+                          ),
                       enabled:
                           enabled &&
                           value.unitKind != EventSuccessUnitKind.wholeGroup,
@@ -109,8 +130,12 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                   child: StructureNumberField(
                     label: value.unitKind.countLabel,
                     detail: value.unitKind.supportsUnitCount
-                        ? 'Set a host-owned count or let Catch estimate it from attendance.'
-                        : 'Whole-group formats keep everyone in one shared flow.',
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessStructureConfigEditorDetailSetAHostOwned
+                        : context
+                              .l10n
+                              .eventSuccessEventSuccessStructureConfigEditorDetailWholeGroupFormatsKeep,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -119,7 +144,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                           runSpacing: CatchSpacing.s2,
                           children: [
                             CatchSelectChip(
-                              label: 'Auto',
+                              label: context
+                                  .l10n
+                                  .eventSuccessEventSuccessStructureConfigEditorLabelAuto,
                               active: value.unitCount == null,
                               enabled:
                                   enabled && value.unitKind.supportsUnitCount,
@@ -130,7 +157,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                                   : null,
                             ),
                             CatchSelectChip(
-                              label: 'Fixed',
+                              label: context
+                                  .l10n
+                                  .eventSuccessEventSuccessStructureConfigEditorLabelFixed,
                               active: value.unitCount != null,
                               enabled:
                                   enabled && value.unitKind.supportsUnitCount,
@@ -148,8 +177,17 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                         if (value.unitCount == null)
                           Text(
                             value.unitKind.supportsUnitCount
-                                ? 'Auto: about $estimatedUnitCount ${value.unitKind.label.toLowerCase()} from $targetAttendeeCount target attendees.'
-                                : 'One shared group for the full event.',
+                                ? context.l10n
+                                      .eventSuccessEventSuccessStructureConfigEditorTextAutoAboutEstimatedunitcountTolowercase(
+                                        estimatedUnitCount: estimatedUnitCount,
+                                        toLowerCase: value.unitKind.label
+                                            .toLowerCase(),
+                                        targetAttendeeCount:
+                                            targetAttendeeCount,
+                                      )
+                                : context
+                                      .l10n
+                                      .eventSuccessEventSuccessStructureConfigEditorTextOneSharedGroupFor,
                             style: CatchTextStyles.supporting(
                               context,
                               color: t.ink2,
@@ -160,8 +198,12 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                             value: value.unitCount ?? estimatedUnitCount,
                             min: 1,
                             max: 40,
-                            formatValue: (number) =>
-                                '${number.toInt()} ${value.unitKind.label.toLowerCase()}',
+                            formatValue: (number) => context.l10n
+                                .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointTolowercase(
+                                  toInt: number.toInt(),
+                                  toLowerCase: value.unitKind.label
+                                      .toLowerCase(),
+                                ),
                             enabled:
                                 enabled &&
                                 value.unitKind.supportsUnitCount &&
@@ -180,10 +222,17 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         ),
         if (value.unitKind != EventSuccessUnitKind.wholeGroup) ...[
           gapH12,
-          Text('Assignment goals', style: CatchTextStyles.labelL(context)),
+          Text(
+            context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorTextAssignmentGoals,
+            style: CatchTextStyles.labelL(context),
+          ),
           gapH8,
           ActivityAttributeGoalChips(
-            title: 'Balance across units',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorTitleBalanceAcrossUnits,
             attributes: value.balanceActivityAttributes,
             labelFor: (attribute) => attribute.balanceLabel,
             enabled: enabled,
@@ -202,7 +251,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           ),
           gapH8,
           ActivityAttributeGoalChips(
-            title: 'Cluster similar people',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorTitleClusterSimilarPeople,
             attributes: value.clusterActivityAttributes,
             labelFor: (attribute) => attribute.clusterLabel,
             enabled: enabled,
@@ -222,7 +273,12 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         ],
         if (value.rotates) ...[
           gapH12,
-          Text('Repeat policy', style: CatchTextStyles.labelL(context)),
+          Text(
+            context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorTextRepeatPolicy,
+            style: CatchTextStyles.labelL(context),
+          ),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -243,14 +299,21 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           ),
           gapH8,
           StructureNumberField(
-            label: 'Max meetings per pair',
-            detail: 'Caps repeat pairings when the event has extra rounds.',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorLabelMaxMeetingsPerPair,
+            detail: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorDetailCapsRepeatPairingsWhen,
             child: CatchNumberStepper(
               value: value.maxPairMeetings,
               min: 1,
               max: 10,
-              formatValue: (number) =>
-                  '${number.toInt()} ${number.toInt() == 1 ? 'time' : 'times'}',
+              formatValue: (number) => context.l10n
+                  .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointValue2(
+                    toInt: number.toInt(),
+                    value2: number.toInt() == 1 ? 'time' : 'times',
+                  ),
               enabled: enabled,
               onChanged: (number) =>
                   onChanged(value.copyWith(maxPairMeetings: number.toInt())),
@@ -260,7 +323,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         if (!enabled) ...[
           gapH8,
           Text(
-            'Structure is locked once attendance or waitlist activity exists.',
+            context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorTextStructureIsLockedOnce,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],

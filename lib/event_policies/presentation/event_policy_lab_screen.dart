@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_preview.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 abstract final class EventPolicyLabKeys {
@@ -64,7 +65,11 @@ class _EventPolicyLabScreenState extends State<EventPolicyLabScreen> {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: const CatchTopBar(title: 'Event policy lab', border: true),
+      appBar: CatchTopBar(
+        title:
+            context.l10n.eventPoliciesEventPolicyLabScreenTitleEventPolicyLab,
+        border: true,
+      ),
       body: SafeArea(
         top: false,
         child: ListView(
@@ -110,12 +115,16 @@ class EventPolicyLabHeader extends StatelessWidget {
           runSpacing: CatchSpacing.s1,
           children: [
             CatchBadge(
-              label: 'In development',
+              label: context
+                  .l10n
+                  .eventPoliciesEventPolicyLabScreenLabelInDevelopment,
               tone: CatchBadgeTone.warning,
               icon: CatchIcons.scienceOutlined,
             ),
             CatchBadge(
-              label: 'No live writes',
+              label: context
+                  .l10n
+                  .eventPoliciesEventPolicyLabScreenLabelNoLiveWrites,
               tone: CatchBadgeTone.success,
               icon: CatchIcons.lockOutlineRounded,
             ),
@@ -140,14 +149,15 @@ class EventPolicyLabHeader extends StatelessWidget {
             final children = [
               CatchStatColumn(
                 icon: CatchIcons.groupOutlined,
-                label: 'Capacity',
+                label:
+                    context.l10n.eventPoliciesEventPolicyLabScreenLabelCapacity,
                 value: '${policy.capacityLimit}',
                 center: true,
                 surface: true,
               ),
               CatchStatColumn(
                 icon: CatchIcons.confirmationNumberOutlined,
-                label: 'Base',
+                label: context.l10n.eventPoliciesEventPolicyLabScreenLabelBase,
                 value: _formatPaise(pricing.basePrice.inPaise),
                 center: true,
                 monoValue: true,
@@ -155,14 +165,16 @@ class EventPolicyLabHeader extends StatelessWidget {
               ),
               CatchStatColumn(
                 icon: CatchIcons.eventSeatOutlined,
-                label: 'Booked',
+                label:
+                    context.l10n.eventPoliciesEventPolicyLabScreenLabelBooked,
                 value: '${scenario.roster.totalBooked}',
                 center: true,
                 surface: true,
               ),
               CatchStatColumn(
                 icon: CatchIcons.scheduleOutlined,
-                label: 'Waitlist',
+                label:
+                    context.l10n.eventPoliciesEventPolicyLabScreenLabelWaitlist,
                 value: '${scenario.roster.totalWaitlisted}',
                 center: true,
                 surface: true,
@@ -223,9 +235,13 @@ class EventPolicyScenarioPicker extends StatelessWidget {
       children: [
         EventPolicyLabSectionTitle(
           icon: CatchIcons.tuneRounded,
-          title: 'Host configuration',
+          title: context
+              .l10n
+              .eventPoliciesEventPolicyLabScreenTitleHostConfiguration,
           trailing: Text(
-            '${EventPolicyPreviewCatalog.defaultScenarios.length} fixtures',
+            context.l10n.eventPoliciesEventPolicyLabScreenTextLengthFixtures(
+              length: EventPolicyPreviewCatalog.defaultScenarios.length,
+            ),
             style: CatchTextStyles.labelS(
               context,
               color: CatchTokens.of(context).ink3,
@@ -327,7 +343,7 @@ class EventPolicySummary extends StatelessWidget {
       children: [
         EventPolicyLabSectionTitle(
           icon: CatchIcons.ruleRounded,
-          title: 'Policy shape',
+          title: context.l10n.eventPoliciesEventPolicyLabScreenTitlePolicyShape,
         ),
         gapH10,
         CatchSurface(
@@ -337,20 +353,24 @@ class EventPolicySummary extends StatelessWidget {
             children: [
               EventPolicySummaryLine(
                 icon: CatchIcons.eventAvailableOutlined,
-                label: 'Admission',
+                label: context
+                    .l10n
+                    .eventPoliciesEventPolicyLabScreenLabelAdmission,
                 value: _formatAdmissionFormat(admission.format),
               ),
               EventPolicyDividerLine(color: t.line),
               EventPolicySummaryLine(
                 icon: CatchIcons.queueOutlined,
-                label: 'Waitlist',
+                label:
+                    context.l10n.eventPoliciesEventPolicyLabScreenLabelWaitlist,
                 value: _formatWaitlist(admission.waitlistPolicy.mode),
               ),
               if (admission.inviteRequired) ...[
                 EventPolicyDividerLine(color: t.line),
                 EventPolicySummaryLine(
                   icon: CatchIcons.keyOutlined,
-                  label: 'Invite',
+                  label:
+                      context.l10n.eventPoliciesEventPolicyLabScreenLabelInvite,
                   value: 'Required',
                 ),
               ],
@@ -358,7 +378,9 @@ class EventPolicySummary extends StatelessWidget {
                 EventPolicyDividerLine(color: t.line),
                 EventPolicySummaryLine(
                   icon: CatchIcons.cardMembershipOutlined,
-                  label: 'Membership',
+                  label: context
+                      .l10n
+                      .eventPoliciesEventPolicyLabScreenLabelMembership,
                   value: 'Required',
                 ),
               ],
@@ -366,7 +388,9 @@ class EventPolicySummary extends StatelessWidget {
                 EventPolicyDividerLine(color: t.line),
                 EventPolicySummaryLine(
                   icon: CatchIcons.factCheckOutlined,
-                  label: 'Host review',
+                  label: context
+                      .l10n
+                      .eventPoliciesEventPolicyLabScreenLabelHostReview,
                   value: 'Required',
                 ),
               ],
@@ -374,7 +398,9 @@ class EventPolicySummary extends StatelessWidget {
                 EventPolicyDividerLine(color: t.line),
                 EventPolicySummaryLine(
                   icon: CatchIcons.groups2Outlined,
-                  label: 'Cohort caps',
+                  label: context
+                      .l10n
+                      .eventPoliciesEventPolicyLabScreenLabelCohortCaps,
                   value: _formatCohortCaps(admission.cohortCapacityLimits),
                 ),
               ],
@@ -382,14 +408,17 @@ class EventPolicySummary extends StatelessWidget {
                 EventPolicyDividerLine(color: t.line),
                 EventPolicySummaryLine(
                   icon: CatchIcons.balanceOutlined,
-                  label: 'Ratio',
+                  label:
+                      context.l10n.eventPoliciesEventPolicyLabScreenLabelRatio,
                   value:
                       '${_formatCohortId(ratio.leftCohortId)} / ${_formatCohortId(ratio.rightCohortId)} · ±${ratio.maxSkew}',
                 ),
                 EventPolicyDividerLine(color: t.line),
                 EventPolicySummaryLine(
                   icon: CatchIcons.diversity3Outlined,
-                  label: 'Out-of-ratio',
+                  label: context
+                      .l10n
+                      .eventPoliciesEventPolicyLabScreenLabelOutOfRatio,
                   value: _formatOutOfRatio(ratio.outOfRatioCohortPolicy),
                 ),
               ],
@@ -397,7 +426,9 @@ class EventPolicySummary extends StatelessWidget {
                 EventPolicyDividerLine(color: t.line),
                 EventPolicySummaryLine(
                   icon: CatchIcons.discountOutlined,
-                  label: 'Cohort pricing',
+                  label: context
+                      .l10n
+                      .eventPoliciesEventPolicyLabScreenLabelCohortPricing,
                   value: pricing.cohortAdjustments.entries
                       .map(
                         (entry) =>
@@ -410,7 +441,9 @@ class EventPolicySummary extends StatelessWidget {
                 EventPolicyDividerLine(color: t.line),
                 EventPolicySummaryLine(
                   icon: CatchIcons.trendingUpRounded,
-                  label: 'Demand pricing',
+                  label: context
+                      .l10n
+                      .eventPoliciesEventPolicyLabScreenLabelDemandPricing,
                   value: pricing.demandPricingRules
                       .map(
                         (rule) =>
@@ -422,19 +455,25 @@ class EventPolicySummary extends StatelessWidget {
               EventPolicyDividerLine(color: t.line),
               EventPolicySummaryLine(
                 icon: CatchIcons.eventBusyOutlined,
-                label: 'Cancellation',
+                label: context
+                    .l10n
+                    .eventPoliciesEventPolicyLabScreenLabelCancellation,
                 value: cancellation.title,
               ),
               EventPolicyDividerLine(color: t.line),
               EventPolicySummaryLine(
                 icon: CatchIcons.assignmentReturnOutlined,
-                label: 'Attendee terms',
+                label: context
+                    .l10n
+                    .eventPoliciesEventPolicyLabScreenLabelAttendeeTerms,
                 value: cancellation.attendeeSummary,
               ),
               EventPolicyDividerLine(color: t.line),
               EventPolicySummaryLine(
                 icon: CatchIcons.paymentsOutlined,
-                label: 'Host payout',
+                label: context
+                    .l10n
+                    .eventPoliciesEventPolicyLabScreenLabelHostPayout,
                 value: settlement.title,
               ),
             ],
@@ -458,9 +497,13 @@ class EventPolicyResultRows extends StatelessWidget {
       children: [
         EventPolicyLabSectionTitle(
           icon: CatchIcons.tableRowsOutlined,
-          title: 'Preview outcomes',
+          title: context
+              .l10n
+              .eventPoliciesEventPolicyLabScreenTitlePreviewOutcomes,
           trailing: Text(
-            '${result.rows.length} probes',
+            context.l10n.eventPoliciesEventPolicyLabScreenTextLengthProbes(
+              length: result.rows.length,
+            ),
             style: CatchTextStyles.labelS(
               context,
               color: CatchTokens.of(context).ink3,
@@ -543,7 +586,16 @@ class EventPolicyResultRow extends StatelessWidget {
               row.demandAdjustmentInPaise != 0) ...[
             gapH10,
             Text(
-              'Base ${_formatPaise(row.basePriceInPaise)} · cohort ${_formatSignedPaise(row.cohortAdjustmentInPaise)} · demand ${_formatSignedPaise(row.demandAdjustmentInPaise)}',
+              context.l10n
+                  .eventPoliciesEventPolicyLabScreenTextBaseFormatpaiseCohortFormatsignedpaise(
+                    formatPaise: _formatPaise(row.basePriceInPaise),
+                    formatSignedPaise: _formatSignedPaise(
+                      row.cohortAdjustmentInPaise,
+                    ),
+                    formatSignedPaise2: _formatSignedPaise(
+                      row.demandAdjustmentInPaise,
+                    ),
+                  ),
               style: CatchTextStyles.supporting(context, color: t.ink3),
             ),
           ],
@@ -567,9 +619,13 @@ class EventPolicyCancellationRows extends StatelessWidget {
       children: [
         EventPolicyLabSectionTitle(
           icon: CatchIcons.assignmentReturnOutlined,
-          title: 'Cancellation outcomes',
+          title: context
+              .l10n
+              .eventPoliciesEventPolicyLabScreenTitleCancellationOutcomes,
           trailing: Text(
-            '${result.cancellationRows.length} probes',
+            context.l10n.eventPoliciesEventPolicyLabScreenTextLengthProbes(
+              length: result.cancellationRows.length,
+            ),
             style: CatchTextStyles.labelS(context, color: t.ink3),
           ),
         ),
@@ -618,7 +674,13 @@ class EventPolicyCancellationRow extends StatelessWidget {
                     ),
                     gapH4,
                     Text(
-                      '${_formatCancellationActor(row.actor)} · ${row.beforeStartHours}h before start',
+                      context.l10n
+                          .eventPoliciesEventPolicyLabScreenTextFormatcancellationactorBeforestarthoursHBefore(
+                            formatCancellationActor: _formatCancellationActor(
+                              row.actor,
+                            ),
+                            beforeStartHours: row.beforeStartHours,
+                          ),
                       style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
@@ -641,16 +703,24 @@ class EventPolicyCancellationRow extends StatelessWidget {
                 icon: CatchIcons.ruleOutlined,
               ),
               CatchBadge(
-                label: 'Refund ${_formatPaise(row.refundAmountInPaise)}',
+                label: context.l10n
+                    .eventPoliciesEventPolicyLabScreenLabelRefundFormatpaise(
+                      formatPaise: _formatPaise(row.refundAmountInPaise),
+                    ),
                 icon: CatchIcons.paymentsOutlined,
               ),
               CatchBadge(
-                label: 'Credit ${_formatPaise(row.creditAmountInPaise)}',
+                label: context.l10n
+                    .eventPoliciesEventPolicyLabScreenLabelCreditFormatpaise(
+                      formatPaise: _formatPaise(row.creditAmountInPaise),
+                    ),
                 icon: CatchIcons.accountBalanceWalletOutlined,
               ),
               if (row.isWaitlisted)
                 CatchBadge(
-                  label: 'Waitlist',
+                  label: context
+                      .l10n
+                      .eventPoliciesEventPolicyLabScreenLabelWaitlist,
                   tone: CatchBadgeTone.brand,
                   icon: CatchIcons.queueOutlined,
                 ),
@@ -682,7 +752,7 @@ class EventPolicyDebugOutput extends StatelessWidget {
       children: [
         EventPolicyLabSectionTitle(
           icon: CatchIcons.dataObjectRounded,
-          title: 'Debug map',
+          title: context.l10n.eventPoliciesEventPolicyLabScreenTitleDebugMap,
         ),
         gapH10,
         CatchSurface(

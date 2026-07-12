@@ -79,6 +79,10 @@ void main() {
     tester,
   ) async {
     late final List<TextStyle> styles;
+    late final TextStyle kicker;
+    late final TextStyle kickerLarge;
+    late final TextStyle monoCapsLabel;
+    late final TextStyle badgeCaps;
 
     await tester.pumpWidget(
       _wrap(
@@ -98,13 +102,15 @@ void main() {
                 CatchTextStyles.bodyL(context),
                 CatchTextStyles.bodyS(context),
                 CatchTextStyles.labelL(context),
-                CatchTextStyles.kicker(context),
-                CatchTextStyles.kickerLg(context),
                 CatchTextStyles.monoLabel(context),
                 CatchTextStyles.monoLabelS(context),
                 CatchTextStyles.mono(context),
                 CatchTextStyles.badge(context),
               ];
+              kicker = CatchTextStyles.kicker(context);
+              kickerLarge = CatchTextStyles.kickerLg(context);
+              monoCapsLabel = CatchTextStyles.monoCapsLabel(context);
+              badgeCaps = CatchTextStyles.badgeCaps(context);
               return const Text('Typography sample');
             },
           ),
@@ -116,6 +122,10 @@ void main() {
       TextDecoration.none,
     });
     expect(styles.map((style) => style.letterSpacing).toSet(), {0});
+    expect(kicker.letterSpacing, 1.76);
+    expect(kickerLarge.letterSpacing, 2.16);
+    expect(monoCapsLabel.letterSpacing, 1.43);
+    expect(badgeCaps.letterSpacing, 0.72);
   });
 
   testWidgets('CatchKicker renders uppercase mono eyebrow sizes', (
@@ -2540,7 +2550,10 @@ void main() {
     );
 
     expect(find.text('Something went wrong'), findsOneWidget);
-    expect(find.text('Could not load profile'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
     expect(find.byType(CatchErrorBody), findsOneWidget);
     expect(find.text('Try again'), findsOneWidget);
     expect(find.textContaining('StackTrace'), findsNothing);
@@ -2564,7 +2577,10 @@ void main() {
     );
 
     expect(find.text('Check your details'), findsOneWidget);
-    expect(find.text('Please enter a valid phone number.'), findsOneWidget);
+    expect(
+      find.text('Check the highlighted details and try again.'),
+      findsOneWidget,
+    );
     expect(find.text('Try again'), findsNothing);
   });
 
@@ -2602,8 +2618,11 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchErrorState), findsOneWidget);
-    expect(find.text('load failed'), findsOneWidget);
+    expect(find.bySubtype<CatchErrorState>(), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('CatchAsyncValueView supports context-aware state builders', (
@@ -2676,7 +2695,10 @@ void main() {
     await tester.tap(find.text('Show error'));
     await tester.pump();
 
-    expect(find.text('snack failed'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('showCatchSnackBar pins token contrast in dark mode', (
@@ -2847,7 +2869,10 @@ void main() {
     await tester.tap(find.text('Delete'));
     await pumpFeatureUi(tester);
 
-    expect(find.text('delete failed'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('CatchField can render control content expanded on first build', (

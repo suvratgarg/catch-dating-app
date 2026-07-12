@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_picker_tile.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class WhenStep extends StatelessWidget {
@@ -44,24 +45,31 @@ class WhenStep extends StatelessWidget {
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [
-          const CatchFormFieldLabel(label: 'Date', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsWhenStepLabelDate,
+            large: true,
+          ),
           gapH8,
           HostPickerTile(
             key: CreateEventFormKeys.datePicker,
             icon: CatchIcons.calendarTodayOutlined,
             value: dateController.text.isEmpty ? null : dateController.text,
-            placeholder: 'Select a date',
+            placeholder: context.l10n.hostsWhenStepPlaceholderSelectADate,
             onTap: onPickDate,
           ),
           FormField<String>(
-            validator: (_) =>
-                dateController.text.isEmpty ? 'Please select a date' : null,
+            validator: (_) => dateController.text.isEmpty
+                ? context.l10n.hostsWhenStepVisiblecopyPleaseSelectADate
+                : null,
             builder: (field) => field.hasError
                 ? WhenStepFieldError(text: field.errorText!)
                 : const SizedBox.shrink(),
           ),
           gapH20,
-          const CatchFormFieldLabel(label: 'Start time', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsWhenStepLabelStartTime,
+            large: true,
+          ),
           gapH8,
           HostPickerTile(
             key: CreateEventFormKeys.timePicker,
@@ -69,12 +77,13 @@ class WhenStep extends StatelessWidget {
             value: startTimeController.text.isEmpty
                 ? null
                 : startTimeController.text,
-            placeholder: 'Select start time',
+            placeholder: context.l10n.hostsWhenStepPlaceholderSelectStartTime,
             onTap: onPickTime,
           ),
           FormField<String>(
-            validator: (_) =>
-                startTimeController.text.isEmpty ? 'Required' : null,
+            validator: (_) => startTimeController.text.isEmpty
+                ? context.l10n.hostsWhenStepVisiblecopyRequired
+                : null,
             builder: (field) => field.hasError
                 ? WhenStepFieldError(text: field.errorText!)
                 : const SizedBox.shrink(),
@@ -82,14 +91,19 @@ class WhenStep extends StatelessWidget {
           if (scheduleErrorText != null)
             WhenStepFieldError(text: scheduleErrorText!),
           gapH20,
-          const CatchFormFieldLabel(label: 'Duration', large: true),
+          CatchFormFieldLabel(
+            label: context.l10n.hostsWhenStepLabelDuration,
+            large: true,
+          ),
           gapH8,
           CatchNumberStepper(
             value: durationMinutes,
             onDecrease: onDecreaseDuration,
             onIncrease: onIncreaseDuration,
-            decreaseTooltip: 'Decrease duration',
-            increaseTooltip: 'Increase duration',
+            decreaseTooltip:
+                context.l10n.hostsWhenStepVisiblecopyDecreaseDuration,
+            increaseTooltip:
+                context.l10n.hostsWhenStepVisiblecopyIncreaseDuration,
             formatValue: (value) => formatDuration(value.round()),
           ),
         ],

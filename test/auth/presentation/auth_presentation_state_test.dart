@@ -44,8 +44,8 @@ void main() {
       expect(state.canVerify, true);
       expect(state.verifyButtonLoading, false);
       expect(state.canResend, true);
-      expect(state.resendCooldownLabel, 'RESEND NOW');
-      expect(state.resendButtonLabel, 'Resend OTP');
+      expect(state.secondsUntilResend, 0);
+      expect(state.isSendPending, false);
       expect(state.canChangeNumber, true);
     });
 
@@ -64,8 +64,8 @@ void main() {
       expect(state.canVerify, false);
       expect(state.canResend, false);
       expect(state.canChangeNumber, false);
-      expect(state.resendCooldownLabel, 'RESEND IN 0:07');
-      expect(state.resendButtonLabel, 'Sending OTP...');
+      expect(state.secondsUntilResend, 7);
+      expect(state.isSendPending, true);
     });
 
     test(

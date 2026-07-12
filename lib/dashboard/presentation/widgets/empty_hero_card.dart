@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -70,7 +71,7 @@ class EmptyHeroContent extends StatelessWidget {
       children: [
         if (showWelcomeEyebrow) ...[
           Text(
-            'WELCOME TO CATCH',
+            context.l10n.dashboardEmptyHeroCardTextWelcomeToCatch,
             style: CatchTextStyles.kicker(
               context,
               color: CatchTokens.editorialWhite,
@@ -79,7 +80,7 @@ class EmptyHeroContent extends StatelessWidget {
           gapH28,
         ],
         Text(
-          '● NO EVENTS BOOKED',
+          context.l10n.dashboardEmptyHeroCardTextNoEventsBooked,
           style: CatchTextStyles.kicker(
             context,
             color: CatchTokens.editorialWhite,
@@ -87,7 +88,7 @@ class EmptyHeroContent extends StatelessWidget {
         ),
         gapH10,
         Text(
-          'Your catches unlock\nafter your first event.',
+          context.l10n.dashboardEmptyHeroCardTextYourCatchesUnlockAfter,
           style: CatchTextStyles.headline(
             context,
             color: CatchTokens.editorialWhite,
@@ -95,7 +96,7 @@ class EmptyHeroContent extends StatelessWidget {
         ),
         gapH8,
         Text(
-          "The dating app where you've already met. No cold swiping — just people you actually crossed paths with.",
+          context.l10n.dashboardEmptyHeroCardTextTheDatingAppWhere,
           style: CatchTextStyles.supporting(
             context,
             color: CatchTokens.editorialWhite,
@@ -103,9 +104,10 @@ class EmptyHeroContent extends StatelessWidget {
         ),
         gapH16,
         Semantics(
-          hint: 'Opens the explore page to find events near your location.',
+          hint:
+              context.l10n.dashboardEmptyHeroCardVisiblecopyOpensTheExplorePage,
           child: CatchButton(
-            label: 'Find an event near me',
+            label: context.l10n.dashboardEmptyHeroCardLabelFindAnEventNear,
             onPressed: onFindEvent,
             variant: CatchButtonVariant.light,
             size: CatchButtonSize.lg,

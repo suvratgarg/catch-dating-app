@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:flutter/material.dart';
@@ -182,7 +183,10 @@ class ProfileHeroWidget extends StatelessWidget {
                     ),
                   gapH8,
                   Text(
-                    '${data.name}, ${data.age}',
+                    context.l10n.swipesCatchProfileViewTextNameAge(
+                      name: data.name,
+                      age: data.age,
+                    ),
                     style: CatchTextStyles.display(context, color: dark.ink),
                   ),
                   if (data.metaLine != null) ...[
@@ -414,12 +418,21 @@ class ProfileRunning extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ProfileSectionKicker('Running rhythm', color: activity?.accent),
+        ProfileSectionKicker(
+          context.l10n.swipesCatchProfileViewVisiblecopyRunningRhythm,
+          color: activity?.accent,
+        ),
         gapH10,
         CatchMetricStrip(
           items: [
-            CatchMetricStripItem(value: section.pace, label: 'PACE'),
-            CatchMetricStripItem(value: section.distance, label: 'DISTANCE'),
+            CatchMetricStripItem(
+              value: section.pace,
+              label: context.l10n.swipesCatchProfileViewLabelPace,
+            ),
+            CatchMetricStripItem(
+              value: section.distance,
+              label: context.l10n.swipesCatchProfileViewLabelDistance,
+            ),
           ],
         ),
         if (section.reasons.isNotEmpty || section.times.isNotEmpty) ...[

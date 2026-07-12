@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/celebration/celebration_effects_controller
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter/material.dart';
 
@@ -38,56 +39,69 @@ class CreateEventSuccessScreen extends StatelessWidget {
           ).toString();
     final displayName = _eventCreatedDisplayName(event, eventDisplayName);
     final message = inviteLink == null
-        ? '$displayName is now listed on ${club.name}. People can discover it from their home feed.'
-        : '$displayName is now listed on ${club.name}. People can discover it, but only attendees with the invite code or private link can book.';
+        ? context.l10n
+              .hostsCreateEventSuccessScreenMessageDisplaynameIsNowListed(
+                displayName: displayName,
+                name: club.name,
+              )
+        : context.l10n
+              .hostsCreateEventSuccessScreenMessageDisplaynameIsNowListed244c65(
+                displayName: displayName,
+                name: club.name,
+              );
 
     return CatchCelebrationScreen(
       kind: CelebrationMomentKind.eventCreated,
       icon: CatchIcons.celebration,
-      eyebrow: 'Event created',
-      title: 'Your event is live.',
+      eyebrow: context.l10n.hostsCreateEventSuccessScreenEyebrowEventCreated,
+      title: context.l10n.hostsCreateEventSuccessScreenTitleYourEventIsLive,
       message: message,
       details: [
         CelebrationDetail(
           icon: CatchIcons.calendarMonthOutlined,
-          label: 'When',
+          label: context.l10n.hostsCreateEventSuccessScreenLabelWhen,
           value: _eventCreatedWhenLabel(event),
         ),
         CelebrationDetail(
           icon: CatchIcons.locationOnOutlined,
-          label: 'Where',
+          label: context.l10n.hostsCreateEventSuccessScreenLabelWhere,
           value: event.locationName,
         ),
         CelebrationDetail(
           icon: CatchIcons.directionsRunRounded,
-          label: 'Event',
+          label: context.l10n.hostsCreateEventSuccessScreenLabelEvent,
           value: _eventCreatedActivityLabel(event),
         ),
         CelebrationDetail(
           icon: CatchIcons.groupOutlined,
-          label: 'Capacity',
-          value: '${event.capacityLimit} attendees',
+          label: context.l10n.hostsCreateEventSuccessScreenLabelCapacity,
+          value: context.l10n
+              .hostsCreateEventSuccessScreenVisiblecopyCapacitylimitAttendees(
+                capacityLimit: event.capacityLimit,
+              ),
         ),
         if (normalizedInviteCode != null && normalizedInviteCode.isNotEmpty)
           CelebrationDetail(
             icon: CatchIcons.keyOutlined,
-            label: 'Invite code',
+            label: context.l10n.hostsCreateEventSuccessScreenLabelInviteCode,
             value: normalizedInviteCode,
           ),
         if (inviteLink != null)
           CelebrationDetail(
             icon: CatchIcons.linkOutlined,
-            label: 'Private link',
+            label: context.l10n.hostsCreateEventSuccessScreenLabelPrivateLink,
             value: inviteLink,
           ),
       ],
-      note: 'Bookings, waitlist, and attendance are tracked from Manage event.',
+      note: context
+          .l10n
+          .hostsCreateEventSuccessScreenNoteBookingsWaitlistAndAttendance,
       primaryAction: CelebrationAction(
-        label: 'Manage event',
+        label: context.l10n.hostsCreateEventSuccessScreenLabelManageEvent,
         onPressed: onManageEvent,
       ),
       secondaryAction: CelebrationAction(
-        label: 'Back to club',
+        label: context.l10n.hostsCreateEventSuccessScreenLabelBackToClub,
         onPressed: onDone,
       ),
       onClose: onDone,

@@ -232,7 +232,9 @@ class PaperCompanionNav extends StatelessWidget {
             gapW8,
             Expanded(
               child: Text(
-                'Event companion',
+                context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionSharedTextEventCompanion,
                 textAlign: TextAlign.center,
                 style: CatchTextStyles.fieldRowTitle(context),
               ),
@@ -241,7 +243,11 @@ class PaperCompanionNav extends StatelessWidget {
             SizedBox(
               width: CatchLayout.eventSuccessStageNavExtent,
               child: Text(
-                '${activeStep.toString().padLeft(2, '0')} / $totalSteps',
+                context.l10n
+                    .eventSuccessEventSuccessCompanionSharedTextPadleftTotalsteps(
+                      padLeft: activeStep.toString().padLeft(2, '0'),
+                      totalSteps: totalSteps,
+                    ),
                 textAlign: TextAlign.end,
                 style: CatchTextStyles.labelS(context, color: t.ink2),
               ),
@@ -300,7 +306,9 @@ class PaperCompanionTicket extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'YOUR TICKET - TODAY',
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionSharedTextYourTicketToday,
           style: CatchTextStyles.sectionTitle(context, color: t.ink2),
         ),
         gapH12,
@@ -326,23 +334,31 @@ class PaperCompanionTicket extends StatelessWidget {
                     children: [
                       Expanded(
                         child: PaperTicketDetail(
-                          label: 'WHEN',
+                          label: context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionSharedLabelWhen,
                           value: _paperTicketTime(event),
                         ),
                       ),
                       gapW12,
                       Expanded(
                         child: PaperTicketDetail(
-                          label: 'WHERE',
+                          label: context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionSharedLabelWhere,
                           value: event.locationName,
                         ),
                       ),
                       gapW12,
                       Expanded(
                         child: PaperTicketDetail(
-                          label: 'ENTRY',
+                          label: context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionSharedLabelEntry,
                           value: event.isFree
-                              ? 'Free'
+                              ? context
+                                    .l10n
+                                    .eventSuccessEventSuccessCompanionSharedVisiblecopyFree
                               : EventFormatters.priceInPaise(
                                   event.priceInPaise,
                                   currencyCode: event.currency,
@@ -415,7 +431,11 @@ class PaperTicketHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${plan.playbook.title} - ${event.locationName}'
+                  context.l10n
+                      .eventSuccessEventSuccessCompanionSharedTextTitleLocationname(
+                        title: plan.playbook.title,
+                        locationName: event.locationName,
+                      )
                       .toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -555,9 +575,11 @@ class PaperTicketSerial extends StatelessWidget {
   Widget build(BuildContext context) {
     final booked = event.bookedCount ?? 0;
     final capacity = event.capacityLimit;
-    final label =
-        'ADMIT ONE - NO ${booked.toString().padLeft(2, '0')} / '
-        '$capacity';
+    final label = context.l10n
+        .eventSuccessEventSuccessCompanionSharedLabelAdmitOneNoPadleft(
+          padLeft: booked.toString().padLeft(2, '0'),
+          capacity: capacity,
+        );
     final value = _paperTicketCode(event);
 
     return PaperTicketDetail(label: label, value: value);
@@ -619,6 +641,7 @@ class PaperExpectationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final items = _paperExpectationItems(
+      l10n: context.l10n,
       event: event,
       plan: plan,
       showSelfCheckIn: showSelfCheckIn,
@@ -635,7 +658,9 @@ class PaperExpectationCard extends StatelessWidget {
         children: [
           StageSectionLabel(
             icon: CatchIcons.eventAvailableRounded,
-            label: 'What to expect',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessCompanionSharedLabelWhatToExpect,
             color: t.primary,
           ),
           gapH12,
@@ -721,7 +746,8 @@ class PaperSelfCheckInBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchButton(
-      label: "I'm here - check me in",
+      label:
+          context.l10n.eventSuccessEventSuccessCompanionSharedLabelIMHereCheck,
       icon: Icon(CatchIcons.locationOnOutlined),
       isLoading: actionState.isCheckingIn,
       onPressed: actionState.isCheckingIn
@@ -741,6 +767,7 @@ class _PaperExpectationItem {
 }
 
 List<_PaperExpectationItem> _paperExpectationItems({
+  required AppLocalizations l10n,
   required Event event,
   required EventSuccessPlan plan,
   required bool showSelfCheckIn,
@@ -750,11 +777,13 @@ List<_PaperExpectationItem> _paperExpectationItems({
     return [
       _PaperExpectationItem(
         icon: CatchIcons.favoriteBorderRounded,
-        label: 'Post-event follow-up opens after attendance is confirmed.',
+        label:
+            l10n.eventSuccessEventSuccessCompanionSharedLabelPostEventFollowUp,
       ),
       _PaperExpectationItem(
         icon: CatchIcons.chatBubbleOutlineRounded,
-        label: 'Conversation starters stay private to your event context.',
+        label: l10n
+            .eventSuccessEventSuccessCompanionSharedLabelConversationStartersStayPrivate,
       ),
     ];
   }
@@ -764,28 +793,34 @@ List<_PaperExpectationItem> _paperExpectationItems({
           ? CatchIcons.locationOnOutlined
           : CatchIcons.groups2Outlined,
       label: showSelfCheckIn
-          ? 'Check in when you reach ${event.locationName}.'
-          : 'A small starter group will form when arrivals open.',
+          ? l10n.eventSuccessEventSuccessCompanionSharedLabelCheckInWhenYou(
+              locationName: event.locationName,
+            )
+          : l10n.eventSuccessEventSuccessCompanionSharedLabelASmallStarterGroup,
     ),
     if (plan.hasModule(EventSuccessModuleCatalog.guidedRotations.id))
       _PaperExpectationItem(
         icon: CatchIcons.syncAltRounded,
-        label: 'Timed partner rotations as the event unfolds.',
+        label: l10n
+            .eventSuccessEventSuccessCompanionSharedLabelTimedPartnerRotationsAs,
       )
     else
       _PaperExpectationItem(
         icon: CatchIcons.forumOutlined,
-        label: 'Conversation cues appear when the room needs an easy opener.',
+        label: l10n
+            .eventSuccessEventSuccessCompanionSharedLabelConversationCuesAppearWhen,
       ),
     if (plan.hasModule(EventSuccessModuleCatalog.liveReveal.id))
       _PaperExpectationItem(
         icon: CatchIcons.boltRounded,
-        label: 'One synchronized reveal - every phone at once.',
+        label: l10n
+            .eventSuccessEventSuccessCompanionSharedLabelOneSynchronizedRevealEvery,
       )
     else
       _PaperExpectationItem(
         icon: CatchIcons.lockOutlineRounded,
-        label: 'Your guide stays private to your ticket and attendance.',
+        label: l10n
+            .eventSuccessEventSuccessCompanionSharedLabelYourGuideStaysPrivate,
       ),
   ];
 }
@@ -940,7 +975,8 @@ class StageNav extends StatelessWidget {
     return Row(
       children: [
         Tooltip(
-          message: 'Back',
+          message:
+              context.l10n.eventSuccessEventSuccessCompanionSharedMessageBack,
           child: CatchIconButton(
             background: foreground.withValues(alpha: CatchOpacity.subtleFill),
             onTap: canPop ? () => _popCompanion(context) : null,
@@ -958,7 +994,9 @@ class StageNav extends StatelessWidget {
         gapW8,
         Expanded(
           child: Text(
-            'Event companion',
+            context
+                .l10n
+                .eventSuccessEventSuccessCompanionSharedTextEventCompanion,
             textAlign: TextAlign.center,
             style: CatchTextStyles.labelL(
               context,
@@ -1043,7 +1081,11 @@ class CompanionHero extends StatelessWidget {
         Text(event.title, style: CatchTextStyles.titleL(context, color: fg)),
         gapH4,
         Text(
-          '${plan.playbook.title} · ${event.locationName}',
+          context.l10n
+              .eventSuccessEventSuccessCompanionSharedTextTitleLocationname29e462(
+                title: plan.playbook.title,
+                locationName: event.locationName,
+              ),
           style: CatchTextStyles.supporting(
             context,
             color: fg.withValues(alpha: CatchOpacity.eventSuccessMutedInk),
@@ -1927,8 +1969,16 @@ class ArrivalRingCard extends StatelessWidget {
     final fg = stageTheme.foreground;
     final hasArrivals = checkedInCount > 0;
     final caption = hasArrivals
-        ? (checkedInCount == 1 ? 'person here so far' : 'people here so far')
-        : 'waiting for the room to fill';
+        ? (checkedInCount == 1
+              ? context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionSharedVisiblecopyPersonHereSoFar
+              : context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionSharedVisiblecopyPeopleHereSoFar)
+        : context
+              .l10n
+              .eventSuccessEventSuccessCompanionSharedVisiblecopyWaitingForTheRoom;
     return SizedBox(
       width: CatchLayout.eventSuccessArrivalRingExtent,
       height: CatchLayout.eventSuccessArrivalRingExtent,
@@ -1952,7 +2002,10 @@ class ArrivalRingCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '$checkedInCount',
+                  context.l10n
+                      .eventSuccessEventSuccessCompanionSharedTextCheckedincount(
+                        checkedInCount: checkedInCount,
+                      ),
                   style: CatchTextStyles.headlineS(context, color: fg).copyWith(
                     height: 1.0,
                     fontFeatures: const [FontFeature.tabularFigures()],
@@ -2051,8 +2104,13 @@ class _LiveOthersInRoomLineState extends State<LiveOthersInRoomLine>
                 Flexible(
                   child: Text(
                     count == 1
-                        ? '1 person is checked in alongside you'
-                        : '$count people in the room with you',
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessCompanionSharedText1PersonIsChecked
+                        : context.l10n
+                              .eventSuccessEventSuccessCompanionSharedTextCountPeopleInThe(
+                                count: count,
+                              ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: CatchTextStyles.labelL(context, color: t.ink),
@@ -2133,12 +2191,16 @@ class NoCompanionActionsCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'The host is running the room',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionSharedTextTheHostIsRunning,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
                 gapH4,
                 Text(
-                  'Your next prompt or partner reveal will show up here.',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionSharedTextYourNextPromptOr,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],

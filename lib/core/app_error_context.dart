@@ -69,7 +69,7 @@ extension AppOperationService on AppOperation {
   };
 
   /// Stable, low-cardinality label written into the `operation` log key.
-  String get label => switch (this) {
+  String get logKey => switch (this) {
     AppOperation.validation => 'validation',
     AppOperation.localPersistence => 'local_persistence',
     AppOperation.navigation => 'navigation',
@@ -121,7 +121,7 @@ class AppErrorContext {
     service: operation.service,
     action: action,
     resource: resource,
-    metadata: {'operation': operation.label, ...metadata},
+    metadata: {'operation': operation.logKey, ...metadata},
   );
 }
 

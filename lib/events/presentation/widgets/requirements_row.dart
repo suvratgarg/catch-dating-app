@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class RequirementsRow extends StatelessWidget {
@@ -24,7 +25,7 @@ class RequirementsRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Requirements',
+          context.l10n.eventsRequirementsRowTextRequirements,
           style: CatchTextStyles.labelL(
             context,
             color: surfaceStyle?.bodyColor ?? t.ink2,

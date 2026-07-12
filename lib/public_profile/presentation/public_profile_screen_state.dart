@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 class PublicProfileScreenStateArgs {
@@ -59,7 +60,8 @@ class PublicProfileScreenState {
   final String? sharedRunTitle;
   final bool isInitialProfileFallback;
 
-  String get title => profile?.name ?? 'Profile';
+  String title(AppLocalizations l10n) =>
+      profile?.name ?? l10n.publicProfilePublicProfileScreenStateTitleProfile;
   bool get isSubmitting => mutationMode != PublicProfileMutationMode.idle;
   bool get showSafetyActions => profile != null;
   bool get enableSafetyActions => showSafetyActions && !isSubmitting;

@@ -76,12 +76,20 @@ class _CompatibilityQuestionnaireSectionState
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
-                'A few quick questions',
+                context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionQuestionnaireTextAFewQuickQuestions,
                 style: CatchTextStyles.sectionTitle(context),
               ),
               const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
               CatchBadge(
-                label: rankingOn ? 'Can guide pairings' : 'Clues only',
+                label: rankingOn
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionQuestionnaireLabelCanGuidePairings
+                    : context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionQuestionnaireLabelCluesOnly,
                 tone: rankingOn
                     ? CatchBadgeTone.success
                     : CatchBadgeTone.neutral,
@@ -91,7 +99,9 @@ class _CompatibilityQuestionnaireSectionState
               ),
               if (widget.response != null)
                 CatchBadge(
-                  label: 'Saved',
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionQuestionnaireLabelSaved,
                   tone: CatchBadgeTone.success,
                   icon: CatchIcons.checkRounded,
                 ),
@@ -100,8 +110,12 @@ class _CompatibilityQuestionnaireSectionState
           gapH10,
           Text(
             rankingOn
-                ? 'Your answers can shape reveal clues and help guide pairings. Hosts never see individual answers.'
-                : 'Your answers can shape reveal clues. Hosts never see individual answers, and this event will not use them for pairings.',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionQuestionnaireTextYourAnswersCanShape
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionQuestionnaireTextYourAnswersCanShape025884,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH16,
@@ -161,6 +175,7 @@ class _CompatibilityQuestionnaireSectionState
             Text(
               appErrorMessage(
                 widget.actionState.error!,
+                l10n: context.l10n,
                 context: AppErrorContext.event,
               ),
               style: CatchTextStyles.supporting(context, color: t.danger),
@@ -170,7 +185,13 @@ class _CompatibilityQuestionnaireSectionState
           gapH16,
           StageActionDock(
             child: CatchButton(
-              label: widget.response == null ? 'Save clues' : 'Update clues',
+              label: widget.response == null
+                  ? context
+                        .l10n
+                        .eventSuccessEventSuccessCompanionQuestionnaireLabelSaveClues
+                  : context
+                        .l10n
+                        .eventSuccessEventSuccessCompanionQuestionnaireLabelUpdateClues,
               isLoading: saving,
               onPressed: !hasAnswers || !dirty || saving
                   ? null
@@ -254,11 +275,17 @@ class QuestionProgressRail extends StatelessWidget {
         gapW10,
         for (var index = 0; index < questionCount; index++) ...[
           Tooltip(
-            message: 'Question ${index + 1}',
+            message: context.l10n
+                .eventSuccessEventSuccessCompanionQuestionnaireMessageQuestionValue1(
+                  value1: index + 1,
+                ),
             child: StageBouncyPress(
               borderRadius: BorderRadius.circular(CatchRadius.pill),
               glowColor: t.primary,
-              semanticLabel: 'Question ${index + 1}',
+              semanticLabel: context.l10n
+                  .eventSuccessEventSuccessCompanionQuestionnaireSemanticlabelQuestionValue1(
+                    value1: index + 1,
+                  ),
               selected: index == activeIndex,
               onTap: () => onSelect(index),
               child: CatchSurface(
@@ -272,7 +299,10 @@ class QuestionProgressRail extends StatelessWidget {
                     : t.surface,
                 borderColor: t.line,
                 child: Text(
-                  '${index + 1}',
+                  context.l10n
+                      .eventSuccessEventSuccessCompanionQuestionnaireTextValue1(
+                        value1: index + 1,
+                      ),
                   style: CatchTextStyles.labelS(
                     context,
                     color: index == activeIndex ? t.surface : t.ink2,

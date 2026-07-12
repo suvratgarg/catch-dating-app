@@ -14,6 +14,7 @@ import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
       ActivityController.markAllReadMutation,
     );
     final state = buildNotificationsListState(
+      l10n: context.l10n,
       uid: uidAsync,
       notifications: notificationsAsync,
       now: DateTime.now(),
@@ -48,11 +50,11 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
     return Scaffold(
       backgroundColor: t.bg,
       appBar: CatchScreenTopBar(
-        title: 'Activity',
+        title: context.l10n.dashboardActivityScreenTitleActivity,
         actions: [
           if (state.showMarkAllReadAction)
             CatchTextButton(
-              label: state.markAllReadLabel,
+              label: state.markAllReadLabel(context.l10n),
               onPressed: state.canMarkAllRead
                   ? () => unawaited(
                       _markAllRead(
@@ -120,10 +122,14 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
             normalizeBackendError(
               error,
               stackTrace: stackTrace,
-              context: const BackendErrorContext(
+              context: BackendErrorContext(
                 service: BackendService.local,
-                action: 'mark notifications read',
-                resource: 'activity_screen',
+                action: context
+                    .l10n
+                    .dashboardActivityScreenVisiblecopyMarkNotificationsRead,
+                resource: context
+                    .l10n
+                    .dashboardActivityScreenVisiblecopyActivityScreen,
               ),
             ),
           );

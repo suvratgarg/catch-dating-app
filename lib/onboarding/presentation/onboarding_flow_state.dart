@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 
@@ -34,6 +35,7 @@ class OnboardingFlowState {
   bool get showsProgressShell => !showsWelcome;
 
   factory OnboardingFlowState.from({
+    required AppLocalizations l10n,
     required OnboardingData data,
     required bool profileCompletionOnly,
     required bool runPreferencesOnly,
@@ -52,6 +54,7 @@ class OnboardingFlowState {
       topBar: data.step.showsProgress
           ? OnboardingTopBarState.from(
               step: data.step,
+              l10n: l10n,
               entryMode: entryMode,
               canGoBack: previousStep != null,
             )
@@ -96,6 +99,7 @@ class OnboardingTopBarState {
   final bool canGoBack;
 
   factory OnboardingTopBarState.from({
+    required AppLocalizations l10n,
     required OnboardingStep step,
     required OnboardingEntryMode entryMode,
     required bool canGoBack,
@@ -113,6 +117,7 @@ class OnboardingTopBarState {
         : 0;
     final progressTotal = runPreferencesOnly ? 1 : 2;
     final copy = step.headerCopy(
+      l10n: l10n,
       profileCompletionOnly: profileCompletionOnly,
       runPreferencesOnly: runPreferencesOnly,
     );

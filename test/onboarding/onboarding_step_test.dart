@@ -1,7 +1,10 @@
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  final l10n = AppLocalizationsEn();
+
   group('OnboardingStepX', () {
     test('shows progress for every step after welcome', () {
       expect(OnboardingStep.welcome.showsProgress, isFalse);
@@ -40,6 +43,7 @@ void main() {
       bool profileCompletionOnly = false,
       bool runPreferencesOnly = false,
     }) => step.headerCopy(
+      l10n: l10n,
       profileCompletionOnly: profileCompletionOnly,
       runPreferencesOnly: runPreferencesOnly,
     );

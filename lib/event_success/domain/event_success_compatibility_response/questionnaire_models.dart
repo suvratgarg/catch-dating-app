@@ -12,7 +12,10 @@ final class EventSuccessCompatibilityQuestion {
   ) {
     return EventSuccessCompatibilityQuestion(
       id: _normalizedId(json['id'], fallback: 'question'),
-      prompt: _normalizedText(json['prompt'], fallback: 'Question'),
+      prompt: _normalizedText(
+        json['prompt'],
+        fallback: EventSuccessQuestionnairePackLibrary.fallbackQuestion,
+      ),
       options: (json['options'] as List<dynamic>? ?? const [])
           .whereType<Map<String, dynamic>>()
           .map(EventSuccessCompatibilityOption.fromJson)
@@ -34,7 +37,9 @@ final class EventSuccessCompatibilityQuestion {
         .toList(growable: false);
     return EventSuccessCompatibilityQuestion(
       id: _normalizedId(id, fallback: _slugFrom(normalizedPrompt, 'question')),
-      prompt: normalizedPrompt.isEmpty ? 'Question' : normalizedPrompt,
+      prompt: normalizedPrompt.isEmpty
+          ? EventSuccessQuestionnairePackLibrary.fallbackQuestion
+          : normalizedPrompt,
       options: normalizedOptions.length < 2
           ? _fallbackOptionsFor(id)
           : normalizedOptions,
@@ -67,7 +72,10 @@ final class EventSuccessCompatibilityOption {
   });
 
   factory EventSuccessCompatibilityOption.fromJson(Map<String, dynamic> json) {
-    final label = _normalizedText(json['label'], fallback: 'Option');
+    final label = _normalizedText(
+      json['label'],
+      fallback: EventSuccessQuestionnairePackLibrary.fallbackOption,
+    );
     return EventSuccessCompatibilityOption(
       id: _normalizedId(json['id'], fallback: _slugFrom(label, 'option')),
       label: label,

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/celebration/celebration_effects_controller
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -34,9 +35,11 @@ class MatchCelebrationDialog extends ConsumerWidget {
 
     return CatchCelebrationScreen(
       kind: CelebrationMomentKind.match,
-      eyebrow: 'New catch',
-      title: "It's a Catch.",
-      message: 'You and $name both liked each other.',
+      eyebrow: context.l10n.matchesMatchCelebrationDialogEyebrowNewCatch,
+      title: context.l10n.matchesMatchCelebrationDialogTitleItSACatch,
+      message: context.l10n.matchesMatchCelebrationDialogMessageYouAndNameBoth(
+        name: name,
+      ),
       icon: CatchIcons.favoriteRounded,
       visual: CatchPersonAvatar(
         size: 108,
@@ -48,19 +51,20 @@ class MatchCelebrationDialog extends ConsumerWidget {
       details: [
         CelebrationDetail(
           icon: CatchIcons.favoriteBorderRounded,
-          label: 'Match',
+          label: context.l10n.matchesMatchCelebrationDialogLabelMatch,
           value: '$name liked you back.',
         ),
       ],
-      note:
-          'Start with something specific from their profile or event history.',
+      note: context
+          .l10n
+          .matchesMatchCelebrationDialogNoteStartWithSomethingSpecific,
       primaryAction: CelebrationAction(
-        label: 'Send a message',
+        label: context.l10n.matchesMatchCelebrationDialogLabelSendAMessage,
         onPressed: onSendMessage,
         icon: Icon(CatchIcons.sendRounded),
       ),
       secondaryAction: CelebrationAction(
-        label: 'Keep catching',
+        label: context.l10n.matchesMatchCelebrationDialogLabelKeepCatching,
         onPressed: onKeepSwiping,
       ),
       onClose: onKeepSwiping,

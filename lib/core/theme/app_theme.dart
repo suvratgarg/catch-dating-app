@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +26,7 @@ abstract final class AppTheme {
     required CatchTokens tokens,
   }) {
     final base = ThemeData(useMaterial3: true, colorScheme: colorScheme);
-    final textTheme = _textTheme(base.textTheme, tokens);
+    final textTheme = CatchTextStyles.materialTextTheme(base.textTheme, tokens);
 
     return base.copyWith(
       // Platform system font as the app-wide function/body baseline, tuned to
@@ -196,40 +197,6 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(CatchRadius.pill),
         ),
       ),
-    );
-  }
-
-  static TextTheme _textTheme(TextTheme base, CatchTokens tokens) {
-    // Every slot below is overridden, so the platform system baseline fully
-    // replaces the default Material text theme for un-styled widgets.
-    TextStyle style(
-      double size,
-      FontWeight weight,
-      double height,
-      Color color,
-    ) => CatchFonts.sans(
-      fontSize: size,
-      fontWeight: weight,
-      height: height,
-      color: color,
-    );
-
-    return base.copyWith(
-      displayLarge: style(40, FontWeight.w800, 1.02, tokens.ink),
-      displayMedium: style(32, FontWeight.w800, 1.04, tokens.ink),
-      displaySmall: style(26, FontWeight.w800, 1.08, tokens.ink),
-      headlineLarge: style(32, FontWeight.w800, 1.05, tokens.ink),
-      headlineMedium: style(28, FontWeight.w800, 1.10, tokens.ink),
-      headlineSmall: style(20, FontWeight.w800, 1.14, tokens.ink),
-      titleLarge: style(19, FontWeight.w700, 1.20, tokens.ink),
-      titleMedium: style(16, FontWeight.w700, 1.24, tokens.ink),
-      titleSmall: style(14, FontWeight.w700, 1.26, tokens.ink),
-      bodyLarge: style(16, FontWeight.w400, 1.50, tokens.ink),
-      bodyMedium: style(14, FontWeight.w400, 1.50, tokens.ink),
-      bodySmall: style(13, FontWeight.w400, 1.45, tokens.ink2),
-      labelLarge: style(13, FontWeight.w700, 1.24, tokens.ink),
-      labelMedium: style(11, FontWeight.w700, 1.24, tokens.ink2),
-      labelSmall: style(10, FontWeight.w800, 1.15, tokens.ink2),
     );
   }
 }

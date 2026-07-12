@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class DashboardEmptySliverBody extends StatelessWidget {
   const DashboardEmptySliverBody({super.key});
@@ -20,12 +21,15 @@ class DashboardEmptySliverBody extends StatelessWidget {
               ),
               child: CatchSectionStack(
                 padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s5),
-                children: const [
+                children: [
                   CatchSection.divided(
-                    title: 'How Catch works',
+                    title:
+                        context.l10n.dashboardDashboardEmptyTitleHowCatchWorks,
                     first: true,
                     bodyGap: CatchSpacing.s4,
-                    child: CatchJourneySteps(steps: _howCatchWorksSteps),
+                    child: CatchJourneySteps(
+                      steps: _howCatchWorksSteps(context.l10n),
+                    ),
                   ),
                 ],
               ),
@@ -37,21 +41,21 @@ class DashboardEmptySliverBody extends StatelessWidget {
   }
 }
 
-const List<CatchJourneyStep> _howCatchWorksSteps = [
+List<CatchJourneyStep> _howCatchWorksSteps(AppLocalizations l10n) => [
   CatchJourneyStep(
-    title: 'Book a group event',
-    body: "Pick a club near you. Pay the fee — or don't; some are free.",
+    title: l10n.dashboardDashboardEmptyTitleBookAGroupEvent,
+    body: l10n.dashboardDashboardEmptyBodyPickAClubNear,
   ),
   CatchJourneyStep(
-    title: 'Actually show up',
-    body: 'Meet the club at the event. No cold matching happens here.',
+    title: l10n.dashboardDashboardEmptyTitleActuallyShowUp,
+    body: l10n.dashboardDashboardEmptyBodyMeetTheClubAt,
   ),
   CatchJourneyStep(
-    title: 'Catch within 24 hours',
-    body: 'You get the roster of who came. Catch anyone who caught your eye.',
+    title: l10n.dashboardDashboardEmptyTitleCatchWithin24Hours,
+    body: l10n.dashboardDashboardEmptyBodyYouGetTheRoster,
   ),
   CatchJourneyStep(
-    title: 'They catch you back?',
-    body: 'Match. Message. Plan the next event together.',
+    title: l10n.dashboardDashboardEmptyTitleTheyCatchYouBack,
+    body: l10n.dashboardDashboardEmptyBodyMatchMessagePlanThe,
   ),
 ];

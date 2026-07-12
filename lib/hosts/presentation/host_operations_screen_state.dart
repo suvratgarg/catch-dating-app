@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 enum HostClubTab { organizer, edit, insights, preview }
@@ -61,7 +62,8 @@ class HostClubsScreenState {
   bool get hasClubs => clubs.isNotEmpty;
   bool get showClubPicker => clubs.length > 1;
   Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
-  String get title => selectedClub?.name ?? 'Clubs';
+  String title(AppLocalizations l10n) =>
+      selectedClub?.name ?? l10n.hostsHostOperationsScreenStateTitleClubs;
   bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
 
   HostClubsScreenState selectClubIndex(int index) {

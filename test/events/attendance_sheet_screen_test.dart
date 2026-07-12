@@ -259,7 +259,7 @@ void main() {
     );
     await _settleAttendanceSheet(tester);
 
-    expect(find.byType(CatchInlineErrorState), findsOneWidget);
+    expect(find.bySubtype<CatchInlineErrorState>(), findsOneWidget);
   });
 
   testWidgets('renders attendee profiles and toggles attendance', (

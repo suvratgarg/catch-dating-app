@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 
 const minimumProfileAge = schemaMinimumProfileAge;
 const preferredMatchAgeOpenEndedDisplayAge = 60;
@@ -59,12 +60,12 @@ String? validateRequiredProfileName(String? value, {required String label}) {
 String? validateRequiredDisplayName(String? value) {
   final requiredError = validateRequiredProfileName(
     value,
-    label: 'Display name',
+    label: StructuredDomainCopy.profileValidationDisplayName,
   );
   if (requiredError != null) return requiredError;
   return validateProfileTextMaxLength(
     value,
-    label: 'Display name',
+    label: StructuredDomainCopy.profileValidationDisplayName,
     maxLength: maximumDisplayNameLength,
   );
 }
@@ -79,7 +80,7 @@ String? validateOptionalEmail(String? value) {
   if (email.isEmpty) return null;
   final lengthError = validateProfileTextMaxLength(
     email,
-    label: 'Email',
+    label: StructuredDomainCopy.profileValidationEmail,
     maxLength: maximumProfileEmailLength,
   );
   if (lengthError != null) return lengthError;

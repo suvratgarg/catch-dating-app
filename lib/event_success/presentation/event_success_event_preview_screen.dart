@@ -9,6 +9,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 export 'package:catch_dating_app/event_success/presentation/event_success_event_preview_body_screen.dart';
 export 'package:catch_dating_app/event_success/presentation/event_success_event_preview_loading_screen.dart';
@@ -52,9 +53,13 @@ class EventSuccessEventPreviewRouteScreen extends ConsumerWidget {
         );
       }
 
-      return const CatchErrorScaffold(
-        title: 'Event not found',
-        message: 'This event is no longer available for preview.',
+      return CatchErrorScaffold(
+        title: context
+            .l10n
+            .eventSuccessEventSuccessEventPreviewScreenTitleEventNotFound,
+        message: context
+            .l10n
+            .eventSuccessEventSuccessEventPreviewScreenMessageThisEventIsNo,
       );
     }
 

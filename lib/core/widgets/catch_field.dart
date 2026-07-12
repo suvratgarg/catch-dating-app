@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -428,7 +429,7 @@ class CatchField extends StatefulWidget {
     return CatchField._(
       key: key,
       title: title,
-      placeholder: hintText ?? 'Select ${title.toLowerCase()}',
+      placeholder: hintText,
       prefixIcon: prefixIcon,
       mode: CatchFieldMode.select,
       enabled: enabled,
@@ -914,7 +915,9 @@ class _CatchFieldState extends State<CatchField> {
       builder: (_, value, _) {
         if (value.text.isEmpty) return fallback ?? const SizedBox.shrink();
         return CatchFieldTrailing.clear(
-          tooltip: 'Clear ${_title ?? 'field'}',
+          tooltip: context.l10n.coreCatchFieldTooltipClearValue1(
+            value1: _title ?? context.l10n.coreCatchFieldTooltipField,
+          ),
           onPressed: () {
             _controller.clear();
             widget.onChanged?.call('');
@@ -1103,7 +1106,7 @@ class _CatchFieldState extends State<CatchField> {
     final actionBar = LayoutBuilder(
       builder: (context, constraints) {
         final cancelButton = CatchTextButton(
-          label: 'Cancel',
+          label: context.l10n.coreCatchFieldLabelCancel,
           onPressed: widget._isLoading
               ? null
               : () {
@@ -1113,7 +1116,7 @@ class _CatchFieldState extends State<CatchField> {
           tone: CatchTextButtonTone.neutral,
         );
         final doneButton = CatchButton(
-          label: 'Done',
+          label: context.l10n.coreCatchFieldLabelDone,
           onPressed: widget._isLoading ? null : widget._onSubmit,
           isLoading: widget._isLoading,
           size: CatchButtonSize.sm,
@@ -1559,7 +1562,10 @@ class _CatchFieldState extends State<CatchField> {
                   content: _buildFieldContent(
                     tokens,
                     label: widget.showLabel ? _title?.trim() : null,
-                    value: label ?? widget.placeholder ?? 'Select',
+                    value:
+                        label ??
+                        widget.placeholder ??
+                        _selectPlaceholder(context.l10n, _title),
                     supportText: supportText,
                     hasError: hasError,
                     valueIsPlaceholder: label == null,
@@ -1638,7 +1644,9 @@ class _CatchFieldState extends State<CatchField> {
                 const SizedBox.shrink();
           }
           return IconButton(
-            tooltip: 'Clear ${_title ?? 'field'}',
+            tooltip: context.l10n.coreCatchFieldTooltipClearValue1(
+              value1: _title ?? context.l10n.coreCatchFieldTooltipField,
+            ),
             icon: Icon(CatchIcons.closeRounded, size: CatchIcon.xs),
             onPressed: () {
               _controller.clear();
@@ -1808,6 +1816,16 @@ class _CatchFieldState extends State<CatchField> {
     }
     return const BoxConstraints();
   }
+}
+
+String _selectPlaceholder(AppLocalizations l10n, String? title) {
+  final normalizedTitle = title?.trim();
+  if (normalizedTitle == null || normalizedTitle.isEmpty) {
+    return l10n.coreCatchFieldVisiblecopySelect;
+  }
+  return l10n.coreCatchFieldVisiblecopySelectTolowercase(
+    toLowerCase: normalizedTitle.toLowerCase(),
+  );
 }
 
 Duration _catchFieldMotionDuration(BuildContext context) {

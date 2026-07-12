@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -559,7 +560,8 @@ class _CatchTopBarState extends State<CatchTopBar> {
     if (widget.actionIcon != null) {
       return CatchIconAction(
         icon: widget.actionIcon!,
-        tooltip: widget.actionLabel ?? 'Action',
+        tooltip:
+            widget.actionLabel ?? context.l10n.coreCatchTopBarTooltipAction,
         onPressed: widget.onAction,
         variant: widget.actionVariant,
       );
@@ -809,7 +811,9 @@ Widget _buildCatchTopBarIdentityTitle(
 
   return Semantics(
     button: onTap != null,
-    label: onTap == null ? null : 'View $name profile',
+    label: onTap == null
+        ? null
+        : context.l10n.coreCatchTopBarLabelViewNameProfile(name: name),
     child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(CatchRadius.lg),

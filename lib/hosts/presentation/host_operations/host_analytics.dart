@@ -45,7 +45,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
         if (!widget.dedicated) ...[
           HostMetaRow(
             club: widget.club,
-            roleLabel: 'Insights',
+            roleLabel: context.l10n.hostsHostAnalyticsVisiblecopyInsights,
             owner: widget.isOwner,
           ),
           gapH24,
@@ -117,7 +117,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
       initialDate: _state.customStartDate,
       firstDate: _analyticsDateDaysAgo(366),
       lastDate: _state.customEndDate,
-      title: 'Start date',
+      title: context.l10n.hostsHostAnalyticsTitleStartDate,
     );
     if (picked == null || !mounted) return;
     setState(() => _state = _state.selectCustomStartDate(picked));
@@ -129,7 +129,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
       initialDate: _state.customEndDate,
       firstDate: _state.customStartDate,
       lastDate: DateUtils.dateOnly(DateTime.now()),
-      title: 'End date',
+      title: context.l10n.hostsHostAnalyticsTitleEndDate,
     );
     if (picked == null || !mounted) return;
     setState(() => _state = _state.selectCustomEndDate(picked));
@@ -209,26 +209,26 @@ class HostAnalyticsControls extends StatelessWidget {
             selected: rangePreset,
             onChanged: onRangeChanged,
             variant: CatchOptionGroupVariant.mono,
-            options: const [
+            options: [
               CatchOption(
                 value: HostClubInsightsRangePreset.sevenDays,
-                label: '7D',
+                label: context.l10n.hostsHostAnalyticsLabel7d,
               ),
               CatchOption(
                 value: HostClubInsightsRangePreset.thirtyDays,
-                label: '30D',
+                label: context.l10n.hostsHostAnalyticsLabel30d,
               ),
               CatchOption(
                 value: HostClubInsightsRangePreset.ninetyDays,
-                label: '90D',
+                label: context.l10n.hostsHostAnalyticsLabel90d,
               ),
               CatchOption(
                 value: HostClubInsightsRangePreset.month,
-                label: 'MONTH',
+                label: context.l10n.hostsHostAnalyticsLabelMonth,
               ),
               CatchOption(
                 value: HostClubInsightsRangePreset.custom,
-                label: 'CUSTOM',
+                label: context.l10n.hostsHostAnalyticsLabelCustom,
               ),
             ],
           ),
@@ -238,15 +238,18 @@ class HostAnalyticsControls extends StatelessWidget {
             selected: granularity,
             onChanged: onGranularityChanged,
             variant: CatchOptionGroupVariant.mono,
-            options: const [
-              CatchOption(value: HostClubInsightsGranularity.day, label: 'DAY'),
+            options: [
+              CatchOption(
+                value: HostClubInsightsGranularity.day,
+                label: context.l10n.hostsHostAnalyticsLabelDay,
+              ),
               CatchOption(
                 value: HostClubInsightsGranularity.week,
-                label: 'WEEK',
+                label: context.l10n.hostsHostAnalyticsLabelWeek,
               ),
               CatchOption(
                 value: HostClubInsightsGranularity.month,
-                label: 'MONTH',
+                label: context.l10n.hostsHostAnalyticsLabelMonth,
               ),
             ],
           ),
@@ -256,7 +259,7 @@ class HostAnalyticsControls extends StatelessWidget {
             children: [
               Expanded(
                 child: HostAnalyticsDateButton(
-                  label: 'Start',
+                  label: context.l10n.hostsHostAnalyticsLabelStart,
                   value: _formatAnalyticsDate(customStartDate),
                   onTap: onPickStartDate,
                 ),
@@ -264,7 +267,7 @@ class HostAnalyticsControls extends StatelessWidget {
               const SizedBox(width: CatchSpacing.s3),
               Expanded(
                 child: HostAnalyticsDateButton(
-                  label: 'End',
+                  label: context.l10n.hostsHostAnalyticsLabelEnd,
                   value: _formatAnalyticsDate(customEndDate),
                   onTap: onPickEndDate,
                 ),
@@ -281,12 +284,12 @@ class HostAnalyticsControls extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Event scoped',
+                    context.l10n.hostsHostAnalyticsTextEventScoped,
                     style: CatchTextStyles.labelM(context, color: t.ink2),
                   ),
                 ),
                 CatchButton(
-                  label: 'All events',
+                  label: context.l10n.hostsHostAnalyticsLabelAllEvents,
                   onPressed: onClearEvent,
                   variant: CatchButtonVariant.ghost,
                   size: CatchButtonSize.sm,
@@ -357,10 +360,12 @@ class _HostAnalyticsRangeSheetState extends State<HostAnalyticsRangeSheet> {
   @override
   Widget build(BuildContext context) {
     return CatchBottomSheetScaffold(
-      title: 'Date range',
-      subtitle: 'Compare organizer performance over a consistent window.',
+      title: context.l10n.hostsHostAnalyticsTitleDateRange,
+      subtitle: context
+          .l10n
+          .hostsHostAnalyticsSubtitleCompareOrganizerPerformanceOver,
       action: CatchButton(
-        label: 'Apply range',
+        label: context.l10n.hostsHostAnalyticsLabelApplyRange,
         onPressed: () => Navigator.of(context).pop(_selected),
         fullWidth: true,
       ),
@@ -368,23 +373,26 @@ class _HostAnalyticsRangeSheetState extends State<HostAnalyticsRangeSheet> {
         selected: _selected,
         onChanged: (selected) => setState(() => _selected = selected),
         variant: CatchOptionGroupVariant.mono,
-        options: const [
+        options: [
           CatchOption(
             value: HostClubInsightsRangePreset.sevenDays,
-            label: '7 days',
+            label: context.l10n.hostsHostAnalyticsLabel7Days,
           ),
           CatchOption(
             value: HostClubInsightsRangePreset.thirtyDays,
-            label: '30 days',
+            label: context.l10n.hostsHostAnalyticsLabel30Days,
           ),
           CatchOption(
             value: HostClubInsightsRangePreset.ninetyDays,
-            label: '90 days',
+            label: context.l10n.hostsHostAnalyticsLabel90Days,
           ),
-          CatchOption(value: HostClubInsightsRangePreset.month, label: 'Month'),
+          CatchOption(
+            value: HostClubInsightsRangePreset.month,
+            label: context.l10n.hostsHostAnalyticsLabelMonth5406de,
+          ),
           CatchOption(
             value: HostClubInsightsRangePreset.custom,
-            label: 'Custom',
+            label: context.l10n.hostsHostAnalyticsLabelCustoma46c31,
           ),
         ],
       ),
@@ -485,7 +493,7 @@ class HostAnalyticsReportView extends StatelessWidget {
         HostAnalyticsReviewDiscoveryPanel(report: report),
         gapH24,
         CatchAnalyticsSection(
-          label: 'Data quality',
+          label: context.l10n.hostsHostAnalyticsLabelDataQuality,
           child: CatchAnalyticsDataQualityList(
             rows: [
               for (final row in report.dataQuality)
@@ -514,22 +522,28 @@ class HostAnalyticsTrendPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final totalBookings = points.fold<num>(
       0,
-      (sum, point) => sum + (point.metrics['bookings'] ?? 0),
+      (sum, point) =>
+          sum +
+          (point.metrics[context.l10n.hostsHostAnalyticsVisiblecopyBookings] ??
+              0),
     );
     final totalDemand = points.fold<num>(
       0,
-      (sum, point) => sum + (point.metrics['demand'] ?? 0),
+      (sum, point) =>
+          sum +
+          (point.metrics[context.l10n.hostsHostAnalyticsVisiblecopyDemand] ??
+              0),
     );
     final maxValue = points.fold<num>(0, (max, point) {
       final value = [
-        point.metrics['bookings'] ?? 0,
-        point.metrics['demand'] ?? 0,
+        point.metrics[context.l10n.hostsHostAnalyticsVisiblecopyBookings] ?? 0,
+        point.metrics[context.l10n.hostsHostAnalyticsVisiblecopyDemand] ?? 0,
       ].reduce((a, b) => a > b ? a : b);
       return value > max ? value : max;
     });
 
     return CatchAnalyticsSection(
-      label: 'Trend · bookings vs demand',
+      label: context.l10n.hostsHostAnalyticsLabelTrendBookingsVsDemand,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -538,18 +552,18 @@ class HostAnalyticsTrendPanel extends StatelessWidget {
               selected: granularity!,
               onChanged: onGranularityChanged!,
               expanded: true,
-              segments: const [
+              segments: [
                 CatchSegment(
                   value: HostClubInsightsGranularity.day,
-                  label: 'Day',
+                  label: context.l10n.hostsHostAnalyticsLabelDaycb7256,
                 ),
                 CatchSegment(
                   value: HostClubInsightsGranularity.week,
-                  label: 'Week',
+                  label: context.l10n.hostsHostAnalyticsLabelWeek4cce87,
                 ),
                 CatchSegment(
                   value: HostClubInsightsGranularity.month,
-                  label: 'Month',
+                  label: context.l10n.hostsHostAnalyticsLabelMonth5406de,
                 ),
               ],
             ),
@@ -565,13 +579,13 @@ class HostAnalyticsTrendPanel extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CatchStatColumn(
-                        label: 'Demand',
+                        label: context.l10n.hostsHostAnalyticsLabelDemand,
                         value: _formatCount(totalDemand),
                       ),
                     ),
                     Expanded(
                       child: CatchStatColumn(
-                        label: 'Bookings',
+                        label: context.l10n.hostsHostAnalyticsLabelBookings,
                         value: _formatCount(totalBookings),
                       ),
                     ),
@@ -606,9 +620,15 @@ class HostAnalyticsTrendPanel extends StatelessWidget {
                                 Expanded(
                                   child: HostAnalyticsDualBar(
                                     demand:
-                                        points[index].metrics['demand'] ?? 0,
+                                        points[index].metrics[context
+                                            .l10n
+                                            .hostsHostAnalyticsVisiblecopyDemand] ??
+                                        0,
                                     bookings:
-                                        points[index].metrics['bookings'] ?? 0,
+                                        points[index].metrics[context
+                                            .l10n
+                                            .hostsHostAnalyticsVisiblecopyBookings] ??
+                                        0,
                                     maxValue: maxValue,
                                   ),
                                 ),
@@ -698,14 +718,16 @@ class HostAnalyticsEventList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchAnalyticsSection(
-      label: selectedEventId == null ? 'Top events' : 'Selected event',
+      label: selectedEventId == null
+          ? context.l10n.hostsHostAnalyticsLabelTopEvents
+          : context.l10n.hostsHostAnalyticsLabelSelectedEvent,
       child: Column(
         children: [
           if (selectedEventId != null) ...[
             Align(
               alignment: Alignment.centerLeft,
               child: CatchButton(
-                label: 'All events',
+                label: context.l10n.hostsHostAnalyticsLabelAllEvents,
                 onPressed: onClearEvent,
                 variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.sm,
@@ -718,7 +740,7 @@ class HostAnalyticsEventList extends StatelessWidget {
               padding: CatchInsets.content,
               borderColor: CatchTokens.of(context).line,
               child: Text(
-                'No events in this range.',
+                context.l10n.hostsHostAnalyticsTextNoEventsInThis,
                 style: CatchTextStyles.supporting(
                   context,
                   color: CatchTokens.of(context).ink2,
@@ -788,7 +810,9 @@ class HostAnalyticsEventTile extends StatelessWidget {
                         ),
                         if (selected) ...[
                           const SizedBox(width: CatchSpacing.s2),
-                          const CatchBadge(label: 'Selected'),
+                          CatchBadge(
+                            label: context.l10n.hostsHostAnalyticsLabelSelected,
+                          ),
                         ],
                       ],
                     ),
@@ -806,45 +830,88 @@ class HostAnalyticsEventTile extends StatelessWidget {
                           label: _analyticsEventStatusLabel(event.status),
                           tone: _analyticsEventStatusTone(event.status),
                         ),
-                        CatchBadge(label: '${event.demandCount} demand'),
-                        CatchBadge(label: '${event.bookedCount} booked'),
+                        CatchBadge(
+                          label: context.l10n
+                              .hostsHostAnalyticsLabelDemandcountDemand(
+                                demandCount: event.demandCount,
+                              ),
+                        ),
+                        CatchBadge(
+                          label: context.l10n
+                              .hostsHostAnalyticsLabelBookedcountBooked(
+                                bookedCount: event.bookedCount,
+                              ),
+                        ),
                         if (event.waitlistedCount > 0)
                           CatchBadge(
-                            label: '${event.waitlistedCount} waitlisted',
+                            label: context.l10n
+                                .hostsHostAnalyticsLabelWaitlistedcountWaitlisted(
+                                  waitlistedCount: event.waitlistedCount,
+                                ),
                             tone: CatchBadgeTone.warning,
                           ),
                         CatchBadge(
-                          label: '${event.checkedInCount} attended',
+                          label: context.l10n
+                              .hostsHostAnalyticsLabelCheckedincountAttended(
+                                checkedInCount: event.checkedInCount,
+                              ),
                           tone: CatchBadgeTone.success,
                         ),
                         if (event.mutualMatchCount > 0)
                           CatchBadge(
-                            label: '${event.mutualMatchCount} matches',
+                            label: context.l10n
+                                .hostsHostAnalyticsLabelMutualmatchcountMatches(
+                                  mutualMatchCount: event.mutualMatchCount,
+                                ),
                             tone: CatchBadgeTone.brand,
                           ),
                         if (event.chatStartedCount > 0)
-                          CatchBadge(label: '${event.chatStartedCount} chats'),
+                          CatchBadge(
+                            label: context.l10n
+                                .hostsHostAnalyticsLabelChatstartedcountChats(
+                                  chatStartedCount: event.chatStartedCount,
+                                ),
+                          ),
                         if (event.repeatAttendeeCount > 0)
                           CatchBadge(
-                            label: '${event.repeatAttendeeCount} repeat',
+                            label: context.l10n
+                                .hostsHostAnalyticsLabelRepeatattendeecountRepeat(
+                                  repeatAttendeeCount:
+                                      event.repeatAttendeeCount,
+                                ),
                           ),
                         if (event.checkoutStartedCount > 0)
                           CatchBadge(
-                            label: '${event.checkoutStartedCount} checkouts',
+                            label: context.l10n
+                                .hostsHostAnalyticsLabelCheckoutstartedcountCheckouts(
+                                  checkoutStartedCount:
+                                      event.checkoutStartedCount,
+                                ),
                           ),
                         if (event.checkoutDropoffCount > 0)
                           CatchBadge(
-                            label: '${event.checkoutDropoffCount} drop-off',
+                            label: context.l10n
+                                .hostsHostAnalyticsLabelCheckoutdropoffcountDropOff(
+                                  checkoutDropoffCount:
+                                      event.checkoutDropoffCount,
+                                ),
                             tone: CatchBadgeTone.warning,
                           ),
                         if (event.paymentFailedCount > 0)
                           CatchBadge(
-                            label: '${event.paymentFailedCount} failed',
+                            label: context.l10n
+                                .hostsHostAnalyticsLabelPaymentfailedcountFailed(
+                                  paymentFailedCount: event.paymentFailedCount,
+                                ),
                             tone: CatchBadgeTone.danger,
                           ),
                         if (event.paymentRefundedCount > 0)
                           CatchBadge(
-                            label: '${event.paymentRefundedCount} refunded',
+                            label: context.l10n
+                                .hostsHostAnalyticsLabelPaymentrefundedcountRefunded(
+                                  paymentRefundedCount:
+                                      event.paymentRefundedCount,
+                                ),
                             tone: CatchBadgeTone.warning,
                           ),
                       ],
@@ -887,7 +954,7 @@ class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchAnalyticsSection(
-      label: 'Reviews and saves',
+      label: context.l10n.hostsHostAnalyticsLabelReviewsAndSaves,
       child: CatchSurface(
         padding: CatchInsets.content,
         borderColor: CatchTokens.of(context).line,
@@ -897,13 +964,15 @@ class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
               children: [
                 Expanded(
                   child: CatchStatColumn(
-                    label: 'New reviews',
-                    value: '${report.reviewSummary.newReviews}',
+                    label: context.l10n.hostsHostAnalyticsLabelNewReviews,
+                    value: context.l10n.hostsHostAnalyticsVisiblecopyNewreviews(
+                      newReviews: report.reviewSummary.newReviews,
+                    ),
                   ),
                 ),
                 Expanded(
                   child: CatchStatColumn(
-                    label: 'Average rating',
+                    label: context.l10n.hostsHostAnalyticsLabelAverageRating,
                     value: report.reviewSummary.averageRating <= 0
                         ? '—'
                         : report.reviewSummary.averageRating.toStringAsFixed(1),
@@ -916,14 +985,20 @@ class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
               children: [
                 Expanded(
                   child: CatchStatColumn(
-                    label: 'Event saves',
-                    value: '${report.discoverySummary.eventSaves}',
+                    label: context.l10n.hostsHostAnalyticsLabelEventSaves,
+                    value: context.l10n.hostsHostAnalyticsVisiblecopyEventsaves(
+                      eventSaves: report.discoverySummary.eventSaves,
+                    ),
                   ),
                 ),
                 Expanded(
                   child: CatchStatColumn(
-                    label: 'Responses',
-                    value: '${report.reviewSummary.ownerResponseCount}',
+                    label: context.l10n.hostsHostAnalyticsLabelResponses,
+                    value: context.l10n
+                        .hostsHostAnalyticsVisiblecopyOwnerresponsecount(
+                          ownerResponseCount:
+                              report.reviewSummary.ownerResponseCount,
+                        ),
                   ),
                 ),
               ],

@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_config_provider.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
@@ -29,7 +30,11 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
 
     return Scaffold(
-      appBar: const CatchTopBar(title: 'Apply for access'),
+      appBar: CatchTopBar(
+        title: context
+            .l10n
+            .launchAccessLaunchAccessApplicationScreenTitleApplyForAccess,
+      ),
       body: SafeArea(
         top: false,
         child: Padding(
@@ -38,9 +43,12 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
               ? Center(
                   child: CatchEmptyState(
                     icon: CatchIcons.lockOpenRounded,
-                    title: 'Access gate is off',
-                    message:
-                        'Remote Config has not enabled launch access for this build.',
+                    title: context
+                        .l10n
+                        .launchAccessLaunchAccessApplicationScreenTitleAccessGateIsOff,
+                    message: context
+                        .l10n
+                        .launchAccessLaunchAccessApplicationScreenMessageRemoteConfigHasNot,
                   ),
                 )
               : CatchAsyncValueView<String?>(
@@ -50,9 +58,12 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                       return Center(
                         child: CatchEmptyState(
                           icon: CatchIcons.phoneAndroidRounded,
-                          title: 'Verify your phone',
-                          message:
-                              'Phone verification is required before applying for access.',
+                          title: context
+                              .l10n
+                              .launchAccessLaunchAccessApplicationScreenTitleVerifyYourPhone,
+                          message: context
+                              .l10n
+                              .launchAccessLaunchAccessApplicationScreenMessagePhoneVerificationIsRequired,
                         ),
                       );
                     }
@@ -73,8 +84,12 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                                   : CatchIcons.hourglassTopRounded,
                               title: application.status.label,
                               message: application.status.unlocksProfileCreation
-                                  ? 'Access is approved. Profile creation can be unlocked once the router uses this gate.'
-                                  : 'Your application is saved for the next launch cohort.',
+                                  ? context
+                                        .l10n
+                                        .launchAccessLaunchAccessApplicationScreenMessageAccessIsApprovedProfile
+                                  : context
+                                        .l10n
+                                        .launchAccessLaunchAccessApplicationScreenMessageYourApplicationIsSaved,
                             ),
                           );
                         }
@@ -257,21 +272,29 @@ class _LaunchAccessApplicationFormState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Join the next city drop',
+              context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenTextJoinTheNextCity,
               style: CatchTextStyles.headlineS(context, color: t.ink),
             ),
             gapH8,
             Text(
-              'Tell us where you fit so we can open access around real events.',
+              context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenTextTellUsWhereYou,
               style: CatchTextStyles.bodyLead(context, color: t.ink2),
             ),
             gapH24,
             CatchField.select<CityOption>(
-              title: 'City',
+              title: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenTitleCity,
               values: selectableCities,
               value: selectedCity,
               itemLabel: (city) => city.label,
-              hintText: 'Select city',
+              hintText: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenHinttextSelectCity,
               prefixIcon: Icon(CatchIcons.locationCityOutlined),
               validator: (_) =>
                   draft.city.trim().isEmpty ? 'Please choose your city' : null,
@@ -283,7 +306,9 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchChipField<LaunchAccessRole>(
-              label: 'Joining as',
+              label: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenLabelJoiningAs,
               values: LaunchAccessRole.values,
               selected: {draft.role},
               multiSelect: false,
@@ -296,7 +321,9 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchChipField<LaunchAccessEventType>(
-              label: 'Events you would show up for',
+              label: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenLabelEventsYouWouldShow,
               values: LaunchAccessEventType.values,
               selected: draft.eventTypes,
               multiSelect: true,
@@ -312,7 +339,9 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchChipField<LaunchAccessAvailabilityWindow>(
-              label: 'Best times',
+              label: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenLabelBestTimes,
               values: LaunchAccessAvailabilityWindow.values,
               selected: draft.availabilityWindows,
               multiSelect: true,
@@ -328,9 +357,12 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchField.toggle(
-              title: 'I might host',
-              body:
-                  'Useful if you already run a club, venue, or social format.',
+              title: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenTitleIMightHost,
+              body: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenBodyUsefulIfYouAlready,
               value: draft.wantsToHost,
               onChanged: (value) {
                 LaunchAccessController.submitMutation.reset(ref);
@@ -341,7 +373,9 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchField.input(
-              title: 'Invite code',
+              title: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenTitleInviteCode,
               isOptional: true,
               controller: _inviteCodeController,
               textCapitalization: TextCapitalization.characters,
@@ -355,7 +389,9 @@ class _LaunchAccessApplicationFormState
             ),
             gapH16,
             CatchField.input(
-              title: 'Instagram',
+              title: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenTitleInstagram,
               isOptional: true,
               controller: _instagramController,
               prefixText: '@',
@@ -369,7 +405,9 @@ class _LaunchAccessApplicationFormState
             ),
             gapH16,
             CatchField.input(
-              title: 'Who referred you?',
+              title: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenTitleWhoReferredYou,
               isOptional: true,
               controller: _referralController,
               textCapitalization: TextCapitalization.words,
@@ -382,7 +420,9 @@ class _LaunchAccessApplicationFormState
             ),
             gapH16,
             CatchField.input(
-              title: 'Why do you want to join?',
+              title: context
+                  .l10n
+                  .launchAccessLaunchAccessApplicationScreenTitleWhyDoYouWant,
               controller: _whyController,
               maxLines: 4,
               minLines: 3,
@@ -403,13 +443,19 @@ class _LaunchAccessApplicationFormState
             ),
             if (mutation.hasError) ...[
               gapH16,
-              CatchErrorBanner(message: mutationErrorMessage(mutation)),
+              CatchErrorBanner(
+                message: mutationErrorMessage(mutation, l10n: context.l10n),
+              ),
             ],
             gapH32,
             CatchButton(
               label: widget.application == null
-                  ? 'Submit application'
-                  : 'Update application',
+                  ? context
+                        .l10n
+                        .launchAccessLaunchAccessApplicationScreenLabelSubmitApplication
+                  : context
+                        .l10n
+                        .launchAccessLaunchAccessApplicationScreenLabelUpdateApplication,
               onPressed: mutation.isPending ? null : _submit,
               isLoading: mutation.isPending,
               fullWidth: true,

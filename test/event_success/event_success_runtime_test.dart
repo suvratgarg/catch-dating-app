@@ -1,12 +1,16 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart' show buildEvent;
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   group('EventSuccessRuntime', () {
@@ -441,12 +445,14 @@ void main() {
         EventSuccessConversationCueLibrary.liveCuesFor(
           event: event,
           plan: plan,
+          l10n: _l10n,
         ).first.moment,
         EventSuccessConversationCueMoment.live,
       );
       expect(
         EventSuccessConversationCueLibrary.postEventOpenersFor(
           event,
+          l10n: _l10n,
         ).first.moment,
         EventSuccessConversationCueMoment.postEvent,
       );

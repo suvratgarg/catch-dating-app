@@ -81,7 +81,9 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
               children: [
                 StageSectionLabel(
                   icon: CatchIcons.wavingHandOutlined,
-                  label: 'First Hello',
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessCompanionArrivalMissionLabelFirstHello,
                   color: t.primary,
                 ),
                 const CatchPrivacyBadge(
@@ -91,12 +93,16 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
             ),
             gapH12,
             Text(
-              'Start your First Hello.',
+              context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionArrivalMissionTextStartYourFirstHello,
               style: CatchTextStyles.titleL(context),
             ),
             gapH6,
             Text(
-              'We will confirm you are at the venue, then give you one person and one tiny question. Complete it to check in.',
+              context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionArrivalMissionTextWeWillConfirmYou,
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
             gapH14,
@@ -112,7 +118,9 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                   gapW8,
                   Expanded(
                     child: Text(
-                      'This is a private prompt. It is designed to make the first conversation easier, not to put your answers on display.',
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionArrivalMissionTextThisIsAPrivate,
                       style: CatchTextStyles.sectionTitle(context),
                     ),
                   ),
@@ -125,7 +133,9 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CatchButton(
-                    label: 'Start First Hello',
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessCompanionArrivalMissionLabelStartFirstHello,
                     icon: Icon(CatchIcons.playArrowRounded),
                     isLoading: starting,
                     onPressed: starting || widget.onStart == null
@@ -135,7 +145,9 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                   ),
                   gapH8,
                   CatchButton(
-                    label: 'Use normal check-in',
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessCompanionArrivalMissionLabelUseNormalCheckIn,
                     variant: CatchButtonVariant.ghost,
                     icon: Icon(CatchIcons.qrCode2Rounded),
                     isLoading: skipping,
@@ -229,7 +241,9 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
           children: [
             StageSectionLabel(
               icon: CatchIcons.wavingHandOutlined,
-              label: 'First Hello',
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionArrivalMissionLabelFirstHello,
               color: t.primary,
             ),
             const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
@@ -237,7 +251,10 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
         ),
         gapH12,
         Text(
-          'Find ${mission.targetDisplayName}.',
+          context.l10n
+              .eventSuccessEventSuccessCompanionArrivalMissionTextFindTargetdisplayname(
+                targetDisplayName: mission.targetDisplayName,
+              ),
           style: CatchTextStyles.titleL(context),
         ),
         gapH6,
@@ -282,7 +299,9 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
         ),
         gapH14,
         Text(
-          'Complete this tiny mission to check in. If the room is crowded or the person is late, use the fallback.',
+          context
+              .l10n
+              .eventSuccessEventSuccessCompanionArrivalMissionTextCompleteThisTinyMission,
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         gapH14,
@@ -291,7 +310,9 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               CatchButton(
-                label: 'Complete check-in',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionArrivalMissionLabelCompleteCheckIn,
                 icon: Icon(CatchIcons.checkRounded),
                 isLoading: saving,
                 onPressed:
@@ -304,7 +325,9 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
               ),
               gapH8,
               CatchButton(
-                label: 'Can\'t find them',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionArrivalMissionLabelCanTFindThem,
                 variant: CatchButtonVariant.ghost,
                 icon: Icon(CatchIcons.swapHorizRounded),
                 isLoading: skipping,

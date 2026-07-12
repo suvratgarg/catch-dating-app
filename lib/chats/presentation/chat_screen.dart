@@ -28,6 +28,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -211,19 +212,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return switch (action) {
       ChatThreadAction.shareCard => CatchActionMenuItem(
         value: ChatThreadAction.shareCard,
-        label: 'Share card',
+        label: context.l10n.chatsChatScreenLabelShareCard,
         icon: CatchIcons.platformShare(platform: Theme.of(context).platform),
         enabled: enabled,
       ),
       ChatThreadAction.report => CatchActionMenuItem(
         value: ChatThreadAction.report,
-        label: 'Report',
+        label: context.l10n.chatsChatScreenLabelReport,
         icon: CatchIcons.flagOutlined,
         enabled: enabled,
       ),
       ChatThreadAction.block => CatchActionMenuItem(
         value: ChatThreadAction.block,
-        label: 'Block',
+        label: context.l10n.chatsChatScreenLabelBlock,
         icon: CatchIcons.blockRounded,
         enabled: enabled,
         isDestructive: true,
@@ -300,7 +301,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           actions: [
             if (chatState.threadActions.isNotEmpty)
               CatchTopBarMenuAction<ChatThreadAction>(
-                tooltip: 'Chat actions',
+                tooltip: context.l10n.chatsChatScreenTooltipChatActions,
                 onSelected: (action) => unawaited(
                   _threadActionController.runThreadAction(
                     action: action,
@@ -352,15 +353,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             ),
                     )
                   : CatchErrorState(
-                      title: 'Messages unavailable',
+                      title:
+                          context.l10n.chatsChatScreenTitleMessagesUnavailable,
                       message: appErrorMessage(
                         routeError.error,
+                        l10n: context.l10n,
                         context: AppErrorContext.chat,
                       ),
                       icon: CatchIcons.chatBubbleOutlineRounded,
                       onRetry: () =>
                           _retryController.run(routeError.retryIntent),
-                      retryLabel: 'Reload messages',
+                      retryLabel: context
+                          .l10n
+                          .chatsChatScreenCatcherrorstateReloadMessages,
                     ),
             ),
             if (routeState.showSuvbotActionBar)

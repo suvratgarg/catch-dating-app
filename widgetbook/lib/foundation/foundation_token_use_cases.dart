@@ -272,7 +272,7 @@ class FoundationTypographyTokens extends StatelessWidget {
       title: 'Typography roles',
       contractId: 'foundation.typography',
       states: const [
-        '54 public helpers',
+        '55 public helpers',
         'Archivo brand/display',
         'platform body/UI',
         'mono data',
@@ -296,6 +296,16 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'headlineS',
                 'Build a better guest list',
                 CatchTextStyles.headlineS(context),
+              ),
+              _TypeSpec(
+                'welcomeReelHeadline',
+                'Catch someone real.',
+                CatchTextStyles.welcomeReelHeadline(context),
+              ),
+              _TypeSpec(
+                'welcomeIntroBody',
+                'Show up to something you would do anyway.',
+                CatchTextStyles.welcomeIntroBody(context),
               ),
               _TypeSpec(
                 'clubDisplay(24)',
@@ -445,22 +455,6 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.statCompact(context),
               ),
               _TypeSpec(
-                'mapPinTime(1x)',
-                '8:30',
-                CatchTextStyles.mapPinTime(
-                  scale: 1,
-                  color: CatchTokens.of(context).ink,
-                ),
-              ),
-              _TypeSpec(
-                'mapPinCluster(1x)',
-                '12',
-                CatchTextStyles.mapPinCluster(
-                  scale: 1,
-                  color: CatchTokens.of(context).ink,
-                ),
-              ),
-              _TypeSpec(
                 'clubMemberSeal',
                 '128',
                 CatchTextStyles.clubMemberSeal(context),
@@ -480,8 +474,13 @@ class FoundationTypographyTokens extends StatelessWidget {
               ),
               _TypeSpec(
                 'monoLabel',
-                '8:30 PM - 24 SPOTS',
+                '6 going - 2.4 km away',
                 CatchTextStyles.monoLabel(context),
+              ),
+              _TypeSpec(
+                'monoCapsLabel',
+                '8:30 PM - 24 SPOTS',
+                CatchTextStyles.monoCapsLabel(context),
               ),
               _TypeSpec(
                 'numericLarge',
@@ -494,8 +493,12 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.numericMeta(context),
               ),
               _TypeSpec('meta', 'WAITLIST', CatchTextStyles.meta(context)),
-              _TypeSpec('badge', 'VERIFIED', CatchTextStyles.badge(context)),
-              _TypeSpec('code', '4821', CatchTextStyles.code(context)),
+              _TypeSpec('badge', 'Open', CatchTextStyles.badge(context)),
+              _TypeSpec(
+                'badgeCaps',
+                'VERIFIED',
+                CatchTextStyles.badgeCaps(context),
+              ),
               _TypeSpec(
                 'statDisplay',
                 '128',
@@ -507,23 +510,23 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.debugDetails(context),
               ),
               _TypeSpec('otpDigit', '7', CatchTextStyles.otpDigit(context)),
+              _TypeSpec(
+                'avatarInitials(18)',
+                'AS',
+                CatchTextStyles.avatarInitials(context, size: 18),
+              ),
+              _TypeSpec(
+                'statusBarTime',
+                '9:41',
+                CatchTextStyles.statusBarTime(context),
+              ),
             ],
           ),
         ),
         _SpecSection(
-          title: 'Aliases and technical',
+          title: 'Technical',
           child: _TypeStack(
             rows: [
-              _TypeSpec(
-                'button',
-                'Alias of buttonMd',
-                CatchTextStyles.button(context),
-              ),
-              _TypeSpec(
-                'chat',
-                'Alias of chatMessage',
-                CatchTextStyles.chat(context),
-              ),
               _TypeSpec(
                 'transparentInput',
                 'Invisible input carrier',

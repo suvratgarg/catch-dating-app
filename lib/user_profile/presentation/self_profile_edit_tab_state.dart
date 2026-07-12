@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -32,6 +33,7 @@ class SelfProfileEditTabState {
   });
 
   factory SelfProfileEditTabState.fromProfile({
+    required AppLocalizations l10n,
     required UserProfile user,
     required DateTime today,
     required PhotoUploadState uploadState,
@@ -68,7 +70,10 @@ class SelfProfileEditTabState {
             definition: definition,
             answer: answer,
             usedPromptIds: usedPromptIds,
-            fieldName: 'profilePrompt:$index',
+            fieldName: l10n
+                .userProfileSelfProfileEditTabStateVisiblecopyProfilepromptIndex(
+                  index: index,
+                ),
             availablePromptIds: _availableProfilePromptIds(
               usedPromptIds: usedPromptIds,
               currentPromptId: currentPromptId,
@@ -78,13 +83,22 @@ class SelfProfileEditTabState {
         growable: false,
       ),
       basicRows: _basicRows(
+        l10n: l10n,
         user: user,
         today: today,
         patchFactory: patchFactory,
       ),
-      aboutRows: _aboutRows(user: user, patchFactory: patchFactory),
-      runningRows: _runningRows(user: user, patchFactory: patchFactory),
-      lifestyleRows: _lifestyleRows(user: user, patchFactory: patchFactory),
+      aboutRows: _aboutRows(l10n: l10n, user: user, patchFactory: patchFactory),
+      runningRows: _runningRows(
+        l10n: l10n,
+        user: user,
+        patchFactory: patchFactory,
+      ),
+      lifestyleRows: _lifestyleRows(
+        l10n: l10n,
+        user: user,
+        patchFactory: patchFactory,
+      ),
     );
   }
 
@@ -352,6 +366,7 @@ class SelfProfileRangeFieldRowDescriptor extends SelfProfileFieldRowDescriptor {
 }
 
 List<SelfProfileFieldRowDescriptor> _basicRows({
+  required AppLocalizations l10n,
   required UserProfile user,
   required DateTime today,
   required SelfProfileInlineEditPatchFactory patchFactory,
@@ -360,13 +375,13 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
     SelfProfileTextFieldRowDescriptor(
       id: 'displayName',
       icon: CatchIcons.personOutlined,
-      label: 'Display name',
+      label: l10n.userProfileSelfProfileEditTabStateLabelDisplayName,
       value: user.publicDisplayName,
       currentValue: user.publicDisplayName,
       currentFieldValue: user.displayName.trim().isEmpty
           ? null
           : user.displayName.trim(),
-      fieldName: 'displayName',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyDisplayname,
       patchForValue: patchFactory.displayName,
       textCapitalization: TextCapitalization.words,
       autofillHints: const [AutofillHints.nickname],
@@ -376,16 +391,18 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
     SelfProfileReadOnlyFieldRowDescriptor(
       id: 'dateOfBirth',
       icon: CatchIcons.cakeOutlined,
-      label: 'Date of birth',
-      body:
-          '${user.dateOfBirth.day.toString().padLeft(2, '0')}/'
-          '${user.dateOfBirth.month.toString().padLeft(2, '0')}/'
-          '${user.dateOfBirth.year}  (${user.ageOn(today)} years)',
+      label: l10n.userProfileSelfProfileEditTabStateLabelDateOfBirth,
+      body: l10n.userProfileSelfProfileEditTabStateBodyPadleftPadleft2YearAgeon(
+        padLeft: user.dateOfBirth.day.toString().padLeft(2, '0'),
+        padLeft2: user.dateOfBirth.month.toString().padLeft(2, '0'),
+        year: user.dateOfBirth.year,
+        ageOn: user.ageOn(today),
+      ),
     ),
     SelfProfileReadOnlyFieldRowDescriptor(
       id: 'gender',
       icon: CatchIcons.wcOutlined,
-      label: 'Gender',
+      label: l10n.userProfileSelfProfileEditTabStateLabelGender,
       body: user.gender.label,
     ),
     // Phone is the OTP identity credential; editing requires Auth
@@ -393,16 +410,16 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
     SelfProfileReadOnlyFieldRowDescriptor(
       id: 'phoneNumber',
       icon: CatchIcons.phoneOutlined,
-      label: 'Phone',
+      label: l10n.userProfileSelfProfileEditTabStateLabelPhone,
       body: user.phoneNumber,
     ),
     SelfProfileTextFieldRowDescriptor(
       id: 'email',
       icon: CatchIcons.emailOutlined,
-      label: 'Email',
-      value: 'Email',
+      label: l10n.userProfileSelfProfileEditTabStateLabelEmail,
+      value: l10n.userProfileSelfProfileEditTabStateVisiblecopyEmail,
       currentValue: user.email,
-      fieldName: 'email',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyEmaile69bb2,
       patchForValue: patchFactory.email,
       keyboardType: TextInputType.emailAddress,
       textCapitalization: TextCapitalization.none,
@@ -412,13 +429,16 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
     SelfProfileTextFieldRowDescriptor(
       id: 'instagramHandle',
       icon: CatchIcons.alternateEmailOutlined,
-      label: 'Instagram',
-      value: 'Instagram',
+      label: l10n.userProfileSelfProfileEditTabStateLabelInstagram,
+      value: l10n.userProfileSelfProfileEditTabStateVisiblecopyInstagram,
       currentValue: user.instagramHandle?.isNotEmpty == true
-          ? '@${user.instagramHandle}'
+          ? l10n.userProfileSelfProfileEditTabStateVisiblecopyInstagramhandle(
+              instagramHandle: user.instagramHandle!,
+            )
           : '',
       currentFieldValue: user.instagramHandle,
-      fieldName: 'instagramHandle',
+      fieldName: l10n
+          .userProfileSelfProfileEditTabStateVisiblecopyInstagramhandle71eebb,
       patchForValue: patchFactory.instagramHandle,
       keyboardType: TextInputType.text,
       textCapitalization: TextCapitalization.none,
@@ -431,8 +451,12 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
     SelfProfileHeightFieldRowDescriptor(
       id: 'height',
       icon: CatchIcons.heightOutlined,
-      label: 'Height',
-      value: user.height != null ? '${user.height} cm' : 'Height',
+      label: l10n.userProfileSelfProfileEditTabStateLabelHeight,
+      value: user.height != null
+          ? l10n.userProfileSelfProfileEditTabStateVisiblecopyHeightCm(
+              height: user.height!,
+            )
+          : l10n.userProfileSelfProfileEditTabStateVisiblecopyHeight,
       currentValue: user.height,
       patchForValue: patchFactory.height,
     ),
@@ -440,6 +464,7 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
 }
 
 List<SelfProfileFieldRowDescriptor> _aboutRows({
+  required AppLocalizations l10n,
   required UserProfile user,
   required SelfProfileInlineEditPatchFactory patchFactory,
 }) {
@@ -447,77 +472,84 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
     SelfProfileSingleChoiceFieldRowDescriptor<CityOption>(
       id: 'city',
       icon: CatchIcons.locationOnOutlined,
-      label: 'City',
+      label: l10n.userProfileSelfProfileEditTabStateLabelCity,
       values: defaultCityOptions
           .where((city) => city.profileSelectable)
           .toList(growable: false),
       value: cityOptionByName(user.city),
-      fieldName: 'city',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyCity,
       patchForValue: patchFactory.city,
     ),
     SelfProfileTextFieldRowDescriptor(
       id: 'occupation',
       icon: CatchIcons.workOutline,
-      label: 'Job title',
-      value: 'Job title',
+      label: l10n.userProfileSelfProfileEditTabStateLabelJobTitle,
+      value: l10n.userProfileSelfProfileEditTabStateVisiblecopyJobTitle,
       currentValue: user.occupation ?? '',
-      fieldName: 'occupation',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyOccupation,
       patchForValue: patchFactory.occupation,
-      validator: (value) =>
-          validateOptionalProfileShortText(value, label: 'Job title'),
+      validator: (value) => validateOptionalProfileShortText(
+        value,
+        label: l10n.userProfileSelfProfileEditTabStateLabelJobTitle,
+      ),
     ),
     SelfProfileTextFieldRowDescriptor(
       id: 'company',
       icon: CatchIcons.businessOutlined,
-      label: 'Company',
-      value: 'Company',
+      label: l10n.userProfileSelfProfileEditTabStateLabelCompany,
+      value: l10n.userProfileSelfProfileEditTabStateVisiblecopyCompany,
       currentValue: user.company ?? '',
-      fieldName: 'company',
+      fieldName:
+          l10n.userProfileSelfProfileEditTabStateVisiblecopyCompanyfd8aec,
       patchForValue: patchFactory.company,
-      validator: (value) =>
-          validateOptionalProfileShortText(value, label: 'Company'),
+      validator: (value) => validateOptionalProfileShortText(
+        value,
+        label: l10n.userProfileSelfProfileEditTabStateLabelCompany,
+      ),
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<EducationLevel>(
       id: 'education',
       icon: CatchIcons.schoolOutlined,
-      label: 'Education',
+      label: l10n.userProfileSelfProfileEditTabStateLabelEducation,
       values: EducationLevel.values,
       value: user.education,
-      fieldName: 'education',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyEducation,
       patchForValue: patchFactory.education,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<Religion>(
       id: 'religion',
       icon: CatchIcons.volunteerActivismOutlined,
-      label: 'Religion',
+      label: l10n.userProfileSelfProfileEditTabStateLabelReligion,
       values: Religion.values,
       value: user.religion,
-      fieldName: 'religion',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyReligion,
       patchForValue: patchFactory.religion,
     ),
     SelfProfileMultiChoiceFieldRowDescriptor<Language>(
       id: 'languages',
       icon: CatchIcons.languageOutlined,
-      label: 'Languages',
+      label: l10n.userProfileSelfProfileEditTabStateLabelLanguages,
       values: Language.values,
       selected: user.languages,
-      fieldName: 'languages',
-      placeholder: 'Languages',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyLanguages,
+      placeholder: l10n.userProfileSelfProfileEditTabStatePlaceholderLanguages,
       patchForValues: patchFactory.languages,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<RelationshipGoal>(
       id: 'relationshipGoal',
       icon: CatchIcons.favoriteOutline,
-      label: 'Looking for',
+      label: l10n.userProfileSelfProfileEditTabStateLabelLookingFor,
       values: RelationshipGoal.values,
       value: user.relationshipGoal,
-      fieldName: 'relationshipGoal',
+      fieldName:
+          l10n.userProfileSelfProfileEditTabStateVisiblecopyRelationshipgoal,
       patchForValue: patchFactory.relationshipGoal,
     ),
   ];
 }
 
 List<SelfProfileFieldRowDescriptor> _runningRows({
+  required AppLocalizations l10n,
   required UserProfile user,
   required SelfProfileInlineEditPatchFactory patchFactory,
 }) {
@@ -525,47 +557,55 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
     SelfProfileRangeFieldRowDescriptor(
       id: 'pace-range',
       icon: CatchIcons.speedOutlined,
-      label: 'Pace range',
+      label: l10n.userProfileSelfProfileEditTabStateLabelPaceRange,
       value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
       currentMin: user.paceMinSecsPerKm,
       currentMax: user.paceMaxSecsPerKm,
       sliderMin: 240,
       sliderMax: 540,
       divisions: 20,
-      labelText: (v) => '${formatPace(v.round())}/km',
+      labelText: (v) =>
+          l10n.userProfileSelfProfileEditTabStateVisiblecopyFormatpaceKm(
+            formatPace: formatPace(v.round()),
+          ),
       patchForRange: (min, max) => patchFactory.paceRange(user, min, max),
       patchForLatestProfile: patchFactory.paceRange,
     ),
     SelfProfileMultiChoiceFieldRowDescriptor<PreferredDistance>(
       id: 'preferredDistances',
       icon: CatchIcons.straightenOutlined,
-      label: 'Preferred distances',
+      label: l10n.userProfileSelfProfileEditTabStateLabelPreferredDistances,
       values: PreferredDistance.values,
       selected: user.preferredDistances,
-      fieldName: 'preferredDistances',
-      placeholder: 'Preferred distances',
+      fieldName:
+          l10n.userProfileSelfProfileEditTabStateVisiblecopyPreferreddistances,
+      placeholder:
+          l10n.userProfileSelfProfileEditTabStatePlaceholderPreferredDistances,
       patchForValues: (values) => patchFactory.preferredDistances(user, values),
       patchForLatestProfile: patchFactory.preferredDistances,
     ),
     SelfProfileMultiChoiceFieldRowDescriptor<RunReason>(
       id: 'runningReasons',
       icon: CatchIcons.directionsRunOutlined,
-      label: 'Why I event',
+      label: l10n.userProfileSelfProfileEditTabStateLabelWhyIEvent,
       values: RunReason.values,
       selected: user.runningReasons,
-      fieldName: 'runningReasons',
-      placeholder: 'Why I event',
+      fieldName:
+          l10n.userProfileSelfProfileEditTabStateVisiblecopyRunningreasons,
+      placeholder: l10n.userProfileSelfProfileEditTabStatePlaceholderWhyIEvent,
       patchForValues: (values) => patchFactory.runningReasons(user, values),
       patchForLatestProfile: patchFactory.runningReasons,
     ),
     SelfProfileMultiChoiceFieldRowDescriptor<PreferredRunTime>(
       id: 'preferredRunTimes',
       icon: CatchIcons.wbTwilightOutlined,
-      label: 'Favorite event times',
+      label: l10n.userProfileSelfProfileEditTabStateLabelFavoriteEventTimes,
       values: PreferredRunTime.values,
       selected: user.preferredRunTimes,
-      fieldName: 'preferredRunTimes',
-      placeholder: 'Favorite event times',
+      fieldName:
+          l10n.userProfileSelfProfileEditTabStateVisiblecopyPreferredruntimes,
+      placeholder:
+          l10n.userProfileSelfProfileEditTabStatePlaceholderFavoriteEventTimes,
       patchForValues: (values) => patchFactory.preferredRunTimes(user, values),
       patchForLatestProfile: patchFactory.preferredRunTimes,
     ),
@@ -573,6 +613,7 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
 }
 
 List<SelfProfileFieldRowDescriptor> _lifestyleRows({
+  required AppLocalizations l10n,
   required UserProfile user,
   required SelfProfileInlineEditPatchFactory patchFactory,
 }) {
@@ -580,46 +621,46 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
     SelfProfileSingleChoiceFieldRowDescriptor<DrinkingHabit>(
       id: 'drinking',
       icon: CatchIcons.localBarOutlined,
-      label: 'Drinking',
+      label: l10n.userProfileSelfProfileEditTabStateLabelDrinking,
       values: DrinkingHabit.values,
       value: user.drinking,
-      fieldName: 'drinking',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyDrinking,
       patchForValue: patchFactory.drinking,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<SmokingHabit>(
       id: 'smoking',
       icon: CatchIcons.smokeFreeOutlined,
-      label: 'Smoking',
+      label: l10n.userProfileSelfProfileEditTabStateLabelSmoking,
       values: SmokingHabit.values,
       value: user.smoking,
-      fieldName: 'smoking',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopySmoking,
       patchForValue: patchFactory.smoking,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<WorkoutFrequency>(
       id: 'workout',
       icon: CatchIcons.fitnessCenterOutlined,
-      label: 'Workout',
+      label: l10n.userProfileSelfProfileEditTabStateLabelWorkout,
       values: WorkoutFrequency.values,
       value: user.workout,
-      fieldName: 'workout',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyWorkout,
       patchForValue: patchFactory.workout,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<DietaryPreference>(
       id: 'diet',
       icon: CatchIcons.restaurantOutlined,
-      label: 'Diet',
+      label: l10n.userProfileSelfProfileEditTabStateLabelDiet,
       values: DietaryPreference.values,
       value: user.diet,
-      fieldName: 'diet',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyDiet,
       patchForValue: patchFactory.diet,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<ChildrenStatus>(
       id: 'children',
       icon: CatchIcons.childCareOutlined,
-      label: 'Children',
+      label: l10n.userProfileSelfProfileEditTabStateLabelChildren,
       values: ChildrenStatus.values,
       value: user.children,
-      fieldName: 'children',
+      fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyChildren,
       patchForValue: patchFactory.children,
     ),
   ];

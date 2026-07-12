@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
@@ -114,6 +115,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
             watchEventParticipationProvider(widget.eventId, currentUser.uid),
           );
     final state = buildCatchesEventScreenState(
+      l10n: context.l10n,
       queue: _catchAsyncState(queueAsync),
       event: _catchAsyncState(eventAsync),
       currentUser: _catchAsyncState(currentUserAsync),
@@ -392,7 +394,7 @@ class CatchesTopOverlay extends StatelessWidget {
           child: Row(
             children: [
               CatchIconAction(
-                tooltip: 'Back to Catches',
+                tooltip: context.l10n.swipesSwipeScreenTooltipBackToCatches,
                 icon: CatchIcons.arrowBackIosNewRounded,
                 onPressed: onBack,
                 size: CatchLayout.floatingControlExtent,
@@ -417,7 +419,10 @@ class CatchesTopOverlay extends StatelessWidget {
                       vertical: CatchSpacing.s2,
                     ),
                     child: Text(
-                      'Catches · $remainingCount left',
+                      context.l10n
+                          .swipesSwipeScreenTextCatchesRemainingcountLeft(
+                            remainingCount: remainingCount,
+                          ),
                       style: CatchTextStyles.labelM(context, color: t.ink),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -427,7 +432,7 @@ class CatchesTopOverlay extends StatelessWidget {
               ),
               gapW10,
               CatchIconAction(
-                tooltip: 'Filters',
+                tooltip: context.l10n.swipesSwipeScreenTooltipFilters,
                 icon: CatchIcons.tuneRounded,
                 onPressed: onFilters,
                 size: CatchLayout.floatingControlExtent,

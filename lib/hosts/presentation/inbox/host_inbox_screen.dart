@@ -31,6 +31,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -240,11 +241,15 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       ).then((result) {
         if (!mounted || result == null) return;
         final suffix = result.isPartial
-            ? ' Some push attempts failed; Activity updates are still available.'
+            ? context.l10n.hostsHostInboxScreenVisiblecopySomePushAttemptsFailed
             : '';
         showCatchSnackBar(
           context,
-          'Broadcast sent to ${result.recipientCount} people.$suffix',
+          context.l10n
+              .hostsHostInboxScreenVisiblecopyBroadcastSentToRecipientcount(
+                recipientCount: result.recipientCount,
+                suffix: suffix,
+              ),
         );
       }),
     );
@@ -321,9 +326,9 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
             ],
             builder: (context, controller, child) => Semantics(
               button: true,
-              label: 'Inbox scope',
+              label: context.l10n.hostsHostInboxScreenLabelInboxScope,
               value: selectedLabel,
-              hint: 'Select an event or general inquiries',
+              hint: context.l10n.hostsHostInboxScreenVisiblecopySelectAnEventOr,
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -355,21 +360,41 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
   }
 
   String _scopeTriggerLabel(HostInboxScope scope, Event? event) {
-    if (scope.isGeneral) return 'General inquiries';
-    if (event == null) return 'Event inquiry';
-    final eventName =
-        '${AppTimeFormatters.longWeekday(event.startTime)} ${event.eventFormat.eventTitleLabel}';
+    if (scope.isGeneral)
+      return context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries;
+    if (event == null)
+      return context.l10n.hostsHostInboxScreenVisiblecopyEventInquiry;
+    final eventName = context.l10n
+        .hostsHostInboxScreenVisiblecopyLongweekdayEventtitlelabel(
+          longWeekday: AppTimeFormatters.longWeekday(event.startTime),
+          eventTitleLabel: event.eventFormat.eventTitleLabel,
+        );
     final timing = DateUtils.isSameDay(event.startTime, widget.now)
-        ? 'Tonight ${AppTimeFormatters.time(event.startTime)}'
-        : '${event.shortDateLabel} · ${AppTimeFormatters.time(event.startTime)}';
-    return '$eventName · $timing';
+        ? context.l10n.hostsHostInboxScreenVisiblecopyTonightTime(
+            time: AppTimeFormatters.time(event.startTime),
+          )
+        : context.l10n.hostsHostInboxScreenVisiblecopyShortdatelabelTime(
+            shortDateLabel: event.shortDateLabel,
+            time: AppTimeFormatters.time(event.startTime),
+          );
+    return context.l10n.hostsHostInboxScreenVisiblecopyEventnameTiming(
+      eventName: eventName,
+      timing: timing,
+    );
   }
 
   String _scopeMenuLabel(HostInboxScope scope, Map<String, Event> eventsById) {
-    if (scope.isGeneral) return 'General inquiries';
+    if (scope.isGeneral)
+      return context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries;
     final event = eventsById[scope.eventId];
-    if (event == null) return 'Event inquiry';
-    return '${event.title} · ${event.shortDateLabel} · ${event.compactTimeRangeLabel}';
+    if (event == null)
+      return context.l10n.hostsHostInboxScreenVisiblecopyEventInquiry;
+    return context.l10n
+        .hostsHostInboxScreenVisiblecopyTitleShortdatelabelCompacttimerangelabel(
+          title: event.title,
+          shortDateLabel: event.shortDateLabel,
+          compactTimeRangeLabel: event.compactTimeRangeLabel,
+        );
   }
 }
 
@@ -393,11 +418,17 @@ class HostInboxAudienceRail extends StatelessWidget {
           segments: [
             CatchSegment(
               value: HostInboxAudienceSegment.booked,
-              label: 'BOOKED · ${workspace.bookedThreadCount}',
+              label: context.l10n
+                  .hostsHostInboxScreenLabelBookedBookedthreadcount(
+                    bookedThreadCount: workspace.bookedThreadCount,
+                  ),
             ),
             CatchSegment(
               value: HostInboxAudienceSegment.prospective,
-              label: 'PROSPECTIVE · ${workspace.prospectiveThreadCount}',
+              label: context.l10n
+                  .hostsHostInboxScreenLabelProspectiveProspectivethreadcount(
+                    prospectiveThreadCount: workspace.prospectiveThreadCount,
+                  ),
             ),
           ],
           expanded: true,
@@ -449,7 +480,10 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
               ),
               child: HostInboxBroadcastCard(
                 audienceCount: workspace.selectedAudienceCount,
-                audienceLabel: '${workspace.selectedSegment.name} attendee',
+                audienceLabel: context.l10n
+                    .hostsHostInboxScreenVisiblecopyNameAttendee(
+                      name: workspace.selectedSegment.name,
+                    ),
                 subtitle: _broadcastSubtitle,
                 onTap: canSend ? () => onBroadcastSelected(workspace) : null,
               ),
@@ -476,16 +510,30 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
             child: workspace.query.isNotEmpty && workspace.hasUnfilteredThreads
                 ? const ChatsEmptyState.noHostSearchResults()
                 : workspace.isGeneral
-                ? const HostInboxEmptyState(
-                    title: 'No general inquiries',
-                    message:
-                        'Questions that are not tied to one event will appear here.',
+                ? HostInboxEmptyState(
+                    title: context
+                        .l10n
+                        .hostsHostInboxScreenTitleNoGeneralInquiries,
+                    message: context
+                        .l10n
+                        .hostsHostInboxScreenMessageQuestionsThatAreNot,
                   )
                 : HostInboxEmptyState(
-                    title:
-                        'No ${workspace.selectedSegment == HostInboxAudienceSegment.booked ? 'booked attendees' : 'prospective attendees'} have written yet',
-                    message:
-                        'Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.',
+                    title: context.l10n
+                        .hostsHostInboxScreenTitleNoValue1HaveWritten(
+                          value1:
+                              workspace.selectedSegment ==
+                                  HostInboxAudienceSegment.booked
+                              ? context
+                                    .l10n
+                                    .hostsHostInboxScreenTitleBookedAttendees
+                              : context
+                                    .l10n
+                                    .hostsHostInboxScreenTitleProspectiveAttendees,
+                        ),
+                    message: context
+                        .l10n
+                        .hostsHostInboxScreenMessagePersonalQuestionsAppearHere,
                   ),
           ),
         const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),

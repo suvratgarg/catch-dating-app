@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 /// Read-only star row. [rating] is 1-5 (integers for filled stars).
@@ -57,10 +58,16 @@ class StarRatingPicker extends StatelessWidget {
       children: List.generate(5, (i) {
         final value = i + 1;
         return Tooltip(
-          message: '$value star${value == 1 ? '' : 's'}',
+          message: context.l10n.reviewsStarRatingMessageValueStarValue2(
+            value: value,
+            value2: value == 1 ? '' : context.l10n.reviewsStarRatingMessageS,
+          ),
           child: Semantics(
             button: true,
-            label: 'Rate $value star${value == 1 ? '' : 's'}',
+            label: context.l10n.reviewsStarRatingLabelRateValueStarValue2(
+              value: value,
+              value2: value == 1 ? '' : context.l10n.reviewsStarRatingLabelS,
+            ),
             selected: clampedRating == value,
             child: GestureDetector(
               key: keyBuilder?.call(value),

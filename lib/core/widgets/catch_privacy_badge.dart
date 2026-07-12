@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 enum CatchPrivacyBadgeKind { privateToYou, hostCanSee, catchPrivate }
@@ -18,7 +19,7 @@ class CatchPrivacyBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final data = _PrivacyBadgeData.from(kind);
+    final data = _PrivacyBadgeData.from(kind, context.l10n);
 
     return Semantics(
       label: data.label,
@@ -52,18 +53,21 @@ class _PrivacyBadgeData {
   final String label;
   final IconData icon;
 
-  static _PrivacyBadgeData from(CatchPrivacyBadgeKind kind) {
+  static _PrivacyBadgeData from(
+    CatchPrivacyBadgeKind kind,
+    AppLocalizations l10n,
+  ) {
     return switch (kind) {
       CatchPrivacyBadgeKind.privateToYou => _PrivacyBadgeData(
-        label: 'Private to you',
+        label: l10n.coreCatchPrivacyBadgeLabelPrivateToYou,
         icon: CatchIcons.lockOutlineRounded,
       ),
       CatchPrivacyBadgeKind.hostCanSee => _PrivacyBadgeData(
-        label: 'Host can see',
+        label: l10n.coreCatchPrivacyBadgeLabelHostCanSee,
         icon: CatchIcons.visibilityOutlined,
       ),
       CatchPrivacyBadgeKind.catchPrivate => _PrivacyBadgeData(
-        label: 'Catch private',
+        label: l10n.coreCatchPrivacyBadgeLabelCatchPrivate,
         icon: CatchIcons.shieldOutlined,
       ),
     };

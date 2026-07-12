@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
@@ -108,9 +109,14 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
     _selectedLabel = _trimToNull(widget.initialLabel);
     final initialSearchQuery = _trimToNull(widget.initialSearchQuery);
     _searchController.text = _selectedLabel ?? initialSearchQuery ?? '';
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     final initialSearchError = widget.initialSearchError;
-    if (initialSearchError != null) {
-      _searchError = _placeSearchFailureText(initialSearchError);
+    if (_searchError == null && initialSearchError != null) {
+      _searchError = _placeSearchFailureText(context.l10n, initialSearchError);
     }
   }
 
@@ -201,8 +207,10 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   }
 
   String? get _searchStateText {
-    if (_pendingSuggestion != null) return 'Selecting...';
-    if (_searching && _suggestions.isEmpty) return 'Searching...';
+    if (_pendingSuggestion != null)
+      return context.l10n.eventsLocationPickerScreenVisiblecopySelecting;
+    if (_searching && _suggestions.isEmpty)
+      return context.l10n.eventsLocationPickerScreenVisiblecopySearching;
     return null;
   }
 
@@ -278,7 +286,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
       setState(() {
         _suggestions = const [];
         _searching = false;
-        _searchError = _placeSearchFailureText(error);
+        _searchError = _placeSearchFailureText(context.l10n, error);
       });
     }
   }
@@ -316,7 +324,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
         _pendingSuggestion = null;
         _suggestions = [suggestion];
         _searching = false;
-        _searchError = _placeDetailsFailureText(error);
+        _searchError = _placeDetailsFailureText(context.l10n, error);
       });
     }
   }
@@ -336,23 +344,35 @@ String _suggestionLabel(PlaceAutocompleteSuggestion suggestion) {
   return 'selected place';
 }
 
-String _placeSearchFailureText(Object error) {
+String _placeSearchFailureText(AppLocalizations l10n, Object error) {
   return _locationPickerFailureText(
+    l10n,
     error,
     fallback: 'Could not search places. Try again.',
   );
 }
 
-String _placeDetailsFailureText(Object error) {
+String _placeDetailsFailureText(AppLocalizations l10n, Object error) {
   return _locationPickerFailureText(
+    l10n,
     error,
     fallback: 'Could not load that place. Try another result.',
   );
 }
 
-String _locationPickerFailureText(Object error, {required String fallback}) {
-  final descriptor = appErrorDescriptor(error, context: AppErrorContext.event);
-  if (descriptor.title == 'Connection issue') return descriptor.message;
+String _locationPickerFailureText(
+  AppLocalizations l10n,
+  Object error, {
+  required String fallback,
+}) {
+  final descriptor = appErrorDescriptor(
+    error,
+    l10n: l10n,
+    context: AppErrorContext.event,
+  );
+  if (descriptor.title == l10n.coreAppErrorMessageVisiblecopyConnectionIssue) {
+    return descriptor.message;
+  }
   return fallback;
 }
 
@@ -419,13 +439,16 @@ class PlaceSearchPanel extends StatelessWidget {
           hasError: errorText != null && errorText!.trim().isNotEmpty,
           padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
           child: CatchField.input(
-            title: 'Search for a meeting point',
+            title:
+                context.l10n.eventsLocationPickerScreenTitleSearchForAMeeting,
             showLabel: false,
             controller: controller,
             onChanged: onChanged,
             textInputAction: TextInputAction.search,
             textCapitalization: TextCapitalization.words,
-            placeholder: 'Search for a meeting point',
+            placeholder: context
+                .l10n
+                .eventsLocationPickerScreenPlaceholderSearchForAMeeting,
             errorText: errorText,
             size: CatchFieldSize.floating,
             prefixIcon: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
@@ -557,13 +580,16 @@ class SelectedPointPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final title = hasSelection
-        ? selectedLabel ?? 'Pinned location'
-        : 'No location selected';
+        ? selectedLabel ??
+              context.l10n.eventsLocationPickerScreenTitlePinnedLocation
+        : context.l10n.eventsLocationPickerScreenTitleNoLocationSelected;
     final subtitle = hasSelection
         ? selectedLabel == null
-              ? 'Confirm this map pin or tap elsewhere to adjust.'
-              : 'Confirm this place or tap elsewhere to adjust.'
-        : 'Search for a place or tap the map to set the meeting point.';
+              ? context.l10n.eventsLocationPickerScreenSubtitleConfirmThisMapPin
+              : context
+                    .l10n
+                    .eventsLocationPickerScreenSubtitleConfirmThisPlaceOr
+        : context.l10n.eventsLocationPickerScreenSubtitleSearchForAPlace;
 
     return CatchSurface(
       padding: CatchInsets.content,
@@ -611,7 +637,7 @@ class SelectedPointPanel extends StatelessWidget {
           ),
           gapH12,
           CatchButton(
-            label: 'Confirm location',
+            label: context.l10n.eventsLocationPickerScreenLabelConfirmLocation,
             onPressed: onConfirm,
             fullWidth: true,
             size: CatchButtonSize.lg,

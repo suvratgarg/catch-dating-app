@@ -12,6 +12,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 const double _dateRailWidth = CatchLayout.eventDateRailWidth;
 const double _ticketNotchRadius = CatchSpacing.s3;
@@ -114,8 +115,9 @@ class EventDateRailCard extends StatelessWidget {
                               gapW8,
                               Expanded(
                                 child: CatchMonoLabel(
-                                  kicker.toUpperCase(),
+                                  kicker,
                                   color: t.ink3,
+                                  uppercase: true,
                                 ),
                               ),
                               if (showStatusPill) ...[
@@ -162,7 +164,14 @@ class EventDateRailCard extends StatelessWidget {
                               gapW8,
                               Flexible(
                                 child: Text(
-                                  '${EventFormatters.time(event.startTime)} · ${priceLabel ?? _priceLabel(event)}',
+                                  context.l10n
+                                      .eventsEventDateRailCardTextTimeValue2(
+                                        time: EventFormatters.time(
+                                          event.startTime,
+                                        ),
+                                        value2:
+                                            priceLabel ?? _priceLabel(event),
+                                      ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: CatchTextStyles.mono(
@@ -438,7 +447,7 @@ class DateRail extends StatelessWidget {
           ),
           gapH4,
           Text(
-            '${startTime.day}',
+            context.l10n.eventsEventDateRailCardTextDay(day: startTime.day),
             style: CatchTextStyles.eventDisplay(
               context,
               size: 31,

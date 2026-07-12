@@ -8,6 +8,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_controller.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_keys.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -78,7 +79,7 @@ class UpdateRequiredContent extends StatelessWidget {
               ),
               gapH32,
               Text(
-                'Update required',
+                context.l10n.forceUpdateUpdateRequiredScreenTextUpdateRequired,
                 style: CatchTextStyles.headline(
                   context,
                 ).copyWith(fontWeight: FontWeight.bold),
@@ -86,15 +87,15 @@ class UpdateRequiredContent extends StatelessWidget {
               ),
               gapH12,
               Text(
-                'A new version of Catch is available. '
-                'Please update to continue.',
+                context.l10n.forceUpdateUpdateRequiredScreenTextANewVersionOf,
                 style: CatchTextStyles.bodyLead(context, color: t.ink2),
                 textAlign: TextAlign.center,
               ),
               gapH48,
               CatchButton(
                 key: UpdateRequiredKeys.updateNowButton,
-                label: 'Update now',
+                label:
+                    context.l10n.forceUpdateUpdateRequiredScreenLabelUpdateNow,
                 onPressed: onUpdateNow,
                 icon: Icon(CatchIcons.openInNew),
                 fullWidth: true,

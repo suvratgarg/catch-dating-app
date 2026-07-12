@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingPhotosState {
@@ -35,17 +36,21 @@ class OnboardingPhotosState {
 
   bool get canDeletePhotos => photoCount > minimumProfilePhotoCount;
 
-  String? get continueHint {
+  String? continueHint(AppLocalizations l10n) {
     if (uploadingCount > 0) {
-      return 'Finish uploading your photos to continue.';
+      return l10n.onboardingPhotosPageStateVisiblecopyFinishUploadingYourPhotos;
     }
 
     final remainingPhotos = minimumProfilePhotoCount - photoCount;
     if (remainingPhotos > 0) {
       final label = remainingPhotos == 1
-          ? '1 more photo'
-          : '$remainingPhotos more photos';
-      return 'Add $label to continue.';
+          ? l10n.onboardingPhotosPageStateLabel1MorePhoto
+          : l10n.onboardingPhotosPageStateLabelRemainingphotosMorePhotos(
+              remainingPhotos: remainingPhotos,
+            );
+      return l10n.onboardingPhotosPageStateVisiblecopyAddLabelToContinue(
+        label: label,
+      );
     }
 
     return null;
@@ -59,9 +64,9 @@ class OnboardingPhotosState {
     );
   }
 
-  String get supportingCopy => profileCompletionOnly
-      ? 'This only gates Catches. Event booking stays available.'
-      : 'Running photos boost catches by 2.3x.';
+  String supportingCopy(AppLocalizations l10n) => profileCompletionOnly
+      ? l10n.onboardingPhotosPageStateVisiblecopyThisOnlyGatesCatches
+      : l10n.onboardingPhotosPageStateVisiblecopyRunningPhotosBoostCatches;
 }
 
 class OnboardingPhotoSlotIntent {

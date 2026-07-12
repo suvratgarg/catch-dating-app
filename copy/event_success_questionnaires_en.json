@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "locale": "en",
+  "owner": "product",
+  "packs": [
+    {
+      "id": "balanced",
+      "title": "Balanced",
+      "subtitle": "Light social signal for most event formats.",
+      "questions": [
+        {
+          "id": "event_energy",
+          "prompt": "Tonight I'm most up for",
+          "options": [
+            { "id": "event_energy_easy_conversation", "label": "Easy conversation" },
+            { "id": "event_energy_playful_competition", "label": "Playful competition" },
+            { "id": "event_energy_quiet_chemistry", "label": "Quiet chemistry" },
+            { "id": "event_energy_new_people", "label": "Meeting a few new people" }
+          ]
+        },
+        {
+          "id": "first_conversation",
+          "prompt": "My best first conversation starts with",
+          "options": [
+            { "id": "first_conversation_activity", "label": "A shared activity" },
+            { "id": "first_conversation_question", "label": "A thoughtful question" },
+            { "id": "first_conversation_joke", "label": "A joke" },
+            { "id": "first_conversation_recommendation", "label": "A practical recommendation" }
+          ]
+        },
+        {
+          "id": "shared_connection",
+          "prompt": "I usually connect over",
+          "options": [
+            { "id": "shared_connection_movement", "label": "Movement" },
+            { "id": "shared_connection_places", "label": "Food and places" },
+            { "id": "shared_connection_ideas", "label": "Ideas and trivia" },
+            { "id": "shared_connection_future_plans", "label": "Future plans" }
+          ]
+        },
+        {
+          "id": "after_event",
+          "prompt": "After a good event I'd rather",
+          "options": [
+            { "id": "after_event_coffee", "label": "Grab coffee" },
+            { "id": "after_event_activity", "label": "Plan another activity" },
+            { "id": "after_event_text_first", "label": "Text first" },
+            { "id": "after_event_keep_casual", "label": "Keep it casual" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flirty",
+      "title": "Flirty",
+      "subtitle": "More playful prompts for explicitly dating-forward events.",
+      "questions": [
+        {
+          "id": "flirty_energy",
+          "prompt": "The kind of spark I enjoy is",
+          "options": [
+            { "id": "flirty_energy_banter", "label": "Quick banter" },
+            { "id": "flirty_energy_slow_burn", "label": "A slow burn" },
+            { "id": "flirty_energy_playful_challenge", "label": "A playful challenge" }
+          ]
+        },
+        {
+          "id": "flirty_first_move",
+          "prompt": "I respond best when someone",
+          "options": [
+            { "id": "flirty_first_move_direct", "label": "Is direct" },
+            { "id": "flirty_first_move_witty", "label": "Makes me laugh" },
+            { "id": "flirty_first_move_curious", "label": "Asks something real" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "earnest",
+      "title": "Earnest",
+      "subtitle": "Warmer questions for people seeking intentional connection.",
+      "questions": [
+        {
+          "id": "earnest_connection",
+          "prompt": "I feel most connected when conversation is about",
+          "options": [
+            { "id": "earnest_connection_values", "label": "Values" },
+            { "id": "earnest_connection_family", "label": "Family and community" },
+            { "id": "earnest_connection_growth", "label": "Growth and goals" }
+          ]
+        },
+        {
+          "id": "earnest_date_energy",
+          "prompt": "A good first follow-up would feel",
+          "options": [
+            { "id": "earnest_date_energy_calm", "label": "Calm and thoughtful" },
+            { "id": "earnest_date_energy_active", "label": "Active and easygoing" },
+            { "id": "earnest_date_energy_deep", "label": "Unhurried and deep" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "intentional",
+      "title": "Intentional",
+      "subtitle": "Lower-pressure prompts for older or more deliberate groups.",
+      "questions": [
+        {
+          "id": "intentional_pace",
+          "prompt": "I prefer new connections to move",
+          "options": [
+            { "id": "intentional_pace_slow", "label": "Slowly" },
+            { "id": "intentional_pace_natural", "label": "Naturally" },
+            { "id": "intentional_pace_clear", "label": "With clear intent" }
+          ]
+        },
+        {
+          "id": "intentional_life_fit",
+          "prompt": "Compatibility means sharing",
+          "options": [
+            { "id": "intentional_life_fit_rhythm", "label": "A similar life rhythm" },
+            { "id": "intentional_life_fit_values", "label": "Core values" },
+            { "id": "intentional_life_fit_curiosity", "label": "Curiosity and respect" }
+          ]
+        }
+      ]
+    }
+  ],
+  "customStarterQuestions": [
+    {
+      "id": "custom_question_1",
+      "prompt": "I usually connect with someone through",
+      "options": [
+        { "id": "custom_question_1_option_1", "label": "Conversation" },
+        { "id": "custom_question_1_option_2", "label": "Shared activities" },
+        { "id": "custom_question_1_option_3", "label": "Humor" }
+      ]
+    },
+    {
+      "id": "custom_question_2",
+      "prompt": "The best energy for this event is",
+      "options": [
+        { "id": "custom_question_2_option_1", "label": "Relaxed" },
+        { "id": "custom_question_2_option_2", "label": "Playful" },
+        { "id": "custom_question_2_option_3", "label": "Intentional" }
+      ]
+    }
+  ],
+  "customFallback": {
+    "title": "Custom",
+    "subtitle": "Custom questions for this event."
+  },
+  "normalizationFallbacks": {
+    "question": "Question",
+    "option": "Option",
+    "option1": "Option 1",
+    "option2": "Option 2"
+  }
+}

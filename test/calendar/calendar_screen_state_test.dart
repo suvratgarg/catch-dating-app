@@ -1,9 +1,12 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   group('CalendarHomeState', () {
@@ -90,7 +93,7 @@ void main() {
       expect(row.event, event);
       expect(row.clubName, 'Stride Social');
       expect(row.status, CalendarAgendaEventStatus.joined);
-      expect(row.badgeLabel, 'JOINED');
+      expect(row.badgeLabel(_l10n), 'JOINED');
     });
 
     test('empty agenda state wins before club-name lookup state', () {
@@ -106,9 +109,13 @@ void main() {
       expect(
         agenda,
         isA<CalendarAgendaEmptyState>()
-            .having((state) => state.title, 'title', 'No planned events yet')
             .having(
-              (state) => state.body,
+              (state) => state.title(_l10n),
+              'title',
+              'No planned events yet',
+            )
+            .having(
+              (state) => state.body(_l10n),
               'body',
               'Events you book or save will show up here by day and time.',
             ),
@@ -225,7 +232,7 @@ void main() {
         CalendarAgendaEventStatus.joined,
         CalendarAgendaEventStatus.cancelled,
       ]);
-      expect(agenda.rows.map((row) => row.badgeLabel), [
+      expect(agenda.rows.map((row) => row.badgeLabel(_l10n)), [
         'SAVED',
         'JOINED',
         'CANCELLED',

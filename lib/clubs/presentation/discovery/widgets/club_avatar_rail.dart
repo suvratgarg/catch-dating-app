@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +26,7 @@ class ClubAvatarRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchHorizontalRail(
-      title: 'Your clubs',
+      title: context.l10n.clubsClubAvatarRailTitleYourClubs,
       height: null,
       spacing: CatchSpacing.micro14,
       fullBleed: fullBleed,

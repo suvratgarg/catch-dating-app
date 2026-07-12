@@ -585,8 +585,10 @@ scan_nonzero_letter_spacing() {
   local output
   output="$(rg -n \
     "${common_globs[@]}" \
-    'letterSpacing:\s*(-?[1-9][0-9]*(\.[0-9]+)?|-?0\.[0-9]*[1-9][0-9]*)' \
-    lib/core/widgets lib/core/theme lib/*/presentation || true)"
+    'letterSpacing:' \
+    lib \
+    --glob '!lib/core/theme/catch_fonts.dart' \
+    --glob '!lib/core/theme/catch_text_styles.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then

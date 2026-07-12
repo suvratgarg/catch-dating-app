@@ -47,7 +47,7 @@ class CatchBadge extends StatelessWidget {
       CatchTokens.of(context),
       accentColor: accentColor,
     );
-    final metrics = _BadgeMetrics.from(size);
+    final metrics = _BadgeMetrics.from(size, uppercase: uppercase);
     final displayLabel = uppercase ? label.toUpperCase() : label;
     final foreground = foregroundColor ?? palette.foreground;
 
@@ -162,7 +162,7 @@ class _BadgeMetrics {
   final bool centerContent;
   final TextStyle Function(BuildContext context, Color color) textStyle;
 
-  static _BadgeMetrics from(CatchBadgeSize size) {
+  static _BadgeMetrics from(CatchBadgeSize size, {required bool uppercase}) {
     return switch (size) {
       CatchBadgeSize.sm => _BadgeMetrics(
         padding: const EdgeInsets.symmetric(
@@ -174,8 +174,10 @@ class _BadgeMetrics {
         iconSize: CatchIcon.badge,
         dotSize: CatchSpacing.micro6,
         centerContent: false,
-        textStyle: (context, color) =>
-            CatchTextStyles.badge(context, color: color),
+        textStyle: uppercase
+            ? (context, color) =>
+                  CatchTextStyles.badgeCaps(context, color: color)
+            : (context, color) => CatchTextStyles.badge(context, color: color),
       ),
       CatchBadgeSize.md => _BadgeMetrics(
         padding: const EdgeInsets.symmetric(

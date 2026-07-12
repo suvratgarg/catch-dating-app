@@ -456,7 +456,7 @@ void main() {
 
     expect(
       find.text(
-        'No internet connection. Connect to the internet and try again.',
+        'We are having trouble connecting. Please check your internet and try again.',
       ),
       findsOneWidget,
     );
@@ -1275,7 +1275,10 @@ void main() {
     ]);
     expect(_inlinePromptEditableText(), findsOneWidget);
     expect(find.byType(CatchErrorBanner), findsOneWidget);
-    expect(find.textContaining('Save failed'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('prompt edit limits input to the callable length limit', (
@@ -1682,7 +1685,10 @@ void main() {
       expect(repository.updatedFields, {
         'education': EducationLevel.values.first.name,
       });
-      expect(find.textContaining('Save failed'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(
         tester

@@ -33,7 +33,7 @@ void main() {
         expect(context.toBackendContext().service, BackendService.local);
         expect(
           context.toBackendContext().metadata['operation'],
-          operation.label,
+          operation.logKey,
         );
       }
     });

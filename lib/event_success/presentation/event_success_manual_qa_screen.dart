@@ -1,3 +1,4 @@
+// copy:allow-file(Developer-only manual QA diagnostics and fixture labels)
 import 'dart:async';
 import 'dart:convert';
 
@@ -40,6 +41,7 @@ import 'package:catch_dating_app/events/events.dart'
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/hosts.dart'
     show HostEventManageScreen, HostEventManageSection;
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -99,7 +101,12 @@ class _EventSuccessManualQaScreenState
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: const CatchTopBar(title: 'Event success manual QA', border: true),
+      appBar: CatchTopBar(
+        title: context
+            .l10n
+            .eventSuccessEventSuccessManualQaScreenTitleEventSuccessManualQa,
+        border: true,
+      ),
       body: SafeArea(
         child: FutureBuilder<_ManualQaStore>(
           future: _storeFuture,
@@ -109,7 +116,10 @@ class _EventSuccessManualQaScreenState
               return Center(
                 child: snapshot.hasError
                     ? Text(
-                        'Manual QA fixture failed to load: ${snapshot.error}',
+                        context.l10n
+                            .eventSuccessEventSuccessManualQaScreenTextManualQaFixtureFailed(
+                              error: snapshot.error?.toString() ?? '',
+                            ),
                         style: CatchTextStyles.supporting(context),
                       )
                     : const Padding(
@@ -503,12 +513,16 @@ class ManualQaHero extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               CatchBadge(
-                label: 'Manual QA',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessManualQaScreenLabelManualQa,
                 tone: CatchBadgeTone.live,
                 icon: CatchIcons.factCheckOutlined,
               ),
               CatchBadge(
-                label: 'Fixture data',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessManualQaScreenLabelFixtureData,
                 tone: CatchBadgeTone.solid,
                 icon: CatchIcons.dataObjectRounded,
               ),
@@ -521,7 +535,12 @@ class ManualQaHero extends StatelessWidget {
           ),
           gapH8,
           Text(
-            '${data.playbook.title} · ${data.plan.structureConfig.unitKind.label} · ${data.moment.label}',
+            context.l10n
+                .eventSuccessEventSuccessManualQaScreenTextTitleLabelLabel2(
+                  title: data.playbook.title,
+                  label: data.plan.structureConfig.unitKind.label,
+                  label2: data.moment.label,
+                ),
             style: CatchTextStyles.bodyL(
               context,
               color: t.accentInk.withValues(
@@ -534,23 +553,42 @@ class ManualQaHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              EventSuccessDarkPill(label: '${data.roster.bookedCount} booked'),
               EventSuccessDarkPill(
-                label: '${data.roster.checkedInCount} checked in',
+                label: context.l10n
+                    .eventSuccessEventSuccessManualQaScreenLabelBookedcountBooked(
+                      bookedCount: data.roster.bookedCount,
+                    ),
               ),
               EventSuccessDarkPill(
-                label:
-                    '${data.plan.structureConfig.revealCountdownSeconds}s reveal',
+                label: context.l10n
+                    .eventSuccessEventSuccessManualQaScreenLabelCheckedincountCheckedIn(
+                      checkedInCount: data.roster.checkedInCount,
+                    ),
+              ),
+              EventSuccessDarkPill(
+                label: context.l10n
+                    .eventSuccessEventSuccessManualQaScreenLabelRevealcountdownsecondsSReveal(
+                      revealCountdownSeconds:
+                          data.plan.structureConfig.revealCountdownSeconds,
+                    ),
               ),
               EventSuccessDarkPill(
                 label:
                     !data.plan.hasModule(
                       EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
                     )
-                    ? 'Questionnaire off'
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessManualQaScreenLabelQuestionnaireOff
                     : data.plan.compatibilityAffectsRanking
-                    ? '${data.plan.questionnaireConfig.pack.title} · ranking'
-                    : '${data.plan.questionnaireConfig.pack.title} · clues',
+                    ? context.l10n
+                          .eventSuccessEventSuccessManualQaScreenLabelTitleRanking(
+                            title: data.plan.questionnaireConfig.pack.title,
+                          )
+                    : context.l10n
+                          .eventSuccessEventSuccessManualQaScreenLabelTitleClues(
+                            title: data.plan.questionnaireConfig.pack.title,
+                          ),
               ),
             ],
           ),
@@ -579,7 +617,9 @@ class ManualQaControls extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Fixture scenario',
+            context
+                .l10n
+                .eventSuccessEventSuccessManualQaScreenTextFixtureScenario,
             style: CatchTextStyles.sectionTitle(context),
           ),
           gapH12,
@@ -662,9 +702,13 @@ class ManualQaSideBySide extends StatelessWidget {
               SizedBox(
                 width: paneWidth,
                 child: QaDeviceFrame(
-                  title: 'Host Manage',
-                  subtitle:
-                      'Production host workspace · ${data.activeStepLabel}',
+                  title: context
+                      .l10n
+                      .eventSuccessEventSuccessManualQaScreenTitleHostManage,
+                  subtitle: context.l10n
+                      .eventSuccessEventSuccessManualQaScreenSubtitleProductionHostWorkspaceActivesteplabel(
+                        activeStepLabel: data.activeStepLabel,
+                      ),
                   badges: [
                     data.hostTabBadge(hostSection.eventSuccessTab),
                     data.activeStepProgress,
@@ -686,9 +730,15 @@ class ManualQaSideBySide extends StatelessWidget {
               SizedBox(
                 width: paneWidth,
                 child: QaDeviceFrame(
-                  title: 'Attendee experience',
-                  subtitle:
-                      '${data.viewer.publicDisplayName} · ${data.participation.status.name} · ${data.activeStepLabel}',
+                  title: context
+                      .l10n
+                      .eventSuccessEventSuccessManualQaScreenTitleAttendeeExperience,
+                  subtitle: context.l10n
+                      .eventSuccessEventSuccessManualQaScreenSubtitlePublicdisplaynameNameActivesteplabel(
+                        publicDisplayName: data.viewer.publicDisplayName,
+                        name: data.participation.status.name,
+                        activeStepLabel: data.activeStepLabel,
+                      ),
                   badges: [
                     data.moment.label,
                     data.activeStepProgress,
@@ -885,23 +935,33 @@ class AttendeeQaControls extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CatchField.toggle(
-              title: 'Micro-pods opt-out',
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessManualQaScreenTitleMicroPodsOptOut,
               value: microPodsOptedOut,
               onChanged: onMicroPodsOptOutChanged,
             ),
             gapH8,
             CatchField.toggle(
-              title: 'Rotations opt-out',
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessManualQaScreenTitleRotationsOptOut,
               value: guidedRotationsOptedOut,
               onChanged: onGuidedRotationsOptOutChanged,
             ),
             if (firstHelloEnabled)
               CatchBadge(
                 label: firstHelloCompleted
-                    ? 'first hello complete'
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessManualQaScreenLabelFirstHelloComplete
                     : firstHelloSkipped
-                    ? 'first hello skipped'
-                    : 'first hello pending',
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessManualQaScreenLabelFirstHelloSkipped
+                    : context
+                          .l10n
+                          .eventSuccessEventSuccessManualQaScreenLabelFirstHelloPending,
                 tone: firstHelloCompleted
                     ? CatchBadgeTone.success
                     : CatchBadgeTone.live,

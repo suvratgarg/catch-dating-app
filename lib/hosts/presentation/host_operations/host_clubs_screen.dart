@@ -16,7 +16,10 @@ class HostClubsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
     if (uidAsync.isLoading) {
-      return const HostLoadingScreen(title: 'Clubs', showTabRail: true);
+      return HostLoadingScreen(
+        title: context.l10n.hostsHostClubsScreenTitleClubs,
+        showTabRail: true,
+      );
     }
     if (uidAsync.hasError) {
       return CatchErrorScaffold.fromError(
@@ -32,8 +35,10 @@ class HostClubsScreen extends ConsumerWidget {
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
     return CatchAsyncValueView<List<Club>>(
       value: clubsAsync,
-      loadingBuilder: (_) =>
-          const HostLoadingScreen(title: 'Clubs', showTabRail: true),
+      loadingBuilder: (_) => HostLoadingScreen(
+        title: context.l10n.hostsHostClubsScreenTitleClubs,
+        showTabRail: true,
+      ),
       errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,
         context: AppErrorContext.club,

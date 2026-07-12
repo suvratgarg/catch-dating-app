@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_support_widgets.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,11 @@ class ExploreClubPolaroidCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final isSynthetic = isSyntheticExploreClub(club);
-    final state = ExploreClubCardState.from(club, isSynthetic: isSynthetic);
+    final state = ExploreClubCardState.from(
+      club,
+      isSynthetic: isSynthetic,
+      l10n: context.l10n,
+    );
     final card = CatchPolaroid(
       onTap: isSynthetic ? null : () => onClubSelected?.call(club),
       paddingKey: const ValueKey('explore-club-polaroid-padding'),
@@ -75,7 +80,11 @@ class ExploreFeedClubRow extends StatelessWidget {
     final t = CatchTokens.of(context);
     final palette = ClubCoverVisualPalette.forClub(context, club);
     final isSynthetic = isSyntheticExploreClub(club);
-    final state = ExploreClubCardState.from(club, isSynthetic: isSynthetic);
+    final state = ExploreClubCardState.from(
+      club,
+      isSynthetic: isSynthetic,
+      l10n: context.l10n,
+    );
     return CatchSurface(
       onTap: isSynthetic ? null : () => onClubSelected?.call(club),
       radius: CatchRadius.md,

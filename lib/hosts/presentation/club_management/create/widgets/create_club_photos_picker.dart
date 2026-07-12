@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 enum CreateClubPhotosPickerVariant { standard, editStrip }
@@ -47,13 +48,19 @@ class CreateClubPhotosPicker extends StatelessWidget {
     final picker = OrderedPhotoPicker(
       label: editStrip
           ? EditClubPhotosLabel(count: visiblePhotos.length)
-          : const CatchFormFieldLabel(label: 'Club photos', isOptional: true),
+          : CatchFormFieldLabel(
+              label: context.l10n.hostsCreateClubPhotosPickerLabelClubPhotos,
+              isOptional: true,
+            ),
       photos: visiblePhotos,
       onAddPhotos: onAddPhotos,
       onRemovePhoto: hasEditablePhotos ? onRemovePhoto : null,
       onReorderPhoto: hasEditablePhotos ? onReorderPhoto : null,
-      emptyActionLabel: editStrip ? 'Add photos' : 'Add club photos',
-      addActionLabel: 'Add photos',
+      emptyActionLabel: editStrip
+          ? context.l10n.hostsCreateClubPhotosPickerVisiblecopyAddPhotos
+          : context.l10n.hostsCreateClubPhotosPickerVisiblecopyAddClubPhotos,
+      addActionLabel:
+          context.l10n.hostsCreateClubPhotosPickerVisiblecopyAddPhotos,
       maxPhotos: editStrip ? 4 : 6,
       crossAxisCount: editStrip ? 4 : 2,
       childAspectRatio: editStrip ? 1 : CatchAspectRatio.wide16x9,
@@ -68,7 +75,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
         picker,
         gapH12,
         Text(
-          'Drag to reorder - the first photo is your cover. Add as many as you like.',
+          context.l10n.hostsCreateClubPhotosPickerTextDragToReorderThe,
           style: CatchTextStyles.supporting(
             context,
             color: CatchTokens.of(context).ink3,
@@ -103,7 +110,10 @@ class CreateClubProfileImagePicker extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('CLUB LOGO', style: CatchTextStyles.kicker(context)),
+          Text(
+            context.l10n.hostsCreateClubPhotosPickerTextClubLogo,
+            style: CatchTextStyles.kicker(context),
+          ),
           gapH8,
           Row(
             children: [
@@ -116,7 +126,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
               gapW16,
               Expanded(
                 child: Text(
-                  'A square logo, shown on your club profile and every event.',
+                  context.l10n.hostsCreateClubPhotosPickerTextASquareLogoShown,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ),
@@ -129,8 +139,8 @@ class CreateClubProfileImagePicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const CatchFormFieldLabel(
-          label: 'Club profile image',
+        CatchFormFieldLabel(
+          label: context.l10n.hostsCreateClubPhotosPickerLabelClubProfileImage,
           isOptional: true,
         ),
         gapH8,
@@ -156,10 +166,13 @@ class EditClubPhotosLabel extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Row(
       children: [
-        Text('PHOTOS', style: CatchTextStyles.kicker(context)),
+        Text(
+          context.l10n.hostsCreateClubPhotosPickerTextPhotos,
+          style: CatchTextStyles.kicker(context),
+        ),
         const Spacer(),
         Text(
-          '$count',
+          context.l10n.hostsCreateClubPhotosPickerTextCount(count: count),
           style: CatchTextStyles.monoLabel(context, color: t.ink3),
         ),
       ],
@@ -190,7 +203,9 @@ class ClubProfileImageTile extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: hasImage ? 'Change club profile image' : 'Add club profile image',
+      label: hasImage
+          ? context.l10n.hostsCreateClubPhotosPickerLabelChangeClubProfileImage
+          : context.l10n.hostsCreateClubPhotosPickerLabelAddClubProfileImage,
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox.square(
@@ -236,7 +251,9 @@ class ClubProfileImageTile extends StatelessWidget {
                               Padding(
                                 padding: CatchInsets.inlineHorizontal,
                                 child: Text(
-                                  'Add image',
+                                  context
+                                      .l10n
+                                      .hostsCreateClubPhotosPickerTextAddImage,
                                   style: CatchTextStyles.supporting(
                                     context,
                                     color: t.ink2,

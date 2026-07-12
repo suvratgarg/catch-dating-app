@@ -11,8 +11,7 @@ import 'package:flutter/services.dart';
 Future<void> loadCatchTestFonts() async {
   final platformFunctionFonts = _platformFunctionFontFiles();
   final loaders = <FontLoader>[
-    FontLoader('Archivo')
-      ..addFont(_bytes('assets/fonts/Archivo-Roman-VF.woff2')),
+    FontLoader('Archivo')..addFont(_bytes('assets/fonts/Archivo-Roman-VF.ttf')),
     FontLoader('IBM Plex Mono')
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Regular.ttf'))
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Medium.ttf'))

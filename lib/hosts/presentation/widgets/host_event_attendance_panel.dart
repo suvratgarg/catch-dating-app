@@ -28,6 +28,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_booking_controlle
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -116,8 +117,11 @@ class _HostEventParticipantsPanelState
             padding: CatchInsets.contentVerticalRelaxed,
             child: CatchEmptyState(
               icon: CatchIcons.eventBusyOutlined,
-              title: 'Event not found',
-              message: 'This event is no longer available.',
+              title:
+                  context.l10n.hostsHostEventAttendancePanelTitleEventNotFound,
+              message: context
+                  .l10n
+                  .hostsHostEventAttendancePanelMessageThisEventIsNo,
             ),
           );
         }
@@ -347,11 +351,20 @@ class _HostEventParticipantsPanelState
             ),
       );
       if (!mounted) return;
-      showCatchSnackBar(context, 'Revenue CSV ready.');
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsHostEventAttendancePanelVisiblecopyRevenueCsvReady,
+      );
     } catch (error, stackTrace) {
       ref
           .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: '_shareRevenueReport failed');
+          .logError(
+            error,
+            stackTrace,
+            reason: context
+                .l10n
+                .hostsHostEventAttendancePanelVisiblecopySharerevenuereportFailed,
+          );
     }
   }
 
@@ -372,11 +385,20 @@ class _HostEventParticipantsPanelState
             ),
       );
       if (!mounted) return;
-      showCatchSnackBar(context, 'Ops CSV ready.');
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsHostEventAttendancePanelVisiblecopyOpsCsvReady,
+      );
     } catch (error, stackTrace) {
       ref
           .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: '_shareOpsReport failed');
+          .logError(
+            error,
+            stackTrace,
+            reason: context
+                .l10n
+                .hostsHostEventAttendancePanelVisiblecopyShareopsreportFailed,
+          );
     }
   }
 
@@ -572,6 +594,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
     switch (mode) {
       case HostEventParticipantsMode.setup:
         final rosterState = HostRosterDisplayState.setup(
+          l10n: context.l10n,
           usesRequestApproval: usesRequestApproval,
           attendeeIds: viewModel.attendeeIds,
           waitlistedIds: viewModel.waitlistedIds,
@@ -588,10 +611,16 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
           children: [
             if (showHeader) ...[
               HostRosterFilterHeader(
-                title: 'Participation',
+                title: context
+                    .l10n
+                    .hostsHostEventAttendancePanelTitleParticipation,
                 subtitle: usesRequestApproval
-                    ? 'Review profiles and approve requests before launch.'
-                    : 'Review booking status before launch.',
+                    ? context
+                          .l10n
+                          .hostsHostEventAttendancePanelSubtitleReviewProfilesAndApprove
+                    : context
+                          .l10n
+                          .hostsHostEventAttendancePanelSubtitleReviewBookingStatusBefore,
                 filters: rosterState.filters,
                 selectedFilter: rosterState.activeFilter,
                 onFilterChanged: onFilterChanged,
@@ -610,18 +639,24 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
             ],
             HostRosterSearchBar(
               value: searchQuery,
-              label: 'Search people',
+              label:
+                  context.l10n.hostsHostEventAttendancePanelLabelSearchPeople,
               onChanged: onSearchChanged,
             ),
             gapH14,
             CatchRosterTable(
-              columns: const ['Guest', 'Signal', 'Host action'],
+              columns: [
+                context.l10n.hostsHostEventAttendancePanelVisiblecopyGuest,
+                context.l10n.hostsHostEventAttendancePanelVisiblecopySignal,
+                context.l10n.hostsHostEventAttendancePanelVisiblecopyHostAction,
+              ],
               showEmpty: rosterState.rowIds.isEmpty,
               emptyTitle: rosterState.emptyTitle,
               emptyMessage: rosterState.emptyMessage,
               rows: [
                 for (final uid in rosterState.rowIds)
                   _setupRow(
+                    context,
                     uid,
                     usesRequestApproval: usesRequestApproval,
                     requestActionPending: mutationState.isRequestActionPending(
@@ -637,6 +672,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
         );
       case HostEventParticipantsMode.live:
         final rosterState = HostRosterDisplayState.live(
+          l10n: context.l10n,
           usesRequestApproval: usesRequestApproval,
           attendeeIds: viewModel.attendeeIds,
           attendedIds: viewModel.attendedIds,
@@ -652,9 +688,13 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             HostRosterFilterHeader(
-              title: showHeader ? 'Check-in board' : null,
+              title: showHeader
+                  ? context.l10n.hostsHostEventAttendancePanelTitleCheckInBoard
+                  : null,
               subtitle: showHeader
-                  ? 'Use the status tiles to focus the roster as people arrive.'
+                  ? context
+                        .l10n
+                        .hostsHostEventAttendancePanelSubtitleUseTheStatusTiles
                   : null,
               filters: rosterState.filters,
               selectedFilter: rosterState.activeFilter,
@@ -673,18 +713,24 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
             ],
             HostRosterSearchBar(
               value: searchQuery,
-              label: 'Search roster',
+              label:
+                  context.l10n.hostsHostEventAttendancePanelLabelSearchRoster,
               onChanged: onSearchChanged,
             ),
             gapH14,
             CatchRosterTable(
-              columns: const ['Guest', 'Status', 'Host action'],
+              columns: [
+                context.l10n.hostsHostEventAttendancePanelVisiblecopyGuest,
+                context.l10n.hostsHostEventAttendancePanelVisiblecopyStatus,
+                context.l10n.hostsHostEventAttendancePanelVisiblecopyHostAction,
+              ],
               showEmpty: rosterState.rowIds.isEmpty,
               emptyTitle: rosterState.emptyTitle,
               emptyMessage: rosterState.emptyMessage,
               rows: [
                 for (final uid in rosterState.rowIds)
                   _liveRow(
+                    context,
                     uid,
                     usesRequestApproval: usesRequestApproval,
                     attendanceActionPending: mutationState
@@ -707,6 +753,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
           currencyCode: viewModel.event.currency,
         );
         final rosterState = HostRosterDisplayState.report(
+          l10n: context.l10n,
           attendeeIds: viewModel.attendeeIds,
           attendedIds: viewModel.attendedIds,
           waitlistedIds: viewModel.waitlistedIds,
@@ -721,9 +768,11 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
           children: [
             if (showHeader) ...[
               HostRosterFilterHeader(
-                title: 'Event report',
-                subtitle:
-                    'Attendance, payout, and export-ready roster history.',
+                title:
+                    context.l10n.hostsHostEventAttendancePanelTitleEventReport,
+                subtitle: context
+                    .l10n
+                    .hostsHostEventAttendancePanelSubtitleAttendancePayoutAndExport,
                 filters: rosterState.filters,
                 selectedFilter: rosterState.activeFilter,
                 onFilterChanged: onFilterChanged,
@@ -732,16 +781,23 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
             ],
             HostRosterSearchBar(
               value: searchQuery,
-              label: 'Search roster',
+              label:
+                  context.l10n.hostsHostEventAttendancePanelLabelSearchRoster,
               onChanged: onSearchChanged,
             ),
             gapH14,
             CatchRosterTable(
-              columns: const ['Name', 'Attendance', 'Payment'],
+              columns: [
+                context.l10n.hostsHostEventAttendancePanelVisiblecopyName,
+                context.l10n.hostsHostEventAttendancePanelVisiblecopyAttendance,
+                context.l10n.hostsHostEventAttendancePanelVisiblecopyPayment,
+              ],
               showEmpty: rosterState.rowIds.isEmpty,
               emptyTitle: rosterState.emptyTitle,
               emptyMessage: rosterState.emptyMessage,
-              rows: [for (final uid in rosterState.rowIds) _reportRow(uid)],
+              rows: [
+                for (final uid in rosterState.rowIds) _reportRow(context, uid),
+              ],
             ),
             gapH12,
             CatchSurface(
@@ -750,7 +806,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
               radius: CatchRadius.md,
               backgroundColor: t.raised,
               child: Text(
-                reportSummary.summary,
+                reportSummary.summary(context.l10n),
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ),
@@ -766,7 +822,8 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
               children: [
                 Expanded(
                   child: HostExportReportButton(
-                    label: 'Ops CSV',
+                    label:
+                        context.l10n.hostsHostEventAttendancePanelLabelOpsCsv,
                     isExporting: mutationState.opsReportExportPending,
                     onExport: actions.shareOpsReport,
                   ),
@@ -774,7 +831,9 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                 gapW10,
                 Expanded(
                   child: HostExportReportButton(
-                    label: 'Revenue CSV',
+                    label: context
+                        .l10n
+                        .hostsHostEventAttendancePanelLabelRevenueCsv,
                     primary: true,
                     isExporting: mutationState.revenueReportExportPending,
                     onExport: actions.shareRevenueReport,
@@ -798,6 +857,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
   }
 
   CatchRosterRow _setupRow(
+    BuildContext context,
     String uid, {
     required bool usesRequestApproval,
     required bool requestActionPending,
@@ -805,6 +865,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
   }) {
     final participation = viewModel.participationFor(uid);
     final rowState = HostSetupRosterRowDisplayState.resolve(
+      l10n: context.l10n,
       participation: participation,
       usesRequestApproval: usesRequestApproval,
     );
@@ -821,12 +882,13 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
       );
     } else if (rowState.showWaitlistOfferAction) {
       action = _waitlistOfferAction(
+        context,
         uid,
         participation,
         offerActionPending: offerActionPending,
       );
     } else {
-      action = _profileAction(uid);
+      action = _profileAction(context, uid);
     }
     return CatchRosterRow(
       person: _nameFor(uid),
@@ -839,6 +901,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
   }
 
   CatchRosterRow _liveRow(
+    BuildContext context,
     String uid, {
     required bool usesRequestApproval,
     required bool attendanceActionPending,
@@ -847,6 +910,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
     final participation = viewModel.participationFor(uid);
     final attended = viewModel.attendedIds.contains(uid);
     final rowState = HostLiveRosterRowDisplayState.resolve(
+      l10n: context.l10n,
       participation: participation,
       attended: attended,
       usesRequestApproval: usesRequestApproval,
@@ -864,12 +928,13 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
       );
     } else if (rowState.showWaitlistOfferAction) {
       action = _waitlistOfferAction(
+        context,
         uid,
         participation,
         offerActionPending: offerActionPending,
       );
     } else {
-      action = _profileAction(uid);
+      action = _profileAction(context, uid);
     }
     return CatchRosterRow(
       person: _nameFor(uid),
@@ -881,10 +946,11 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
     );
   }
 
-  CatchRosterRow _reportRow(String uid) {
+  CatchRosterRow _reportRow(BuildContext context, String uid) {
     final participation = viewModel.participationFor(uid);
     final attended = viewModel.attendedIds.contains(uid);
     final rowState = HostReportRosterRowDisplayState.resolve(
+      l10n: context.l10n,
       participation: participation,
       attended: attended,
       priceInPaise: viewModel.event.priceInPaise,
@@ -907,6 +973,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
   /// Shared waitlist action — a settled offer reads as an outcome [CatchBadge],
   /// otherwise an "Offer" button (disabled while a send is in flight).
   CatchRosterAction _waitlistOfferAction(
+    BuildContext context,
     String uid,
     EventParticipation? participation, {
     required bool offerActionPending,
@@ -916,12 +983,14 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
         offerStatus == EventWaitlistOfferStatus.accepted) {
       final accepted = offerStatus == EventWaitlistOfferStatus.accepted;
       return CatchRosterBadgeAction(
-        label: accepted ? 'Accepted' : 'Offered',
+        label: accepted
+            ? context.l10n.hostsHostEventAttendancePanelLabelAccepted
+            : context.l10n.hostsHostEventAttendancePanelLabelOffered,
         tone: accepted ? CatchBadgeTone.success : CatchBadgeTone.brand,
       );
     }
     return CatchRosterButtonAction(
-      label: 'Offer',
+      label: context.l10n.hostsHostEventAttendancePanelLabelOffer,
       onPressed: offerActionPending
           ? null
           : () => actions.createWaitlistOffer(uid),
@@ -929,9 +998,9 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
     );
   }
 
-  CatchRosterAction _profileAction(String uid) {
+  CatchRosterAction _profileAction(BuildContext context, String uid) {
     return CatchRosterButtonAction(
-      label: 'Profile',
+      label: context.l10n.hostsHostEventAttendancePanelLabelProfile,
       onPressed: () => actions.openProfile(uid),
     );
   }
@@ -1012,7 +1081,10 @@ class HostRosterFilterHeader extends StatelessWidget {
             for (final spec in filters)
               CatchRosterTile(
                 id: spec.filter.name,
-                value: '${spec.value}',
+                value: context.l10n
+                    .hostsHostEventAttendancePanelVisiblecopyValue(
+                      value: spec.value,
+                    ),
                 label: spec.label,
                 tone: spec.tone,
               ),
@@ -1044,8 +1116,15 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
     final t = CatchTokens.of(context);
     final remainingAfterSend = candidateCount - count;
     final detail = remainingAfterSend > 0
-        ? '$remainingAfterSend still waiting after this offer'
-        : 'Next $count ${_personNoun(count)} on the waitlist';
+        ? context.l10n
+              .hostsHostEventAttendancePanelVisiblecopyRemainingaftersendStillWaitingAfter(
+                remainingAfterSend: remainingAfterSend,
+              )
+        : context.l10n
+              .hostsHostEventAttendancePanelVisiblecopyNextCountPersonnounOn(
+                count: count,
+                personNoun: _personNoun(count),
+              );
     return CatchSurface(
       padding: CatchInsets.compactControlContent,
       borderColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
@@ -1067,7 +1146,9 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Waitlist movement',
+                      context
+                          .l10n
+                          .hostsHostEventAttendancePanelTextWaitlistMovement,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: CatchTextStyles.labelL(context, color: t.ink),
@@ -1084,7 +1165,8 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
             ],
           );
           final button = CatchButton(
-            label: 'Offer next $count',
+            label: context.l10n
+                .hostsHostEventAttendancePanelLabelOfferNextCount(count: count),
             size: CatchButtonSize.sm,
             variant: CatchButtonVariant.secondary,
             icon: Icon(CatchIcons.sendRounded),

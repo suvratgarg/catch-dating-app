@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +20,7 @@ List<Widget> buildClubDirectorySlivers({
   return [
     SliverToBoxAdapter(
       child: CatchSectionHeader(
-        title: 'Club directory',
+        title: context.l10n.clubsClubDiscoverListTitleClubDirectory,
         titleStyle: CatchTextStyles.titleL(context),
         padding: CatchInsets.sectionHeader,
       ),

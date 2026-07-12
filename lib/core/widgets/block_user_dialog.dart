@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 Future<bool?> showBlockUserDialog({
   required BuildContext context,
@@ -7,10 +8,8 @@ Future<bool?> showBlockUserDialog({
 }) {
   return showConfirmDangerDialog(
     context: context,
-    title: 'Block $name?',
-    message:
-        'You will stop seeing each other in chats, matches, Catches, and '
-        'future event slots where the other person is already booked.',
-    confirmLabel: 'Block',
+    title: context.l10n.coreBlockUserDialogTitleBlockName(name: name),
+    message: context.l10n.coreBlockUserDialogMessageYouWillStopSeeing,
+    confirmLabel: context.l10n.coreBlockUserDialogVisiblecopyBlock,
   );
 }

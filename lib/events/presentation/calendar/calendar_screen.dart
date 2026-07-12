@@ -20,6 +20,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -68,7 +69,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: const CatchTopBar(title: 'Calendar'),
+      appBar: CatchTopBar(
+        title: context.l10n.eventsCalendarScreenTitleCalendar,
+      ),
       body: SafeArea(
         bottom: false,
         child: Builder(
@@ -258,7 +261,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final day = DateUtils.dateOnly(date);
     return _daySectionKeys.putIfAbsent(
       day,
-      () => GlobalKey(debugLabel: 'calendar-agenda-day-${_dateKey(day)}'),
+      () => GlobalKey(
+        debugLabel: context.l10n
+            .eventsCalendarScreenVisiblecopyCalendarAgendaDayDatekey(
+              dateKey: _dateKey(day),
+            ),
+      ),
     );
   }
 }
@@ -289,23 +297,22 @@ class CalendarAgendaSliverSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      CalendarAgendaEmptyState(:final title, :final body) =>
-        SliverFillRemaining(
-          child: Center(
-            child: CatchEmptyState(
-              icon: CatchIcons.calendarMonthOutlined,
-              title: title,
-              message: body,
-              iconSize: CatchLayout.calendarEmptyIconSize,
-              padding: CatchInsets.contentSpacious,
-              titleStyle: CatchTextStyles.titleL(context),
-              messageStyle: CatchTextStyles.proseM(
-                context,
-                color: CatchTokens.of(context).ink2,
-              ),
+      CalendarAgendaEmptyState() => SliverFillRemaining(
+        child: Center(
+          child: CatchEmptyState(
+            icon: CatchIcons.calendarMonthOutlined,
+            title: const CalendarAgendaEmptyState().title(context.l10n),
+            message: const CalendarAgendaEmptyState().body(context.l10n),
+            iconSize: CatchLayout.calendarEmptyIconSize,
+            padding: CatchInsets.contentSpacious,
+            titleStyle: CatchTextStyles.titleL(context),
+            messageStyle: CatchTextStyles.proseM(
+              context,
+              color: CatchTokens.of(context).ink2,
             ),
           ),
         ),
+      ),
       CalendarAgendaClubNamesLoadingState(:final skeletonCount) =>
         EventAgendaSliverSkeleton(count: skeletonCount),
       CalendarAgendaClubNamesErrorState(:final error) => SliverFillRemaining(
@@ -323,7 +330,7 @@ class CalendarAgendaSliverSection extends StatelessWidget {
               EventAgendaRow(
                 event: row.event,
                 clubName: row.clubName,
-                badgeLabel: row.badgeLabel,
+                badgeLabel: row.badgeLabel(context.l10n),
                 status: _eventTileStatusFor(row.status),
               ),
           ],
@@ -450,8 +457,8 @@ class CalendarDateHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: expanded
-          ? 'Calendar date header. Drag up to collapse the month.'
-          : 'Calendar date header. Drag down to expand the month.',
+          ? context.l10n.eventsCalendarScreenLabelCalendarDateHeaderDrag
+          : context.l10n.eventsCalendarScreenLabelCalendarDateHeaderDrag0f5be6,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onVerticalDragUpdate: (details) =>
@@ -567,7 +574,7 @@ class CalendarTitleRow extends StatelessWidget {
         ),
         gapW12,
         CatchButton(
-          label: 'Today',
+          label: context.l10n.eventsCalendarScreenLabelToday,
           onPressed: onTodayPressed,
           variant: CatchButtonVariant.secondary,
           size: CatchButtonSize.sm,
@@ -646,25 +653,29 @@ class CalendarStatsHeader extends StatelessWidget {
                 Expanded(
                   child: CatchStatColumn(
                     key: const ValueKey('calendar.stats.planned'),
-                    label: 'Planned',
-                    value: '${summary.events.length}',
+                    label: context.l10n.eventsCalendarScreenLabelPlanned,
+                    value: context.l10n.eventsCalendarScreenVisiblecopyLength(
+                      length: summary.events.length,
+                    ),
                   ),
                 ),
                 const CalendarStatDivider(),
                 Expanded(
                   child: CatchStatColumn(
                     key: const ValueKey('calendar.stats.distance'),
-                    label: 'Distance',
-                    value: '${summary.totalDistance.round()} km',
+                    label: context.l10n.eventsCalendarScreenLabelDistance,
+                    value: context.l10n.eventsCalendarScreenVisiblecopyRoundKm(
+                      round: summary.totalDistance.round(),
+                    ),
                   ),
                 ),
                 const CalendarStatDivider(),
                 Expanded(
                   child: CatchStatColumn(
                     key: const ValueKey('calendar.stats.next'),
-                    label: 'Next',
+                    label: context.l10n.eventsCalendarScreenLabelNext,
                     value: summary.nextEvent == null
-                        ? 'None'
+                        ? context.l10n.eventsCalendarScreenVisiblecopyNone
                         : EventFormatters.time(summary.nextEvent!.startTime),
                   ),
                 ),
@@ -800,7 +811,15 @@ class CalendarMonthGrid extends StatelessWidget {
       children: [
         Row(
           children: [
-            for (final day in const ['S', 'M', 'T', 'W', 'T', 'F', 'S'])
+            for (final day in [
+              context.l10n.eventsCalendarScreenVisiblecopyS,
+              context.l10n.eventsCalendarScreenVisiblecopyM,
+              context.l10n.eventsCalendarScreenVisiblecopyT,
+              context.l10n.eventsCalendarScreenVisiblecopyW,
+              context.l10n.eventsCalendarScreenVisiblecopyT,
+              context.l10n.eventsCalendarScreenVisiblecopyF,
+              context.l10n.eventsCalendarScreenVisiblecopyS,
+            ])
               Expanded(
                 child: Text(
                   day,

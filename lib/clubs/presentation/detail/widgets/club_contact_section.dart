@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 typedef ClubContactActionHandler =
@@ -28,7 +29,9 @@ class ClubContactSection extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSection.contained(
-      title: showTitle ? 'Contact' : null,
+      title: showTitle
+          ? context.l10n.clubsClubContactSectionTitleContact
+          : null,
       borderColor: t.line,
       elevation: CatchSurfaceElevation.none,
       padding: CatchInsets.tileContentCompact,

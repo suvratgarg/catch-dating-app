@@ -14,6 +14,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -102,8 +103,10 @@ class _EventFocusRailState extends State<EventFocusRail> {
     if (_selectedIndex >= items.length) _selectedIndex = items.length - 1;
 
     final cardCountLabel = items.length == 1
-        ? '1 event'
-        : '${items.length} events';
+        ? context.l10n.dashboardEventFocusRailVisiblecopy1Event
+        : context.l10n.dashboardEventFocusRailVisiblecopyLengthEvents(
+            length: items.length,
+          );
     final selectedItem = items[_selectedIndex];
 
     return Column(
@@ -112,7 +115,10 @@ class _EventFocusRailState extends State<EventFocusRail> {
       children: [
         Row(
           children: [
-            Text('Event Focus', style: CatchTextStyles.titleL(context)),
+            Text(
+              context.l10n.dashboardEventFocusRailTextEventFocus,
+              style: CatchTextStyles.titleL(context),
+            ),
             gapW8,
             CatchBadge(label: cardCountLabel, tone: CatchBadgeTone.brand),
           ],
@@ -129,13 +135,26 @@ class _EventFocusRailState extends State<EventFocusRail> {
             return SizedBox(
               width: cardWidth,
               child: Semantics(
-                label: 'Event focus carousel',
-                value: 'Event ${_selectedIndex + 1} of ${items.length}',
+                label:
+                    context.l10n.dashboardEventFocusRailLabelEventFocusCarousel,
+                value: context.l10n
+                    .dashboardEventFocusRailVisiblecopyEventValue1OfLength(
+                      value1: _selectedIndex + 1,
+                      length: items.length,
+                    ),
                 increasedValue: canAdvance
-                    ? 'Event ${_selectedIndex + 2} of ${items.length}'
+                    ? context.l10n
+                          .dashboardEventFocusRailVisiblecopyEventValue1OfLength(
+                            value1: _selectedIndex + 2,
+                            length: items.length,
+                          )
                     : null,
                 decreasedValue: canRetreat
-                    ? 'Event $_selectedIndex of ${items.length}'
+                    ? context.l10n
+                          .dashboardEventFocusRailVisiblecopyEventSelectedindexOfLength(
+                            selectedIndex: _selectedIndex,
+                            length: items.length,
+                          )
                     : null,
                 onIncrease: items.length > 1 && canAdvance
                     ? () => setState(() => _selectedIndex += 1)
@@ -192,7 +211,11 @@ class _EventFocusRailState extends State<EventFocusRail> {
             child: CatchPageDots(
               selectedIndex: _selectedIndex,
               itemCount: items.length,
-              semanticLabel: 'Event ${_selectedIndex + 1} of ${items.length}',
+              semanticLabel: context.l10n
+                  .dashboardEventFocusRailSemanticlabelEventValue1OfLength(
+                    value1: _selectedIndex + 1,
+                    length: items.length,
+                  ),
             ),
           ),
         ],
@@ -332,21 +355,28 @@ class EventFocusCard extends StatelessWidget {
       topAccentColors: [activity.accent, activity.deep],
       subtitle: item.clubName,
       urgent: item.isUrgent,
-      indexLabel: cardCount > 1 ? '${cardIndex + 1}/$cardCount' : null,
+      indexLabel: cardCount > 1
+          ? context.l10n.dashboardEventFocusRailVisiblecopyValue1Cardcount(
+              value1: cardIndex + 1,
+              cardCount: cardCount,
+            )
+          : null,
       badges: [
         EventActionCardBadge(
-          label: item.badgeLabel,
+          label: item.badgeLabel(context.l10n),
           tone: item.isUrgent ? CatchBadgeTone.brand : CatchBadgeTone.neutral,
         ),
         if (item.canSwipe)
           EventActionCardBadge(
-            label: 'Catch · ${_swipeCountdown(item.event)}',
+            label: context.l10n.dashboardEventFocusRailLabelCatchSwipecountdown(
+              swipeCountdown: _swipeCountdown(item.event),
+            ),
             tone: CatchBadgeTone.brand,
             icon: PhosphorIconsFill.heart,
           ),
         if (item.needsReview)
-          const EventActionCardBadge(
-            label: 'Review pending',
+          EventActionCardBadge(
+            label: context.l10n.dashboardEventFocusRailLabelReviewPending,
             tone: CatchBadgeTone.warning,
             icon: PhosphorIconsRegular.pencilLine,
           ),
@@ -355,11 +385,15 @@ class EventFocusCard extends StatelessWidget {
         [
           CatchMetaEntry(
             icon: CatchIcons.clock,
-            label:
-                '${EventFormatters.shortWeekday(item.event.startTime)}, '
-                '${item.event.startTime.day} '
-                '${EventFormatters.shortMonth(item.event.startTime)} · '
-                '${item.event.timeRangeLabel}',
+            label: context.l10n
+                .dashboardEventFocusRailLabelShortweekdayDayShortmonthTimerangelabel(
+                  shortWeekday: EventFormatters.shortWeekday(
+                    item.event.startTime,
+                  ),
+                  day: item.event.startTime.day,
+                  shortMonth: EventFormatters.shortMonth(item.event.startTime),
+                  timeRangeLabel: item.event.timeRangeLabel,
+                ),
           ),
         ],
         [
@@ -375,7 +409,11 @@ class EventFocusCard extends StatelessWidget {
           ),
           CatchMetaEntry(
             icon: CatchIcons.group,
-            label: '${item.event.signedUpCount}/${item.event.capacityLimit}',
+            label: context.l10n
+                .dashboardEventFocusRailLabelSignedupcountCapacitylimit(
+                  signedUpCount: item.event.signedUpCount,
+                  capacityLimit: item.event.capacityLimit,
+                ),
           ),
         ],
       ],
@@ -383,7 +421,7 @@ class EventFocusCard extends StatelessWidget {
         for (var index = 0; index < actions.length; index += 1)
           EventActionCardAction(
             key: actions[index].key,
-            label: actions[index].label,
+            label: actions[index].label(context.l10n),
             icon: actions[index].icon,
             variant: index == 0
                 ? CatchButtonVariant.primary
@@ -417,14 +455,16 @@ enum EventFocusAction {
 }
 
 extension on EventFocusAction {
-  String get label {
+  String label(AppLocalizations l10n) {
     return switch (this) {
-      EventFocusAction.viewEvent => 'View event',
-      EventFocusAction.checkIn => 'Check in',
-      EventFocusAction.directions => 'Directions',
-      EventFocusAction.addToCalendar => 'Add to calendar',
-      EventFocusAction.swipe => 'Start catching',
-      EventFocusAction.review => 'Write review',
+      EventFocusAction.viewEvent => l10n.dashboardEventFocusRailLabelViewEvent,
+      EventFocusAction.checkIn => l10n.dashboardEventFocusRailLabelCheckIn,
+      EventFocusAction.directions =>
+        l10n.dashboardEventFocusRailLabelDirections,
+      EventFocusAction.addToCalendar =>
+        l10n.dashboardEventFocusRailLabelAddToCalendar,
+      EventFocusAction.swipe => l10n.dashboardEventFocusRailLabelStartCatching,
+      EventFocusAction.review => l10n.dashboardEventFocusRailLabelWriteReview,
     };
   }
 
@@ -467,11 +507,14 @@ class EventFocusItem {
     return 3;
   }
 
-  String get badgeLabel {
+  String badgeLabel(AppLocalizations l10n) {
     return switch (kind) {
-      EventFocusKind.checkIn => 'Check-in open',
-      EventFocusKind.afterEvent => 'After the event',
-      EventFocusKind.upcoming => 'Next event',
+      EventFocusKind.checkIn =>
+        l10n.dashboardEventFocusRailBadgelabelCheckInOpen,
+      EventFocusKind.afterEvent =>
+        l10n.dashboardEventFocusRailBadgelabelAfterTheEvent,
+      EventFocusKind.upcoming =>
+        l10n.dashboardEventFocusRailBadgelabelNextEvent,
     };
   }
 

@@ -1,3 +1,4 @@
+// copy:allow-file(Developer-only deterministic design fixture data)
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/labs/design_fixtures/utility_surface_fixtures.dart';

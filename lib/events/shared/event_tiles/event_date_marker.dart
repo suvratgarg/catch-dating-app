@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 const double _dateMarkerRadius = CatchSpacing.s3;
 const double _monthMarkerHeight = CatchSpacing.s10;
@@ -78,7 +79,10 @@ class WeekMarker extends StatelessWidget {
     return Semantics(
       button: true,
       selected: active,
-      label: '$day ${date.day}',
+      label: context.l10n.eventsEventDateMarkerLabelDayDay2(
+        day: day,
+        day2: date.day,
+      ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -103,7 +107,7 @@ class WeekMarker extends StatelessWidget {
                 ),
                 gapH2,
                 Text(
-                  '${date.day}',
+                  context.l10n.eventsEventDateMarkerTextDay(day: date.day),
                   style: CatchTextStyles.statCompact(
                     context,
                     color: active ? t.surface : t.ink,
@@ -150,14 +154,14 @@ class MonthMarker extends StatelessWidget {
         ? t.ink
         : t.ink3.withValues(alpha: CatchOpacity.mutedContent);
     final dayText = Text(
-      '${date.day}',
+      context.l10n.eventsEventDateMarkerTextDay(day: date.day),
       style: CatchTextStyles.labelL(context, color: textColor),
     );
 
     return Semantics(
       button: enabled,
       selected: active,
-      label: '${date.day}',
+      label: context.l10n.eventsEventDateMarkerLabelDay(day: date.day),
       child: Material(
         color: Colors.transparent,
         child: InkWell(

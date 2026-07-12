@@ -10,7 +10,7 @@ List<ProfileConfidenceSignal> _confidenceSignals({
     signals.add(
       const ProfileConfidenceSignal(
         kind: ProfileConfidenceSignalKind.completeProfile,
-        label: 'Complete profile',
+        label: StructuredDomainCopy.profileInsightComplete,
       ),
     );
   }
@@ -20,7 +20,9 @@ List<ProfileConfidenceSignal> _confidenceSignals({
     signals.add(
       ProfileConfidenceSignal(
         kind: ProfileConfidenceSignalKind.sharedRun,
-        label: 'Met at $eventTitle',
+        label:
+            // copy:allow-inline(Composes governed prefix copy with a dynamic event title)
+            '${StructuredDomainCopy.profileInsightSharedEventPrefix} $eventTitle',
       ),
     );
   }
@@ -30,7 +32,7 @@ List<ProfileConfidenceSignal> _confidenceSignals({
     signals.add(
       const ProfileConfidenceSignal(
         kind: ProfileConfidenceSignalKind.easyOpeners,
-        label: 'Easy openers',
+        label: StructuredDomainCopy.profileInsightEasyOpeners,
       ),
     );
   }

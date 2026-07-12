@@ -14,11 +14,11 @@ import 'package:catch_dating_app/force_update/data/app_version_config_provider.d
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -48,15 +48,19 @@ class MyApp extends ConsumerWidget {
     ref.watch(locationInitializerProvider);
 
     return MaterialApp.router(
-      title: AppConfig.appTitle,
+      onGenerateTitle: (context) {
+        final l10n = context.l10n;
+        return AppConfig.appTitleFor(
+          consumerTitle: l10n.appTitleConsumer,
+          hostTitle: l10n.appTitleHost,
+        );
+      },
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+        ...AppLocalizations.localizationsDelegates,
         CountryLocalizations.getDelegate(enableLocalization: false),
       ],
-      supportedLocales: const [Locale('en')],
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       routerConfig: goRouter,
@@ -213,6 +217,7 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final diagnostic = forceUpdateDevelopmentDiagnostic(error);
+    final l10n = context.l10n;
 
     return Scaffold(
       body: SafeArea(
@@ -228,13 +233,13 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
                   Icon(CatchIcons.cloudOffOutlined, size: 48),
                   gapH24,
                   Text(
-                    'Could not verify app version',
+                    l10n.sharedForceUpdateCheckErrorTitle,
                     style: textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
                   gapH12,
                   Text(
-                    'Check your connection and try again.',
+                    l10n.sharedForceUpdateCheckErrorBody,
                     style: textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -250,7 +255,7 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
                   ],
                   gapH24,
                   CatchButton(
-                    label: 'Try again',
+                    label: l10n.sharedActionTryAgain,
                     onPressed: onRetry,
                     icon: Icon(CatchIcons.refresh),
                     fullWidth: true,

@@ -105,7 +105,7 @@ void main() {
     await _pumpSettings(tester, container);
 
     expect(find.text('Unavailable'), findsNWidgets(2));
-    expect(find.byType(CatchInlineErrorState), findsOneWidget);
+    expect(find.bySubtype<CatchInlineErrorState>(), findsOneWidget);
   });
 
   testWidgets('preference switches write through SettingsController', (
@@ -148,7 +148,10 @@ void main() {
       find.byKey(SettingsKeys.weeklyDigestSwitch),
     );
     expect(weeklyDigestField.toggled, isFalse);
-    expect(find.text('update failed'), findsOneWidget);
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('blocked account rows use profile data and unblock controller', (

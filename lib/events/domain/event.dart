@@ -11,6 +11,7 @@ import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -224,10 +225,11 @@ abstract class Event with _$Event {
     final weekday = AppTimeFormatters.longWeekday(startTime);
     final hour = startTime.hour;
     final period = hour < 12
-        ? 'Morning'
+        ? StructuredDomainCopy.eventTitleMorning
         : hour < 17
-        ? 'Afternoon'
-        : 'Evening';
+        ? StructuredDomainCopy.eventTitleAfternoon
+        : StructuredDomainCopy.eventTitleEvening;
+    // copy:allow-inline(Composes governed period copy with dynamic event data)
     return '$weekday $period ${eventFormat.eventTitleLabel}';
   }
 }

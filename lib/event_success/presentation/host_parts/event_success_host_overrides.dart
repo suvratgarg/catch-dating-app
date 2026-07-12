@@ -33,7 +33,11 @@ class MicroPodsHostCard extends StatelessWidget {
         .toList(growable: false);
     final staleAssignmentCount = assignments.length - activeAssignments.length;
     final hostEdited = activeAssignments.any(
-      (assignment) => assignment.source == 'host_override_v1',
+      (assignment) =>
+          assignment.source ==
+          context
+              .l10n
+              .eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1,
     );
     return CatchSurface(
       borderColor: CatchTokens.of(context).line,
@@ -50,12 +54,17 @@ class MicroPodsHostCard extends StatelessWidget {
               gapW10,
               Expanded(
                 child: Text(
-                  'Small starter groups',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesTextSmallStarterGroups,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchBadge(
-                label: '${activeAssignments.length} assigned',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostOverridesLabelLengthAssigned(
+                      length: activeAssignments.length,
+                    ),
                 tone: activeAssignments.isEmpty
                     ? CatchBadgeTone.warning
                     : CatchBadgeTone.success,
@@ -63,23 +72,37 @@ class MicroPodsHostCard extends StatelessWidget {
               if (optedOutCount > 0) ...[
                 gapW8,
                 CatchBadge(
-                  label: '$optedOutCount opted out',
+                  label: context.l10n
+                      .eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut(
+                        optedOutCount: optedOutCount,
+                      ),
                   icon: CatchIcons.visibilityOffOutlined,
                 ),
               ],
               if (hostEdited) ...[
                 gapW8,
-                CatchBadge(label: 'Host edited', icon: CatchIcons.editOutlined),
+                CatchBadge(
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesLabelHostEdited,
+                  icon: CatchIcons.editOutlined,
+                ),
               ],
             ],
           ),
           gapH8,
           Text(
             staleAssignmentCount > 0
-                ? 'Regenerate to remove opted-out attendee cards from the current pod set.'
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted
                 : optedOutCount > 0
-                ? 'Generate attendee pod cards from the roster, excluding opted-out attendees.'
-                : 'Generate attendee pod cards from the current booked and checked-in roster.',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf,
             style: CatchTextStyles.supporting(context),
           ),
           if (activeAssignments.isNotEmpty) ...[
@@ -98,8 +121,14 @@ class MicroPodsHostCard extends StatelessWidget {
           gapH12,
           if (activeAssignments.isEmpty)
             CatchButton(
-              key: const ValueKey('eventSuccessGenerateMicroPodsButton'),
-              label: 'Generate micro-pods',
+              key: ValueKey(
+                context
+                    .l10n
+                    .eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton,
+              ),
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods,
               icon: Icon(CatchIcons.autoAwesomeOutlined),
               isLoading: actionState.isGenerating,
               onPressed: actionState.isGenerating || onGenerate == null
@@ -112,8 +141,14 @@ class MicroPodsHostCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: CatchButton(
-                    key: const ValueKey('eventSuccessGenerateMicroPodsButton'),
-                    label: 'Regenerate',
+                    key: ValueKey(
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton,
+                    ),
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessHostOverridesLabelRegenerate,
                     icon: Icon(CatchIcons.autoAwesomeOutlined),
                     variant: CatchButtonVariant.secondary,
                     isLoading: actionState.isGenerating,
@@ -126,7 +161,9 @@ class MicroPodsHostCard extends StatelessWidget {
                 gapW10,
                 Expanded(
                   child: CatchButton(
-                    label: 'Edit groups',
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessHostOverridesLabelEditGroups,
                     icon: Icon(CatchIcons.editOutlined),
                     onPressed: () => _showGroupOverrideSheet(
                       context: context,
@@ -201,8 +238,10 @@ class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
     final validationError = _validationError;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
     return CatchBottomSheetScaffold(
-      title: 'Edit groups',
-      subtitle: 'Host override',
+      title: context.l10n.eventSuccessEventSuccessHostOverridesTitleEditGroups,
+      subtitle: context
+          .l10n
+          .eventSuccessEventSuccessHostOverridesSubtitleHostOverride,
       action: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -224,7 +263,9 @@ class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
             gapH8,
           ],
           CatchButton(
-            label: 'Save overrides',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesLabelSaveOverrides,
             icon: Icon(CatchIcons.checkRounded),
             isLoading: _isSaving,
             onPressed:
@@ -267,23 +308,33 @@ class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
 
   String? get _validationError {
     if (_rounds.every((round) => round.groups.isEmpty)) {
-      return 'Add at least one group.';
+      return context
+          .l10n
+          .eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne;
     }
     for (final round in _rounds) {
       final usedInRound = <String>{};
       for (final group in round.groups) {
         if (group.label.trim().isEmpty) {
-          return 'Name every group.';
+          return context
+              .l10n
+              .eventSuccessEventSuccessHostOverridesVisiblecopyNameEveryGroup;
         }
         if (group.memberUids.isEmpty) {
-          return 'Add at least one attendee to every group.';
+          return context
+              .l10n
+              .eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne64c0b6;
         }
         for (final memberUid in group.memberUids) {
           if (memberUid == null) {
-            return 'Choose every attendee slot.';
+            return context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesVisiblecopyChooseEveryAttendeeSlot;
           }
           if (!usedInRound.add(memberUid)) {
-            return 'Each attendee can appear once per round.';
+            return context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesVisiblecopyEachAttendeeCanAppear;
           }
         }
       }
@@ -301,7 +352,10 @@ class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
         .toList(growable: false);
     round.groups.add(
       GroupOverrideUnitDraft(
-        label: 'Group ${round.groups.length + 1}',
+        label: context.l10n
+            .eventSuccessEventSuccessHostOverridesLabelGroupValue1(
+              value1: round.groups.length + 1,
+            ),
         memberUids: <String?>[if (available.isNotEmpty) available.first],
       ),
     );
@@ -392,12 +446,17 @@ class GroupOverrideRoundEditor extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Round ${round.roundIndex + 1}',
+                  context.l10n
+                      .eventSuccessEventSuccessHostOverridesTextRoundValue1(
+                        value1: round.roundIndex + 1,
+                      ),
                   style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchButton(
-                label: 'Add group',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostOverridesLabelAddGroup,
                 icon: Icon(CatchIcons.addRounded),
                 size: CatchButtonSize.sm,
                 variant: CatchButtonVariant.secondary,
@@ -408,7 +467,9 @@ class GroupOverrideRoundEditor extends StatelessWidget {
           gapH10,
           if (round.groups.isEmpty)
             Text(
-              'No groups in this round.',
+              context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesTextNoGroupsInThis,
               style: CatchTextStyles.supporting(context, color: t.ink3),
             )
           else
@@ -465,7 +526,9 @@ class GroupOverrideUnitEditor extends StatelessWidget {
             children: [
               Expanded(
                 child: CatchField.input(
-                  title: 'Group label',
+                  title: context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesTitleGroupLabel,
                   initialValue: group.label,
                   textCapitalization: TextCapitalization.words,
                   onChanged: (value) {
@@ -477,7 +540,9 @@ class GroupOverrideUnitEditor extends StatelessWidget {
               gapW8,
               CatchIconAction(
                 size: CatchIconButton.defaultSize,
-                tooltip: 'Remove group',
+                tooltip: context
+                    .l10n
+                    .eventSuccessEventSuccessHostOverridesTooltipRemoveGroup,
                 icon: CatchIcons.deleteOutlineRounded,
                 foregroundColor: t.danger,
                 onPressed: onRemoveGroup,
@@ -503,7 +568,9 @@ class GroupOverrideUnitEditor extends StatelessWidget {
             gapH8,
           ],
           CatchButton(
-            label: 'Add attendee',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesLabelAddAttendee,
             icon: Icon(CatchIcons.personAddAlt1Rounded),
             size: CatchButtonSize.sm,
             variant: CatchButtonVariant.secondary,
@@ -537,11 +604,15 @@ class GroupOverrideMemberEditor extends StatelessWidget {
       children: [
         Expanded(
           child: CatchField.select<String>(
-            title: 'Group attendee',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesTitleGroupAttendee,
             values: participantUids,
             value: value,
             itemLabel: participantLabel,
-            hintText: 'Attendee',
+            hintText: context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesHinttextAttendee,
             showLabel: false,
             onChanged: onChanged,
           ),
@@ -549,7 +620,9 @@ class GroupOverrideMemberEditor extends StatelessWidget {
         gapW8,
         CatchIconAction(
           size: CatchIconButton.defaultSize,
-          tooltip: 'Remove attendee',
+          tooltip: context
+              .l10n
+              .eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee,
           icon: CatchIcons.closeRounded,
           onPressed: onRemove,
         ),
@@ -595,7 +668,11 @@ class RotationsHostCard extends StatelessWidget {
     final optedOutCount = optedOutUids.length;
     final staleAssignmentCount = assignments.length - activeAssignments.length;
     final hostEdited = activeAssignments.any(
-      (assignment) => assignment.source == 'host_override_v1',
+      (assignment) =>
+          assignment.source ==
+          context
+              .l10n
+              .eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1,
     );
     return CatchSurface(
       borderColor: CatchTokens.of(context).line,
@@ -612,12 +689,17 @@ class RotationsHostCard extends StatelessWidget {
               gapW10,
               Expanded(
                 child: Text(
-                  'Timed partner rotations',
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations,
                   style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchBadge(
-                label: '$roundCount rounds',
+                label: context.l10n
+                    .eventSuccessEventSuccessHostOverridesLabelRoundcountRounds(
+                      roundCount: roundCount,
+                    ),
                 tone: roundCount == 0
                     ? CatchBadgeTone.warning
                     : CatchBadgeTone.success,
@@ -625,21 +707,33 @@ class RotationsHostCard extends StatelessWidget {
               if (optedOutCount > 0) ...[
                 gapW8,
                 CatchBadge(
-                  label: '$optedOutCount opted out',
+                  label: context.l10n
+                      .eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut(
+                        optedOutCount: optedOutCount,
+                      ),
                   icon: CatchIcons.visibilityOffOutlined,
                 ),
               ],
               if (hostEdited) ...[
                 gapW8,
-                CatchBadge(label: 'Host edited', icon: CatchIcons.editOutlined),
+                CatchBadge(
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesLabelHostEdited,
+                  icon: CatchIcons.editOutlined,
+                ),
               ],
             ],
           ),
           gapH8,
           Text(
             staleAssignmentCount > 0
-                ? 'Regenerate to remove opted-out attendees from timed rotations.'
-                : 'Generate pairings from event duration, saved cadence, checked-in participants, and mutual gender interest.',
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent,
             style: CatchTextStyles.supporting(context),
           ),
           if (activeAssignments.isNotEmpty) ...[
@@ -649,22 +743,36 @@ class RotationsHostCard extends StatelessWidget {
               runSpacing: CatchSpacing.s2,
               children: [
                 CatchBadge(
-                  label: '${activeAssignments.length} assigned',
+                  label: context.l10n
+                      .eventSuccessEventSuccessHostOverridesLabelLengthAssigned(
+                        length: activeAssignments.length,
+                      ),
                   icon: CatchIcons.peopleOutlineRounded,
                 ),
                 CatchBadge(
-                  label:
-                      '${_eventRotationCapacity(event, rotationIntervalMinutes)} possible',
+                  label: context.l10n
+                      .eventSuccessEventSuccessHostOverridesLabelEventrotationcapacityPossible(
+                        eventRotationCapacity: _eventRotationCapacity(
+                          event,
+                          rotationIntervalMinutes,
+                        ),
+                      ),
                   icon: CatchIcons.scheduleRounded,
                 ),
                 if (fairness.sitOutRoundCount > 0)
                   CatchBadge(
-                    label: '${fairness.sitOutRoundCount} planned breaks',
+                    label: context.l10n
+                        .eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks(
+                          sitOutRoundCount: fairness.sitOutRoundCount,
+                        ),
                     icon: CatchIcons.eventRepeatOutlined,
                   ),
                 if (fairness.repeatPeerCount > 0)
                   CatchBadge(
-                    label: '${fairness.repeatPeerCount} repeated peers',
+                    label: context.l10n
+                        .eventSuccessEventSuccessHostOverridesLabelRepeatpeercountRepeatedPeers(
+                          repeatPeerCount: fairness.repeatPeerCount,
+                        ),
                     tone: CatchBadgeTone.warning,
                     icon: CatchIcons.infoOutlineRounded,
                   ),
@@ -683,8 +791,14 @@ class RotationsHostCard extends StatelessWidget {
           gapH12,
           if (activeAssignments.isEmpty)
             CatchButton(
-              key: const ValueKey('eventSuccessGenerateRotationsButton'),
-              label: 'Generate rotations',
+              key: ValueKey(
+                context
+                    .l10n
+                    .eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton,
+              ),
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesLabelGenerateRotations,
               icon: Icon(CatchIcons.autoAwesomeOutlined),
               isLoading: actionState.isGenerating,
               onPressed: actionState.isGenerating || onGenerate == null
@@ -697,8 +811,14 @@ class RotationsHostCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: CatchButton(
-                    key: const ValueKey('eventSuccessGenerateRotationsButton'),
-                    label: 'Regenerate',
+                    key: ValueKey(
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton,
+                    ),
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessHostOverridesLabelRegenerate,
                     icon: Icon(CatchIcons.autoAwesomeOutlined),
                     variant: CatchButtonVariant.secondary,
                     isLoading: actionState.isGenerating,
@@ -711,7 +831,9 @@ class RotationsHostCard extends StatelessWidget {
                 gapW10,
                 Expanded(
                   child: CatchButton(
-                    label: 'Edit rotations',
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessHostOverridesLabelEditRotations,
                     icon: Icon(CatchIcons.editOutlined),
                     onPressed: () => _showRotationOverrideSheet(
                       context: context,
@@ -786,8 +908,11 @@ class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
     final validationError = _validationError;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
     return CatchBottomSheetScaffold(
-      title: 'Edit rotations',
-      subtitle: 'Host override',
+      title:
+          context.l10n.eventSuccessEventSuccessHostOverridesTitleEditRotations,
+      subtitle: context
+          .l10n
+          .eventSuccessEventSuccessHostOverridesSubtitleHostOverride,
       action: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -809,7 +934,9 @@ class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
             gapH8,
           ],
           CatchButton(
-            label: 'Save overrides',
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesLabelSaveOverrides,
             icon: Icon(CatchIcons.checkRounded),
             isLoading: _isSaving,
             onPressed:
@@ -849,7 +976,9 @@ class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
 
   String? get _validationError {
     if (_rounds.every((round) => round.pairings.isEmpty)) {
-      return 'Add at least one pair.';
+      return context
+          .l10n
+          .eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne76e783;
     }
     for (final round in _rounds) {
       final usedInRound = <String>{};
@@ -857,13 +986,19 @@ class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
         final uidA = pair.uidA;
         final uidB = pair.uidB;
         if (uidA == null || uidB == null) {
-          return 'Choose both attendees for every pair.';
+          return context
+              .l10n
+              .eventSuccessEventSuccessHostOverridesVisiblecopyChooseBothAttendeesFor;
         }
         if (uidA == uidB) {
-          return 'Choose two different attendees.';
+          return context
+              .l10n
+              .eventSuccessEventSuccessHostOverridesVisiblecopyChooseTwoDifferentAttendees;
         }
         if (!usedInRound.add(uidA) || !usedInRound.add(uidB)) {
-          return 'Each attendee can appear once per round.';
+          return context
+              .l10n
+              .eventSuccessEventSuccessHostOverridesVisiblecopyEachAttendeeCanAppear;
         }
       }
     }
@@ -955,12 +1090,17 @@ class RotationOverrideRoundEditor extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Round ${round.roundIndex + 1}',
+                  context.l10n
+                      .eventSuccessEventSuccessHostOverridesTextRoundValue1(
+                        value1: round.roundIndex + 1,
+                      ),
                   style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchButton(
-                label: 'Add pair',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessHostOverridesLabelAddPair,
                 icon: Icon(CatchIcons.addRounded),
                 size: CatchButtonSize.sm,
                 variant: CatchButtonVariant.secondary,
@@ -971,7 +1111,9 @@ class RotationOverrideRoundEditor extends StatelessWidget {
           gapH10,
           if (round.pairings.isEmpty)
             Text(
-              'No pairs in this round.',
+              context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesTextNoPairsInThis,
               style: CatchTextStyles.supporting(context, color: t.ink3),
             )
           else
@@ -1013,11 +1155,15 @@ class RotationOverridePairEditor extends StatelessWidget {
       children: [
         Expanded(
           child: CatchField.select<String>(
-            title: 'First rotation attendee',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee,
             values: participantUids,
             value: pair.uidA,
             itemLabel: participantLabel,
-            hintText: 'Attendee',
+            hintText: context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesHinttextAttendee,
             showLabel: false,
             onChanged: (value) {
               pair.uidA = value;
@@ -1028,11 +1174,15 @@ class RotationOverridePairEditor extends StatelessWidget {
         gapW8,
         Expanded(
           child: CatchField.select<String>(
-            title: 'Second rotation attendee',
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee,
             values: participantUids,
             value: pair.uidB,
             itemLabel: participantLabel,
-            hintText: 'Partner',
+            hintText: context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesHinttextPartner,
             showLabel: false,
             onChanged: (value) {
               pair.uidB = value;
@@ -1043,7 +1193,9 @@ class RotationOverridePairEditor extends StatelessWidget {
         gapW8,
         CatchIconAction(
           size: CatchIconButton.defaultSize,
-          tooltip: 'Remove pair',
+          tooltip: context
+              .l10n
+              .eventSuccessEventSuccessHostOverridesTooltipRemovePair,
           icon: CatchIcons.deleteOutlineRounded,
           foregroundColor: CatchTokens.of(context).danger,
           onPressed: onRemove,
@@ -1067,7 +1219,11 @@ class PodGroupSummary extends StatelessWidget {
       children: [
         for (final entry in groups.entries)
           CatchBadge(
-            label: '${entry.key} · ${entry.value} assigned',
+            label: context.l10n
+                .eventSuccessEventSuccessHostOverridesLabelKeyValueAssigned(
+                  key: entry.key,
+                  value: entry.value,
+                ),
             icon: CatchIcons.groupOutlined,
           ),
       ],
@@ -1097,7 +1253,9 @@ class AssignmentReasonSummary extends StatelessWidget {
             ),
             gapW6,
             Text(
-              'Assignment notes',
+              context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesTextAssignmentNotes,
               style: CatchTextStyles.labelM(context, color: t.ink2),
             ),
           ],

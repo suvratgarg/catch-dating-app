@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 class CreateEventPhotoPicker extends StatelessWidget {
   const CreateEventPhotoPicker({
@@ -19,8 +20,8 @@ class CreateEventPhotoPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OrderedPhotoPicker(
-      label: const CatchFormFieldLabel(
-        label: 'Event photos',
+      label: CatchFormFieldLabel(
+        label: context.l10n.hostsCreateEventPhotoPickerLabelEventPhotos,
         isOptional: true,
         large: true,
       ),
@@ -28,8 +29,10 @@ class CreateEventPhotoPicker extends StatelessWidget {
       onAddPhotos: onAddPhotos,
       onRemovePhoto: onRemovePhoto,
       onReorderPhoto: onReorderPhoto,
-      emptyActionLabel: 'Add event photos',
-      addActionLabel: 'Add photos',
+      emptyActionLabel:
+          context.l10n.hostsCreateEventPhotoPickerVisiblecopyAddEventPhotos,
+      addActionLabel:
+          context.l10n.hostsCreateEventPhotoPickerVisiblecopyAddPhotos,
     );
   }
 }

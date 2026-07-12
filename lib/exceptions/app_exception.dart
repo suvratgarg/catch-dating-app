@@ -13,8 +13,8 @@ enum BackendService {
   unknown,
 }
 
-extension BackendServiceLabel on BackendService {
-  String get label => switch (this) {
+extension BackendServiceLogKey on BackendService {
+  String get logKey => switch (this) {
     BackendService.auth => 'auth',
     BackendService.firestore => 'firestore',
     BackendService.functions => 'functions',
@@ -50,7 +50,7 @@ class BackendErrorContext {
   final Map<String, String> metadata;
 
   Map<String, String> toLogContext() => {
-    'service': service.label,
+    'service': service.logKey,
     'action': action,
     if (resource != null && resource!.isNotEmpty) 'resource': resource!,
     ...metadata,

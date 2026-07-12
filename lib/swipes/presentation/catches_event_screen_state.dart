@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -40,6 +41,7 @@ final class CatchesEventReady extends CatchesEventScreenState {
 }
 
 CatchesEventScreenState buildCatchesEventScreenState({
+  required AppLocalizations l10n,
   required CatchAsyncState<List<PublicProfile>> queue,
   required CatchAsyncState<Event?> event,
   required CatchAsyncState<UserProfile?> currentUser,
@@ -50,6 +52,7 @@ CatchesEventScreenState buildCatchesEventScreenState({
     CatchAsyncStatus.loading => const CatchesEventQueueLoading(),
     CatchAsyncStatus.error => CatchesEventQueueError(queue.error!),
     CatchAsyncStatus.data => _catchesEventDataState(
+      l10n: l10n,
       profiles: queue.value ?? const <PublicProfile>[],
       event: event.value,
       currentUser: currentUser.value,
@@ -60,6 +63,7 @@ CatchesEventScreenState buildCatchesEventScreenState({
 }
 
 CatchesEventScreenState _catchesEventDataState({
+  required AppLocalizations l10n,
   required List<PublicProfile> profiles,
   required Event? event,
   required UserProfile? currentUser,
@@ -69,6 +73,7 @@ CatchesEventScreenState _catchesEventDataState({
   if (profiles.isEmpty) {
     return CatchesEventEmpty(
       content: buildSwipeEmptyContent(
+        l10n: l10n,
         event: event,
         currentUser: currentUser,
         currentUserParticipation: currentUserParticipation,

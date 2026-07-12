@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 /// Explore scope + filter rail.
@@ -47,23 +48,41 @@ class ExploreFilterRail extends StatelessWidget {
   final ValueChanged<String>? onToggleArea;
   final VoidCallback? onClearFilters;
 
-  static const List<CatchOption<ExploreTimeFilter>> _timeOptions = [
-    CatchOption(value: ExploreTimeFilter.tonight, label: 'Tonight'),
-    CatchOption(value: ExploreTimeFilter.tomorrow, label: 'Tomorrow'),
-    CatchOption(value: ExploreTimeFilter.weekend, label: 'Weekend'),
-    CatchOption(value: ExploreTimeFilter.thisWeek, label: 'This week'),
-    CatchOption(value: ExploreTimeFilter.anytime, label: 'Anytime'),
+  static List<CatchOption<ExploreTimeFilter>> _timeOptions(
+    AppLocalizations l10n,
+  ) => [
+    CatchOption(
+      value: ExploreTimeFilter.tonight,
+      label: l10n.exploreExploreFilterRailLabelTonight,
+    ),
+    CatchOption(
+      value: ExploreTimeFilter.tomorrow,
+      label: l10n.exploreExploreFilterRailLabelTomorrow,
+    ),
+    CatchOption(
+      value: ExploreTimeFilter.weekend,
+      label: l10n.exploreExploreFilterRailLabelWeekend,
+    ),
+    CatchOption(
+      value: ExploreTimeFilter.thisWeek,
+      label: l10n.exploreExploreFilterRailLabelThisWeek,
+    ),
+    CatchOption(
+      value: ExploreTimeFilter.anytime,
+      label: l10n.exploreExploreFilterRailLabelAnytime,
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final railState = state ?? ExploreFilterRailState.from(filters);
+    final railState =
+        state ?? ExploreFilterRailState.from(filters, l10n: context.l10n);
 
     return CatchTabRail<ExploreTimeFilter>(
       selected: filters.timeFilter,
       onChanged: onTimeFilterSelected,
-      options: _timeOptions,
+      options: _timeOptions(context.l10n),
       scrollable: true,
       backgroundColor: backgroundColor ?? t.bg,
       trailing: ExploreFilterGlyphButton(
@@ -119,7 +138,9 @@ class ExploreFilterGlyphButton extends StatelessWidget {
             onTap: onTap,
             borderRadius: BorderRadius.circular(CatchRadius.pill),
             child: CatchIconBadge(
-              label: '$activeCount',
+              label: context.l10n.exploreExploreFilterRailLabelActivecount(
+                activeCount: activeCount,
+              ),
               isLabelVisible: activeCount > 0,
               backgroundColor: t.ink,
               foregroundColor: t.surface,
@@ -169,17 +190,21 @@ class ExploreFilterSheet extends StatelessWidget {
     final t = CatchTokens.of(context);
     final sheetState =
         state ??
-        ExploreFilterSheetState.from(filters: filters, sourceClubs: const []);
+        ExploreFilterSheetState.from(
+          filters: filters,
+          sourceClubs: const [],
+          l10n: context.l10n,
+        );
 
     return CatchBottomSheetScaffold(
-      title: 'Explore filters',
-      subtitle: 'Narrow the map and feed without changing your time scope.',
+      title: context.l10n.exploreExploreFilterRailTitleExploreFilters,
+      subtitle: context.l10n.exploreExploreFilterRailSubtitleNarrowTheMapAnd,
       action: Row(
         children: [
           if (sheetState.activeCount > 0) ...[
             Expanded(
               child: CatchButton(
-                label: 'Clear',
+                label: context.l10n.exploreExploreFilterRailLabelClear,
                 variant: CatchButtonVariant.secondary,
                 onPressed: onClearFilters,
               ),
@@ -188,7 +213,7 @@ class ExploreFilterSheet extends StatelessWidget {
           ],
           Expanded(
             child: CatchButton(
-              label: 'Done',
+              label: context.l10n.exploreExploreFilterRailLabelDone,
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -203,7 +228,7 @@ class ExploreFilterSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'DISTANCE',
+                context.l10n.exploreExploreFilterRailTextDistance,
                 style: CatchTextStyles.kicker(context, color: t.ink2),
               ),
               gapH12,
@@ -221,7 +246,7 @@ class ExploreFilterSheet extends StatelessWidget {
               ),
               gapH20,
               Text(
-                'CLUBS',
+                context.l10n.exploreExploreFilterRailTextClubs,
                 style: CatchTextStyles.kicker(context, color: t.ink2),
               ),
               gapH12,
@@ -230,12 +255,13 @@ class ExploreFilterSheet extends StatelessWidget {
                 runSpacing: CatchSpacing.s2,
                 children: [
                   CatchSelectChip(
-                    label: 'Joined clubs',
+                    label:
+                        context.l10n.exploreExploreFilterRailLabelJoinedClubs,
                     active: filters.joinedOnly,
                     onTap: onToggleJoinedOnly,
                   ),
                   CatchSelectChip(
-                    label: 'Rated 4.5+',
+                    label: context.l10n.exploreExploreFilterRailLabelRated45,
                     active: filters.highRatedOnly,
                     onTap: onToggleHighRatedOnly,
                   ),
@@ -243,7 +269,7 @@ class ExploreFilterSheet extends StatelessWidget {
               ),
               gapH20,
               Text(
-                'ACTIVITY',
+                context.l10n.exploreExploreFilterRailTextActivity,
                 style: CatchTextStyles.kicker(context, color: t.ink2),
               ),
               gapH12,
@@ -262,7 +288,7 @@ class ExploreFilterSheet extends StatelessWidget {
               if (sheetState.areaOptions.isNotEmpty) ...[
                 gapH20,
                 Text(
-                  'AREA',
+                  context.l10n.exploreExploreFilterRailTextArea,
                   style: CatchTextStyles.kicker(context, color: t.ink2),
                 ),
                 gapH12,

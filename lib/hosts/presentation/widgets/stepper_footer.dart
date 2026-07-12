@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class StepperFooter extends StatelessWidget {
@@ -25,7 +26,9 @@ class StepperFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final label = primaryLabel ?? (isLastStep ? lastStepLabel : 'Next');
+    final label =
+        primaryLabel ??
+        (isLastStep ? lastStepLabel : context.l10n.hostsStepperFooterLabelNext);
     return CatchBottomDock(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s4,
@@ -40,7 +43,7 @@ class StepperFooter extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: CatchButton(
-                  label: 'Save Draft',
+                  label: context.l10n.hostsStepperFooterLabelSaveDraft,
                   onPressed: isLoading ? null : onSaveDraft,
                   variant: CatchButtonVariant.ghost,
                   size: CatchButtonSize.lg,

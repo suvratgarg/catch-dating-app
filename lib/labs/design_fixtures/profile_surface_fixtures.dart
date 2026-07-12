@@ -1,3 +1,4 @@
+// copy:allow-file(Developer-only deterministic design fixture data)
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;

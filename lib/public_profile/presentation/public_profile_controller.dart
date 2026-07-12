@@ -28,9 +28,6 @@ class PublicProfileController extends _$PublicProfileController {
   }) async {
     await ref
         .read(safetyRepositoryProvider)
-        .reportUser(
-          targetUserId: targetUserId,
-          reasonCode: reasonCode,
-        );
+        .reportUser(targetUserId: targetUserId, reasonCode: reasonCode);
   }
 }

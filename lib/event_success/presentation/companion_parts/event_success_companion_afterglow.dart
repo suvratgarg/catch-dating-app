@@ -28,7 +28,9 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
             children: [
               StageSectionLabel(
                 icon: CatchIcons.autoAwesomeRounded,
-                label: 'Private afterglow',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionAfterglowLabelPrivateAfterglow,
                 color: t.primary,
               ),
               const CatchPrivacyBadge(),
@@ -36,12 +38,17 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
           ),
           gapH10,
           Text(
-            'Your night at ${event.title}',
+            context.l10n
+                .eventSuccessEventSuccessCompanionAfterglowTextYourNightAtTitle(
+                  title: event.title,
+                ),
             style: CatchTextStyles.titleL(context),
           ),
           gapH4,
           Text(
-            'A small recap for you, not a public share card.',
+            context
+                .l10n
+                .eventSuccessEventSuccessCompanionAfterglowTextASmallRecapFor,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
@@ -49,24 +56,54 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
             beats: [
               _AfterglowBeat(
                 icon: CatchIcons.eventAvailableOutlined,
-                label: 'You showed up',
-                value: '${event.longDateLabel} | ${event.activitySummaryLabel}',
+                label: context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionAfterglowLabelYouShowedUp,
+                value: context.l10n
+                    .eventSuccessEventSuccessCompanionAfterglowVisiblecopyLongdatelabelActivitysummarylabel(
+                      longDateLabel: event.longDateLabel,
+                      activitySummaryLabel: event.activitySummaryLabel,
+                    ),
               ),
               _AfterglowBeat(
                 icon: CatchIcons.forumOutlined,
-                label: openersEnabled ? 'Openers ready' : 'Memory saved',
+                label: openersEnabled
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionAfterglowLabelOpenersReady
+                    : context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionAfterglowLabelMemorySaved,
                 value: openersEnabled
-                    ? 'Use the shared event context when a match opens.'
-                    : 'Keep the useful parts of the room for yourself.',
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionAfterglowVisiblecopyUseTheSharedEvent
+                    : context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionAfterglowVisiblecopyKeepTheUsefulParts,
               ),
               _AfterglowBeat(
                 icon: CatchIcons.favoriteBorderRounded,
-                label: feedback == null ? 'Your read' : 'Your read saved',
+                label: feedback == null
+                    ? context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionAfterglowLabelYourRead
+                    : context
+                          .l10n
+                          .eventSuccessEventSuccessCompanionAfterglowLabelYourReadSaved,
                 value: feedback == null
                     ? feedbackEnabled
-                          ? 'Leave a quick note while the event is fresh.'
-                          : 'Catch keeps this recap private to you.'
-                    : '${feedback.metNewPeopleCount} people remembered, welcome ${feedback.welcomeRating}/5.',
+                          ? context
+                                .l10n
+                                .eventSuccessEventSuccessCompanionAfterglowVisiblecopyLeaveAQuickNote
+                          : context
+                                .l10n
+                                .eventSuccessEventSuccessCompanionAfterglowVisiblecopyCatchKeepsThisRecap
+                    : context.l10n
+                          .eventSuccessEventSuccessCompanionAfterglowVisiblecopyMetnewpeoplecountPeopleRememberedWelcome(
+                            metNewPeopleCount: feedback.metNewPeopleCount,
+                            welcomeRating: feedback.welcomeRating,
+                          ),
                 // Counter animates the first number ("X people remembered")
                 // up to its final value to give the recap a Wrapped-style
                 // landing beat. Skipped when no feedback exists.
@@ -87,7 +124,9 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
                 gapW8,
                 Expanded(
                   child: Text(
-                    'Only you see this recap. Hosts get aggregate coaching, never your private notes or individual opener choices.',
+                    context
+                        .l10n
+                        .eventSuccessEventSuccessCompanionAfterglowTextOnlyYouSeeThis,
                     style: CatchTextStyles.supporting(context, color: t.ink),
                   ),
                 ),
@@ -262,7 +301,9 @@ class _AfterglowBeatRowState extends State<AfterglowBeatRow>
     if (target == null) return beat.value;
     final eased = CatchMotion.easeOutCubicCurve.transform(_count.value);
     final live = (target * eased).round();
-    final pattern = RegExp(r'\d+');
+    final pattern = RegExp(
+      context.l10n.eventSuccessEventSuccessCompanionAfterglowVisiblecopyD,
+    );
     final match = pattern.firstMatch(beat.value);
     if (match == null) return beat.value;
     return beat.value.replaceRange(match.start, match.end, live.toString());

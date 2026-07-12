@@ -16,6 +16,7 @@ import 'package:catch_dating_app/events/presentation/event_action_keys.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -145,6 +146,7 @@ class EventDetailCta extends ConsumerWidget {
         ? (errorMutation as MutationError).error
         : null;
     final dockState = eventDetailBookingDockStateFrom(
+      l10n: context.l10n,
       event: event,
       userProfile: userProfile,
       participation: participation,
@@ -166,7 +168,11 @@ class EventDetailCta extends ConsumerWidget {
 
     final errorMessage = dockState.error == null
         ? null
-        : appErrorMessage(dockState.error!, context: AppErrorContext.event);
+        : appErrorMessage(
+            dockState.error!,
+            l10n: context.l10n,
+            context: AppErrorContext.event,
+          );
 
     void handleBookingCompletion({
       required GoRouter? router,
@@ -284,7 +290,7 @@ class EventDetailCta extends ConsumerWidget {
       ),
       EventDetailBookingDockLeadingKind.booked => EventCtaStatusLeading(
         icon: CatchIcons.checkCircleRounded,
-        label: "You're in!",
+        label: context.l10n.eventsEventDetailCtaLabelYouReIn,
       ),
       EventDetailBookingDockLeadingKind.waitlistOffer => WaitlistOfferLeading(
         expiresAt: dockState.waitlistOfferExpiresAt,
@@ -295,7 +301,7 @@ class EventDetailCta extends ConsumerWidget {
       ),
       EventDetailBookingDockLeadingKind.attended => EventCtaStatusLeading(
         icon: CatchIcons.directionsRunRounded,
-        label: 'Completed',
+        label: context.l10n.eventsEventDetailCtaLabelCompleted,
       ),
     };
 
@@ -400,7 +406,7 @@ class PriceLeading extends StatelessWidget {
                 style: CatchTextStyles.monoLabel(context, color: t.warning),
               )
             : Text(
-                note ?? 'per person',
+                note ?? context.l10n.eventsEventDetailCtaTextPerPerson,
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
       ],
@@ -424,8 +430,10 @@ class WaitlistOfferLeading extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final expiresLabel = expiresAt == null
-        ? 'Offer active'
-        : 'Until ${EventFormatters.time(expiresAt!)}';
+        ? context.l10n.eventsEventDetailCtaVisiblecopyOfferActive
+        : context.l10n.eventsEventDetailCtaVisiblecopyUntilTime(
+            time: EventFormatters.time(expiresAt!),
+          );
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -437,7 +445,9 @@ class WaitlistOfferLeading extends StatelessWidget {
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         CatchTextButton(
-          label: isDeclining ? 'Declining' : 'Decline',
+          label: isDeclining
+              ? context.l10n.eventsEventDetailCtaLabelDeclining
+              : context.l10n.eventsEventDetailCtaLabelDecline,
           onPressed: onDecline,
           tone: CatchTextButtonTone.neutral,
           padding: EdgeInsets.zero,

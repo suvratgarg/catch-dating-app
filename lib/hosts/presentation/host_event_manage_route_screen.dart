@@ -34,7 +34,10 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       value: routeDataAsync,
       loadingBuilder: (_) => Scaffold(
         backgroundColor: CatchTokens.of(context).bg,
-        appBar: const CatchTopBar(title: 'Manage event', border: true),
+        appBar: CatchTopBar(
+          title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
+          border: true,
+        ),
         body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
       ),
       errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
@@ -50,16 +53,23 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         final club = routeData.club;
         final event = routeData.event;
         if (club == null || event == null) {
-          return const CatchErrorScaffold(
-            title: 'Event not found',
-            message: 'This hosted event is no longer available.',
+          return CatchErrorScaffold(
+            title:
+                context.l10n.hostsHostEventManageRouteScreenTitleEventNotFound,
+            message: context
+                .l10n
+                .hostsHostEventManageRouteScreenMessageThisHostedEventIs,
           );
         }
 
         if (uid == null || !club.isHostedBy(uid)) {
           return CatchErrorScaffold(
-            title: 'Action unavailable',
-            message: 'You can manage only events that you host.',
+            title: context
+                .l10n
+                .hostsHostEventManageRouteScreenTitleActionUnavailable,
+            message: context
+                .l10n
+                .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
             icon: CatchIcons.blockRounded,
           );
         }

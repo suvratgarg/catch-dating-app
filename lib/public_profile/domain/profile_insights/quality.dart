@@ -37,18 +37,14 @@ ProfileQualitySummary profileQualitySummary(PublicProfile profile) {
       weight: 20,
       isComplete: photoCount >= 3,
       suggestion: const ProfileQualitySuggestion(
-        title: 'Add 3 clear photos',
-        detail:
-            'A mix of face, full-body, and running/social photos gives people confidence.',
+        ProfileQualitySuggestionKind.photos,
       ),
     ),
     _QualityItem(
       weight: 24,
       isComplete: promptCount >= maxProfilePromptAnswers,
       suggestion: const ProfileQualitySuggestion(
-        title: 'Answer all 3 prompts',
-        detail:
-            'Specific prompts create the easiest openings for comments and likes.',
+        ProfileQualitySuggestionKind.profilePrompts,
       ),
     ),
     _QualityItem(
@@ -57,44 +53,35 @@ ProfileQualitySummary profileQualitySummary(PublicProfile profile) {
           photoCount > 0 &&
           photoPromptCount >= _targetPhotoPromptCount(photoCount),
       suggestion: const ProfileQualitySuggestion(
-        title: 'Add photo prompts',
-        detail:
-            'Prompts make photos easier to react to without writing captions.',
+        ProfileQualitySuggestionKind.photoPrompts,
       ),
     ),
     _QualityItem(
       weight: 12,
       isComplete: profile.relationshipGoal != null,
       suggestion: const ProfileQualitySuggestion(
-        title: 'Add what you are looking for',
-        detail:
-            'Intent helps people decide whether starting a conversation makes sense.',
+        ProfileQualitySuggestionKind.relationshipGoal,
       ),
     ),
     _QualityItem(
       weight: 16,
       isComplete: runningDetailsComplete,
       suggestion: const ProfileQualitySuggestion(
-        title: 'Fill out your running identity',
-        detail:
-            'Distance, reason, and time-of-day preferences power better compatibility signals.',
+        ProfileQualitySuggestionKind.runningIdentity,
       ),
     ),
     _QualityItem(
       weight: 8,
       isComplete: hasBackgroundFact,
       suggestion: const ProfileQualitySuggestion(
-        title: 'Add one background detail',
-        detail:
-            'Height, work, education, or languages help round out the card.',
+        ProfileQualitySuggestionKind.backgroundDetail,
       ),
     ),
     _QualityItem(
       weight: 8,
       isComplete: hasLifestyleFact,
       suggestion: const ProfileQualitySuggestion(
-        title: 'Add one lifestyle detail',
-        detail: 'Small details make the profile feel less generic.',
+        ProfileQualitySuggestionKind.lifestyleDetail,
       ),
     ),
   ];

@@ -63,11 +63,7 @@ Widget _sheet(BuildContext context) {
         Text('Tonight in Bandra.', style: CatchTextStyles.headline(context)),
         Text(
           'Sundowner Run Club',
-          style: CatchTextStyles.clubDisplay(
-            context,
-            size: 28,
-            fontStyle: FontStyle.italic,
-          ),
+          style: CatchTextStyles.clubDisplay(context, size: 28),
         ),
         Text(
           'Long table, short questions',
@@ -80,7 +76,7 @@ Widget _sheet(BuildContext context) {
           style: CatchTextStyles.bodyL(context),
         ),
         Text(
-          'Editorial prose, set in Archivo for bios and reading copy.',
+          'Readable prose, set in the platform font for bios and details.',
           style: CatchTextStyles.proseL(context),
         ),
         const SizedBox(height: CatchSpacing.s2),

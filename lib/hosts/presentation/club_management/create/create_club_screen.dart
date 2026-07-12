@@ -35,6 +35,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -176,14 +177,28 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   List<CatchFormStepSpec> get _activeSteps {
     final uid = ref.read(uidProvider).asData?.value;
     if (_isMediaOnlyForUid(uid)) {
-      return [CatchFormStepSpec(title: 'Club photos', formKey: _basicsFormKey)];
+      return [
+        CatchFormStepSpec(
+          title: context.l10n.hostsCreateClubScreenTitleClubPhotos,
+          formKey: _basicsFormKey,
+        ),
+      ];
     }
     return [
-      CatchFormStepSpec(title: 'Club basics', formKey: _basicsFormKey),
-      CatchFormStepSpec(title: 'Club details', formKey: _detailsFormKey),
-      CatchFormStepSpec(title: 'Host defaults', formKey: _defaultsFormKey),
       CatchFormStepSpec(
-        title: 'Event success defaults',
+        title: context.l10n.hostsCreateClubScreenTitleClubBasics,
+        formKey: _basicsFormKey,
+      ),
+      CatchFormStepSpec(
+        title: context.l10n.hostsCreateClubScreenTitleClubDetails,
+        formKey: _detailsFormKey,
+      ),
+      CatchFormStepSpec(
+        title: context.l10n.hostsCreateClubScreenTitleHostDefaults,
+        formKey: _defaultsFormKey,
+      ),
+      CatchFormStepSpec(
+        title: context.l10n.hostsCreateClubScreenTitleEventSuccessDefaults,
         formKey: _eventSuccessFormKey,
       ),
     ];
@@ -197,7 +212,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   @override
   void initState() {
     super.initState();
-    _currentStep = widget.initialStep.clamp(0, _activeSteps.length - 1).toInt();
+    final uid = ref.read(uidProvider).asData?.value;
+    final stepCount = _isMediaOnlyForUid(uid) ? 1 : 4;
+    _currentStep = widget.initialStep.clamp(0, stepCount - 1).toInt();
     _pageController = PageController(initialPage: _currentStep);
     _seedInitialMedia();
 
@@ -266,14 +283,19 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         _restoredDraft = true;
       });
 
-      showCatchSnackBar(context, 'Restored your club draft');
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsCreateClubScreenVisiblecopyRestoredYourClubDraft,
+      );
     } catch (error, stackTrace) {
       ref
           .read(errorLoggerProvider)
           .logError(
             error,
             stackTrace,
-            reason: 'CreateClubScreen._restoreSavedDraft failed',
+            reason: context
+                .l10n
+                .hostsCreateClubScreenVisiblecopyCreateclubscreenRestoresaveddraftFailed,
           );
       return;
     }
@@ -367,7 +389,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       builder: (context) {
         final maxHeight = MediaQuery.sizeOf(context).height * 0.6;
         return CatchBottomSheetScaffold(
-          title: 'City',
+          title: context.l10n.hostsCreateClubScreenTitleCity,
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: maxHeight),
             child: SingleChildScrollView(
@@ -527,7 +549,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
 
     showCatchSnackBar(
       context,
-      _restoredDraft ? 'Draft updated' : 'Draft saved',
+      _restoredDraft
+          ? context.l10n.hostsCreateClubScreenVisiblecopyDraftUpdated
+          : context.l10n.hostsCreateClubScreenVisiblecopyDraftSaved,
     );
     _restoredDraft = true;
   }
@@ -577,7 +601,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                 .logError(
                   error,
                   stackTrace,
-                  reason: 'CreateClubScreen._submit failed',
+                  reason: context
+                      .l10n
+                      .hostsCreateClubScreenVisiblecopyCreateclubscreenSubmitFailed,
                 );
           }),
     );
@@ -617,9 +643,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       CreateClubDraftController.loadDraftMutation,
     );
     final mutationError = submitMutation.hasError
-        ? mutationErrorMessage(submitMutation)
+        ? mutationErrorMessage(submitMutation, l10n: context.l10n)
         : saveDraftMutation.hasError
-        ? mutationErrorMessage(saveDraftMutation)
+        ? mutationErrorMessage(saveDraftMutation, l10n: context.l10n)
         : null;
     final draftLoadError = loadDraftMutation.hasError
         ? (loadDraftMutation as MutationError).error
@@ -854,7 +880,7 @@ class HostClubEditScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: t.bg,
       appBar: CatchTopBar(
-        title: 'Edit club',
+        title: context.l10n.hostsCreateClubScreenTitleEditClub,
         leadingType: CatchTopBarLeading.back,
         onBack: () => onIntent(const HostClubCreateBackIntent()),
       ),
@@ -907,12 +933,15 @@ class HostClubEditScaffold extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         HostClubEditSection(
-                          label: 'Identity',
+                          label:
+                              context.l10n.hostsCreateClubScreenLabelIdentity,
                           child: CatchSection.contained(
                             hasError: editIdentityHasError,
                             children: [
                               CatchField.input(
-                                title: 'Club name',
+                                title: context
+                                    .l10n
+                                    .hostsCreateClubScreenTitleClubName,
                                 controller: nameController,
                                 onChanged: (value) => onIntent(
                                   HostClubCreateIdentityChangedIntent(value),
@@ -922,7 +951,9 @@ class HostClubEditScaffold extends StatelessWidget {
                                 textInputAction: TextInputAction.next,
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter a club name';
+                                    return context
+                                        .l10n
+                                        .hostsCreateClubScreenBodyPleaseEnterAClub;
                                   }
                                   return null;
                                 },
@@ -934,24 +965,32 @@ class HostClubEditScaffold extends StatelessWidget {
                                 onPickCity: onPickCity,
                               ),
                               CatchField.input(
-                                title: 'Area / neighbourhood',
+                                title: context
+                                    .l10n
+                                    .hostsCreateClubScreenTitleAreaNeighbourhood,
                                 controller: areaController,
                                 onChanged: (value) => onIntent(
                                   HostClubCreateIdentityChangedIntent(value),
                                 ),
                                 icon: CatchIcons.locationOnOutlined,
-                                placeholder: 'e.g. Bandra, Koramangala',
+                                placeholder: context
+                                    .l10n
+                                    .hostsCreateClubScreenPlaceholderEGBandraKoramangala,
                                 textCapitalization: TextCapitalization.words,
                                 textInputAction: TextInputAction.next,
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter an area';
+                                    return context
+                                        .l10n
+                                        .hostsCreateClubScreenBodyPleaseEnterAnArea;
                                   }
                                   return null;
                                 },
                               ),
                               CatchField.input(
-                                title: 'Description',
+                                title: context
+                                    .l10n
+                                    .hostsCreateClubScreenTitleDescription,
                                 controller: descriptionController,
                                 onChanged: (value) => onIntent(
                                   HostClubCreateIdentityChangedIntent(value),
@@ -964,7 +1003,9 @@ class HostClubEditScaffold extends StatelessWidget {
                                 textInputAction: TextInputAction.newline,
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Please add a description';
+                                    return context
+                                        .l10n
+                                        .hostsCreateClubScreenBodyPleaseAddADescription;
                                   }
                                   return null;
                                 },
@@ -973,25 +1014,31 @@ class HostClubEditScaffold extends StatelessWidget {
                           ),
                         ),
                         HostClubEditSection(
-                          label: 'Contact',
+                          label: context.l10n.hostsCreateClubScreenLabelContact,
                           child: CatchSection.contained(
                             children: [
                               CatchField.input(
-                                title: 'Instagram',
+                                title: context
+                                    .l10n
+                                    .hostsCreateClubScreenTitleInstagram,
                                 controller: instagramController,
                                 icon: CatchIcons.alternateEmailOutlined,
                                 leadingUnit: '@',
                                 textInputAction: TextInputAction.next,
                               ),
                               CatchField.input(
-                                title: 'Phone',
+                                title: context
+                                    .l10n
+                                    .hostsCreateClubScreenTitlePhone,
                                 controller: phoneController,
                                 icon: CatchIcons.phoneOutlined,
                                 keyboardType: TextInputType.phone,
                                 textInputAction: TextInputAction.next,
                               ),
                               CatchField.input(
-                                title: 'Email',
+                                title: context
+                                    .l10n
+                                    .hostsCreateClubScreenTitleEmail,
                                 controller: emailController,
                                 icon: CatchIcons.emailOutlined,
                                 keyboardType: TextInputType.emailAddress,
@@ -1004,8 +1051,10 @@ class HostClubEditScaffold extends StatelessWidget {
                     ),
                   ),
                   HostClubEditSection(
-                    label: 'Event defaults',
-                    subtitle: 'Prefill every new event this club creates.',
+                    label: context.l10n.hostsCreateClubScreenLabelEventDefaults,
+                    subtitle: context
+                        .l10n
+                        .hostsCreateClubScreenSubtitlePrefillEveryNewEvent,
                     child: Column(
                       children: [
                         ClubHostDefaultsStep(
@@ -1113,15 +1162,17 @@ class HostClubEditCityField extends StatelessWidget {
       validator: (_) {
         final raw = rawCityName;
         final hasCity = city != null || (raw != null && raw.isNotEmpty);
-        return hasCity ? null : 'Please select a city';
+        return hasCity
+            ? null
+            : context.l10n.hostsCreateClubScreenVisiblecopyPleaseSelectACity;
       },
       builder: (field) {
         final raw = rawCityName;
         final value = city?.label ?? (raw == null || raw.isEmpty ? '' : raw);
         return CatchField.nav(
-          title: 'City',
+          title: context.l10n.hostsCreateClubScreenTitleCity,
           body: value,
-          placeholder: 'Select city',
+          placeholder: context.l10n.hostsCreateClubScreenPlaceholderSelectCity,
           icon: CatchIcons.locationCityOutlined,
           showChevron: enabled,
           error: field.errorText,

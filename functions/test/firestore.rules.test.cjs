@@ -1069,6 +1069,8 @@ describe("firestore.rules", () => {
           platform: "ios",
           appVersion: "1.0.0",
           buildNumber: "42",
+          locale: "en-IN",
+          timeZone: "IST",
           updatedAt: serverTimestamp(),
         }),
       );

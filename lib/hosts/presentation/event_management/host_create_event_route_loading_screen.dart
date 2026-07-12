@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class HostCreateEventRouteLoadingScreen extends StatelessWidget {
@@ -17,8 +18,12 @@ class HostCreateEventRouteLoadingScreen extends StatelessWidget {
         child: Column(
           children: [
             CreateEventStepHeader(
-              title: 'Event basics',
-              clubName: 'Loading club',
+              title: context
+                  .l10n
+                  .hostsHostCreateEventRouteLoadingScreenTitleEventBasics,
+              clubName: context
+                  .l10n
+                  .hostsHostCreateEventRouteLoadingScreenBodyLoadingClub,
               currentStep: 0,
               totalSteps: 5,
               onBack: () => Navigator.of(context).maybePop(),

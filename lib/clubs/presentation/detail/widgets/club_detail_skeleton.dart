@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 
 /// Skeleton loading body for the club detail screen.
 class ClubDetailLoadingBody extends StatelessWidget {
@@ -17,7 +18,7 @@ class ClubDetailLoadingBody extends StatelessWidget {
 
     return ColoredBox(
       color: t.surface,
-      child: const CustomScrollView(
+      child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(child: ClubHeroLoadingSkeleton()),
           CatchDetailSliverSectionList(
@@ -28,20 +29,20 @@ class ClubDetailLoadingBody extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CatchSection.divided(
-                    title: 'About',
+                    title: context.l10n.clubsClubDetailSkeletonTitleAbout,
                     first: true,
                     child: ClubTextLoadingSkeleton(lines: 3),
                   ),
                   CatchSection.divided(
-                    title: 'What we do',
+                    title: context.l10n.clubsClubDetailSkeletonTitleWhatWeDo,
                     child: CatchSkeletonChips(height: CatchSpacing.s8),
                   ),
                   CatchSection.divided(
-                    title: 'Your hosts',
+                    title: context.l10n.clubsClubDetailSkeletonTitleYourHosts,
                     child: ClubHostLoadingSkeleton(),
                   ),
                   CatchSection.divided(
-                    title: 'Schedule',
+                    title: context.l10n.clubsClubDetailSkeletonTitleSchedule,
                     child: ClubScheduleLoadingSkeleton(),
                   ),
                 ],
