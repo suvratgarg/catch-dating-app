@@ -313,10 +313,10 @@
         {"kind": "doc", "ref": "docs/release_operations.md"},
         {
           "kind": "manual",
-          "ref": "App Store Connect TestFlight groups and legacy Xcode Cloud shutdown",
+          "ref": "App Store Connect TestFlight group assignment and install/launch proof",
           "owner": "docs/release_operations.md",
           "ticket": "testflight-console-evidence-required",
-          "guardrail": "Close APP-TARGET-IOS-GITHUB-CUTOVER-001 only after both GitHub uploads process, both legacy Xcode Cloud workflows are disabled, and group/install proof exists."
+          "guardrail": "Both GitHub uploads processed and both legacy workflows are disabled; close APP-TARGET-IOS-GITHUB-CUTOVER-001 only after intended group assignment and install/launch proof exists."
         },
         {
           "kind": "manual",
@@ -337,8 +337,9 @@
       "notes": [
         "GitHub Actions is canonical for both roles and both mobile platforms; public store promotion remains separate.",
         "Mobile Internal Release preflights an 18-digit monotonic iOS candidate against App Store Connect and reserves two Android retry digits, then writes identity and processing receipts.",
+        "Mobile Internal Release run 29168074271 processed Consumer and Host build 202607110000000301 as VALID; retirement run 29168662623 verified those receipts and disabled both app-scoped Default workflows.",
         "Apple Developer App ID Catch Host/com.catchdates.host and App Store Connect app id 6778927317 were created on 2026-06-10; SKU is catch-host-ios.",
-        "Legacy Catch | Default and Runner | Default Xcode Cloud workflows must be disabled after GitHub cutover proof.",
+        "Legacy Catch | Default and Runner | Default Xcode Cloud workflows are disabled and retained only as rollback/audit surfaces.",
         "Android Publisher API and the dedicated github-actions-play-publisher OIDC identity are ready with zero project roles; Play upload remains disabled until APP-TARGET-ANDROID-PLAY-001 closes app-record, app-scoped permission, App Signing, tester, and install proof.",
         "App Store Connect displays an updated Apple Developer Program License Agreement notice that the Account Holder should accept before treating host uploads/submissions as release-ready.",
         "App Store review metadata and TestFlight group membership remain console-owned."

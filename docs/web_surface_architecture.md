@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.132
-updated: 2026-07-03
+version: 0.7.133
+updated: 2026-07-12
 owner: web_platform
 status: active
 ---
@@ -128,25 +128,25 @@ instead of creating a separate website inventory.
 - `admin`: builds `admin/` and deploys `admin/dist` with `X-Robots-Tag:
   noindex, nofollow`.
 
-The production `.firebaserc` currently binds `marketing` to the existing default
-Hosting site, `catch-dating-app-64e51`. Before deploying the `app` or `admin`
-targets, create or choose actual Firebase Hosting site IDs and bind them:
+The production `.firebaserc` binds each target to a distinct checked Hosting
+site:
 
-```sh
-firebase target:apply hosting marketing <marketing-site-id> --project <project-id>
-firebase target:apply hosting app <app-site-id> --project <project-id>
-firebase target:apply hosting admin <admin-site-id> --project <project-id>
-```
+- `marketing` -> `catch-dating-app-64e51`
+- `app` -> `catchdates-app`
+- `admin` -> `catchdates-admin`
 
-Then attach custom domains in Firebase Hosting:
+The admin build is deployed at `https://catchdates-admin.web.app`. On
+2026-07-12, Cloudflare began serving the Firebase-required DNS-only CNAME for
+`admin.catchdates.com` plus its ACME TXT proof. Firebase Hosting detected the
+records and began ownership/certificate reconciliation. Do not call the custom
+domain live until Firebase reports active ownership and certificate state and a
+normal HTTPS request succeeds.
+
+Custom-domain ownership remains:
 
 - `catchdates.com` and `www.catchdates.com` to the marketing site.
 - `app.catchdates.com` to the app site.
 - `admin.catchdates.com` to the admin site.
-
-The existing default Hosting site can remain the marketing site if it is already
-bound to `catchdates.com`; the app and admin surfaces should still be separate
-Hosting sites.
 
 ## Marketing CI/CD
 

@@ -393,7 +393,9 @@
         "appStoreConnectAppId": "6765646860",
         "googlePlayPackageName": "com.catchdates.app",
         "legacyXcodeCloudWorkflow": "Default",
-        "testFlightEvidence": "github-cutover-pending",
+        "legacyXcodeCloudState": "disabled",
+        "legacyXcodeCloudRetirementRunId": "29168662623",
+        "testFlightEvidence": "github-valid-run-29168074271-build-202607110000000301-awaiting-group-install",
         "playInternalEvidence": "gcp-publisher-ready-play-console-blocked"
       }
     },
@@ -453,7 +455,9 @@
         "appStoreConnectAppId": "6778927317",
         "googlePlayPackageName": "com.catchdates.host",
         "legacyXcodeCloudWorkflow": "Default",
-        "testFlightEvidence": "github-cutover-pending",
+        "legacyXcodeCloudState": "disabled",
+        "legacyXcodeCloudRetirementRunId": "29168662623",
+        "testFlightEvidence": "github-valid-run-29168074271-build-202607110000000301-awaiting-group-install",
         "playInternalEvidence": "gcp-publisher-ready-play-console-blocked"
       }
     }
@@ -462,21 +466,19 @@
     {
       "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
       "status": "blocked_external",
-      "reason": "GitHub Actions is the canonical iOS owner, but cutover remains externally unproven until both role uploads process and both legacy Xcode Cloud workflows are disabled.",
+      "reason": "GitHub Actions is the canonical iOS owner, both role uploads processed, and both legacy Xcode Cloud workflows are disabled. Closure remains externally blocked only on intended TestFlight group assignment plus install and launch proof.",
       "externalPrerequisites": [
-        "process a GitHub-uploaded Consumer TestFlight build",
-        "process a GitHub-uploaded Host TestFlight build",
-        "disable the app-scoped Consumer and Host workflows whose exact App Store Connect API name is Default",
-        "select and record the intended Consumer and Host internal TestFlight groups"
+        "select and record the intended Consumer and Host internal TestFlight groups",
+        "assign the GitHub-processed Consumer and Host builds to those groups",
+        "install and launch both GitHub-owned builds with role-specific runtime smoke proof"
       ],
       "githubBuildNumberNamespace": "<UTC YYYYMMDD><8-digit GitHub run><2-digit attempt>",
       "removalProof": [
-        "consumer-prod/Release-prod archive and processed build",
-        "host-prod/Release-host-prod archive",
-        "com.catchdates.host processed build",
-        "processing receipts bound to one Mobile Internal Release run",
-        "both legacy Xcode Cloud workflows disabled",
-        "tester-group assignments"
+        "Mobile Internal Release run 29168074271: Consumer and Host build 202607110000000301 processed VALID",
+        "processing receipts bound to Mobile Internal Release run 29168074271",
+        "retirement run 29168662623: both app-scoped Default workflows disabled",
+        "tester-group assignments",
+        "Consumer and Host install/launch smoke proof"
       ]
     },
     {
