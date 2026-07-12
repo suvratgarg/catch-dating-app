@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-10T20:20:33.719Z",
+  "generatedAt": "2026-07-12T18:30:00.131Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 862,
-    "components": 828,
-    "stateCards": 1746,
+    "useCases": 859,
+    "components": 825,
+    "stateCards": 1739,
     "reviewCandidates": 39,
     "oversizedUseCases": 44,
     "multiUseCaseComponents": 33
@@ -9151,12 +9151,12 @@
         "[Core primitives]/Selection"
       ],
       "labels": [
-        "active",
-        "activity-tinted",
-        "default",
-        "disabled",
+        "activity emphasis",
         "removable",
-        "with-icon"
+        "selectable options",
+        "selectable states",
+        "tag",
+        "truncated"
       ],
       "review": {
         "needsReview": false,
@@ -9173,28 +9173,28 @@
           "stateCardCount": 6,
           "stateCards": [
             {
-              "label": "default",
-              "normalizedLabel": "default"
+              "label": "tag",
+              "normalizedLabel": "tag"
             },
             {
-              "label": "active",
-              "normalizedLabel": "active"
+              "label": "selectable states",
+              "normalizedLabel": "selectable states"
             },
             {
-              "label": "disabled",
-              "normalizedLabel": "disabled"
-            },
-            {
-              "label": "with-icon",
-              "normalizedLabel": "with icon"
+              "label": "selectable options",
+              "normalizedLabel": "selectable options"
             },
             {
               "label": "removable",
               "normalizedLabel": "removable"
             },
             {
-              "label": "activity-tinted",
-              "normalizedLabel": "activity tinted"
+              "label": "activity emphasis",
+              "normalizedLabel": "activity emphasis"
+            },
+            {
+              "label": "truncated",
+              "normalizedLabel": "truncated"
             }
           ]
         }
@@ -10255,58 +10255,6 @@
             {
               "label": "custom-size",
               "normalizedLabel": "custom size"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchActivityChip",
-      "useCaseCount": 1,
-      "stateCardCount": 5,
-      "paths": [
-        "[Core primitives]/Activity"
-      ],
-      "labels": [
-        "custom-label",
-        "primary",
-        "soft",
-        "tappable",
-        "truncated"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchActivityChipContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Activity",
-          "stateCardCount": 5,
-          "stateCards": [
-            {
-              "label": "soft",
-              "normalizedLabel": "soft"
-            },
-            {
-              "label": "primary",
-              "normalizedLabel": "primary"
-            },
-            {
-              "label": "tappable",
-              "normalizedLabel": "tappable"
-            },
-            {
-              "label": "custom-label",
-              "normalizedLabel": "custom label"
-            },
-            {
-              "label": "truncated",
-              "normalizedLabel": "truncated"
             }
           ]
         }
@@ -22585,38 +22533,6 @@
       ]
     },
     {
-      "component": "CatchChipRemoveButton",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core primitives]/Selection"
-      ],
-      "labels": [
-        "remove affordance"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchChipRemoveButtonContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Selection",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "remove affordance",
-              "normalizedLabel": "remove affordance"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchDaySectionHeader",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -23891,38 +23807,6 @@
             {
               "label": "plain / icon / truncated",
               "normalizedLabel": "plain icon truncated"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchSelectChip",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core catalog]/Selection"
-      ],
-      "labels": [
-        "resting / active / disabled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "catchSelectChipCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Selection",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "resting / active / disabled",
-              "normalizedLabel": "resting active disabled"
             }
           ]
         }

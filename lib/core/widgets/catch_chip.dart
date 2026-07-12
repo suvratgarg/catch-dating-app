@@ -144,6 +144,27 @@ class CatchChip extends StatefulWidget {
   final VoidCallback? _onRemove;
   final String? _semanticsLabel;
 
+  /// Visible label for tag, selectable, and removable chips, or the optional
+  /// label override for an activity chip.
+  String? get label => _label;
+
+  Widget? get leading => _leading;
+
+  /// Parent-owned selection state. This is meaningful only for
+  /// [CatchChip.selectable].
+  bool get selected => _selected;
+
+  bool get enabled => _enabled;
+  Color? get accent => _accent;
+  Color? get tintColor => _tintColor;
+  Color? get inkColor => _inkColor;
+  ActivityKind? get activityKind => _activityKind;
+  CatchChipEmphasis get emphasis => _emphasis;
+  ValueChanged<bool>? get onChanged => _onChanged;
+  VoidCallback? get onTap => _onTap;
+  VoidCallback? get onRemove => _onRemove;
+  String? get semanticsLabel => _semanticsLabel;
+
   @override
   State<CatchChip> createState() => _CatchChipState();
 }

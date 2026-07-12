@@ -28,15 +28,15 @@
           "symbol": "CatchSelectChip",
           "disposition": "unify",
           "target": "CatchChip.selectable",
-          "preview": "required",
-          "rationale": "Its solid inverse selected state is the quality reference; fold that behavior into the canonical chip contract without retaining persistent glow or selected scale."
+          "preview": "not-applicable",
+          "rationale": "Its pre-migration solid inverse selected state is the quality reference; that behavior now lives in the canonical chip contract without persistent glow or selected scale, and the retired public symbol no longer has an active preview."
         },
         {
           "symbol": "CatchActivityChip",
           "disposition": "unify",
           "target": "CatchChip.activity",
-          "preview": "required",
-          "rationale": "Preserve the typed activity pigment and glyph behavior as a semantic constructor instead of a parallel chip implementation."
+          "preview": "not-applicable",
+          "rationale": "Typed activity pigment and glyph behavior now live in the semantic activity constructor; the retired public symbol no longer has an active preview."
         }
       ]
     },

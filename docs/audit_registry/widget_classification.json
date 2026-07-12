@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 1,
-  "updated": "2026-07-10",
+  "updated": "2026-07-12",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,30 +10,30 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1118,
-    "widgetClasses": 1002,
+    "total": 1115,
+    "widgetClasses": 999,
     "stateClasses": 116,
-    "publicClasses": 997,
+    "publicClasses": 994,
     "privateClasses": 121,
     "byRole": {
-      "atom": 57,
-      "composition": 339,
+      "atom": 55,
+      "composition": 338,
       "feature-adapter": 319,
       "pattern": 16,
       "screen": 271,
       "widget-state": 116
     },
     "byDecision": {
-      "keep-canonical-contract": 172,
+      "keep-canonical-contract": 170,
       "keep-public-cataloged": 753,
       "keep-widget-state": 116,
       "review-catalog-coverage": 55,
-      "review-promote-or-consolidate": 17,
+      "review-promote-or-consolidate": 16,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
-      "cataloged": 707,
-      "contracted": 172,
+      "cataloged": 706,
+      "contracted": 170,
       "not-applicable": 116,
       "route-covered": 61,
       "uncataloged": 62
@@ -2263,29 +2263,6 @@
       "flags": []
     },
     {
-      "name": "CatchActivityChip",
-      "file": "lib/core/widgets/catch_activity_chip.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "atom",
-      "canonicalFamily": "catch.activity_chip",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.activity_chip",
-      "allowedDependencyLevel": "tokens-and-primitives",
-      "stateOwnership": "local-ui-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "internal-only",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "CatchActivityMapPin",
       "file": "lib/core/widgets/catch_activity_map_pin.dart",
       "classKind": "widget",
@@ -2889,39 +2866,39 @@
       "flags": []
     },
     {
+      "name": "_CatchChipState",
+      "file": "lib/core/widgets/catch_chip.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<CatchChip>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.catch_chip",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "CatchChip",
       "file": "lib/core/widgets/catch_chip.dart",
       "classKind": "widget",
-      "baseClass": "StatelessWidget",
+      "baseClass": "StatefulWidget",
       "visibility": "public",
       "role": "atom",
       "canonicalFamily": "catch.chip",
       "publicApi": true,
       "catalogStatus": "contracted",
       "contractId": "catch.chip",
-      "allowedDependencyLevel": "tokens-and-primitives",
-      "stateOwnership": "local-ui-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "internal-only",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CatchChipRemoveButton",
-      "file": "lib/core/widgets/catch_chip.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "atom",
-      "canonicalFamily": "catch.chip",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.chip.remove_button",
       "allowedDependencyLevel": "tokens-and-primitives",
       "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
@@ -5012,26 +4989,22 @@
       "classKind": "widget",
       "baseClass": "StatefulWidget",
       "visibility": "public",
-      "role": "composition",
+      "role": "atom",
       "canonicalFamily": "catch.row_press_surface",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
+      "catalogStatus": "contracted",
+      "contractId": "catch.row_press_surface",
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
+      "layoutOwnership": "internal-only",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchScrim",
@@ -5467,52 +5440,6 @@
       "publicApi": true,
       "catalogStatus": "contracted",
       "contractId": "catch.segmented_control",
-      "allowedDependencyLevel": "tokens-and-primitives",
-      "stateOwnership": "local-ui-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "internal-only",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "_SelectChipState",
-      "file": "lib/core/widgets/catch_select_chip.dart",
-      "classKind": "widget-state",
-      "baseClass": "State<CatchSelectChip>",
-      "visibility": "private",
-      "role": "widget-state",
-      "canonicalFamily": "state.catch_select_chip",
-      "publicApi": false,
-      "catalogStatus": "not-applicable",
-      "contractId": null,
-      "allowedDependencyLevel": "owning-widget-state",
-      "stateOwnership": "owning-widget-state",
-      "asyncOwnership": "owning-widget-state",
-      "layoutOwnership": "owning-widget-state",
-      "actionOwnership": "owning-widget-state",
-      "decision": "keep-widget-state",
-      "remediationOptions": [
-        "moveStateToController",
-        "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CatchSelectChip",
-      "file": "lib/core/widgets/catch_select_chip.dart",
-      "classKind": "widget",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "role": "atom",
-      "canonicalFamily": "catch.chip",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.chip.select_chip",
       "allowedDependencyLevel": "tokens-and-primitives",
       "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
