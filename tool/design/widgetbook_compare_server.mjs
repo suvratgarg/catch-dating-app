@@ -1276,13 +1276,13 @@ function buildCandidates() {
     tags: ["selection"],
   });
   add({
-    id: "select-chip-vs-option-card",
-    title: "SelectChip vs OptionCard",
+    id: "chip-selectable-vs-option-card",
+    title: "CatchChip.selectable vs OptionCard",
     bucket: "unify",
     reason:
       "Both are selectable option affordances. Decide whether chip/card are variants of one option primitive or remain separate size/form-factor primitives.",
     recommended: "catch.option",
-    left: findFirst(byName, "CatchSelectChip"),
+    left: findFirst(byName, "CatchChip"),
     right: findFirst(byName, "CatchOptionCard"),
     priority: "P1",
     tags: ["selection"],
@@ -1998,7 +1998,7 @@ function buildCandidates() {
       tags: ["selection", "forms"],
       names: [
         "CatchOptionCard",
-        "CatchSelectChip",
+        "CatchChip",
         "IncludeMeToggle",
         "RecommendationSwitch",
         "CatchToggle",

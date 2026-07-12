@@ -177,8 +177,8 @@
   },
   "claude_widgetbook_inventory": {
     "path": "docs/design_parity/claude_widgetbook_inventory.md",
-    "version": "0.1.12",
-    "updated": "2026-07-07",
+    "version": "0.1.13",
+    "updated": "2026-07-12",
     "status": "active",
     "read_policy": "Use before Claude Design to Widgetbook sync work to compare exported Claude primitives, local Widgetbook entries, local contracts, token specimens, aliases, and missing inventory."
   },
@@ -240,8 +240,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.612",
-    "updated": "2026-07-11",
+    "version": "2.5.614",
+    "updated": "2026-07-12",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, reusable design-system roles, action-effect/state adapters, or provider-free section boundaries materially change."
   },

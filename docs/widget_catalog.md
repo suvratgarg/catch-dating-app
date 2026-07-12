@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.613
-updated: 2026-07-11
+version: 2.5.614
+updated: 2026-07-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,19 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.614
+
+- Reframed widget consolidation around durable visual-pattern families rather
+  than pair-first similarity. The family registry and compare tool now put
+  canonical, repair, unify, register, and discard judgments ahead of dedupe
+  evidence.
+- Consolidated quiet tags, parent-owned selectable choices, activity-typed
+  labels, and removable values behind `CatchChip.tag`,
+  `CatchChip.selectable`, `CatchChip.activity`, and `CatchChip.removable`.
+  Removed the weaker parallel `CatchSelectChip`, `CatchActivityChip`, and
+  public remove-button surfaces while preserving the stronger solid selected
+  fill, inverse ink, subtle selected shadow, and press-only scale.
 
 ### 2.5.613
 
@@ -6010,12 +6023,9 @@ Generated 2026-05-06.
 | `CatchFormFieldLabel` | `lib/core/widgets/catch_form_field_label.dart:5` | Styled form field label with an optional badge (e.g., "Optional"). The semantic label always includes optional status; the visible optional badge collapses at large text scale so narrow forms can ellipsize the label without overflow. |
 | `CatchFormFieldOptionalBadge` | `lib/core/widgets/catch_form_field_label.dart:54` | Direct optional-badge renderer used inside `CatchFormFieldLabel`. Keeps the default and error badge treatments reviewable without a private widget-returning helper. |
 | `CatchControlShell` | `lib/core/widgets/catch_control_shell.dart:50` | Shared single-line control shell for fields, select triggers, picker tiles, map pin tiles, and steppers. Owns the fill, border, focus ring, radius, and size metrics. Use `floating` for overlay chrome, `compact` for dense header/search controls, and `md` for regular form controls. Registered as formal component contract `catch.control_shell`; product UI should still prefer higher-level field, search, select, or stepper APIs. |
-| `CatchChip` | `lib/core/widgets/catch_chip.dart:7` | Handoff `Chip` fact/filter pill. Supports resting surface fill, selected transparent fill with a 1.5px ink rule, optional activity tint/ink colors, tap behavior, and an optional remove button. Used in `ChipField` and independently for static or interactive fact tags. |
-| `CatchChipRemoveButton` | `lib/core/widgets/catch_chip.dart:121` | Direct removable-chip X affordance rendered inside `CatchChip` when `onRemove` is supplied. Preserves the padded tap target and canonical close glyph without relying on a private widget-returning helper. |
-| `CatchSelectChip` | `lib/core/widgets/catch_select_chip.dart:8` | Handoff tactile selectable pill for questionnaire answers, mission choices, and choosy filters. Supports accent selected fill, active glow/scale, pressed scale-down, selected semantics, and tokenized pill surface chrome. |
+| `CatchChip` | `lib/core/widgets/catch_chip.dart:18` | Canonical compact-label primitive with explicit `tag`, `selectable`, `activity`, and `removable` constructors. Passive tags stay quiet; parent-owned choices use the stronger solid selected fill, inverse ink, subtle selected shadow, and press-only scale; activity chips resolve registry glyph and pigment; removable values expose one full-chip removal action. |
 | `CatchActivityArt` | `lib/core/widgets/catch_activity_art.dart:10` | Handoff generated activity-art surface. Resolves activity pigment and glyph through `ActivityPalette`, renders the gradient, screen-print texture, faint motif glyph, optional dim layer, radius/height controls, and overlay child slot. |
 | `CatchActivityInitialsPlaceholder` | `lib/core/widgets/catch_person_avatar.dart:396` | Direct activity-register avatar fallback for people shown in activity-grounded surfaces. Resolves activity pigment through `ActivityPalette`, renders mono initials over an activity gradient with screen-print texture, and supports dim veil states. |
-| `CatchActivityChip` | `lib/core/widgets/catch_activity_chip.dart:8` | Handoff activity tag for typed `ActivityKind` values. Resolves label/glyph/pigment through `ActivityPalette`, supports soft and primary registers, optional label override, and optional tap semantics. Use for registry-backed activity labels instead of feature-local colored chip helpers. |
 | `CatchActivityMapPin` | `lib/core/widgets/catch_activity_map_pin.dart:9` | Handoff map pin for activity-colored map marks. Resolves pigment through `ActivityPalette`, supports resting/selected sizing, uppercases optional selected flag text, and owns the subtle pin shadow used on map canvases. |
 | `CatchDistanceRing` | `lib/core/widgets/catch_distance_ring.dart:7` | Handoff map radius ring for static map canvases and previews. Renders a 170px default circular ink ring with 1.2px stroke and an optional tappable mono label pill anchored to the top edge. |
 | `CatchBadge` | `lib/core/widgets/catch_badge.dart:10` | Handoff `Badge` status pill used for spots-left indicators, distance/pace pills, event requirement chips, status labels, compact metadata, and action-column outcomes. Supports functional tones including `gold`, `size.action` 33px alignment, optional leading icons, optional uppercase labels, and activity-accent tinting. |
@@ -6620,7 +6630,7 @@ Generated 2026-05-06.
 | `ClubDirectorySkeletonCard` | `lib/explore/presentation/widgets/explore_list.dart:202` | Single Explore club-directory skeleton row. Mirrors `ClubIndexRow` with a white-mat thumbnail placeholder, title, badge, mono meta, and trailing action skeleton inside the shared `CatchSurface` row shell. |
 | `ExploreFilterRail` | `lib/explore/presentation/widgets/explore_filter_rail.dart:21` | Handoff Explore scope/filter rail. Renders all five model-backed time scopes (Tonight, Tomorrow, Weekend, This week, Anytime) through `CatchOptionGroupItem` in a horizontally safe lane, keeps the filter glyph pinned to the right with an active-count badge, and leaves selected time mutation at the rail boundary. Secondary distance/joined filters stay in a tokenized `CatchBottomSheetScaffold` with handoff `SelectChip` choices; no Following control is exposed until a distinct follow graph exists. The rail stays backed by `exploreFiltersProvider` and can receive transparent/opaque background colors from the floating map chrome. |
 | `ExploreFilterGlyphButton` | `lib/explore/presentation/widgets/explore_filter_rail.dart:126` | Pinned filter glyph button used inside `ExploreFilterRail`. Receives active-count copy, semantic label, and tap callback, then renders the tune icon with `CatchIconBadge` so filter state stays visible without giving the leaf provider access. |
-| `ExploreFilterSheet` | `lib/explore/presentation/widgets/explore_filter_rail.dart:171` | Public Explore filter-sheet content opened by `ExploreFilterRail` and rendered directly in Widgetbook. It keeps distance and joined-club controls on the same `exploreFiltersProvider` seam as the rail and uses `CatchBottomSheetScaffold`, `CatchButton`, and `CatchSelectChip` instead of a feature-local sheet shell. |
+| `ExploreFilterSheet` | `lib/explore/presentation/widgets/explore_filter_rail.dart:171` | Public Explore filter-sheet content opened by `ExploreFilterRail` and rendered directly in Widgetbook. It keeps distance and joined-club controls on the same `exploreFiltersProvider` seam as the rail and uses `CatchBottomSheetScaffold`, `CatchButton`, and `CatchChip.selectable` instead of a feature-local sheet shell. |
 | `ClubDetailDock` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:31` | Provider-free Club Detail bottom dock renderer. Delegates sticky footer chrome, top divider, padding, and bottom safe-area handling to `CatchBottomDock`, while owning guest/visitor/member/owner button composition, optional member count, notification bell, activity accent, and footnote copy. Deprecated `CatchClubDock` and `CatchClubDockState` typedefs remain for one release only. |
 | `ClubMembershipDock` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:270` | Consumer club detail membership dock. Calls `ClubMembershipController` for join/leave/notification actions and renders through the feature-owned `ClubDetailDock` renderer. |
 | `DockCount` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:191` | Compact numeric count block used inside the club dock. Renders the member/going number with the shared numeric text style and quiet uppercase label while the parent dock decides whether counts apply to the current membership state. |
@@ -6683,7 +6693,7 @@ Generated 2026-05-06.
 | `ClubContactAction` | `lib/clubs/presentation/detail/club_detail_screen_state.dart:14` | Typed contact-row intent emitted by `ClubDetailBodyState`. Encodes Instagram, phone, and email labels/URIs plus whether the link should open externally so `ClubDetailScreen` can own the platform link side effect. |
 | `ClubDetailBody` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:74` | Scrollable public club detail body on a white page surface: hero, optional next-run banner, stats apron, then detail-list `CatchSection`s for About, What we do, From the club, Your hosts, sliver-native Schedule, Reviews, and footer-position Get in touch. The body is a reusable renderer: it receives typed callbacks for share, schedule taps, host profile/message actions, and contact links instead of reading GoRouter or external link/share providers itself. For Host Club Detail parity, it passes the next event address into `ClubHeroAppBar`, renders activity-kind chips before generic tags, uses regular-weight About copy, splits additional generic tags onto a follow-up wrap row, keeps the current public-preview contract, and leaves operational Add event, Edit club, payouts, and host-team editing in Host Operations unless a future design contract moves them here. |
 | `ClubNextRunBanner` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:205` | Optional next-run banner shown near the top of Club Detail when the club has an upcoming event. Uses `CatchSurface` for the tappable tile shell, activity pigment, event date/time copy from `EventFormatters`, tap semantics, token typography, and a forward affordance while navigation remains an injected callback. |
-| `ClubActivitySection` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:275` | Activity/tag renderer for the Club Detail "What we do" section. Promotes supported activity kinds into `CatchActivityChip`s, keeps the primary activity highlighted, and renders remaining generic tags through neutral `ClubTagWrap` rows. |
+| `ClubActivitySection` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:275` | Activity/tag renderer for the Club Detail "What we do" section. Promotes supported activity kinds into `CatchChip.activity` labels, keeps the primary activity highlighted, and renders remaining generic tags through neutral `ClubTagWrap` rows. |
 | `ClubHostSection` | `lib/clubs/presentation/detail/widgets/club_host_section.dart:19` | Provider-free Club Detail hosts section. Receives the club, profile-view affordance, pending message flag, and precomputed messageable host ids from `ClubDetailBodyState`; resolves the club activity accent and shared established-date label before rendering owner/host rows without reading providers or deciding app-role policy. |
 | `ClubHostRow` | `lib/clubs/presentation/detail/widgets/club_host_section.dart:84` | Provider-free host row used by `ClubHostSection`. Renders avatar/name, an activity-accent owner seal, mono role/established meta, optional message icon, and optional chevron from explicit display inputs. |
 | `ClubContactSection` | `lib/clubs/presentation/detail/widgets/club_contact_section.dart:15` | Provider-free Club Detail contact section. Receives typed `ClubContactAction`s from `ClubDetailBodyState` and delegates link launching to an injected callback. |

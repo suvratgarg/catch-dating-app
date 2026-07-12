@@ -3091,6 +3091,33 @@
       "role": "finder"
     },
     {
+      "id": "design:widget-pattern-families",
+      "category": "design",
+      "path": "tool/design/check_widget_pattern_families.mjs",
+      "command": "node tool/design/check_widget_pattern_families.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "role": "gate",
+      "description": "Validates stable visual-pattern family decisions, explicit member dispositions, constructor-qualified convergence targets, and required Widgetbook or source evidence.",
+      "checks": [
+        "node --check tool/design/check_widget_pattern_families.mjs",
+        "node --test tool/design/check_widget_pattern_families.test.mjs",
+        "node tool/design/check_widget_pattern_families.mjs --check"
+      ],
+      "rules": [
+        "WIDGET-PATTERN-FAMILY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_widget_pattern_families.test.mjs",
+        "contains": [
+          "rejects an invalid disposition",
+          "requires a target for unify",
+          "rejects a required preview missing from generated Widgetbook directories"
+        ]
+      }
+    },
+    {
       "id": "design:new-widget-inventory",
       "category": "design",
       "path": "tool/design/check_new_widget_inventory.mjs",
@@ -3219,7 +3246,7 @@
       "command": "node tool/design/widgetbook_compare_server.mjs",
       "safety": "local-server",
       "status": "active",
-      "description": "Serves the interactive Widgetbook comparison and decision logging UI for dedupe-assisted consolidation review.",
+      "description": "Serves the interactive Widgetbook comparison and decision logging UI with pattern-family review first and dedupe evidence available as a secondary queue.",
       "checks": [
         "node --check tool/design/widgetbook_compare_server.mjs"
       ]

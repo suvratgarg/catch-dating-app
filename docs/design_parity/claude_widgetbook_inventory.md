@@ -1,7 +1,7 @@
 ---
 doc_id: claude_widgetbook_inventory
-version: 0.1.12
-updated: 2026-07-07
+version: 0.1.13
+updated: 2026-07-12
 owner: product_design_parity
 status: active
 ---
@@ -398,7 +398,7 @@ Activity:
 
 - `CatchActivityArt`
 - `CatchPersonAvatar` activity variant
-- `CatchActivityChip`
+- `CatchChip` activity states
 - `CatchActivityMapPin`
 - `CatchDistanceRing`
 
@@ -520,7 +520,7 @@ Selection:
 
 - `CatchChipField<Labelled>`
 - `CatchOptionGroup`
-- `CatchSelectChip`
+- `CatchChip` selectable states
 - `CatchToggle`
 
 Sheets and footers:
@@ -614,7 +614,7 @@ state-by-state review before we call it aligned.
 |---|---|---|
 | `ActivityArt` | `CatchActivityArt` | direct prefix |
 | `ActivityAvatar` | `CatchPersonAvatar` activity variant | direct prefix |
-| `ActivityChip` | `CatchActivityChip` | direct prefix |
+| `ActivityChip` | `CatchChip.activity` | consolidated constructor |
 | `AppBar` | `CatchTopBar` | alias |
 | `AvatarStack` | `CatchPersonAvatarStack` | alias |
 | `Badge` | `CatchBadge` | direct prefix |
@@ -644,7 +644,7 @@ state-by-state review before we call it aligned.
 | `Section` | `CatchSection` | alias |
 | `SectionLabel` | `CatchSectionLabel` | direct prefix |
 | `SegPill` | `CatchSegmentedControl` | alias |
-| `SelectChip` | `CatchSelectChip` | direct prefix |
+| `SelectChip` | `CatchChip.selectable` | consolidated constructor |
 | `Sheet` | `CatchBottomSheetScaffold` | alias |
 | `SoftBand` | `CatchSurface.tinted` | direct prefix |
 | `MetricStrip` | `CatchMetricStrip` | direct prefix |

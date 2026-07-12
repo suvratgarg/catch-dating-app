@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-10",
+  "updated": "2026-07-12",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -17802,7 +17802,7 @@
               "edited_preferences",
               "text_scale_2"
             ],
-            "migration": "FiltersContent exposes selected chip set and toggles through provider-free content state while preserving CatchSelectChip treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
+            "migration": "FiltersContent exposes selected chip set and toggles through provider-free content state while preserving the stronger CatchChip.selectable treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
             "previewIds": [
               "FiltersContent/Content states"
             ]

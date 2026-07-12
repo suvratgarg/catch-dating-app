@@ -63,7 +63,7 @@ PATTERN_MATCHERS = [
     (r'nav|tile|row.*display|label.*row', ['CatchField.nav', 'CatchField.read'], 'CatchField.nav/CatchField.read', 'medium'),
     (r'input|text.*(field|entry|edit)', ['TextField', 'TextEditingController'], 'CatchField.input', 'high'),
     (r'expand|collapse|disclosure|drawer', ['AnimatedSize', 'AnimatedSwitcher'], 'CatchField.expanding/CatchField.actions', 'high'),
-    (r'chip|select|choice|picker', ['CatchChip', 'Wrap', 'CatchSelectChip'], 'CatchChipField', 'medium'),
+    (r'chip|select|choice|picker', ['CatchChip', 'Wrap', 'CatchChip.selectable'], 'CatchChipField', 'medium'),
     (r'search.*morph|search.*animat', ['AnimationController', 'TweenAnimationBuilder'], 'CatchTopBar (search)', 'high'),
     (r'skeleton|loading.*placeholder|shimmer', ['CatchSkeleton'], 'CatchSkeleton', 'high'),
     (r'empty.*state|nothing.*found', ['CatchEmptyState'], 'CatchEmptyState', 'medium'),
