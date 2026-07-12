@@ -62,7 +62,7 @@ export function validatePatternFamilies(registry, evidence = {}) {
     requireNonemptyString(family, "targetContract", prefix, errors);
     requireNonemptyString(family, "qualityReference", prefix, errors);
     requireString(family, "decisionSource", prefix, errors);
-    requireString(family, "acceptedVisualDelta", prefix, errors);
+    requireStringArray(family, "acceptedVisualDelta", prefix, errors);
 
     if (typeof family.id === "string" && family.id.trim() !== "") {
       if (!kebabCase.test(family.id)) {
@@ -87,7 +87,10 @@ export function validatePatternFamilies(registry, evidence = {}) {
       if (!isNonemptyString(family.decisionSource)) {
         errors.push(`${prefix}.decisionSource is required when status is '${family.status}'`);
       }
-      if (!isNonemptyString(family.acceptedVisualDelta)) {
+      if (
+        !Array.isArray(family.acceptedVisualDelta) ||
+        family.acceptedVisualDelta.length === 0
+      ) {
         errors.push(
           `${prefix}.acceptedVisualDelta is required when status is '${family.status}'`,
         );
@@ -161,9 +164,11 @@ export function validatePatternFamilies(registry, evidence = {}) {
       if (
         targetDispositions.has(member.disposition) &&
         isNonemptyString(member.target) &&
-        !memberSymbols.has(member.target)
+        !targetNamesFamilyMember(member.target, memberSymbols)
       ) {
-        errors.push(`${memberPrefix}.target '${member.target}' must name a family member`);
+        errors.push(
+          `${memberPrefix}.target '${member.target}' must name a family member or one of its named constructors`,
+        );
       }
     }
   }
@@ -209,6 +214,15 @@ export function checkPatternFamilies({
   };
 }
 
+function targetNamesFamilyMember(target, memberSymbols) {
+  if (memberSymbols.has(target)) return true;
+  const constructorSeparator = target.indexOf(".");
+  if (constructorSeparator <= 0 || constructorSeparator === target.length - 1) {
+    return false;
+  }
+  return memberSymbols.has(target.slice(0, constructorSeparator));
+}
+
 function validateTarget({member, memberPrefix, errors}) {
   const hasTarget = Object.hasOwn(member, "target");
   if (member.disposition === "unify") {
@@ -225,6 +239,18 @@ function validateTarget({member, memberPrefix, errors}) {
   }
   if (hasTarget) {
     errors.push(`${memberPrefix}.target is only allowed for 'repair' or 'unify'`);
+  }
+}
+
+function requireStringArray(value, key, prefix, errors) {
+  if (!Array.isArray(value[key])) {
+    errors.push(`${prefix}.${key} must be an array of nonempty strings`);
+    return;
+  }
+  for (const [index, item] of value[key].entries()) {
+    if (!isNonemptyString(item)) {
+      errors.push(`${prefix}.${key}[${index}] must be a nonempty string`);
+    }
   }
 }
 

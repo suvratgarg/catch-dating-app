@@ -26,7 +26,9 @@ function validRegistry() {
         targetContract: "CatchChip",
         qualityReference: "CatchChip",
         decisionSource: "widgetbook-compare:app-pill-chip-family",
-        acceptedVisualDelta: "Selected chips use the stronger inverse fill.",
+        acceptedVisualDelta: [
+          "Selected chips use the stronger inverse fill.",
+        ],
         members: [
           {
             symbol: "CatchChip",
@@ -37,14 +39,14 @@ function validRegistry() {
           {
             symbol: "LegacyChip",
             disposition: "unify",
-            target: "CatchChip",
+            target: "CatchChip.selectable",
             preview: "source-only",
             rationale: "Migrates to the stronger canonical chip contract.",
           },
           {
             symbol: "RepairChip",
             disposition: "repair",
-            target: "CatchChip",
+            target: "CatchChip.tag",
             preview: "source-only",
             rationale: "Keeps its semantic identity while adopting the target treatment.",
           },
@@ -197,12 +199,24 @@ test("requires qualityReference to name a member", (t) => {
 
 test("requires an accepted visual delta for approved families", (t) => {
   const errors = errorsFor(t, (registry) => {
-    registry.families[0].acceptedVisualDelta = "";
+    registry.families[0].acceptedVisualDelta = [];
   });
 
   assert.ok(
     errors.includes(
       "families[0].acceptedVisualDelta is required when status is 'approved'",
+    ),
+  );
+});
+
+test("requires accepted visual deltas to be nonempty strings", (t) => {
+  const errors = errorsFor(t, (registry) => {
+    registry.families[0].acceptedVisualDelta = [""];
+  });
+
+  assert.ok(
+    errors.includes(
+      "families[0].acceptedVisualDelta[0] must be a nonempty string",
     ),
   );
 });
@@ -257,6 +271,14 @@ test("allows target on repair but rejects it on other non-unify dispositions", (
       "families[0].members[0].target is only allowed for 'repair' or 'unify'",
     ),
   );
+});
+
+test("allows unify and repair targets to name canonical member constructors", (t) => {
+  const {root} = createFixture(t);
+
+  const result = checkPatternFamilies({repoRoot: root});
+
+  assert.deepEqual(result.errors, []);
 });
 
 test("CLI supports --check with custom --file and --repo-root", (t) => {
