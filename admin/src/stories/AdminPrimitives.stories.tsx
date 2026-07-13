@@ -15,8 +15,8 @@ import {
   Users,
 } from "lucide-react";
 import {
+  AdminAccountMenu,
   AdminAppShell,
-  AdminAuthStatus,
   AdminBrandBlock,
   AdminBrandCopy,
   AdminBrandMark,
@@ -44,7 +44,6 @@ import {
   AdminPanelActions,
   AdminRowTitle,
   AdminSidebar,
-  AdminSidebarFooter,
   AdminSignInActions,
   AdminSignInMeta,
   AdminSignInPanel,
@@ -303,13 +302,10 @@ export const AdminAppShellStory: Story = {
         <AdminNavList aria-label="Admin sections">
           <AdminNavButton icon={<Home size={16} />} label="Overview" selected />
         </AdminNavList>
-        <AdminSidebarFooter>
-          <AdminEnvironmentStatus environment="prod" mode="sample" />
-        </AdminSidebarFooter>
       </AdminSidebar>
       <AdminWorkspace>
         <AdminTopbar>
-          <AdminAuthStatus mode="sample" roles={[]} />
+          <AdminAccountMenu mode="sample" roles={[]} />
         </AdminTopbar>
         <PageHeader eyebrow="Preview" title="Registered app shell">
           Shared app chrome is configured from one primitive family.
@@ -468,24 +464,6 @@ export const AdminNavButtonStory: Story = {
   ),
 };
 
-export const AdminSidebarFooterStory: Story = {
-  name: "Sidebar footer",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_sidebar_footer",
-      states: ["environment", "auth"],
-    },
-  },
-  render: () => (
-    <AdminSidebar>
-      <AdminSidebarFooter>
-        <AdminEnvironmentStatus environment="prod" mode="sample" />
-        <AdminAuthStatus mode="sample" roles={[]} />
-      </AdminSidebarFooter>
-    </AdminSidebar>
-  ),
-};
-
 export const AdminWorkspaceStory: Story = {
   name: "Workspace",
   parameters: {
@@ -518,9 +496,14 @@ export const AdminTopbarStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminTopbar>
-        <AdminAuthStatus mode="live" roles={["admin", "growth"]} />
         <AdminTopbarActions onSubmit={(event) => event.preventDefault()}>
           <AdminButton icon={<RefreshCw size={16} />}>Refresh</AdminButton>
+          <AdminAccountMenu
+            mode="live"
+            onSignOut={() => undefined}
+            roles={["admin", "growth"]}
+            userLabel="admin@example.com"
+          />
         </AdminTopbarActions>
       </AdminTopbar>
     </AdminWorkspace>
@@ -668,19 +651,28 @@ export const AdminSignInActionsStory: Story = {
   ),
 };
 
-export const AdminAuthStatusStory: Story = {
-  name: "Auth status",
+export const AdminAccountMenuStory: Story = {
+  name: "Account menu",
   parameters: {
     catchComponent: {
-      id: "shared_admin_auth_status",
-      states: ["sample", "live", "no-roles"],
+      id: "shared_admin_account_menu",
+      states: ["open", "role-summary", "sign-out"],
     },
   },
   render: () => (
     <AdminWorkspace>
-      <AdminAuthStatus mode="sample" roles={[]} />
-      <AdminAuthStatus mode="live" roles={["admin", "events"]} />
-      <AdminAuthStatus mode="live" roles={[]} userLabel="Signed in as reviewer" />
+      <AdminTopbar>
+        <div />
+        <AdminTopbarActions onSubmit={(event) => event.preventDefault()}>
+          <AdminAccountMenu
+            defaultOpen
+            mode="live"
+            onSignOut={() => undefined}
+            roles={["admin"]}
+            userLabel="+91 91314 04263"
+          />
+        </AdminTopbarActions>
+      </AdminTopbar>
     </AdminWorkspace>
   ),
 };

@@ -1,6 +1,6 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 20,
+  "version": 21,
   "updated": "2026-07-13",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
@@ -624,25 +624,25 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_auth_status",
+      "id": "shared_admin_account_menu",
       "kind": "shared-primitive",
       "owner": "shared/ui",
       "source": "admin/src/shared/ui/AdminPrimitives.tsx",
-      "exportName": "AdminAuthStatus",
+      "exportName": "AdminAccountMenu",
       "css": [
         "admin/src/styles.css"
       ],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminAuthStatusStory",
+        "exportName": "AdminAccountMenuStory",
         "states": [
-          "sample",
-          "live",
-          "no-roles"
+          "open",
+          "role-summary",
+          "sign-out"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin shell disclosure keeps identity, role claims, and sign-out behind one keyboard-accessible account control."
     },
     {
       "id": "shared_admin_brand_block",
@@ -4045,26 +4045,6 @@
         "exportName": "AdminSidebarStory",
         "states": [
           "navigation"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_sidebar_footer",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives.tsx",
-      "exportName": "AdminSidebarFooter",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminSidebarFooterStory",
-        "states": [
-          "environment",
-          "auth"
         ]
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."

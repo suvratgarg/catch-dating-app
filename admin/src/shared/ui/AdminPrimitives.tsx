@@ -1,3 +1,4 @@
+import {useEffect, useId, useRef, useState} from "react";
 import type {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -10,7 +11,15 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import {CheckCircle2, FileWarning, Lock, RefreshCw} from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronDown,
+  FileWarning,
+  Lock,
+  LogOut,
+  RefreshCw,
+  UserRound,
+} from "lucide-react";
 
 type SelectOption = string | {label: ReactNode; value: string};
 
@@ -189,20 +198,6 @@ export function AdminNavList({
   );
 }
 
-export function AdminSidebarFooter({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("sidebar-footer", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function AdminWorkspace({
   children,
   className = "",
@@ -243,6 +238,135 @@ export function AdminTopbarActions({
       {children}
     </form>
   );
+}
+
+export function AdminAccountMenu({
+  defaultOpen = false,
+  isSigningOut = false,
+  mode,
+  onSignOut,
+  roles,
+  userLabel = "Signed in",
+}: {
+  defaultOpen?: boolean;
+  isSigningOut?: boolean;
+  mode: string;
+  onSignOut?: () => void;
+  roles: readonly string[];
+  userLabel?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelId = useId();
+  const primaryRole = roles[0] ? adminAccountRoleLabel(roles[0]) : "Account";
+  const accountMeta = mode === "sample" ?
+    "Sample mode" :
+    roles.length > 1 ? `${roles.length} roles` : "Live account";
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        !containerRef.current?.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    const closeOnEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      setIsOpen(false);
+      triggerRef.current?.focus();
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [isOpen]);
+
+  const handleSignOut = () => {
+    setIsOpen(false);
+    onSignOut?.();
+  };
+
+  return (
+    <div className="admin-account-menu" ref={containerRef}>
+      <button
+        aria-controls={panelId}
+        aria-expanded={isOpen}
+        aria-haspopup="dialog"
+        aria-label="Account menu"
+        className="admin-account-trigger"
+        onClick={() => setIsOpen((current) => !current)}
+        ref={triggerRef}
+        type="button"
+      >
+        <span aria-hidden="true" className="admin-account-avatar">
+          <UserRound size={15} strokeWidth={1.9} />
+        </span>
+        <span className="admin-account-trigger-copy">
+          <strong>{primaryRole}</strong>
+          <span>{accountMeta}</span>
+        </span>
+        <ChevronDown
+          aria-hidden="true"
+          className="admin-account-chevron"
+          size={15}
+          strokeWidth={1.9}
+        />
+      </button>
+      {isOpen ? (
+        <div
+          aria-label="Account details"
+          className="admin-account-panel"
+          id={panelId}
+          role="dialog"
+        >
+          <span className="admin-account-label">Signed in as</span>
+          <strong className="admin-account-identity" title={userLabel}>
+            {userLabel}
+          </strong>
+          <div aria-label="Admin roles" className="admin-account-roles">
+            {roles.length > 0 ? (
+              roles.map((role) => (
+                <span className="admin-account-role" key={role}>
+                  {adminAccountRoleLabel(role)}
+                </span>
+              ))
+            ) : (
+              <span className="admin-account-role muted">No admin roles</span>
+            )}
+          </div>
+          {onSignOut ? (
+            <button
+              className="admin-account-sign-out"
+              disabled={isSigningOut}
+              onClick={handleSignOut}
+              type="button"
+            >
+              <LogOut aria-hidden="true" size={16} strokeWidth={1.9} />
+              {isSigningOut ? "Signing out" : "Sign out"}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function adminAccountRoleLabel(role: string): string {
+  const words = role
+    .replace(/([a-z0-9])([A-Z])/gu, "$1 $2")
+    .replace(/[-_]+/gu, " ")
+    .trim()
+    .toLowerCase();
+  return words ? `${words[0]!.toUpperCase()}${words.slice(1)}` : "Account";
 }
 
 export function AdminSignInScreen({
@@ -1205,29 +1329,6 @@ export function AdminEnvironmentStatus({
   return (
     <span className="admin-env-status" title={title}>
       {environment} · {mode}
-    </span>
-  );
-}
-
-export function AdminAuthStatus({
-  mode,
-  roles,
-  userLabel = "Signed in",
-}: {
-  mode: "sample" | string;
-  roles: string[];
-  userLabel?: ReactNode;
-}) {
-  if (mode === "sample") {
-    return (
-      <span className="admin-auth-status sample">
-        Sample mode · auth bypassed
-      </span>
-    );
-  }
-  return (
-    <span className="admin-auth-status live">
-      {userLabel} · {roles.length > 0 ? roles.join(", ") : "no admin claim read yet"}
     </span>
   );
 }

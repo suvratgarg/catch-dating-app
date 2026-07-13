@@ -129,18 +129,6 @@ button {
   color: #ffffff;
 }
 
-.sidebar-footer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: auto;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  color: rgba(248, 250, 252, 0.66);
-  font-size: 12px;
-}
-
 .workspace {
   min-width: 0;
   padding: 24px;
@@ -176,6 +164,148 @@ button {
   justify-content: flex-end;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.admin-account-menu {
+  position: relative;
+}
+
+.admin-account-trigger {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 8px 3px 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.admin-account-trigger:hover,
+.admin-account-trigger[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--ink) 24%, var(--line));
+  background: var(--surface-muted);
+}
+
+.admin-account-trigger:focus-visible,
+.admin-account-sign-out:focus-visible {
+  outline: 2px solid #f05a3b;
+  outline-offset: 2px;
+}
+
+.admin-account-avatar {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  place-items: center;
+  border-radius: 7px;
+  background: #14161a;
+  color: #ffffff;
+}
+
+.admin-account-trigger-copy {
+  display: grid;
+  min-width: 72px;
+  gap: 1px;
+  text-align: left;
+}
+
+.admin-account-trigger-copy strong {
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.1;
+}
+
+.admin-account-trigger-copy span {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.1;
+}
+
+.admin-account-chevron {
+  color: var(--muted);
+  transition: transform 140ms ease;
+}
+
+.admin-account-trigger[aria-expanded="true"] .admin-account-chevron {
+  transform: rotate(180deg);
+}
+
+.admin-account-panel {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 8px);
+  right: 0;
+  display: grid;
+  width: min(300px, calc(100vw - 32px));
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 18px 45px rgba(20, 22, 26, 0.18);
+}
+
+.admin-account-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-account-identity {
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.admin-account-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-account-role {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.admin-account-role.muted {
+  background: var(--surface-muted);
+  color: var(--muted);
+}
+
+.admin-account-sign-out {
+  display: flex;
+  width: 100%;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  border: 1px solid color-mix(in srgb, #9d3328 28%, var(--line));
+  border-radius: 7px;
+  background: var(--surface);
+  color: #7a2a23;
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.admin-account-sign-out:hover:not(:disabled) {
+  background: var(--red-soft);
+}
+
+.admin-account-sign-out:disabled {
+  cursor: wait;
+  opacity: 0.58;
 }
 
 .search-control {
@@ -302,35 +432,6 @@ select {
   border-color: #9fd9bd;
   background: var(--green-soft);
   color: var(--green);
-}
-
-.admin-auth-status {
-  display: inline-flex;
-  min-height: 32px;
-  align-items: center;
-  max-width: 280px;
-  padding: 0 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 750;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.admin-auth-status.live {
-  border-color: #9fd9bd;
-  background: var(--green-soft);
-  color: var(--green);
-}
-
-.admin-auth-status.sample {
-  border-color: #e6c99a;
-  background: var(--orange-soft);
-  color: var(--orange);
 }
 
 .metric-grid {
@@ -2862,6 +2963,11 @@ th {
     justify-content: flex-start;
   }
 
+  .admin-account-panel {
+    right: auto;
+    left: 0;
+  }
+
   .search-control {
     min-width: min(100%, 280px);
   }
@@ -2902,6 +3008,16 @@ th {
   .search-control,
   .segmented {
     width: 100%;
+  }
+
+  .admin-account-trigger,
+  .admin-account-panel {
+    width: 100%;
+  }
+
+  .admin-account-panel {
+    right: auto;
+    left: 0;
   }
 
   .segmented button {

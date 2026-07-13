@@ -32,8 +32,8 @@ import {
 } from "lucide-react";
 import {getIdTokenResult, onAuthStateChanged, User} from "firebase/auth";
 import {
+  AdminAccountMenu,
   AdminAppShell,
-  AdminAuthStatus,
   AdminBrandBlock,
   AdminBrandCopy,
   AdminBrandMark,
@@ -48,7 +48,6 @@ import {
   AdminNavButton,
   AdminNavList,
   AdminSidebar,
-  AdminSidebarFooter,
   AdminSignInActions,
   AdminSignInMeta,
   AdminSignInPanel,
@@ -602,10 +601,6 @@ function AdminRouteApp() {
             );
           })}
         </AdminNavList>
-        <AdminSidebarFooter>
-          <Lock size={15} strokeWidth={1.8} />
-          <span>Admin claim required</span>
-        </AdminSidebarFooter>
       </AdminSidebar>
 
       <AdminWorkspace>
@@ -627,10 +622,16 @@ function AdminRouteApp() {
               environment={adminEnvironment}
               mode={mode}
             />
-            <AdminAuthStatus
+            <AdminAccountMenu
+              isSigningOut={isAuthActionPending}
               mode={mode}
+              onSignOut={mode === "live" ?
+                () => void handleSignOut() :
+                undefined}
               roles={adminRoles}
-              userLabel={user?.email ?? user?.uid ?? "Signed in"}
+              userLabel={
+                user?.phoneNumber ?? user?.email ?? user?.uid ?? "Signed in"
+              }
             />
             <SegmentedControl<AnalyticsRangePreset>
               ariaLabel="Time range"
@@ -649,14 +650,6 @@ function AdminRouteApp() {
             >
               <AdminLoadingIcon active={overviewController.isLoading} />
             </AdminIconButton>
-            {mode === "live" && (
-              <AdminButton
-                disabled={isAuthActionPending}
-                onClick={() => void handleSignOut()}
-              >
-                {isAuthActionPending ? "Signing out" : "Sign out"}
-              </AdminButton>
-            )}
           </AdminTopbarActions>
         </AdminTopbar>
 
