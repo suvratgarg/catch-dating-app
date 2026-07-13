@@ -42,6 +42,7 @@ const FAMILY_STATUSES = new Set([
   "implemented",
   "blocked",
 ]);
+const DECIDED_FAMILY_STATUSES = new Set(["approved", "implemented"]);
 const FAMILY_PREVIEW_MODES = new Set([
   "required",
   "source-only",
@@ -341,6 +342,7 @@ function loadPatternFamilyRegistry() {
     if (!Array.isArray(family.acceptedVisualDelta)) {
       throw new Error(`${family.id}.acceptedVisualDelta must be an array.`);
     }
+    validateRegistryReviewQuestions(family);
     if (!Array.isArray(family.members) || family.members.length === 0) {
       throw new Error(`${family.id}.members must be a non-empty array.`);
     }
@@ -390,6 +392,62 @@ function requireRegistryEnum(value, allowed, field) {
     throw new Error(
       `Pattern family ${field} must be one of: ${[...allowed].join(", ")}.`,
     );
+  }
+}
+
+function validateRegistryReviewQuestions(family) {
+  if (!Array.isArray(family.reviewQuestions)) {
+    if (family.status === "review") {
+      throw new Error(
+        `Pattern family ${family.id}.reviewQuestions must be a non-empty array while in review.`,
+      );
+    }
+    return;
+  }
+  if (family.status === "review" && family.reviewQuestions.length === 0) {
+    throw new Error(
+      `Pattern family ${family.id}.reviewQuestions must be a non-empty array while in review.`,
+    );
+  }
+  const ids = new Set();
+  for (const question of family.reviewQuestions) {
+    requireRegistryString(question?.id, `${family.id}.reviewQuestion.id`);
+    requireRegistryString(question?.prompt, `${family.id}.${question?.id}.prompt`);
+    requireRegistryString(
+      question?.recommendation,
+      `${family.id}.${question?.id}.recommendation`,
+    );
+    if (ids.has(question.id)) {
+      throw new Error(
+        `Duplicate review question ${question.id} in pattern family ${family.id}.`,
+      );
+    }
+    ids.add(question.id);
+    if (!Array.isArray(question.options) || question.options.length < 2) {
+      throw new Error(
+        `Pattern family ${family.id}.${question.id}.options must contain at least two choices.`,
+      );
+    }
+    for (const option of question.options) {
+      requireRegistryString(option, `${family.id}.${question.id}.option`);
+    }
+    const hasSelectedOption = Object.hasOwn(question, "selectedOption");
+    if (DECIDED_FAMILY_STATUSES.has(family.status) && !hasSelectedOption) {
+      throw new Error(
+        `Pattern family ${family.id}.${question.id}.selectedOption is required while ${family.status}.`,
+      );
+    }
+    if (hasSelectedOption) {
+      requireRegistryString(
+        question.selectedOption,
+        `${family.id}.${question.id}.selectedOption`,
+      );
+      if (!question.options.includes(question.selectedOption)) {
+        throw new Error(
+          `Pattern family ${family.id}.${question.id}.selectedOption must match a declared choice.`,
+        );
+      }
+    }
   }
 }
 
@@ -2340,11 +2398,12 @@ function withReviewState(item, decisionsById, resolvedIds) {
   );
   const implemented =
     decision?.status === "implemented" || decision?.implemented === true;
+  const registryImplemented = item.patternFamily?.status === "implemented";
   return {
     ...item,
     reviewState: {
       decided: hasDecision,
-      resolved: resolvedIds.has(item.id) || implemented,
+      resolved: resolvedIds.has(item.id) || implemented || registryImplemented,
       status: decision?.status ?? "",
       decision: decision?.decision ?? "",
       note: decision?.note ?? "",
@@ -2912,6 +2971,13 @@ function appHtml() {
       gap: 8px;
       min-width: min(100%, 528px);
     }
+    .render-grid.pattern-family-lineup {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 420px;
+      width: max-content;
+      min-width: 100%;
+    }
     .render-card, .notes-card, .code-card, .register-card, .related-card {
       border: 1px solid var(--line);
       background: var(--paper);
@@ -3041,6 +3107,31 @@ function appHtml() {
       color: var(--muted);
     }
     .why-list li + li { margin-top: 4px; }
+    .review-question-grid {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .review-question {
+      border: 1px solid var(--line);
+      background: #fffdf8;
+      padding: 10px;
+    }
+    .review-question p {
+      margin-top: 6px;
+      color: var(--ink);
+    }
+    .review-recommendation {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .review-question-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+    }
     .action-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -3311,6 +3402,7 @@ function appHtml() {
         candidate.patternFamily?.targetContract,
         candidate.patternFamily?.qualityReference,
         candidate.patternFamily?.decisionSource,
+        candidate.patternFamily?.reviewQuestions?.map((question) => [question.id, question.prompt, question.recommendation, question.selectedOption, question.options?.join(" ")].join(" ")).join(" "),
         candidate.patternFamily?.members?.map((member) => [member.symbol, member.disposition, member.target, member.preview, member.rationale].join(" ")).join(" "),
         ...(candidate.tags || []),
         ...(candidate.previewPanes || []).map((pane) => pane.component),
@@ -3322,13 +3414,36 @@ function appHtml() {
       return data.candidates;
     }
 
+    function syncSelectionFromHash() {
+      const nextId =
+        decodeURIComponent(window.location.hash.replace(/^#/u, "")) || null;
+      const candidate = allCandidates().find((item) => item.id === nextId);
+      if (!candidate) return false;
+      selectedId = candidate.id;
+      selectedDecision = "";
+      selectedCodeFile = "";
+      const hasBucketOption = [...bucket.options].some(
+        (option) => option.value === candidate.bucket,
+      );
+      bucket.value = hasBucketOption ? candidate.bucket : "";
+      if (candidate.reviewState?.resolved) {
+        showResolved.checked = true;
+      } else if (candidate.reviewState?.decided) {
+        showDecided.checked = true;
+      }
+      return true;
+    }
+
     function filteredCandidates() {
       const q = search.value.trim().toLowerCase();
       return allCandidates().filter((candidate) => {
         if (bucket.value && candidate.bucket !== bucket.value) return false;
         if (priority.value && candidate.priority !== priority.value) return false;
-        if (!showDecided.checked && candidate.reviewState?.decided) return false;
-        if (!showResolved.checked && candidate.reviewState?.resolved) return false;
+        if (candidate.reviewState?.resolved) {
+          if (!showResolved.checked) return false;
+        } else if (!showDecided.checked && candidate.reviewState?.decided) {
+          return false;
+        }
         if (q && !candidateText(candidate).includes(q)) return false;
         return true;
       });
@@ -3482,8 +3597,11 @@ function appHtml() {
             { label: "Left", pane: candidate.left },
             { label: "Right", pane: candidate.right },
           ];
+      const gridClass = candidate.patternFamily
+        ? "render-grid pattern-family-lineup"
+        : "render-grid";
       return renderReviewContextControls(candidate) +
-        '<div class="preview-scroll"><div class="render-grid">' +
+        '<div class="preview-scroll"><div class="' + gridClass + '">' +
         panes.map(({ label, pane }) => renderPane(label, pane)).join("") +
         '</div></div>';
     }
@@ -3679,6 +3797,21 @@ function appHtml() {
         '<td>' + esc(member.preview) + '</td>' +
         '<td>' + esc(member.rationale) + '</td></tr>'
       ).join("");
+      const questions = (family.reviewQuestions || []).map((question) =>
+        '<article class="review-question">' +
+        '<div><strong>' + esc(question.id) + '</strong></div>' +
+        '<p>' + esc(question.prompt) + '</p>' +
+        '<div class="review-recommendation"><strong>' +
+        (question.selectedOption ? 'Approved' : 'Recommended') + '</strong> ' +
+        esc(question.selectedOption || question.recommendation) + '</div>' +
+        '<div class="review-question-options">' +
+        question.options.map((option) => '<span class="pill">' +
+          (option === question.selectedOption ? '✓ ' : '') + esc(option) + '</span>').join("") +
+        '</div></article>'
+      ).join("");
+      const questionHeading = (family.reviewQuestions || []).some(
+        (question) => question.selectedOption,
+      ) ? 'Owner decisions' : 'Owner questions';
       return '<section class="evidence-card">' +
         '<div class="evidence-top"><div><strong>Pattern family contract</strong><p>' +
         esc(family.id) + ' · ' + esc(family.status) + ' · ' + esc(family.decisionSource) +
@@ -3689,6 +3822,7 @@ function appHtml() {
         '<div class="evidence-metric"><strong>' + esc(family.members?.length || 0) + '</strong><span>review members</span></div>' +
         '</div>' +
         (deltas ? '<strong>Accepted visual delta</strong><ul class="why-list">' + deltas + '</ul>' : '<p class="context-note">No visual delta is accepted while this family remains in review.</p>') +
+        (questions ? '<strong>' + questionHeading + '</strong><div class="review-question-grid">' + questions + '</div>' : '') +
         '<table class="member-table"><thead><tr><th>Widget</th><th>disposition</th><th>target</th><th>preview</th><th>rationale</th></tr></thead><tbody>' +
         members +
         '</tbody></table><p class="context-note">Member dispositions are read-only here and come from <code>pattern_families.json</code>.</p></section>';
@@ -3825,14 +3959,7 @@ function appHtml() {
     async function boot() {
       const response = await fetch("/api/data");
       data = await response.json();
-      selectedId = decodeURIComponent(window.location.hash.replace(/^#/u, "")) || null;
-      const deepLinkedCandidate = data.candidates.find((candidate) => candidate.id === selectedId);
-      if (deepLinkedCandidate && deepLinkedCandidate.bucket !== "pattern-family") {
-        const hasBucketOption = [...bucket.options].some(
-          (option) => option.value === deepLinkedCandidate.bucket,
-        );
-        bucket.value = hasBucketOption ? deepLinkedCandidate.bucket : "";
-      }
+      syncSelectionFromHash();
       renderStats();
       render();
       search.addEventListener("input", render);
@@ -3840,6 +3967,11 @@ function appHtml() {
       priority.addEventListener("change", render);
       showDecided.addEventListener("change", render);
       showResolved.addEventListener("change", render);
+      window.addEventListener("hashchange", () => {
+        if (!syncSelectionFromHash()) return;
+        render();
+        document.querySelector("main").scrollTo({top: 0});
+      });
       window.addEventListener("keydown", (event) => {
         const tag = event.target?.tagName?.toLowerCase();
         if (tag === "input" || tag === "textarea" || tag === "select") return;

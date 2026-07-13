@@ -1,6 +1,6 @@
 ---
 doc_id: widget_consolidation_receipts
-version: 0.3.0
+version: 0.3.2
 updated: 2026-07-13
 owner: widget_consolidation
 status: active
@@ -2674,6 +2674,80 @@ analyzer findings are inherited project debt, not introduced by PWF-001.
 - `EventDetailMapCard` still has map-specific alpha literals 0.52 and 0.24;
   exact existing opacity tokens are semantically unrelated. Proposed future
   token names: `eventDetailMapGridLine` and `eventDetailMapRouteWash`.
+
+## 2026-07-13 - Remaining pattern-family review wall
+
+Scope:
+
+- Expanded the four unresolved family packets from 12 to 27 review members,
+  while keeping the implemented three-member `chip-core` packet resolved.
+- Added 15 structured owner questions (`B1`–`B5`, `C1`–`C4`, `I1`–`I3`, and
+  `P1`–`P3`) with explicit recommendations and alternatives.
+- Added a standalone review-only Flutter wall that renders real production
+  widgets together across badge/status, compact controls, identity switchers,
+  and progress cues. No `lib/` production widget or Event Detail file changed.
+- Made pattern-family panes a readable 420px horizontal strip, hid implemented
+  families by default, and repaired compare-page hash navigation.
+
+Commands and proof:
+
+- `node --test tool/design/check_widget_pattern_families.test.mjs` — 20/20
+  tests passed.
+- `node tool/design/check_widget_pattern_families.mjs --check` — 5 families,
+  30 members.
+- `node --check tool/design/widgetbook_compare_server.mjs` — passed.
+- `(widgetbook) flutter analyze
+  lib/reviews/pattern_family_review_main.dart` — no issues.
+- `(widgetbook) flutter build web
+  --target=lib/reviews/pattern_family_review_main.dart
+  --output=build/pattern_family_review` — built successfully.
+- Browser proof: all four focused light-theme family views rendered; dark
+  theme at 2x text rendered without fixed-height clipping; the compare queue
+  showed four unresolved families, rendered all 15 owner questions, switched
+  deep links without reload, and exposed the implemented chip family only when
+  `Show resolved` was enabled.
+
+Review outcome:
+
+- Provisional dispositions are recorded as review evidence only. No accepted
+  visual delta and no implementation work order is created until the owner
+  answers the stable question ids.
+- Event Detail remains deliberately excluded from every family packet while
+  its parallel screen work is active.
+
+New debt: none.
+
+## 2026-07-13 - Pattern-family owner approval
+
+Decision scope:
+
+- The owner approved all 15 stable recommendations: `B1`–`B5`, `C1`–`C4`,
+  `I1`–`I3`, and `P1`–`P3`.
+- `badge-status`, `floating-compact-controls`, `identity-switchers`, and
+  `progress-cues` are now `approved`, not implemented. Their selected options,
+  accepted deltas, targets, and member dispositions remain canonical in
+  `pattern_families.json`.
+- The conditional `CatchCornerSash` recommendation resolved to `discard`
+  because no production adopter was named. `ClubRatingPill` remains
+  `discard`; the quiet unsaved-state concept is approved for a future
+  `CatchInlineStatus` target.
+- No production widget, test, or Event Detail file changed. Event Detail was
+  outside the approval scope, and `decisions.json` remains untouched until
+  mechanical K/R/D execution begins under the dedicated implementation goal.
+
+Proof:
+
+- `node tool/run.mjs check design:widget-pattern-families` — 22/22 tests
+  passed; 5 families and 30 members validated.
+- `node --check tool/design/widgetbook_compare_server.mjs` — passed.
+- `node tool/run.mjs check --manifest-only` — passed.
+- `git diff --check` — passed; `git diff --name-only -- lib test` returned no
+  production or test paths.
+- `node tool/agent/check_agent_readiness.mjs` — 100/100 (1,434/1,434 checks
+  passed).
+
+New debt: none. Implementation remains intentionally pending the user's next
+goal.
 
 ## 2026-07-04 - WO-023 name-family batch 2
 

@@ -29,6 +29,7 @@ function validRegistry() {
         acceptedVisualDelta: [
           "Selected chips use the stronger inverse fill.",
         ],
+        reviewQuestions: [],
         members: [
           {
             symbol: "CatchChip",
@@ -217,6 +218,130 @@ test("requires accepted visual deltas to be nonempty strings", (t) => {
   assert.ok(
     errors.includes(
       "families[0].acceptedVisualDelta[0] must be a nonempty string",
+    ),
+  );
+});
+
+test("accepts structured owner questions for a review family", (t) => {
+  const registry = validRegistry();
+  registry.families[0].status = "review";
+  registry.families[0].acceptedVisualDelta = [];
+  registry.families[0].reviewQuestions = [
+    {
+      id: "PF1",
+      prompt: "Which treatment should become the family default?",
+      recommendation: "Use the stronger inverse selected treatment.",
+      options: ["Use inverse selection", "Keep the current outline"],
+    },
+  ];
+  const {root} = createFixture(t, {registry});
+
+  assert.deepEqual(checkPatternFamilies({repoRoot: root}).errors, []);
+});
+
+test("requires review families to declare owner questions", (t) => {
+  const errors = errorsFor(t, (registry) => {
+    registry.families[0].status = "review";
+    registry.families[0].acceptedVisualDelta = [];
+    delete registry.families[0].reviewQuestions;
+  });
+
+  assert.ok(
+    errors.includes(
+      "families[0].reviewQuestions must be a nonempty array when status is 'review'",
+    ),
+  );
+});
+
+test("requires approved families to record a selected option for every retained question", (t) => {
+  const errors = errorsFor(t, (registry) => {
+    registry.families[0].reviewQuestions = [
+      {
+        id: "PF1",
+        prompt: "Which treatment should become the family default?",
+        recommendation: "Use the stronger inverse selected treatment.",
+        options: ["Use inverse selection", "Keep the current outline"],
+      },
+    ];
+  });
+
+  assert.ok(
+    errors.includes(
+      "families[0].reviewQuestions[0].selectedOption is required when status is 'approved'",
+    ),
+  );
+});
+
+test("requires a selected option to match one of the declared choices", (t) => {
+  const errors = errorsFor(t, (registry) => {
+    registry.families[0].reviewQuestions = [
+      {
+        id: "PF1",
+        prompt: "Which treatment should become the family default?",
+        recommendation: "Use the stronger inverse selected treatment.",
+        selectedOption: "Invent a third treatment",
+        options: ["Use inverse selection", "Keep the current outline"],
+      },
+    ];
+  });
+
+  assert.ok(
+    errors.includes(
+      "families[0].reviewQuestions[0].selectedOption must match one declared option",
+    ),
+  );
+});
+
+test("rejects duplicate review question ids", (t) => {
+  const errors = errorsFor(t, (registry) => {
+    registry.families[0].status = "review";
+    registry.families[0].acceptedVisualDelta = [];
+    registry.families[0].reviewQuestions = [
+      {
+        id: "PF1",
+        prompt: "First question?",
+        recommendation: "First answer.",
+        options: ["First", "Second"],
+      },
+      {
+        id: "PF1",
+        prompt: "Second question?",
+        recommendation: "Second answer.",
+        options: ["First", "Second"],
+      },
+    ];
+  });
+
+  assert.ok(
+    errors.includes("families[0].reviewQuestions[1].id duplicates question 'PF1'"),
+  );
+});
+
+test("rejects incomplete review questions", (t) => {
+  const errors = errorsFor(t, (registry) => {
+    registry.families[0].status = "review";
+    registry.families[0].acceptedVisualDelta = [];
+    registry.families[0].reviewQuestions = [
+      {
+        id: "PF1",
+        prompt: "",
+        recommendation: "",
+        options: ["Only one"],
+      },
+    ];
+  });
+
+  assert.ok(
+    errors.includes(
+      "families[0].reviewQuestions[0].options must contain at least two nonempty strings",
+    ),
+  );
+  assert.ok(
+    errors.includes("families[0].reviewQuestions[0].prompt must be a nonempty string"),
+  );
+  assert.ok(
+    errors.includes(
+      "families[0].reviewQuestions[0].recommendation must be a nonempty string",
     ),
   );
 });

@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.12
-updated: 2026-07-12
+version: 0.1.14
+updated: 2026-07-13
 owner: product_design_parity
 status: active
 ---
@@ -20,7 +20,7 @@ checks in one durable matrix.
 | `claude_widgetbook_inventory.md` | Persistent inventory comparison between the Claude Design export, local Widgetbook, local component contracts, and foundation token/style sources. |
 | `comprehensive_todo.md` | Canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, features, drift prevention, and pass cadence. |
 | `composition_migration_spec.md` | Layered implementation spec for migrating screens into controller-owned state composition, registered sections, registered components, and platform-neutral design tokens/contracts. |
-| `widget_consolidation/pattern_families.json` | Stable visual-family review registry. Records quality references, target contracts, per-member dispositions, and accepted visual deltas before consolidation work orders exist. |
+| `widget_consolidation/pattern_families.json` | Stable visual-family review registry. Records quality references, target contracts, enforceable owner questions, per-member dispositions, and accepted visual deltas before consolidation work orders exist. |
 | `widget_consolidation/consolidation_rules.md` | Pattern-family review gate plus post-decision K/R/D implementation tactics. Generated similarity pairs and clusters remain discovery evidence only. |
 | `widgetbook_compare_resolution_queue.md` | Human-readable summary of the current pattern-family review queue; machine state remains in the family and decision registries. |
 | `event_detail_composition_tracker.md` | First screen-level composition tracker, mapping Event Detail from Claude event primitives to current Flutter sections, states, Widgetbook gaps, and migration tasks. |
@@ -38,6 +38,7 @@ checks in one durable matrix.
 | `state_matrix.schema.json` | JSON Schema for the matrix shape. |
 | `tool/design/check_design_parity_matrix.mjs` | Validates routes, captures, component ids, screen contracts, source paths, tests, and state entries. |
 | `widgetbook/` | Local Widgetbook workspace for reusable component and hard-to-reach state previews. |
+| `widgetbook/lib/reviews/pattern_family_review_main.dart` | Standalone all-family review wall for comparing unresolved production-widget patterns without changing app contracts or replacing the normal Widgetbook build. |
 
 ## Pass Workflow
 
@@ -142,3 +143,20 @@ The local Widgetbook workspace lives in `widgetbook/`. Primitive previews should
 map to `design/components/catch.components.json` contract states, and screen
 previews should use the same fixture fakes as UI captures where possible. Run
 `cd widgetbook && dart run build_runner build` after adding annotated use cases.
+
+For a focused widget-pattern decision session, build the standalone review wall
+without replacing the normal Widgetbook output:
+
+```bash
+cd widgetbook
+flutter build web \
+  --target=lib/reviews/pattern_family_review_main.dart \
+  --output=build/pattern_family_review
+```
+
+The default route renders the reviewed family set. Query parameters support
+focused visual proof: `family=badge|controls|identity|progress`,
+`theme=light|dark`, and `scale=1|1.5|2`. The decision prompts, selected owner
+answers, and current member dispositions remain owned by
+`widget_consolidation/pattern_families.json`; the wall is visual evidence, not
+a second decision ledger.

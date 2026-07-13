@@ -15,8 +15,8 @@
   },
   "widget_consolidation_receipts": {
     "path": "docs/audit_registry/widget_consolidation_receipts.md",
-    "version": "0.2.0",
-    "updated": "2026-07-02",
+    "version": "0.3.2",
+    "updated": "2026-07-13",
     "status": "active",
     "read_policy": "Use for widget-consolidation pipeline commands, spot-check receipts, generated counts, calibration notes, and known limitations before review-packet generation."
   },
@@ -163,8 +163,8 @@
   },
   "design_parity_tracker": {
     "path": "docs/design_parity/README.md",
-    "version": "0.1.12",
-    "updated": "2026-07-12",
+    "version": "0.1.14",
+    "updated": "2026-07-13",
     "status": "active",
     "read_policy": "Use before design-parity passes to pick feature scope, stable widget pattern families, state coverage, screen contracts, preview/capture requirements, visual-diff gaps, component-contract gaps, and drift-prevention follow-ups."
   },

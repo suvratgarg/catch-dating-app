@@ -1729,6 +1729,18 @@ must not attempt it.
 > SetupChoiceChips merge (c031), footer inlines (c051), one D1 fix. The
 > escalation queue is now empty.
 
+- Review answer (2026-07-13): the owner approved every recommendation in
+  `B1`–`B5`, `C1`–`C4`, `I1`–`I3`, and `P1`–`P3`. The `badge-status`,
+  `floating-compact-controls`, `identity-switchers`, and `progress-cues`
+  families are now `approved`, with selected options and accepted deltas in
+  `pattern_families.json`. Implementation has not started and waits for the
+  dedicated goal. No mechanical K/R/D outcome has been written to
+  `decisions.json`.
+- Decision proof for all four families remains in the standalone
+  pattern-family wall and the family-first compare queue. Event Detail was not
+  included in this approval and remains excluded while its parallel screen
+  work is active.
+
 - WO-002: resolved by WO-016 — `CatchScrim.photoFrame` now uses
   `CatchOpacity.photoFrameEdge`; `CatchOpacity.eventSuccessSubtleBorder` remains
   only for Event Success usages.

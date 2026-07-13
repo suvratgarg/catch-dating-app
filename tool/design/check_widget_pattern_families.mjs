@@ -63,6 +63,7 @@ export function validatePatternFamilies(registry, evidence = {}) {
     requireNonemptyString(family, "qualityReference", prefix, errors);
     requireString(family, "decisionSource", prefix, errors);
     requireStringArray(family, "acceptedVisualDelta", prefix, errors);
+    validateReviewQuestions(family, prefix, errors);
 
     if (typeof family.id === "string" && family.id.trim() !== "") {
       if (!kebabCase.test(family.id)) {
@@ -250,6 +251,59 @@ function requireStringArray(value, key, prefix, errors) {
   for (const [index, item] of value[key].entries()) {
     if (!isNonemptyString(item)) {
       errors.push(`${prefix}.${key}[${index}] must be a nonempty string`);
+    }
+  }
+}
+
+function validateReviewQuestions(family, prefix, errors) {
+  if (!Array.isArray(family.reviewQuestions)) {
+    if (family.status === "review") {
+      errors.push(`${prefix}.reviewQuestions must be a nonempty array when status is 'review'`);
+    }
+    return;
+  }
+  if (family.status === "review" && family.reviewQuestions.length === 0) {
+    errors.push(`${prefix}.reviewQuestions must be a nonempty array when status is 'review'`);
+  }
+
+  const questionIds = new Set();
+  for (const [questionIndex, question] of family.reviewQuestions.entries()) {
+    const questionPrefix = `${prefix}.reviewQuestions[${questionIndex}]`;
+    if (!isObject(question)) {
+      errors.push(`${questionPrefix} must be an object`);
+      continue;
+    }
+    requireNonemptyString(question, "id", questionPrefix, errors);
+    requireNonemptyString(question, "prompt", questionPrefix, errors);
+    requireNonemptyString(question, "recommendation", questionPrefix, errors);
+    if (isNonemptyString(question.id)) {
+      if (questionIds.has(question.id)) {
+        errors.push(`${questionPrefix}.id duplicates question '${question.id}'`);
+      }
+      questionIds.add(question.id);
+    }
+    if (!Array.isArray(question.options) || question.options.length < 2) {
+      errors.push(`${questionPrefix}.options must contain at least two nonempty strings`);
+      continue;
+    }
+    for (const [optionIndex, option] of question.options.entries()) {
+      if (!isNonemptyString(option)) {
+        errors.push(`${questionPrefix}.options[${optionIndex}] must be a nonempty string`);
+      }
+    }
+
+    const hasSelectedOption = Object.hasOwn(question, "selectedOption");
+    if (decidedStatuses.has(family.status) && !hasSelectedOption) {
+      errors.push(
+        `${questionPrefix}.selectedOption is required when status is '${family.status}'`,
+      );
+    }
+    if (hasSelectedOption) {
+      if (!isNonemptyString(question.selectedOption)) {
+        errors.push(`${questionPrefix}.selectedOption must be a nonempty string`);
+      } else if (!question.options.includes(question.selectedOption)) {
+        errors.push(`${questionPrefix}.selectedOption must match one declared option`);
+      }
     }
   }
 }
