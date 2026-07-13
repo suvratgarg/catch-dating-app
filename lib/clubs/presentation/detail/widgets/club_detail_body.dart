@@ -295,7 +295,6 @@ class ClubActivitySection extends StatelessWidget {
             tags: [firstGenericTag],
             tone: CatchBadgeTone.neutral,
             size: CatchBadgeSize.md,
-            uppercase: false,
           ),
       ],
     );
@@ -316,7 +315,6 @@ class ClubActivitySection extends StatelessWidget {
                 tags: [tag],
                 tone: CatchBadgeTone.neutral,
                 size: CatchBadgeSize.md,
-                uppercase: false,
               ),
           ],
         ),

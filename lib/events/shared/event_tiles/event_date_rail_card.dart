@@ -117,7 +117,7 @@ class EventDateRailCard extends StatelessWidget {
                                 child: CatchMonoLabel(
                                   kicker,
                                   color: t.ink3,
-                                  uppercase: true,
+                                  typography: CatchBadgeTypography.functional,
                                 ),
                               ),
                               if (showStatusPill) ...[

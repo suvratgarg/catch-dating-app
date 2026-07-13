@@ -103,7 +103,7 @@ class HostPaymentAccountCard extends StatelessWidget {
               CatchBadge(
                 label: presentation.badge,
                 tone: presentation.tone,
-                uppercase: true,
+                typography: CatchBadgeTypography.functional,
               ),
               gapH14,
               Text(
@@ -222,7 +222,7 @@ class HostPaymentAccountContentCard extends StatelessWidget {
               CatchBadge(
                 label: presentation.badge,
                 tone: presentation.tone,
-                uppercase: true,
+                typography: CatchBadgeTypography.functional,
               ),
             ],
           ),

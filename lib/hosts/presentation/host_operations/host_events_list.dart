@@ -388,7 +388,7 @@ class HostMetaRow extends StatelessWidget {
         CatchBadge(
           label: roleLabel,
           tone: owner ? CatchBadgeTone.solid : CatchBadgeTone.neutral,
-          uppercase: true,
+          typography: CatchBadgeTypography.functional,
         ),
         CatchChip.activity(
           activityKind: club.hostDefaults.primaryActivityKind,

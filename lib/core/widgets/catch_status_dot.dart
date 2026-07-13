@@ -5,7 +5,7 @@ class CatchStatusDot extends StatelessWidget {
   const CatchStatusDot({
     super.key,
     this.color,
-    this.size = 7,
+    this.size = CatchSpacing.micro6,
     this.borderColor,
   });
 

@@ -40,7 +40,7 @@ class RequirementsRow extends StatelessWidget {
               CatchBadge(
                 label: label,
                 tone: CatchBadgeTone.brand,
-                uppercase: true,
+                typography: CatchBadgeTypography.functional,
               ),
           ],
         ),

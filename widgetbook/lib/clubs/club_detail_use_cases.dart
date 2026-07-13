@@ -1017,7 +1017,6 @@ Widget clubTagWrapStates(BuildContext context) {
         child: ClubTagWrap(
           tags: ['coffee', 'first timers'],
           tone: CatchBadgeTone.neutral,
-          uppercase: false,
         ),
       ),
     ],

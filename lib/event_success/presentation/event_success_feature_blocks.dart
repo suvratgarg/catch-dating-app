@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_progress_cue.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
@@ -249,8 +250,10 @@ class EventSuccessLiveHostMode extends StatelessWidget {
             for (var i = 0; i < resolvedPlan.steps.length; i++)
               LiveStepRow(
                 step: resolvedPlan.steps[i],
-                index: i,
-                activeIndex: resolvedPlan.activeStepIndex,
+                state: CatchProgressCueState.fromPosition(
+                  index: i,
+                  currentIndex: resolvedPlan.activeStepIndex,
+                ),
               ),
           ],
         ],
@@ -678,26 +681,19 @@ class ProgressRow extends StatelessWidget {
 }
 
 class LiveStepRow extends StatelessWidget {
-  const LiveStepRow({
-    required this.step,
-    required this.index,
-    required this.activeIndex,
-  });
+  const LiveStepRow({required this.step, required this.state});
 
   final EventRunOfShowStep step;
-  final int index;
-  final int activeIndex;
+  final CatchProgressCueState state;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final active = index == activeIndex;
-    final complete = index < activeIndex;
-    final color = active
-        ? t.primary
-        : complete
-        ? t.success
-        : t.ink3;
+    final color = switch (state) {
+      CatchProgressCueState.current => t.gold,
+      CatchProgressCueState.complete => t.success,
+      CatchProgressCueState.future => t.ink3,
+    };
 
     return Padding(
       padding: _liveStepRowGap,
@@ -705,11 +701,13 @@ class LiveStepRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
-            complete
-                ? CatchIcons.checkCircleRounded
-                : active
-                ? CatchIcons.radioButtonCheckedRounded
-                : CatchIcons.radioButtonUncheckedRounded,
+            switch (state) {
+              CatchProgressCueState.complete => CatchIcons.checkCircleRounded,
+              CatchProgressCueState.current =>
+                CatchIcons.radioButtonCheckedRounded,
+              CatchProgressCueState.future =>
+                CatchIcons.radioButtonUncheckedRounded,
+            },
             color: color,
             size: CatchIcon.md,
           ),
@@ -1017,19 +1015,12 @@ class EventSuccessMetricPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      tone: CatchSurfaceTone.raised,
-      radius: CatchRadius.pill,
-      borderColor: t.line,
-      padding: CatchInsets.compactControlContent,
-      child: Text(
-        context.l10n.eventSuccessEventSuccessFeatureBlocksTextLabelRound(
-          label: label,
-          round: (value * 100).round(),
-        ),
-        style: CatchTextStyles.labelL(context),
+    return CatchBadge(
+      label: context.l10n.eventSuccessEventSuccessFeatureBlocksTextLabelRound(
+        label: label,
+        round: (value * 100).round(),
       ),
+      size: CatchBadgeSize.md,
     );
   }
 }

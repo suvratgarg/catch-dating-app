@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -97,13 +96,11 @@ class ClubTagWrap extends StatelessWidget {
     required this.tags,
     this.tone = CatchBadgeTone.brand,
     this.size = CatchBadgeSize.sm,
-    this.uppercase = true,
   });
 
   final List<String> tags;
   final CatchBadgeTone tone;
   final CatchBadgeSize size;
-  final bool uppercase;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +109,7 @@ class ClubTagWrap extends StatelessWidget {
       runSpacing: CatchSpacing.micro6,
       children: [
         for (final tag in tags)
-          CatchBadge(label: tag, tone: tone, size: size, uppercase: uppercase),
+          CatchBadge.metadata(label: tag, tone: tone, size: size),
       ],
     );
   }
@@ -186,36 +183,6 @@ class ClubHostRoleBadge extends StatelessWidget {
       tone: role == ClubHostRole.owner
           ? CatchBadgeTone.brand
           : CatchBadgeTone.neutral,
-    );
-  }
-}
-
-class ClubRatingPill extends StatelessWidget {
-  const ClubRatingPill({super.key, required this.rating});
-  final double rating;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s2,
-        vertical: CatchSpacing.micro3,
-      ),
-      radius: CatchRadius.pill,
-      backgroundColor: t.gold.withValues(alpha: CatchOpacity.clubRatingFill),
-      borderColor: t.gold.withValues(alpha: CatchOpacity.clubRatingBorder),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(CatchIcons.rated, size: CatchIcon.rating, color: t.gold),
-          gapW2,
-          Text(
-            rating.toStringAsFixed(1),
-            style: CatchTextStyles.labelL(context, color: t.ink),
-          ),
-        ],
-      ),
     );
   }
 }

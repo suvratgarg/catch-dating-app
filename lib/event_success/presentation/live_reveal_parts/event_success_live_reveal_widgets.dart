@@ -128,6 +128,27 @@ class AttendeeCountdown extends StatelessWidget {
     final t = CatchTokens.of(context);
     final seconds = _remainingSeconds(plan, now);
     final progress = plan.revealProgress(now);
+    // Reveal pacing is Event Success policy. The reusable rail receives only
+    // ordered display items and the resulting sequence position.
+    final currentBeatIndex = progress >= 0.78
+        ? 2
+        : progress >= 0.42
+        ? 1
+        : 0;
+    final beatItems = [
+      (
+        label: context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelHold,
+        icon: CatchIcons.panToolAltOutlined,
+      ),
+      (
+        label: context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelWatch,
+        icon: CatchIcons.visibilityOutlined,
+      ),
+      (
+        label: context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelMove,
+        icon: CatchIcons.boltRounded,
+      ),
+    ];
     final urgency = seconds <= 3
         ? 1.0
         : seconds <= 7
@@ -244,7 +265,10 @@ class AttendeeCountdown extends StatelessWidget {
                     ),
                   ),
                   gapH18,
-                  CountdownBeatRail(progress: progress),
+                  CountdownBeatRail(
+                    items: beatItems,
+                    currentIndex: currentBeatIndex,
+                  ),
                   gapH14,
                   CountdownCueStack(clue: clue),
                 ],
@@ -377,96 +401,96 @@ class CountdownStageDial extends StatelessWidget {
 }
 
 class CountdownBeatRail extends StatelessWidget {
-  const CountdownBeatRail({required this.progress});
+  const CountdownBeatRail({required this.items, required this.currentIndex})
+    : assert(items.length > 0),
+      assert(currentIndex >= 0),
+      assert(currentIndex < items.length);
 
-  final double progress;
-
-  @override
-  Widget build(BuildContext context) {
-    final activeIndex = progress >= 0.78
-        ? 2
-        : progress >= 0.42
-        ? 1
-        : 0;
-    return Row(
-      children: [
-        for (final entry in [
-          (
-            label:
-                context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelHold,
-            icon: CatchIcons.panToolAltOutlined,
-          ),
-          (
-            label: context
-                .l10n
-                .eventSuccessEventSuccessLiveRevealWidgetsLabelWatch,
-            icon: CatchIcons.visibilityOutlined,
-          ),
-          (
-            label:
-                context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelMove,
-            icon: CatchIcons.boltRounded,
-          ),
-        ].indexed) ...[
-          Expanded(
-            child: CountdownBeatPill(
-              label: entry.$2.label,
-              icon: entry.$2.icon,
-              active: entry.$1 == activeIndex,
-              complete: entry.$1 < activeIndex,
-            ),
-          ),
-          if (entry.$1 < 2) gapW8,
-        ],
-      ],
-    );
-  }
-}
-
-class CountdownBeatPill extends StatelessWidget {
-  const CountdownBeatPill({
-    required this.label,
-    required this.icon,
-    required this.active,
-    required this.complete,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool active;
-  final bool complete;
+  final List<({String label, IconData icon})> items;
+  final int currentIndex;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final color = active || complete ? t.gold : t.ink;
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      backgroundColor: color.withValues(
-        alpha: active
-            ? CatchOpacity.revealBeatFillActive
-            : CatchOpacity.revealBeatFillInactive,
-      ),
-      borderColor: color.withValues(
-        alpha: active
-            ? CatchOpacity.revealBeatBorderActive
-            : CatchOpacity.revealBeatBorderInactive,
-      ),
-      padding: _revealBeatPadding,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: CatchIcon.sm, color: color),
-          gapW4,
-          Flexible(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: CatchTextStyles.labelS(context, color: color),
-            ),
+    final resolvedItems = [
+      for (final entry in items.indexed)
+        (
+          item: entry.$2,
+          state: CatchProgressCueState.fromPosition(
+            index: entry.$1,
+            currentIndex: currentIndex,
           ),
+        ),
+    ];
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final entry in resolvedItems.indexed) ...[
+            Expanded(
+              child: CatchSurface(
+                radius: CatchRadius.pill,
+                backgroundColor: switch (entry.$2.state) {
+                  CatchProgressCueState.current => t.gold.withValues(
+                    alpha: CatchOpacity.revealBeatFillActive,
+                  ),
+                  CatchProgressCueState.complete => t.success.withValues(
+                    alpha: CatchOpacity.revealBeatFillInactive,
+                  ),
+                  CatchProgressCueState.future => t.ink3.withValues(
+                    alpha: CatchOpacity.revealBeatFillInactive,
+                  ),
+                },
+                borderColor: switch (entry.$2.state) {
+                  CatchProgressCueState.current => t.gold.withValues(
+                    alpha: CatchOpacity.revealBeatBorderActive,
+                  ),
+                  CatchProgressCueState.complete => t.success.withValues(
+                    alpha: CatchOpacity.revealBeatBorderInactive,
+                  ),
+                  CatchProgressCueState.future => t.ink3.withValues(
+                    alpha: CatchOpacity.revealBeatBorderInactive,
+                  ),
+                },
+                padding: _revealBeatPadding,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      entry.$2.state == CatchProgressCueState.complete
+                          ? CatchIcons.checkCircleRounded
+                          : entry.$2.item.icon,
+                      size: CatchIcon.sm,
+                      color: switch (entry.$2.state) {
+                        CatchProgressCueState.current => t.gold,
+                        CatchProgressCueState.complete => t.success,
+                        CatchProgressCueState.future => t.ink3,
+                      },
+                    ),
+                    gapW4,
+                    Flexible(
+                      child: Text(
+                        entry.$2.item.label,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: CatchTextStyles.labelS(
+                          context,
+                          color: switch (entry.$2.state) {
+                            CatchProgressCueState.current => t.gold,
+                            CatchProgressCueState.complete => t.success,
+                            CatchProgressCueState.future => t.ink3,
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (entry.$1 < resolvedItems.length - 1) gapW8,
+          ],
         ],
       ),
     );

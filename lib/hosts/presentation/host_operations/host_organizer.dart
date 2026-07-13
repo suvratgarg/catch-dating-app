@@ -248,7 +248,7 @@ class HostOrganizerHeader extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final format in formats)
-                CatchBadge(label: format, uppercase: true),
+                CatchBadge.functional(label: format),
             ],
           ),
         ],
@@ -468,7 +468,7 @@ class HostOrganizerTeamRow extends StatelessWidget {
                 CatchBadge(
                   label: context.l10n.hostsHostOrganizerLabelOwner,
                   tone: CatchBadgeTone.solid,
-                  uppercase: true,
+                  typography: CatchBadgeTypography.functional,
                 )
               else
                 Icon(

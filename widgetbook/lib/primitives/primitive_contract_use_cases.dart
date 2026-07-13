@@ -6942,7 +6942,7 @@ class _BehaviorScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchBadge(label: behaviorId, uppercase: true),
+                CatchBadge.functional(label: behaviorId),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(title, style: CatchTextStyles.headlineS(context)),
                 const SizedBox(height: CatchSpacing.s3),
@@ -7048,7 +7048,7 @@ class _ContractScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchBadge(label: contractId, uppercase: true),
+                CatchBadge.functional(label: contractId),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(title, style: CatchTextStyles.headlineS(context)),
                 const SizedBox(height: CatchSpacing.s3),
@@ -7104,7 +7104,7 @@ class _StateCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchBadge(label: label, uppercase: true),
+              CatchBadge.functional(label: label),
               if (description != null) ...[
                 const SizedBox(width: CatchSpacing.s3),
                 Expanded(
@@ -7145,7 +7145,7 @@ class _CatchFieldStatePreview extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchBadge(label: label, uppercase: true),
+            CatchBadge.functional(label: label),
             if (description != null) ...[
               const SizedBox(width: CatchSpacing.s3),
               Expanded(

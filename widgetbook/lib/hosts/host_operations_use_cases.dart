@@ -325,11 +325,6 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostTodayCountdownPill,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
   type: HostTodayHeroMetric,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -1404,15 +1399,13 @@ Widget _hostHomePreviewFor(String focus) {
       ),
     ),
     'HostTodayClubPill' => HostTodayClubPill(
-      club: club,
+      club: club.copyWith(
+        profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
+      ),
       currentUid: _hostUid,
       clubs: clubs,
       showClubPicker: true,
       onSwitchClubIndex: (_) {},
-    ),
-    'HostTodayCountdownPill' => HostTodayCountdownPill(
-      event: event,
-      now: HostOperationsFixtures.now,
     ),
     'HostTodayDashboardCard' => HostTodayDashboardCard(
       club: club,

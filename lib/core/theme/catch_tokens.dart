@@ -1688,6 +1688,7 @@ abstract final class CatchLayout {
   static const double noticeTitleMessageGap = CatchSpacing.micro2;
   static const double personUnreadBadgeHorizontalPadding =
       CatchSpacing.micro6 + CatchStroke.hairline;
+  static const double countBadgeMinExtent = 17.0;
   static const double countPillIconSize = CatchIcon.sm + CatchSpacing.micro2;
   static const double countPillLabelVerticalPadding =
       CatchSpacing.micro10 + CatchStroke.hairline;

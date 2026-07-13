@@ -287,13 +287,13 @@ class _BadgeStatusFamily extends StatelessWidget {
               CatchBadge(
                 label: 'Ready',
                 tone: CatchBadgeTone.success,
-                uppercase: true,
+                typography: CatchBadgeTypography.functional,
               ),
               CatchBadge(label: 'Draft'),
               CatchBadge(
                 label: 'Live now',
                 tone: CatchBadgeTone.live,
-                uppercase: true,
+                typography: CatchBadgeTypography.functional,
               ),
             ],
           ),

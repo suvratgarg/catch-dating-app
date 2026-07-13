@@ -273,6 +273,15 @@ class CatchTabBarIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final glyph = Icon(icon, size: CatchLayout.tabBarIconSize, color: color);
-    return CatchCountBadge(count: badgeCount, child: glyph);
+    return SizedBox(
+      width: CatchLayout.appShellNavigationBadgeWidth,
+      height: CatchLayout.appShellNavigationBadgeHeight,
+      child: CatchCountBadge(
+        count: badgeCount,
+        alignment: Alignment.topRight,
+        offset: const Offset(-1, 2),
+        child: Align(alignment: Alignment.bottomCenter, child: glyph),
+      ),
+    );
   }
 }

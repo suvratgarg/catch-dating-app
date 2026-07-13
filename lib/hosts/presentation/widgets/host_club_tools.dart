@@ -81,11 +81,11 @@ class HostClubManagementPanel extends StatelessWidget {
                     CatchBadge(
                       label: context.l10n.hostsHostClubToolsLabelHostTools,
                       tone: CatchBadgeTone.brand,
-                      uppercase: true,
+                      typography: CatchBadgeTypography.functional,
                     ),
                     CatchBadge(
                       label: context.l10n.hostsHostClubToolsLabelClub,
-                      uppercase: true,
+                      typography: CatchBadgeTypography.functional,
                     ),
                   ],
                 ),

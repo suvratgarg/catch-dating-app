@@ -189,23 +189,23 @@ class LabHero extends StatelessWidget {
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s2,
                   children: [
-                    EventSuccessDarkPill(
+                    CatchBadge.onDark(
                       label: context.l10n
                           .eventSuccessEventSuccessLabScreenLabelPlaybookcountPlaybooks(
                             playbookCount: playbookCount,
                           ),
                     ),
-                    EventSuccessDarkPill(
+                    CatchBadge.onDark(
                       label: context
                           .l10n
                           .eventSuccessEventSuccessLabScreenLabelDevStagingRoute,
                     ),
-                    EventSuccessDarkPill(
+                    CatchBadge.onDark(
                       label: context
                           .l10n
                           .eventSuccessEventSuccessLabScreenLabelNoFirestoreWrites,
                     ),
-                    EventSuccessDarkPill(
+                    CatchBadge.onDark(
                       label: context
                           .l10n
                           .eventSuccessEventSuccessLabScreenLabelNoBookingChanges,

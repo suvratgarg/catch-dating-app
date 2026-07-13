@@ -18,7 +18,6 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
 import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
@@ -1349,7 +1348,7 @@ void main() {
     },
   );
 
-  testWidgets('CatchBadge renders status tones and uppercase option', (
+  testWidgets('CatchBadge renders status tones and typed typography', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -1358,11 +1357,7 @@ void main() {
           children: [
             const CatchBadge(label: 'pending'),
             const CatchBadge(label: 'paid', tone: CatchBadgeTone.success),
-            const CatchBadge(
-              label: 'live - 6h left',
-              tone: CatchBadgeTone.live,
-              uppercase: true,
-            ),
+            const CatchBadge.live(label: 'live - 6h left'),
             CatchBadge(
               label: 'reward',
               tone: CatchBadgeTone.gold,
@@ -1472,6 +1467,28 @@ void main() {
       expect(find.byType(CatchPersonAvatarShell), findsOneWidget);
       expect(find.byType(CatchObscuredAvatarContent), findsOneWidget);
       expect(find.byType(CatchInitialsAvatarPlaceholder), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'CatchPersonAvatar keeps activity fallback when a supplied logo fails',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const CatchPersonAvatar(
+            size: 48,
+            name: 'Sea Face Social',
+            imageUrl: 'assets/fixtures/does-not-exist.png',
+            activityKind: ActivityKind.socialRun,
+            initials: 'SF',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CatchActivityInitialsPlaceholder), findsOneWidget);
+      expect(find.byType(CatchInitialsAvatarPlaceholder), findsNothing);
+      expect(find.text('SF'), findsOneWidget);
     },
   );
 
@@ -2014,12 +2031,6 @@ void main() {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CatchCornerSash(
-                label: 'Saved',
-                icon: CatchIcons.saved,
-                tone: CatchSashTone.success,
-              ),
-              gapH12,
               CatchMetaDotRow(
                 entries: [
                   CatchMetaEntry(

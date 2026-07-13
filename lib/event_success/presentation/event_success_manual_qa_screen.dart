@@ -553,26 +553,26 @@ class ManualQaHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label: context.l10n
                     .eventSuccessEventSuccessManualQaScreenLabelBookedcountBooked(
                       bookedCount: data.roster.bookedCount,
                     ),
               ),
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label: context.l10n
                     .eventSuccessEventSuccessManualQaScreenLabelCheckedincountCheckedIn(
                       checkedInCount: data.roster.checkedInCount,
                     ),
               ),
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label: context.l10n
                     .eventSuccessEventSuccessManualQaScreenLabelRevealcountdownsecondsSReveal(
                       revealCountdownSeconds:
                           data.plan.structureConfig.revealCountdownSeconds,
                     ),
               ),
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label:
                     !data.plan.hasModule(
                       EventSuccessModuleCatalog.compatibilityQuestionnaire.id,

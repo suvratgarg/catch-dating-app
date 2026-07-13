@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -237,7 +238,10 @@ class ActivityTypeRow extends StatelessWidget {
             ),
             child: Row(
               children: [
-                ActivityDot(color: visual.accent),
+                CatchStatusDot(
+                  color: visual.accent,
+                  size: CatchLayout.eventTypeIndexDotSize,
+                ),
                 gapW16,
                 Expanded(
                   child: Text(
@@ -320,24 +324,6 @@ class MoreActivityTypesRow extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class ActivityDot extends StatelessWidget {
-  const ActivityDot({super.key, required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSurface(
-      width: CatchLayout.eventTypeIndexDotSize,
-      height: CatchLayout.eventTypeIndexDotSize,
-      radius: CatchRadius.pill,
-      borderWidth: 0,
-      backgroundColor: color,
-      child: const SizedBox.shrink(),
     );
   }
 }
