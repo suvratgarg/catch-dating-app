@@ -3,9 +3,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchLayout, CatchIcon, CatchOpacity, CatchSpacing, CatchTokens;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
@@ -134,64 +133,22 @@ class ProfileHeightStepperControls extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ProfileHeightStepButton(
+        CatchIconButton.icon(
           tooltip:
               context.l10n.userProfileInlineEditorHeightTooltipDecreaseHeight,
           icon: CatchIcons.removeRounded,
-          enabled: canDecrease,
-          onPressed: () => onChanged(value - 1),
+          disabled: !canDecrease,
+          onTap: canDecrease ? () => onChanged(value - 1) : null,
         ),
         gapW4,
-        ProfileHeightStepButton(
+        CatchIconButton.icon(
           tooltip:
               context.l10n.userProfileInlineEditorHeightTooltipIncreaseHeight,
           icon: CatchIcons.addRounded,
-          enabled: canIncrease,
-          onPressed: () => onChanged(value + 1),
+          disabled: !canIncrease,
+          onTap: canIncrease ? () => onChanged(value + 1) : null,
         ),
       ],
-    );
-  }
-}
-
-class ProfileHeightStepButton extends StatelessWidget {
-  const ProfileHeightStepButton({
-    super.key,
-    required this.tooltip,
-    required this.icon,
-    required this.enabled,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final bool enabled;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: t.raised,
-        shape: const CircleBorder(),
-        child: InkResponse(
-          onTap: enabled ? onPressed : null,
-          radius: CatchSpacing.micro18,
-          customBorder: const CircleBorder(),
-          child: SizedBox.square(
-            dimension: CatchLayout.profileHeightStepButtonExtent,
-            child: Icon(
-              icon,
-              size: CatchIcon.profileHeightStep,
-              color: enabled
-                  ? t.ink
-                  : t.ink3.withValues(alpha: CatchOpacity.profileDisabledIcon),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

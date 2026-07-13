@@ -3,10 +3,10 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -85,10 +85,12 @@ class ExploreFilterRail extends StatelessWidget {
       options: _timeOptions(context.l10n),
       scrollable: true,
       backgroundColor: backgroundColor ?? t.bg,
-      trailing: ExploreFilterGlyphButton(
+      trailing: CatchIconButton.counted(
         key: const ValueKey('explore-filter-button'),
-        activeCount: railState.activeCount,
-        semanticLabel: railState.filterButtonSemanticLabel,
+        icon: CatchIcons.tuneRounded,
+        count: railState.activeCount,
+        variant: CatchIconButtonVariant.plain,
+        tooltip: railState.filterButtonSemanticLabel,
         onTap: () => _showExploreFilterSheet(context),
       ),
     );
@@ -106,58 +108,6 @@ class ExploreFilterRail extends StatelessWidget {
         onToggleActivityTag: onToggleActivityTag,
         onToggleArea: onToggleArea,
         onClearFilters: onClearFilters,
-      ),
-    );
-  }
-}
-
-class ExploreFilterGlyphButton extends StatelessWidget {
-  const ExploreFilterGlyphButton({
-    super.key,
-    required this.activeCount,
-    required this.semanticLabel,
-    required this.onTap,
-  });
-
-  final int activeCount;
-  final String semanticLabel;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Tooltip(
-      message: semanticLabel,
-      child: Semantics(
-        button: true,
-        label: semanticLabel,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(CatchRadius.pill),
-            child: CatchIconBadge(
-              label: context.l10n.exploreExploreFilterRailLabelActivecount(
-                activeCount: activeCount,
-              ),
-              isLabelVisible: activeCount > 0,
-              backgroundColor: t.ink,
-              foregroundColor: t.surface,
-              offset: const Offset(-4, 4),
-              child: SizedBox.square(
-                dimension: CatchLayout.iconButtonNavSize,
-                child: Center(
-                  child: Icon(
-                    CatchIcons.tuneRounded,
-                    color: t.ink,
-                    size: CatchIcon.md,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

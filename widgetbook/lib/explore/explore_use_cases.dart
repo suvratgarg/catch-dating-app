@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -948,21 +949,23 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Filter glyph states',
-  type: ExploreFilterGlyphButton,
+  name: 'Counted filter action',
+  type: CatchIconButton,
   path: '[Explore]/Controls',
 )
-Widget exploreFilterGlyphButtonStates(BuildContext context) {
+Widget exploreCountedFilterActionStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreFilterGlyphButton',
-    catalogId: 'control.explore.filter_glyph_button',
+    title: 'CatchIconButton.counted filter action',
+    catalogId: 'catch.icon_button',
     children: [
       _StateCard(
         label: 'inactive',
         child: Center(
-          child: ExploreFilterGlyphButton(
-            activeCount: 0,
-            semanticLabel: 'Filters',
+          child: CatchIconButton.counted(
+            icon: CatchIcons.tuneRounded,
+            count: 0,
+            variant: CatchIconButtonVariant.plain,
+            tooltip: 'Filters',
             onTap: _noop,
           ),
         ),
@@ -970,9 +973,11 @@ Widget exploreFilterGlyphButtonStates(BuildContext context) {
       _StateCard(
         label: 'active count',
         child: Center(
-          child: ExploreFilterGlyphButton(
-            activeCount: 3,
-            semanticLabel: 'Filters, 3 active',
+          child: CatchIconButton.counted(
+            icon: CatchIcons.tuneRounded,
+            count: 3,
+            variant: CatchIconButtonVariant.plain,
+            tooltip: 'Filters, 3 active',
             onTap: _noop,
           ),
         ),
@@ -1911,30 +1916,35 @@ Widget exploreMapLauncherStates(BuildContext context) {
       _StateCard(
         label: 'empty count',
         child: _MapPillFrame(
-          child: CatchCountPill(
+          child: CatchCountPill.label(
             label: 'Map',
             icon: CatchIcons.map,
             semanticLabel: 'Map',
+            onPressed: _noop,
           ),
         ),
       ),
       _StateCard(
         label: 'with count',
         child: _MapPillFrame(
-          child: CatchCountPill(
-            label: 'Map · 6',
+          child: CatchCountPill.label(
+            label: 'Map',
             icon: CatchIcons.map,
+            count: 6,
             semanticLabel: 'Map, 6 events',
+            onPressed: _noop,
           ),
         ),
       ),
       _StateCard(
         label: 'pressed review target',
         child: _MapPillFrame(
-          child: CatchCountPill(
-            label: 'Map · 12',
+          child: CatchCountPill.label(
+            label: 'Map',
             icon: CatchIcons.map,
+            count: 12,
             semanticLabel: 'Map, 12 events',
+            onPressed: _noop,
           ),
         ),
       ),
@@ -1943,10 +1953,12 @@ Widget exploreMapLauncherStates(BuildContext context) {
         child: _MediaOverride(
           textScaler: const TextScaler.linear(2),
           child: _MapPillFrame(
-            child: CatchCountPill(
-              label: 'Map · 12',
+            child: CatchCountPill.label(
+              label: 'Map',
               icon: CatchIcons.map,
+              count: 12,
               semanticLabel: 'Map, 12 events',
+              onPressed: _noop,
             ),
           ),
         ),

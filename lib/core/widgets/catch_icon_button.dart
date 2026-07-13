@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:flutter/material.dart';
 
 enum CatchIconButtonVariant { bordered, float, plain }
@@ -7,7 +8,8 @@ enum CatchIconButtonVariant { bordered, float, plain }
 ///
 /// Defaults to the 44px bordered inline control. Top bars use [navSize] for the
 /// handoff's 40px back/action rule, and photo/map overlays use
-/// [CatchIconButtonVariant.float].
+/// [CatchIconButtonVariant.float]. Counted icon actions use [counted] so callers
+/// provide a typed count instead of composing a string badge around the button.
 ///
 /// Usage:
 /// ```dart
@@ -34,7 +36,7 @@ class CatchIconButton extends StatelessWidget {
     this.size = defaultSize,
     this.borderRadius,
     this.tooltip,
-  });
+  }) : _count = null;
 
   factory CatchIconButton.icon({
     Key? key,
@@ -68,6 +70,62 @@ class CatchIconButton extends StatelessWidget {
     );
   }
 
+  /// Icon-only action with the canonical count badge overlaid on the target.
+  ///
+  /// The count stays typed through the API. Zero hides the badge, and the
+  /// shared [CatchCountBadge] owns count formatting and overflow behavior.
+  factory CatchIconButton.counted({
+    Key? key,
+    required IconData icon,
+    required int count,
+    VoidCallback? onTap,
+    CatchIconButtonVariant variant = CatchIconButtonVariant.bordered,
+    bool active = false,
+    bool? fill,
+    Color? accent,
+    bool disabled = false,
+    Color? background,
+    Color? borderColor,
+    double size = defaultSize,
+    double? borderRadius,
+    String? tooltip,
+  }) {
+    assert(count >= 0, 'count must not be negative');
+    return CatchIconButton._counted(
+      key: key,
+      count: count,
+      onTap: onTap,
+      variant: variant,
+      active: active,
+      fill: fill,
+      accent: accent,
+      disabled: disabled,
+      background: background,
+      borderColor: borderColor,
+      size: size,
+      borderRadius: borderRadius,
+      tooltip: tooltip,
+      child: Icon(icon),
+    );
+  }
+
+  const CatchIconButton._counted({
+    super.key,
+    required int count,
+    required this.child,
+    this.onTap,
+    this.variant = CatchIconButtonVariant.bordered,
+    this.active = false,
+    this.fill,
+    this.accent,
+    this.disabled = false,
+    this.background,
+    this.borderColor,
+    this.size = defaultSize,
+    this.borderRadius,
+    this.tooltip,
+  }) : _count = count;
+
   static const double defaultSize = CatchLayout.iconButtonSize;
   static const double navSize = CatchLayout.iconButtonNavSize;
 
@@ -93,6 +151,8 @@ class CatchIconButton extends StatelessWidget {
 
   /// Accessible label and hover affordance for icon-only actions.
   final String? tooltip;
+
+  final int? _count;
 
   @override
   Widget build(BuildContext context) {
@@ -141,8 +201,14 @@ class CatchIconButton extends StatelessWidget {
         ),
       ),
     );
+    final countedButton = _count == null
+        ? button
+        : SizedBox.square(
+            dimension: size,
+            child: CatchCountBadge(count: _count!, child: button),
+          );
     final message = tooltip;
-    if (message == null || message.isEmpty) return button;
+    if (message == null || message.isEmpty) return countedButton;
     return Semantics(
       button: true,
       enabled: enabled,
@@ -150,7 +216,7 @@ class CatchIconButton extends StatelessWidget {
       child: Tooltip(
         message: message,
         excludeFromSemantics: true,
-        child: button,
+        child: countedButton,
       ),
     );
   }

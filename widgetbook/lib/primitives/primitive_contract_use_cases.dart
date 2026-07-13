@@ -1995,6 +1995,7 @@ Widget catchIconButtonContractStates(BuildContext context) {
       'bordered',
       'float',
       'plain',
+      'counted',
     ],
     children: [
       _StateCard(
@@ -2046,6 +2047,31 @@ Widget catchIconButtonContractStates(BuildContext context) {
           icon: CatchIcons.tuneRounded,
           variant: CatchIconButtonVariant.plain,
           onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'counted / zero / overflow',
+        child: _InlineWrap(
+          children: [
+            CatchIconButton.counted(
+              icon: CatchIcons.notificationsNoneRounded,
+              count: 0,
+              tooltip: 'Notifications',
+              onTap: _noop,
+            ),
+            CatchIconButton.counted(
+              icon: CatchIcons.notificationsRounded,
+              count: 3,
+              tooltip: 'Notifications, 3 unread',
+              onTap: _noop,
+            ),
+            CatchIconButton.counted(
+              icon: CatchIcons.notificationsRounded,
+              count: 124,
+              tooltip: 'Notifications, 124 unread',
+              onTap: _noop,
+            ),
+          ],
         ),
       ),
     ],
@@ -5123,43 +5149,39 @@ Widget catchCountPillContractStates(BuildContext context) {
     title: 'CatchCountPill',
     contractId: 'catch.count_pill',
     states: const [
-      'icon-only',
       'label',
       'label-with-icon',
-      'with-badge',
+      'with-count',
       'semantic-label',
       'text-scale-truncation',
     ],
     children: [
       _StateCard(
-        label: 'icon-only',
-        child: CatchCountPill(icon: CatchIcons.mapOutlined, onPressed: _noop),
-      ),
-      _StateCard(
         label: 'label',
-        child: CatchCountPill(label: '24 places', onPressed: _noop),
+        child: CatchCountPill.label(label: '24 places', onPressed: _noop),
       ),
       _StateCard(
         label: 'label-with-icon',
-        child: CatchCountPill(
+        child: CatchCountPill.label(
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
           onPressed: _noop,
         ),
       ),
       _StateCard(
-        label: 'with-badge',
-        child: CatchCountPill(
+        label: 'with-count',
+        child: CatchCountPill.label(
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
-          badge: '3',
+          count: 3,
           onPressed: _noop,
         ),
       ),
       _StateCard(
         label: 'semantic-label',
-        child: CatchCountPill(
+        child: CatchCountPill.label(
           icon: CatchIcons.listRounded,
+          label: 'List',
           semanticLabel: 'Show list view',
           onPressed: _noop,
         ),
@@ -5168,10 +5190,10 @@ Widget catchCountPillContractStates(BuildContext context) {
         label: 'text-scale-truncation',
         child: SizedBox(
           width: 160,
-          child: CatchCountPill(
+          child: CatchCountPill.label(
             icon: CatchIcons.tuneRounded,
             label: 'Very specific active filters',
-            badge: '12',
+            count: 12,
             onPressed: _noop,
           ),
         ),

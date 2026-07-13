@@ -349,7 +349,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             bottom: _mapLauncherBottomOffset(context),
             child: SafeArea(
               top: false,
-              child: CatchCountPill(
+              child: CatchCountPill.label(
                 label: screenState.mapLauncherState.label,
                 icon: CatchIcons.map,
                 semanticLabel: screenState.mapLauncherState.label,

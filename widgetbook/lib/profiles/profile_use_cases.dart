@@ -37,7 +37,7 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor
         ProfileMultiChipValue,
         ProfileSingleChipValue;
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart'
-    show ProfileHeightStepButton, ProfileHeightStepperControls;
+    show ProfileHeightStepperControls;
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart'
@@ -1141,46 +1141,6 @@ Widget profileHeightStepperControlsStates(BuildContext context) {
               value: 172,
               enabled: false,
               onChanged: (_) {},
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Height step button states',
-  type: ProfileHeightStepButton,
-  path: '[P1 product surfaces]/Profiles/Inline Editors',
-)
-Widget profileHeightStepButtonStates(BuildContext context) {
-  return _ProfileCatalog(
-    title: 'ProfileHeightStepButton',
-    contractId: 'screen.profile.inline.height_step_button',
-    children: [
-      _StateCard(
-        label: 'enabled and disabled',
-        child: _SectionFrame(
-          height: 120,
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ProfileHeightStepButton(
-                  tooltip: 'Decrease height',
-                  icon: CatchIcons.removeRounded,
-                  enabled: true,
-                  onPressed: () {},
-                ),
-                gapW8,
-                ProfileHeightStepButton(
-                  tooltip: 'Increase height',
-                  icon: CatchIcons.addRounded,
-                  enabled: false,
-                  onPressed: () {},
-                ),
-              ],
             ),
           ),
         ),

@@ -236,17 +236,20 @@ class DockBell extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final foreground = active ? CatchTokens.editorialWhite : t.ink2;
+    final enabled = !isLoading && onPressed != null;
 
     return Semantics(
+      container: true,
       button: true,
       toggled: active,
+      enabled: enabled,
       label: active
           ? context.l10n.clubsClubDetailDockLabelDisableClubPushNotifications
           : context.l10n.clubsClubDetailDockLabelEnableClubPushNotifications,
       child: CatchIconButton(
         size: CatchSpacing.s12,
         background: active ? accent : t.raised,
-        onTap: isLoading ? null : onPressed,
+        onTap: enabled ? onPressed : null,
         child: isLoading
             ? SizedBox.square(
                 dimension: CatchIcon.md,

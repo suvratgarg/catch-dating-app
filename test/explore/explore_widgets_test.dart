@@ -3485,6 +3485,11 @@ void main() {
       expect(find.text('Filters'), findsNothing);
       expect(find.text('1'), findsOneWidget);
 
+      final filterButton = tester.widget<CatchIconButton>(
+        find.byKey(const ValueKey('explore-filter-button')),
+      );
+      expect(filterButton.size, CatchIconButton.defaultSize);
+
       final iconCenter = tester.getCenter(find.byIcon(CatchIcons.tuneRounded));
       final badgeCenter = tester.getCenter(find.text('1'));
       expect(badgeCenter.dx, greaterThan(iconCenter.dx));

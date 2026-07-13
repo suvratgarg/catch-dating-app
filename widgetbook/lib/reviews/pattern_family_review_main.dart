@@ -25,8 +25,6 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_event_supp
     show ExploreDarkPill;
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart'
     show ActivityDot;
-import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart'
-    show ExploreFilterGlyphButton;
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
     show HostTodayClubPill, HostTodayCountdownPill;
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
@@ -397,25 +395,27 @@ class _CompactControlFamily extends StatelessWidget {
       title: 'Floating compact controls',
       description:
           'The key ergonomic comparison is semantic role plus target size: '
-          '38px CountPill, 40px app-bar exception, and the 44px control default.',
+          'labelled and icon-only actions share a 44px default, with a 40px '
+          'app-bar navigation exception.',
       cards: [
         _PreviewCard(
-          title: 'Current CountPill surface',
-          note: 'Icon-only and labelled states currently overlap two roles.',
+          title: 'Labelled floating action',
+          note: 'CountPill stays labelled, interactive, and typed for counts.',
           child: Wrap(
             spacing: 16,
             runSpacing: 16,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              CatchCountPill(
+              CatchCountPill.label(
                 icon: CatchIcons.mapOutlined,
+                label: 'Map',
                 semanticLabel: 'Show map',
                 onPressed: _noop,
               ),
-              CatchCountPill(
+              CatchCountPill.label(
                 icon: CatchIcons.tuneRounded,
                 label: 'Filters',
-                badge: '3',
+                count: 3,
                 onPressed: _noop,
               ),
             ],
@@ -423,18 +423,19 @@ class _CompactControlFamily extends StatelessWidget {
         ),
         _PreviewCard(
           title: 'Hit-target comparison',
-          note: '36px legacy, 40px app-bar exception, 44px canonical default.',
+          note:
+              '40px is reserved for app-bar navigation; compact actions default to 44px.',
           child: Wrap(
             spacing: 20,
             runSpacing: 16,
             crossAxisAlignment: WrapCrossAlignment.end,
             children: [
               _MeasuredControl(
-                label: '36',
-                child: CatchIconButton.icon(
-                  icon: CatchIcons.deleteOutlineRounded,
-                  size: 36,
-                  onTap: _noop,
+                label: '44 label',
+                child: CatchCountPill.label(
+                  icon: CatchIcons.mapOutlined,
+                  label: 'Map',
+                  onPressed: _noop,
                 ),
               ),
               _MeasuredControl(
@@ -477,11 +478,13 @@ class _CompactControlFamily extends StatelessWidget {
           ),
         ),
         _PreviewCard(
-          title: 'Counted feature adapter',
-          note: 'Feature semantics can survive on canonical icon/count parts.',
-          child: ExploreFilterGlyphButton(
-            activeCount: 3,
-            semanticLabel: '3 active filters',
+          title: 'Counted icon action',
+          note: 'The canonical icon action owns its typed count badge.',
+          child: CatchIconButton.counted(
+            icon: CatchIcons.tuneRounded,
+            count: 3,
+            variant: CatchIconButtonVariant.plain,
+            tooltip: '3 active filters',
             onTap: _noop,
           ),
         ),

@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -1235,6 +1236,16 @@ void main() {
     expect(find.byTooltip('Decrease height'), findsOneWidget);
     expect(find.byTooltip('Increase height'), findsOneWidget);
     expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
+
+    final stepButtons = find.descendant(
+      of: heightTile,
+      matching: find.byType(CatchIconButton),
+    );
+    expect(stepButtons, findsNWidgets(2));
+    for (final element in stepButtons.evaluate()) {
+      final button = element.widget as CatchIconButton;
+      expect(button.size, CatchIconButton.defaultSize);
+    }
 
     await tester.tap(find.byTooltip('Increase height'));
     await tester.pump();

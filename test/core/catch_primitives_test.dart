@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
@@ -361,6 +362,126 @@ void main() {
     await tester.tap(find.byIcon(CatchIcons.more));
     await tester.pump();
 
+    expect(taps, 1);
+  });
+
+  test(
+    'compact-control constructors reject invalid count and label states',
+    () {
+      expect(
+        () => CatchIconButton.counted(
+          icon: CatchIcons.notificationsRounded,
+          count: -1,
+        ),
+        throwsAssertionError,
+      );
+      expect(
+        () => CatchCountPill.label(label: '   ', onPressed: () {}),
+        throwsAssertionError,
+      );
+      expect(
+        () =>
+            CatchCountPill.label(label: 'Filters', count: -1, onPressed: () {}),
+        throwsAssertionError,
+      );
+    },
+  );
+
+  testWidgets(
+    'CatchIconButton.counted owns typed counts, target size, and semantics',
+    (tester) async {
+      var taps = 0;
+
+      await tester.pumpWidget(
+        _wrap(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CatchIconButton.counted(
+                key: const ValueKey('zero-count-icon-button'),
+                icon: CatchIcons.notificationsNoneRounded,
+                count: 0,
+                tooltip: 'Notifications',
+                onTap: () => taps++,
+              ),
+              CatchIconButton.counted(
+                key: const ValueKey('counted-icon-button'),
+                icon: CatchIcons.tuneRounded,
+                count: 3,
+                tooltip: 'Filters, 3 active',
+                onTap: () => taps++,
+              ),
+              CatchIconButton.counted(
+                icon: CatchIcons.notificationsRounded,
+                count: 124,
+                tooltip: 'Notifications, 124 unread',
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
+      );
+
+      final counted = find.byKey(const ValueKey('counted-icon-button'));
+      final semantics = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.label == 'Filters, 3 active',
+        ),
+      );
+
+      expect(find.text('0'), findsNothing);
+      expect(find.text('3'), findsOneWidget);
+      expect(find.text('99+'), findsOneWidget);
+      expect(
+        tester.getSize(counted),
+        const Size.square(CatchIconButton.defaultSize),
+      );
+      expect(semantics.properties.button, isTrue);
+      expect(semantics.properties.enabled, isTrue);
+
+      await tester.tap(counted);
+      await tester.pump();
+      expect(taps, 1);
+    },
+  );
+
+  testWidgets('CatchCountPill.label stays interactive and at least 44px', (
+    tester,
+  ) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchCountPill.label(
+          key: const ValueKey('labelled-count-pill'),
+          icon: CatchIcons.tuneRounded,
+          label: 'Filters',
+          count: 3,
+          semanticLabel: 'Filters, 3 active',
+          onPressed: () => taps++,
+        ),
+      ),
+    );
+
+    final pill = find.byKey(const ValueKey('labelled-count-pill'));
+    final semantics = tester.widget<Semantics>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics &&
+            widget.properties.label == 'Filters, 3 active',
+      ),
+    );
+
+    expect(find.text('Filters'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+    expect(tester.getSize(pill).height, greaterThanOrEqualTo(44));
+    expect(semantics.properties.button, isTrue);
+    expect(semantics.properties.enabled, isTrue);
+
+    await tester.tap(pill);
+    await tester.pump();
     expect(taps, 1);
   });
 
