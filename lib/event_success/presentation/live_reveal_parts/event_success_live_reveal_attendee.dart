@@ -104,11 +104,7 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              CatchBadge(
-                label: kind.label(context.l10n),
-                tone: CatchBadgeTone.live,
-                icon: CatchIcons.boltRounded,
-              ),
+              CatchBadge.live(label: kind.label(context.l10n)),
               if (assigned != null)
                 CatchBadge(
                   label: isCountingDown

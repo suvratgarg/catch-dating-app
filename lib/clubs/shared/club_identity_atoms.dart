@@ -108,8 +108,7 @@ class ClubTagWrap extends StatelessWidget {
       spacing: CatchSpacing.micro6,
       runSpacing: CatchSpacing.micro6,
       children: [
-        for (final tag in tags)
-          CatchBadge.metadata(label: tag, tone: tone, size: size),
+        for (final tag in tags) CatchBadge(label: tag, tone: tone, size: size),
       ],
     );
   }

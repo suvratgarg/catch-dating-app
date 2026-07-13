@@ -27,41 +27,39 @@ Generated from live review notes saved through
    information-grouping primitive with divided, contained, and plain variants;
    the former field-group, design-section, and section-surface APIs are
    removed.
-8. Current: owner-approved pattern families awaiting the dedicated
-   implementation goal. Stable families from
-   `widget_consolidation/pattern_families.json` remain the actionable queue and
-   render every available member side by side. The standalone review wall lines
-   up the real production widgets across all four approved families. Generated
-   similarity pairs and clusters remain discovery evidence; they do not choose
-   the canonical widget or create implementation work orders directly.
+8. Completed: owner-approved badge/status, compact-control, identity-switcher,
+   and progress-cue families. Stable decisions and implemented dispositions
+   live in `widget_consolidation/pattern_families.json` and `decisions.json`;
+   the standalone wall renders the canonical production outcomes side by side.
+   No approved family remains in the default implementation queue. Generated
+   similarity pairs and clusters remain discovery evidence only.
 
 ## Pattern Family Queue
 
 | Family | Status | Quality direction |
 | --- | --- | --- |
 | `chip-core` | implemented | One `CatchChip` contract owns quiet tags, selectable choices, removable tags, and typed activity chips. Hidden from the default queue unless `Show resolved` is enabled. |
-| `badge-status` | approved · implementation pending | Repair `CatchBadge`; use typed count and dot ingredients; converge on-dark chrome; preserve quiet status as the approved inline-status concept; discard the unused rating pill and adopter-less corner sash. |
-| `floating-compact-controls` | approved · implementation pending | Keep icon-only and labelled action roles distinct, use the 44px ergonomic reference outside the 40px app-bar exception, and type numeric counts. |
-| `identity-switchers` | approved · implementation pending | Repair the club switcher into one whole-surface control with an explicit passive state, real identity art, and selected/role menu context. |
-| `progress-cues` | approved · implementation pending | Make progress sequence-owned with ordered items plus `currentIndex`; share state semantics with expanded rows while preserving distinct layouts. |
+| `badge-status` | implemented | `CatchBadge` owns named visual recipes, `CatchCountBadge` owns typed integers, `CatchStatusDot` owns marks, and `CatchInlineStatus` owns quiet unboxed state. |
+| `floating-compact-controls` | implemented | Icon-only and labelled actions keep distinct APIs while sharing 44px defaults, the 40px app-bar exception, and typed count rendering. |
+| `identity-switchers` | implemented | The club switcher is whole-surface interactive for multiple clubs, passive for one, and exposes real art plus selected/role context. |
+| `progress-cues` | implemented | Ordered compact rails and expanded rows share future/current/complete state semantics while retaining distinct layouts. |
 
 Event Detail was not included in this approval and remains excluded while its
 screen redesign is active in a parallel worktree.
 
 ## Focused Visual Decision Queue
 
-Status: four pattern families approved; implementation pending
+Status: four pattern families implemented and visually verified
 
 The first screen of the compare tool is the stable pattern-family queue. Each
 member receives one of `canonical`, `repair`, `unify`, `register`, or `discard`.
 Similarity evidence remains available in a separate bucket for discovery and
 boundary checks.
 
-The stable owner-question ids (`B1`–`B5`, `C1`–`C4`, `I1`–`I3`, `P1`–`P3`) are
-approved design and API decisions, not implemented outcomes. Their selected
-options live in the pattern-family registry and render directly in the compare
-tool. The broader candidates below remain unresolved and were not covered by
-this blanket approval.
+The stable owner-question ids (`B1`–`B5`, `C1`–`C4`, `I1`–`I3`, `P1`–`P3`)
+now have implemented outcomes in the pattern-family and mechanical decision
+registries. The broader candidates below remain unresolved and were not
+covered by that approval or implementation tranche.
 
 | Candidate | Review question | Compare id |
 | --- | --- | --- |
@@ -76,7 +74,7 @@ club hero/header implementation.
 
 ## Second Pass Candidate Backlog
 
-Status: paused behind focused visual review
+Status: pending future owner review; no implementation order approved
 
 These are broader Widgetbook catalog boundaries that still look like possible
 drift points after the field, surface, top-bar, metric, and section

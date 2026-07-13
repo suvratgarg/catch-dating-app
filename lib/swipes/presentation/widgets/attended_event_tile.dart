@@ -85,9 +85,8 @@ class AttendedEventTile extends StatelessWidget {
                   foregroundColor: t.primary,
                 ),
                 gapH4,
-                CatchBadge(
+                CatchBadge.solidStatus(
                   label: context.l10n.swipesAttendedEventTileLabelCatch,
-                  tone: CatchBadgeTone.solid,
                   size: CatchBadgeSize.md,
                 ),
               ],

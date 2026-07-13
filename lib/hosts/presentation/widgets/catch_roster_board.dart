@@ -15,10 +15,7 @@ Color _rosterToneColor(CatchTokens t, CatchBadgeTone tone) => switch (tone) {
   CatchBadgeTone.warning => t.warning,
   CatchBadgeTone.danger => t.danger,
   CatchBadgeTone.gold => t.gold,
-  CatchBadgeTone.solid => t.ink,
-  CatchBadgeTone.neutral ||
-  CatchBadgeTone.brand ||
-  CatchBadgeTone.live => t.ink2,
+  CatchBadgeTone.neutral || CatchBadgeTone.brand => t.ink2,
 };
 
 /// One count tile in a [CatchRosterTiles] row.

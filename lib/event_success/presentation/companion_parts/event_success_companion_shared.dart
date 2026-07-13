@@ -1055,7 +1055,7 @@ class CompanionHero extends StatelessWidget {
                 showSelfCheckIn: showSelfCheckIn,
                 eventEnded: eventEnded,
               ),
-              tone: attended ? CatchBadgeTone.success : CatchBadgeTone.live,
+              tone: attended ? CatchBadgeTone.success : CatchBadgeTone.brand,
               icon: attended
                   ? CatchIcons.checkRounded
                   : CatchIcons.qrCode2Rounded,

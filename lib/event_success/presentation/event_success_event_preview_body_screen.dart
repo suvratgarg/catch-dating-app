@@ -116,18 +116,16 @@ class EventPreviewHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: context
                     .l10n
                     .eventSuccessEventSuccessEventPreviewBodyScreenLabelPreviewOnly,
-                tone: CatchBadgeTone.solid,
                 icon: CatchIcons.visibilityOutlined,
               ),
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: context
                     .l10n
                     .eventSuccessEventSuccessEventPreviewBodyScreenLabelDevStaging,
-                tone: CatchBadgeTone.live,
                 icon: CatchIcons.scienceOutlined,
               ),
             ],

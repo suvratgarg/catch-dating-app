@@ -208,30 +208,15 @@ class AttendeeCountdown extends StatelessWidget {
                     runSpacing: CatchSpacing.s2,
                     alignment: WrapAlignment.center,
                     children: [
-                      CatchBadge(
+                      CatchBadge.onDarkStatus(
                         label: context
                             .l10n
                             .eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold,
-                        tone: CatchBadgeTone.live,
                         icon: CatchIcons.lockClockRounded,
-                        backgroundColor: t.ink.withValues(
-                          alpha: CatchOpacity.warningFill,
-                        ),
-                        foregroundColor: t.ink,
-                        borderColor: t.ink.withValues(
-                          alpha: CatchOpacity.revealBeatBorderInactive,
-                        ),
                       ),
-                      CatchBadge(
+                      CatchBadge.onDarkStatus(
                         label: kind.label(context.l10n),
                         icon: kind.icon,
-                        backgroundColor: t.gold.withValues(
-                          alpha: CatchOpacity.revealSurfaceBorder,
-                        ),
-                        foregroundColor: t.ink,
-                        borderColor: t.gold.withValues(
-                          alpha: CatchOpacity.revealBeatFillActive,
-                        ),
                       ),
                     ],
                   ),
@@ -1193,7 +1178,7 @@ class RevealRoundRow extends StatelessWidget {
       ),
       _RevealRoundState.now => (
         context.l10n.eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow,
-        CatchBadgeTone.solid,
+        CatchBadgeTone.brand,
       ),
       _RevealRoundState.hidden => (
         context.l10n.eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden,

@@ -1072,22 +1072,6 @@ Widget clubHostRoleBadgeStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Rating pill states',
-  type: ClubRatingPill,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubRatingPillStates(BuildContext context) {
-  return const _CatalogScreen(
-    title: 'ClubRatingPill',
-    catalogId: 'atom.club.rating_pill',
-    children: [
-      _StateCard(label: 'high rating', child: ClubRatingPill(rating: 4.9)),
-      _StateCard(label: 'new rating', child: ClubRatingPill(rating: 3.8)),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Body composition',
   type: ClubDetailBody,
   path: '[Club Detail]/Sections',

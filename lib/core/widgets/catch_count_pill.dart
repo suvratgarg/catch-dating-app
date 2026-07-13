@@ -69,12 +69,19 @@ class CatchCountPill extends StatelessWidget {
       elevation: CatchSurfaceElevation.raised,
       backgroundColor: t.surface.withValues(alpha: 0.94),
       borderColor: t.line2,
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+      padding: EdgeInsets.only(
+        left: CatchSpacing.s4,
+        right: count > 0 ? CatchSpacing.s5 : CatchSpacing.s4,
+      ),
       onTap: onPressed,
       child: content,
     );
 
-    final countedPill = CatchCountBadge(count: count, child: pill);
+    final countedPill = CatchCountBadge(
+      count: count,
+      offset: const Offset(CatchSpacing.s1, -CatchSpacing.s1),
+      child: pill,
+    );
 
     if (semanticLabel == null) return countedPill;
     return Semantics(

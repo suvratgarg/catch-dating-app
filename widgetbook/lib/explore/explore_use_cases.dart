@@ -15,7 +15,6 @@ import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -1418,25 +1417,6 @@ Widget exploreClubTagsStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Dark pill states',
-  type: ExploreDarkPill,
-  path: '[Explore]/Cards',
-)
-Widget exploreDarkPillStates(BuildContext context) {
-  return const _CatalogScreen(
-    title: 'ExploreDarkPill',
-    catalogId: 'card.explore.feed.dark_pill',
-    children: [
-      _StateCard(label: 'default', child: ExploreDarkPill('412 members')),
-      _StateCard(
-        label: 'compact action',
-        child: ExploreDarkPill('View club', compact: true),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Mono label states',
   type: ExploreMonoLabel,
   path: '[Explore]/Cards',
@@ -1858,31 +1838,6 @@ Widget moreActivityTypesRowStates(BuildContext context) {
       _StateCard(
         label: 'collapsed overflow',
         child: MoreActivityTypesRow(remainingCount: 3, onTap: _noop),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Activity dot states',
-  type: ActivityDot,
-  path: '[Explore]/Rows',
-)
-Widget activityDotStates(BuildContext context) {
-  final run = eventActivityVisual(ActivityKind.socialRun, context: context);
-  final dinner = eventActivityVisual(ActivityKind.dinner, context: context);
-  return _CatalogScreen(
-    title: 'ActivityDot',
-    catalogId: 'row.explore.activity_type.dot',
-    children: [
-      _StateCard(
-        label: 'activity accents',
-        child: _InlineSwatches(
-          children: [
-            ActivityDot(color: run.accent),
-            ActivityDot(color: dinner.accent),
-          ],
-        ),
       ),
     ],
   );
@@ -2437,21 +2392,6 @@ class _MapPillFrame extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _InlineSwatches extends StatelessWidget {
-  const _InlineSwatches({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s3,
-      runSpacing: CatchSpacing.s3,
-      children: children,
     );
   }
 }

@@ -142,9 +142,8 @@ class PhotoSlot extends StatelessWidget {
                   top: CatchSpacing.s2,
                   left: CatchSpacing.s2,
                   child: ExcludeSemantics(
-                    child: CatchBadge(
+                    child: CatchBadge.functional(
                       label: mainBadgeLabel,
-                      typography: CatchBadgeTypography.functional,
                       backgroundColor: t.ink,
                       foregroundColor: t.bg,
                       borderColor: Colors.transparent,

@@ -6027,6 +6027,190 @@
       "decidedBy": "codex-rule:PWF-001",
       "date": "2026-07-12",
       "status": "implemented-PWF-001"
+    },
+    {
+      "clusterId": "pattern-family:badge-status",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchBadge",
+      "members": [
+        {
+          "name": "CatchBadge",
+          "action": "keep",
+          "note": "repaired as sentence-case metadata plus named functional, solid, live, on-dark, and privacy recipes"
+        },
+        {
+          "name": "CatchCountBadge",
+          "action": "keep",
+          "note": "sole typed integer overlay; hides zero, preserves caller geometry, and clamps overflow to 99+"
+        },
+        {
+          "name": "CatchIconBadge",
+          "action": "absorb",
+          "note": "numeric uses moved to CatchCountBadge; generic string overlays removed"
+        },
+        {
+          "name": "CatchPrivacyBadge",
+          "action": "keep",
+          "note": "retained as the localized visibility adapter over CatchBadge.privacy"
+        },
+        {
+          "name": "ClubHostRoleBadge",
+          "action": "keep",
+          "note": "retained as a domain-to-CatchBadge adapter without local chrome"
+        },
+        {
+          "name": "CatchStatusDot",
+          "action": "keep",
+          "note": "canonical nonnumeric status mark with a reviewed 7px default"
+        },
+        {
+          "name": "CatchInlineStatus",
+          "action": "keep",
+          "note": "new canonical unboxed status row with an 8px mark and wrapping supporting copy"
+        },
+        {
+          "name": "ActivityDot",
+          "action": "absorb",
+          "note": "activity-colored uses now render through CatchStatusDot"
+        },
+        {
+          "name": "CatchPersonNewMatchDot",
+          "action": "keep",
+          "note": "semantic row adapter now delegates its mark to CatchStatusDot"
+        },
+        {
+          "name": "CatchPersonUnreadCountPill",
+          "action": "keep",
+          "note": "semantic row adapter now delegates its integer to CatchCountBadge"
+        },
+        {
+          "name": "CatchCornerSash",
+          "action": "delete",
+          "note": "unused speculative primitive removed"
+        },
+        {
+          "name": "ClubRatingPill",
+          "action": "delete",
+          "note": "unused feature wrapper removed"
+        },
+        {
+          "name": "ExploreDarkPill",
+          "action": "absorb",
+          "note": "solid overlay metadata moved to CatchBadge.solid"
+        },
+        {
+          "name": "EventSuccessDarkPill",
+          "action": "absorb",
+          "note": "its strongest on-dark recipe became CatchBadge.onDark"
+        },
+        {
+          "name": "LiveNowPill",
+          "action": "absorb",
+          "note": "live dot plus functional copy moved to CatchBadge.live"
+        },
+        {
+          "name": "HostTodayCountdownPill",
+          "action": "absorb",
+          "note": "passive hero metadata moved to the fixed on-dark badge recipe"
+        },
+        {
+          "name": "EventSuccessMetricPill",
+          "action": "keep",
+          "note": "percentage formatting remains feature-owned while chrome delegates to CatchBadge"
+        },
+        {
+          "name": "UnsavedChangesPill",
+          "action": "absorb",
+          "note": "quiet status moved to CatchInlineStatus and the misleading pill symbol was removed"
+        }
+      ],
+      "rationale": "The approved family preserves semantic adapters but eliminates alternate badge chrome. CatchBadge owns named visual recipes, CatchCountBadge owns integers, CatchStatusDot owns nonnumeric marks, and CatchInlineStatus owns quiet unboxed state. Feature wrappers survive only when they translate domain meaning or localized copy. Event Detail remains outside this order.",
+      "decidedBy": "codex-rule:PWF-002",
+      "date": "2026-07-13",
+      "status": "implemented-PWF-002"
+    },
+    {
+      "clusterId": "pattern-family:floating-compact-controls",
+      "decision": "consolidate-semantic-contracts",
+      "canonicalSymbol": "CatchIconButton",
+      "members": [
+        {
+          "name": "CatchCountPill",
+          "action": "keep",
+          "note": "repaired as the required labelled CatchCountPill.label action with a 44px target and typed count"
+        },
+        {
+          "name": "CatchIconButton",
+          "action": "keep",
+          "note": "canonical icon-only action; counted constructor delegates to CatchCountBadge"
+        },
+        {
+          "name": "ExploreFilterGlyphButton",
+          "action": "absorb",
+          "note": "replaced by CatchIconButton.counted"
+        },
+        {
+          "name": "DashboardNotificationBellButton",
+          "action": "absorb",
+          "note": "replaced by CatchIconButton.counted at its only caller"
+        },
+        {
+          "name": "DockBell",
+          "action": "keep",
+          "note": "retained as a toggle and loading adapter over the shared icon-button renderer"
+        },
+        {
+          "name": "ProfileHeightStepButton",
+          "action": "absorb",
+          "note": "bounded-step state stays in the editor while rendering moved to CatchIconButton"
+        }
+      ],
+      "rationale": "Icon-only and labelled actions remain separate ergonomic APIs while sharing the same minimum-target and count-overlay rules. Picker, toggle, loading, bounded-step, and media semantics stay in their adapters rather than being flattened into a fictitious universal compact-control widget.",
+      "decidedBy": "codex-rule:PWF-003",
+      "date": "2026-07-13",
+      "status": "implemented-PWF-003"
+    },
+    {
+      "clusterId": "pattern-family:identity-switchers",
+      "decision": "repair-existing",
+      "canonicalSymbol": "HostTodayClubPill",
+      "members": [
+        {
+          "name": "HostTodayClubPill",
+          "action": "keep",
+          "note": "whole-surface menu action for multiple clubs, passive for one club, with real logo or activity initials and selected role context"
+        }
+      ],
+      "rationale": "Identity switching remains a contextual composition rather than a generic chip. The repaired Host Today control makes its action boundary, fallback art, selected state, and owner or host-team context explicit without inventing a one-consumer core primitive.",
+      "decidedBy": "codex-rule:PWF-004",
+      "date": "2026-07-13",
+      "status": "implemented-PWF-004"
+    },
+    {
+      "clusterId": "pattern-family:progress-cues",
+      "decision": "share-state-keep-layouts",
+      "canonicalSymbol": "CatchProgressCueState",
+      "members": [
+        {
+          "name": "CountdownBeatRail",
+          "action": "keep",
+          "note": "repaired to accept ordered display items plus currentIndex"
+        },
+        {
+          "name": "CountdownBeatPill",
+          "action": "absorb",
+          "note": "private item rendering moved inside the rail-owned sequence contract"
+        },
+        {
+          "name": "LiveStepRow",
+          "action": "keep",
+          "note": "expanded renderer now consumes the shared future, current, and complete state"
+        }
+      ],
+      "rationale": "Compact rails and expanded run-of-show rows share CatchProgressCueState while keeping layout-specific renderers. Complete uses a success check, current alone uses gold, future stays muted, and Event Success retains ownership of percentage thresholds.",
+      "decidedBy": "codex-rule:PWF-005",
+      "date": "2026-07-13",
+      "status": "implemented-PWF-005"
     }
   ]
 }

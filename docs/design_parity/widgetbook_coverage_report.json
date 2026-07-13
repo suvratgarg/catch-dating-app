@@ -1,18 +1,18 @@
 {
-  "generatedAt": "2026-07-12T19:47:32.012Z",
+  "generatedAt": "2026-07-13T11:32:16.537Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
-  "total": 975,
+  "total": 963,
   "stats": {
-    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 852,
-    "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 118,
+    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 842,
+    "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 116,
     "PRIVATE_NEEDS_RENAME_OR_REPLACE": 5
   },
   "decisionStats": {},
   "areaStats": [
     {
       "area": "event_success",
-      "total": 196,
-      "publicAlreadyCataloged": 190,
+      "total": 192,
+      "publicAlreadyCataloged": 186,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
       "publicNeedsCatalogOrReplace": 6,
@@ -22,19 +22,19 @@
     },
     {
       "area": "hosts",
-      "total": 166,
-      "publicAlreadyCataloged": 113,
+      "total": 165,
+      "publicAlreadyCataloged": 114,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
-      "publicNeedsCatalogOrReplace": 53,
+      "publicNeedsCatalogOrReplace": 51,
       "replacedWithCatalogEntry": 0,
       "promotedToWidgetbookCatalog": 0,
       "deletedOrMergedDuplicate": 0
     },
     {
       "area": "core/widgets",
-      "total": 152,
-      "publicAlreadyCataloged": 148,
+      "total": 151,
+      "publicAlreadyCataloged": 147,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 2,
       "publicNeedsCatalogOrReplace": 2,
@@ -66,8 +66,8 @@
     },
     {
       "area": "explore",
-      "total": 49,
-      "publicAlreadyCataloged": 47,
+      "total": 46,
+      "publicAlreadyCataloged": 44,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 2,
       "publicNeedsCatalogOrReplace": 0,
@@ -77,8 +77,8 @@
     },
     {
       "area": "clubs",
-      "total": 39,
-      "publicAlreadyCataloged": 39,
+      "total": 38,
+      "publicAlreadyCataloged": 38,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
       "publicNeedsCatalogOrReplace": 0,
@@ -88,8 +88,8 @@
     },
     {
       "area": "user_profile",
-      "total": 30,
-      "publicAlreadyCataloged": 25,
+      "total": 29,
+      "publicAlreadyCataloged": 24,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
       "publicNeedsCatalogOrReplace": 5,
@@ -99,8 +99,8 @@
     },
     {
       "area": "dashboard",
-      "total": 26,
-      "publicAlreadyCataloged": 18,
+      "total": 25,
+      "publicAlreadyCataloged": 17,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
       "publicNeedsCatalogOrReplace": 8,
@@ -865,7 +865,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "line": 270,
+      "line": 273,
       "name": "ClubMembershipDock",
       "base": "ConsumerWidget",
       "area": "clubs",
@@ -1173,7 +1173,7 @@
     },
     {
       "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "line": 106,
+      "line": 105,
       "name": "MembershipTrailingController",
       "base": "ConsumerWidget",
       "area": "clubs",
@@ -1187,7 +1187,7 @@
     },
     {
       "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "line": 174,
+      "line": 173,
       "name": "MembershipTrailing",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -1229,7 +1229,7 @@
     },
     {
       "file": "lib/clubs/shared/club_identity_atoms.dart",
-      "line": 42,
+      "line": 41,
       "name": "ClubMemberSeal",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -1243,7 +1243,7 @@
     },
     {
       "file": "lib/clubs/shared/club_identity_atoms.dart",
-      "line": 94,
+      "line": 93,
       "name": "ClubTagWrap",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -1257,7 +1257,7 @@
     },
     {
       "file": "lib/clubs/shared/club_identity_atoms.dart",
-      "line": 121,
+      "line": 117,
       "name": "ClubHostIdentityLine",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -1271,26 +1271,12 @@
     },
     {
       "file": "lib/clubs/shared/club_identity_atoms.dart",
-      "line": 175,
+      "line": 171,
       "name": "ClubHostRoleBadge",
       "base": "StatelessWidget",
       "area": "clubs",
       "visibility": "public",
       "publicName": "ClubHostRoleBadge",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/clubs/shared/club_identity_atoms.dart",
-      "line": 193,
-      "name": "ClubRatingPill",
-      "base": "StatelessWidget",
-      "area": "clubs",
-      "visibility": "public",
-      "publicName": "ClubRatingPill",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -1649,26 +1635,12 @@
     },
     {
       "file": "lib/core/widgets/catch_badge.dart",
-      "line": 19,
+      "line": 17,
       "name": "CatchBadge",
       "base": "StatelessWidget",
       "area": "core/widgets",
       "visibility": "public",
       "publicName": "CatchBadge",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/core/widgets/catch_badge.dart",
-      "line": 107,
-      "name": "CatchIconBadge",
-      "base": "StatelessWidget",
-      "area": "core/widgets",
-      "visibility": "public",
-      "publicName": "CatchIconBadge",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -1830,22 +1802,8 @@
       "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
-      "file": "lib/core/widgets/catch_corner_sash.dart",
-      "line": 10,
-      "name": "CatchCornerSash",
-      "base": "StatelessWidget",
-      "area": "core/widgets",
-      "visibility": "public",
-      "publicName": "CatchCornerSash",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
       "file": "lib/core/widgets/catch_count_badge.dart",
-      "line": 9,
+      "line": 13,
       "name": "CatchCountBadge",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -1859,7 +1817,7 @@
     },
     {
       "file": "lib/core/widgets/catch_count_pill.dart",
-      "line": 12,
+      "line": 14,
       "name": "CatchCountPill",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2321,7 +2279,7 @@
     },
     {
       "file": "lib/core/widgets/catch_icon_button.dart",
-      "line": 22,
+      "line": 24,
       "name": "CatchIconButton",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2341,6 +2299,20 @@
       "area": "core/widgets",
       "visibility": "public",
       "publicName": "CatchIconTile",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
+      "decision": null,
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
+    },
+    {
+      "file": "lib/core/widgets/catch_inline_status.dart",
+      "line": 10,
+      "name": "CatchInlineStatus",
+      "base": "StatelessWidget",
+      "area": "core/widgets",
+      "visibility": "public",
+      "publicName": "CatchInlineStatus",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -2741,7 +2713,7 @@
     },
     {
       "file": "lib/core/widgets/catch_person_avatar.dart",
-      "line": 227,
+      "line": 234,
       "name": "CatchPersonAvatarShell",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2755,7 +2727,7 @@
     },
     {
       "file": "lib/core/widgets/catch_person_avatar.dart",
-      "line": 252,
+      "line": 259,
       "name": "CatchObscuredAvatarContent",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2769,7 +2741,7 @@
     },
     {
       "file": "lib/core/widgets/catch_person_avatar.dart",
-      "line": 278,
+      "line": 285,
       "name": "CatchPersonAvatarStack",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2783,7 +2755,7 @@
     },
     {
       "file": "lib/core/widgets/catch_person_avatar.dart",
-      "line": 356,
+      "line": 363,
       "name": "CatchVeiledPersonAvatar",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2797,7 +2769,7 @@
     },
     {
       "file": "lib/core/widgets/catch_person_avatar.dart",
-      "line": 396,
+      "line": 403,
       "name": "CatchActivityInitialsPlaceholder",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2811,7 +2783,7 @@
     },
     {
       "file": "lib/core/widgets/catch_person_avatar.dart",
-      "line": 483,
+      "line": 490,
       "name": "CatchInitialsAvatarPlaceholder",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2881,7 +2853,7 @@
     },
     {
       "file": "lib/core/widgets/catch_person_row.dart",
-      "line": 301,
+      "line": 294,
       "name": "CatchPersonNewMatchDot",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2895,7 +2867,7 @@
     },
     {
       "file": "lib/core/widgets/catch_person_row.dart",
-      "line": 320,
+      "line": 313,
       "name": "CatchPersonRosterLayout",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2909,7 +2881,7 @@
     },
     {
       "file": "lib/core/widgets/catch_privacy_badge.dart",
-      "line": 11,
+      "line": 8,
       "name": "CatchPrivacyBadge",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -3735,7 +3707,7 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 31,
+      "line": 30,
       "name": "DashboardScreen",
       "base": "ConsumerStatefulWidget",
       "area": "dashboard",
@@ -3749,7 +3721,7 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 152,
+      "line": 151,
       "name": "NotificationsAction",
       "base": "ConsumerWidget",
       "area": "dashboard",
@@ -3763,21 +3735,7 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 189,
-      "name": "DashboardNotificationBellButton",
-      "base": "StatelessWidget",
-      "area": "dashboard",
-      "visibility": "public",
-      "publicName": "DashboardNotificationBellButton",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 217,
+      "line": 193,
       "name": "DashboardLoadingHeader",
       "base": "StatelessWidget",
       "area": "dashboard",
@@ -3791,7 +3749,7 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 248,
+      "line": 224,
       "name": "DashboardFocusLoadingCard",
       "base": "StatelessWidget",
       "area": "dashboard",
@@ -5149,7 +5107,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_event_preview_body_screen.dart",
-      "line": 192,
+      "line": 184,
       "name": "IntegrationNotesCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5219,7 +5177,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "line": 38,
+      "line": 39,
       "name": "EventSuccessHostSetupFlow",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -5233,7 +5191,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "line": 152,
+      "line": 153,
       "name": "EventSuccessLiveHostMode",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5359,7 +5317,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "line": 740,
+      "line": 735,
       "name": "EventSuccessPromptCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5373,7 +5331,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "line": 779,
+      "line": 774,
       "name": "EventSuccessConversationCueCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5387,7 +5345,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "line": 859,
+      "line": 854,
       "name": "ConversationCueRow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5401,7 +5359,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "line": 908,
+      "line": 903,
       "name": "WingmanCandidateRow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5415,7 +5373,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "line": 960,
+      "line": 955,
       "name": "EventSuccessRecommendationTile",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5429,7 +5387,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "line": 1008,
+      "line": 1003,
       "name": "EventSuccessMetricPill",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5443,26 +5401,12 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_hero_surface.dart",
-      "line": 7,
+      "line": 6,
       "name": "EventSuccessHeroSurface",
       "base": "StatelessWidget",
       "area": "event_success",
       "visibility": "public",
       "publicName": "EventSuccessHeroSurface",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/event_success/presentation/event_success_hero_surface.dart",
-      "line": 28,
-      "name": "EventSuccessDarkPill",
-      "base": "StatelessWidget",
-      "area": "event_success",
-      "visibility": "public",
-      "publicName": "EventSuccessDarkPill",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -5611,7 +5555,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 224,
+      "line": 222,
       "name": "PromiseGrid",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5625,7 +5569,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 280,
+      "line": 278,
       "name": "PromiseCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5639,7 +5583,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 311,
+      "line": 309,
       "name": "PlaybookCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5653,7 +5597,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 388,
+      "line": 386,
       "name": "CapacityRow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5667,7 +5611,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 432,
+      "line": 430,
       "name": "RunOfShow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5681,7 +5625,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 509,
+      "line": 507,
       "name": "ModuleGrid",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5695,7 +5639,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 548,
+      "line": 546,
       "name": "LayerHeader",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5709,7 +5653,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 573,
+      "line": 571,
       "name": "ModuleCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5723,7 +5667,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 633,
+      "line": 631,
       "name": "CoachPanel",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5737,7 +5681,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 725,
+      "line": 723,
       "name": "NotesList",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5751,7 +5695,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 761,
+      "line": 759,
       "name": "Section",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5793,7 +5737,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 601,
+      "line": 599,
       "name": "ManualQaControls",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5807,7 +5751,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 646,
+      "line": 644,
       "name": "ManualQaSideBySide",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5821,7 +5765,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 806,
+      "line": 804,
       "name": "QaDeviceFrame",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5835,7 +5779,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 874,
+      "line": 872,
       "name": "ManualQaHostManagePane",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5849,7 +5793,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 908,
+      "line": 906,
       "name": "AttendeeQaControls",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5863,7 +5807,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 977,
+      "line": 975,
       "name": "ControlLabel",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6157,7 +6101,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "line": 599,
+      "line": 603,
       "name": "LiveCheckInSummaryStrip",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6171,7 +6115,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "line": 667,
+      "line": 671,
       "name": "LiveCheckInQrCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6185,21 +6129,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "line": 710,
-      "name": "LiveNowPill",
-      "base": "StatelessWidget",
-      "area": "event_success",
-      "visibility": "public",
-      "publicName": "LiveNowPill",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "line": 745,
+      "line": 712,
       "name": "LiveStepNavigation",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6423,7 +6353,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-      "line": 252,
+      "line": 260,
       "name": "TargetAttendeeControl",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6437,7 +6367,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-      "line": 343,
+      "line": 351,
       "name": "ReadinessIssues",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6451,21 +6381,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-      "line": 401,
-      "name": "UnsavedChangesPill",
-      "base": "StatelessWidget",
-      "area": "event_success",
-      "visibility": "public",
-      "publicName": "UnsavedChangesPill",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-      "line": 425,
+      "line": 409,
       "name": "NoticeCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6703,7 +6619,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 260,
+      "line": 269,
       "name": "CountdownStageDial",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6717,7 +6633,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 379,
+      "line": 388,
       "name": "CountdownBeatRail",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6731,21 +6647,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 426,
-      "name": "CountdownBeatPill",
-      "base": "StatelessWidget",
-      "area": "event_success",
-      "visibility": "public",
-      "publicName": "CountdownBeatPill",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 476,
+      "line": 485,
       "name": "CountdownCueStack",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6759,7 +6661,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 507,
+      "line": 516,
       "name": "CountdownCuePill",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6773,7 +6675,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 739,
+      "line": 748,
       "name": "WaitingRevealCue",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6787,7 +6689,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 785,
+      "line": 794,
       "name": "VisiblePodAssignment",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6801,7 +6703,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 832,
+      "line": 841,
       "name": "VisibleRotationSlots",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6815,7 +6717,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 874,
+      "line": 883,
       "name": "VisibleGroupRotationSlots",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6829,7 +6731,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 909,
+      "line": 918,
       "name": "AssignmentUnlockedShell",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6843,7 +6745,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 941,
+      "line": 950,
       "name": "RevealGroupSlotRow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6857,7 +6759,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 1025,
+      "line": 1034,
       "name": "RevealSlotRow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6871,7 +6773,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 1087,
+      "line": 1096,
       "name": "RevealRoundList",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6885,7 +6787,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 1137,
+      "line": 1146,
       "name": "RevealRoundRow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6899,7 +6801,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 1241,
+      "line": 1250,
       "name": "RevealRoundRail",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6913,7 +6815,7 @@
     },
     {
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "line": 1290,
+      "line": 1299,
       "name": "RevealTicker",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -8761,7 +8663,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
-      "line": 18,
+      "line": 19,
       "name": "ExploreClubPolaroidCard",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8775,7 +8677,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
-      "line": 68,
+      "line": 69,
       "name": "ExploreFeedClubRow",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8789,7 +8691,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
-      "line": 144,
+      "line": 145,
       "name": "ExploreClubCover",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8803,7 +8705,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
-      "line": 166,
+      "line": 167,
       "name": "ExploreClubTags",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8859,21 +8761,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_event_support_widgets.dart",
-      "line": 6,
-      "name": "ExploreDarkPill",
-      "base": "StatelessWidget",
-      "area": "explore",
-      "visibility": "public",
-      "publicName": "ExploreDarkPill",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_event_support_widgets.dart",
-      "line": 37,
+      "line": 4,
       "name": "ExploreMonoLabel",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8957,7 +8845,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
-      "line": 269,
+      "line": 272,
       "name": "MoreActivityTypesRow",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8971,21 +8859,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
-      "line": 327,
-      "name": "ActivityDot",
-      "base": "StatelessWidget",
-      "area": "explore",
-      "visibility": "public",
-      "publicName": "ActivityDot",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
-      "line": 345,
+      "line": 330,
       "name": "EventTypeBrowseSkeleton",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9055,21 +8929,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line": 114,
-      "name": "ExploreFilterGlyphButton",
-      "base": "StatelessWidget",
-      "area": "explore",
-      "visibility": "public",
-      "publicName": "ExploreFilterGlyphButton",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line": 166,
+      "line": 116,
       "name": "ExploreFilterSheet",
       "base": "StatelessWidget",
       "area": "explore",
@@ -10707,7 +10567,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "line": 487,
+      "line": 485,
       "name": "HostOrganizerTrendStrip",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10811,15 +10671,15 @@
       "area": "hosts",
       "visibility": "public",
       "publicName": "HostTodayClubPill",
-      "exactNameMatched": false,
-      "publicNameMatched": false,
-      "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
       "decision": null,
-      "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "line": 350,
+      "line": 415,
       "name": "HostTodayLoadingBody",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10833,7 +10693,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "line": 368,
+      "line": 433,
       "name": "HostTodayEventHero",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10847,21 +10707,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "line": 497,
-      "name": "HostTodayCountdownPill",
-      "base": "StatelessWidget",
-      "area": "hosts",
-      "visibility": "public",
-      "publicName": "HostTodayCountdownPill",
-      "exactNameMatched": false,
-      "publicNameMatched": false,
-      "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
-      "decision": null,
-      "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
-    },
-    {
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "line": 530,
+      "line": 562,
       "name": "HostTodayHeroMetric",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10875,7 +10721,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "line": 569,
+      "line": 601,
       "name": "HostTodayAvatarStack",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10889,7 +10735,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "line": 604,
+      "line": 636,
       "name": "HostTodayAvatarDot",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10903,7 +10749,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "line": 641,
+      "line": 673,
       "name": "HostTodayTaskCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11015,7 +10861,7 @@
     },
     {
       "file": "lib/hosts/presentation/payments/host_payment_account_card.dart",
-      "line": 181,
+      "line": 180,
       "name": "HostPaymentAccountContentCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11029,7 +10875,7 @@
     },
     {
       "file": "lib/hosts/presentation/payments/host_payment_account_card.dart",
-      "line": 340,
+      "line": 338,
       "name": "HostPaymentAccountLoadingCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11043,7 +10889,7 @@
     },
     {
       "file": "lib/hosts/presentation/payments/host_payment_account_card.dart",
-      "line": 381,
+      "line": 379,
       "name": "HostPaymentAccountErrorCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11071,7 +10917,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 42,
+      "line": 39,
       "name": "CatchRosterTiles",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11085,7 +10931,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 75,
+      "line": 72,
       "name": "CatchRosterTileCell",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11099,7 +10945,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 201,
+      "line": 198,
       "name": "CatchRosterRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11113,7 +10959,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 297,
+      "line": 294,
       "name": "CatchRosterActionCell",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11127,7 +10973,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 372,
+      "line": 369,
       "name": "CatchRosterDecideTarget",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11141,7 +10987,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 405,
+      "line": 402,
       "name": "CatchRosterTable",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11169,7 +11015,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_club_tools.dart",
-      "line": 324,
+      "line": 322,
       "name": "HostStatChip",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11589,7 +11435,7 @@
     },
     {
       "file": "lib/image_uploads/shared/photo_slot.dart",
-      "line": 260,
+      "line": 259,
       "name": "StripedPhotoPlaceholder",
       "base": "StatelessWidget",
       "area": "image_uploads",
@@ -13647,7 +13493,7 @@
     },
     {
       "file": "lib/user_profile/presentation/widgets/inline_editor_height.dart",
-      "line": 15,
+      "line": 14,
       "name": "ProfileInlineHeightEditor",
       "base": "ConsumerStatefulWidget",
       "area": "user_profile",
@@ -13661,26 +13507,12 @@
     },
     {
       "file": "lib/user_profile/presentation/widgets/inline_editor_height.dart",
-      "line": 118,
+      "line": 117,
       "name": "ProfileHeightStepperControls",
       "base": "StatelessWidget",
       "area": "user_profile",
       "visibility": "public",
       "publicName": "ProfileHeightStepperControls",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/user_profile/presentation/widgets/inline_editor_height.dart",
-      "line": 157,
-      "name": "ProfileHeightStepButton",
-      "base": "StatelessWidget",
-      "area": "user_profile",
-      "visibility": "public",
-      "publicName": "ProfileHeightStepButton",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",

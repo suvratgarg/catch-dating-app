@@ -1019,6 +1019,12 @@ abstract final class CatchOpacity {
   /// Translucent pill fills over fixed dark editorial hero surfaces.
   static const double darkHeroPillFill = 0.16;
 
+  /// Canonical light-fill badge treatment over dark, media, or art surfaces.
+  static const double badgeOnDarkFill = 0.12;
+
+  /// Canonical light hairline for badges over dark, media, or art surfaces.
+  static const double badgeOnDarkBorder = 0.18;
+
   /// Backing ring opacity for overlapping avatar stacks on dark/art surfaces.
   static const double avatarStackRing = 0.28;
 

@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.14
+version: 0.1.15
 updated: 2026-07-13
 owner: product_design_parity
 status: active
@@ -38,7 +38,7 @@ checks in one durable matrix.
 | `state_matrix.schema.json` | JSON Schema for the matrix shape. |
 | `tool/design/check_design_parity_matrix.mjs` | Validates routes, captures, component ids, screen contracts, source paths, tests, and state entries. |
 | `widgetbook/` | Local Widgetbook workspace for reusable component and hard-to-reach state previews. |
-| `widgetbook/lib/reviews/pattern_family_review_main.dart` | Standalone all-family review wall for comparing unresolved production-widget patterns without changing app contracts or replacing the normal Widgetbook build. |
+| `widgetbook/lib/reviews/pattern_family_review_main.dart` | Standalone all-family review wall for comparing approved, implemented, and future production-widget patterns without replacing the normal Widgetbook build. |
 
 ## Pass Workflow
 

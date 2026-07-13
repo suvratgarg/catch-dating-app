@@ -100,10 +100,9 @@ class HostPaymentAccountCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchBadge(
+              CatchBadge.functional(
                 label: presentation.badge,
                 tone: presentation.tone,
-                typography: CatchBadgeTypography.functional,
               ),
               gapH14,
               Text(
@@ -219,10 +218,9 @@ class HostPaymentAccountContentCard extends StatelessWidget {
                   title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
                 ),
               ),
-              CatchBadge(
+              CatchBadge.functional(
                 label: presentation.badge,
                 tone: presentation.tone,
-                typography: CatchBadgeTypography.functional,
               ),
             ],
           ),

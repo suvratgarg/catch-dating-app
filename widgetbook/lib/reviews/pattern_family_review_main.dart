@@ -1,32 +1,26 @@
 import 'package:catch_dating_app/clubs/domain/club.dart' show ClubHostRole;
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart'
-    show ClubHostRoleBadge, ClubRatingPill;
+    show ClubHostRoleBadge;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart'
     show CatchPersonNewMatchDot, CatchPersonUnreadCountPill;
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_progress_cue.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart'
-    show EventSuccessMetricPill;
-import 'package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart'
-    show EventSuccessDarkPill;
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart'
-    show LiveNowPill, UnsavedChangesPill;
+    show EventSuccessMetricPill, LiveStepRow;
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart'
-    show CountdownBeatPill, CountdownBeatRail;
-import 'package:catch_dating_app/explore/presentation/widgets/explore_event_support_widgets.dart'
-    show ExploreDarkPill;
-import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart'
-    show ActivityDot;
+    show CountdownBeatRail;
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
-    show HostTodayClubPill, HostTodayCountdownPill;
+    show HostTodayClubPill;
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/labs/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
@@ -267,7 +261,6 @@ class _BadgeStatusFamily extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final event = HostOperationsFixtures.upcomingEvent;
     return _FamilySection(
       id: 'badge-status · B1–B5',
       title: 'Badge and compact status',
@@ -281,18 +274,14 @@ class _BadgeStatusFamily extends StatelessWidget {
           child: Wrap(
             spacing: 10,
             runSpacing: 10,
-            children: const [
-              CatchBadge(
+            children: [
+              CatchBadge.functional(
                 label: 'Ready',
                 tone: CatchBadgeTone.success,
-                typography: CatchBadgeTypography.functional,
               ),
               CatchBadge(label: 'Draft'),
-              CatchBadge(
-                label: 'Live now',
-                tone: CatchBadgeTone.live,
-                typography: CatchBadgeTypography.functional,
-              ),
+              CatchBadge.live(label: 'Live now'),
+              CatchBadge.solid(label: '412 members'),
             ],
           ),
         ),
@@ -307,13 +296,16 @@ class _BadgeStatusFamily extends StatelessWidget {
               CatchPrivacyBadge(),
               ClubHostRoleBadge(role: ClubHostRole.owner),
               EventSuccessMetricPill(label: 'Pacing', value: .78),
-              UnsavedChangesPill(),
+              CatchInlineStatus(
+                label: 'Unsaved changes',
+                tone: CatchInlineStatusTone.warning,
+              ),
             ],
           ),
         ),
         _PreviewCard(
           title: 'Numeric overlays',
-          note: 'Typed int behavior versus arbitrary string badge drawing.',
+          note: 'One integer contract hides zero and clamps overflow to 99+.',
           child: Wrap(
             spacing: 24,
             runSpacing: 16,
@@ -323,8 +315,8 @@ class _BadgeStatusFamily extends StatelessWidget {
                 count: 7,
                 child: Icon(CatchIcons.notificationsOutlined),
               ),
-              CatchIconBadge(
-                label: '7',
+              CatchCountBadge(
+                count: 124,
                 child: Icon(CatchIcons.notificationsOutlined),
               ),
               CatchPersonUnreadCountPill(count: 12),
@@ -340,22 +332,16 @@ class _BadgeStatusFamily extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               const CatchStatusDot(),
-              ActivityDot(color: tokens.warning),
+              CatchStatusDot(color: tokens.warning),
               const CatchPersonNewMatchDot(),
             ],
           ),
         ),
         _PreviewCard(
-          title: 'Edge cases',
-          note: 'Keep only if the product has a deliberate adopter.',
-          child: Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              ClubRatingPill(rating: 4.9),
-              CatchCornerSash(label: "You're in", icon: CatchIcons.checkCircle),
-            ],
+          title: 'Retired edge cases',
+          note: 'Unused public APIs are removed instead of kept speculatively.',
+          child: const Text(
+            'The unused rating pill and card-edge sash were removed.',
           ),
         ),
         _PreviewCard(
@@ -367,16 +353,12 @@ class _BadgeStatusFamily extends StatelessWidget {
             runSpacing: 12,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const EventSuccessDarkPill(label: 'Preview'),
-              LiveNowPill(
-                foreground: CatchTokens.editorialWhite,
-                accent: tokens.gold,
+              CatchBadge.onDark(label: 'Starts in 2 hours'),
+              CatchBadge.onDarkStatus(
+                label: 'Preview only',
+                icon: CatchIcons.visibilityOutlined,
               ),
-              const ExploreDarkPill('412 members'),
-              HostTodayCountdownPill(
-                event: event,
-                now: event.startTime.subtract(const Duration(hours: 2)),
-              ),
+              CatchBadge.live(label: 'Live now'),
             ],
           ),
         ),
@@ -499,8 +481,12 @@ class _IdentitySwitcherFamily extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final club = HostOperationsFixtures.primaryClub;
-    final clubs = HostOperationsFixtures.clubs;
-    final longClub = club.copyWith(
+    final logoClub = club.copyWith(
+      profileImageUrl:
+          'packages/catch_dating_app/assets/fixtures/club_hero_portrait.jpg',
+    );
+    final clubs = [logoClub, ...HostOperationsFixtures.clubs.skip(1)];
+    final longClub = logoClub.copyWith(
       name: 'Sea Face Social With A Deliberately Long Club Name',
     );
     return _FamilySection(
@@ -512,9 +498,9 @@ class _IdentitySwitcherFamily extends StatelessWidget {
       cards: [
         _PreviewCard(
           title: 'Single context',
-          note: 'Stable identity surface; intentionally passive.',
+          note: 'Real club art in a stable, intentionally passive surface.',
           child: HostTodayClubPill(
-            club: club,
+            club: logoClub,
             currentUid: HostOperationsFixtures.hostUid,
             clubs: clubs,
             showClubPicker: false,
@@ -523,9 +509,9 @@ class _IdentitySwitcherFamily extends StatelessWidget {
         ),
         _PreviewCard(
           title: 'Switchable context',
-          note: 'Current implementation makes only the chevron interactive.',
+          note: 'The whole bounded identity surface opens the club menu.',
           child: HostTodayClubPill(
-            club: club,
+            club: logoClub,
             currentUid: HostOperationsFixtures.hostUid,
             clubs: clubs,
             showClubPicker: true,
@@ -554,53 +540,59 @@ class _ProgressCueFamily extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = [
+      (label: 'Hold', icon: CatchIcons.panToolAltOutlined),
+      (label: 'Watch', icon: CatchIcons.visibilityOutlined),
+      (label: 'Move', icon: CatchIcons.boltRounded),
+    ];
+    final steps = EventSuccessPlaybookLibrary.socialRun.runOfShow
+        .take(3)
+        .toList();
     return _FamilySection(
       id: 'progress-cues · P1–P3',
       title: 'Compact progress cues',
       description:
-          'The rail is the meaningful sequence. Leaf pills are supporting evidence '
-          'for upcoming, current, and complete treatments—not the public API.',
+          'Compact rails and expanded rows share one future/current/complete '
+          'state model while retaining distinct layouts.',
       cards: [
-        const _PreviewCard(
+        _PreviewCard(
           title: 'Sequence · upcoming',
           note: 'Early progress keeps the first step current.',
-          child: SizedBox(width: 360, child: CountdownBeatRail(progress: .15)),
-        ),
-        const _PreviewCard(
-          title: 'Sequence · current',
-          note: 'Middle progress should distinguish complete from current.',
-          child: SizedBox(width: 360, child: CountdownBeatRail(progress: .55)),
-        ),
-        const _PreviewCard(
-          title: 'Sequence · complete',
-          note: 'Late progress exposes the weak completed treatment.',
-          child: SizedBox(width: 360, child: CountdownBeatRail(progress: .90)),
+          child: SizedBox(
+            width: 360,
+            child: CountdownBeatRail(items: items, currentIndex: 0),
+          ),
         ),
         _PreviewCard(
-          title: 'Leaf-state evidence',
-          note: 'Independent booleans currently permit invalid combinations.',
-          child: Wrap(
-            spacing: 10,
-            runSpacing: 10,
+          title: 'Sequence · current',
+          note: 'Middle progress should distinguish complete from current.',
+          child: SizedBox(
+            width: 360,
+            child: CountdownBeatRail(items: items, currentIndex: 1),
+          ),
+        ),
+        _PreviewCard(
+          title: 'Sequence · complete',
+          note: 'Completed items use success checks; current alone stays gold.',
+          child: SizedBox(
+            width: 360,
+            child: CountdownBeatRail(items: items, currentIndex: 2),
+          ),
+        ),
+        _PreviewCard(
+          title: 'Expanded sibling',
+          note:
+              'Rows consume the same typed state without sharing rail layout.',
+          child: Column(
             children: [
-              CountdownBeatPill(
-                label: 'Hold',
-                icon: CatchIcons.panToolAltOutlined,
-                active: false,
-                complete: false,
-              ),
-              CountdownBeatPill(
-                label: 'Watch',
-                icon: CatchIcons.visibilityOutlined,
-                active: true,
-                complete: false,
-              ),
-              CountdownBeatPill(
-                label: 'Move',
-                icon: CatchIcons.boltRounded,
-                active: false,
-                complete: true,
-              ),
+              for (final entry in steps.indexed)
+                LiveStepRow(
+                  step: entry.$2,
+                  state: CatchProgressCueState.fromPosition(
+                    index: entry.$1,
+                    currentIndex: 1,
+                  ),
+                ),
             ],
           ),
         ),
@@ -688,7 +680,7 @@ class _PreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final background = onDark ? t.ink : t.surface;
+    final background = onDark ? CatchTokens.editorialBlack : t.surface;
     final foreground = onDark ? CatchTokens.editorialWhite : t.ink;
     final supporting = onDark
         ? CatchTokens.editorialWhite.withValues(alpha: .72)
@@ -699,7 +691,7 @@ class _PreviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: onDark ? t.ink : t.line),
+        border: Border.all(color: onDark ? CatchTokens.editorialBlack : t.line),
         boxShadow: onDark ? const [] : CatchElevation.card,
       ),
       child: Column(

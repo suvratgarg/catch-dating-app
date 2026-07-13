@@ -32,44 +32,10 @@ class CatchCountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final child = _child;
-    if (child == null) {
-      return count <= 0
-          ? const SizedBox.shrink()
-          : _CatchCountLabel(count: count);
-    }
-    if (count <= 0) return child;
+    if (count <= 0) return child ?? const SizedBox.shrink();
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        child,
-        Positioned.fill(
-          child: IgnorePointer(
-            child: Align(
-              alignment: alignment,
-              child: Transform.translate(
-                offset: offset,
-                child: _CatchCountLabel(count: count),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _CatchCountLabel extends StatelessWidget {
-  const _CatchCountLabel({required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final label = catchCountLabel(count);
-
-    return CatchSurface(
+    final label = CatchSurface(
       radius: CatchRadius.pill,
       backgroundColor: t.primary,
       borderColor: t.surface,
@@ -85,13 +51,35 @@ class _CatchCountLabel extends StatelessWidget {
             vertical: CatchStroke.hairline,
           ),
           child: Center(
+            widthFactor: 1,
+            heightFactor: 1,
             child: Text(
-              label,
+              catchCountLabel(count),
               style: CatchTextStyles.statusLabel(context, color: t.primaryInk),
             ),
           ),
         ),
       ),
+    );
+    if (child == null) return label;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        Positioned.fill(
+          child: IgnorePointer(
+            child: OverflowBox(
+              alignment: alignment,
+              minWidth: 0,
+              maxWidth: double.infinity,
+              minHeight: 0,
+              maxHeight: double.infinity,
+              child: Transform.translate(offset: offset, child: label),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

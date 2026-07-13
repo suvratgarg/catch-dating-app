@@ -2773,7 +2773,7 @@ Widget catchSectionHeaderCatalogStates(BuildContext context) {
             ),
             const CatchSectionHeader(
               title: 'metadata group',
-              typography: CatchBadgeTypography.functional,
+              uppercase: true,
               heavy: true,
             ),
           ],

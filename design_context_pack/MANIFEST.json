@@ -15,8 +15,8 @@
     },
     {
       "path": "design_system/components.json",
-      "sha256": "176e7dad0e67a4dd978453679a76106bd00c75e178173276da2ae0dea43d5633",
-      "bytes": 273041
+      "sha256": "9b06b587a537034b0f91dd4083165cfbd975dd097f9f5e5d0af0473c5415c8bd",
+      "bytes": 273528
     },
     {
       "path": "design_system/design_language.txt",
@@ -30,8 +30,8 @@
     },
     {
       "path": "design_system/tokens.json",
-      "sha256": "86ec2d0900af29cae90abc8556d19973e7c33ca1404ef3e076ac562c25ce08a2",
-      "bytes": 26203
+      "sha256": "9ed909de51bfdaa3d5cfb4b42640acbf06f99483e4026385de6052eed6a1ab50",
+      "bytes": 26361
     },
     {
       "path": "design_system/typography.json",

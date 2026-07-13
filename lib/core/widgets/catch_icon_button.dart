@@ -205,7 +205,7 @@ class CatchIconButton extends StatelessWidget {
         ? button
         : SizedBox.square(
             dimension: size,
-            child: CatchCountBadge(count: _count!, child: button),
+            child: CatchCountBadge(count: _count, child: button),
           );
     final message = tooltip;
     if (message == null || message.isEmpty) return countedButton;

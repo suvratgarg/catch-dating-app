@@ -462,6 +462,7 @@ void main() {
           semanticLabel: 'Filters, 3 active',
           onPressed: () => taps++,
         ),
+        textScale: 2,
       ),
     );
 
@@ -477,6 +478,12 @@ void main() {
     expect(find.text('Filters'), findsOneWidget);
     expect(find.text('3'), findsOneWidget);
     expect(tester.getSize(pill).height, greaterThanOrEqualTo(44));
+    expect(
+      tester
+          .getRect(find.text('Filters'))
+          .overlaps(tester.getRect(find.text('3'))),
+      isFalse,
+    );
     expect(semantics.properties.button, isTrue);
     expect(semantics.properties.enabled, isTrue);
 
@@ -2184,7 +2191,6 @@ void main() {
       ),
     );
 
-    expect(find.text('Saved'), findsOneWidget);
     expect(find.text('Tonight'), findsOneWidget);
     expect(find.text('Bandra'), findsOneWidget);
     expect(find.text('2.3 km'), findsOneWidget);
@@ -4170,10 +4176,13 @@ Finder get _startupLogoFinder {
   );
 }
 
-Widget _wrap(Widget child, {ThemeData? theme}) {
+Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
   return MaterialApp(
     theme: theme ?? AppTheme.light,
-    home: Scaffold(body: Center(child: child)),
+    home: MediaQuery(
+      data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+      child: Scaffold(body: Center(child: child)),
+    ),
   );
 }
 

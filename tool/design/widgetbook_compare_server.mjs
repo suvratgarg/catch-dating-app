@@ -2197,7 +2197,6 @@ function buildCandidates() {
         "LiveArrivalRing",
         "LiveStepContextCard",
         "LiveStepNavigation",
-        "LiveNowPill",
       ],
     },
     {

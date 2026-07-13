@@ -16,13 +16,15 @@ continue with the next approved family.
   `tool/flutter_with_env.sh`).
 - Never edit `packages/catch_ui_lints/` (local plugin recompile crashes
   `dart analyze`).
-- `lib/` analyzer baseline: **188 info-level issues, 0 warnings/errors**
-  (re-verified 2026-07-03 post-WO-014 review). Any new warning/error is
-  regression from your change; the info count may only go down.
-- Widgetbook workspace analyzer baseline: **65 issues, 0 warnings** (post
-  WO-014 review).
+- Current isolated-branch `lib/` analyzer: **280 info-level issues, 0
+  warnings/errors** (re-verified 2026-07-13 after PWF-002–005). Any new
+  warning/error is a regression; info-level style findings remain advisory.
+- Whole-Widgetbook analysis currently reports **89 inherited issues** outside
+  the PWF contract/review files. The five changed PWF contract, dashboard,
+  progress, and review-wall files analyze clean.
 - `check_widgetbook_coverage.mjs --check` fails on an INHERITED
-  catalog-or-replace decision queue (134 items at review time, owned by the
+  catalog-or-replace decision queue (121 items after PWF-002–005, down from
+  the PWF-001 baseline of 123, owned by the
   review session — do not work it). Record the count in each receipt; treat
   the check as regression only if the count GROWS from your change.
 
@@ -118,6 +120,149 @@ Implementation order:
 Deferred neighboring families remain independently reviewable: badge/status,
 floating compact controls, identity switchers, and progress/cues. A pill radius
 does not make them members of `chip-core`.
+
+---
+
+## PWF-002 — `badge-status` pattern family
+
+Status: implemented and verified on the isolated
+`codex/widget-pattern-core-20260712` branch. Event Detail remains excluded;
+the active parent worktree is intentionally untouched because its parallel
+writers currently overlap generated and contract paths.
+
+Quality decision:
+
+- `CatchBadge` is the canonical visual grammar: sentence-case metadata and
+  named functional, solid, live, on-dark, and privacy recipes prevent weak or
+  contradictory combinations.
+- `CatchCountBadge` is the sole typed integer overlay. It hides zero, preserves
+  caller-owned placement geometry, and caps values above 99 at `99+`.
+- `CatchStatusDot` owns nonnumeric marks; `CatchInlineStatus` owns quiet
+  unboxed state with wrapping copy.
+- Feature wrappers survive only where they translate domain state, formatting,
+  accessibility, or localized copy. Alternate chrome does not survive.
+
+Implementation order:
+
+- [x] Repair `CatchBadge`, add named recipes, and normalize all non-Event
+  Detail consumers onto supported tone and typography combinations.
+- [x] Repair `CatchCountBadge`, absorb numeric `CatchIconBadge` uses, and keep
+  app-shell/tab placement boxes caller-owned.
+- [x] Add `CatchInlineStatus`; route person-row marks and privacy/role/metric
+  adapters through the canonical renderers.
+- [x] Remove `CatchIconBadge`, `ActivityDot`, `CatchCornerSash`,
+  `ClubRatingPill`, `ExploreDarkPill`, `EventSuccessDarkPill`, `LiveNowPill`,
+  `HostTodayCountdownPill`, and `UnsavedChangesPill` without aliases.
+- [x] Update component contracts, Widgetbook sources, catalog, focused tests,
+  family registry, and the `codex-rule:PWF-002` decision ledger.
+- [x] Regenerate governed artifacts, rerender the family wall, run the final
+  visual/accessibility review, scanners, analyzers, tests, readiness, audit
+  receipt, and parent-integration safety audit.
+
+Receipt: `2026-07-13-widget-consolidation-pwf-002-005`; six focused badge
+tests and the 307-test serialized family suite passed, including 2x count and
+wrapping stress cases. Light 1x and dark 2x wall review passed after repairing
+count placement and the review-only on-dark backdrop.
+
+---
+
+## PWF-003 — `floating-compact-controls` pattern family
+
+Status: implemented and verified on the isolated
+`codex/widget-pattern-core-20260712` branch. Parent integration is deferred to
+a clean checkpoint because the live dirty tree has active overlapping paths.
+
+Quality decision:
+
+- Icon-only actions remain `CatchIconButton`; labelled actions remain
+  `CatchCountPill.label`. Both share the 44px minimum target, except the
+  documented 40px app-bar navigation case.
+- `CatchIconButton.counted` and `CatchCountPill.label` accept typed integer
+  state and delegate count rendering to `CatchCountBadge`.
+- Picker, toggle/loading, bounded-step, and media-mutation adapters retain
+  their semantic boundaries while sharing renderers and metrics.
+
+Implementation order:
+
+- [x] Add the counted icon-action constructor and repair the labelled control
+  so empty, passive, raw-string-count, and icon-only states cannot be built.
+- [x] Absorb `ExploreFilterGlyphButton`,
+  `DashboardNotificationBellButton`, and `ProfileHeightStepButton` into the
+  shared renderers; retain `DockBell` as a semantic adapter.
+- [x] Update Widgetbook sources, catalog, focused tests, family registry, and
+  the `codex-rule:PWF-003` decision ledger.
+- [x] Regenerate governed artifacts, rerender the family wall, run the final
+  visual/accessibility review, scanners, analyzers, tests, readiness, audit
+  receipt, and parent-integration safety audit.
+
+Receipt: `2026-07-13-widget-consolidation-pwf-002-005`; counted icon and
+labelled-action tests passed at 1x/2x text with 40px/44px target assertions.
+The dark 2x wall review caught and verified the final non-overlapping count
+placement.
+
+---
+
+## PWF-004 — `identity-switchers` pattern family
+
+Status: implemented and verified on the isolated
+`codex/widget-pattern-core-20260712` branch. Parent integration is deferred to
+a clean checkpoint because the live dirty tree has active overlapping paths.
+
+Quality decision:
+
+- The whole `HostTodayClubPill` surface is interactive when multiple clubs are
+  available and explicitly passive when only one club is available.
+- Real club logos use `CatchPersonAvatar`; image failure and missing art fall
+  back deterministically to activity-colored initials.
+- Menu rows expose a selected check plus owner or host-team secondary context.
+  The one-consumer composition remains feature-owned rather than creating a
+  fictitious generic identity primitive.
+
+Implementation order:
+
+- [x] Repair the action boundary, passive state, identity art, fallback, and
+  typed menu-row context.
+- [x] Add focused tests and Widgetbook coverage for single- and multi-club
+  states, then update the catalog, family registry, and
+  `codex-rule:PWF-004` decision ledger.
+- [x] Regenerate governed artifacts, rerender the family wall, run the final
+  visual/accessibility review, scanners, analyzers, tests, readiness, audit
+  receipt, and parent-integration safety audit.
+
+Receipt: `2026-07-13-widget-consolidation-pwf-002-005`; passive and switchable
+surface, real-logo/fallback, role context, selected state, and 2x stability
+tests passed. The wall renders real club art in light and dark modes.
+
+---
+
+## PWF-005 — `progress-cues` pattern family
+
+Status: implemented and verified on the isolated
+`codex/widget-pattern-core-20260712` branch. Parent integration is deferred to
+a clean checkpoint because the live dirty tree has active overlapping paths.
+
+Quality decision:
+
+- `CatchProgressCueState` is the shared future/current/complete model.
+  Completed items use a success check, only the current item uses gold, and
+  future items remain muted.
+- `CountdownBeatRail` accepts ordered display items plus `currentIndex`;
+  Event Success retains ownership of percentage-to-index thresholds.
+- `LiveStepRow` shares the state model but retains its expanded layout.
+
+Implementation order:
+
+- [x] Add the typed state model, repair the compact rail, absorb the public
+  `CountdownBeatPill`, and migrate all Event Success adapters.
+- [x] Repair `LiveStepRow`, add focused tests and Widgetbook coverage, and
+  update the catalog, family registry, and `codex-rule:PWF-005` ledger.
+- [x] Regenerate governed artifacts, rerender the family wall, run the final
+  visual/accessibility review, scanners, analyzers, tests, readiness, audit
+  receipt, and parent-integration safety audit.
+
+Receipt: `2026-07-13-widget-consolidation-pwf-002-005`; shared-state and rail
+ownership tests passed. Light 1x and dark 2x wall review confirmed distinct
+complete/current/future states in both compact rails and expanded rows.
 
 ---
 
@@ -1729,17 +1874,15 @@ must not attempt it.
 > SetupChoiceChips merge (c031), footer inlines (c051), one D1 fix. The
 > escalation queue is now empty.
 
-- Review answer (2026-07-13): the owner approved every recommendation in
-  `B1`–`B5`, `C1`–`C4`, `I1`–`I3`, and `P1`–`P3`. The `badge-status`,
-  `floating-compact-controls`, `identity-switchers`, and `progress-cues`
-  families are now `approved`, with selected options and accepted deltas in
-  `pattern_families.json`. Implementation has not started and waits for the
-  dedicated goal. No mechanical K/R/D outcome has been written to
-  `decisions.json`.
-- Decision proof for all four families remains in the standalone
-  pattern-family wall and the family-first compare queue. Event Detail was not
-  included in this approval and remains excluded while its parallel screen
-  work is active.
+- Review answer (2026-07-13, superseded by execution): the owner approved every
+  recommendation in `B1`–`B5`, `C1`–`C4`, `I1`–`I3`, and `P1`–`P3`.
+  PWF-002 through PWF-005 subsequently implemented every selected option;
+  `pattern_families.json` now records the implemented families and
+  `decisions.json` records every mechanical keep, repair, absorb, and delete
+  outcome. No approved family remains awaiting implementation.
+- Decision and implementation proof for all four families lives in the
+  standalone wall, family-first queue, work-order receipts, and combined audit
+  pass. Event Detail was not included and remains excluded from this tranche.
 
 - WO-002: resolved by WO-016 — `CatchScrim.photoFrame` now uses
   `CatchOpacity.photoFrameEdge`; `CatchOpacity.eventSuccessSubtleBorder` remains
@@ -2066,4 +2209,6 @@ must not attempt it.
 
 ## Completed
 
-(move finished orders here with their receipts line)
+Completion is represented by each order's status, checked tasks, and receipt;
+historical orders remain in place so their implementation context stays
+searchable.

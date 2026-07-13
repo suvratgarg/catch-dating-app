@@ -37,11 +37,7 @@ class RequirementsRow extends StatelessWidget {
           runSpacing: CatchSpacing.micro6,
           children: [
             for (final label in chips)
-              CatchBadge(
-                label: label,
-                tone: CatchBadgeTone.brand,
-                typography: CatchBadgeTypography.functional,
-              ),
+              CatchBadge.functional(label: label, tone: CatchBadgeTone.brand),
           ],
         ),
       ],

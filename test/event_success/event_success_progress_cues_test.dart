@@ -34,7 +34,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Scaffold(
+        home: Scaffold(
           body: CountdownBeatRail(
             items: [
               (label: 'Hold', icon: Icons.pan_tool_alt_outlined),

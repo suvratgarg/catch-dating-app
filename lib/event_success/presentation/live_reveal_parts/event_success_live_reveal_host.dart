@@ -95,32 +95,18 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: context
                     .l10n
                     .eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal,
-                tone: CatchBadgeTone.live,
                 icon: CatchIcons.boltRounded,
-                backgroundColor: t.surface.withValues(
-                  alpha: CatchOpacity.warningFill,
-                ),
-                foregroundColor: t.surface,
               ),
               gapW8,
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: revealSet.kind.label(context.l10n),
                 icon: revealSet.kind.icon,
-                backgroundColor: t.surface.withValues(
-                  alpha: CatchOpacity.subtleFill,
-                ),
-                foregroundColor: t.surface.withValues(
-                  alpha: CatchOpacity.floatingControlFill,
-                ),
-                borderColor: t.surface.withValues(
-                  alpha: CatchOpacity.photoScrimMedium,
-                ),
               ),
-              CatchBadge(
+              CatchBadge.onDark(
                 label: roundCount == 0
                     ? context
                           .l10n
@@ -132,15 +118,6 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
                                 1,
                             roundCount: roundCount,
                           ),
-                backgroundColor: t.surface.withValues(
-                  alpha: CatchOpacity.subtleFill,
-                ),
-                foregroundColor: t.surface.withValues(
-                  alpha: CatchOpacity.floatingControlFill,
-                ),
-                borderColor: t.surface.withValues(
-                  alpha: CatchOpacity.photoScrimMedium,
-                ),
               ),
             ],
           ),

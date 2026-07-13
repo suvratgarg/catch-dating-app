@@ -44,7 +44,7 @@
       "title": "Badge and compact status family",
       "intent": "Review compact non-interactive metadata, status, privacy, role, rating, live, and on-dark treatments against one badge grammar. Floating controls, context switchers, and progress indicators remain separate families. Event Detail symbols, including EventStatusPill, are excluded while the parallel Event Detail change is in flight.",
       "priority": "P0",
-      "status": "approved",
+      "status": "implemented",
       "targetContract": "catch.badge",
       "qualityReference": "CatchBadge",
       "decisionSource": "user-approved:2026-07-13",
@@ -128,7 +128,7 @@
           "symbol": "CatchIconBadge",
           "disposition": "unify",
           "target": "CatchCountBadge",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "Its flexible string-label overlay overlaps the typed count contract; migrate numeric action counts into CatchCountBadge and keep non-count status in CatchBadge."
         },
         {
@@ -151,10 +151,16 @@
           "rationale": "Keep one dot ingredient for live, presence, and row-local semantic adapters."
         },
         {
+          "symbol": "CatchInlineStatus",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Use one unboxed status row for low-emphasis state, with a semantic dot, wrapping supporting copy, and no parallel pill chrome."
+        },
+        {
           "symbol": "ActivityDot",
           "disposition": "unify",
           "target": "CatchStatusDot",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "The Explore activity dot is a color-mapped use of the same dot renderer and should not retain a parallel surface implementation."
         },
         {
@@ -174,41 +180,41 @@
         {
           "symbol": "CatchCornerSash",
           "disposition": "discard",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "No real production adopter was named during approval, so the unused sash is removed rather than retained as speculative core API."
         },
         {
           "symbol": "ClubRatingPill",
           "disposition": "discard",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "It has no current production adopter; rating metadata can use the canonical badge grammar if the concept returns."
         },
         {
           "symbol": "ExploreDarkPill",
           "disposition": "unify",
           "target": "CatchBadge.solid",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "Its member-count and action-label metadata are solid badges, not a separate Explore pill primitive."
         },
         {
           "symbol": "EventSuccessDarkPill",
           "disposition": "unify",
           "target": "CatchBadge.onDark",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "Use its translucent light fill, light hairline, and light ink as the canonical on-dark badge treatment."
         },
         {
           "symbol": "LiveNowPill",
           "disposition": "unify",
           "target": "CatchBadge.live",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "Live status is the canonical dot-plus-functional-label badge case and should not retain feature-owned chrome."
         },
         {
           "symbol": "HostTodayCountdownPill",
           "disposition": "unify",
           "target": "CatchBadge.onDark",
-          "preview": "source-only",
+          "preview": "not-applicable",
           "rationale": "This is passive temporal metadata on a hero and should use the same on-dark recipe rather than a third translucent treatment."
         },
         {
@@ -220,9 +226,10 @@
         },
         {
           "symbol": "UnsavedChangesPill",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "This is intentionally quiet unboxed status rather than a pill; retain the concept for the approved future CatchInlineStatus target."
+          "disposition": "unify",
+          "target": "CatchInlineStatus",
+          "preview": "not-applicable",
+          "rationale": "Its intentionally quiet unboxed status now lives in CatchInlineStatus, so the feature-owned pill symbol and misleading name are retired."
         }
       ]
     },
@@ -231,8 +238,8 @@
       "title": "Floating compact controls",
       "intent": "Review the shared rendering and ergonomics of compact single-action controls across floating overlays and dense rails. Labelled and icon-only commands may share family metrics while feature adapters retain toggle or loading semantics. Picker shells, multi-action inputs, media decision actions, status badges, and Event Detail symbols remain separate.",
       "priority": "P1",
-      "status": "approved",
-      "targetContract": "catch.compact_control",
+      "status": "implemented",
+      "targetContract": "catch.icon_button + catch.count_pill",
       "qualityReference": "CatchIconButton",
       "decisionSource": "user-approved:2026-07-13",
       "acceptedVisualDelta": [
@@ -301,14 +308,14 @@
           "symbol": "ExploreFilterGlyphButton",
           "disposition": "unify",
           "target": "CatchIconButton.counted",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "Replace the custom 40px InkWell and separately composed badge with the canonical counted icon-action contract."
         },
         {
           "symbol": "DashboardNotificationBellButton",
           "disposition": "unify",
           "target": "CatchIconButton.counted",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "Its filled/unfilled notification mapping is useful evidence, but its only production caller can configure the shared counted icon action directly."
         },
         {
@@ -321,7 +328,7 @@
           "symbol": "ProfileHeightStepButton",
           "disposition": "unify",
           "target": "CatchIconButton",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "Replace the custom 36px Material circle with the canonical icon renderer while leaving bounded-step state in the profile input adapter."
         }
       ]
@@ -331,8 +338,8 @@
       "title": "Identity switchers",
       "intent": "Review compact current-context controls that combine identity art, a constrained label, and an optional switch menu. They should not be flattened into generic chips. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",
       "priority": "P1",
-      "status": "approved",
-      "targetContract": "catch.identity_switcher",
+      "status": "implemented",
+      "targetContract": "HostTodayClubPill",
       "qualityReference": "HostTodayClubPill",
       "decisionSource": "user-approved:2026-07-13",
       "acceptedVisualDelta": [
@@ -378,7 +385,7 @@
           "symbol": "HostTodayClubPill",
           "disposition": "repair",
           "target": "HostTodayClubPill",
-          "preview": "source-only",
+          "preview": "required",
           "rationale": "Use the whole bounded identity surface as the switch action when multiple clubs exist, render a passive state for one club, show real logo art with a deterministic fallback, and expose selected and role context in the menu."
         }
       ]
@@ -388,8 +395,8 @@
       "title": "Compact progress cues",
       "intent": "Review ordered progress cues whose future, active, and complete states communicate sequence. Compact rails and expanded rows should share one state model without being forced into one layout. Domain progress thresholds remain adapter-owned; wizard bars, page dots, static countdown metadata, and Event Detail symbols remain separate.",
       "priority": "P1",
-      "status": "approved",
-      "targetContract": "catch.progress_cue",
+      "status": "implemented",
+      "targetContract": "CatchProgressCueState",
       "qualityReference": "CountdownBeatRail",
       "decisionSource": "user-approved:2026-07-13",
       "acceptedVisualDelta": [
@@ -442,7 +449,7 @@
           "symbol": "CountdownBeatPill",
           "disposition": "unify",
           "target": "CountdownBeatRail",
-          "preview": "required",
+          "preview": "not-applicable",
           "rationale": "The item renderer belongs to the rail-owned progress contract rather than remaining an independently selectable public pill."
         },
         {

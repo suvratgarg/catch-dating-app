@@ -14,7 +14,6 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
@@ -29,6 +28,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
@@ -85,29 +85,77 @@ Widget catchBadgeContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchBadge',
     contractId: 'catch.badge',
-    states: const ['default', 'live', 'with-icon', 'truncated'],
+    states: const [
+      'metadata',
+      'functional',
+      'semantic-tones',
+      'solid',
+      'live',
+      'on-dark',
+      'privacy',
+      'truncated',
+    ],
     children: [
       _StateCard(
-        label: 'default',
+        label: 'metadata / sentence case',
         child: _InlineWrap(
           children: const [
             CatchBadge(label: 'Queued'),
-            CatchBadge(label: 'Brand', tone: CatchBadgeTone.brand),
-            CatchBadge(label: 'Gold', tone: CatchBadgeTone.gold),
             CatchBadge(label: 'Action', size: CatchBadgeSize.action),
           ],
         ),
       ),
       _StateCard(
-        label: 'live',
-        child: const CatchBadge(label: 'Live now', tone: CatchBadgeTone.live),
+        label: 'functional / uppercase mono',
+        child: const _InlineWrap(
+          children: [
+            CatchBadge.functional(label: 'Ready', tone: CatchBadgeTone.success),
+            CatchBadge.solidStatus(label: 'Owner'),
+          ],
+        ),
       ),
       _StateCard(
-        label: 'with-icon',
-        child: CatchBadge(
-          label: 'Verified',
-          tone: CatchBadgeTone.success,
-          icon: CatchIcons.checkCircle,
+        label: 'semantic-tones',
+        child: const _InlineWrap(
+          children: [
+            CatchBadge(label: 'Brand', tone: CatchBadgeTone.brand),
+            CatchBadge(label: 'Success', tone: CatchBadgeTone.success),
+            CatchBadge(label: 'Warning', tone: CatchBadgeTone.warning),
+            CatchBadge(label: 'Danger', tone: CatchBadgeTone.danger),
+            CatchBadge(label: 'Gold', tone: CatchBadgeTone.gold),
+          ],
+        ),
+      ),
+      const _StateCard(
+        label: 'solid metadata',
+        child: CatchBadge.solid(label: '412 members'),
+      ),
+      const _StateCard(
+        label: 'live status',
+        child: CatchBadge.live(label: 'Live now'),
+      ),
+      _StateCard(
+        label: 'on-dark metadata / status',
+        child: CatchSurface(
+          backgroundColor: t.ink,
+          borderWidth: 0,
+          padding: CatchInsets.content,
+          child: _InlineWrap(
+            children: [
+              CatchBadge.onDark(label: 'Starts in 2 hours'),
+              CatchBadge.onDarkStatus(
+                label: 'Preview only',
+                icon: CatchIcons.visibilityOutlined,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'privacy',
+        child: CatchBadge.privacy(
+          label: 'Private to you',
+          icon: CatchIcons.lockOutline,
         ),
       ),
       _StateCard(
@@ -135,7 +183,13 @@ Widget catchCountBadgeContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchCountBadge',
     contractId: 'catch.badge.count_badge',
-    states: const ['hidden', 'count', 'overflow-count'],
+    states: const [
+      'hidden',
+      'count',
+      '99-boundary',
+      'overflow-count',
+      'standalone',
+    ],
     children: [
       _StateCard(
         label: 'hidden',
@@ -152,11 +206,22 @@ Widget catchCountBadgeContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: '99-boundary',
+        child: CatchCountBadge(
+          count: 99,
+          child: Icon(CatchIcons.notificationsOutlined),
+        ),
+      ),
+      _StateCard(
         label: 'overflow-count',
         child: CatchCountBadge(
           count: 104,
           child: Icon(CatchIcons.notificationsOutlined),
         ),
+      ),
+      const _StateCard(
+        label: 'standalone',
+        child: CatchCountBadge.label(count: 12),
       ),
     ],
   );
@@ -164,51 +229,57 @@ Widget catchCountBadgeContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchIconBadge,
+  type: CatchInlineStatus,
   path: '[Core primitives]/Status',
 )
-Widget catchIconBadgeContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
+Widget catchInlineStatusContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchIconBadge',
-    contractId: 'catch.badge.icon_badge',
-    states: const ['count', 'overflow-count', 'hidden', 'custom-colors'],
+    title: 'CatchInlineStatus',
+    contractId: 'catch.badge.inline_status',
+    states: const ['neutral', 'success', 'warning', 'danger', 'live', 'scaled'],
     children: [
-      _StateCard(
-        label: 'count',
-        child: _InlineWrap(
+      const _StateCard(
+        label: 'semantic tones',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchIconBadge(
-              label: '3',
-              child: Icon(CatchIcons.chatBubbleOutlineRounded),
+            CatchInlineStatus(label: 'Draft saved locally'),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Changes saved',
+              tone: CatchInlineStatusTone.success,
             ),
-            CatchIconBadge(label: '9', child: Icon(CatchIcons.group)),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Unsaved changes',
+              tone: CatchInlineStatusTone.warning,
+            ),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Connection lost',
+              tone: CatchInlineStatusTone.danger,
+            ),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Updating live',
+              tone: CatchInlineStatusTone.live,
+            ),
           ],
         ),
       ),
       _StateCard(
-        label: 'overflow-count',
-        child: CatchIconBadge(
-          label: '99+',
-          child: Icon(CatchIcons.notificationsOutlined),
-        ),
-      ),
-      _StateCard(
-        label: 'hidden',
-        child: CatchIconBadge(
-          label: '0',
-          isLabelVisible: false,
-          child: Icon(CatchIcons.savedOutlined),
-        ),
-      ),
-      _StateCard(
-        label: 'custom-colors',
-        child: CatchIconBadge(
-          label: '!',
-          backgroundColor: t.danger,
-          foregroundColor: t.surface,
-          child: Icon(CatchIcons.warningAmberRounded, color: t.ink),
+        label: '2x text / wrapped copy',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: const SizedBox(
+            width: 220,
+            child: CatchInlineStatus(
+              label: 'Unsaved changes with longer localized supporting copy',
+              tone: CatchInlineStatusTone.warning,
+            ),
+          ),
         ),
       ),
     ],
@@ -878,47 +949,6 @@ Widget catchNoticeContractStates(BuildContext context) {
             tone: CatchNoticeTone.success,
           ),
           onDismiss: _noop,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchCornerSash,
-  path: '[Core primitives]/Status',
-)
-Widget catchCornerSashContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchCornerSash',
-    contractId: 'catch.badge.corner_sash',
-    states: const ['brand', 'success', 'solid', 'surface', 'top-end'],
-    children: [
-      _StateCard(
-        label: 'tones',
-        child: _InlineWrap(
-          children: [
-            CatchCornerSash(label: "You're in", icon: CatchIcons.checkCircle),
-            CatchCornerSash(
-              label: 'Hosted',
-              tone: CatchSashTone.success,
-              icon: CatchIcons.hosted,
-            ),
-            CatchCornerSash(label: 'Saved', tone: CatchSashTone.solid),
-            CatchCornerSash(label: 'Private', tone: CatchSashTone.surface),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'top-end',
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: CatchCornerSash(
-            label: 'Featured',
-            icon: CatchIcons.sparkle,
-            alignment: CatchSashAlignment.topEnd,
-          ),
         ),
       ),
     ],

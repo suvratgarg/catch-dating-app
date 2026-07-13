@@ -1,6 +1,6 @@
 ---
 doc_id: widget_consolidation_receipts
-version: 0.3.2
+version: 0.3.3
 updated: 2026-07-13
 owner: widget_consolidation
 status: active
@@ -2583,6 +2583,103 @@ Known blockers / inherited debt:
 - `node tool/design/check_screen_contracts.mjs --check` still fails on inherited
   missing-symbol drift for Calendar, Saved Events, host create/edit footers,
   Host settings adapter ownership, Event edit footer, and Reviews History.
+
+## 2026-07-13 - PWF-002–005 implemented pattern families
+
+Scope:
+
+- Implemented every owner-approved outcome in `badge-status`,
+  `floating-compact-controls`, `identity-switchers`, and `progress-cues` on the
+  isolated `codex/widget-pattern-core-20260712` branch.
+- Preserved semantic domain/localization/state adapters while removing weaker
+  alternate renderers without aliases.
+- Kept Event Detail implementation files outside the tranche. A read-only
+  integration audit found active parent writers and 44 dirty-path overlaps, so
+  no unsafe merge, stash, reset, or parent-tree edit was attempted.
+
+### PWF-002 badge-status
+
+- `CatchBadge` now exposes named metadata, functional, solid, live, on-dark,
+  and privacy recipes; unsupported tone/typography combinations are gone.
+- `CatchCountBadge` is the only typed integer overlay, hides zero, clamps to
+  `99+`, and preserves caller geometry. `CatchStatusDot` owns nonnumeric marks;
+  `CatchInlineStatus` owns quiet unboxed state with wrapping copy.
+- Removed `CatchIconBadge`, `ActivityDot`, `CatchCornerSash`,
+  `ClubRatingPill`, `ExploreDarkPill`, `EventSuccessDarkPill`, `LiveNowPill`,
+  `HostTodayCountdownPill`, and `UnsavedChangesPill` from active and generated
+  code. Semantic privacy, role, metric, and person-row adapters delegate to the
+  canonical renderers.
+
+### PWF-003 floating compact controls
+
+- `CatchIconButton.counted` owns icon-only counted actions;
+  `CatchCountPill.label` owns labelled counted actions. Both use typed integer
+  state and 44px defaults, with the documented 40px app-bar exception.
+- Removed `ExploreFilterGlyphButton`, `DashboardNotificationBellButton`, and
+  `ProfileHeightStepButton`; retained `DockBell` for toggle/loading semantics.
+- Large-text visual review caught and fixed count/label overlap. Geometry tests
+  now assert non-overlap at 2x text and 40px/44px target sizes.
+
+### PWF-004 identity switchers
+
+- `HostTodayClubPill` is passive for one club and one whole-surface action for
+  multiple clubs. It prefers real logo art and falls back to activity-colored
+  initials through `CatchPersonAvatar`.
+- Menu rows show selected state plus owner or host-team context. Focused tests
+  cover action boundaries, real-art fallback, role context, selection, and 2x
+  text stability.
+
+### PWF-005 progress cues
+
+- `CatchProgressCueState` is the shared future/current/complete model.
+  `CountdownBeatRail` owns ordered display items plus `currentIndex`;
+  `LiveStepRow` consumes the same state while retaining its expanded layout.
+- Removed public `CountdownBeatPill`. Complete uses success checks, current
+  alone uses gold, and future remains muted in compact and expanded previews.
+
+Commands and generated proof:
+
+- `(widgetbook) dart run build_runner build --delete-conflicting-outputs` —
+  regenerated directories after source cleanup.
+- `flutter analyze --no-fatal-infos lib` — exit 0; 280 info-level findings,
+  no warnings or errors.
+- Serialized focused Flutter suite — 307 tests passed. After flattening the
+  count-label helper for the governance gate, the 146-test core/app-shell
+  subset passed again.
+- Focused Widgetbook analysis of dashboard, Event Success progress, primitive
+  contracts, core catalog, and the family wall — no issues. Whole-Widgetbook
+  analysis still reports 89 inherited issues outside those files.
+- Widget classification — 1,103 entries, 74 review items, 5 private classes.
+- Widget variants — 851 use cases, 1,737 state cards, 40 review candidates.
+- Fingerprints/similarity — 987 widgets, 0 extraction failures, 45 clusters,
+  200 ranked pairs, 204 name families, and 8 absorb candidates.
+- Explicit-base new-widget inventory from
+  `b01a3038d505a39f4ee6b6894f6343582a8665ac` — one covered public widget,
+  zero helpers, zero unresolved items.
+- Widgetbook coverage — 121 inherited queue items, down from the PWF-001
+  baseline of 123, with zero stale decisions. The strict zero-queue check
+  remains red by design; the ratchet improved.
+- Component contracts — 59 components. Widgetbook refs — 874 components, 914
+  annotated use cases, 103 formal primitive previews, and 1,434 referenced
+  preview ids. Screen contracts — 35 screens and 239 sections.
+- Pattern-family checker — 22/22 tests, 5 families, 31 members. Comparison
+  artifact — 935 rows, 107 design-export members, 908 Widgetbook members, and
+  59 contracts. Dedupe probes and context-pack reproducibility passed.
+
+Visual and accessibility proof:
+
+- Rebuilt the standalone wall and reviewed all four families in light 1x and
+  dark 2x modes, including horizontal overflow content.
+- Repaired two issues found only through side-by-side review: count overlays
+  clipped by small caller boxes, and counted labels colliding at 2x text.
+- The review wall now shows real club art, stable passive/switchable identity,
+  readable compact/expanded progress states, fully visible `99+`, and an
+  absolute editorial-black on-dark specimen in both themes.
+
+Audit target: `2026-07-13-widget-consolidation-pwf-002-005`.
+
+New debt: none. The 121-item Widgetbook coverage queue and 89 whole-Widgetbook
+issues are inherited; both are recorded without weakening their gates.
 
 ## 2026-07-13 - PWF-001 chip-core pattern family
 

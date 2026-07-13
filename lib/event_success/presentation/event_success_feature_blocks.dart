@@ -219,10 +219,7 @@ class EventSuccessLiveHostMode extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchBadge(
-                  label: resolvedPlan.activeStep.stage.label,
-                  tone: CatchBadgeTone.live,
-                ),
+                CatchBadge.live(label: resolvedPlan.activeStep.stage.label),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(
                   resolvedPlan.activeStep.title,
@@ -826,7 +823,7 @@ class EventSuccessConversationCueCard extends StatelessWidget {
                         CatchBadge(
                           label: moment.label(context.l10n),
                           tone: moment == EventSuccessConversationCueMoment.live
-                              ? CatchBadgeTone.live
+                              ? CatchBadgeTone.brand
                               : CatchBadgeTone.brand,
                         ),
                       ],

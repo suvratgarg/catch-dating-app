@@ -512,18 +512,16 @@ class ManualQaHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: context
                     .l10n
                     .eventSuccessEventSuccessManualQaScreenLabelManualQa,
-                tone: CatchBadgeTone.live,
                 icon: CatchIcons.factCheckOutlined,
               ),
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: context
                     .l10n
                     .eventSuccessEventSuccessManualQaScreenLabelFixtureData,
-                tone: CatchBadgeTone.solid,
                 icon: CatchIcons.dataObjectRounded,
               ),
             ],
@@ -964,7 +962,7 @@ class AttendeeQaControls extends StatelessWidget {
                           .eventSuccessEventSuccessManualQaScreenLabelFirstHelloPending,
                 tone: firstHelloCompleted
                     ? CatchBadgeTone.success
-                    : CatchBadgeTone.live,
+                    : CatchBadgeTone.brand,
                 icon: CatchIcons.wavingHandOutlined,
               ),
           ],

@@ -518,6 +518,47 @@ Widget hostHomeRouteStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Identity switcher states',
+  type: HostTodayClubPill,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostTodayClubPillStates(BuildContext context) {
+  final club = HostOperationsFixtures.primaryClub.copyWith(
+    profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
+  );
+  return _HostCatalog(
+    title: 'HostTodayClubPill',
+    contractId: 'component.host.home.host-today-club-pill',
+    children: [
+      _StateCard(
+        label: 'single club / passive',
+        child: _HostHomeSectionFrame(
+          child: HostTodayClubPill(
+            club: club,
+            currentUid: _hostUid,
+            clubs: [club],
+            showClubPicker: true,
+            onSwitchClubIndex: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'multiple clubs / whole-surface action',
+        child: _HostHomeSectionFrame(
+          child: HostTodayClubPill(
+            club: club,
+            currentUid: _hostUid,
+            clubs: HostOperationsFixtures.clubs,
+            showClubPicker: true,
+            onSwitchClubIndex: (_) {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Route states',
   type: HostClubsScreen,
   path: '[P1 product surfaces]/Host operations',
@@ -1724,7 +1765,7 @@ Widget _hostEventManagePreviewFor(String focus) {
       filter: HostRosterFilter.all,
       label: 'All',
       value: 3,
-      tone: CatchBadgeTone.solid,
+      tone: CatchBadgeTone.neutral,
     ),
     HostRosterFilterSpec(
       filter: HostRosterFilter.booked,

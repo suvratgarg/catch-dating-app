@@ -66,9 +66,8 @@ class ClubIndexRow extends StatelessWidget {
                   gapH8,
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: CatchBadge(
+                    child: CatchBadge.functional(
                       label: _clubIndexActivityLabel(club),
-                      typography: CatchBadgeTypography.functional,
                       accentColor: activitySwatch.accent,
                     ),
                   ),

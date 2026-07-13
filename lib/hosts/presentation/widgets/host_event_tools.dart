@@ -432,7 +432,7 @@ extension HostEventAttendanceStateLabels on HostEventAttendanceState {
 
   CatchBadgeTone get badgeTone {
     return switch (this) {
-      HostEventAttendanceState.open => CatchBadgeTone.live,
+      HostEventAttendanceState.open => CatchBadgeTone.brand,
       HostEventAttendanceState.opensLater => CatchBadgeTone.neutral,
       HostEventAttendanceState.closed => CatchBadgeTone.neutral,
     };

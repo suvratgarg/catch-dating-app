@@ -2001,7 +2001,7 @@ Widget eventSuccessStrictCountdownBeatRail(BuildContext context) {
     (label: "Watch", icon: Icons.visibility_outlined),
     (label: "Move", icon: Icons.bolt_rounded),
   ];
-  return const _StrictCoverageScaffold(
+  return _StrictCoverageScaffold(
     componentName: "CountdownBeatRail",
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

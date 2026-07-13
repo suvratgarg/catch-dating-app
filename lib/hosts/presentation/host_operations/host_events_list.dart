@@ -385,11 +385,10 @@ class HostMetaRow extends StatelessWidget {
             area.toUpperCase(),
             style: CatchTextStyles.monoLabel(context, color: t.ink3),
           ),
-        CatchBadge(
-          label: roleLabel,
-          tone: owner ? CatchBadgeTone.solid : CatchBadgeTone.neutral,
-          typography: CatchBadgeTypography.functional,
-        ),
+        if (owner)
+          CatchBadge.solidStatus(label: roleLabel)
+        else
+          CatchBadge.functional(label: roleLabel),
         CatchChip.activity(
           activityKind: club.hostDefaults.primaryActivityKind,
           emphasis: CatchChipEmphasis.solid,

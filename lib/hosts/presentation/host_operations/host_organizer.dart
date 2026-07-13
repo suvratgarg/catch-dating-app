@@ -465,10 +465,8 @@ class HostOrganizerTeamRow extends StatelessWidget {
                 ),
               ),
               if (profile.role == ClubHostRole.owner)
-                CatchBadge(
+                CatchBadge.solidStatus(
                   label: context.l10n.hostsHostOrganizerLabelOwner,
-                  tone: CatchBadgeTone.solid,
-                  typography: CatchBadgeTypography.functional,
                 )
               else
                 Icon(

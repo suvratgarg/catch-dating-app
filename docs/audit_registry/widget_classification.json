@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 1,
-  "updated": "2026-07-12",
+  "updated": "2026-07-13",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,33 +10,33 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1115,
-    "widgetClasses": 999,
+    "total": 1103,
+    "widgetClasses": 987,
     "stateClasses": 116,
-    "publicClasses": 994,
+    "publicClasses": 982,
     "privateClasses": 121,
     "byRole": {
-      "atom": 55,
+      "atom": 54,
       "composition": 338,
-      "feature-adapter": 319,
+      "feature-adapter": 309,
       "pattern": 16,
-      "screen": 271,
+      "screen": 270,
       "widget-state": 116
     },
     "byDecision": {
-      "keep-canonical-contract": 170,
-      "keep-public-cataloged": 753,
+      "keep-canonical-contract": 169,
+      "keep-public-cataloged": 744,
       "keep-widget-state": 116,
-      "review-catalog-coverage": 55,
+      "review-catalog-coverage": 53,
       "review-promote-or-consolidate": 16,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
-      "cataloged": 706,
-      "contracted": 170,
+      "cataloged": 697,
+      "contracted": 169,
       "not-applicable": 116,
       "route-covered": 61,
-      "uncataloged": 62
+      "uncataloged": 60
     }
   },
   "widgets": [
@@ -1762,29 +1762,6 @@
       "flags": []
     },
     {
-      "name": "ClubRatingPill",
-      "file": "lib/clubs/shared/club_identity_atoms.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.club_rating_pill",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "ClubTagWrap",
       "file": "lib/clubs/shared/club_identity_atoms.dart",
       "classKind": "widget",
@@ -2590,29 +2567,6 @@
       "flags": []
     },
     {
-      "name": "CatchIconBadge",
-      "file": "lib/core/widgets/catch_badge.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "atom",
-      "canonicalFamily": "catch.badge",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.badge.icon_badge",
-      "allowedDependencyLevel": "tokens-and-primitives",
-      "stateOwnership": "local-ui-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "internal-only",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "CatchBottomDock",
       "file": "lib/core/widgets/catch_bottom_dock.dart",
       "classKind": "widget",
@@ -2922,29 +2876,6 @@
       "publicApi": true,
       "catalogStatus": "contracted",
       "contractId": "catch.control_shell",
-      "allowedDependencyLevel": "tokens-and-primitives",
-      "stateOwnership": "local-ui-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "internal-only",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CatchCornerSash",
-      "file": "lib/core/widgets/catch_corner_sash.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "atom",
-      "canonicalFamily": "catch.badge",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.badge.corner_sash",
       "allowedDependencyLevel": "tokens-and-primitives",
       "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
@@ -3832,6 +3763,29 @@
       "publicApi": true,
       "catalogStatus": "contracted",
       "contractId": "catch.icon_tile",
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchInlineStatus",
+      "file": "lib/core/widgets/catch_inline_status.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.badge",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.badge.inline_status",
       "allowedDependencyLevel": "tokens-and-primitives",
       "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
@@ -6713,29 +6667,6 @@
       "canonicalFamily": "screen.dashboard_loading_header",
       "publicApi": true,
       "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "DashboardNotificationBellButton",
-      "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.dashboard_notification_bell_button",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -9965,29 +9896,6 @@
       "flags": []
     },
     {
-      "name": "EventSuccessDarkPill",
-      "file": "lib/event_success/presentation/event_success_hero_surface.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.event_success_dark_pill",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "EventSuccessHeroSurface",
       "file": "lib/event_success/presentation/event_success_hero_surface.dart",
       "classKind": "widget",
@@ -11322,29 +11230,6 @@
       "flags": []
     },
     {
-      "name": "LiveNowPill",
-      "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.live_now_pill",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "LiveStepNavigation",
       "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
       "classKind": "widget",
@@ -11874,29 +11759,6 @@
       "flags": []
     },
     {
-      "name": "UnsavedChangesPill",
-      "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.unsaved_changes_pill",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "CompatibilitySignalHostCard",
       "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
       "classKind": "widget",
@@ -12226,29 +12088,6 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.event_success.attendee_countdown",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CountdownBeatPill",
-      "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.countdown_beat_pill",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -16084,29 +15923,6 @@
       "flags": []
     },
     {
-      "name": "ExploreDarkPill",
-      "file": "lib/explore/presentation/widgets/explore_event_support_widgets.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.explore.explore_dark_pill",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "ExploreMonoLabel",
       "file": "lib/explore/presentation/widgets/explore_event_support_widgets.dart",
       "classKind": "widget",
@@ -16149,29 +15965,6 @@
       "remediationOptions": [
         "moveStateToController",
         "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ActivityDot",
-      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.explore.activity_dot",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
       ],
       "flags": []
     },
@@ -16392,29 +16185,6 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.explore.explore_events_loading_sliver",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ExploreFilterGlyphButton",
-      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.explore.explore_filter_glyph_button",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -19775,50 +19545,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_today_club_pill",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
-    },
-    {
-      "name": "HostTodayCountdownPill",
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.hosts.host_today_countdown_pill",
-      "publicApi": true,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
-      "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "HostTodayDashboardCard",
@@ -25434,29 +25173,6 @@
       "remediationOptions": [
         "moveStateToController",
         "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ProfileHeightStepButton",
-      "file": "lib/user_profile/presentation/widgets/inline_editor_height.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.user_profile.profile_height_step_button",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
       ],
       "flags": []
     },

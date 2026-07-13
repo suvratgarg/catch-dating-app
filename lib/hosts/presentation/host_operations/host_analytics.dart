@@ -1074,7 +1074,7 @@ String _analyticsEventStatusLabel(String status) {
 
 CatchBadgeTone _analyticsEventStatusTone(String status) {
   return switch (status.trim().toLowerCase()) {
-    'live' || 'active' || 'open' || 'published' => CatchBadgeTone.live,
+    'live' || 'active' || 'open' || 'published' => CatchBadgeTone.brand,
     'completed' || 'past' => CatchBadgeTone.success,
     'draft' || 'pending' || 'scheduled' => CatchBadgeTone.warning,
     'cancelled' || 'canceled' => CatchBadgeTone.danger,

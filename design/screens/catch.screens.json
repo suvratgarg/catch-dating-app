@@ -2866,10 +2866,10 @@
             ],
             "flutter": {
               "file": "lib/dashboard/presentation/dashboard_screen.dart",
-              "symbol": "DashboardNotificationBellButton"
+              "symbol": "NotificationsAction"
             },
             "currentOwner": "DashboardScreen",
-            "targetOwner": "provider-free notification badge action fed by DashboardHomeScreenState",
+            "targetOwner": "NotificationsAction semantic adapter over CatchIconButton.counted",
             "dependencies": [
               "catch.badge",
               "catch.icon_button",
@@ -2880,7 +2880,7 @@
               "unread",
               "capped_count"
             ],
-            "migration": "Notification route ownership is now selected by DashboardHomeScreenState; remaining work is to move unread count derivation out of the private widget and expose a provider-free badge action section with typed onPressed intent.",
+            "migration": "NotificationsAction retains notification loading, analytics, and routing semantics while delegating icon chrome, typed count formatting, zero hiding, and the 40px app-bar target to CatchIconButton.counted.",
             "previewIds": [
               "DashboardScreen/Screen states"
             ]

@@ -32,14 +32,12 @@ class CatchInlineStatus extends StatelessWidget {
       builder: (context, constraints) {
         final copy = Text(
           label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
           style: CatchTextStyles.supporting(context, color: color),
         );
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchStatusDot(color: color),
+            CatchStatusDot(color: color, size: CatchIcon.unsavedDot),
             gapW6,
             if (constraints.hasBoundedWidth) Flexible(child: copy) else copy,
           ],

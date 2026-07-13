@@ -739,7 +739,7 @@ class EventSuccessMomentPresentation {
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyPreEventDetailsStay,
         icon: CatchIcons.eventAvailableOutlined,
-        badgeTone: CatchBadgeTone.live,
+        badgeTone: CatchBadgeTone.brand,
         effectKind: EventSuccessLiveEffectKind.liveEntry,
       ),
       EventSuccessAttendeeMomentKind.selfCheckIn => EventSuccessMomentPresentation(
@@ -796,7 +796,7 @@ class EventSuccessMomentPresentation {
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame,
         icon: CatchIcons.locationOnOutlined,
-        badgeTone: CatchBadgeTone.live,
+        badgeTone: CatchBadgeTone.brand,
         effectKind: EventSuccessLiveEffectKind.stepChange,
         ambientBed: EventSuccessAmbientBed.pulse,
       ),
@@ -812,7 +812,7 @@ class EventSuccessMomentPresentation {
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyPromptsAreSharedGuidance,
         icon: CatchIcons.chatBubbleOutlineRounded,
-        badgeTone: CatchBadgeTone.live,
+        badgeTone: CatchBadgeTone.brand,
         effectKind: EventSuccessLiveEffectKind.stepChange,
         ambientBed: EventSuccessAmbientBed.pulse,
       ),
@@ -828,7 +828,7 @@ class EventSuccessMomentPresentation {
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCuesAreSuggestions,
         icon: CatchIcons.forumOutlined,
-        badgeTone: CatchBadgeTone.live,
+        badgeTone: CatchBadgeTone.brand,
         effectKind: EventSuccessLiveEffectKind.stepChange,
         ambientBed: EventSuccessAmbientBed.pulse,
       ),
@@ -854,7 +854,7 @@ class EventSuccessMomentPresentation {
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourDetailsStayHidden,
         icon: CatchIcons.boltRounded,
-        badgeTone: CatchBadgeTone.live,
+        badgeTone: CatchBadgeTone.brand,
         effectKind: _revealHeroEffect(plan),
         // Cinematic owns the soundscape during anticipation/climax; the bed
         // resumes from the next moment's vibe.
