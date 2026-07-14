@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-10T20:20:33.719Z",
+  "generatedAt": "2026-07-14T13:13:48.330Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 862,
+    "useCases": 863,
     "components": 828,
-    "stateCards": 1746,
-    "reviewCandidates": 39,
+    "stateCards": 1751,
+    "reviewCandidates": 40,
     "oversizedUseCases": 44,
-    "multiUseCaseComponents": 33
+    "multiUseCaseComponents": 34
   },
   "reviewCandidates": [
     {
@@ -3899,6 +3899,75 @@
             {
               "label": "mixed read state",
               "normalizedLabel": "mixed read state"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchSectionLabel",
+      "useCaseCount": 2,
+      "stateCardCount": 6,
+      "paths": [
+        "[Core catalog]/Typography",
+        "[Core primitives]/Typography"
+      ],
+      "labels": [
+        "accented",
+        "eyebrow",
+        "metadata-label",
+        "plain / icon / truncated",
+        "truncated",
+        "with-icon"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchSectionLabelCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Typography",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "plain / icon / truncated",
+              "normalizedLabel": "plain icon truncated"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchSectionLabelContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Typography",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "eyebrow",
+              "normalizedLabel": "eyebrow"
+            },
+            {
+              "label": "metadata-label",
+              "normalizedLabel": "metadata label"
+            },
+            {
+              "label": "with-icon",
+              "normalizedLabel": "with icon"
+            },
+            {
+              "label": "accented",
+              "normalizedLabel": "accented"
+            },
+            {
+              "label": "truncated",
+              "normalizedLabel": "truncated"
             }
           ]
         }
@@ -7792,6 +7861,75 @@
             {
               "label": "mixed read state",
               "normalizedLabel": "mixed read state"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchSectionLabel",
+      "useCaseCount": 2,
+      "stateCardCount": 6,
+      "paths": [
+        "[Core catalog]/Typography",
+        "[Core primitives]/Typography"
+      ],
+      "labels": [
+        "accented",
+        "eyebrow",
+        "metadata-label",
+        "plain / icon / truncated",
+        "truncated",
+        "with-icon"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchSectionLabelCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Typography",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "plain / icon / truncated",
+              "normalizedLabel": "plain icon truncated"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchSectionLabelContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Typography",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "eyebrow",
+              "normalizedLabel": "eyebrow"
+            },
+            {
+              "label": "metadata-label",
+              "normalizedLabel": "metadata label"
+            },
+            {
+              "label": "with-icon",
+              "normalizedLabel": "with icon"
+            },
+            {
+              "label": "accented",
+              "normalizedLabel": "accented"
+            },
+            {
+              "label": "truncated",
+              "normalizedLabel": "truncated"
             }
           ]
         }
@@ -23859,38 +23997,6 @@
             {
               "label": "plain / uppercase / trailing",
               "normalizedLabel": "plain uppercase trailing"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchSectionLabel",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core catalog]/Typography"
-      ],
-      "labels": [
-        "plain / icon / truncated"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "catchSectionLabelCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Typography",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "plain / icon / truncated",
-              "normalizedLabel": "plain icon truncated"
             }
           ]
         }
