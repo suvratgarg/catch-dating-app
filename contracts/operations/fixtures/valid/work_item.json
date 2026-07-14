@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "work:event:cntraveller:1",
+  "workflowId": "supply-intake",
+  "runId": "run:mumbai:2026-07-14",
+  "entityKind": "event",
+  "externalKey": "cntraveller:event:1",
+  "revision": 0,
+  "candidateHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "primaryStage": "incoming",
+  "lifecycleStatus": "queued",
+  "outcome": null,
+  "taskFlags": ["source_capture_required"],
+  "blockerCodes": [],
+  "warningCodes": [],
+  "priority": 800,
+  "attemptCount": 0,
+  "evidenceRefs": [{
+    "artifactId": "artifact:cntraveller:1",
+    "contentHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "observedAt": "2026-07-14T08:00:00.000Z",
+    "locator": "article card 1"
+  }],
+  "fieldProvenance": [],
+  "normalizedPayload": {},
+  "decisionId": null,
+  "publicationPlanId": null,
+  "createdAt": "2026-07-14T08:00:00.000Z",
+  "updatedAt": "2026-07-14T08:00:00.000Z",
+  "staleAt": "2026-07-15T08:00:00.000Z",
+  "expiresAt": "2026-07-28T00:00:00.000Z"
+}

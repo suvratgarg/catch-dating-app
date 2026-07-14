@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "actionId": "action:extract:1",
+  "runId": "run:mumbai:2026-07-14",
+  "workItemId": "work:event:cntraveller:1",
+  "sequence": 1,
+  "operation": "extract_source",
+  "status": "succeeded",
+  "fromRevision": 0,
+  "toRevision": 1,
+  "actor": {"actorType": "agent", "actorId": "worker:supply-intake"},
+  "idempotencyKey": "run:mumbai:extract:1",
+  "inputHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "outputHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "rulesetVersion": "supply-intake-rules-v1",
+  "modelVersion": null,
+  "reasonCodes": ["deterministic_extractor_match"],
+  "occurredAt": "2026-07-14T08:01:00.000Z",
+  "completedAt": "2026-07-14T08:01:01.000Z",
+  "failure": null
+}

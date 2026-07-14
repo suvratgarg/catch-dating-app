@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/common.schema.json",
+  "title": "OperationsCommonDefinitions",
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "workflowId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z][a-z0-9_.:-]*$"
+    },
+    "isoDateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "nullableIsoDateTime": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actorType", "actorId"],
+      "properties": {
+        "actorType": {
+          "type": "string",
+          "enum": ["human", "agent", "system"]
+        },
+        "actorId": {"$ref": "#/definitions/id"}
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifactId",
+        "contentHash",
+        "observedAt",
+        "locator"
+      ],
+      "properties": {
+        "artifactId": {"$ref": "#/definitions/id"},
+        "contentHash": {"$ref": "#/definitions/sha256"},
+        "observedAt": {"$ref": "#/definitions/isoDateTime"},
+        "locator": {
+          "type": ["string", "null"],
+          "maxLength": 1000
+        }
+      }
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "retryable"],
+      "properties": {
+        "code": {"$ref": "#/definitions/code"},
+        "message": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "retryable": {"type": "boolean"}
+      }
+    },
+    "metricSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fieldExactness",
+        "eventPrecision",
+        "duplicatePrecision",
+        "duplicateRecall",
+        "correctionRate",
+        "escalationRate"
+      ],
+      "properties": {
+        "fieldExactness": {"type": "number", "minimum": 0, "maximum": 1},
+        "eventPrecision": {"type": "number", "minimum": 0, "maximum": 1},
+        "duplicatePrecision": {"type": "number", "minimum": 0, "maximum": 1},
+        "duplicateRecall": {"type": "number", "minimum": 0, "maximum": 1},
+        "correctionRate": {"type": "number", "minimum": 0, "maximum": 1},
+        "escalationRate": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}

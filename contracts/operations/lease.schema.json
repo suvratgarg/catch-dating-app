@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/lease.schema.json",
+  "title": "OperationLease",
+  "description": "A time-bounded lease with a monotonically increasing fencing token.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "leaseId",
+    "resourceType",
+    "resourceId",
+    "ownerId",
+    "fencingToken",
+    "status",
+    "idempotencyKey",
+    "acquiredAt",
+    "heartbeatAt",
+    "expiresAt",
+    "releasedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "leaseId": {"$ref": "common.schema.json#/definitions/id"},
+    "resourceType": {
+      "type": "string",
+      "enum": ["run", "work_item"]
+    },
+    "resourceId": {"$ref": "common.schema.json#/definitions/id"},
+    "ownerId": {"$ref": "common.schema.json#/definitions/id"},
+    "fencingToken": {"type": "integer", "minimum": 1},
+    "status": {"type": "string", "enum": ["active", "released", "expired"]},
+    "idempotencyKey": {"$ref": "common.schema.json#/definitions/id"},
+    "acquiredAt": {"$ref": "common.schema.json#/definitions/isoDateTime"},
+    "heartbeatAt": {"$ref": "common.schema.json#/definitions/isoDateTime"},
+    "expiresAt": {"$ref": "common.schema.json#/definitions/isoDateTime"},
+    "releasedAt": {"$ref": "common.schema.json#/definitions/nullableIsoDateTime"}
+  }
+}
