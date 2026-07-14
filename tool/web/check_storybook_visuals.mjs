@@ -75,6 +75,16 @@ const jobs = resolvedStories.flatMap((story) =>
   viewports.map((viewport) => ({story, viewport}))
 );
 const failures = [];
+if (args.components.length === 0) {
+  const expectedFiles = new Set(jobs.map(({story, viewport}) => captureFileName(story, viewport)));
+  const staleFiles = fs.readdirSync(baselineRoot)
+    .filter((fileName) => fileName.endsWith(".png") && !expectedFiles.has(fileName));
+  if (args.update) {
+    staleFiles.forEach((fileName) => fs.rmSync(path.join(baselineRoot, fileName)));
+  } else {
+    staleFiles.forEach((fileName) => failures.push(`${fileName}: stale baseline`));
+  }
+}
 let completed = 0;
 
 try {
@@ -107,7 +117,7 @@ try {
         : null;
       if (storyError?.trim()) throw new Error(storyError.trim().replace(/\s+/gu, " ").slice(0, 2000));
       const actual = await page.screenshot({animations: "disabled", fullPage: false});
-      const fileName = `${sanitize(story.id)}.${viewport.name}.png`;
+      const fileName = captureFileName(story, viewport);
       const baselinePath = path.join(baselineRoot, fileName);
       const actualPath = path.join(actualRoot, fileName);
       if (args.update) {
@@ -276,6 +286,10 @@ function sanitize(value) {
   return String(value).replace(/[^a-z0-9_.-]+/giu, "-");
 }
 
+function captureFileName(story, viewport) {
+  return `${sanitize(story.id)}.${viewport.name}.png`;
+}
+
 function platformCapturePath(root, surface, platform) {
   return path.posix.join(root, surface, platform);
 }
@@ -335,6 +349,10 @@ function runSelfTest() {
   assert.notEqual(
     platformCapturePath("design/visual_baselines", "admin", "darwin"),
     platformCapturePath("design/visual_baselines", "admin", "linux")
+  );
+  assert.equal(
+    captureFileName({id: "Admin/Role management"}, {name: "desktop"}),
+    "Admin-Role-management.desktop.png"
   );
   const stories = [
     {componentId: "one", exportName: "One", storyPath: "One.stories.tsx"},
