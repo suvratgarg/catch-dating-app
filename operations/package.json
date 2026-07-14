@@ -1,0 +1,19 @@
+{
+  "name": "@catch/operations",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Durable, review-first operational workflows for Catch",
+  "type": "module",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "bin": {
+    "catch-operations": "./src/cli/main.mjs"
+  },
+  "scripts": {
+    "boundaries": "node scripts/check-boundaries.mjs",
+    "check": "npm run test && npm run boundaries && npm run smoke",
+    "smoke": "node src/cli/main.mjs help",
+    "test": "node --test test/*.test.mjs"
+  }
+}

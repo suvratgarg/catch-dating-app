@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "workflowId": "supply-intake",
+  "version": "0.1.0",
+  "executionModes": ["shadow"],
+  "capabilities": {
+    "network": false,
+    "modelCalls": false,
+    "publicWrites": false,
+    "ruleDeployment": false
+  },
+  "commands": [
+    "plan",
+    "run",
+    "resume",
+    "queue",
+    "status",
+    "promote",
+    "reconcile",
+    "learn"
+  ],
+  "sourceProfiles": ["luma", "cntraveller"]
+}
