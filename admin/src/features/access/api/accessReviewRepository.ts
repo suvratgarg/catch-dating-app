@@ -11,11 +11,23 @@ import type {
   AdminOverviewResponse,
 } from "../../../shared/types/adminTypes";
 
-export async function listAccessApplications(): Promise<
-  AdminOverviewResponse["queues"]["accessApplications"]
-> {
+export interface AccessApplicationListSnapshot {
+  generatedAt: string;
+  pendingTotal: number;
+  rows: AdminOverviewResponse["queues"]["accessApplications"];
+}
+
+export async function listAccessApplications(): Promise<AccessApplicationListSnapshot> {
   const overview = await loadOverview();
-  return overview.queues.accessApplications;
+  const rows = overview.queues.accessApplications;
+  const pendingTotal = overview.metrics.find(
+    (metric) => metric.id === "pendingApplications"
+  )?.value ?? rows.length;
+  return {
+    generatedAt: overview.generatedAt,
+    pendingTotal,
+    rows,
+  };
 }
 
 export function decideAccessReview(

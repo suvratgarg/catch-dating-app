@@ -18,9 +18,9 @@ npm run dev
 ```
 
 The app starts in `sample` data mode by default so the UI can be reviewed before
-admin claims and App Check are configured. In sample mode the top bar shows
-that Auth is bypassed and no login/logout control is rendered because no
-Firebase session is required.
+admin claims and App Check are configured. The account menu discloses that
+local sample data is active and that Firebase authentication is bypassed; no
+sign-out action is shown because no Firebase session is required.
 In live mode the shell supports phone OTP sign-in for claimed app accounts and
 Google sign-in for separately claimed internal accounts before any callable
 data loads. It shows the signed-in email/uid and custom admin claims after Auth
@@ -46,9 +46,10 @@ select a row and enter a review note.
 The app shell owns shared navigation, auth, role gating, topbar search, and
 feature composition. Overview range state, refresh, analytics loading, and queue
 triage live in `admin/src/features/overview/controllers`.
-The topbar environment indicator is read-only and reflects
-`VITE_ADMIN_FIREBASE_ENV` plus the current sample/live data mode; switching
-Firebase targets still happens through environment variables and rebuilds.
+The top bar omits the production environment label. Non-production environment
+and local-data context appear in the account menu only when they change
+operator risk; switching Firebase targets still happens through environment
+variables and rebuilds.
 Admin feature import direction is enforced by
 `npm run check:boundaries` and by `npm run build`: app-shell modules may compose
 features and shared modules; feature modules may import their own top-level

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-07-13",
+  "maxAppChunkBytes": 510000,
+  "maxAdminRoutesStoryBytes": 50000,
+  "notes": "Budgets cover Catch-authored feature and AdminRoutes story chunks. Storybook framework, axe, and vendor runtime chunks are intentionally outside this app-boundary ratchet."
+}

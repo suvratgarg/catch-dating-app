@@ -15,6 +15,12 @@ const adminControllerPath =
   "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts";
 const adminScreenPath =
   "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx";
+const adminDiagnosticsPath =
+  "admin/src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx";
+const adminDiscoveryPanelsPath =
+  "admin/src/features/intake/organizer/ui/organizerIntakeDiscoveryPanels.tsx";
+const adminEvidencePanelsPath =
+  "admin/src/features/intake/organizer/ui/organizerIntakeEvidencePanels.tsx";
 const adminTypesPath = "admin/src/shared/types/adminTypes.ts";
 
 test("checkAdminReviewBridge passes for the current organizer review channels", () => {
@@ -280,7 +286,7 @@ test("checkAdminReviewBridge fails when source mention review packets are not vi
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const appPath = path.join(root, adminScreenPath);
+  const appPath = path.join(root, adminDiscoveryPanelsPath);
   fs.writeFileSync(
     appPath,
     fs.readFileSync(appPath, "utf8")
@@ -303,7 +309,7 @@ test("checkAdminReviewBridge fails when reviewed answer packets are not visible"
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const appPath = path.join(root, adminScreenPath);
+  const appPath = path.join(root, adminDiagnosticsPath);
   fs.writeFileSync(
     appPath,
     fs.readFileSync(appPath, "utf8")
@@ -329,7 +335,7 @@ test("checkAdminReviewBridge fails when promotion execution is not visible", () 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const appPath = path.join(root, adminScreenPath);
+  const appPath = path.join(root, adminDiagnosticsPath);
   fs.writeFileSync(
     appPath,
     fs.readFileSync(appPath, "utf8")
@@ -349,7 +355,7 @@ test("checkAdminReviewBridge fails when pending work coverage is not visible", (
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const appPath = path.join(root, adminScreenPath);
+  const appPath = path.join(root, adminDiagnosticsPath);
   fs.writeFileSync(
     appPath,
     fs.readFileSync(appPath, "utf8")
@@ -440,6 +446,9 @@ function mirrorRequiredFiles(root) {
     adminBridgePath,
     adminControllerPath,
     adminScreenPath,
+    adminDiagnosticsPath,
+    adminDiscoveryPanelsPath,
+    adminEvidencePanelsPath,
     adminTypesPath,
     "functions/src/index.ts",
     "tool/organizer_intake/README.md",

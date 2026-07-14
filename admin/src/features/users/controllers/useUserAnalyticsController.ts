@@ -32,6 +32,7 @@ export interface UserLookupContract {
 }
 
 export interface UserAnalyticsController {
+  errorMessage: string | null;
   endDate: string;
   granularity: UserAnalyticsGranularity;
   isLoading: boolean;
@@ -41,6 +42,7 @@ export interface UserAnalyticsController {
   report: UserAnalyticsResponse | null;
   startDate: string;
   userId: string;
+  viewState: UserAnalyticsViewState;
   load: (nextUserId?: string) => Promise<boolean>;
   setEndDate: (value: string) => void;
   setGranularity: (value: UserAnalyticsGranularity) => void;
@@ -48,6 +50,17 @@ export interface UserAnalyticsController {
   setStartDate: (value: string) => void;
   setUserId: (value: string) => void;
 }
+
+export type UserAnalyticsViewState =
+  | "idle"
+  | "invalid"
+  | "loading"
+  | "ready"
+  | "empty"
+  | "partial"
+  | "forbidden"
+  | "missing"
+  | "error";
 
 export function useUserAnalyticsController({
   handoffRequestId,
@@ -104,8 +117,15 @@ export function useUserAnalyticsController({
       }
       return loadUserAnalyticsReport(submittedPayload);
     },
-    placeholderData: (previousData) => previousData,
   });
+
+  const setLookupUserId = useCallback((value: string) => {
+    setUserId(value);
+    const nextNormalizedUserId = normalizeUserAnalyticsUserId(value);
+    setSubmittedPayload((current) =>
+      current?.userId === nextNormalizedUserId ? current : null
+    );
+  }, []);
 
   const load = useCallback(async (nextUserId?: string) => {
     const contract = buildUserLookupContract(nextUserId ?? userId);
@@ -124,6 +144,13 @@ export function useUserAnalyticsController({
     }
     if (rangePreset === "custom" && (!startDate || !endDate)) {
       onError("Choose both start and end dates for a custom analytics range.");
+      return false;
+    }
+    if (
+      rangePreset === "custom" &&
+      Date.parse(startDate) > Date.parse(endDate)
+    ) {
+      onError("Start date must be on or before end date.");
       return false;
     }
     const queryKey = adminQueryKeys.users.analytics(
@@ -182,15 +209,35 @@ export function useUserAnalyticsController({
     void load();
   }, [load, userId]);
 
+  const normalizedCurrentUserId = lookupContract.normalizedUserId;
+  const report = reportQuery.data &&
+    submittedPayload?.userId === normalizedCurrentUserId &&
+    reportQuery.data.scope.userId === normalizedCurrentUserId ?
+    reportQuery.data :
+    null;
+  const isLoading = Boolean(submittedPayload?.userId) &&
+    submittedPayload?.userId === normalizedCurrentUserId &&
+    (reportQuery.isPending || reportQuery.isFetching);
+  const errorMessage = reportQuery.error ?
+    messageFromError(reportQuery.error, "Unable to load user analytics.") :
+    null;
+  const viewState = userAnalyticsViewState({
+    errorMessage,
+    isLoading,
+    lookupContract,
+    report,
+    submittedPayload,
+  });
+
   return {
     endDate,
+    errorMessage,
     granularity,
-    isLoading: Boolean(submittedPayload?.userId) &&
-      (reportQuery.isPending || reportQuery.isFetching),
+    isLoading,
     lookupContract,
     payload,
     rangePreset,
-    report: reportQuery.data ?? null,
+    report,
     startDate,
     userId,
     load,
@@ -198,8 +245,40 @@ export function useUserAnalyticsController({
     setGranularity,
     setRangePreset,
     setStartDate,
-    setUserId,
+    setUserId: setLookupUserId,
+    viewState,
   };
+}
+
+function userAnalyticsViewState({
+  errorMessage,
+  isLoading,
+  lookupContract,
+  report,
+  submittedPayload,
+}: {
+  errorMessage: string | null;
+  isLoading: boolean;
+  lookupContract: UserLookupContract;
+  report: UserAnalyticsResponse | null;
+  submittedPayload: UserAnalyticsQueryPayload | null;
+}): UserAnalyticsViewState {
+  if (!lookupContract.canLoad && lookupContract.mode !== "empty") return "invalid";
+  if (isLoading) return "loading";
+  if (errorMessage) {
+    if (/permission|forbidden|unauthori[sz]ed/iu.test(errorMessage)) {
+      return "forbidden";
+    }
+    if (/not[ -]?found|missing analytics/iu.test(errorMessage)) return "missing";
+    return "error";
+  }
+  if (!submittedPayload?.userId || !report) return "idle";
+  if (report.dataQuality.some((row) => row.state !== "ok")) return "partial";
+  const hasAnyActivity = report.summaryCards.some((metric) => metric.value !== 0) ||
+    report.trend.some((point) =>
+      Object.values(point.metrics).some((value) => value !== 0)
+    );
+  return hasAnyActivity ? "ready" : "empty";
 }
 
 function userAnalyticsPayloadKey(payload: UserAnalyticsQueryPayload): string {

@@ -13,7 +13,8 @@ export const adminQueryKeys = {
       [...adminQueryKeys.all, "access", "detail", applicationUid] as const,
   },
   dataQuality: {
-    snapshot: () => [...adminQueryKeys.all, "data-quality", "snapshot"] as const,
+    source: (sourceId: string) =>
+      [...adminQueryKeys.all, "data-quality", "source", sourceId] as const,
   },
   events: {
     list: (payloadKey: string) =>
@@ -31,8 +32,13 @@ export const adminQueryKeys = {
   },
   finance: {
     overview: () => [...adminQueryKeys.all, "finance", "overview"] as const,
+    hostAnalytics: () =>
+      [...adminQueryKeys.all, "finance", "host-analytics", "30d", "week"] as const,
   },
   growth: {
+    overview: () => [...adminQueryKeys.all, "growth", "overview"] as const,
+    hostAnalytics: (rangePreset: string, granularity: string) =>
+      [...adminQueryKeys.all, "growth", "host-analytics", rangePreset, granularity] as const,
     kpis: (rangePreset: string, granularity: string) =>
       [...adminQueryKeys.all, "growth", "kpis", rangePreset, granularity] as const,
   },

@@ -1,7 +1,5 @@
-import {
-  dataMode,
-  loadUserAnalytics,
-} from "../../../shared/api/adminApi";
+import {loadUserAnalytics} from "../../../shared/api/adminApi";
+import {dataMode} from "../../../shared/api/dataMode";
 import type {
   UserAnalyticsQueryPayload,
   UserAnalyticsResponse,

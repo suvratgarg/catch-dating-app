@@ -188,7 +188,7 @@ function printHelp() {
 
 Fails when admin feature UI exports uppercase components that are not route or
 workspace entry components. Reusable panels/cards/lists belong in
-admin/src/shared/ui/AdminPrimitives.tsx or should stay private to the file.
+admin/src/shared/ui/AdminPrimitives/ or should stay private to the file.
 
 Temporary exceptions require an adjacent comment containing:
   ${overrideToken}: <DEBT-ID-001> <removal note>

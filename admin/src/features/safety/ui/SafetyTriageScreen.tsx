@@ -1,5 +1,7 @@
 import {
   AlertTriangle,
+  ArrowLeft,
+  BarChart3,
   Clock3,
   RefreshCw,
   Search,
@@ -8,22 +10,29 @@ import {
 } from "lucide-react";
 import {
   AdminButton,
+  AdminDecisionFooterShell,
   AdminEditorGrid,
   AdminEditorPanel,
   AdminMetricCard,
   AdminMetricGrid,
   AdminRoadmapList,
   AdminRoadmapListItem,
+  AdminSecondaryDisclosure,
+  AdminSectionCaption,
+  AdminSignalBars,
+  AdminStatusGrid,
   AdminTableRow,
   AdminTag,
   AdminToolbar,
   AdminWorkbenchStack,
+  AdminWorkbenchNote,
   DataTable,
   EmptyState,
   Panel,
   QualityList,
   RiskBadge,
   SearchField,
+  SegmentedControl,
   SelectField,
   StateRow,
   TableActionButton,
@@ -37,73 +46,155 @@ import type {
   AdminSafetyTriageDetails,
 } from
   "../../../shared/types/adminTypes";
+import {displayAdminQueueTitle} from "../../../shared/ui/adminPresentation";
 import {
   type SafetyAssignmentFormState,
-  type SafetyAssignmentRecord,
   type SafetyDecisionFormState,
-  type SafetyDecisionRecord,
   type SafetyQueueKind,
   type SafetyTriageController,
   type SafetyTriageRow,
   useSafetyTriageController,
 } from "../controllers/useSafetyTriageController";
-
-const queueOptions: Array<{label: string; value: SafetyQueueKind}> = [
-  {label: "All queues", value: "all"},
-  {label: "User reports", value: "reports"},
-  {label: "Moderation flags", value: "moderation"},
-  {label: "Event reports", value: "event"},
+const queueOptions: Array<{label: string; id: SafetyQueueKind}> = [
+  {label: "All", id: "all"},
+  {label: "User reports", id: "reports"},
+  {label: "Moderation", id: "moderation"},
+  {label: "Event reports", id: "event"},
 ];
 
 export function SafetyTriageScreen({
+  onBackToList,
   onError,
   onNotice,
+  onSelectTargetPath,
+  selectedTargetPath,
 }: {
+  onBackToList: () => void;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
+  onSelectTargetPath: (targetPath: string) => void;
+  selectedTargetPath: string | null;
 }) {
-  const controller = useSafetyTriageController({onError, onNotice});
-  return <SafetyTriageWorkspace controller={controller} />;
+  const controller = useSafetyTriageController({
+    onError,
+    onNotice,
+    selectedTargetPath,
+    onSelectedTargetPathChange: (targetPath) => {
+      if (targetPath) {
+        onSelectTargetPath(targetPath);
+      } else {
+        onBackToList();
+      }
+    },
+  });
+  return (
+    <SafetyTriageWorkspace
+      controller={controller}
+      onBackToList={onBackToList}
+      view={selectedTargetPath ? "detail" : "list"}
+    />
+  );
 }
 
 export function SafetyTriageWorkspace({
   controller,
+  onBackToList,
+  view = controller.selected ? "detail" : "list",
 }: {
   controller: SafetyTriageController;
+  onBackToList?: () => void;
+  view?: "list" | "detail";
 }) {
+  if (view === "detail") {
+    return (
+      <AdminWorkbenchStack>
+        <AdminToolbar>
+          <AdminButton
+            icon={<ArrowLeft size={15} strokeWidth={1.9} />}
+            onClick={onBackToList ?? (() => undefined)}
+          >
+            All safety cases
+          </AdminButton>
+          {controller.selected ? (
+            <AdminTag tone="muted">
+              {controller.selected.queueLabel}
+            </AdminTag>
+          ) : null}
+        </AdminToolbar>
+        {controller.selected ? (
+          <>
+            <SafetyDetailPanel
+              detail={controller.selectedDetail}
+              generatedAt={controller.generatedAt}
+              isDetailLoading={controller.isDetailLoading}
+              selected={controller.selected}
+            />
+            <SafetyActionRail
+              assignmentForm={controller.assignmentForm}
+              assignmentInFlight={controller.assignmentInFlight}
+              assignmentValidationIssue={controller.assignmentValidationIssue}
+              decisionForm={controller.decisionForm}
+              decisionInFlight={controller.decisionInFlight}
+              decisionValidationIssue={controller.decisionValidationIssue}
+              onAssign={controller.assign}
+              onAssignmentFormChange={controller.setAssignmentForm}
+              onDecision={async (decision) => {
+                const succeeded = await controller.decide(decision);
+                if (succeeded) onBackToList?.();
+                return succeeded;
+              }}
+              onDecisionFormChange={controller.setDecisionForm}
+              selected={controller.selected}
+            />
+            <AdminSecondaryDisclosure summary="Policy guidance and action boundary">
+              <AdminRoadmapList>
+                <ChecklistRow text="Open source evidence before deciding." />
+                <ChecklistRow text="Confirm the people, event, club, and channel context." />
+                <ChecklistRow text="Only assignment and reviewed/dismissed status are available here." />
+              </AdminRoadmapList>
+              <QualityList>
+                <StateRow label="Read source" value="adminGetSafetyTriageDetails" />
+                <StateRow label="Mutations" value="assignment and reviewed/dismissed status with required notes" />
+                <StateRow label="Unavailable" value="escalation, restriction, content removal, and durable reviewer timeline" />
+              </QualityList>
+            </AdminSecondaryDisclosure>
+          </>
+        ) : (
+          <EmptyState
+            variant="workbench"
+            icon={<Clock3 size={16} strokeWidth={1.9} />}
+          >
+            {controller.isLoading ?
+              "Loading the selected safety case." :
+              "This safety case is no longer in the open queue."}
+          </EmptyState>
+        )}
+      </AdminWorkbenchStack>
+    );
+  }
+
   return (
     <AdminWorkbenchStack>
-      <AdminMetricGrid ariaLabel="Safety triage state">
-        <AdminMetricCard label="Open reports" value={controller.metrics.reports} />
-        <AdminMetricCard label="Moderation" value={controller.metrics.moderation} />
-        <AdminMetricCard label="Event reports" value={controller.metrics.eventReports} />
-        <AdminMetricCard
-          label="High priority"
-          tone={controller.metrics.highPriority > 0 ? "attention" : "normal"}
-          value={controller.metrics.highPriority}
-        />
-      </AdminMetricGrid>
       <Panel
         span={2}
         icon={<ShieldAlert size={18} strokeWidth={1.9} />}
         title="Safety triage"
-        action={controller.isLoading ? "Loading" : `${controller.filteredRows.length} shown`}
+        action={controller.isLoading ? "Loading" :
+          `${controller.filteredRows.length} shown of ${controller.rows.length} preview rows`}
       >
         <AdminToolbar>
+          <SegmentedControl<SafetyQueueKind>
+            ariaLabel="Safety queue scope"
+            options={queueOptions}
+            value={controller.queueFilter}
+            onChange={controller.setQueueFilter}
+          />
           <SearchField
             ariaLabel="Search safety queues"
             icon={<Search size={16} strokeWidth={1.8} />}
             onChange={controller.setQuery}
-            placeholder="Search report, target, status, owner"
+            placeholder="Search loaded preview rows"
             value={controller.query}
-          />
-          <SelectField
-            label="Queue"
-            onChange={(value) =>
-              controller.setQueueFilter(value as SafetyQueueKind)
-            }
-            options={queueOptions}
-            value={controller.queueFilter}
           />
           <AdminButton
             disabled={controller.isLoading}
@@ -113,100 +204,78 @@ export function SafetyTriageWorkspace({
             Refresh
           </AdminButton>
         </AdminToolbar>
+        <AdminWorkbenchNote>
+          Capped preview: up to five rows per source queue. Search applies only
+          to these {controller.rows.length} loaded rows. Source generated at {formatDateTime(controller.generatedAt)}.
+        </AdminWorkbenchNote>
         <SafetyTable
           rows={controller.filteredRows}
-          selectedTargetPath={controller.selected?.targetPath ?? null}
           onSelect={controller.select}
         />
       </Panel>
-      <AdminEditorGrid>
-        <SafetyDetailPanel
-          detail={controller.selectedDetail}
-          generatedAt={controller.generatedAt}
-          isDetailLoading={controller.isDetailLoading}
-          selected={controller.selected}
+      <AdminMetricGrid ariaLabel="Authoritative open safety totals" columns={3}>
+        <AdminMetricCard
+          caption="Authoritative open member-report total."
+          footer={`${returnedCount(controller.rows, "reports")} preview rows returned`}
+          label="User reports"
+          value={controller.metrics.reports}
         />
-        <AdminWorkbenchStack>
-          <SafetyAssignmentPanel
-            assignmentForm={controller.assignmentForm}
-            assignmentInFlight={controller.assignmentInFlight}
-            assignmentValidationIssue={controller.assignmentValidationIssue}
-            onAssign={controller.assign}
-            onAssignmentFormChange={controller.setAssignmentForm}
-            recentAssignments={controller.recentAssignments}
-            selected={controller.selected}
-          />
-          <SafetyDecisionPanel
-            decisionForm={controller.decisionForm}
-            decisionInFlight={controller.decisionInFlight}
-            decisionValidationIssue={controller.decisionValidationIssue}
-            onDecision={controller.decide}
-            onDecisionFormChange={controller.setDecisionForm}
-            recentDecisions={controller.recentDecisions}
-            selected={controller.selected}
-          />
-          <Panel
-            icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-            title="Action boundary"
-            action="status-only"
-          >
-            <QualityList>
-              <StateRow label="Source" value="adminGetOverview + adminGetSafetyTriageDetails" />
-              <StateRow label="Mutations" value="adminAssignSafetyTriageItem, adminDecideSafetyTriageItem" />
-              <StateRow label="Scope" value="assignment plus reviewed/dismissed status with required notes" />
-              <StateRow label="Read contract" value="assignment, SLA, evidence, next actions" />
-              <StateRow label="Not here" value="restrictions, escalation, payment disputes, organizer publishing" />
-            </QualityList>
-          </Panel>
-          <Panel
-            icon={<AlertTriangle size={18} strokeWidth={1.9} />}
-            title="Policy checklist"
-            action="manual"
-          >
-            <AdminRoadmapList>
-              <ChecklistRow text="Open the source document before resolving." />
-              <ChecklistRow text="Confirm reporter, subject, event, and channel context." />
-              <ChecklistRow text="Use backend-owned actions only after policy outcome is explicit." />
-            </AdminRoadmapList>
-          </Panel>
-        </AdminWorkbenchStack>
-      </AdminEditorGrid>
+        <AdminMetricCard
+          caption="Authoritative pending moderation total."
+          footer={`${returnedCount(controller.rows, "moderation")} preview rows returned`}
+          label="Moderation"
+          value={controller.metrics.moderation}
+        />
+        <AdminMetricCard
+          caption="Authoritative open event-report total."
+          footer={`${returnedCount(controller.rows, "event")} preview rows returned`}
+          label="Event reports"
+          value={controller.metrics.eventReports}
+        />
+      </AdminMetricGrid>
     </AdminWorkbenchStack>
   );
 }
 
-function SafetyAssignmentPanel({
+function SafetyActionRail({
   assignmentForm,
   assignmentInFlight,
   assignmentValidationIssue,
+  decisionForm,
+  decisionInFlight,
+  decisionValidationIssue,
   onAssign,
   onAssignmentFormChange,
-  recentAssignments,
+  onDecision,
+  onDecisionFormChange,
   selected,
 }: {
   assignmentForm: SafetyAssignmentFormState;
   assignmentInFlight: boolean;
   assignmentValidationIssue: string | null;
+  decisionForm: SafetyDecisionFormState;
+  decisionInFlight: AdminSafetyTriageDecision | null;
+  decisionValidationIssue: string | null;
   onAssign: () => Promise<boolean>;
   onAssignmentFormChange: (value: SafetyAssignmentFormState) => void;
-  recentAssignments: SafetyAssignmentRecord[];
+  onDecision: (decision: AdminSafetyTriageDecision) => Promise<boolean>;
+  onDecisionFormChange: (value: SafetyDecisionFormState) => void;
   selected: SafetyTriageRow | null;
 }) {
-  const isDisabled =
-    !selected || Boolean(assignmentValidationIssue) || assignmentInFlight;
+  const assignmentDisabled = !selected ||
+    Boolean(assignmentValidationIssue) || assignmentInFlight;
+  const decisionDisabled =
+    !selected || Boolean(decisionValidationIssue) || Boolean(decisionInFlight);
   return (
     <Panel
       icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-      title="Assignment"
-      action={selected ? "audited" : "No item"}
+      title="Assignment and decision"
+      action="audited"
+      span={2}
     >
       <QualityList>
-        <StateRow
-          label="Selected"
-          value={selected ? selected.targetPath : "Select a queue row"}
-        />
         <TextField
-          label="Assignee uid"
+          label="Assignee UID"
           onChange={(assigneeUid) =>
             onAssignmentFormChange({...assignmentForm, assigneeUid})
           }
@@ -218,71 +287,17 @@ function SafetyAssignmentPanel({
           onChange={(note) =>
             onAssignmentFormChange({...assignmentForm, note})
           }
-          placeholder="Record why this owner should take the next action."
+          placeholder="Why this owner should take the next action"
           rows={3}
           value={assignmentForm.note}
         />
-        <StateRow
-          label="Assignment check"
-          value={assignmentValidationIssue ?? "Ready"}
-        />
+        <StateRow label="Assignment check" value={assignmentValidationIssue ?? "Ready"} />
         <AdminButton
-          disabled={isDisabled}
+          disabled={assignmentDisabled}
           onClick={() => void onAssign()}
-          variant="primary"
         >
-          {assignmentInFlight ? "Saving" : "Save assignment"}
+          {assignmentInFlight ? "Saving assignment" : "Save assignment"}
         </AdminButton>
-        {recentAssignments.length ? (
-          <AdminRoadmapList>
-            {recentAssignments.map((record) => (
-              <ChecklistRow
-                key={`${record.targetPath}-${record.assignment.assigneeUid ?? "unassigned"}`}
-                text={
-                  `${record.targetPath}: ` +
-                  `${record.assignment.assigneeUid ?? "Unassigned"}`
-                }
-              />
-            ))}
-          </AdminRoadmapList>
-        ) : (
-          <StateRow label="Recent assignments" value="None this session" />
-        )}
-      </QualityList>
-    </Panel>
-  );
-}
-
-function SafetyDecisionPanel({
-  decisionForm,
-  decisionInFlight,
-  decisionValidationIssue,
-  onDecision,
-  onDecisionFormChange,
-  recentDecisions,
-  selected,
-}: {
-  decisionForm: SafetyDecisionFormState;
-  decisionInFlight: AdminSafetyTriageDecision | null;
-  decisionValidationIssue: string | null;
-  onDecision: (decision: AdminSafetyTriageDecision) => Promise<boolean>;
-  onDecisionFormChange: (value: SafetyDecisionFormState) => void;
-  recentDecisions: SafetyDecisionRecord[];
-  selected: SafetyTriageRow | null;
-}) {
-  const isDisabled =
-    !selected || Boolean(decisionValidationIssue) || Boolean(decisionInFlight);
-  return (
-    <Panel
-      icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-      title="Decision"
-      action={selected ? "audited" : "No item"}
-    >
-      <QualityList>
-        <StateRow
-          label="Selected"
-          value={selected ? selected.targetPath : "Select a queue row"}
-        />
         <TextareaField
           label="Review note"
           onChange={(note) => onDecisionFormChange({note})}
@@ -290,37 +305,28 @@ function SafetyDecisionPanel({
           rows={4}
           value={decisionForm.note}
         />
-        <StateRow
-          label="Decision check"
-          value={decisionValidationIssue ?? "Ready"}
-        />
-        <AdminToolbar>
+        <StateRow label="Decision check" value={decisionValidationIssue ?? "Ready"} />
+        <AdminDecisionFooterShell sticky>
+          <AdminWorkbenchNote>
+            These actions only record reviewed or not-actionable status. They do
+            not restrict accounts, remove content, or escalate the case.
+          </AdminWorkbenchNote>
           <AdminButton
-            disabled={isDisabled}
+            disabled={decisionDisabled}
             onClick={() => void onDecision("review")}
             variant="primary"
           >
             {decisionInFlight === "review" ? "Reviewing" : "Mark reviewed"}
           </AdminButton>
           <AdminButton
-            disabled={isDisabled}
+            disabled={decisionDisabled}
             onClick={() => void onDecision("dismiss")}
           >
-            {decisionInFlight === "dismiss" ? "Dismissing" : "Dismiss"}
+            {decisionInFlight === "dismiss" ?
+              "Recording" :
+              "Dismiss as not actionable"}
           </AdminButton>
-        </AdminToolbar>
-        {recentDecisions.length ? (
-          <AdminRoadmapList>
-            {recentDecisions.map((record) => (
-              <ChecklistRow
-                key={`${record.targetPath}-${record.status}`}
-                text={`${record.status}: ${record.targetPath}`}
-              />
-            ))}
-          </AdminRoadmapList>
-        ) : (
-          <StateRow label="Recent decisions" value="None this session" />
-        )}
+        </AdminDecisionFooterShell>
       </QualityList>
     </Panel>
   );
@@ -329,11 +335,9 @@ function SafetyDecisionPanel({
 function SafetyTable({
   onSelect,
   rows,
-  selectedTargetPath,
 }: {
   onSelect: (row: SafetyTriageRow) => void;
   rows: SafetyTriageRow[];
-  selectedTargetPath: string | null;
 }) {
   if (rows.length === 0) {
     return (
@@ -346,37 +350,29 @@ function SafetyTable({
     );
   }
   return (
-    <DataTable variant="workbench">
+    <DataTable ariaLabel="Safety triage queue" variant="workbench">
       <thead>
         <tr>
           <th>Queue item</th>
-          <th>Priority</th>
           <th>Status</th>
-          <th>Owner</th>
           <th>Created</th>
-          <th>Select</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
         {rows.map((row) => (
-          <AdminTableRow key={row.id} selected={selectedTargetPath === row.targetPath}>
+          <AdminTableRow key={row.id}>
             <td>
               <AdminRowTitle>
-                <strong>{row.title}</strong>
+                <strong>{displayAdminQueueTitle(row.title)}</strong>
                 <span>{row.queueLabel} · {row.detail}</span>
               </AdminRowTitle>
             </td>
-            <td>
-              <RiskBadge tone={riskTone(row.priority)}>
-                {row.priority}
-              </RiskBadge>
-            </td>
             <td>{row.status}</td>
-            <td>{row.routeOwner}</td>
             <td>{relativeTime(row.createdAt)}</td>
             <td>
               <TableActionButton onClick={() => onSelect(row)}>
-                Review
+                Open
               </TableActionButton>
             </td>
           </AdminTableRow>
@@ -400,15 +396,14 @@ function SafetyDetailPanel({
   return (
     <AdminEditorPanel
       icon={<ShieldAlert size={18} strokeWidth={1.9} />}
-      title="Triage detail"
-      action={selected?.priority ?? "No item"}
+      title={selected ? displayAdminQueueTitle(selected.title) : "Safety case"}
+      action={detail?.assignment.severity ?? "Loading"}
     >
       {selected ? (
         <QualityList>
           <StateRow label="Queue" value={selected.queueLabel} />
           <StateRow label="Target" value={selected.targetPath} />
           <StateRow label="Status" value={selected.status} />
-          <StateRow label="Owner" value={selected.routeOwner} />
           <StateRow label="Detail" value={selected.detail} />
           <StateRow
             label="Detail read"
@@ -417,26 +412,20 @@ function SafetyDetailPanel({
           {detail ? (
             <>
               <StateRow label="Summary" value={detail.summary} />
+              <StateRow label="Severity" value={detail.assignment.severity} />
+              <StateRow label="SLA" value={formatSla(detail)} />
+              <StateRow label="SLA policy" value={detail.sla.policy} />
+              <StateRow label="Owner team" value={detail.assignment.ownerTeam} />
+              <StateRow
+                label="Assignee"
+                value={detail.assignment.assigneeUid ?? "Unassigned"}
+              />
               <StateRow label="Primary user" value={detail.primaryUserId} />
               <StateRow label="Secondary user" value={detail.secondaryUserId} />
               <StateRow label="Event" value={detail.eventId} />
               <StateRow label="Club" value={detail.clubId} />
               <StateRow label="Source" value={detail.source} />
               <StateRow label="Context" value={detail.contextId} />
-              <StateRow
-                label="Owner team"
-                value={detail.assignment.ownerTeam}
-              />
-              <StateRow
-                label="Assignee"
-                value={detail.assignment.assigneeUid ?? "Unassigned"}
-              />
-              <StateRow
-                label="Severity"
-                value={detail.assignment.severity}
-              />
-              <StateRow label="SLA" value={formatSla(detail)} />
-              <StateRow label="SLA policy" value={detail.sla.policy} />
               <StateRow
                 label="Prior history"
                 value={<PriorHistoryList detail={detail} />}
@@ -462,7 +451,8 @@ function SafetyDetailPanel({
             </>
           ) : null}
           <StateRow label="Created" value={formatDateTime(selected.createdAt)} />
-          <StateRow label="Queue generated" value={formatDateTime(generatedAt)} />
+          <StateRow label="Record updated at" value={formatDateTime(detail?.updatedAt ?? null)} />
+          <StateRow label="Source generated at" value={formatDateTime(generatedAt)} />
           {detail?.nextActions.length ? (
             <AdminRoadmapList>
               {detail.nextActions.map((action) => (
@@ -547,11 +537,11 @@ function formatGuidanceStatus(
   return status;
 }
 
-function riskTone(priority: SafetyTriageRow["priority"]):
-  "low" | "medium" | "high" | "watch" {
-  if (priority === "high") return "high";
-  if (priority === "medium") return "medium";
-  return "watch";
+function returnedCount(
+  rows: SafetyTriageRow[],
+  queueKind: SafetyTriageRow["queueKind"]
+): number {
+  return rows.filter((row) => row.queueKind === queueKind).length;
 }
 
 function relativeTime(value: string | null): string {

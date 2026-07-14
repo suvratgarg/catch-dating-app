@@ -17,15 +17,19 @@ import {
   AdminIntakeDecisionActions,
   AdminIntakeDecisionBox,
   AdminIntakeDecisionState,
+  AdminIntakeBoundaryNotice,
   AdminIntakeEventWorkspaceShell,
   AdminIntakeGate,
   AdminIntakeGateList,
   AdminIntakeLayout,
   AdminIntakePublicationBoundaryPanel,
+  AdminIntakeReviewWorkbench,
   AdminIntakeSection,
   AdminIntakeSectionTitle,
   AdminIntakeSourceList,
   AdminIntakeStateGrid,
+  AdminIntakeStageRail,
+  AdminIntakeTaskToolbar,
   AdminIntakeWorkspaceHeader,
   AdminIntakeWorkspaceTabs,
   AdminOrganizerCurationControlGrid,
@@ -115,6 +119,148 @@ export const AdminIntakeWorkspaceTabsStory: Story = {
         ]}
         value="organizers"
         onChange={() => undefined}
+      />
+    </AdminWorkspace>
+  ),
+};
+
+export const AdminIntakeTaskToolbarStory: Story = {
+  name: "Task toolbar",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_intake_task_toolbar",
+      states: ["search-and-filters", "desktop", "mobile"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <AdminIntakeTaskToolbar aria-label="Intake filters">
+        <SearchField ariaLabel="Search intake" placeholder="Search organizer, source, city..." />
+        <AdminButton>All cities</AdminButton>
+        <AdminButton>All priorities</AdminButton>
+        <AdminButton>Diagnostics</AdminButton>
+        <AdminButton variant="primary">Refresh</AdminButton>
+      </AdminIntakeTaskToolbar>
+    </AdminWorkspace>
+  ),
+};
+
+export const AdminIntakeStageRailStory: Story = {
+  name: "Stage rail",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_intake_stage_rail",
+      states: ["incoming", "verify", "resolve", "ready"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <AdminIntakeStageRail
+        ariaLabel="Organizer intake stages"
+        options={[
+          {id: "incoming", label: "Incoming", meta: "12 new leads"},
+          {id: "verify", label: "Verify", meta: "5 need review"},
+          {id: "resolve", label: "Resolve", meta: "2 conflicts"},
+          {id: "ready", label: "Ready", meta: "3 handoffs"},
+        ]}
+        value="verify"
+        onChange={() => undefined}
+      />
+    </AdminWorkspace>
+  ),
+};
+
+export const AdminIntakeBoundaryNoticeStory: Story = {
+  name: "Boundary notice",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_intake_boundary_notice",
+      states: ["compact", "expanded-action"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <AdminIntakeBoundaryNotice
+        actionLabel="View boundary"
+        title="Approval creates a publishing handoff—not ownership or app visibility."
+        onAction={() => undefined}
+      >
+        Claims, crawling, and canonical edits stay separately gated.
+      </AdminIntakeBoundaryNotice>
+    </AdminWorkspace>
+  ),
+};
+
+export const AdminIntakeReviewWorkbenchStory: Story = {
+  name: "Review workbench",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_intake_review_workbench",
+      states: ["populated", "empty-queue", "blocked-decision", "mobile"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <AdminIntakeReviewWorkbench
+        detail={{
+          checklistRows: [
+            {id: "identity", label: "Identity reviewed", meta: "complete", passed: true},
+            {id: "reports", label: "Acknowledge manual reports", meta: "required", passed: false},
+          ],
+          checklistTitle: "Review checklist",
+          footerActions: <AdminButton disabled variant="primary">Approve listing</AdminButton>,
+          footerHint: "Approval is disabled until the evidence blocker is resolved.",
+          impactRows: [
+            {id: "website", label: "Website listing", tone: "success", value: "Ready after review"},
+            {id: "app", label: "App visibility", value: "Stays hidden"},
+          ],
+          impactTitle: "Handoff impact",
+          initials: "AF",
+          note: <AdminTextareaField label="Decision note" rows={2} value="" onChange={() => undefined} />,
+          noteTitle: "Decision note",
+          primaryRows: [{
+            id: "instagram",
+            meta: "Primary identity surface",
+            status: "Confirmed",
+            statusTone: "success",
+            title: "Instagram · @afterfly.in",
+          }],
+          primaryTitle: "Source evidence",
+          readiness: {blockers: 1, complete: 4, label: "Decision readiness", total: 6},
+          status: "Needs evidence",
+          statusTone: "warning",
+          subtitle: "Organizer lead · afterfly · Indore",
+          title: "AFTER FLY",
+        }}
+        filters={[
+          {id: "all", label: "All 2", selected: true},
+          {id: "blocked", label: "Blocked 1", selected: false},
+        ]}
+        items={[
+          {
+            description: "Run club · Indore",
+            id: "afterfly",
+            initials: "AF",
+            meta: "5 surfaces · 2 reports",
+            status: "Needs evidence",
+            statusTone: "warning",
+            title: "AFTER FLY",
+          },
+          {
+            description: "Run club · Delhi NCR",
+            id: "bhag",
+            initials: "BC",
+            meta: "3 surfaces · 0 reports",
+            status: "Ready",
+            statusTone: "success",
+            title: "Bhag Club",
+          },
+        ]}
+        queueMeta="2 items"
+        queueTitle="Needs verification"
+        selectedId="afterfly"
+        onFilterChange={() => undefined}
+        onSelect={() => undefined}
       />
     </AdminWorkspace>
   ),

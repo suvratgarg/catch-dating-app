@@ -54,7 +54,8 @@ export type ExternalEventSupplyFilter =
   | "active"
   | "cancelled";
 
-export type EventPublishingView = "list" | "detail" | "external";
+export type EventPublishingWorkspace = "directory" | "readiness" | "external";
+export type EventPublishingView = "list" | "detail" | "readiness" | "external";
 
 export interface ExternalEventPublishRequest {
   sourceActionId: string;
@@ -64,14 +65,32 @@ export interface ExternalEventPublishRequest {
 }
 
 export function useEventPublishingController({
+  activeWorkspace = "directory",
+  onBackToList,
   onError,
   onNotice,
+  onSelectEventId,
+  onSelectExternalEventId,
+  onSelectReadinessActionId,
+  onWorkspaceChange,
+  selectedEventId: controlledSelectedEventId,
+  selectedExternalEventId: controlledSelectedExternalEventId,
+  selectedReadinessActionId = null,
 }: {
+  activeWorkspace?: EventPublishingWorkspace;
+  onBackToList?: () => void;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
+  onSelectEventId?: (eventId: string) => void;
+  onSelectExternalEventId?: (eventId: string | null) => void;
+  onSelectReadinessActionId?: (sourceActionId: string | null) => void;
+  onWorkspaceChange?: (workspace: EventPublishingWorkspace) => void;
+  selectedEventId?: string | null;
+  selectedExternalEventId?: string | null;
+  selectedReadinessActionId?: string | null;
 }) {
   const queryClient = useQueryClient();
-  const [selectedExternalEventId, setSelectedExternalEventId] =
+  const [localSelectedExternalEventId, setLocalSelectedExternalEventId] =
     useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [externalQuery, setExternalQuery] = useState("");
@@ -83,40 +102,84 @@ export function useEventPublishingController({
   const [filter, setFilter] =
     useState<EventPublishingFilter>("launchCities");
   const [externalFilter, setExternalFilter] =
-    useState<ExternalEventSupplyFilter>("reviewOpen");
-  const [view, setView] = useState<EventPublishingView>("list");
+    useState<ExternalEventSupplyFilter>(
+      activeWorkspace === "external" ? "public" : "reviewOpen"
+    );
   const [eventId, setEventId] = useState("");
-  const [loadedEventId, setLoadedEventId] = useState<string | null>(null);
+  const [localSelectedEventId, setLocalSelectedEventId] =
+    useState<string | null>(null);
   const [event, setEvent] = useState<AdminEventDetails | null>(null);
   const [form, setForm] = useState<EventPublishingFormState | null>(null);
+  const selectedEventId = controlledSelectedEventId === undefined ?
+    localSelectedEventId :
+    controlledSelectedEventId;
+  const selectedExternalEventId = controlledSelectedExternalEventId === undefined ?
+    localSelectedExternalEventId :
+    controlledSelectedExternalEventId;
+  const setSelectedEventId = useCallback((nextEventId: string | null) => {
+    if (controlledSelectedEventId === undefined) {
+      setLocalSelectedEventId(nextEventId);
+    }
+    if (nextEventId) onSelectEventId?.(nextEventId);
+  }, [controlledSelectedEventId, onSelectEventId]);
+  const setSelectedExternalEventId = useCallback((nextEventId: string | null) => {
+    if (controlledSelectedExternalEventId === undefined) {
+      setLocalSelectedExternalEventId(nextEventId);
+    }
+    onSelectExternalEventId?.(nextEventId);
+  }, [controlledSelectedExternalEventId, onSelectExternalEventId]);
+  const view: EventPublishingView = selectedEventId ?
+    "detail" :
+    activeWorkspace === "directory" ? "list" : activeWorkspace;
   const listPayload = useMemo(
     () => buildEventListPayload(filter, debouncedQuery),
     [debouncedQuery, filter]
   );
   const externalListPayload = useMemo(
-    () => buildExternalEventListPayload(externalFilter, debouncedExternalQuery),
+    () => ({
+      ...buildExternalEventListPayload(externalFilter, debouncedExternalQuery),
+      publicationStatus: "public" as const,
+    }),
     [debouncedExternalQuery, externalFilter]
   );
   const listQuery = useQuery({
+    enabled: activeWorkspace === "directory" && !selectedEventId,
     queryKey: adminQueryKeys.events.list(JSON.stringify(listPayload)),
     queryFn: () => listEventProfiles(listPayload),
     placeholderData: (previousData) => previousData,
   });
   const externalListQuery = useQuery({
+    enabled: activeWorkspace === "external" && !selectedExternalEventId,
     queryKey: adminQueryKeys.events.externalList(
       JSON.stringify(externalListPayload)
     ),
     queryFn: () => listExternalEventProfiles(externalListPayload),
     placeholderData: (previousData) => previousData,
   });
+  const externalDetailQuery = useQuery({
+    enabled: activeWorkspace === "external" && Boolean(selectedExternalEventId),
+    queryKey: adminQueryKeys.events.externalList(JSON.stringify({
+      query: selectedExternalEventId,
+      publicationStatus: "public",
+      timeWindow: "all",
+      limit: 10,
+    })),
+    queryFn: () => listExternalEventProfiles({
+      query: selectedExternalEventId,
+      publicationStatus: "public",
+      timeWindow: "all",
+      limit: 10,
+    }),
+  });
   const supplyReadinessQuery = useQuery({
+    enabled: activeWorkspace === "readiness",
     queryKey: adminQueryKeys.events.supplyReadiness(),
     queryFn: loadEventSupplyReadiness,
     placeholderData: (previousData) => previousData,
   });
-  const detailEventId = loadedEventId ?? "__none__";
+  const detailEventId = selectedEventId ?? "__none__";
   const detailQuery = useQuery({
-    enabled: Boolean(loadedEventId),
+    enabled: Boolean(selectedEventId),
     queryKey: adminQueryKeys.events.detail(detailEventId),
     queryFn: () => loadEventProfile({eventId: detailEventId}),
   });
@@ -179,6 +242,14 @@ export function useEventPublishingController({
   }, [externalListQuery.error, onError]);
 
   useEffect(() => {
+    if (!externalDetailQuery.error) return;
+    onError(messageFromError(
+      externalDetailQuery.error,
+      "Unable to load external event detail."
+    ));
+  }, [externalDetailQuery.error, onError]);
+
+  useEffect(() => {
     if (!supplyReadinessQuery.error) return;
     onError(messageFromError(
       supplyReadinessQuery.error,
@@ -199,13 +270,24 @@ export function useEventPublishingController({
     onError(null);
   }, [detailQuery.data, onError]);
 
+  useEffect(() => {
+    if (!selectedEventId) {
+      setEvent(null);
+      setForm(null);
+      return;
+    }
+    setEventId(selectedEventId);
+    setEvent((current) => current?.eventId === selectedEventId ? current : null);
+    setForm((current) => event?.eventId === selectedEventId ? current : null);
+  }, [event?.eventId, selectedEventId]);
+
   const loadEvent = useCallback(async (nextEventId = eventId) => {
     const normalizedEventId = nextEventId.trim();
     if (!normalizedEventId) {
       onError("Enter an events/{id} document id before loading.");
       return false;
     }
-    setLoadedEventId(normalizedEventId);
+    setSelectedEventId(normalizedEventId);
     try {
       const response = await queryClient.fetchQuery({
         queryKey: adminQueryKeys.events.detail(normalizedEventId),
@@ -221,23 +303,31 @@ export function useEventPublishingController({
       onError(messageFromError(error, "Unable to load event profile."));
       return false;
     }
-  }, [eventId, onError, queryClient]);
+  }, [eventId, onError, queryClient, setSelectedEventId]);
 
   const selectEvent = useCallback((nextEventId: string) => {
     setEventId(nextEventId);
-    setView("detail");
-    void loadEvent(nextEventId);
-  }, [loadEvent]);
+    setSelectedEventId(nextEventId);
+    if (!onSelectEventId) void loadEvent(nextEventId);
+  }, [loadEvent, onSelectEventId, setSelectedEventId]);
 
   const backToList = useCallback(() => {
-    setView("list");
+    if (controlledSelectedEventId === undefined) {
+      setLocalSelectedEventId(null);
+    }
     onError(null);
-  }, [onError]);
+    onBackToList?.();
+  }, [controlledSelectedEventId, onBackToList, onError]);
 
   const openExternalSupply = useCallback(() => {
-    setView("external");
+    onWorkspaceChange?.("external");
     onError(null);
-  }, [onError]);
+  }, [onError, onWorkspaceChange]);
+
+  const openReadiness = useCallback(() => {
+    onWorkspaceChange?.("readiness");
+    onError(null);
+  }, [onError, onWorkspaceChange]);
 
   const diffRows = useMemo(
     () => diffEventProfile(event, form),
@@ -263,10 +353,13 @@ export function useEventPublishingController({
     [externalFilter, externalListGeneratedAt, externalRows]
   );
   const selectedExternalEvent = useMemo(() => {
-    if (filteredExternalRows.length === 0) return null;
-    return filteredExternalRows.find((row) =>
-      row.eventId === selectedExternalEventId) ?? filteredExternalRows[0];
-  }, [filteredExternalRows, selectedExternalEventId]);
+    const rowsToSearch = [
+      ...(externalDetailQuery.data?.rows ?? []),
+      ...filteredExternalRows,
+    ];
+    return rowsToSearch.find((row) =>
+      row.eventId === selectedExternalEventId) ?? null;
+  }, [externalDetailQuery.data?.rows, filteredExternalRows, selectedExternalEventId]);
   const selectedExternalImportReview = useMemo(
     () => buildExternalEventImportReview(
       selectedExternalEvent,
@@ -304,8 +397,10 @@ export function useEventPublishingController({
       setEvent(refreshed.event);
       setForm(formFromEventProfile(refreshed.event));
       setEventId(refreshed.event.eventId);
-      setLoadedEventId(refreshed.event.eventId);
-      await refreshList();
+      setSelectedEventId(refreshed.event.eventId);
+      await queryClient.invalidateQueries({
+        queryKey: [...adminQueryKeys.all, "events", "list"],
+      });
       onError(null);
       onNotice(`Saved ${result.updatedFieldCount} event field updates.`);
       return true;
@@ -319,8 +414,8 @@ export function useEventPublishingController({
     onError,
     onNotice,
     queryClient,
-    refreshList,
     saveMutation,
+    setSelectedEventId,
   ]);
 
   const publishExternalEvent = useCallback(async (
@@ -338,8 +433,12 @@ export function useEventPublishingController({
         checklist: publishRequest.checklist,
       });
       await Promise.all([
-        refreshExternalList(),
-        refreshSupplyReadiness(),
+        queryClient.invalidateQueries({
+          queryKey: [...adminQueryKeys.all, "events", "external-list"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: adminQueryKeys.events.supplyReadiness(),
+        }),
       ]);
       onError(null);
       onNotice(`Published ${result.targetPath} as read-only external supply.`);
@@ -352,8 +451,7 @@ export function useEventPublishingController({
     onError,
     onNotice,
     publishExternalMutation,
-    refreshExternalList,
-    refreshSupplyReadiness,
+    queryClient,
   ]);
 
   return {
@@ -370,12 +468,16 @@ export function useEventPublishingController({
     filteredRows,
     form,
     isDetailLoading: detailQuery.isPending || detailQuery.isFetching,
-    isExternalListLoading: externalListQuery.isPending ||
-      externalListQuery.isFetching,
-    isListLoading: listQuery.isPending || listQuery.isFetching,
+    isExternalListLoading: activeWorkspace === "external" && (
+      selectedExternalEventId ?
+        externalDetailQuery.isPending || externalDetailQuery.isFetching :
+        externalListQuery.isPending || externalListQuery.isFetching
+    ),
+    isListLoading: activeWorkspace === "directory" &&
+      !selectedEventId && (listQuery.isPending || listQuery.isFetching),
     isSaving: saveMutation.isPending,
-    isSupplyReadinessLoading: supplyReadinessQuery.isPending ||
-      supplyReadinessQuery.isFetching,
+    isSupplyReadinessLoading: activeWorkspace === "readiness" &&
+      (supplyReadinessQuery.isPending || supplyReadinessQuery.isFetching),
     listGeneratedAt,
     publishingExternalActionId: publishExternalMutation.isPending ?
       publishExternalMutation.variables?.sourceActionId ?? null :
@@ -383,12 +485,14 @@ export function useEventPublishingController({
     query,
     rows,
     selectedExternalEvent,
-    selectedExternalEventId: selectedExternalEvent?.eventId ?? null,
+    selectedExternalEventId,
     selectedExternalImportReview,
+    selectedReadinessActionId,
     supplyReadiness,
     validationIssues,
     view,
     openExternalSupply,
+    openReadiness,
     publishExternalEvent,
     refreshExternalList,
     refreshList,
@@ -396,6 +500,7 @@ export function useEventPublishingController({
     save,
     selectEvent,
     selectExternalEvent: setSelectedExternalEventId,
+    selectReadinessAction: onSelectReadinessActionId ?? (() => undefined),
     setEventId,
     setExternalFilter,
     setExternalQuery,
