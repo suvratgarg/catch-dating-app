@@ -355,6 +355,12 @@
   background: var(--flow-surface, var(--website-surface));
 }
 
+.not-found-page main {
+  width: min(calc(100% - (var(--gutter) * 2)), var(--content));
+  margin: 0 auto;
+  padding: calc(var(--header-height) + 32px) 0 64px;
+}
+
 .process-status-panel__card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

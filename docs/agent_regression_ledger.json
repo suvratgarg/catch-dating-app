@@ -716,13 +716,75 @@
       "guard": {
         "type": "command",
         "command": "node tool/web/check_storybook_visuals.mjs --surface website --component home_discovery_section --check",
-        "guardEvidence": "the visual checker waits for either a mounted story child under a Storybook main state or an explicit Storybook error before it freezes motion and captures pixels"
+        "guardEvidence": "the visual checker waits for either a visible mounted story child under a Storybook main state or an explicit Storybook error, hides the preparing screen, and forces reveal-on-scroll content into its stable visible state before capture"
       },
       "owner_docs": [
         "docs/web_surface_architecture.md",
         "docs/audit_registry/rules.json"
       ],
-      "notes": "Network-idle and font readiness do not prove that a lazy Storybook module has rendered. The checker must never bless the built-in preparing UI as product evidence."
+      "notes": "Network-idle and font readiness do not prove that a lazy Storybook module has rendered. The checker must never bless the built-in preparing UI or pre-intersection reveal state as product evidence."
+    },
+    {
+      "id": "REG-WEB-VISUAL-CAPTURE-INTEGRITY-001",
+      "title": "Concurrent browser captures bless broken images or corrupted render tiles",
+      "status": "active",
+      "applies_to": [
+        "tool/web/check_storybook_visuals.mjs",
+        "design/visual_baselines/admin/**",
+        "design/visual_baselines/website/**",
+        "design/visual_baselines/webui/**"
+      ],
+      "symptom": "A committed baseline contains a broken visible image or large black Chromium render tiles even though the same story renders correctly when captured in isolation.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --surface website --check",
+        "guardEvidence": "the visual checker captures one browser page at a time and rejects visible images that have not loaded or decoded before the screenshot"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "Parallel Storybook pages can intermittently produce compositor tile corruption in headless Chromium. Visual evidence favors deterministic serialized capture over a shorter run."
+    },
+    {
+      "id": "REG-WEB-NOT-FOUND-HEADER-OFFSET-001",
+      "title": "Not-found content renders underneath the fixed website header",
+      "status": "active",
+      "applies_to": [
+        "website/src/features/notFound/NotFoundPage.tsx",
+        "website/src/styles/flows.css",
+        "website/src/stories/MarketingRoutes.stories.tsx"
+      ],
+      "symptom": "The 404 mark, title, or eyebrow overlaps the fixed Catch header because the not-found main content starts at the top of the viewport.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --surface website --component route_not_found --check",
+        "guardEvidence": "desktop and mobile not-found route baselines preserve the header-height offset and route gutter"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Route stories must include the same PageShell class as the live app so route-specific fixed-header layout is verified instead of bypassed."
+    },
+    {
+      "id": "REG-WEB-HOST-DARK-LABEL-CONTRAST-001",
+      "title": "Generic labels become unreadable inside dark Host heroes",
+      "status": "active",
+      "applies_to": [
+        "website/src/styles/host.css",
+        "website/src/stories/RouteShellPrimitives.stories.tsx"
+      ],
+      "symptom": "A shared UiLabel retains the light-theme ink token inside a dark Host hero, producing approximately 1.1:1 contrast.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --surface website --component shared_host_page_shell --component shared_host_preview_shell --check",
+        "guardEvidence": "Host and Host Preview shell labels inherit the dark-theme muted ink token in desktop and mobile baselines"
+      },
+      "owner_docs": [
+        "docs/design_language.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Dark component shells own the semantic color override for generic labels; stories should not patch contrast with one-off inline styles."
     },
     {
       "id": "REG-TYPOGRAPHY-001",

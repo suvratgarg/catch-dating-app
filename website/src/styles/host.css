@@ -1,4 +1,6 @@
-.host-page {
+.host-page,
+.host-hero,
+.host-preview-hero {
   --host-dark-bg: var(--catch-color-dark-bg);
   --host-dark-surface: var(--catch-color-dark-surface);
   --host-dark-ink: var(--catch-color-dark-ink);
@@ -72,6 +74,11 @@
 
 .host-hero .host-console .ui-label,
 .host-hero .host-console__top span {
+  color: var(--host-dark-muted);
+}
+
+.host-hero .ui-label,
+.host-preview-hero .ui-label {
   color: var(--host-dark-muted);
 }
 

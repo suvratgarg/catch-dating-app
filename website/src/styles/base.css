@@ -79,3 +79,31 @@ textarea {
 main {
   overflow: clip;
 }
+
+.route-loading {
+  display: grid;
+  min-height: min(45vh, 360px);
+  place-items: center;
+}
+
+.route-loading::after {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--website-line-strong);
+  border-radius: 999px;
+  border-top-color: var(--website-accent);
+  animation: route-loading-spin 800ms linear infinite;
+  content: "";
+}
+
+@keyframes route-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loading::after {
+    animation: none;
+  }
+}

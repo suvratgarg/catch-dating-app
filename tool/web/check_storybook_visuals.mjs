@@ -8,6 +8,7 @@ import {PNG} from "pngjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const args = parseArgs(process.argv.slice(2));
+const captureConcurrency = 1;
 if (args.help) {
   printHelp();
   process.exit(0);
@@ -88,7 +89,7 @@ if (args.components.length === 0) {
 let completed = 0;
 
 try {
-  await runPool(jobs, 6, async ({story, viewport}) => {
+  await runPool(jobs, captureConcurrency, async ({story, viewport}) => {
     const page = await browser.newPage({
       colorScheme: "light",
       reducedMotion: "reduce",
@@ -103,6 +104,7 @@ try {
         {state: "visible", timeout: 15_000}
       );
       await page.locator(".sb-preparing-story").waitFor({state: "hidden", timeout: 15_000});
+      await waitForVisibleImages(page);
       await page.evaluate(async () => {
         await document.fonts.ready;
       });
@@ -113,6 +115,10 @@ try {
           caret-color: transparent !important;
           scroll-behavior: auto !important;
           transition: none !important;
+        }
+        [data-reveal] {
+          opacity: 1 !important;
+          transform: none !important;
         }
       `});
       await page.waitForTimeout(40);
@@ -168,6 +174,38 @@ console.log(
   `${resolvedStories.length} ready story(s), ${jobs.length} capture(s), ` +
   `surface ${args.surface}, platform ${capturePlatform}.`
 );
+
+async function waitForVisibleImages(page) {
+  await page.waitForFunction(() => {
+    return visibleImages().every((image) => image.complete);
+
+    function visibleImages() {
+      return Array.from(document.images).filter((image) => {
+        const bounds = image.getBoundingClientRect();
+        const style = getComputedStyle(image);
+        return bounds.bottom > 0 && bounds.right > 0 &&
+          bounds.top < innerHeight && bounds.left < innerWidth &&
+          style.display !== "none" && style.visibility !== "hidden";
+      });
+    }
+  }, undefined, {timeout: 15_000});
+
+  await page.evaluate(async () => {
+    const images = Array.from(document.images).filter((image) => {
+      const bounds = image.getBoundingClientRect();
+      const style = getComputedStyle(image);
+      return bounds.bottom > 0 && bounds.right > 0 &&
+        bounds.top < innerHeight && bounds.left < innerWidth &&
+        style.display !== "none" && style.visibility !== "hidden";
+    });
+    const brokenImages = images.filter((image) => image.naturalWidth === 0);
+    if (brokenImages.length > 0) {
+      const sources = brokenImages.map((image) => image.currentSrc || image.src || "<missing src>");
+      throw new Error(`Visible image failed to load: ${sources.join(", ")}`);
+    }
+    await Promise.all(images.map((image) => image.decode()));
+  });
+}
 
 function readyStories(document, previewKey) {
   const stories = [];

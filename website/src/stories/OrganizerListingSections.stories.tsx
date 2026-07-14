@@ -359,7 +359,12 @@ export const ListingRecommendedOrganizers: Story = {
       states: ["verified-nearby"],
     },
   },
-  render: () => <RecommendedOrganizersSection current={claimableListing} />,
+  render: () => (
+    <RecommendedOrganizersSection
+      current={claimableListing}
+      listings={hostListings}
+    />
+  ),
 };
 
 function QueryStoryFrame({children}: {children: ReactNode}) {

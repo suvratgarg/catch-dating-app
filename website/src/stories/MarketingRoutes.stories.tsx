@@ -11,6 +11,7 @@ import {HostListingPage} from "../features/organizers/HostListingPage";
 import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
 import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
+import {PageShell} from "../shared/site";
 import {captures} from "./fixtures/marketingCaptures";
 
 const generatedOrganizerListing = requireListing("afterfly");
@@ -72,7 +73,11 @@ export const Host: Story = {
       states: ["default", "host-application", "capture-placeholders"],
     },
   },
-  render: () => <HostPage captures={captures} />,
+  render: () => (
+    <PageShell pageClassName="host-page">
+      <HostPage captures={captures} />
+    </PageShell>
+  ),
 };
 
 export const HostPreview: Story = {
@@ -94,7 +99,11 @@ export const HostPreview: Story = {
       states: ["default", "founding-host-offer", "create-flow"],
     },
   },
-  render: () => <HostPreviewPage captures={captures} />,
+  render: () => (
+    <PageShell pageClassName="host-page host-preview-page">
+      <HostPreviewPage captures={captures} />
+    </PageShell>
+  ),
 };
 
 export const Claim: Story = {
@@ -160,7 +169,11 @@ export const NotFound: Story = {
       states: ["unknown-route"],
     },
   },
-  render: () => <NotFoundPage />,
+  render: () => (
+    <PageShell pageClassName="not-found-page">
+      <NotFoundPage />
+    </PageShell>
+  ),
 };
 
 export const OrganizerSearch: Story = {
