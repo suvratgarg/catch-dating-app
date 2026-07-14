@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "ruleEvaluationId": "rule-evaluation:cntraveller:replay:1",
+  "ruleProposalId": "rule-proposal:cntraveller:1",
+  "candidateRuleVersion": "cntraveller-extractor-v1",
+  "phase": "replay",
+  "datasetHash": "4444444444444444444444444444444444444444444444444444444444444444",
+  "sampleSize": 120,
+  "baselineMetrics": {
+    "fieldExactness": 0.96,
+    "eventPrecision": 0.99,
+    "duplicatePrecision": 0.999,
+    "duplicateRecall": 0.98,
+    "correctionRate": 0.01,
+    "escalationRate": 0.08
+  },
+  "candidateMetrics": {
+    "fieldExactness": 0.995,
+    "eventPrecision": 1,
+    "duplicatePrecision": 1,
+    "duplicateRecall": 0.99,
+    "correctionRate": 0,
+    "escalationRate": 0.005
+  },
+  "requiredThresholds": {
+    "fieldExactness": 0.99,
+    "eventPrecision": 0.995,
+    "duplicatePrecision": 0.999,
+    "duplicateRecall": 0.98,
+    "correctionRate": 0.005,
+    "escalationRate": 0.01
+  },
+  "result": "passed",
+  "deploymentRecommendation": "advance_phase",
+  "disagreementWorkItemIds": [],
+  "evaluatedBy": {"actorType": "human", "actorId": "admin:quality:1"},
+  "independentEvaluator": true,
+  "evaluatedAt": "2026-07-14T09:00:00.000Z"
+}

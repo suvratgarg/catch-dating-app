@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/rule_evaluation.schema.json",
+  "title": "OperationRuleEvaluation",
+  "description": "Immutable replay, holdout, shadow, canary, or production-watch evidence for a rule proposal.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "ruleEvaluationId",
+    "ruleProposalId",
+    "candidateRuleVersion",
+    "phase",
+    "datasetHash",
+    "sampleSize",
+    "baselineMetrics",
+    "candidateMetrics",
+    "requiredThresholds",
+    "result",
+    "deploymentRecommendation",
+    "disagreementWorkItemIds",
+    "evaluatedBy",
+    "independentEvaluator",
+    "evaluatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "ruleEvaluationId": {"$ref": "common.schema.json#/definitions/id"},
+    "ruleProposalId": {"$ref": "common.schema.json#/definitions/id"},
+    "candidateRuleVersion": {"type": "string", "minLength": 1, "maxLength": 120},
+    "phase": {
+      "type": "string",
+      "enum": ["replay", "holdout", "shadow", "canary", "production_watch"]
+    },
+    "datasetHash": {"$ref": "common.schema.json#/definitions/sha256"},
+    "sampleSize": {"type": "integer", "minimum": 1},
+    "baselineMetrics": {"$ref": "common.schema.json#/definitions/metricSet"},
+    "candidateMetrics": {"$ref": "common.schema.json#/definitions/metricSet"},
+    "requiredThresholds": {"$ref": "common.schema.json#/definitions/metricSet"},
+    "result": {"type": "string", "enum": ["passed", "failed", "inconclusive"]},
+    "deploymentRecommendation": {
+      "type": "string",
+      "enum": ["do_not_promote", "advance_phase", "rollback", "retain"]
+    },
+    "disagreementWorkItemIds": {
+      "type": "array",
+      "maxItems": 1000,
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/definitions/id"}
+    },
+    "evaluatedBy": {"$ref": "common.schema.json#/definitions/actor"},
+    "independentEvaluator": {"type": "boolean", "const": true},
+    "evaluatedAt": {"$ref": "common.schema.json#/definitions/isoDateTime"}
+  }
+}
