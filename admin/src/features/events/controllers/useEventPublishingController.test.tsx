@@ -94,10 +94,11 @@ describe("useEventPublishingController", () => {
 
   it("loads a route-selected event even when the directory query is disabled", async () => {
     const event = sampleEventDetails["mumbai-padel-mixer-1"];
+    const onError = vi.fn();
     repository.loadEventProfile.mockResolvedValue({event});
     const {result} = renderHook(
       () => useEventPublishingController({
-        onError: vi.fn(),
+        onError,
         onNotice: vi.fn(),
         selectedEventId: event.eventId,
       }),

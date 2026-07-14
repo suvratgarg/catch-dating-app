@@ -703,6 +703,45 @@
       "notes": "The shell may redirect an inaccessible route only after a live user has a resolved, non-empty role set. Sign-in, claim-check, and no-claim states retain the requested URL."
     },
     {
+      "id": "REG-WEB-ADMIN-TEST-CALLBACK-STABILITY-001",
+      "title": "Admin hook test schedules an infinite render loop after assertions pass",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/events/controllers/useEventPublishingController.ts",
+        "admin/src/features/events/controllers/useEventPublishingController.test.tsx"
+      ],
+      "symptom": "Vitest reports every assertion as passed, then emits a React scheduler error such as window is not defined during JSDOM teardown because a renderHook callback recreates an effect dependency on every render.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/events/controllers/useEventPublishingController.test.tsx",
+        "guardEvidence": "the route-selected event test passes stable callback identities into the controller, completes all five cases, and leaves no maximum-update-depth warning or unhandled scheduler work"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "When a hook effect depends on a callback prop, renderHook tests must not create that callback inline if the effect also hydrates state. Explicit cleanup cannot repair a render loop that is already scheduled."
+    },
+    {
+      "id": "REG-WEB-ADMIN-LAZY-COVERAGE-001",
+      "title": "Coverage instrumentation outruns the default assertion timeout at an intentional lazy boundary",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx"
+      ],
+      "symptom": "The full Admin coverage suite intermittently remains on Loading diagnostics after the Diagnostics action succeeds because the cold lazy diagnostics module is still being transformed when Testing Library's one-second default expires.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run test:coverage",
+        "guardEvidence": "the organizer diagnostics assertion uses a five-second timeout local to the known lazy boundary; the cold full coverage suite completes 29 files and 91 tests"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Keep the production lazy boundary and the global Testing Library timeout. Only the assertion that crosses the coverage-instrumented lazy import receives the bounded allowance."
+    },
+    {
       "id": "REG-WEB-VISUAL-STORY-READY-001",
       "title": "Visual baselines capture Storybook's preparing screen instead of the story",
       "status": "active",

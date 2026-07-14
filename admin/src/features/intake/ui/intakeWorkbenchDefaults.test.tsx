@@ -42,7 +42,7 @@ describe("Intake task-first defaults", () => {
     fireEvent.click(screen.getByRole("button", {name: "Diagnostics"}));
     expect(await screen.findByRole("heading", {
       name: "Workflow readiness",
-    })).toBeTruthy();
+    }, {timeout: 5_000})).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Back to review queue"}));
     expect(screen.getByRole("navigation", {
       name: "Organizer intake stages",
