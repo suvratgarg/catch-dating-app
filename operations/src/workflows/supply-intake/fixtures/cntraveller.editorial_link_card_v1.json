@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "fixtureSetId": "cntraveller-editorial-link-card-v1",
+  "sourceProfileId": "cntraveller",
+  "cases": [
+    {
+      "caseId": "two-event-roundup",
+      "input": {
+        "sourceUrl": "https://www.cntraveller.in/story/example-things-to-do-in-mumbai/",
+        "document": {
+          "templateFingerprint": "cntraveller-link-card-fixture-a",
+          "cards": [
+            {
+              "id": "museum-after-hours",
+              "heading": "Museum After Hours",
+              "summary": "An evening programme with tours and live music.",
+              "dateText": "26 July",
+              "venueText": "Fort, Mumbai",
+              "links": [
+                {"url": "https://museum.example/events/after-hours", "relationship": "official"}
+              ]
+            },
+            {
+              "id": "monsoon-table",
+              "heading": "The Monsoon Table",
+              "summary": "A seasonal supper club.",
+              "dateText": "27 July",
+              "venueText": "Bandra, Mumbai",
+              "links": [
+                {"url": "javascript:alert(1)", "relationship": "reference"},
+                {"url": "https://www.cntraveller.in/story/example-things-to-do-in-mumbai/", "relationship": "editorial"}
+              ]
+            }
+          ]
+        }
+      },
+      "expected": [
+        {
+          "sourceEntityId": "museum-after-hours",
+          "title": "Museum After Hours",
+          "officialSourceUrl": "https://museum.example/events/after-hours",
+          "requiresOfficialSource": true
+        },
+        {
+          "sourceEntityId": "monsoon-table",
+          "title": "The Monsoon Table",
+          "officialSourceUrl": null,
+          "requiresOfficialSource": true
+        }
+      ]
+    },
+    {
+      "caseId": "empty-roundup",
+      "input": {
+        "sourceUrl": "https://www.cntraveller.in/story/empty-example/",
+        "document": {
+          "templateFingerprint": "cntraveller-link-card-fixture-empty",
+          "cards": []
+        }
+      },
+      "expected": []
+    }
+  ]
+}
