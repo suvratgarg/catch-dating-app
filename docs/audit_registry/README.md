@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.6.3
-updated: 2026-07-10
+version: 2.6.4
+updated: 2026-07-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -31,7 +31,9 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `agent_metrics.jsonl` | Append-only measurements for agent-readiness score, check counts, delegation outcomes, and workflow-quality trend events. |
 | `architecture_pattern_adoption.json` | Machine-readable tracker for architecture reference exhibits, prototype files, adopters, variants, exceptions, and back-propagation obligations. |
 | `react_component_governance_families.json` | Generated reader snapshot of React component families governed by `tool/web/check_react_component_governance.mjs --families-json`. |
+| `web_shared_primitive_adoption.json` | Active cross-React primitive compatibility decisions plus the running usability, performance, organization, test, and tooling improvement queue. |
 | `react_staff_review_remediation.json` | Staff review item tracker for the 2026-07-02 organizer publication, public listing, and claim CTA remediation pass. |
+| `admin_console_design_adoption.json` | Production adoption tracker for the comprehensive admin-console design export, including implemented, partial, blocked, and prototype-only behavior. |
 | `widget_classification.json` | Generated registry of every Dart widget class, its role, ownership boundaries, catalog status, and allowed public remediation path. |
 | `widget_classification.schema.json` | JSON schema for the generated widget classification registry. |
 | `widget_similarity.json` | Generated structural-similarity registry for widget consolidation review packets. |

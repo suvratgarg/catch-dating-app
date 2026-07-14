@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-12",
+  "updated": "2026-07-14",
   "description": "Existing marketing website component copy. The scanner blocks additions; migrate entries into website/src/content and delete them from this baseline.",
   "entries": [
     {
@@ -3380,72 +3380,104 @@
       "text": "Primary"
     },
     {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "${field.label}: ${field.value}"
-    },
-    {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "${review.rating} out of 5 stars"
-    },
-    {
-      "file": "website/src/shared/ui/primitives.tsx",
+      "file": "website/src/shared/ui/primitives/actions.tsx",
       "text": "${String(event.title)} event counts"
     },
     {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "confidence"
+      "file": "website/src/shared/ui/primitives/actions.tsx",
+      "text": "app-download-ctas app-download-ctas--compact"
     },
     {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "external"
+      "file": "website/src/shared/ui/primitives/actions.tsx",
+      "text": "app-download-ctas app-download-ctas--panel"
     },
     {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "For attendees:"
+      "file": "website/src/shared/ui/primitives/forms.tsx",
+      "text": "${field.label}: ${field.value}"
     },
     {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "For hosts:"
-    },
-    {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "Host response ·"
-    },
-    {
-      "file": "website/src/shared/ui/primitives.tsx",
+      "file": "website/src/shared/ui/primitives/foundation.tsx",
       "text": "listing-hero__eyebrow"
     },
     {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "Location"
-    },
-    {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "Owner response"
-    },
-    {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "proof-section"
-    },
-    {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "proof-section__copy"
-    },
-    {
-      "file": "website/src/shared/ui/primitives.tsx",
+      "file": "website/src/shared/ui/primitives/foundation.tsx",
       "text": "Search Catch"
     },
     {
-      "file": "website/src/shared/ui/primitives.tsx",
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "capture-grid capture-grid--host"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-after"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-faq"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-live"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-loop"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-payments"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-product-split"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-trust"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-grid listing-grid--fit"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-section listing-section--events"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-section listing-section--reviews"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-section listing-section--split"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-section listing-section--success"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "proof-section"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "proof-section proof-section--host"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "proof-section__copy"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/organizer2.tsx",
+      "text": "Location"
+    },
+    {
+      "file": "website/src/shared/ui/primitives/organizer2.tsx",
       "text": "Source"
     },
     {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "visible"
-    },
-    {
-      "file": "website/src/shared/ui/primitives.tsx",
-      "text": "waitlisted"
+      "file": "website/src/shared/ui/primitives/organizer3.tsx",
+      "text": "${review.rating} out of 5 stars"
     }
   ]
 }

@@ -102,6 +102,29 @@
             }
           }
         },
+        "surfaces": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "flutter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "website": {
+              "type": "string",
+              "minLength": 1
+            },
+            "admin": {
+              "type": "string",
+              "minLength": 1
+            },
+            "webui": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
         "design": {
           "type": "object",
           "required": ["figma", "codeConnect", "claude"],

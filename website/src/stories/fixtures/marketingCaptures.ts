@@ -1,6 +1,31 @@
 import type {CaptureRecord} from "../../shared/ui/primitives";
 
 export const captures: Record<string, CaptureRecord> = {
+  "host-create-basics": capture(
+    "host-create-basics",
+    "Basics",
+    "Name the format, city, and first organizer details before the event rules appear."
+  ),
+  "host-create-location": capture(
+    "host-create-location",
+    "Location",
+    "Set the venue, precise meeting point, and arrival note guests will see."
+  ),
+  "host-create-schedule": capture(
+    "host-create-schedule",
+    "Schedule",
+    "Place the event into the host calendar with date, start time, and check-in timing."
+  ),
+  "host-create-policy": capture(
+    "host-create-policy",
+    "Policy",
+    "Balance capacity, pricing, admission, waitlists, cohorts, and cancellation rules."
+  ),
+  "host-create-guide": capture(
+    "host-create-guide",
+    "Live guide",
+    "Choose the live Event Success guide before the night starts."
+  ),
   "host-event-setup": capture(
     "host-event-setup",
     "Host event setup",

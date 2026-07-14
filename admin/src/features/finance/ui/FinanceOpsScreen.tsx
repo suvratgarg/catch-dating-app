@@ -1,4 +1,6 @@
 import {
+  AlertTriangle,
+  ArrowLeft,
   CircleDollarSign,
   Clock3,
   CreditCard,
@@ -8,14 +10,16 @@ import {
 } from "lucide-react";
 import {
   AdminButton,
-  AdminEditorGrid,
-  AdminEditorPanel,
   AdminMetricCard,
   AdminMetricGrid,
   AdminRoadmapList,
   AdminRoadmapListItem,
+  AdminRowTitle,
+  AdminSecondaryDisclosure,
   AdminTableRow,
   AdminTag,
+  AdminTagList,
+  AdminTagRow,
   AdminToolbar,
   AdminWorkbenchStack,
   AlertRow,
@@ -28,17 +32,14 @@ import {
   SelectField,
   StateRow,
   TableActionButton,
-  AdminTagList,
-  AdminIntakeSection,
-  AdminIntakeSectionTitle,
-  AdminRowTitle,
-  AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {
-  type FinanceOpsController,
+  type FinanceEvidenceState,
   type FinanceIssueKind,
   type FinanceIssueReview,
   type FinanceIssueRow,
+  type FinanceOpsController,
+  type FinanceSourceId,
   useFinanceOpsController,
 } from "../controllers/useFinanceOpsController";
 
@@ -50,35 +51,68 @@ const kindOptions: Array<{label: string; value: FinanceIssueKind}> = [
 ];
 
 export function FinanceOpsScreen({
+  onBackToList,
   onError,
+  onSelectIssueId,
+  selectedIssueId = null,
 }: {
+  onBackToList?: () => void;
   onError: (message: string | null) => void;
+  onSelectIssueId?: (issueId: string) => void;
+  selectedIssueId?: string | null;
 }) {
-  const controller = useFinanceOpsController({onError});
-  return <FinanceOpsWorkspace controller={controller} />;
+  const controller = useFinanceOpsController({
+    onError,
+    onSelectIssueId,
+    selectedIssueId,
+  });
+  return (
+    <FinanceOpsWorkspace
+      controller={controller}
+      onBackToList={onBackToList}
+    />
+  );
 }
 
 export function FinanceOpsWorkspace({
   controller,
+  onBackToList,
 }: {
   controller: FinanceOpsController;
+  onBackToList?: () => void;
 }) {
+  if (controller.selectedIssueId) {
+    return (
+      <FinanceDetailWorkspace
+        controller={controller}
+        onBackToList={onBackToList}
+      />
+    );
+  }
   return (
     <AdminWorkbenchStack>
+      <FinanceSourceAlerts controller={controller} />
       <AdminMetricGrid ariaLabel="Finance state">
-        <AdminMetricCard label="Completed" value={numberValue(controller.metrics.completedPayments)} />
         <AdminMetricCard
-          label="Failed"
-          tone={controller.metrics.failedPayments > 0 ? "attention" : "normal"}
-          value={numberValue(controller.metrics.failedPayments)}
+          caption="Current capped overview preview"
+          label="Payment issues shown"
+          value={metricValue(controller.metrics.paymentPreviewCount)}
         />
         <AdminMetricCard
-          label="Signup failed"
-          value={numberValue(controller.metrics.signupFailedPayments)}
+          caption="Current overview metric"
+          label="Failed payments"
+          tone={(controller.metrics.failedPayments ?? 0) > 0 ? "attention" : "normal"}
+          value={metricValue(controller.metrics.failedPayments)}
         />
         <AdminMetricCard
-          label="Revenue"
-          value={`INR ${numberValue(controller.metrics.revenueMinor / 100)}`}
+          caption="Current overview aggregate"
+          label="Payout restrictions"
+          value={metricValue(controller.metrics.payoutRestrictedHosts)}
+        />
+        <AdminMetricCard
+          caption="30-day host event analytics"
+          label="Event payment signals"
+          value={metricValue(controller.metrics.eventIssueCount30d)}
         />
       </AdminMetricGrid>
       <Panel
@@ -92,14 +126,12 @@ export function FinanceOpsWorkspace({
             ariaLabel="Search finance issues"
             icon={<Search size={16} strokeWidth={1.8} />}
             onChange={controller.setQuery}
-            placeholder="Search payment, event, provider state"
+            placeholder="Search payment, event, or status"
             value={controller.query}
           />
           <SelectField
             label="Issue type"
-            onChange={(value) =>
-              controller.setKindFilter(value as FinanceIssueKind)
-            }
+            onChange={(value) => controller.setKindFilter(value as FinanceIssueKind)}
             options={kindOptions}
             value={controller.kindFilter}
           />
@@ -113,89 +145,188 @@ export function FinanceOpsWorkspace({
         </AdminToolbar>
         <FinanceTable
           rows={controller.filteredRows}
-          selectedId={controller.selected?.id ?? null}
           onSelect={controller.select}
         />
       </Panel>
-      <AdminEditorGrid>
-        <FinanceDetailPanel
-          loadedAt={controller.loadedAt}
-          selected={controller.selected}
-          review={controller.selectedReview}
-        />
-        <AdminWorkbenchStack>
+      <FinanceSourceDisclosure controller={controller} />
+    </AdminWorkbenchStack>
+  );
+}
+
+function FinanceDetailWorkspace({
+  controller,
+  onBackToList,
+}: {
+  controller: FinanceOpsController;
+  onBackToList?: () => void;
+}) {
+  return (
+    <AdminWorkbenchStack>
+      <AdminToolbar>
+        <AdminButton
+          icon={<ArrowLeft size={15} strokeWidth={1.9} />}
+          onClick={onBackToList}
+        >
+          Back to finance issues
+        </AdminButton>
+        <AdminButton
+          disabled={controller.isLoading}
+          icon={<RefreshCw size={15} strokeWidth={1.9} />}
+          onClick={() => void controller.refresh()}
+        >
+          Refresh evidence
+        </AdminButton>
+      </AdminToolbar>
+      <FinanceSourceAlerts controller={controller} />
+      {controller.selected ? (
+        <>
+          <FinanceDetailPanel
+            selected={controller.selected}
+            review={controller.selectedReview}
+          />
+          <FinanceReconciliationPanel review={controller.selectedReview} />
+        </>
+      ) : controller.selectedUnavailable ? (
+        <Panel
+          span={2}
+          icon={<AlertTriangle size={18} strokeWidth={1.9} />}
+          title="Issue unavailable"
+          action="Not in current sources"
+        >
+          <AlertRow
+            icon={<AlertTriangle size={16} strokeWidth={1.9} />}
+            title="This deep link is outside the current source previews"
+            tone="warning"
+          >
+            Finance has no point-read issue contract yet. Return to the list or
+            retry the sources; no substitute record has been selected.
+          </AlertRow>
+        </Panel>
+      ) : (
+        <EmptyState variant="workbench" icon={<Clock3 size={16} strokeWidth={1.9} />}>
+          Loading finance evidence.
+        </EmptyState>
+      )}
+      <FinanceSourceDisclosure controller={controller} />
+    </AdminWorkbenchStack>
+  );
+}
+
+function FinanceSourceAlerts({controller}: {controller: FinanceOpsController}) {
+  if (controller.isUnavailable) {
+    return (
+      <AlertRow
+        icon={<AlertTriangle size={16} strokeWidth={1.9} />}
+        title="Finance sources unavailable"
+        tone="blocked"
+      >
+        Retry the failed sources below. No issue data is being inferred from a
+        different workflow.
+      </AlertRow>
+    );
+  }
+  if (controller.isPartial) {
+    return (
+      <AlertRow
+        icon={<AlertTriangle size={16} strokeWidth={1.9} />}
+        title="Partial finance view"
+        tone="warning"
+      >
+        One source failed. Available rows and metrics retain their source scope;
+        unavailable values show a dash.
+      </AlertRow>
+    );
+  }
+  if (controller.malformedCount > 0) {
+    return (
+      <AlertRow
+        icon={<AlertTriangle size={16} strokeWidth={1.9} />}
+        title={`${controller.malformedCount} malformed source record${controller.malformedCount === 1 ? "" : "s"} omitted`}
+        tone="warning"
+      >
+        Records missing identifiers, titles, or numeric payment signals are not
+        rendered as actionable issues.
+      </AlertRow>
+    );
+  }
+  return null;
+}
+
+function FinanceSourceDisclosure({controller}: {controller: FinanceOpsController}) {
+  return (
+    <AdminSecondaryDisclosure summary="Source status, scope, and authority boundary">
+      <AdminWorkbenchStack compact>
+        {controller.sources.map((source) => (
           <Panel
-            icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-            title="Authority boundary"
-            action="read-only"
+            key={source.id}
+            icon={<ShieldCheck size={17} strokeWidth={1.9} />}
+            title={source.label}
+            action={source.status}
           >
             <QualityList>
-              <StateRow label="Sources" value="adminGetOverview, adminGetHostAnalytics" />
-              <StateRow label="Mutations" value="None from this tab" />
-              <StateRow label="Needed next" value="provider ledger/read model and audited finance callables" />
-              <StateRow label="Not here" value="refund execution, payout release, settlement edits" />
+              <StateRow label="Scope" value={source.scope} />
+              <StateRow label="Generated" value={formatDateTime(source.generatedAt)} />
+              <StateRow label="Loaded" value={formatDateTime(source.loadedAt)} />
+              {source.error ? <StateRow label="Error" value={source.error} /> : null}
             </QualityList>
+            {source.status === "error" ? (
+              <AdminButton onClick={() => void controller.retrySource(source.id as FinanceSourceId)}>
+                Retry source
+              </AdminButton>
+            ) : null}
           </Panel>
-          <FinanceReconciliationPanel review={controller.selectedReview} />
-        </AdminWorkbenchStack>
-      </AdminEditorGrid>
-    </AdminWorkbenchStack>
+        ))}
+        <AlertRow
+          icon={<ShieldCheck size={16} strokeWidth={1.9} />}
+          title="Read-only reconciliation"
+          tone="neutral"
+        >
+          Refund, retry, payout release, restriction clearing, settlement edits,
+          and every money-moving action remain unavailable.
+        </AlertRow>
+      </AdminWorkbenchStack>
+    </AdminSecondaryDisclosure>
   );
 }
 
 function FinanceTable({
   onSelect,
   rows,
-  selectedId,
 }: {
   onSelect: (row: FinanceIssueRow) => void;
   rows: FinanceIssueRow[];
-  selectedId: string | null;
 }) {
   if (rows.length === 0) {
     return (
-      <EmptyState
-        variant="workbench"
-        icon={<Clock3 size={16} strokeWidth={1.9} />}
-      >
-        No finance issues match this filter.
+      <EmptyState variant="workbench" icon={<Clock3 size={16} strokeWidth={1.9} />}>
+        No available finance issues match this filter.
       </EmptyState>
     );
   }
   return (
-    <DataTable variant="workbench">
+    <DataTable ariaLabel="Finance issues" variant="workbench">
       <thead>
         <tr>
           <th>Issue</th>
+          <th>Scope</th>
           <th>Severity</th>
           <th>Status</th>
-          <th>Amount</th>
-          <th>Target</th>
-          <th>Select</th>
+          <th>Review</th>
         </tr>
       </thead>
       <tbody>
         {rows.map((row) => (
-          <AdminTableRow key={row.id} selected={selectedId === row.id}>
+          <AdminTableRow key={row.id}>
             <td>
               <AdminRowTitle>
                 <strong>{row.title}</strong>
-                <span>{row.kind} · {row.detail}</span>
+                <span>{row.detail}</span>
               </AdminRowTitle>
             </td>
-            <td>
-              <RiskBadge tone={riskTone(row.severity)}>
-                {row.severity}
-              </RiskBadge>
-            </td>
+            <td>{row.sourceScope}</td>
+            <td><RiskBadge tone={riskTone(row.severity)}>{row.severity}</RiskBadge></td>
             <td>{row.status}</td>
-            <td>{amountValue(row)}</td>
-            <td>{row.targetPath}</td>
-            <td>
-              <TableActionButton onClick={() => onSelect(row)}>
-                Review
-              </TableActionButton>
-            </td>
+            <td><TableActionButton onClick={() => onSelect(row)}>Review</TableActionButton></td>
           </AdminTableRow>
         ))}
       </tbody>
@@ -204,156 +335,105 @@ function FinanceTable({
 }
 
 function FinanceDetailPanel({
-  loadedAt,
   review,
   selected,
 }: {
-  loadedAt: string | null;
   review: FinanceIssueReview | null;
-  selected: FinanceIssueRow | null;
-}) {
-  return (
-    <AdminEditorPanel
-      icon={<CircleDollarSign size={18} strokeWidth={1.9} />}
-      title="Issue detail"
-      action={selected?.status ?? "No issue"}
-    >
-      {selected ? (
-        <QualityList>
-          <StateRow label="Type" value={selected.kind} />
-          <StateRow label="Target" value={selected.targetPath} />
-          <StateRow label="Status" value={selected.status} />
-          <StateRow label="Amount" value={amountValue(selected)} />
-          <StateRow label="Next action" value={selected.nextAction} />
-          <StateRow label="Created/start" value={formatDateTime(selected.createdAt)} />
-          <StateRow label="Signals loaded" value={formatDateTime(loadedAt)} />
-          {review ? (
-            <>
-              <AlertRow
-                icon={<ShieldCheck size={16} strokeWidth={1.9} />}
-                title={review.statusLabel}
-                tone={reviewTone(review.actionStatus)}
-              >
-                {review.statusDetail}
-              </AlertRow>
-              <AdminTagRow>
-                <AdminTag tone="muted">provider {review.provider}</AdminTag>
-                <AdminTag tone="muted">
-                  {review.actionStatus.replaceAll("_", " ")}
-                </AdminTag>
-              </AdminTagRow>
-              <StateRow label="Authority" value={review.sourceOfTruth} />
-              <StateRow
-                label="Reconciliation"
-                value={review.reconciliationStatus}
-              />
-              <StateRow label="Mutation boundary" value={review.mutationBoundary} />
-            </>
-          ) : null}
-        </QualityList>
-      ) : (
-        <EmptyState
-          variant="workbench"
-          icon={<Clock3 size={16} strokeWidth={1.9} />}
-        >
-          Select a finance issue to inspect.
-        </EmptyState>
-      )}
-    </AdminEditorPanel>
-  );
-}
-
-function FinanceReconciliationPanel({
-  review,
-}: {
-  review: FinanceIssueReview | null;
+  selected: FinanceIssueRow;
 }) {
   return (
     <Panel
-      icon={<CreditCard size={18} strokeWidth={1.9} />}
-      title="Reconciliation model"
-      action={review ? review.actionStatus.replaceAll("_", " ") : "select issue"}
+      span={2}
+      icon={<CircleDollarSign size={18} strokeWidth={1.9} />}
+      title={selected.title}
+      action={selected.status}
     >
+      <QualityList>
+        <StateRow label="Issue type" value={selected.kind} />
+        <StateRow label="Source scope" value={selected.sourceScope} />
+        <StateRow label="Target" value={selected.targetPath} />
+        <StateRow label="Created/start" value={formatDateTime(selected.createdAt)} />
+        <StateRow label="Manual next step" value={selected.nextAction} />
+      </QualityList>
       {review ? (
-        <AdminWorkbenchStack compact>
+        <>
+          <AlertRow
+            icon={<ShieldCheck size={16} strokeWidth={1.9} />}
+            title={review.statusLabel}
+            tone={reviewTone(review.actionStatus)}
+          >
+            {review.statusDetail}
+          </AlertRow>
+          <AdminTagRow>
+            <AdminTag tone="muted">{review.actionStatus.replaceAll("_", " ")}</AdminTag>
+            <AdminTag tone="muted">read only</AdminTag>
+          </AdminTagRow>
           <QualityList>
-            <StateRow label="Source model" value={review.sourceModel} />
-            <StateRow label="Provider authority" value={review.sourceOfTruth} />
+            {review.fieldEvidence.map((field) => (
+              <StateRow
+                key={field.label}
+                label={`${field.label} · ${evidenceLabel(field.state)}`}
+                value={field.value}
+              />
+            ))}
           </QualityList>
-          <AdminIntakeSection>
-            <AdminIntakeSectionTitle>Required Evidence</AdminIntakeSectionTitle>
-            <AdminRoadmapList>
-              {review.requiredEvidence.map((item) => (
-                <ReviewRow key={item} text={item} />
-              ))}
-            </AdminRoadmapList>
-          </AdminIntakeSection>
-          <AdminIntakeSection>
-            <AdminIntakeSectionTitle>Blocked Here</AdminIntakeSectionTitle>
-            <AdminTagList>
-              {review.blockedActions.map((action) => (
-                <AdminTag key={action}>{action}</AdminTag>
-              ))}
-            </AdminTagList>
-          </AdminIntakeSection>
-        </AdminWorkbenchStack>
-      ) : (
-        <EmptyState
-          variant="workbench"
-          icon={<Clock3 size={16} strokeWidth={1.9} />}
-        >
-          Select a finance issue to inspect reconciliation evidence.
-        </EmptyState>
-      )}
+        </>
+      ) : null}
     </Panel>
   );
 }
 
-function ReviewRow({text}: {text: string}) {
+function FinanceReconciliationPanel({review}: {review: FinanceIssueReview | null}) {
+  if (!review) return null;
   return (
-    <AdminRoadmapListItem>
-      <ShieldCheck size={15} strokeWidth={1.9} />
-      <span>{text}</span>
-    </AdminRoadmapListItem>
+    <Panel
+      span={2}
+      icon={<CreditCard size={18} strokeWidth={1.9} />}
+      title="Required reconciliation evidence"
+      action="Manual provider handoff"
+    >
+      <QualityList>
+        <StateRow label="Source model" value={review.sourceModel} />
+        <StateRow label="Provider" value={review.provider} />
+        <StateRow label="Authority" value={review.sourceOfTruth} />
+        <StateRow label="Reconciliation" value={review.reconciliationStatus} />
+        <StateRow label="Mutation boundary" value={review.mutationBoundary} />
+      </QualityList>
+      <AdminRoadmapList>
+        {review.requiredEvidence.map((item) => (
+          <AdminRoadmapListItem key={item}>
+            <ShieldCheck size={15} strokeWidth={1.9} />
+            <span>{item}</span>
+          </AdminRoadmapListItem>
+        ))}
+      </AdminRoadmapList>
+      <AdminTagList>
+        {review.blockedActions.map((action) => <AdminTag key={action}>{action}</AdminTag>)}
+      </AdminTagList>
+    </Panel>
   );
 }
 
-function amountValue(row: FinanceIssueRow): string {
-  if (row.amountMinor === null) return "n/a";
-  return new Intl.NumberFormat("en-IN", {
-    currency: row.currency,
-    maximumFractionDigits: 0,
-    style: "currency",
-  }).format(row.amountMinor / 100);
+function metricValue(value: number | null): string {
+  return value === null ? "—" : new Intl.NumberFormat("en-IN").format(value);
 }
 
-function riskTone(severity: FinanceIssueRow["severity"]):
-  "low" | "medium" | "high" | "watch" {
-  if (severity === "high") return "high";
-  if (severity === "medium") return "medium";
-  return "watch";
+function evidenceLabel(state: FinanceEvidenceState): string {
+  return state === "source" ? "source" : state === "inferred" ? "inferred" : "unknown";
 }
 
-function reviewTone(
-  status: FinanceIssueReview["actionStatus"]
-): "neutral" | "warning" | "success" | "blocked" {
-  if (status === "needs_finance_contract") return "blocked";
-  if (status === "aggregate_only") return "warning";
-  return "neutral";
+function riskTone(severity: FinanceIssueRow["severity"]): "low" | "medium" | "high" | "watch" {
+  return severity === "high" ? "high" : severity === "medium" ? "medium" : "watch";
 }
 
-function numberValue(value: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    maximumFractionDigits: 0,
-  }).format(value);
+function reviewTone(status: FinanceIssueReview["actionStatus"]): "neutral" | "warning" | "success" | "blocked" {
+  return status === "needs_finance_contract" ? "blocked" :
+    status === "aggregate_only" ? "warning" : "neutral";
 }
 
 function formatDateTime(value: string | null): string {
-  if (!value) return "unknown";
+  if (!value) return "Unavailable";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
+  if (Number.isNaN(date.getTime())) return "Malformed timestamp";
+  return new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeStyle: "short"}).format(date);
 }

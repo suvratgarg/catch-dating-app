@@ -4,6 +4,7 @@ import {createCatchReactViteConfig} from "../packages/web-config/vite-react";
 
 export default defineConfig(
   createCatchReactViteConfig({
+    manifest: true,
     plugins: [react()],
   })
 );

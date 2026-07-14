@@ -1,0 +1,97 @@
+import type {Meta, StoryObj} from "@storybook/react-vite";
+import {
+  BadgeControl,
+  ButtonControl,
+  CheckboxControl,
+  DataTableControl,
+  EmptyStateControl,
+  SelectControl,
+  TextareaControl,
+  TextInputControl,
+  ToggleButtonControl,
+  ToggleGroupControl,
+  UiLabel,
+} from "./primitives";
+
+const meta = {
+  title: "Web UI/Primitives",
+  component: UiLabel,
+} satisfies Meta<typeof UiLabel>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Label: Story = {
+  args: {children: "Shared label"},
+  render: () => (
+    <div style={{display: "grid", gap: 12}}>
+      <UiLabel>Span label</UiLabel>
+      <UiLabel as="div">Div label</UiLabel>
+      <UiLabel className="surface-label">Surface class label</UiLabel>
+    </div>
+  ),
+};
+
+export const Checkbox = {
+  render: () => (
+    <div style={{display: "grid", gap: 12}}>
+      <label><CheckboxControl /> Unchecked</label>
+      <label><CheckboxControl defaultChecked /> Checked</label>
+      <label><CheckboxControl disabled /> Disabled</label>
+    </div>
+  ),
+};
+
+export const Button = {
+  render: () => (
+    <div style={{display: "flex", flexWrap: "wrap", gap: 8}}>
+      <ButtonControl>Default</ButtonControl>
+      <ButtonControl disabled>Disabled</ButtonControl>
+      <ButtonControl loading>Loading</ButtonControl>
+      <ButtonControl type="submit">Explicit submit</ButtonControl>
+    </div>
+  ),
+};
+
+export const DataTable = {
+  render: () => (
+    <DataTableControl ariaLabel="Shared table preview" style={{overflowX: "auto"}}>
+      <thead><tr><th>Organizer</th><th>Status</th></tr></thead>
+      <tbody><tr><td>Catch Club</td><td>Ready</td></tr></tbody>
+    </DataTableControl>
+  ),
+};
+
+export const Fields = {
+  render: () => (
+    <div style={{display: "grid", gap: 12, maxWidth: 320}}>
+      <TextInputControl aria-label="Default text field" placeholder="Default" />
+      <TextInputControl aria-label="Invalid text field" descriptionId="field-error" invalid />
+      <span id="field-error">Enter a valid value.</span>
+      <SelectControl aria-label="Select field"><option>Option</option></SelectControl>
+      <TextareaControl aria-label="Textarea field" rows={3} />
+    </div>
+  ),
+};
+
+export const Feedback = {
+  render: () => (
+    <div style={{display: "grid", gap: 12}}>
+      <BadgeControl>Ready badge</BadgeControl>
+      <EmptyStateControl>No results yet.</EmptyStateControl>
+      <EmptyStateControl announce="polite" contentElement="span">
+        Updated results are empty.
+      </EmptyStateControl>
+    </div>
+  ),
+};
+
+export const Toggle = {
+  render: () => (
+    <ToggleGroupControl aria-label="Shared toggle states" style={{display: "flex", gap: 8}}>
+      <ToggleButtonControl selected={false}>Available</ToggleButtonControl>
+      <ToggleButtonControl selected>Selected</ToggleButtonControl>
+      <ToggleButtonControl disabled selected={false}>Disabled</ToggleButtonControl>
+    </ToggleGroupControl>
+  ),
+};

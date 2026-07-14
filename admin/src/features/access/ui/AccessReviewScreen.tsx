@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   CheckCircle2,
   Clock3,
   FileWarning,
@@ -14,10 +15,11 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
-  AdminEditorGrid,
+  AdminDecisionFooterShell,
+  AdminDetailScreenStack,
+  AdminDirectoryScreenStack,
   AdminEditorPanel,
   AdminEditorSection,
-  AdminFieldGrid,
   AdminForm,
   AdminMetricCard,
   AdminMetricGrid,
@@ -27,10 +29,11 @@ import {
   AdminTableRow,
   AdminTag,
   AdminToolbar,
-  AdminWorkbenchStack,
+  AdminWorkbenchNote,
   DataTable,
   EmptyState,
   Panel,
+  PageHeader,
   QualityList,
   SearchField,
   StateRow,
@@ -44,44 +47,122 @@ import {
   applicationUidFromTargetPath,
   type AccessReviewFormState,
   type AccessReviewController,
-  type AccessRecentDecision,
   useAccessReviewController,
 } from "../controllers/useAccessReviewController";
 
 export function AccessReviewScreen({
+  onBackToList,
   onError,
   onNotice,
+  onSelectApplicationUid,
+  selectedApplicationUid,
 }: {
+  onBackToList: () => void;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
+  onSelectApplicationUid: (applicationUid: string) => void;
+  selectedApplicationUid: string | null;
 }) {
-  const controller = useAccessReviewController({onError, onNotice});
-  return <AccessReviewWorkspace controller={controller} />;
+  const controller = useAccessReviewController({
+    onError,
+    onNotice,
+    onSelectedApplicationUidChange: (applicationUid) => {
+      if (applicationUid) {
+        onSelectApplicationUid(applicationUid);
+      } else {
+        onBackToList();
+      }
+    },
+    selectedApplicationUid,
+  });
+  return (
+    <AccessReviewWorkspace
+      controller={controller}
+      onBackToList={onBackToList}
+    />
+  );
 }
 
 export function AccessReviewWorkspace({
   controller,
+  onBackToList = () => undefined,
 }: {
   controller: AccessReviewController;
+  onBackToList?: () => void;
 }) {
+  if (controller.selectedApplicationUid) {
+    return (
+      <AdminDetailScreenStack>
+        <AdminButton
+          icon={<ArrowLeft size={15} strokeWidth={1.9} />}
+          onClick={onBackToList}
+        >
+          All launch access
+        </AdminButton>
+        <PageHeader
+          actions={controller.selected ? (
+            <AdminTag tone="muted">{controller.selected.status}</AdminTag>
+          ) : null}
+          title={controller.selected?.title ?? controller.selectedApplicationUid}
+        />
+        {controller.selectedUnavailable ? (
+          <Panel
+            icon={<FileWarning size={18} strokeWidth={1.9} />}
+            title="Application unavailable"
+            action="Retry available"
+          >
+            <EmptyState
+              variant="workbench"
+              icon={<FileWarning size={16} strokeWidth={1.9} />}
+            >
+              {controller.detailError ??
+                "This application was not returned by the direct detail read."}
+            </EmptyState>
+            <AdminButton
+              disabled={controller.isDetailLoading}
+              icon={<RefreshCw size={15} strokeWidth={1.9} />}
+              onClick={() => void controller.refreshDetail()}
+            >
+              Retry application read
+            </AdminButton>
+          </Panel>
+        ) : (
+          <>
+            <AccessApplicantDetailPanel
+              details={controller.selectedDetails}
+              isLoading={controller.isDetailLoading}
+              selected={controller.selected}
+            />
+            {controller.isDetailLoading ? null : (
+              <AccessDecisionPanel
+                decisionInFlight={controller.decisionInFlight}
+                form={controller.form}
+                selected={controller.selected}
+                validationIssue={controller.validationIssue}
+                onDecide={(decision) => void controller.decide(decision)}
+                onFormChange={controller.setForm}
+              />
+            )}
+          </>
+        )}
+      </AdminDetailScreenStack>
+    );
+  }
+
   return (
-    <AdminWorkbenchStack>
-      <AdminMetricGrid ariaLabel="Access review state">
-        <AdminMetricCard label="Pending" value={controller.rows.length} />
-        <AdminMetricCard label="Shown" value={controller.filteredRows.length} />
-        <AdminMetricCard label="Recent decisions" value={controller.recentDecisions.length} />
+    <AdminDirectoryScreenStack>
+      <AdminMetricGrid ariaLabel="Launch access queue scope" columns="auto">
+        <AdminMetricCard label="Pending total" value={controller.pendingTotal} />
         <AdminMetricCard
-          label="Needs note"
-          tone={controller.selected && controller.validationIssue ?
-            "attention" :
-            "normal"}
-          value={controller.selected && controller.validationIssue ? 1 : 0}
+          caption="Search and filters apply only to the returned preview."
+          label="Preview rows"
+          value={controller.rows.length}
         />
       </AdminMetricGrid>
       <Panel
         span={2}
         icon={<UserCheck size={18} strokeWidth={1.9} />}
-        title="Access applications"
+        title="Pending applications"
         action={controller.isLoading ? "Loading" : `${controller.filteredRows.length} shown`}
       >
         <AdminToolbar>
@@ -102,53 +183,23 @@ export function AccessReviewWorkspace({
         </AdminToolbar>
         <AccessTable
           rows={controller.filteredRows}
-          selectedTargetPath={controller.selected?.targetPath ?? null}
           onSelect={controller.select}
         />
+        <AdminWorkbenchNote>
+          Showing {controller.rows.length} of {controller.pendingTotal} pending
+          applications. Source generated at {formatDateTime(controller.generatedAt)}.
+        </AdminWorkbenchNote>
       </Panel>
-      <AdminEditorGrid>
-        <AccessDecisionPanel
-          decisionInFlight={controller.decisionInFlight}
-          form={controller.form}
-          selected={controller.selected}
-          validationIssue={controller.validationIssue}
-          onDecide={(decision) => void controller.decide(decision)}
-          onFormChange={controller.setForm}
-        />
-        <AdminWorkbenchStack>
-          <AccessApplicantDetailPanel
-            details={controller.selectedDetails}
-            isLoading={controller.isDetailLoading}
-            selected={controller.selected}
-          />
-          <RecentDecisionsPanel decisions={controller.recentDecisions} />
-          <Panel
-            icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-            title="Mutation boundary"
-            action="audited"
-          >
-            <QualityList>
-              <StateRow label="Callable" value="adminDecideAccessApplication" />
-              <StateRow label="Collection" value="accessApplications/{uid}" />
-              <StateRow label="Audit log" value="adminAuditLogs/{id}" />
-              <StateRow label="Required role" value="admin, adminOwner, support" />
-              <StateRow label="Not here" value="profile lookup, safety, payments" />
-            </QualityList>
-          </Panel>
-        </AdminWorkbenchStack>
-      </AdminEditorGrid>
-    </AdminWorkbenchStack>
+    </AdminDirectoryScreenStack>
   );
 }
 
 function AccessTable({
   onSelect,
   rows,
-  selectedTargetPath,
 }: {
   onSelect: (row: AdminQueueItem) => void;
   rows: AdminQueueItem[];
-  selectedTargetPath: string | null;
 }) {
   if (rows.length === 0) {
     return (
@@ -161,7 +212,7 @@ function AccessTable({
     );
   }
   return (
-    <DataTable variant="workbench">
+    <DataTable ariaLabel="Access applications" variant="workbench">
       <thead>
         <tr>
           <th>Applicant</th>
@@ -173,7 +224,7 @@ function AccessTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <AdminTableRow key={row.id} selected={selectedTargetPath === row.targetPath}>
+          <AdminTableRow key={row.id}>
             <td>
               <AdminRowTitle>
                 <strong>{row.title}</strong>
@@ -182,7 +233,7 @@ function AccessTable({
             </td>
             <td>{row.detail}</td>
             <td><AdminTag tone="muted">{row.status}</AdminTag></td>
-            <td>{relativeTime(row.createdAt)}</td>
+            <td>{formatDateTime(row.createdAt)}</td>
             <td>
               <TableActionButton onClick={() => onSelect(row)}>
                 Review
@@ -212,7 +263,15 @@ function AccessApplicantDetailPanel({
     >
       {details ? (
         <QualityList>
-          <StateRow label="Application" value={details.targetPath} />
+          <StateRow label="Why Catch" value={details.whyCatch} />
+          <StateRow
+            label="Event interests"
+            value={<TagList values={details.eventTypes} />}
+          />
+          <StateRow
+            label="Availability"
+            value={<TagList values={details.availabilityWindows} />}
+          />
           <StateRow label="City" value={details.city} />
           <StateRow label="Role" value={details.role} />
           <StateRow
@@ -224,15 +283,8 @@ function AccessApplicantDetailPanel({
           <StateRow label="Referral" value={details.referralSource} />
           <StateRow label="Submissions" value={String(details.submissionCount)} />
           <StateRow label="Submitted" value={formatDateTime(details.submittedAt)} />
-          <StateRow
-            label="Event types"
-            value={<TagList values={details.eventTypes} />}
-          />
-          <StateRow
-            label="Availability"
-            value={<TagList values={details.availabilityWindows} />}
-          />
-          <StateRow label="Why Catch" value={details.whyCatch} />
+          <StateRow label="Record updated" value={formatDateTime(details.updatedAt)} />
+          <StateRow label="Source record" value={details.targetPath} />
           <DuplicateSignals signals={details.duplicateSignals} />
         </QualityList>
       ) : (
@@ -240,7 +292,8 @@ function AccessApplicantDetailPanel({
           variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
-          {selected ?
+          {isLoading ?
+            "Loading applicant detail." : selected ?
             "Loading applicant detail." :
             "Select an access application to inspect source detail."}
         </EmptyState>
@@ -313,7 +366,7 @@ function AccessDecisionPanel({
   return (
     <AdminEditorPanel
       icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-      title="Review decision"
+      title="Decision"
       action={selected?.status ?? "No application"}
     >
       {selected ? (
@@ -321,31 +374,13 @@ function AccessDecisionPanel({
           event.preventDefault();
         }}>
           <AdminEditorSection>
-            <legend>Applicant context</legend>
-            <QualityList>
-              <StateRow label="Applicant" value={selected.title} />
-              <StateRow
-                label="Application uid"
-                value={applicationUidFromTargetPath(selected.targetPath)}
-              />
-              <StateRow label="Detail" value={selected.detail} />
-              <StateRow label="Created" value={formatDateTime(selected.createdAt)} />
-            </QualityList>
-          </AdminEditorSection>
-          <AdminEditorSection>
             <legend>Decision inputs</legend>
-            <AdminFieldGrid columns={2}>
-              <TextField
-                label="Cohort id"
-                onChange={(cohortId) => onFormChange({...form, cohortId})}
-                placeholder="indore-founders"
-                value={form.cohortId}
-              />
-              <ReadonlyState
-                label="Review note"
-                value={`${form.note.trim().length}/1000`}
-              />
-            </AdminFieldGrid>
+            <TextField
+              label="Cohort ID (optional)"
+              onChange={(cohortId) => onFormChange({...form, cohortId})}
+              placeholder="indore-founders"
+              value={form.cohortId}
+            />
             <TextareaField
               label="Review note"
               onChange={(note) => onFormChange({...form, note})}
@@ -359,23 +394,33 @@ function AccessDecisionPanel({
               </AdminRoadmapListItem>
             ) : null}
           </AdminEditorSection>
-          <AdminTagRow>
-            <AdminButton
-              disabled={isDecisionDisabled}
-              icon={<CheckCircle2 size={15} strokeWidth={1.9} />}
-              onClick={() => onDecide("approve")}
-              variant="primary"
-            >
-              {decisionInFlight === "approve" ? "Approving" : "Approve"}
-            </AdminButton>
-            <AdminButton
-              disabled={isDecisionDisabled}
-              icon={<FileWarning size={15} strokeWidth={1.9} />}
-              onClick={() => onDecide("deny")}
-            >
-              {decisionInFlight === "deny" ? "Denying" : "Deny"}
-            </AdminButton>
-          </AdminTagRow>
+          <AdminDecisionFooterShell sticky>
+            <AdminWorkbenchNote>
+              This records an audited access decision. It does not invite or
+              notify the applicant.
+            </AdminWorkbenchNote>
+            <AdminTagRow>
+              <AdminButton
+                disabled={isDecisionDisabled}
+                icon={<CheckCircle2 size={15} strokeWidth={1.9} />}
+                onClick={() => onDecide("approve")}
+                variant="primary"
+              >
+                {decisionInFlight === "approve" ?
+                  "Approving for profile" :
+                  "Approve for profile"}
+              </AdminButton>
+              <AdminButton
+                disabled={isDecisionDisabled}
+                icon={<FileWarning size={15} strokeWidth={1.9} />}
+                onClick={() => onDecide("deny")}
+              >
+                {decisionInFlight === "deny" ?
+                  "Recording decision" :
+                  "Not selected yet"}
+              </AdminButton>
+            </AdminTagRow>
+          </AdminDecisionFooterShell>
         </AdminForm>
       ) : (
         <EmptyState
@@ -387,60 +432,6 @@ function AccessDecisionPanel({
       )}
     </AdminEditorPanel>
   );
-}
-
-function RecentDecisionsPanel({
-  decisions,
-}: {
-  decisions: AccessRecentDecision[];
-}) {
-  return (
-    <Panel
-      icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
-      title="Recent decisions"
-      action={`${decisions.length} local`}
-    >
-      {decisions.length === 0 ? (
-        <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
-          No decisions in this session.
-        </EmptyState>
-      ) : (
-        <AdminRoadmapList>
-          {decisions.map((decision) => (
-            <AdminRoadmapListItem
-              key={`${decision.applicationUid}-${decision.status}`}
-            >
-              <CheckCircle2 size={15} strokeWidth={1.9} />
-              <span>
-                <strong>{decision.title}</strong> · {decision.decision} ·{" "}
-                {decision.status}
-              </span>
-            </AdminRoadmapListItem>
-          ))}
-        </AdminRoadmapList>
-      )}
-    </Panel>
-  );
-}
-
-function ReadonlyState({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return <StateRow label={label} value={value} />;
-}
-
-function relativeTime(value: string | null): string {
-  if (!value) return "unknown";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  const diffMs = Date.now() - date.getTime();
-  const diffHours = Math.round(diffMs / 3600000);
-  if (Math.abs(diffHours) < 24) return `${diffHours}h ago`;
-  return `${Math.round(diffHours / 24)}d ago`;
 }
 
 function formatDateTime(value: string | null): string {

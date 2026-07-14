@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catch.app/schemas/web-ui.components.schema.json",
+  "title": "Catch shared web UI component registry",
+  "type": "object",
+  "required": ["$schema", "version", "updated", "owner", "components"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"const": "./components.schema.json"},
+    "version": {"type": "integer", "minimum": 1},
+    "updated": {"type": "string"},
+    "owner": {"const": "web_ui"},
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "source", "exportName", "lexicon", "lexiconId", "storybook"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+          "source": {"type": "string"},
+          "exportName": {"type": "string"},
+          "lexicon": {"const": true},
+          "lexiconId": {"type": "string", "pattern": "^catch\\.[a-z0-9_.-]+$"},
+          "storybook": {
+            "type": "object",
+            "required": ["status", "story", "exportName", "states"],
+            "additionalProperties": false,
+            "properties": {
+              "status": {"enum": ["ready", "planned"]},
+              "story": {"type": "string"},
+              "exportName": {"type": "string"},
+              "states": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+            }
+          },
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}

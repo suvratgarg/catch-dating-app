@@ -513,8 +513,8 @@ function ChoiceControlsDemo() {
   return (
     <ContentGrid variant="claim-review">
       <div>
-        <UiLabel>Host formats</UiLabel>
-        <ChoiceChipGrid>
+        <UiLabel id="storybook-host-formats-label">Host formats</UiLabel>
+        <ChoiceChipGrid aria-labelledby="storybook-host-formats-label">
           {formats.map((item) => (
             <ChoiceChip
               key={item}
@@ -527,8 +527,8 @@ function ChoiceControlsDemo() {
         </ChoiceChipGrid>
       </div>
       <div>
-        <UiLabel>Verification</UiLabel>
-        <VerificationMethodGrid>
+        <UiLabel id="storybook-verification-methods-label">Verification</UiLabel>
+        <VerificationMethodGrid aria-labelledby="storybook-verification-methods-label">
           {methods.map((item) => (
             <ChoiceCard
               body={item.body}

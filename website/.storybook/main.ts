@@ -7,7 +7,10 @@ const config: StorybookConfig = {
     options: {},
   },
   staticDirs: ["../public"],
-  stories: ["../src/**/*.stories.@(ts|tsx)"],
+  stories: [
+    "../src/**/*.stories.@(ts|tsx)",
+    "../../packages/web-ui/src/**/*.stories.@(ts|tsx)",
+  ],
 };
 
 export default config;

@@ -18,7 +18,8 @@ export type DecisionHandler = (input: {
 
 export function checklistForDecision(
   targetType: MarketingOpsTargetType,
-  decision: MarketingOpsDecision
+  decision: MarketingOpsDecision,
+  evidence: {rightsReviewed?: boolean} = {}
 ): AdminRecordMarketingReviewDecisionPayload["checklist"] {
   if (decision !== "approve" && decision !== "export_ready") {
     return {
@@ -44,7 +45,9 @@ export function checklistForDecision(
     ].includes(targetType),
     copyReviewed:
       targetType !== "source_profile" && targetType !== "query_template",
-    rightsReviewed: targetType === "content_draft",
+    rightsReviewed: targetType === "content_draft" ?
+      evidence.rightsReviewed === true :
+      false,
     noCatchHostingImplied: true,
   };
 }

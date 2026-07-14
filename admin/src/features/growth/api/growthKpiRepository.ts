@@ -14,6 +14,16 @@ export interface GrowthKpiSnapshot {
   hostAnalytics: HostAnalyticsResponse;
 }
 
+export function loadGrowthOverview(): Promise<AdminOverviewResponse> {
+  return loadOverview();
+}
+
+export function loadGrowthHostAnalytics(
+  payload: HostAnalyticsQueryPayload
+): Promise<HostAnalyticsResponse> {
+  return loadHostAnalytics(payload);
+}
+
 export async function loadGrowthKpiSnapshot(
   payload: HostAnalyticsQueryPayload
 ): Promise<GrowthKpiSnapshot> {

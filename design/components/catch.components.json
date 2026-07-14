@@ -188,6 +188,115 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchBadge",
+        "website": "StatusBadge",
+        "admin": "StatusChip",
+        "webui": "BadgeControl"
+      }
+    },
+    {
+      "id": "catch.ui_label",
+      "name": "CatchSectionLabel",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Structural eyebrow or compact metadata label that introduces a section without communicating status.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/UI Label",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "UiLabel",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "accentColor",
+            "type": "object",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "maxLines",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "dartType": "int"
+          }
+        ],
+        "states": [
+          "eyebrow",
+          "metadata-label",
+          "with-icon",
+          "accented",
+          "truncated"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "theme.light.color.primary",
+          "theme.light.color.ink2"
+        ],
+        "dartRoles": [
+          "CatchSectionLabel",
+          "CatchTextStyles.kicker",
+          "CatchIcon.md"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use to introduce hierarchy or metadata context; use catch.badge for state, status, counts, or alerts.",
+          "Keep copy short and scannable. Long explanatory text belongs in supporting copy.",
+          "Surface adapters own casing, color, spacing, and element choice while preserving non-interactive semantics."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.ui_label",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchSectionLabel",
+        "file": "lib/core/widgets/catch_section_label.dart",
+        "constructors": [
+          "CatchSectionLabel"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchSectionLabel",
+        "website": "UiLabel",
+        "admin": "AdminEyebrow",
+        "webui": "UiLabel"
       }
     },
     {
@@ -383,6 +492,12 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchButton",
+        "website": "Button",
+        "admin": "AdminButton",
+        "webui": "ButtonControl"
       }
     },
     {
@@ -543,6 +658,11 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchChip",
+        "website": "ChoiceChip",
+        "webui": "ToggleButtonControl"
       }
     },
     {
@@ -713,6 +833,12 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchEmptyState",
+        "website": "EmptyState",
+        "admin": "EmptyState",
+        "webui": "EmptyStateControl"
       }
     },
     {
@@ -1558,6 +1684,12 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchField",
+        "website": "TextField",
+        "admin": "TextField",
+        "webui": "TextInputControl"
       }
     },
     {
@@ -2954,6 +3086,10 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchIconButton",
+        "admin": "AdminIconButton"
       }
     },
     {
@@ -3761,6 +3897,10 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchSegmentedControl",
+        "admin": "SegmentedControl"
       }
     },
     {
@@ -6113,6 +6253,10 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchSearchField",
+        "admin": "SearchField"
       }
     },
     {

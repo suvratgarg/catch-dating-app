@@ -8,8 +8,14 @@ import {featuredOrganizerCardItemForListing} from "../featuredOrganizerCardItem"
 import {isVerifiedListing} from "../selectors";
 import type {HostListing} from "../types";
 
-export function RecommendedOrganizersSection({current}: {current: HostListing}) {
-  const recommended = hostListings
+export function RecommendedOrganizersSection({
+  current,
+  listings = hostListings,
+}: {
+  current: HostListing;
+  listings?: HostListing[];
+}) {
+  const recommended = listings
     .filter((listing) => listing.id !== current.id && isVerifiedListing(listing))
     .slice(0, 3);
   if (!recommended.length) return null;

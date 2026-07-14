@@ -78,8 +78,8 @@ export const CaptureShellStory: Story = {
         captures={captures}
       />
       <CaptureCard
-        id="missing-capture-slot"
-        fallbackStep="Fallback"
+        id="host-post-event-report"
+        fallbackStep="Report"
         captures={captures}
       />
       <PhoneCaptureShell

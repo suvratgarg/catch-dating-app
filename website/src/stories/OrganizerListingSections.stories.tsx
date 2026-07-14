@@ -245,9 +245,13 @@ export const ListingEventSuccess: Story = {
       states: ["app-created-aggregate"],
     },
   },
-  render: () => appCreatedListing.eventSuccessSummary ? (
-    <ListingEventSuccessSection summary={appCreatedListing.eventSuccessSummary} />
-  ) : null,
+  render: () => (
+    <>
+      {appCreatedListing.eventSuccessSummary ? (
+        <ListingEventSuccessSection summary={appCreatedListing.eventSuccessSummary} />
+      ) : null}
+    </>
+  ),
 };
 
 export const ListingFit: Story = {
@@ -355,7 +359,12 @@ export const ListingRecommendedOrganizers: Story = {
       states: ["verified-nearby"],
     },
   },
-  render: () => <RecommendedOrganizersSection current={claimableListing} />,
+  render: () => (
+    <RecommendedOrganizersSection
+      current={claimableListing}
+      listings={hostListings}
+    />
+  ),
 };
 
 function QueryStoryFrame({children}: {children: ReactNode}) {

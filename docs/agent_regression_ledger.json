@@ -1,6 +1,6 @@
 {
-  "version": 7,
-  "updated": "2026-07-13",
+  "version": 9,
+  "updated": "2026-07-14",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -474,6 +474,356 @@
         "docs/data_contracts.md"
       ],
       "notes": "The Flutter ownership baseline is explicit migration debt and may only shrink. The ARB and copy JSON catalogs are sources; generated Dart, InfoPlist.strings, and TypeScript are outputs."
+    },
+    {
+      "id": "REG-WEB-CALLABLE-001",
+      "title": "Admin callable contract validation silently becomes partial or stale",
+      "status": "active",
+      "applies_to": [
+        "admin/src/shared/api/adminApi.ts",
+        "admin/src/generated/validators/**",
+        "admin/scripts/generateCallableValidators.mjs",
+        "contracts/callables/**",
+        "contracts/callable_responses/**"
+      ],
+      "symptom": "A new admin callable bypasses request validation, a schema change is not regenerated, or a development response violates its callable response contract without naming the callable and JSON path.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-callable-validators && npm --workspace catch-admin run test",
+        "guardEvidence": "generator discovers every adminApi callable and validator tests cover strict request families plus invalid response paths"
+      },
+    "owner_docs": [
+      "docs/web_surface_architecture.md"
+    ],
+      "notes": "Schema-backed contracts are strict. Callables without a dedicated JSON contract still receive a generated top-level object validator and remain visible in validation coverage until their strict contract lands."
+    },
+    {
+      "id": "REG-WEB-VISUAL-PLATFORM-001",
+      "title": "Storybook visual baselines cross operating-system font renderers",
+      "status": "active",
+      "applies_to": [
+        "tool/web/check_storybook_visuals.mjs",
+        "design/visual_baselines/**",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/marketing-website.yml"
+      ],
+      "symptom": "Darwin-authored screenshots pass locally but fail broadly on Ubuntu because system-ui resolves to different fonts and rasterizers, producing text reflow and antialiasing noise that looks like hundreds of product regressions.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --self-test",
+        "guardEvidence": "the checker pins baseline, actual, and diff paths to process.platform; the self-test rejects Darwin and Linux path collapse, while both React workflows pin blocking Linux capture to Ubuntu 24.04"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Keep production system-ui typography unchanged. Capture and review each platform separately; never increase the pixel threshold or accept a cross-platform baseline churn to hide environment drift."
+    },
+    {
+      "id": "REG-WEB-UI-001",
+      "title": "Shared web primitives drift out of adapters, CI, or accessibility contracts",
+      "status": "active",
+      "applies_to": [
+        "packages/web-ui/**",
+        "packages/web-config/styles/catch-web.css",
+        "website/src/shared/ui/**",
+        "admin/src/shared/ui/**",
+        "design/web-ui/**",
+        "docs/audit_registry/web_shared_primitive_adoption.json",
+        ".github/workflows/marketing-website.yml",
+        ".github/workflows/admin-website.yml"
+      ],
+      "symptom": "A shared package export is unclassified, an adopted surface adapter stops using it, a table loses its accessible name or keyboard scroll frame, a field loses validation semantics, focus becomes invisible, or package-only changes skip both React CI workflows.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:shared-ui-adoption && npm run web:ui:test && npm run web:ui:typecheck",
+        "guardEvidence": "known-bad unclassified overlap/export and missing-adapter-import probes plus shared button, field, toggle, feedback, and table behavior tests"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/marketing_website_architecture.md",
+        "docs/audit_registry/web_shared_primitive_adoption.json"
+      ],
+      "notes": "The package owns compatible native behavior and accessibility state. Website/admin adapters continue to own visual density, class names, domain tone mapping, and feature composition."
+    },
+    {
+      "id": "REG-WEB-BUNDLE-001",
+      "title": "Lazy admin screens still ship their controllers in the entry chunk",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/features/**/controllers/**",
+        "admin/src/shared/api/**",
+        "admin/vite.config.ts",
+        "admin/bundle-budget.json",
+        "admin/scripts/checkBundleBudget.mjs"
+      ],
+      "symptom": "A screen is rendered through React.lazy, but App.tsx statically imports its controller or adminApi, pulling Firebase Functions, sample data, and generated bridges into the production entry and exposing screen-only controls on unrelated routes.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build",
+        "guardEvidence": "Vite manifest budget plus a known-bad feature-controller import probe"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/bundle-budget.json"
+      ],
+      "notes": "Live route wrappers own query controllers behind the lazy boundary. Prop-driven workspaces remain independently renderable for Storybook and tests."
+    },
+    {
+      "id": "REG-WEB-STORYBOOK-BUNDLE-001",
+      "title": "Admin route stories collapse every feature and generated intake packet into one oversized chunk",
+      "status": "active",
+      "applies_to": [
+        "admin/.storybook/main.ts",
+        "admin/src/stories/**",
+        "admin/src/features/**",
+        "admin/storybook-bundle-budget.json",
+        "admin/scripts/checkStorybookBundleBudget.mjs"
+      ],
+      "symptom": "AdminRoutes.stories grows back toward a megabyte because all feature modules and the generated organizer-intake bridge are bundled into the story entry, slowing visual and accessibility review.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build:storybook",
+        "guardEvidence": "named feature/data chunks plus known-bad route-story and app-chunk budget probes"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/storybook-bundle-budget.json"
+      ],
+      "notes": "The budget covers Catch-authored chunks only. Storybook framework, axe, and other vendor runtime chunks are measured separately from application composition."
+    },
+    {
+      "id": "REG-WEB-FEATURE-SIZE-001",
+      "title": "Admin feature screens regrow into multi-thousand-line route modules",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/**/*.tsx",
+        "admin/feature-ui-size-budget.json",
+        "tool/web/check_admin_feature_ui_size.mjs"
+      ],
+      "symptom": "A route/workspace entry accumulates private workflow panels until review, testing, and ownership become impractical, or feature-private panels are exported as an accidental shared API.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-feature-ui-size && node tool/run.mjs check web:admin-feature-exports",
+        "guardEvidence": "known-bad route and private-module size fixtures plus the uppercase feature-export scanner"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/feature-ui-size-budget.json"
+      ],
+      "notes": "Split cohesive workflows behind lower-case feature-private module APIs. Route and workspace components remain the only public feature UI exports."
+    },
+    {
+      "id": "REG-WEB-UI-LABEL-001",
+      "title": "Structural eyebrow labels collapse back into the status badge family",
+      "status": "active",
+      "applies_to": [
+        "design/components/catch.components.json",
+        "design/website/components.json",
+        "design/admin/components.json",
+        "design/web-ui/components.json",
+        "tool/design/check_component_lexicon.mjs"
+      ],
+      "symptom": "UiLabel or AdminEyebrow is classified as catch.badge, making hierarchy metadata indistinguishable from status, count, or alert semantics.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:component-lexicon",
+        "guardEvidence": "exact four-stack catch.ui_label and catch.badge mappings plus a known-bad missing-symbol probe"
+      },
+      "owner_docs": [
+        "docs/design_language.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "catch.ui_label owns structural hierarchy context; catch.badge owns status, state, counts, and alerts. Shared typography does not make them one concept."
+    },
+    {
+      "id": "REG-WEB-INTAKE-TASK-FIRST-001",
+      "title": "Intake daily review regresses into a generated diagnostic wall",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/**",
+        "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+        "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "design/admin/components.json"
+      ],
+      "symptom": "Event or organizer Intake opens with pipeline diagnostics, metric walls, or raw generated cards before the operator can see the staged queue, selected evidence, readiness gates, downstream impact, notes, and backed decision actions.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/intake/ui/intakeWorkbenchDefaults.test.tsx src/shared/ui/AdminPrimitives/intake.test.tsx",
+        "guardEvidence": "feature tests assert both workspaces default to the staged review queue, keep diagnostics secondary, and return cleanly; primitive tests cover stage and queue selection semantics"
+      },
+      "owner_docs": [
+        "docs/admin_dashboard_user_stories_and_component_catalogue.md",
+        "docs/audit_registry/admin_console_design_adoption.json"
+      ],
+      "notes": "New Intake stages must represent durable backend states. Discovery jobs and canonical promotion stay out of the primary stage rail until their state, authority, failure, retry, and receipt contracts exist."
+    },
+    {
+      "id": "REG-WEB-ADMIN-CHROME-001",
+      "title": "Admin route chrome regrows prototype labels and repeated title copy",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+        "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+        "tool/web/check_admin_components.mjs",
+        "design/admin/components.json"
+      ],
+      "symptom": "The admin shell shows Catch Ops, sample console, dev plus sample, or a route kicker and subtitle alongside the global route title, making prototype context look like product identity and repeating information before the task begins.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-components",
+        "guardEvidence": "the component checker requires Catch Admin, a single route-owned h1 in AdminTopbar, no top-bar kicker or subtitle, and rejects known prototype labels"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/admin_console_design_adoption.json"
+      ],
+      "notes": "Production omits the environment badge. Development, Local, or Staging remains visible only when non-production context changes operator risk; roles and local-data context stay inside the account disclosure."
+    },
+    {
+      "id": "REG-WEB-ADMIN-AUTH-DEEP-LINK-001",
+      "title": "Admin deep links are overwritten while authentication or claims resolve",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/app/App.test.tsx"
+      ],
+      "symptom": "A production URL for a safety case, access application, organizer, event, or another role-owned record is replaced with /overview before Firebase authentication and custom claims finish resolving.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/app/App.test.tsx",
+        "guardEvidence": "App-level live-mode tests preserve requested record URLs while Firebase authentication is unresolved and while a signed-in user's admin claims are pending or absent."
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/admin_console_design_adoption.json"
+      ],
+      "notes": "The shell may redirect an inaccessible route only after a live user has a resolved, non-empty role set. Sign-in, claim-check, and no-claim states retain the requested URL."
+    },
+    {
+      "id": "REG-WEB-ADMIN-TEST-CALLBACK-STABILITY-001",
+      "title": "Admin hook test schedules an infinite render loop after assertions pass",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/events/controllers/useEventPublishingController.ts",
+        "admin/src/features/events/controllers/useEventPublishingController.test.tsx"
+      ],
+      "symptom": "Vitest reports every assertion as passed, then emits a React scheduler error such as window is not defined during JSDOM teardown because a renderHook callback recreates an effect dependency on every render.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/events/controllers/useEventPublishingController.test.tsx",
+        "guardEvidence": "the route-selected event test passes stable callback identities into the controller, completes all five cases, and leaves no maximum-update-depth warning or unhandled scheduler work"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "When a hook effect depends on a callback prop, renderHook tests must not create that callback inline if the effect also hydrates state. Explicit cleanup cannot repair a render loop that is already scheduled."
+    },
+    {
+      "id": "REG-WEB-ADMIN-LAZY-COVERAGE-001",
+      "title": "Coverage instrumentation outruns the default assertion timeout at an intentional lazy boundary",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx"
+      ],
+      "symptom": "The full Admin coverage suite intermittently remains on Loading diagnostics after the Diagnostics action succeeds because the cold lazy diagnostics module is still being transformed when Testing Library's one-second default expires.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run test:coverage",
+        "guardEvidence": "the organizer diagnostics assertion uses a five-second timeout local to the known lazy boundary; the cold full coverage suite completes 29 files and 91 tests"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Keep the production lazy boundary and the global Testing Library timeout. Only the assertion that crosses the coverage-instrumented lazy import receives the bounded allowance."
+    },
+    {
+      "id": "REG-WEB-VISUAL-STORY-READY-001",
+      "title": "Visual baselines capture Storybook's preparing screen instead of the story",
+      "status": "active",
+      "applies_to": [
+        "tool/web/check_storybook_visuals.mjs",
+        "design/visual_baselines/admin/**",
+        "design/visual_baselines/website/**",
+        "design/visual_baselines/webui/**"
+      ],
+      "symptom": "A visual capture contains Storybook's blank preparing canvas or spinner because network-idle completed before the selected story mounted, creating a flaky or meaningless committed baseline.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --surface website --component home_discovery_section --check",
+        "guardEvidence": "the visual checker waits for either a visible mounted story child under a Storybook main state or an explicit Storybook error, hides the preparing screen, and forces reveal-on-scroll content into its stable visible state before capture"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "Network-idle and font readiness do not prove that a lazy Storybook module has rendered. The checker must never bless the built-in preparing UI or pre-intersection reveal state as product evidence."
+    },
+    {
+      "id": "REG-WEB-VISUAL-CAPTURE-INTEGRITY-001",
+      "title": "Concurrent browser captures bless broken images or corrupted render tiles",
+      "status": "active",
+      "applies_to": [
+        "tool/web/check_storybook_visuals.mjs",
+        "design/visual_baselines/admin/**",
+        "design/visual_baselines/website/**",
+        "design/visual_baselines/webui/**"
+      ],
+      "symptom": "A committed baseline contains a broken visible image or large black Chromium render tiles even though the same story renders correctly when captured in isolation.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --surface website --check",
+        "guardEvidence": "the visual checker captures one browser page at a time and rejects visible images that have not loaded or decoded before the screenshot"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "Parallel Storybook pages can intermittently produce compositor tile corruption in headless Chromium. Visual evidence favors deterministic serialized capture over a shorter run."
+    },
+    {
+      "id": "REG-WEB-NOT-FOUND-HEADER-OFFSET-001",
+      "title": "Not-found content renders underneath the fixed website header",
+      "status": "active",
+      "applies_to": [
+        "website/src/features/notFound/NotFoundPage.tsx",
+        "website/src/styles/flows.css",
+        "website/src/stories/MarketingRoutes.stories.tsx"
+      ],
+      "symptom": "The 404 mark, title, or eyebrow overlaps the fixed Catch header because the not-found main content starts at the top of the viewport.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --surface website --component route_not_found --check",
+        "guardEvidence": "desktop and mobile not-found route baselines preserve the header-height offset and route gutter"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Route stories must include the same PageShell class as the live app so route-specific fixed-header layout is verified instead of bypassed."
+    },
+    {
+      "id": "REG-WEB-HOST-DARK-LABEL-CONTRAST-001",
+      "title": "Generic labels become unreadable inside dark Host heroes",
+      "status": "active",
+      "applies_to": [
+        "website/src/styles/host.css",
+        "website/src/stories/RouteShellPrimitives.stories.tsx"
+      ],
+      "symptom": "A shared UiLabel retains the light-theme ink token inside a dark Host hero, producing approximately 1.1:1 contrast.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --surface website --component shared_host_page_shell --component shared_host_preview_shell --check",
+        "guardEvidence": "Host and Host Preview shell labels inherit the dark-theme muted ink token in desktop and mobile baselines"
+      },
+      "owner_docs": [
+        "docs/design_language.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Dark component shells own the semantic color override for generic labels; stories should not patch contrast with one-off inline styles."
     },
     {
       "id": "REG-TYPOGRAPHY-001",

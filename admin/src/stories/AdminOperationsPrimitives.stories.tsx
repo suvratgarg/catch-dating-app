@@ -57,6 +57,7 @@ import {
   AdminOverviewQueueRow,
   AdminOverviewQueueRowActions,
   AdminOverviewValueSignals,
+  AdminSignalBars,
   AdminPublishingFormShell,
   AdminPublishingLoadbar,
   AdminQueryList,
@@ -139,7 +140,7 @@ export const AdminOverviewQueueColumnsStory: Story = {
     <AdminWorkspace>
       <AdminOverviewQueueColumns>
         <AdminOverviewQueueList>
-          <AdminOverviewQueueHeading count="8" title="Ready" />
+          <AdminOverviewQueueHeading count="8" owner="Publishing" title="Ready" />
         </AdminOverviewQueueList>
         <AdminOverviewQueueDetailPanel>
           <StateRow label="Selected" value="Organizer packet" />
@@ -177,7 +178,11 @@ export const AdminOverviewQueueListStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminOverviewQueueList>
-        <AdminOverviewQueueHeading count="5" title="Publishing queue" />
+        <AdminOverviewQueueHeading
+          count="5"
+          owner="Publishing"
+          title="Publishing queue"
+        />
         <AdminOverviewQueueItems>
           <AdminOverviewQueueRow intent="neutral">Organizer profile ready</AdminOverviewQueueRow>
         </AdminOverviewQueueItems>
@@ -191,12 +196,12 @@ export const AdminOverviewQueueHeadingStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_admin_overview_queue_heading",
-      states: ["count"],
+      states: ["count", "owner"],
     },
   },
   render: () => (
     <AdminWorkspace>
-      <AdminOverviewQueueHeading count="14" title="Needs review" />
+      <AdminOverviewQueueHeading count="14" owner="Safety" title="Needs review" />
     </AdminWorkspace>
   ),
 };
@@ -377,6 +382,30 @@ export const AdminOverviewValueSignalsStory: Story = {
   ),
 };
 
+export const AdminSignalBarsStory: Story = {
+  name: "Signal bars",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_signal_bars",
+      states: ["neutral", "semantic", "zero"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <AdminSignalBars
+        ariaLabel="Open cases by queue"
+        eyebrow="Open by queue · aggregate"
+        signals={[
+          {label: "User reports", tone: "neutral", value: 12},
+          {label: "High priority", tone: "red", value: 4},
+          {label: "Medium priority", tone: "orange", value: 2},
+          {label: "Watch", tone: "neutral", value: 0},
+        ]}
+      />
+    </AdminWorkspace>
+  ),
+};
+
 export const AdminPublishingLoadbarStory: Story = {
   name: "Publishing loadbar",
   parameters: {
@@ -444,7 +473,7 @@ export const AdminEventSupplyReviewGridStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminEventSupplyReviewGrid>
-        <DataTable compact variant="workbench">
+        <DataTable ariaLabel="Event supply review" compact variant="workbench">
           <tbody>
             <tr>
               <td>Venue import</td>
@@ -938,7 +967,7 @@ export const AdminEditorSectionStory: Story = {
     <AdminWorkspace>
       <AdminEditorSection>
         <legend>Review fields</legend>
-        <AdminTextField label="Canonical owner" value="Catch Ops" onChange={noop} />
+        <AdminTextField label="Canonical owner" value="Organizer team" onChange={noop} />
       </AdminEditorSection>
     </AdminWorkspace>
   ),

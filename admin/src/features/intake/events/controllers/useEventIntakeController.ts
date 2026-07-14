@@ -44,7 +44,7 @@ export function useEventIntakeController({
     mutationFn: recordEventIntakeReviewDecision,
   });
   const bridge = bridgeQuery.data?.bridge ?? null;
-  const [activeTab, setActiveTab] = useState<EventIntakeTab>("setup");
+  const [activeTab, setActiveTab] = useState<EventIntakeTab>("candidates");
   const [localDecisions, setLocalDecisions] =
     useState<Record<string, AdminRecordEventIntakeReviewDecisionResponse>>({});
   const [notes, setNotes] = useState<Record<string, string>>({});

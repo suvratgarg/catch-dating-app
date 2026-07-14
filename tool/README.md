@@ -255,7 +255,52 @@ node tool/run.mjs check web:react-architecture-boundaries
 node tool/run.mjs check web:react-ui-primitives
 node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:react-query-state
+node tool/run.mjs check web:shared-ui-adoption
+node tool/run.mjs check web:react-controller-test-targets
+npm run web:ui:test
+npm run web:ui:typecheck
 ```
+
+`web:shared-ui-adoption` reconciles the cross-surface decision tracker with
+website/admin runtime exports and `@catch/web-ui`. Adopted entries must be used
+through both surface adapters. The same gate also preserves the shared focus,
+accessible table/field/button contracts, and package CI path coverage.
+
+`web:react-controller-test-targets` keeps every feature controller and mutation
+hook classified in `tool/web/react_controller_test_targets.json`. Promoted
+targets need a named importing behavior suite; planned targets remain visible
+without turning aggregate coverage percentages into a brittle merge gate.
+
+Registry-ready Storybook stories also have deterministic desktop and mobile
+image baselines under `design/visual_baselines/<surface>/<platform>/`. Build
+the relevant Storybook before comparing or intentionally updating them:
+
+```sh
+npm --workspace catch-marketing run build:storybook
+node tool/web/check_storybook_visuals.mjs --surface website --check
+node tool/web/check_storybook_visuals.mjs --surface webui --check
+npm --workspace catch-admin run build:storybook
+node tool/web/check_storybook_visuals.mjs --surface admin --check
+# Limit a baseline update/check to task-owned registry entries in a dirty refactor.
+node tool/web/check_storybook_visuals.mjs --surface admin --component workspace_intake_workspace --update
+```
+
+Use repeatable `--component <registry-id>` filters to isolate a task-owned
+visual check or baseline update. Use `--update` only after the target UI and
+registry review states are final. The checker fixes both viewports, requests
+reduced motion, waits for fonts, and compares only against the current
+operating system's baselines. This separation is required because the product
+intentionally uses `system-ui`, whose glyph metrics and rasterization differ
+between Darwin and Linux. A mismatch writes both the rendered image and its
+diff under `artifacts/visual-actuals/<surface>/<platform>/` and
+`artifacts/visual-diffs/<surface>/<platform>/`.
+
+The Admin Website and Marketing Website workflows pin the blocking Linux
+capture to Ubuntu 24.04. Their manual `workflow_dispatch` input
+`update_visual_baselines=true` captures Linux baselines and uploads them as a
+review artifact; it does not commit them. Review that artifact before replacing
+`design/visual_baselines/<surface>/linux/`. Local Darwin updates remain useful
+for local visual review but never substitute for the Linux CI baseline.
 
 ## Host Discovery
 

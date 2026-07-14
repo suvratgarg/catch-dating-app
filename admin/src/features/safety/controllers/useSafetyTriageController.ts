@@ -24,15 +24,12 @@ export type SafetyQueueKind =
 export interface SafetyTriageRow extends AdminQueueItem {
   queueKind: Exclude<SafetyQueueKind, "all">;
   queueLabel: string;
-  priority: "high" | "medium" | "watch";
-  routeOwner: string;
 }
 
 export interface SafetyTriageMetrics {
   reports: number;
   moderation: number;
   eventReports: number;
-  highPriority: number;
 }
 
 export interface SafetyDecisionFormState {
@@ -44,43 +41,39 @@ export interface SafetyAssignmentFormState {
   note: string;
 }
 
-export interface SafetyDecisionRecord {
-  targetPath: string;
-  decision: AdminSafetyTriageDecision;
-  status: "reviewed" | "dismissed";
-  note: string;
-}
-
-export interface SafetyAssignmentRecord {
-  targetPath: string;
-  assignment: AdminSafetyTriageAssignment;
-  note: string;
-}
-
 export function useSafetyTriageController({
   onError,
   onNotice,
+  onSelectedTargetPathChange,
+  selectedTargetPath: controlledSelectedTargetPath,
 }: {
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
+  onSelectedTargetPathChange?: (targetPath: string | null) => void;
+  selectedTargetPath?: string | null;
 }) {
   const queryClient = useQueryClient();
-  const [selectedTargetPath, setSelectedTargetPath] = useState<string | null>(
+  const [localSelectedTargetPath, setLocalSelectedTargetPath] = useState<string | null>(
     null
   );
+  const selectedTargetPath = controlledSelectedTargetPath === undefined ?
+    localSelectedTargetPath :
+    controlledSelectedTargetPath;
+  const setSelectedTargetPath = useCallback((targetPath: string | null) => {
+    if (controlledSelectedTargetPath === undefined) {
+      setLocalSelectedTargetPath(targetPath);
+    }
+    onSelectedTargetPathChange?.(targetPath);
+  }, [controlledSelectedTargetPath, onSelectedTargetPathChange]);
   const [queueFilter, setQueueFilter] = useState<SafetyQueueKind>("all");
   const [query, setQuery] = useState("");
   const [decisionForm, setDecisionForm] =
     useState<SafetyDecisionFormState>({note: ""});
   const [assignmentForm, setAssignmentForm] =
     useState<SafetyAssignmentFormState>({assigneeUid: "", note: ""});
-  const [recentDecisions, setRecentDecisions] =
-    useState<SafetyDecisionRecord[]>([]);
-  const [recentAssignments, setRecentAssignments] =
-    useState<SafetyAssignmentRecord[]>([]);
-
   const queueQueryKey = adminQueryKeys.safety.queue();
   const queueQuery = useQuery({
+    enabled: !selectedTargetPath,
     queryKey: queueQueryKey,
     queryFn: loadSafetyTriageSnapshot,
     placeholderData: (previousData) => previousData,
@@ -89,11 +82,10 @@ export function useSafetyTriageController({
     () => queueQuery.data ? buildSafetyRows(queueQuery.data) : [],
     [queueQuery.data]
   );
-  const metrics = useMemo(() => safetyMetrics(rows), [rows]);
   const generatedAt = queueQuery.data?.generatedAt ?? null;
-  const selected = useMemo(
-    () => rows.find((row) => row.targetPath === selectedTargetPath) ?? null,
-    [rows, selectedTargetPath]
+  const metrics = useMemo(
+    () => safetyMetrics(queueQuery.data?.metrics),
+    [queueQuery.data?.metrics]
   );
   const detailQuery = useQuery({
     enabled: Boolean(selectedTargetPath),
@@ -105,7 +97,14 @@ export function useSafetyTriageController({
       return loadSafetyTriageItem(selectedTargetPath);
     },
   });
-  const selectedDetail = selected ? detailQuery.data?.item ?? null : null;
+  const selectedDetail = detailQuery.data?.item ?? null;
+  const selected = useMemo(() => {
+    const row = rows.find((candidate) =>
+      candidate.targetPath === selectedTargetPath
+    );
+    if (row) return row;
+    return selectedDetail ? safetyRowFromDetail(selectedDetail) : null;
+  }, [rows, selectedDetail, selectedTargetPath]);
   const assignmentMutation = useMutation({
     mutationFn: assignSafetyTriageItemOwner,
   });
@@ -124,7 +123,7 @@ export function useSafetyTriageController({
   }, [onError, queueQuery]);
 
   useEffect(() => {
-    if (queueQuery.isError) {
+    if (!selectedTargetPath && queueQuery.isError) {
       onError(messageFromError(
         queueQuery.error,
         "Unable to load safety queues."
@@ -132,7 +131,7 @@ export function useSafetyTriageController({
       return;
     }
     if (queueQuery.isSuccess) onError(null);
-  }, [onError, queueQuery.error, queueQuery.isError, queueQuery.isSuccess]);
+  }, [onError, queueQuery.error, queueQuery.isError, queueQuery.isSuccess, selectedTargetPath]);
 
   useEffect(() => {
     if (!detailQuery.isError) return;
@@ -141,15 +140,6 @@ export function useSafetyTriageController({
       "Unable to load safety detail."
     ));
   }, [detailQuery.error, detailQuery.isError, onError]);
-
-  useEffect(() => {
-    setSelectedTargetPath((current) => {
-      if (current && rows.some((row) => row.targetPath === current)) {
-        return current;
-      }
-      return null;
-    });
-  }, [rows]);
 
   const filteredRows = useMemo(
     () => filterSafetyRows(rows, queueFilter, query),
@@ -175,7 +165,7 @@ export function useSafetyTriageController({
     setAssignmentForm({assigneeUid: "", note: ""});
     onError(null);
     onNotice(null);
-  }, [onError, onNotice]);
+  }, [onError, onNotice, setSelectedTargetPath]);
 
   const decisionValidationIssue = useMemo(() => {
     if (!selected) return "Select a safety queue item before deciding.";
@@ -233,11 +223,6 @@ export function useSafetyTriageController({
         assigneeUid: response.assignment.assigneeUid ?? "",
         note: "",
       });
-      setRecentAssignments((current) => [{
-        targetPath: response.targetPath,
-        assignment: response.assignment,
-        note,
-      }, ...current].slice(0, 5));
       onNotice(
         response.assignment.assigneeUid ?
           `Assigned ${selected.title} to ${response.assignment.assigneeUid}.` :
@@ -292,12 +277,6 @@ export function useSafetyTriageController({
       });
       setSelectedTargetPath(null);
       setDecisionForm({note: ""});
-      setRecentDecisions((current) => [{
-        targetPath: response.targetPath,
-        decision: response.decision,
-        status: response.status,
-        note,
-      }, ...current].slice(0, 5));
       onNotice(
         `${response.status === "reviewed" ? "Reviewed" : "Dismissed"} ${selected.title}.`
       );
@@ -314,6 +293,7 @@ export function useSafetyTriageController({
     queryClient,
     queueQueryKey,
     selected,
+    setSelectedTargetPath,
   ]);
 
   return {
@@ -327,18 +307,17 @@ export function useSafetyTriageController({
     decisionValidationIssue,
     filteredRows,
     generatedAt,
-    isDetailLoading: selected ?
+    isDetailLoading: selectedTargetPath ?
       detailQuery.isPending || detailQuery.isFetching :
       false,
-    isLoading: queueQuery.isPending || queueQuery.isFetching,
+    isLoading: !selectedTargetPath &&
+      (queueQuery.isPending || queueQuery.isFetching),
     metrics,
     query,
     queueFilter,
     rows,
     selected,
     selectedDetail,
-    recentDecisions,
-    recentAssignments,
     assign,
     decide,
     refresh,
@@ -357,8 +336,19 @@ function removeSafetyQueueItem(
   snapshot: AdminOverviewResponse,
   targetPath: string
 ): AdminOverviewResponse {
+  const metricId = snapshot.queues.safetyReports.some((row) =>
+    row.targetPath === targetPath
+  ) ? "openReports" : snapshot.queues.moderationFlags.some((row) =>
+    row.targetPath === targetPath
+  ) ? "pendingModerationFlags" : snapshot.queues.eventSafetyReports.some((row) =>
+    row.targetPath === targetPath
+  ) ? "eventSafetyReports" : null;
   return {
     ...snapshot,
+    metrics: snapshot.metrics.map((metric) => metric.id === metricId ? {
+      ...metric,
+      value: Math.max(0, metric.value - 1),
+    } : metric),
     queues: {
       ...snapshot.queues,
       safetyReports: snapshot.queues.safetyReports.filter((row) =>
@@ -386,9 +376,7 @@ function buildSafetyRows(snapshot: Awaited<
   const eventRows = snapshot.queues.eventSafetyReports.map((row) =>
     safetyRow(row, "event", "Event reports")
   );
-  return [...reportRows, ...moderationRows, ...eventRows]
-    .sort((a, b) => priorityRank(b.priority) - priorityRank(a.priority) ||
-      (a.createdAt ?? "").localeCompare(b.createdAt ?? ""));
+  return [...reportRows, ...moderationRows, ...eventRows];
 }
 
 function safetyRow(
@@ -400,18 +388,47 @@ function safetyRow(
     ...row,
     queueKind,
     queueLabel,
-    priority: priorityFor(row, queueKind),
-    routeOwner: routeOwnerFor(row, queueKind),
   };
 }
 
-function safetyMetrics(rows: SafetyTriageRow[]): SafetyTriageMetrics {
+function safetyRowFromDetail(
+  detail: AdminGetSafetyTriageDetailsResponse["item"]
+): SafetyTriageRow {
+  const queueKind: SafetyTriageRow["queueKind"] =
+    detail.kind === "report" ? "reports" :
+      detail.kind === "moderationFlag" ? "moderation" :
+        "event";
+  const queueLabel = queueKind === "reports" ? "User reports" :
+    queueKind === "moderation" ? "Moderation flags" :
+      "Event reports";
   return {
-    reports: rows.filter((row) => row.queueKind === "reports").length,
-    moderation: rows.filter((row) => row.queueKind === "moderation").length,
-    eventReports: rows.filter((row) => row.queueKind === "event").length,
-    highPriority: rows.filter((row) => row.priority === "high").length,
+    id: detail.targetPath,
+    title: detail.title,
+    detail: detail.summary,
+    status: detail.status,
+    targetPath: detail.targetPath,
+    createdAt: detail.createdAt,
+    queueKind,
+    queueLabel,
   };
+}
+
+function safetyMetrics(
+  metrics: AdminOverviewResponse["metrics"] | undefined
+): SafetyTriageMetrics {
+  return {
+    reports: overviewMetricValue(metrics, "openReports"),
+    moderation: overviewMetricValue(metrics, "pendingModerationFlags"),
+    eventReports: overviewMetricValue(metrics, "eventSafetyReports"),
+  };
+}
+
+function overviewMetricValue(
+  metrics: AdminOverviewResponse["metrics"] | undefined,
+  id: string
+): number {
+  const value = metrics?.find((metric) => metric.id === id)?.value ?? 0;
+  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }
 
 function filterSafetyRows(
@@ -430,42 +447,9 @@ function filterSafetyRows(
       row.status,
       row.targetPath,
       row.queueLabel,
-      row.routeOwner,
-      row.priority,
     ].join(" ").toLowerCase();
     return tokens.every((token) => haystack.includes(token));
   });
-}
-
-function priorityFor(
-  row: AdminQueueItem,
-  queueKind: Exclude<SafetyQueueKind, "all">
-): SafetyTriageRow["priority"] {
-  const haystack = `${row.title} ${row.detail} ${row.status}`.toLowerCase();
-  if (queueKind === "event" || haystack.includes("harassment") ||
-    haystack.includes("explicit")) {
-    return "high";
-  }
-  if (haystack.includes("fake") || haystack.includes("pending")) {
-    return "medium";
-  }
-  return "watch";
-}
-
-function routeOwnerFor(
-  row: AdminQueueItem,
-  queueKind: Exclude<SafetyQueueKind, "all">
-): string {
-  if (queueKind === "event") return "Event safety";
-  if (queueKind === "moderation") return "Moderation";
-  if (row.detail.toLowerCase().includes("chat")) return "Trust and safety";
-  return "Support review";
-}
-
-function priorityRank(priority: SafetyTriageRow["priority"]): number {
-  if (priority === "high") return 3;
-  if (priority === "medium") return 2;
-  return 1;
 }
 
 function messageFromError(error: unknown, fallback: string): string {
