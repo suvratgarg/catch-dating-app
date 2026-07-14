@@ -181,6 +181,9 @@ export {
   adminGetEventIntakeDashboard,
 } from "./admin/eventIntakeDashboard";
 export {
+  adminListIntakeOperations,
+} from "./admin/intakeOperations";
+export {
   adminDecideOrganizerIntake,
 } from "./admin/organizerIntake";
 export {

@@ -78,17 +78,20 @@
         {"kind": "tool-id", "ref": "data:backfill-event-discovery"},
         {"kind": "tool-id", "ref": "data:backfill-algolia-explore-search"},
         {"kind": "tool-id", "ref": "data:hygiene-media-paths"},
+        {"kind": "tool-id", "ref": "operations:import-admin-projection"},
         {"kind": "workflow", "ref": ".github/workflows/data-validation.yml"},
         {"kind": "doc", "ref": "docs/backend_operation_catalog.md"},
         {"kind": "doc", "ref": "docs/demo_data_seeding.md"}
       ],
       "requiredChecks": [
         "Prefer --json dry run before --apply.",
-        "Use --allow-prod only after reviewing prod dry-run output."
+        "Use --allow-prod only after reviewing prod dry-run output.",
+        "Validate a Supply Intake export without --apply, then repeat with explicit --environment, --project, and --confirm-run only to import the immutable internal shadow projection."
       ],
       "notes": [
         "Destructive tools require an explicit confirmation flag in addition to --apply.",
-        "Fraud/safety-related data changes should be tied back to backend_operation_catalog ownership before apply."
+        "Fraud/safety-related data changes should be tied back to backend_operation_catalog ownership before apply.",
+        "The Supply Intake projection importer writes only operationRuns and operationWorkItems; it cannot publish events or organizers, and a changed artifact requires a new run id."
       ]
     },
     {

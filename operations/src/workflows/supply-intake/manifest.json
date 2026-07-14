@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "workflowId": "supply-intake",
+  "version": "0.1.0",
+  "executionModes": ["shadow"],
+  "capabilities": {
+    "network": false,
+    "modelCalls": false,
+    "publicWrites": false,
+    "ruleDeployment": false
+  },
+  "commands": [
+    "plan",
+    "run",
+    "resume",
+    "queue",
+    "status",
+    "promote",
+    "reconcile",
+    "learn",
+    "export-admin"
+  ],
+  "primaryStages": ["incoming", "verify", "resolve", "ready"],
+  "entityKinds": ["event", "organizer", "source_result", "source_profile"],
+  "allowedTransitions": {
+    "incoming": ["verify", "resolve", "ready"],
+    "verify": ["resolve", "ready"],
+    "resolve": ["verify", "ready"],
+    "ready": ["resolve"]
+  },
+  "lifecycleStatuses": [
+    "active",
+    "published",
+    "rejected",
+    "expired",
+    "cancelled",
+    "taken_down"
+  ],
+  "lifecycleSemantics": {
+    "activeStatuses": ["active"],
+    "publishedStatuses": ["published"],
+    "expiredStatuses": ["expired"]
+  },
+  "maxWorkItemsPerRun": 10000,
+  "sourceProfiles": ["cntraveller", "luma"]
+}

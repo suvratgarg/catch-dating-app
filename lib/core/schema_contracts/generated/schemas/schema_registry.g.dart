@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'OperationRun',
+    source: 'operations/run.schema.json',
+    schema: schemaOperationRunSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OperationWorkItem',
+    source: 'operations/work_item.schema.json',
+    schema: schemaOperationWorkItemSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ProfilePromptAnswer',
     source: 'embedded/profile_prompt_answer.schema.json',
     schema: schemaProfilePromptAnswerSchema,
@@ -412,6 +422,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaAdminRecordEventIntakeReviewDecisionCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'AdminListIntakeOperationsCallablePayload',
+    source: 'callables/admin_list_intake_operations_payload.schema.json',
+    schema: schemaAdminListIntakeOperationsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'AdminDecideOrganizerEventCandidateCallablePayload',
     source: 'callables/admin_decide_organizer_event_candidate_payload.schema.json',
     schema: schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
@@ -779,6 +794,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'OperationRun': schemaOperationRunSchema,
+  'OperationWorkItem': schemaOperationWorkItemSchema,
   'ProfilePromptAnswer': schemaProfilePromptAnswerSchema,
   'PhotoPromptAnswer': schemaPhotoPromptAnswerSchema,
   'ProfilePhoto': schemaProfilePhotoSchema,
@@ -858,6 +875,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'AdminDecideOrganizerIntakeCallablePayload': schemaAdminDecideOrganizerIntakeCallablePayloadSchema,
   'AdminRecordOrganizerCurationCallablePayload': schemaAdminRecordOrganizerCurationCallablePayloadSchema,
   'AdminRecordEventIntakeReviewDecisionCallablePayload': schemaAdminRecordEventIntakeReviewDecisionCallablePayloadSchema,
+  'AdminListIntakeOperationsCallablePayload': schemaAdminListIntakeOperationsCallablePayloadSchema,
   'AdminDecideOrganizerEventCandidateCallablePayload': schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
   'AdminDecideOrganizerPolicyGapCallablePayload': schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
   'AdminResolveOrganizerEventLocationCallablePayload': schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
@@ -934,6 +952,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'operations/run.schema.json': schemaOperationRunSchema,
+  'operations/work_item.schema.json': schemaOperationWorkItemSchema,
   'embedded/profile_prompt_answer.schema.json': schemaProfilePromptAnswerSchema,
   'embedded/photo_prompt_answer.schema.json': schemaPhotoPromptAnswerSchema,
   'embedded/profile_photo.schema.json': schemaProfilePhotoSchema,
@@ -1013,6 +1033,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/admin_decide_organizer_intake_payload.schema.json': schemaAdminDecideOrganizerIntakeCallablePayloadSchema,
   'callables/admin_record_organizer_curation_payload.schema.json': schemaAdminRecordOrganizerCurationCallablePayloadSchema,
   'callables/admin_record_event_intake_review_decision_payload.schema.json': schemaAdminRecordEventIntakeReviewDecisionCallablePayloadSchema,
+  'callables/admin_list_intake_operations_payload.schema.json': schemaAdminListIntakeOperationsCallablePayloadSchema,
   'callables/admin_decide_organizer_event_candidate_payload.schema.json': schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
   'callables/admin_decide_organizer_policy_gap_payload.schema.json': schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
   'callables/admin_resolve_organizer_event_location_payload.schema.json': schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,

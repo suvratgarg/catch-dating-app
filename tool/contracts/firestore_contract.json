@@ -931,6 +931,90 @@
       ]
     },
     {
+      "id": "operationRuns",
+      "path": "operationRuns/{runId}",
+      "rulesMatch": "/operationRuns/{runId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted operations workers",
+      "read": "server/admin callable only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminListIntakeOperations"
+      ],
+      "migrationNotes": [
+        "Portable record shape is contracts/operations/run.schema.json; browser reads use a role-gated projection."
+      ]
+    },
+    {
+      "id": "operationWorkItems",
+      "path": "operationWorkItems/{workItemId}",
+      "rulesMatch": "/operationWorkItems/{workItemId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted operations workers",
+      "read": "server/admin callable only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminListIntakeOperations"
+      ],
+      "migrationNotes": [
+        "Portable record shape is contracts/operations/work_item.schema.json; primaryStage is exclusive and lifecycle outcomes are separate."
+      ]
+    },
+    {
+      "id": "operationActionReceipts",
+      "path": "operationActionReceipts/{actionId}",
+      "rulesMatch": "/operationActionReceipts/{actionId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted operations workers",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "operationDecisions",
+      "path": "operationDecisions/{decisionId}",
+      "rulesMatch": "/operationDecisions/{decisionId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted operations workers and reviewed admin decisions",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "operationLeases",
+      "path": "operationLeases/{leaseId}",
+      "rulesMatch": "/operationLeases/{leaseId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted operations workers",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "operationPublicationPlans",
+      "path": "operationPublicationPlans/{publicationPlanId}",
+      "rulesMatch": "/operationPublicationPlans/{publicationPlanId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted operations publisher boundary",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "operationRuleProposals",
+      "path": "operationRuleProposals/{ruleProposalId}",
+      "rulesMatch": "/operationRuleProposals/{ruleProposalId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted operations learning workers",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "operationRuleEvaluations",
+      "path": "operationRuleEvaluations/{ruleEvaluationId}",
+      "rulesMatch": "/operationRuleEvaluations/{ruleEvaluationId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted operations evaluation workers",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
       "id": "seedEvents",
       "path": "seedEvents/{manifestId}",
       "rulesMatch": "/seedEvents/{manifestId}",

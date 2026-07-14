@@ -139,6 +139,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   adminGetEventSupplyReadiness: {maxRequests: 60, windowMs: 60 * 1000},
   adminPublishExternalEvent: {maxRequests: 10, windowMs: 60 * 1000},
   adminGetEventIntakeDashboard: {maxRequests: 60, windowMs: 60 * 1000},
+  adminListIntakeOperations: {maxRequests: 120, windowMs: 60 * 1000},
   adminDecideOrganizerIntake: {maxRequests: 30, windowMs: 60 * 1000},
   adminRecordOrganizerCuration: {maxRequests: 30, windowMs: 60 * 1000},
   adminRecordEventIntakeReviewDecision: {

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "runId": "run:mumbai:2026-07-14",
+  "workflowId": "supply-intake",
+  "revision": 0,
+  "mode": "shadow",
+  "status": "planned",
+  "scope": {"market": "mumbai", "through": "2026-07-28"},
+  "rulesetVersion": "supply-intake-rules-v1",
+  "policyVersion": "supply-intake-policy-v1",
+  "inputHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "budgets": {
+    "maxWorkItems": 500,
+    "maxModelCalls": 100,
+    "maxModelTokens": 200000,
+    "maxCostMicros": 25000000,
+    "deadlineAt": "2026-07-15T00:00:00.000Z"
+  },
+  "counters": {
+    "discovered": 0,
+    "processed": 0,
+    "modelCalls": 0,
+    "modelTokens": 0,
+    "costMicros": 0,
+    "escalated": 0,
+    "published": 0,
+    "failed": 0
+  },
+  "checkpoint": {"lastSequence": 0, "cursor": null},
+  "createdAt": "2026-07-14T08:00:00.000Z",
+  "updatedAt": "2026-07-14T08:00:00.000Z",
+  "startedAt": null,
+  "finishedAt": null,
+  "failure": null,
+  "metadata": {}
+}

@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/publication_plan.schema.json",
+  "title": "OperationPublicationPlan",
+  "description": "A hash-bound plan consumed by a separately authorized publisher.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "publicationPlanId",
+    "runId",
+    "revision",
+    "environment",
+    "mode",
+    "status",
+    "contentHash",
+    "rulesetVersion",
+    "policyVersion",
+    "workItemInputs",
+    "mutations",
+    "createdBy",
+    "createdAt",
+    "validUntil",
+    "preflightAt",
+    "appliedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "publicationPlanId": {"$ref": "common.schema.json#/definitions/id"},
+    "runId": {"$ref": "common.schema.json#/definitions/id"},
+    "revision": {"type": "integer", "minimum": 0},
+    "environment": {
+      "type": "string",
+      "enum": ["development", "staging", "production"]
+    },
+    "mode": {"type": "string", "enum": ["shadow", "dry_run", "apply"]},
+    "status": {
+      "type": "string",
+      "enum": [
+        "drafted",
+        "preflight_passed",
+        "applied",
+        "rejected",
+        "expired"
+      ]
+    },
+    "contentHash": {"$ref": "common.schema.json#/definitions/sha256"},
+    "rulesetVersion": {"type": "string", "minLength": 1, "maxLength": 120},
+    "policyVersion": {"type": "string", "minLength": 1, "maxLength": 120},
+    "workItemInputs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["workItemId", "revision", "candidateHash"],
+        "properties": {
+          "workItemId": {"$ref": "common.schema.json#/definitions/id"},
+          "revision": {"type": "integer", "minimum": 0},
+          "candidateHash": {"$ref": "common.schema.json#/definitions/sha256"}
+        }
+      }
+    },
+    "mutations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mutationId",
+          "workItemId",
+          "operation",
+          "resourcePath",
+          "documentHash",
+          "payloadArtifactId",
+          "precondition"
+        ],
+        "properties": {
+          "mutationId": {"$ref": "common.schema.json#/definitions/id"},
+          "workItemId": {"$ref": "common.schema.json#/definitions/id"},
+          "operation": {"type": "string", "enum": ["create", "set", "update", "delete"]},
+          "resourcePath": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500,
+            "pattern": "^[A-Za-z0-9_-]+/[A-Za-z0-9._:-]+(?:/[A-Za-z0-9_-]+/[A-Za-z0-9._:-]+)*$"
+          },
+          "documentHash": {"$ref": "common.schema.json#/definitions/sha256"},
+          "payloadArtifactId": {
+            "anyOf": [
+              {"$ref": "common.schema.json#/definitions/id"},
+              {"type": "null"}
+            ]
+          },
+          "precondition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["exists", "lastUpdateAt"],
+            "properties": {
+              "exists": {"type": ["boolean", "null"]},
+              "lastUpdateAt": {"$ref": "common.schema.json#/definitions/nullableIsoDateTime"}
+            }
+          }
+        }
+      }
+    },
+    "createdBy": {"$ref": "common.schema.json#/definitions/actor"},
+    "createdAt": {"$ref": "common.schema.json#/definitions/isoDateTime"},
+    "validUntil": {"$ref": "common.schema.json#/definitions/isoDateTime"},
+    "preflightAt": {"$ref": "common.schema.json#/definitions/nullableIsoDateTime"},
+    "appliedAt": {"$ref": "common.schema.json#/definitions/nullableIsoDateTime"}
+  }
+}

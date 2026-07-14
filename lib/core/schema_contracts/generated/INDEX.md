@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| OperationRun | `operations/run.schema.json` | `functions/src/shared/generated/operationRunContract.ts` |
+| OperationWorkItem | `operations/work_item.schema.json` | `functions/src/shared/generated/operationWorkItemContract.ts` |
 | ProfilePromptAnswer | `embedded/profile_prompt_answer.schema.json` | `functions/src/shared/generated/profilePromptAnswer.ts` |
 | PhotoPromptAnswer | `embedded/photo_prompt_answer.schema.json` | `functions/src/shared/generated/photoPromptAnswer.ts` |
 | ProfilePhoto | `embedded/profile_photo.schema.json` | `functions/src/shared/generated/profilePhoto.ts` |
@@ -91,6 +93,7 @@ Do not edit it by hand.
 | AdminDecideOrganizerIntakeCallablePayload | `callables/admin_decide_organizer_intake_payload.schema.json` | `functions/src/shared/generated/adminDecideOrganizerIntakeCallablePayload.ts` |
 | AdminRecordOrganizerCurationCallablePayload | `callables/admin_record_organizer_curation_payload.schema.json` | `functions/src/shared/generated/adminRecordOrganizerCurationCallablePayload.ts` |
 | AdminRecordEventIntakeReviewDecisionCallablePayload | `callables/admin_record_event_intake_review_decision_payload.schema.json` | `functions/src/shared/generated/adminRecordEventIntakeReviewDecisionCallablePayload.ts` |
+| AdminListIntakeOperationsCallablePayload | `callables/admin_list_intake_operations_payload.schema.json` | `functions/src/shared/generated/adminListIntakeOperationsCallablePayload.ts` |
 | AdminDecideOrganizerEventCandidateCallablePayload | `callables/admin_decide_organizer_event_candidate_payload.schema.json` | `functions/src/shared/generated/adminDecideOrganizerEventCandidateCallablePayload.ts` |
 | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `functions/src/shared/generated/adminDecideOrganizerPolicyGapCallablePayload.ts` |
 | AdminResolveOrganizerEventLocationCallablePayload | `callables/admin_resolve_organizer_event_location_payload.schema.json` | `functions/src/shared/generated/adminResolveOrganizerEventLocationCallablePayload.ts` |
@@ -169,6 +172,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaOperationRunSchema` | OperationRun | `operations/run.schema.json` | `lib/core/schema_contracts/generated/schemas/operation_run.g.dart` |
+| `schemaOperationWorkItemSchema` | OperationWorkItem | `operations/work_item.schema.json` | `lib/core/schema_contracts/generated/schemas/operation_work_item.g.dart` |
 | `schemaProfilePromptAnswerSchema` | ProfilePromptAnswer | `embedded/profile_prompt_answer.schema.json` | `lib/core/schema_contracts/generated/schemas/profile_prompt_answer.g.dart` |
 | `schemaPhotoPromptAnswerSchema` | PhotoPromptAnswer | `embedded/photo_prompt_answer.schema.json` | `lib/core/schema_contracts/generated/schemas/photo_prompt_answer.g.dart` |
 | `schemaProfilePhotoSchema` | ProfilePhoto | `embedded/profile_photo.schema.json` | `lib/core/schema_contracts/generated/schemas/profile_photo.g.dart` |
@@ -248,6 +253,7 @@ Do not edit it by hand.
 | `schemaAdminDecideOrganizerIntakeCallablePayloadSchema` | AdminDecideOrganizerIntakeCallablePayload | `callables/admin_decide_organizer_intake_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_organizer_intake_callable_payload.g.dart` |
 | `schemaAdminRecordOrganizerCurationCallablePayloadSchema` | AdminRecordOrganizerCurationCallablePayload | `callables/admin_record_organizer_curation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_organizer_curation_callable_payload.g.dart` |
 | `schemaAdminRecordEventIntakeReviewDecisionCallablePayloadSchema` | AdminRecordEventIntakeReviewDecisionCallablePayload | `callables/admin_record_event_intake_review_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_event_intake_review_decision_callable_payload.g.dart` |
+| `schemaAdminListIntakeOperationsCallablePayloadSchema` | AdminListIntakeOperationsCallablePayload | `callables/admin_list_intake_operations_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_intake_operations_callable_payload.g.dart` |
 | `schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema` | AdminDecideOrganizerEventCandidateCallablePayload | `callables/admin_decide_organizer_event_candidate_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_organizer_event_candidate_callable_payload.g.dart` |
 | `schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema` | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_organizer_policy_gap_callable_payload.g.dart` |
 | `schemaAdminResolveOrganizerEventLocationCallablePayloadSchema` | AdminResolveOrganizerEventLocationCallablePayload | `callables/admin_resolve_organizer_event_location_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_resolve_organizer_event_location_callable_payload.g.dart` |
@@ -340,6 +346,7 @@ Do not edit it by hand.
 | AdminDecideOrganizerIntakeCallableRequest | AdminDecideOrganizerIntakeCallablePayload | `callables/admin_decide_organizer_intake_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_organizer_intake_callable_request.g.dart` |
 | AdminRecordOrganizerCurationCallableRequest | AdminRecordOrganizerCurationCallablePayload | `callables/admin_record_organizer_curation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_record_organizer_curation_callable_request.g.dart` |
 | AdminRecordEventIntakeReviewDecisionCallableRequest | AdminRecordEventIntakeReviewDecisionCallablePayload | `callables/admin_record_event_intake_review_decision_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_record_event_intake_review_decision_callable_request.g.dart` |
+| AdminListIntakeOperationsCallableRequest | AdminListIntakeOperationsCallablePayload | `callables/admin_list_intake_operations_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_intake_operations_callable_request.g.dart` |
 | AdminDecideOrganizerEventCandidateCallableRequest | AdminDecideOrganizerEventCandidateCallablePayload | `callables/admin_decide_organizer_event_candidate_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_organizer_event_candidate_callable_request.g.dart` |
 | AdminDecideOrganizerPolicyGapCallableRequest | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_organizer_policy_gap_callable_request.g.dart` |
 | AdminResolveOrganizerEventLocationCallableRequest | AdminResolveOrganizerEventLocationCallablePayload | `callables/admin_resolve_organizer_event_location_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_resolve_organizer_event_location_callable_request.g.dart` |

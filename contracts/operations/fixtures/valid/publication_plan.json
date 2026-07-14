@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "publicationPlanId": "publication:event:1",
+  "runId": "run:mumbai:2026-07-14",
+  "revision": 0,
+  "environment": "staging",
+  "mode": "dry_run",
+  "status": "preflight_passed",
+  "contentHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "rulesetVersion": "supply-intake-rules-v1",
+  "policyVersion": "supply-intake-policy-v1",
+  "workItemInputs": [{
+    "workItemId": "work:event:cntraveller:1",
+    "revision": 3,
+    "candidateHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  }],
+  "mutations": [{
+    "mutationId": "mutation:external-event:1",
+    "workItemId": "work:event:cntraveller:1",
+    "operation": "create",
+    "resourcePath": "externalEvents/event:cntraveller:1",
+    "documentHash": "1111111111111111111111111111111111111111111111111111111111111111",
+    "payloadArtifactId": "payload:external-event:1",
+    "precondition": {"exists": false, "lastUpdateAt": null}
+  }],
+  "createdBy": {"actorType": "agent", "actorId": "planner:supply-intake"},
+  "createdAt": "2026-07-14T08:04:00.000Z",
+  "validUntil": "2026-07-14T09:04:00.000Z",
+  "preflightAt": "2026-07-14T08:04:30.000Z",
+  "appliedAt": null
+}

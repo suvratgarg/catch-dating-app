@@ -16,6 +16,8 @@ on:
       - ".github/workflows/tools-ci.yml"
       - "functions/package-lock.json"
       - "functions/package.json"
+      - "operations/**"
+      - "contracts/operations/**"
   push:
     branches: [main]
     paths:
@@ -32,6 +34,8 @@ on:
       - ".github/workflows/tools-ci.yml"
       - "functions/package-lock.json"
       - "functions/package.json"
+      - "operations/**"
+      - "contracts/operations/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -122,12 +126,36 @@ jobs:
             node tool/run.mjs check --category "${category}"
           done
 
+  operations:
+    name: Operations platform
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: operations/package-lock.json
+
+      - name: Install Operations dependencies
+        run: npm --prefix operations ci
+
+      - name: Run Operations contracts, tests, boundaries, and CLI smoke
+        run: npm --prefix operations run check
+
   tools:
     name: Validate tool manifest and fast checks
     runs-on: ubuntu-latest
     needs:
       - preflight
       - tool-buckets
+      - operations
     if: always()
     timeout-minutes: 5
 
@@ -136,9 +164,11 @@ jobs:
         env:
           PREFLIGHT_RESULT: ${{ needs.preflight.result }}
           BUCKETS_RESULT: ${{ needs['tool-buckets'].result }}
+          OPERATIONS_RESULT: ${{ needs.operations.result }}
         run: |
           echo "preflight: ${PREFLIGHT_RESULT}"
           echo "tool buckets: ${BUCKETS_RESULT}"
-          if [[ "${PREFLIGHT_RESULT}" != "success" || "${BUCKETS_RESULT}" != "success" ]]; then
+          echo "operations: ${OPERATIONS_RESULT}"
+          if [[ "${PREFLIGHT_RESULT}" != "success" || "${BUCKETS_RESULT}" != "success" || "${OPERATIONS_RESULT}" != "success" ]]; then
             exit 1
           fi

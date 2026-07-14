@@ -23,6 +23,7 @@ export 'callables/admin_get_event_details_callable_request.g.dart';
 export 'callables/admin_list_club_details_callable_request.g.dart';
 export 'callables/admin_list_event_details_callable_request.g.dart';
 export 'callables/admin_list_external_event_details_callable_request.g.dart';
+export 'callables/admin_list_intake_operations_callable_request.g.dart';
 export 'callables/admin_publish_external_event_callable_request.g.dart';
 export 'callables/admin_record_event_intake_review_decision_callable_request.g.dart';
 export 'callables/admin_record_organizer_curation_callable_request.g.dart';

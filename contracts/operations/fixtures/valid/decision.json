@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "decisionId": "decision:event:1",
+  "runId": "run:mumbai:2026-07-14",
+  "workItemId": "work:event:cntraveller:1",
+  "workItemRevision": 3,
+  "decision": "approve",
+  "status": "accepted",
+  "actor": {"actorType": "agent", "actorId": "reviewer:supply-intake"},
+  "reasonCodes": ["all_required_gates_passed"],
+  "rationale": "Official source resolved and deterministic validators passed.",
+  "evidenceRefs": [{
+    "artifactId": "artifact:official-event:1",
+    "contentHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "observedAt": "2026-07-14T08:02:00.000Z",
+    "locator": "JSON-LD Event"
+  }],
+  "rulesetVersion": "supply-intake-rules-v1",
+  "modelVersion": null,
+  "calibratedConfidence": 0.995,
+  "auditRequired": true,
+  "createdAt": "2026-07-14T08:03:00.000Z",
+  "effectiveAt": "2026-07-14T08:03:00.000Z",
+  "supersedesDecisionId": null
+}

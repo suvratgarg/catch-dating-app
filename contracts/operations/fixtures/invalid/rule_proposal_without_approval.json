@@ -1,0 +1,32 @@
+{
+  "expectedIssueCode": "rule_human_approval_required",
+  "document": {
+    "schemaVersion": 1,
+    "ruleProposalId": "rule-proposal:invalid",
+    "workflowId": "supply-intake",
+    "revision": 0,
+    "sourceProfileId": "cntraveller-india",
+    "templateFingerprint": "2222222222222222222222222222222222222222222222222222222222222222",
+    "proposalKind": "source_extractor",
+    "status": "proposed",
+    "baselineRulesetVersion": "supply-intake-rules-v1",
+    "candidateRuleVersion": "cntraveller-extractor-v1",
+    "candidateArtifactId": "artifact:rule:invalid",
+    "candidateHash": "3333333333333333333333333333333333333333333333333333333333333333",
+    "failureCodes": ["article_list_structure_unknown"],
+    "evidenceWorkItemIds": ["work:event:cntraveller:1"],
+    "minimumSampleSize": 100,
+    "activationThresholds": {
+      "fieldExactness": 0.99,
+      "eventPrecision": 0.995,
+      "duplicatePrecision": 0.999,
+      "duplicateRecall": 0.98,
+      "correctionRate": 0.005,
+      "escalationRate": 0.01
+    },
+    "proposedBy": {"actorType": "agent", "actorId": "learner:supply-intake"},
+    "requiresHumanApproval": false,
+    "createdAt": "2026-07-14T08:10:00.000Z",
+    "updatedAt": "2026-07-14T08:10:00.000Z"
+  }
+}

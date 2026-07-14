@@ -83,6 +83,7 @@ function buildModel() {
   }
 
   const responsePaths = new Map([
+    ["adminListIntakeOperations", path.join(contractsRoot, "callable_responses/admin_list_intake_operations_response.schema.json")],
     ["adminGetHostAnalytics", path.join(contractsRoot, "callable_responses/host_analytics_response.schema.json")],
     ["adminGetUserAnalytics", path.join(contractsRoot, "callable_responses/user_analytics_response.schema.json")],
   ]);

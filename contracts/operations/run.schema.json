@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/run.schema.json",
+  "title": "OperationRun",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "workflowId",
+    "revision",
+    "mode",
+    "status",
+    "scope",
+    "rulesetVersion",
+    "policyVersion",
+    "inputHash",
+    "budgets",
+    "counters",
+    "checkpoint",
+    "createdAt",
+    "updatedAt",
+    "startedAt",
+    "finishedAt",
+    "failure",
+    "metadata"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "runId": {"$ref": "common.schema.json#/definitions/id"},
+    "workflowId": {"$ref": "common.schema.json#/definitions/workflowId"},
+    "revision": {"type": "integer", "minimum": 0},
+    "mode": {
+      "type": "string",
+      "enum": ["shadow", "assisted", "autonomous"]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "queued",
+        "running",
+        "paused",
+        "completed",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": true,
+      "maxProperties": 40
+    },
+    "rulesetVersion": {"type": "string", "minLength": 1, "maxLength": 120},
+    "policyVersion": {"type": "string", "minLength": 1, "maxLength": 120},
+    "inputHash": {"$ref": "common.schema.json#/definitions/sha256"},
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxWorkItems",
+        "maxModelCalls",
+        "maxModelTokens",
+        "maxCostMicros",
+        "deadlineAt"
+      ],
+      "properties": {
+        "maxWorkItems": {"type": "integer", "minimum": 1, "maximum": 10000},
+        "maxModelCalls": {"type": "integer", "minimum": 0},
+        "maxModelTokens": {"type": "integer", "minimum": 0},
+        "maxCostMicros": {"type": "integer", "minimum": 0},
+        "deadlineAt": {"$ref": "common.schema.json#/definitions/nullableIsoDateTime"}
+      }
+    },
+    "counters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "discovered",
+        "processed",
+        "modelCalls",
+        "modelTokens",
+        "costMicros",
+        "escalated",
+        "published",
+        "failed"
+      ],
+      "properties": {
+        "discovered": {"type": "integer", "minimum": 0},
+        "processed": {"type": "integer", "minimum": 0},
+        "modelCalls": {"type": "integer", "minimum": 0},
+        "modelTokens": {"type": "integer", "minimum": 0},
+        "costMicros": {"type": "integer", "minimum": 0},
+        "escalated": {"type": "integer", "minimum": 0},
+        "published": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0}
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lastSequence", "cursor"],
+      "properties": {
+        "lastSequence": {"type": "integer", "minimum": 0},
+        "cursor": {"type": ["string", "null"], "maxLength": 1000}
+      }
+    },
+    "createdAt": {"$ref": "common.schema.json#/definitions/isoDateTime"},
+    "updatedAt": {"$ref": "common.schema.json#/definitions/isoDateTime"},
+    "startedAt": {"$ref": "common.schema.json#/definitions/nullableIsoDateTime"},
+    "finishedAt": {"$ref": "common.schema.json#/definitions/nullableIsoDateTime"},
+    "failure": {
+      "anyOf": [
+        {"$ref": "common.schema.json#/definitions/failure"},
+        {"type": "null"}
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "maxProperties": 40
+    }
+  }
+}

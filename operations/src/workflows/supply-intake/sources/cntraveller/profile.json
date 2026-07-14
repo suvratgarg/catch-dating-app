@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sourceProfileId": "cntraveller",
+  "label": "Cond\u00e9 Nast Traveller India",
+  "sourceTier": "editorial_discovery",
+  "status": "discovery_only",
+  "allowedUse": "Extract event leads from retained, policy-approved article evidence; resolve each lead to an official organizer or event source before publication.",
+  "acquisition": {
+    "networkEnabled": false,
+    "allowedHosts": ["cntraveller.in"],
+    "artifactOnly": true
+  },
+  "extraction": {
+    "strategy": "editorial_link_card_v1",
+    "deterministicFirst": true,
+    "modelFallback": false,
+    "templateDriftBehavior": "abstain"
+  },
+  "publication": {
+    "autoEligible": false,
+    "discoveryOnly": true,
+    "requiresOfficialSource": true,
+    "requiresPolicyApproval": true
+  }
+}

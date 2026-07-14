@@ -541,6 +541,40 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Durable business-workflow state. Trusted operations workers use the
+    // Admin SDK; browser and mobile clients never access these records directly.
+    match /operationRuns/{runId} {
+      allow read, write: if false;
+    }
+
+    match /operationWorkItems/{workItemId} {
+      allow read, write: if false;
+    }
+
+    match /operationActionReceipts/{actionId} {
+      allow read, write: if false;
+    }
+
+    match /operationDecisions/{decisionId} {
+      allow read, write: if false;
+    }
+
+    match /operationLeases/{leaseId} {
+      allow read, write: if false;
+    }
+
+    match /operationPublicationPlans/{publicationPlanId} {
+      allow read, write: if false;
+    }
+
+    match /operationRuleProposals/{ruleProposalId} {
+      allow read, write: if false;
+    }
+
+    match /operationRuleEvaluations/{ruleEvaluationId} {
+      allow read, write: if false;
+    }
+
     // Written exclusively by admin organizer publishing callables to reserve
     // public website routes before pages become indexable.
     match /publicRouteReservations/{routeKey} {

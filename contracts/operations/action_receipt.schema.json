@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/action_receipt.schema.json",
+  "title": "OperationActionReceipt",
+  "description": "Append-only evidence for one attempted work-item action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "actionId",
+    "runId",
+    "workItemId",
+    "sequence",
+    "operation",
+    "status",
+    "fromRevision",
+    "toRevision",
+    "actor",
+    "idempotencyKey",
+    "inputHash",
+    "outputHash",
+    "rulesetVersion",
+    "modelVersion",
+    "reasonCodes",
+    "occurredAt",
+    "completedAt",
+    "failure"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "actionId": {"$ref": "common.schema.json#/definitions/id"},
+    "runId": {"$ref": "common.schema.json#/definitions/id"},
+    "workItemId": {"$ref": "common.schema.json#/definitions/id"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "operation": {"$ref": "common.schema.json#/definitions/code"},
+    "status": {
+      "type": "string",
+      "enum": ["started", "succeeded", "failed", "skipped"]
+    },
+    "fromRevision": {"type": "integer", "minimum": 0},
+    "toRevision": {"type": "integer", "minimum": 0},
+    "actor": {"$ref": "common.schema.json#/definitions/actor"},
+    "idempotencyKey": {"$ref": "common.schema.json#/definitions/id"},
+    "inputHash": {"$ref": "common.schema.json#/definitions/sha256"},
+    "outputHash": {
+      "anyOf": [
+        {"$ref": "common.schema.json#/definitions/sha256"},
+        {"type": "null"}
+      ]
+    },
+    "rulesetVersion": {"type": "string", "minLength": 1, "maxLength": 120},
+    "modelVersion": {"type": ["string", "null"], "maxLength": 160},
+    "reasonCodes": {
+      "type": "array",
+      "maxItems": 40,
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/definitions/code"}
+    },
+    "occurredAt": {"$ref": "common.schema.json#/definitions/isoDateTime"},
+    "completedAt": {"$ref": "common.schema.json#/definitions/nullableIsoDateTime"},
+    "failure": {
+      "anyOf": [
+        {"$ref": "common.schema.json#/definitions/failure"},
+        {"type": "null"}
+      ]
+    }
+  }
+}

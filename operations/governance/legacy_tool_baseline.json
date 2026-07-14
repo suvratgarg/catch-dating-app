@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 2,
+  "policyId": "operations-tool-boundary-v2",
+  "toolRoot": "tool",
+  "legacyRoots": [
+    {"path": "tool/host_discovery", "codeFileCeiling": 7},
+    {"path": "tool/marketing/event_guide", "codeFileCeiling": 5},
+    {"path": "tool/organizer_intake", "codeFileCeiling": 107}
+  ],
+  "allowedLegacyPathReaders": [
+    "operations/src/workflows/supply-intake/adapters/legacy-artifacts.mjs"
+  ],
+  "codeExtensions": [".js", ".mjs", ".cjs", ".ts", ".tsx"],
+  "forbiddenLegacyImports": [
+    "@catch/operations",
+    "operations/src/"
+  ],
+  "durableWorkflowMarkerThreshold": 2,
+  "durableWorkflowMarkers": [
+    "OperationsEngine",
+    "recordIdempotency(",
+    "putWorkItem(",
+    "promotionReceipt(",
+    "createReconciliationPlan(",
+    "lifecycleStatus"
+  ]
+}

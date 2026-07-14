@@ -4,6 +4,8 @@
 
 import Ajv, {ValidateFunction} from "ajv";
 import addFormats from "ajv-formats";
+import {OperationRun} from "./operationRunContract";
+import {OperationWorkItem} from "./operationWorkItemContract";
 import {ProfilePromptAnswer} from "./profilePromptAnswer";
 import {PhotoPromptAnswer} from "./photoPromptAnswer";
 import {ProfilePhoto} from "./profilePhoto";
@@ -83,6 +85,7 @@ import {AdminDecideClubClaimCallablePayload} from "./adminDecideClubClaimCallabl
 import {AdminDecideOrganizerIntakeCallablePayload} from "./adminDecideOrganizerIntakeCallablePayload";
 import {AdminRecordOrganizerCurationCallablePayload} from "./adminRecordOrganizerCurationCallablePayload";
 import {AdminRecordEventIntakeReviewDecisionCallablePayload} from "./adminRecordEventIntakeReviewDecisionCallablePayload";
+import {AdminListIntakeOperationsCallablePayload} from "./adminListIntakeOperationsCallablePayload";
 import {AdminDecideOrganizerEventCandidateCallablePayload} from "./adminDecideOrganizerEventCandidateCallablePayload";
 import {AdminDecideOrganizerPolicyGapCallablePayload} from "./adminDecideOrganizerPolicyGapCallablePayload";
 import {AdminResolveOrganizerEventLocationCallablePayload} from "./adminResolveOrganizerEventLocationCallablePayload";
@@ -157,6 +160,8 @@ import {DeleteSavedEventClientWrite} from "./deleteSavedEventClientWrite";
 import {MarkNotificationReadClientWrite} from "./markNotificationReadClientWrite";
 import {ResetMatchUnreadCountClientWrite} from "./resetMatchUnreadCountClientWrite";
 import {
+  operationRunSchema,
+  operationWorkItemSchema,
   profilePromptAnswerSchema,
   photoPromptAnswerSchema,
   profilePhotoSchema,
@@ -236,6 +241,7 @@ import {
   adminDecideOrganizerIntakeCallablePayloadSchema,
   adminRecordOrganizerCurationCallablePayloadSchema,
   adminRecordEventIntakeReviewDecisionCallablePayloadSchema,
+  adminListIntakeOperationsCallablePayloadSchema,
   adminDecideOrganizerEventCandidateCallablePayloadSchema,
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
   adminResolveOrganizerEventLocationCallablePayloadSchema,
@@ -314,6 +320,14 @@ import {
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateOperationRun:
+  ValidateFunction<OperationRun> =
+    ajv.compile(operationRunSchema) as
+      ValidateFunction<OperationRun>;
+export const validateOperationWorkItem:
+  ValidateFunction<OperationWorkItem> =
+    ajv.compile(operationWorkItemSchema) as
+      ValidateFunction<OperationWorkItem>;
 export const validateProfilePromptAnswer:
   ValidateFunction<ProfilePromptAnswer> =
     ajv.compile(profilePromptAnswerSchema) as
@@ -630,6 +644,10 @@ export const validateAdminRecordEventIntakeReviewDecisionCallablePayload:
   ValidateFunction<AdminRecordEventIntakeReviewDecisionCallablePayload> =
     ajv.compile(adminRecordEventIntakeReviewDecisionCallablePayloadSchema) as
       ValidateFunction<AdminRecordEventIntakeReviewDecisionCallablePayload>;
+export const validateAdminListIntakeOperationsCallablePayload:
+  ValidateFunction<AdminListIntakeOperationsCallablePayload> =
+    ajv.compile(adminListIntakeOperationsCallablePayloadSchema) as
+      ValidateFunction<AdminListIntakeOperationsCallablePayload>;
 export const validateAdminDecideOrganizerEventCandidateCallablePayload:
   ValidateFunction<AdminDecideOrganizerEventCandidateCallablePayload> =
     ajv.compile(adminDecideOrganizerEventCandidateCallablePayloadSchema) as

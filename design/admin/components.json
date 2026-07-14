@@ -25,6 +25,7 @@
       "workspace_growth_kpi",
       "route_intake_workspace",
       "workspace_intake_workspace",
+      "workspace_intake_operations",
       "route_organizer_intake",
       "workspace_organizer_intake",
       "route_marketing_ops",
@@ -306,7 +307,7 @@
           "event-review"
         ]
       },
-      "notes": "Tabbed route shell owns event and organizer composition; previews use deterministic controller fixtures in AdminRoutes.stories.tsx."
+      "notes": "Tabbed route shell owns event, organizer, and read-only automation composition; previews use deterministic controller fixtures in AdminRoutes.stories.tsx."
     },
     {
       "id": "workspace_intake_workspace",
@@ -325,7 +326,7 @@
           "event-review"
         ]
       },
-      "notes": "Prop-driven Intake workspace shell used by the route wrapper and deterministic Storybook previews; live event and organizer composition stays in IntakeWorkspaceScreen."
+      "notes": "Prop-driven Intake workspace shell used by the route wrapper and deterministic Storybook previews; live event, organizer, and automation composition stays in IntakeWorkspaceScreen."
     },
     {
       "id": "workspace_event_intake_live",
@@ -343,6 +344,44 @@
         ]
       },
       "notes": "Live Event Intake hook wrapper registered for export governance; deterministic preview coverage belongs to workspace_event_intake via EventIntakePreviewWorkspace."
+    },
+    {
+      "id": "workspace_intake_operations_live",
+      "kind": "workspace",
+      "owner": "features/intake/operations",
+      "source": "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
+      "exportName": "IntakeOperationsWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Live Supply Intake operations hook wrapper; deterministic preview coverage belongs to workspace_intake_operations."
+    },
+    {
+      "id": "workspace_intake_operations",
+      "kind": "workspace",
+      "owner": "features/intake/operations",
+      "source": "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
+      "exportName": "IntakeOperationsPreviewWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "IntakeOperationsWorkspaceStory",
+        "states": [
+          "default",
+          "human-review",
+          "read-only-boundary"
+        ]
+      },
+      "notes": "Prop-driven read-only Supply Intake operations inventory backed by canonical run and work-item fixtures."
     },
     {
       "id": "route_organizer_intake",

@@ -12,6 +12,7 @@
         "lib/**",
         "test/**",
         "functions/src/**",
+        "operations/**",
         "tool/**",
         "docs/**"
       ],
@@ -2394,6 +2395,64 @@
         }
       ]
     },
+    "OPERATIONS-PLATFORM-001": {
+      "title": "Durable business workflows stay outside repository tooling",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "operations_platform",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "operations/**",
+        "contracts/operations/**",
+        "functions/src/operations/**",
+        "functions/scripts/operations/**",
+        "functions/src/admin/**",
+        "admin/src/features/intake/operations/**",
+        "tool/host_discovery/**",
+        "tool/marketing/event_guide/**",
+        "tool/organizer_intake/**",
+        "tool/tools_manifest.json",
+        "tool/remote_ops_manifest.json"
+      ],
+      "instruction": "Resumable runs, work items, leases, budgets, decisions, receipts, and learning state belong in operations/. Legacy tool folders remain compatibility producers. Every workflow manifest stays bound to its executable commands, ordered states, sources, capabilities, and capacity. Shadow mode fails closed. The admin projection crosses into Firestore only through the dry-run-first trusted importer, and publication requires separately authorized execution.",
+      "sunset_when": [
+        "A stronger package-boundary mechanism enforces equivalent placement and authority rules"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-14",
+        "decision": "keep",
+        "note": "The workflow platform is new and must remain shadow-safe while additional admin flows are added."
+      },
+      "enforcement": [
+        {
+          "tool": "operations:boundaries",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/operations_platform.md#purpose",
+          "baseline": "operations/governance/legacy_tool_baseline.json"
+        },
+        {
+          "tool": "operations:workflow-manifest",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/operations_platform.md#adding-another-workflow"
+        },
+        {
+          "tool": "operations:import-admin-projection",
+          "stage": "manual",
+          "docAnchor": "docs/operations_platform.md#admin-projection-bridge"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/operations_platform.md#activation-checklist"
+        }
+      ]
+    },
     "WEB-VISUAL-001": {
       "title": "Registry-ready React stories have deterministic visual baselines",
       "status": "active",
@@ -2471,6 +2530,6 @@
       ]
     }
   },
-    "version": "2.7.14",
+  "version": "2.7.15",
     "updated": "2026-07-14"
 }

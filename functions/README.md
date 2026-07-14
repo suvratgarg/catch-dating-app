@@ -57,6 +57,7 @@ options when specific functions need higher or lower limits.
 | `adminGetEventDetails` | `src/admin/eventDetails.ts` | Admin-safe canonical event detail snapshot |
 | `adminUpdateEventDetails` | `src/admin/eventDetails.ts` | Admin audited safe app-facing event field patch |
 | `adminListExternalEventDetails` | `src/admin/externalEventDetails.ts` | Admin read-only external event supply list for `externalEvents/{id}` |
+| `adminListIntakeOperations` | `src/admin/intakeOperations.ts` | Role-gated read-only Supply Intake projection with authoritative aggregates, server-filtered human exceptions, and lazy ordinary pages |
 | `adminGetEventSupplyReadiness` | `src/admin/eventSupplyReadiness.ts` | Admin read-only external event import plan and preflight snapshot |
 | `adminPublishExternalEvent` | `src/admin/externalEventPublishing.ts` | Admin audited publish of one preflight-approved read-only `externalEvents/{id}` document |
 | `adminGetMarketingOpsDashboard` | `src/admin/marketingOps.ts` | Admin read-only marketing ops dashboard bridge |
@@ -107,6 +108,8 @@ options when specific functions need higher or lower limits.
 | `src/shared/auth.ts` | `requireAuth()` helper (extracts uid from callable request) |
 | `src/shared/validation.ts` | `validateCallableWithAjv()` — generated Ajv request body validation |
 | `src/shared/dates.ts` | `computeAge()` — shared DOB → age helper |
+| `src/operations/` | Portable operation models, validation, reducers, repositories, and server-only persistence ports |
+| `scripts/operations/import-shadow-projection.cjs` | Dry-run-first, alias-bound and production-guarded import/repair of a canonical Supply Intake shadow export into server-only run/work-item collections |
 | `src/moderation/textFilter.ts` | `moderateText()` — block/flag word list checker |
 
 ## Rate limiting

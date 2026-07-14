@@ -1,0 +1,30 @@
+{
+  "expectedIssueCode": "work_item_terminal_outcome",
+  "document": {
+    "schemaVersion": 1,
+    "workItemId": "work:event:invalid",
+    "workflowId": "supply-intake",
+    "runId": "run:mumbai:2026-07-14",
+    "entityKind": "event",
+    "externalKey": null,
+    "revision": 1,
+    "candidateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "primaryStage": "resolve",
+    "lifecycleStatus": "terminal",
+    "outcome": null,
+    "taskFlags": [],
+    "blockerCodes": [],
+    "warningCodes": [],
+    "priority": 0,
+    "attemptCount": 1,
+    "evidenceRefs": [],
+    "fieldProvenance": [],
+    "normalizedPayload": {},
+    "decisionId": null,
+    "publicationPlanId": null,
+    "createdAt": "2026-07-14T08:00:00.000Z",
+    "updatedAt": "2026-07-14T08:01:00.000Z",
+    "staleAt": null,
+    "expiresAt": null
+  }
+}

@@ -29,6 +29,7 @@ const model = {
     "adminListClubDetails",
     "adminListEventDetails",
     "adminListExternalEventDetails",
+    "adminListIntakeOperations",
     "adminPublishExternalEvent",
     "adminRecordEventIntakeReviewDecision",
     "adminRecordMarketingReviewDecision",
@@ -1892,6 +1893,143 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_intake_operations_payload.schema.json",
+      "title": "AdminListIntakeOperationsCallablePayload",
+      "description": "Read-only filters for the durable Supply Intake operations inventory. This callable never requests or executes a run.",
+      "type": "object",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "humanReviewRequired"
+            ],
+            "properties": {
+              "humanReviewRequired": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "primaryStage": {
+                "type": "null"
+              },
+              "entityKind": {
+                "type": "null"
+              },
+              "lifecycleStatus": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "workflowId": {
+          "type": "string",
+          "enum": [
+            "supply-intake"
+          ]
+        },
+        "runId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "primaryStage": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "incoming",
+            "verify",
+            "resolve",
+            "ready",
+            null
+          ]
+        },
+        "entityKind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "event",
+            "organizer",
+            "source_result",
+            "source_profile",
+            null
+          ]
+        },
+        "lifecycleStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "queued",
+            "in_progress",
+            "waiting",
+            "ready",
+            "published",
+            "terminal",
+            null
+          ]
+        },
+        "runStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "planned",
+            "queued",
+            "running",
+            "paused",
+            "completed",
+            "failed",
+            "cancelled",
+            null
+          ]
+        },
+        "humanReviewRequired": {
+          "type": "boolean",
+          "description": "When true, returns only work items carrying the canonical human_review_required task flag."
+        },
+        "runLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 25
+        },
+        "workItemLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "runCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "workItemCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
       "title": "AdminPublishExternalEventCallablePayload",
       "description": "Callable payload accepted by adminPublishExternalEvent. This publishes one preflight-approved read-only externalEvents/{eventId} document from eventSupplyReadiness/current.",
@@ -2884,6 +3022,927 @@ const model = {
             "week",
             "month"
           ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_list_intake_operations_response.schema.json",
+      "title": "AdminListIntakeOperationsCallableResponse",
+      "description": "Read-only persisted run and work-item projection for the Supply Intake Operations workspace.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "workflowId",
+        "executionMode",
+        "source",
+        "capabilities",
+        "summary",
+        "runs",
+        "workItems",
+        "nextRunCursor",
+        "nextWorkItemCursor"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "workflowId": {
+          "type": "string",
+          "const": "supply-intake"
+        },
+        "executionMode": {
+          "type": "string",
+          "const": "shadow"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "firestore",
+            "sample"
+          ]
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestRuns",
+            "networkFetches",
+            "modelCalls",
+            "publicWrites",
+            "ruleDeployment"
+          ],
+          "properties": {
+            "requestRuns": {
+              "type": "boolean",
+              "const": false
+            },
+            "networkFetches": {
+              "type": "boolean",
+              "const": false
+            },
+            "modelCalls": {
+              "type": "boolean",
+              "const": false
+            },
+            "publicWrites": {
+              "type": "boolean",
+              "const": false
+            },
+            "ruleDeployment": {
+              "type": "boolean",
+              "const": false
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "loadedRunCount",
+            "workItemCount",
+            "humanReviewCount",
+            "stages"
+          ],
+          "properties": {
+            "loadedRunCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "workItemCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "humanReviewCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stages": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "incoming",
+                "verify",
+                "resolve",
+                "ready"
+              ],
+              "properties": {
+                "incoming": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "verify": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "resolve": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ready": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "runs": {
+          "type": "array",
+          "maxItems": 25,
+          "items": {
+            "$ref": "../operations/run.schema.json"
+          }
+        },
+        "workItems": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "../operations/work_item.schema.json"
+              },
+              {
+                "properties": {
+                  "workflowId": {
+                    "const": "supply-intake"
+                  },
+                  "primaryStage": {
+                    "enum": [
+                      "incoming",
+                      "verify",
+                      "resolve",
+                      "ready"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "nextRunCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "nextWorkItemCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/run.schema.json",
+      "title": "OperationRun",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "runId",
+        "workflowId",
+        "revision",
+        "mode",
+        "status",
+        "scope",
+        "rulesetVersion",
+        "policyVersion",
+        "inputHash",
+        "budgets",
+        "counters",
+        "checkpoint",
+        "createdAt",
+        "updatedAt",
+        "startedAt",
+        "finishedAt",
+        "failure",
+        "metadata"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "runId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "workflowId": {
+          "$ref": "common.schema.json#/definitions/workflowId"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "shadow",
+            "assisted",
+            "autonomous"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "queued",
+            "running",
+            "paused",
+            "completed",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": true,
+          "maxProperties": 40
+        },
+        "rulesetVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "inputHash": {
+          "$ref": "common.schema.json#/definitions/sha256"
+        },
+        "budgets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxWorkItems",
+            "maxModelCalls",
+            "maxModelTokens",
+            "maxCostMicros",
+            "deadlineAt"
+          ],
+          "properties": {
+            "maxWorkItems": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "maxModelCalls": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxModelTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxCostMicros": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "deadlineAt": {
+              "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
+            }
+          }
+        },
+        "counters": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "discovered",
+            "processed",
+            "modelCalls",
+            "modelTokens",
+            "costMicros",
+            "escalated",
+            "published",
+            "failed"
+          ],
+          "properties": {
+            "discovered": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "processed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "modelCalls": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "modelTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "costMicros": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "escalated": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "failed": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lastSequence",
+            "cursor"
+          ],
+          "properties": {
+            "lastSequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "cursor": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        },
+        "createdAt": {
+          "$ref": "common.schema.json#/definitions/isoDateTime"
+        },
+        "updatedAt": {
+          "$ref": "common.schema.json#/definitions/isoDateTime"
+        },
+        "startedAt": {
+          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
+        },
+        "finishedAt": {
+          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/failure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true,
+          "maxProperties": 40
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/common.schema.json",
+      "title": "OperationsCommonDefinitions",
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "workflowId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_.:-]*$"
+        },
+        "isoDateTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "nullableIsoDateTime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "actor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actorType",
+            "actorId"
+          ],
+          "properties": {
+            "actorType": {
+              "type": "string",
+              "enum": [
+                "human",
+                "agent",
+                "system"
+              ]
+            },
+            "actorId": {
+              "$ref": "#/definitions/id"
+            }
+          }
+        },
+        "evidenceRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "artifactId",
+            "contentHash",
+            "observedAt",
+            "locator"
+          ],
+          "properties": {
+            "artifactId": {
+              "$ref": "#/definitions/id"
+            },
+            "contentHash": {
+              "$ref": "#/definitions/sha256"
+            },
+            "observedAt": {
+              "$ref": "#/definitions/isoDateTime"
+            },
+            "locator": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        },
+        "failure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "properties": {
+            "code": {
+              "$ref": "#/definitions/code"
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          }
+        },
+        "metricSet": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fieldExactness",
+            "eventPrecision",
+            "duplicatePrecision",
+            "duplicateRecall",
+            "correctionRate",
+            "escalationRate"
+          ],
+          "properties": {
+            "fieldExactness": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "eventPrecision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "duplicatePrecision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "duplicateRecall": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "correctionRate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "escalationRate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/work_item.schema.json",
+      "title": "OperationWorkItem",
+      "description": "One exclusively staged unit of work. Task flags are orthogonal and may overlap.",
+      "type": "object",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "lifecycleStatus": {
+                "const": "terminal"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "type": "string",
+                "not": {
+                  "const": "published"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "lifecycleStatus": {
+                "const": "published"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "const": "published"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "lifecycleStatus": {
+                "enum": [
+                  "queued",
+                  "in_progress",
+                  "waiting",
+                  "ready"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "required": [
+                  "blockerCodes"
+                ],
+                "properties": {
+                  "blockerCodes": {
+                    "contains": {
+                      "const": "human_review_required"
+                    }
+                  }
+                }
+              },
+              {
+                "required": [
+                  "normalizedPayload"
+                ],
+                "properties": {
+                  "normalizedPayload": {
+                    "type": "object",
+                    "required": [
+                      "owner"
+                    ],
+                    "properties": {
+                      "owner": {
+                        "const": "human"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "then": {
+            "properties": {
+              "taskFlags": {
+                "contains": {
+                  "const": "human_review_required"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "lifecycleStatus"
+            ],
+            "properties": {
+              "lifecycleStatus": {
+                "enum": [
+                  "published",
+                  "terminal"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "taskFlags": {
+                "not": {
+                  "contains": {
+                    "const": "human_review_required"
+                  }
+                }
+              },
+              "blockerCodes": {
+                "not": {
+                  "contains": {
+                    "const": "human_review_required"
+                  }
+                }
+              },
+              "normalizedPayload": {
+                "not": {
+                  "required": [
+                    "owner"
+                  ],
+                  "properties": {
+                    "owner": {
+                      "const": "human"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "required": [
+        "schemaVersion",
+        "workItemId",
+        "workflowId",
+        "runId",
+        "entityKind",
+        "externalKey",
+        "revision",
+        "candidateHash",
+        "primaryStage",
+        "lifecycleStatus",
+        "outcome",
+        "taskFlags",
+        "blockerCodes",
+        "warningCodes",
+        "priority",
+        "attemptCount",
+        "evidenceRefs",
+        "fieldProvenance",
+        "normalizedPayload",
+        "decisionId",
+        "publicationPlanId",
+        "createdAt",
+        "updatedAt",
+        "staleAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "workItemId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "workflowId": {
+          "$ref": "common.schema.json#/definitions/workflowId"
+        },
+        "runId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "entityKind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "externalKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "candidateHash": {
+          "$ref": "common.schema.json#/definitions/sha256"
+        },
+        "primaryStage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "lifecycleStatus": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "in_progress",
+            "waiting",
+            "ready",
+            "published",
+            "terminal"
+          ]
+        },
+        "outcome": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "taskFlags": {
+          "type": "array",
+          "maxItems": 40,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/definitions/code"
+          }
+        },
+        "blockerCodes": {
+          "type": "array",
+          "maxItems": 40,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/definitions/code"
+          }
+        },
+        "warningCodes": {
+          "type": "array",
+          "maxItems": 40,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/definitions/code"
+          }
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "common.schema.json#/definitions/evidenceRef"
+          }
+        },
+        "fieldProvenance": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "field",
+              "artifactId",
+              "contentHash",
+              "locator",
+              "extractedBy",
+              "extractorVersion",
+              "confidence"
+            ],
+            "properties": {
+              "field": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "artifactId": {
+                "$ref": "common.schema.json#/definitions/id"
+              },
+              "contentHash": {
+                "$ref": "common.schema.json#/definitions/sha256"
+              },
+              "locator": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1000
+              },
+              "extractedBy": {
+                "type": "string",
+                "enum": [
+                  "deterministic",
+                  "model",
+                  "human"
+                ]
+              },
+              "extractorVersion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "confidence": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "normalizedPayload": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "decisionId": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publicationPlanId": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "$ref": "common.schema.json#/definitions/isoDateTime"
+        },
+        "updatedAt": {
+          "$ref": "common.schema.json#/definitions/isoDateTime"
+        },
+        "staleAt": {
+          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
+        },
+        "expiresAt": {
+          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
         }
       }
     },
@@ -3938,6 +4997,7 @@ const model = {
     "adminListClubDetails": "https://catch.app/contracts/callables/admin_list_club_details_payload.schema.json",
     "adminListEventDetails": "https://catch.app/contracts/callables/admin_list_event_details_payload.schema.json",
     "adminListExternalEventDetails": "https://catch.app/contracts/callables/admin_list_external_event_details_payload.schema.json",
+    "adminListIntakeOperations": "https://catch.app/contracts/callables/admin_list_intake_operations_payload.schema.json",
     "adminPublishExternalEvent": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
     "adminRecordEventIntakeReviewDecision": "https://catch.app/contracts/callables/admin_record_event_intake_review_decision_payload.schema.json",
     "adminRecordMarketingReviewDecision": "https://catch.app/contracts/admin_runtime/adminRecordMarketingReviewDecision_payload.schema.json",
@@ -3974,6 +5034,7 @@ const model = {
     "adminListClubDetails": "https://catch.app/contracts/admin_runtime/adminListClubDetails_response.schema.json",
     "adminListEventDetails": "https://catch.app/contracts/admin_runtime/adminListEventDetails_response.schema.json",
     "adminListExternalEventDetails": "https://catch.app/contracts/admin_runtime/adminListExternalEventDetails_response.schema.json",
+    "adminListIntakeOperations": "https://catch.app/contracts/callable_responses/admin_list_intake_operations_response.schema.json",
     "adminPublishExternalEvent": "https://catch.app/contracts/admin_runtime/adminPublishExternalEvent_response.schema.json",
     "adminRecordEventIntakeReviewDecision": "https://catch.app/contracts/admin_runtime/adminRecordEventIntakeReviewDecision_response.schema.json",
     "adminRecordMarketingReviewDecision": "https://catch.app/contracts/admin_runtime/adminRecordMarketingReviewDecision_response.schema.json",
@@ -3996,6 +5057,7 @@ const model = {
     "adminListClubDetails",
     "adminListEventDetails",
     "adminListExternalEventDetails",
+    "adminListIntakeOperations",
     "adminPublishExternalEvent",
     "adminRecordEventIntakeReviewDecision",
     "adminRecordOrganizerCuration",
@@ -4006,7 +5068,8 @@ const model = {
   ],
   "strictResponses": [
     "adminGetHostAnalytics",
-    "adminGetUserAnalytics"
+    "adminGetUserAnalytics",
+    "adminListIntakeOperations"
   ]
 } as const;
 const ajv = new Ajv({allErrors: true, strict: false, validateSchema: false});

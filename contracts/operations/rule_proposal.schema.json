@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/rule_proposal.schema.json",
+  "title": "OperationRuleProposal",
+  "description": "An evidence-backed deterministic rule proposal. Proposals cannot self-activate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "ruleProposalId",
+    "workflowId",
+    "revision",
+    "sourceProfileId",
+    "templateFingerprint",
+    "proposalKind",
+    "status",
+    "baselineRulesetVersion",
+    "candidateRuleVersion",
+    "candidateArtifactId",
+    "candidateHash",
+    "failureCodes",
+    "evidenceWorkItemIds",
+    "minimumSampleSize",
+    "activationThresholds",
+    "proposedBy",
+    "requiresHumanApproval",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "ruleProposalId": {"$ref": "common.schema.json#/definitions/id"},
+    "workflowId": {"$ref": "common.schema.json#/definitions/workflowId"},
+    "revision": {"type": "integer", "minimum": 0},
+    "sourceProfileId": {"$ref": "common.schema.json#/definitions/id"},
+    "templateFingerprint": {"$ref": "common.schema.json#/definitions/sha256"},
+    "proposalKind": {
+      "type": "string",
+      "enum": ["declarative_rule", "source_extractor"]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "observed",
+        "proposed",
+        "replay_ready",
+        "shadow",
+        "canary",
+        "active",
+        "rejected",
+        "retired"
+      ]
+    },
+    "baselineRulesetVersion": {"type": "string", "minLength": 1, "maxLength": 120},
+    "candidateRuleVersion": {"type": "string", "minLength": 1, "maxLength": 120},
+    "candidateArtifactId": {"$ref": "common.schema.json#/definitions/id"},
+    "candidateHash": {"$ref": "common.schema.json#/definitions/sha256"},
+    "failureCodes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/definitions/code"}
+    },
+    "evidenceWorkItemIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/definitions/id"}
+    },
+    "minimumSampleSize": {"type": "integer", "minimum": 1},
+    "activationThresholds": {"$ref": "common.schema.json#/definitions/metricSet"},
+    "proposedBy": {"$ref": "common.schema.json#/definitions/actor"},
+    "requiresHumanApproval": {"type": "boolean", "const": true},
+    "createdAt": {"$ref": "common.schema.json#/definitions/isoDateTime"},
+    "updatedAt": {"$ref": "common.schema.json#/definitions/isoDateTime"}
+  }
+}

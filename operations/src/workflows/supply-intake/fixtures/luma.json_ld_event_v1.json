@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "fixtureSetId": "luma-json-ld-event-v1",
+  "sourceProfileId": "luma",
+  "cases": [
+    {
+      "caseId": "single-event",
+      "input": {
+        "jsonLd": {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": "Saturday Social Run",
+          "startDate": "2026-07-25T06:30:00+05:30",
+          "endDate": "2026-07-25T08:00:00+05:30",
+          "url": "https://lu.ma/run123",
+          "location": {
+            "@type": "Place",
+            "name": "Marine Drive",
+            "address": {"addressLocality": "Mumbai", "addressCountry": "IN"}
+          }
+        }
+      },
+      "expected": [
+        {
+          "sourceEntityId": "run123",
+          "title": "Saturday Social Run",
+          "sourceUrl": "https://lu.ma/run123",
+          "status": "scheduled"
+        }
+      ]
+    }
+  ]
+}
