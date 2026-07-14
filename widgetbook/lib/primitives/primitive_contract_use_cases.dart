@@ -53,6 +53,7 @@ import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -74,6 +75,61 @@ import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.d
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchSectionLabel,
+  path: '[Core primitives]/Typography',
+)
+Widget catchSectionLabelContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchSectionLabel',
+    contractId: 'catch.ui_label',
+    states: const [
+      'eyebrow',
+      'metadata-label',
+      'with-icon',
+      'accented',
+      'truncated',
+    ],
+    children: [
+      const _StateCard(
+        label: 'eyebrow',
+        child: CatchSectionLabel(label: 'How it works'),
+      ),
+      const _StateCard(
+        label: 'metadata-label',
+        child: CatchSectionLabel(label: 'Source and freshness'),
+      ),
+      _StateCard(
+        label: 'with-icon',
+        child: CatchSectionLabel(
+          label: 'Social run format',
+          icon: CatchIcons.directionsRunRounded,
+        ),
+      ),
+      _StateCard(
+        label: 'accented',
+        child: CatchSectionLabel(
+          label: 'Needs review',
+          icon: CatchIcons.infoOutlineRounded,
+          accentColor: t.warning,
+        ),
+      ),
+      const _StateCard(
+        label: 'truncated',
+        child: SizedBox(
+          width: 152,
+          child: CatchSectionLabel(
+            label: 'A deliberately long structural context label',
+          ),
+        ),
+      ),
+    ],
+  );
+}
 
 @widgetbook.UseCase(
   name: 'Contract states',
