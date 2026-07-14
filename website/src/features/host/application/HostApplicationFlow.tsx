@@ -146,8 +146,8 @@ export function HostApplicationFlow() {
 
         {!submitted && step === "event" ? (
           <HostApplicationStage>
-            <Field span label={<span>Formats you want to run</span>}>
-              <ChoiceChipGrid>
+            <Field span label={<span id="host-format-options-label">Formats you want to run</span>}>
+              <ChoiceChipGrid aria-labelledby="host-format-options-label">
                 {hostFormatOptions.map((format) => (
                   <ChoiceChip
                     selected={draft.formats.includes(format)}
@@ -256,8 +256,8 @@ export function HostApplicationFlow() {
 
         {!submitted && step === "success" ? (
           <HostApplicationStage>
-            <Field span label={<span>Event Success modules to start with</span>}>
-              <ChoiceChipGrid>
+            <Field span label={<span id="host-success-modules-label">Event Success modules to start with</span>}>
+              <ChoiceChipGrid aria-labelledby="host-success-modules-label">
                 {hostSuccessModuleOptions.map((module) => (
                   <ChoiceChip
                     selected={draft.eventSuccessModules.includes(module)}

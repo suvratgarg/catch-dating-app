@@ -245,9 +245,13 @@ export const ListingEventSuccess: Story = {
       states: ["app-created-aggregate"],
     },
   },
-  render: () => appCreatedListing.eventSuccessSummary ? (
-    <ListingEventSuccessSection summary={appCreatedListing.eventSuccessSummary} />
-  ) : null,
+  render: () => (
+    <>
+      {appCreatedListing.eventSuccessSummary ? (
+        <ListingEventSuccessSection summary={appCreatedListing.eventSuccessSummary} />
+      ) : null}
+    </>
+  ),
 };
 
 export const ListingFit: Story = {

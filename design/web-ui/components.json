@@ -1,0 +1,118 @@
+{
+  "$schema": "./components.schema.json",
+  "version": 7,
+  "updated": "2026-07-13",
+  "owner": "web_ui",
+  "components": [
+    {
+      "id": "webui_ui_label",
+      "source": "packages/web-ui/src/primitives.tsx",
+      "exportName": "UiLabel",
+      "lexicon": true,
+      "lexiconId": "catch.ui_label",
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/primitives.stories.tsx",
+        "exportName": "Label",
+        "states": ["span", "div", "surface-class"]
+      },
+      "notes": "Structural label element adopted by both React surfaces; each surface owns its visual class contract."
+    },
+    {
+      "id": "webui_checkbox_control",
+      "source": "packages/web-ui/src/primitives.tsx",
+      "exportName": "CheckboxControl",
+      "lexicon": false,
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/primitives.stories.tsx",
+        "exportName": "Checkbox",
+        "states": ["unchecked", "checked", "disabled"]
+      },
+      "notes": "Native checkbox control adopted through surface adapters so styling and label layout remain surface-owned."
+    },
+    {
+      "id": "webui_field_controls",
+      "source": "packages/web-ui/src/primitives.tsx",
+      "exportName": "TextInputControl",
+      "lexicon": true,
+      "lexiconId": "catch.field",
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/primitives.stories.tsx",
+        "exportName": "Fields",
+        "states": ["text", "invalid", "described", "select", "textarea"]
+      },
+      "notes": "Shared native controls normalize validation and description semantics; surface adapters own labels, controlled-value callbacks, layout, and styling."
+    },
+    {
+      "id": "webui_empty_state_control",
+      "source": "packages/web-ui/src/primitives.tsx",
+      "exportName": "EmptyStateControl",
+      "lexicon": true,
+      "lexiconId": "catch.empty_state",
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/primitives.stories.tsx",
+        "exportName": "Feedback",
+        "states": ["static", "polite-announcement", "surface-content-adapter"]
+      },
+      "notes": "Shared empty-state root owns opt-in status announcements and content wrapping while surface adapters own anatomy styling and variants."
+    },
+    {
+      "id": "webui_badge_control",
+      "source": "packages/web-ui/src/primitives.tsx",
+      "exportName": "BadgeControl",
+      "lexicon": true,
+      "lexiconId": "catch.badge",
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/primitives.stories.tsx",
+        "exportName": "Feedback",
+        "states": ["inline", "surface-tone-adapter"]
+      },
+      "notes": "Shared non-interactive inline badge root for status-oriented surface adapters; structural eyebrow labels use catch.ui_label instead."
+    },
+    {
+      "id": "webui_button_control",
+      "source": "packages/web-ui/src/primitives.tsx",
+      "exportName": "ButtonControl",
+      "lexicon": true,
+      "lexiconId": "catch.button",
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/primitives.stories.tsx",
+        "exportName": "Button",
+        "states": ["default", "disabled", "loading", "explicit-submit"]
+      },
+      "notes": "Shared safe button type and loading semantics used by both surface adapters; styling, density, icons, and labels remain surface-owned."
+    },
+    {
+      "id": "webui_data_table_control",
+      "source": "packages/web-ui/src/primitives.tsx",
+      "exportName": "DataTableControl",
+      "lexicon": false,
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/primitives.stories.tsx",
+        "exportName": "DataTable",
+        "states": ["named-table", "keyboard-scroll-region"]
+      },
+      "notes": "Shared table frame requires an accessible name and makes overflow content keyboard reachable; table density and visual treatment remain surface-owned."
+    },
+    {
+      "id": "webui_toggle_controls",
+      "source": "packages/web-ui/src/primitives.tsx",
+      "exportName": "ToggleButtonControl",
+      "lexicon": true,
+      "lexiconId": "catch.chip",
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/primitives.stories.tsx",
+        "exportName": "Toggle",
+        "states": ["unselected", "selected", "disabled", "labelled-group"]
+      },
+      "notes": "Shared pressed-state and labelled-group semantics used by website choice controls and the admin segmented-control adapter; visual density remains surface-owned."
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.161
-updated: 2026-07-12
+version: 0.4.162
+updated: 2026-07-14
 owner: marketing_website
 status: active
 ---
@@ -64,6 +64,11 @@ The website is already split out of the old monolithic shell:
   code from hand-rolling governed component families. Its generated reader
   snapshot lives at `docs/audit_registry/react_component_governance_families.json`
   and documents the known-family blocklist limitation.
+- `docs/audit_registry/web_shared_primitive_adoption.json` owns the audited
+  marketing/admin compatibility queue. Website buttons, fields, choice
+  controls, empty states, status badges, and data tables adapt compatible
+  `@catch/web-ui` native semantics; visual classes, authored labels, domain
+  variants, and feature composition remain website-owned.
 - Shared route/page shell presentation lives in `website/src/shared/site` as
   `PageShell` and `WebsitePageMain`. `website/src/app/App.tsx` owns React
   Router, route metadata, lifecycle hooks, and page-class selection, but
@@ -863,6 +868,13 @@ website/src/
 11. Keep React component-family enforcement active.
 
    Website and admin code share `node tool/run.mjs check web:react-classname-boundaries` plus `node tool/run.mjs check web:react-component-governance`. The class-name scanner blocks feature/app/story `className` usage outside shared primitive owner files. The component scanner-owned family registry is emitted by `node tool/web/check_react_component_governance.mjs --families-json` and checked in at `docs/audit_registry/react_component_governance_families.json`. This is a known-family blocklist: passing it does not classify novel shells, so repeated new component drift must become a scanner family before handoff.
+
+12. Keep cross-surface primitive decisions classified.
+
+   Run `node tool/run.mjs check web:shared-ui-adoption`. The tracker
+   distinguishes adopted package semantics from deliberate surface-specific
+   families; package exports, exact-name cross-app overlap, and adopted
+   adapters cannot drift outside that decision record.
 
 ## Next Implementation Batch
 

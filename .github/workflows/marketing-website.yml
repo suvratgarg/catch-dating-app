@@ -11,10 +11,15 @@ on:
       - "package-lock.json"
       - "website/**"
       - "packages/web-config/**"
+      - "packages/web-ui/**"
       - "design/tokens/**"
+      - "design/web-ui/**"
       - "design/website/**"
+      - "docs/audit_registry/web_shared_primitive_adoption.json"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
+      - "tool/web/check_shared_web_ui_adoption.mjs"
+      - "tool/web/check_storybook_visuals.mjs"
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
@@ -31,10 +36,15 @@ on:
       - "package-lock.json"
       - "website/**"
       - "packages/web-config/**"
+      - "packages/web-ui/**"
       - "design/tokens/**"
+      - "design/web-ui/**"
       - "design/website/**"
+      - "docs/audit_registry/web_shared_primitive_adoption.json"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
+      - "tool/web/check_shared_web_ui_adoption.mjs"
+      - "tool/web/check_storybook_visuals.mjs"
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
@@ -94,8 +104,20 @@ jobs:
       - name: Build marketing website
         run: npm run web:marketing:build
 
+      - name: Check shared web UI adoption
+        run: npm run web:shared-ui-adoption:check
+
+      - name: Run shared web UI tests and typecheck
+        run: npm run web:ui:test && npm run web:ui:typecheck
+
       - name: Install Storybook accessibility browser
         run: npx playwright install --with-deps chromium
+
+      - name: Build marketing Storybook
+        run: npm --workspace catch-marketing run build:storybook
+
+      - name: Run marketing and shared web UI visual regression
+        run: npm --workspace catch-marketing run test:visual
 
       - name: Run Storybook accessibility gate
         run: npm --workspace catch-marketing run test:storybook:a11y

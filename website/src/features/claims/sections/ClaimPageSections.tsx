@@ -246,14 +246,14 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
           <ClaimFlowStage>
             <div>
               <UiLabel>Verification method</UiLabel>
-              <h2>How Catch should verify ownership.</h2>
+              <h2 id="claim-verification-method-heading">How Catch should verify ownership.</h2>
               <p>
                 Approved claims attach this page to a host account before
                 editing, review responses, events, or analytics are unlocked.
               </p>
             </div>
 
-            <VerificationMethodGrid>
+            <VerificationMethodGrid aria-labelledby="claim-verification-method-heading">
               {claimVerificationMethods.map((method) => (
                 <ChoiceCard
                   body={method.body}

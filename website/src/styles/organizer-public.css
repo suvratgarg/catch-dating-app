@@ -130,6 +130,11 @@
   display: grid;
   min-width: 0;
   align-items: center;
+  border-radius: var(--catch-radius-sm);
+}
+
+.public-search__input:focus-within {
+  box-shadow: inset 0 0 0 2px var(--catch-focus-ring-color);
 }
 
 .public-search__input span {

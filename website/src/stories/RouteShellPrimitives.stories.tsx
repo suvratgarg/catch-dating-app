@@ -167,13 +167,13 @@ export const ClaimFlowShellStory: Story = {
                 <p>Profile evidence and source links are ready for staff review.</p>
               </SelectedListingCard>
             </ClaimListingResults>
-            <VerificationMethodGrid>
+            <VerificationMethodGrid aria-labelledby="public-proof-label business-contact-label">
               <article>
-                <UiLabel>Public proof</UiLabel>
+                <UiLabel id="public-proof-label">Public proof</UiLabel>
                 <p>Link to event pages or social profiles that show ownership.</p>
               </article>
               <article>
-                <UiLabel>Business contact</UiLabel>
+                <UiLabel id="business-contact-label">Business contact</UiLabel>
                 <p>Add a reachable email or phone number for the review packet.</p>
               </article>
             </VerificationMethodGrid>

@@ -132,7 +132,7 @@ function validateComponent(component, context) {
     errors.push(`${label}: source file does not exist: ${component.source}.`);
   } else {
     const source = fs.readFileSync(sourcePath, "utf8");
-    if (!sourceExports(source, component.exportName)) {
+    if (!sourceExports(source, component.exportName, sourcePath)) {
       errors.push(`${label}: source does not export ${component.exportName}.`);
     }
   }
@@ -294,11 +294,37 @@ function validateFeatureComponentExports(components) {
   }
 }
 
-function sourceExports(source, exportName) {
+function sourceExports(source, exportName, sourcePath, visited = new Set()) {
   const escaped = escapeRegExp(exportName);
-  return new RegExp(`export\\s+function\\s+${escaped}\\b`, "u").test(source) ||
+  if (new RegExp(`export\\s+function\\s+${escaped}\\b`, "u").test(source) ||
     new RegExp(`export\\s+const\\s+${escaped}\\b`, "u").test(source) ||
-    new RegExp(`export\\s+class\\s+${escaped}\\b`, "u").test(source);
+    new RegExp(`export\\s+class\\s+${escaped}\\b`, "u").test(source)) {
+    return true;
+  }
+  for (const match of source.matchAll(/export\s*\{([^}]+)\}\s*from/gu)) {
+    const exportedNames = match[1].split(",").map((entry) => {
+      const names = entry.trim().replace(/^type\s+/u, "").split(/\s+as\s+/u);
+      return names.at(-1)?.trim();
+    });
+    if (exportedNames.includes(exportName)) return true;
+  }
+  if (!sourcePath || visited.has(sourcePath)) return false;
+  visited.add(sourcePath);
+  for (const match of source.matchAll(/export\s+\*\s+from\s+["']([^"']+)["']/gu)) {
+    const base = path.resolve(path.dirname(sourcePath), match[1]);
+    const candidates = [
+      base,
+      `${base}.ts`,
+      `${base}.tsx`,
+      path.join(base, "index.ts"),
+      path.join(base, "index.tsx"),
+    ];
+    const target = candidates.find((candidate) => fs.existsSync(candidate));
+    if (!target) continue;
+    const targetSource = fs.readFileSync(target, "utf8");
+    if (sourceExports(targetSource, exportName, target, visited)) return true;
+  }
+  return false;
 }
 
 function exportedReactComponents(source) {
