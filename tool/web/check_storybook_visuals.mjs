@@ -98,6 +98,11 @@ try {
       await page.goto(`${server.origin}/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story`, {
         waitUntil: "networkidle",
       });
+      await page.waitForSelector(
+        "body.sb-show-main #storybook-root > *, body.sb-show-errordisplay .sb-errordisplay",
+        {state: "visible", timeout: 15_000}
+      );
+      await page.locator(".sb-preparing-story").waitFor({state: "hidden", timeout: 15_000});
       await page.evaluate(async () => {
         await document.fonts.ready;
       });

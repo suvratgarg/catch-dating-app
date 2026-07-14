@@ -703,6 +703,28 @@
       "notes": "The shell may redirect an inaccessible route only after a live user has a resolved, non-empty role set. Sign-in, claim-check, and no-claim states retain the requested URL."
     },
     {
+      "id": "REG-WEB-VISUAL-STORY-READY-001",
+      "title": "Visual baselines capture Storybook's preparing screen instead of the story",
+      "status": "active",
+      "applies_to": [
+        "tool/web/check_storybook_visuals.mjs",
+        "design/visual_baselines/admin/**",
+        "design/visual_baselines/website/**",
+        "design/visual_baselines/webui/**"
+      ],
+      "symptom": "A visual capture contains Storybook's blank preparing canvas or spinner because network-idle completed before the selected story mounted, creating a flaky or meaningless committed baseline.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --surface website --component home_discovery_section --check",
+        "guardEvidence": "the visual checker waits for either a mounted story child under a Storybook main state or an explicit Storybook error before it freezes motion and captures pixels"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "Network-idle and font readiness do not prove that a lazy Storybook module has rendered. The checker must never bless the built-in preparing UI as product evidence."
+    },
+    {
       "id": "REG-TYPOGRAPHY-001",
       "title": "Native font packaging or semantic typography ownership drifts",
       "status": "active",
