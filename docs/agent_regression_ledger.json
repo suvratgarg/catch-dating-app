@@ -1,6 +1,6 @@
 {
-  "version": 7,
-  "updated": "2026-07-13",
+  "version": 8,
+  "updated": "2026-07-14",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -474,6 +474,211 @@
         "docs/data_contracts.md"
       ],
       "notes": "The Flutter ownership baseline is explicit migration debt and may only shrink. The ARB and copy JSON catalogs are sources; generated Dart, InfoPlist.strings, and TypeScript are outputs."
+    },
+    {
+      "id": "REG-WEB-CALLABLE-001",
+      "title": "Admin callable contract validation silently becomes partial or stale",
+      "status": "active",
+      "applies_to": [
+        "admin/src/shared/api/adminApi.ts",
+        "admin/src/generated/validators/**",
+        "admin/scripts/generateCallableValidators.mjs",
+        "contracts/callables/**",
+        "contracts/callable_responses/**"
+      ],
+      "symptom": "A new admin callable bypasses request validation, a schema change is not regenerated, or a development response violates its callable response contract without naming the callable and JSON path.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-callable-validators && npm --workspace catch-admin run test",
+        "guardEvidence": "generator discovers every adminApi callable and validator tests cover strict request families plus invalid response paths"
+      },
+    "owner_docs": [
+      "docs/web_surface_architecture.md"
+    ],
+      "notes": "Schema-backed contracts are strict. Callables without a dedicated JSON contract still receive a generated top-level object validator and remain visible in validation coverage until their strict contract lands."
+    },
+    {
+      "id": "REG-WEB-UI-001",
+      "title": "Shared web primitives drift out of adapters, CI, or accessibility contracts",
+      "status": "active",
+      "applies_to": [
+        "packages/web-ui/**",
+        "packages/web-config/styles/catch-web.css",
+        "website/src/shared/ui/**",
+        "admin/src/shared/ui/**",
+        "design/web-ui/**",
+        "docs/audit_registry/web_shared_primitive_adoption.json",
+        ".github/workflows/marketing-website.yml",
+        ".github/workflows/admin-website.yml"
+      ],
+      "symptom": "A shared package export is unclassified, an adopted surface adapter stops using it, a table loses its accessible name or keyboard scroll frame, a field loses validation semantics, focus becomes invisible, or package-only changes skip both React CI workflows.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:shared-ui-adoption && npm run web:ui:test && npm run web:ui:typecheck",
+        "guardEvidence": "known-bad unclassified overlap/export and missing-adapter-import probes plus shared button, field, toggle, feedback, and table behavior tests"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/marketing_website_architecture.md",
+        "docs/audit_registry/web_shared_primitive_adoption.json"
+      ],
+      "notes": "The package owns compatible native behavior and accessibility state. Website/admin adapters continue to own visual density, class names, domain tone mapping, and feature composition."
+    },
+    {
+      "id": "REG-WEB-BUNDLE-001",
+      "title": "Lazy admin screens still ship their controllers in the entry chunk",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/features/**/controllers/**",
+        "admin/src/shared/api/**",
+        "admin/vite.config.ts",
+        "admin/bundle-budget.json",
+        "admin/scripts/checkBundleBudget.mjs"
+      ],
+      "symptom": "A screen is rendered through React.lazy, but App.tsx statically imports its controller or adminApi, pulling Firebase Functions, sample data, and generated bridges into the production entry and exposing screen-only controls on unrelated routes.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build",
+        "guardEvidence": "Vite manifest budget plus a known-bad feature-controller import probe"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/bundle-budget.json"
+      ],
+      "notes": "Live route wrappers own query controllers behind the lazy boundary. Prop-driven workspaces remain independently renderable for Storybook and tests."
+    },
+    {
+      "id": "REG-WEB-STORYBOOK-BUNDLE-001",
+      "title": "Admin route stories collapse every feature and generated intake packet into one oversized chunk",
+      "status": "active",
+      "applies_to": [
+        "admin/.storybook/main.ts",
+        "admin/src/stories/**",
+        "admin/src/features/**",
+        "admin/storybook-bundle-budget.json",
+        "admin/scripts/checkStorybookBundleBudget.mjs"
+      ],
+      "symptom": "AdminRoutes.stories grows back toward a megabyte because all feature modules and the generated organizer-intake bridge are bundled into the story entry, slowing visual and accessibility review.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build:storybook",
+        "guardEvidence": "named feature/data chunks plus known-bad route-story and app-chunk budget probes"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/storybook-bundle-budget.json"
+      ],
+      "notes": "The budget covers Catch-authored chunks only. Storybook framework, axe, and other vendor runtime chunks are measured separately from application composition."
+    },
+    {
+      "id": "REG-WEB-FEATURE-SIZE-001",
+      "title": "Admin feature screens regrow into multi-thousand-line route modules",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/**/*.tsx",
+        "admin/feature-ui-size-budget.json",
+        "tool/web/check_admin_feature_ui_size.mjs"
+      ],
+      "symptom": "A route/workspace entry accumulates private workflow panels until review, testing, and ownership become impractical, or feature-private panels are exported as an accidental shared API.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-feature-ui-size && node tool/run.mjs check web:admin-feature-exports",
+        "guardEvidence": "known-bad route and private-module size fixtures plus the uppercase feature-export scanner"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/feature-ui-size-budget.json"
+      ],
+      "notes": "Split cohesive workflows behind lower-case feature-private module APIs. Route and workspace components remain the only public feature UI exports."
+    },
+    {
+      "id": "REG-WEB-UI-LABEL-001",
+      "title": "Structural eyebrow labels collapse back into the status badge family",
+      "status": "active",
+      "applies_to": [
+        "design/components/catch.components.json",
+        "design/website/components.json",
+        "design/admin/components.json",
+        "design/web-ui/components.json",
+        "tool/design/check_component_lexicon.mjs"
+      ],
+      "symptom": "UiLabel or AdminEyebrow is classified as catch.badge, making hierarchy metadata indistinguishable from status, count, or alert semantics.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:component-lexicon",
+        "guardEvidence": "exact four-stack catch.ui_label and catch.badge mappings plus a known-bad missing-symbol probe"
+      },
+      "owner_docs": [
+        "docs/design_language.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "catch.ui_label owns structural hierarchy context; catch.badge owns status, state, counts, and alerts. Shared typography does not make them one concept."
+    },
+    {
+      "id": "REG-WEB-INTAKE-TASK-FIRST-001",
+      "title": "Intake daily review regresses into a generated diagnostic wall",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/**",
+        "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+        "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "design/admin/components.json"
+      ],
+      "symptom": "Event or organizer Intake opens with pipeline diagnostics, metric walls, or raw generated cards before the operator can see the staged queue, selected evidence, readiness gates, downstream impact, notes, and backed decision actions.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/intake/ui/intakeWorkbenchDefaults.test.tsx src/shared/ui/AdminPrimitives/intake.test.tsx",
+        "guardEvidence": "feature tests assert both workspaces default to the staged review queue, keep diagnostics secondary, and return cleanly; primitive tests cover stage and queue selection semantics"
+      },
+      "owner_docs": [
+        "docs/admin_dashboard_user_stories_and_component_catalogue.md",
+        "docs/audit_registry/admin_console_design_adoption.json"
+      ],
+      "notes": "New Intake stages must represent durable backend states. Discovery jobs and canonical promotion stay out of the primary stage rail until their state, authority, failure, retry, and receipt contracts exist."
+    },
+    {
+      "id": "REG-WEB-ADMIN-CHROME-001",
+      "title": "Admin route chrome regrows prototype labels and repeated title copy",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+        "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+        "tool/web/check_admin_components.mjs",
+        "design/admin/components.json"
+      ],
+      "symptom": "The admin shell shows Catch Ops, sample console, dev plus sample, or a route kicker and subtitle alongside the global route title, making prototype context look like product identity and repeating information before the task begins.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-components",
+        "guardEvidence": "the component checker requires Catch Admin, a single route-owned h1 in AdminTopbar, no top-bar kicker or subtitle, and rejects known prototype labels"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/admin_console_design_adoption.json"
+      ],
+      "notes": "Production omits the environment badge. Development, Local, or Staging remains visible only when non-production context changes operator risk; roles and local-data context stay inside the account disclosure."
+    },
+    {
+      "id": "REG-WEB-ADMIN-AUTH-DEEP-LINK-001",
+      "title": "Admin deep links are overwritten while authentication or claims resolve",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/app/App.test.tsx"
+      ],
+      "symptom": "A production URL for a safety case, access application, organizer, event, or another role-owned record is replaced with /overview before Firebase authentication and custom claims finish resolving.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/app/App.test.tsx",
+        "guardEvidence": "App-level live-mode tests preserve requested record URLs while Firebase authentication is unresolved and while a signed-in user's admin claims are pending or absent."
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/admin_console_design_adoption.json"
+      ],
+      "notes": "The shell may redirect an inaccessible route only after a live user has a resolved, non-empty role set. Sign-in, claim-check, and no-claim states retain the requested URL."
     },
     {
       "id": "REG-TYPOGRAPHY-001",

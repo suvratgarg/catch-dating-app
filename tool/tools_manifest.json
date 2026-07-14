@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-11",
+  "updated": "2026-07-14",
   "tools": [
     {
       "id": "tool:runner",
@@ -3584,6 +3584,190 @@
       "checks": [
         "dart run tool/widget_dedupe/bin/extract_fingerprints.dart --help"
       ]
+    },
+    {
+      "id": "web:shared-ui-adoption",
+      "category": "lint",
+      "path": "tool/web/check_shared_web_ui_adoption.mjs",
+      "command": "node tool/web/check_shared_web_ui_adoption.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Validates the cross-React primitive adoption tracker, classifies every exact-name website/admin primitive overlap, and rejects untracked @catch/web-ui exports.",
+      "checks": [
+        "node --check tool/web/check_shared_web_ui_adoption.mjs",
+        "node tool/web/check_shared_web_ui_adoption.mjs --self-test",
+        "node tool/web/check_shared_web_ui_adoption.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-UI-COMPONENT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_shared_web_ui_adoption.mjs --self-test"
+      }
+    },
+    {
+      "id": "web:react-controller-test-targets",
+      "category": "test",
+      "path": "tool/web/check_react_controller_test_targets.mjs",
+      "command": "node tool/web/check_react_controller_test_targets.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Classifies every React feature controller/mutation hook and requires named behavior suites for promoted targets without gating on aggregate coverage percentages.",
+      "checks": [
+        "node --check tool/web/check_react_controller_test_targets.mjs",
+        "node tool/web/check_react_controller_test_targets.mjs --self-test",
+        "node tool/web/check_react_controller_test_targets.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-CONTROLLER-TEST-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_react_controller_test_targets.mjs --self-test"
+      }
+    },
+    {
+      "id": "web:admin-feature-ui-size",
+      "category": "lint",
+      "path": "tool/web/check_admin_feature_ui_size.mjs",
+      "command": "node tool/web/check_admin_feature_ui_size.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Keeps admin feature route/workspace entries and private panel modules below reviewed line ceilings after the large-screen decomposition pass.",
+      "checks": [
+        "node --check tool/web/check_admin_feature_ui_size.mjs",
+        "node tool/web/check_admin_feature_ui_size.mjs --self-test",
+        "node tool/web/check_admin_feature_ui_size.mjs --check"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "WEB-FEATURE-SIZE-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_admin_feature_ui_size.mjs --self-test"
+      }
+    },
+    {
+      "id": "web:admin-callable-validators",
+      "category": "lint",
+      "path": "admin/scripts/generateCallableValidators.mjs",
+      "command": "npm --workspace catch-admin run check:callable-validators",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Checks the generated admin callable request/response validator registry against current adminApi callables and schema contracts.",
+      "checks": [
+        "node --check admin/scripts/generateCallableValidators.mjs",
+        "node admin/scripts/generateCallableValidators.mjs --self-test",
+        "npm --workspace catch-admin run check:callable-validators"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-CALLABLE-VALIDATION-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "admin/scripts/generateCallableValidators.mjs",
+        "contains": [
+          "simulated schema drift",
+          "Admin callable validator drift self-test passed."
+        ]
+      }
+    },
+    {
+      "id": "design:component-lexicon",
+      "category": "design",
+      "path": "tool/design/check_component_lexicon.mjs",
+      "command": "node tool/design/check_component_lexicon.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Binds declared Flutter, website, admin, and web-ui implementation symbols to the cross-stack Catch component lexicon and validates reverse registry links.",
+      "checks": [
+        "node --check tool/design/check_component_lexicon.mjs",
+        "node --test tool/design/check_component_lexicon.test.mjs",
+        "node tool/design/check_component_lexicon.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "DESIGN-LEXICON-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_component_lexicon.test.mjs",
+        "contains": [
+          "rejects a declared surface symbol that does not exist",
+          "__KnownMissingWebsiteSymbol__"
+        ]
+      }
+    },
+    {
+      "id": "web:admin-bundle-budget",
+      "category": "test",
+      "path": "admin/scripts/checkBundleBudget.mjs",
+      "command": "node admin/scripts/checkBundleBudget.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Ratchets the Vite-manifest JavaScript entry and largest async chunk for the admin production build.",
+      "checks": [
+        "node --check admin/scripts/checkBundleBudget.mjs",
+        "node admin/scripts/checkBundleBudget.mjs --self-test",
+        "node admin/scripts/checkBundleBudget.mjs --check"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "WEB-BUNDLE-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node admin/scripts/checkBundleBudget.mjs --self-test"
+      }
+    },
+    {
+      "id": "web:admin-storybook-bundle-budget",
+      "category": "test",
+      "path": "admin/scripts/checkStorybookBundleBudget.mjs",
+      "command": "node admin/scripts/checkStorybookBundleBudget.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Ratchets Catch-authored admin Storybook route and feature chunks while excluding framework and accessibility-vendor runtime chunks.",
+      "checks": [
+        "node --check admin/scripts/checkStorybookBundleBudget.mjs",
+        "node admin/scripts/checkStorybookBundleBudget.mjs --self-test",
+        "node admin/scripts/checkStorybookBundleBudget.mjs --check"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "WEB-STORYBOOK-BUNDLE-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node admin/scripts/checkStorybookBundleBudget.mjs --self-test"
+      }
+    },
+    {
+      "id": "web:storybook-visuals",
+      "category": "test",
+      "path": "tool/web/check_storybook_visuals.mjs",
+      "command": "node tool/web/check_storybook_visuals.mjs --surface website --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Captures and compares deterministic desktop/mobile Storybook screenshots for registry-ready website, admin, and shared web-ui stories.",
+      "checks": [
+        "node --check tool/web/check_storybook_visuals.mjs",
+        "node tool/web/check_storybook_visuals.mjs --self-test",
+        "node tool/web/check_storybook_visuals.mjs --surface website --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-VISUAL-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_storybook_visuals.mjs --self-test"
+      }
     },
     {
       "id": "design:widget-dedupe-fingerprint-tests",

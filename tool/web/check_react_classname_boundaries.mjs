@@ -14,6 +14,10 @@ const surfaces = {
     root: "website/src",
     primitiveOwners: ["website/src/shared/site/", "website/src/shared/ui/"],
   },
+  webui: {
+    root: "packages/web-ui/src",
+    primitiveOwners: ["packages/web-ui/src/"],
+  },
 };
 
 const checkedExtensions = new Set([".tsx", ".jsx"]);
