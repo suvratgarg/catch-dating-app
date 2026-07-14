@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "updated": "2026-07-14",
   "owner": "agent_operating_model",
   "entries": [
@@ -496,6 +496,28 @@
       "docs/web_surface_architecture.md"
     ],
       "notes": "Schema-backed contracts are strict. Callables without a dedicated JSON contract still receive a generated top-level object validator and remain visible in validation coverage until their strict contract lands."
+    },
+    {
+      "id": "REG-WEB-VISUAL-PLATFORM-001",
+      "title": "Storybook visual baselines cross operating-system font renderers",
+      "status": "active",
+      "applies_to": [
+        "tool/web/check_storybook_visuals.mjs",
+        "design/visual_baselines/**",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/marketing-website.yml"
+      ],
+      "symptom": "Darwin-authored screenshots pass locally but fail broadly on Ubuntu because system-ui resolves to different fonts and rasterizers, producing text reflow and antialiasing noise that looks like hundreds of product regressions.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/web/check_storybook_visuals.mjs --self-test",
+        "guardEvidence": "the checker pins baseline, actual, and diff paths to process.platform; the self-test rejects Darwin and Linux path collapse, while both React workflows pin blocking Linux capture to Ubuntu 24.04"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Keep production system-ui typography unchanged. Capture and review each platform separately; never increase the pixel threshold or accept a cross-platform baseline churn to hide environment drift."
     },
     {
       "id": "REG-WEB-UI-001",

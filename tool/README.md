@@ -272,8 +272,8 @@ targets need a named importing behavior suite; planned targets remain visible
 without turning aggregate coverage percentages into a brittle merge gate.
 
 Registry-ready Storybook stories also have deterministic desktop and mobile
-image baselines under `design/visual_baselines/`. Build the relevant Storybook
-before comparing or intentionally updating them:
+image baselines under `design/visual_baselines/<surface>/<platform>/`. Build
+the relevant Storybook before comparing or intentionally updating them:
 
 ```sh
 npm --workspace catch-marketing run build:storybook
@@ -288,8 +288,19 @@ node tool/web/check_storybook_visuals.mjs --surface admin --component workspace_
 Use repeatable `--component <registry-id>` filters to isolate a task-owned
 visual check or baseline update. Use `--update` only after the target UI and
 registry review states are final. The checker fixes both viewports, requests
-reduced motion, waits for fonts, and writes diff artifacts under
-`artifacts/visual-diffs/` on failure.
+reduced motion, waits for fonts, and compares only against the current
+operating system's baselines. This separation is required because the product
+intentionally uses `system-ui`, whose glyph metrics and rasterization differ
+between Darwin and Linux. A mismatch writes both the rendered image and its
+diff under `artifacts/visual-actuals/<surface>/<platform>/` and
+`artifacts/visual-diffs/<surface>/<platform>/`.
+
+The Admin Website and Marketing Website workflows pin the blocking Linux
+capture to Ubuntu 24.04. Their manual `workflow_dispatch` input
+`update_visual_baselines=true` captures Linux baselines and uploads them as a
+review artifact; it does not commit them. Review that artifact before replacing
+`design/visual_baselines/<surface>/linux/`. Local Darwin updates remain useful
+for local visual review but never substitute for the Linux CI baseline.
 
 ## Host Discovery
 

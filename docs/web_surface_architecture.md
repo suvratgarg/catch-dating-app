@@ -64,9 +64,13 @@ React + TypeScript stack where practical.
   guard for `website/`, `admin/`, and `webui`.
 - `tool/web/check_storybook_visuals.mjs` resolves registry entries marked
   `ready` against built Storybook indexes and compares fixed desktop/mobile
-  captures under `design/visual_baselines/`. Repeatable
+  captures under `design/visual_baselines/<surface>/<platform>/`. Repeatable
   `--component <registry-id>` filters isolate task-owned checks and baseline
-  updates while another surface refactor is dirty.
+  updates while another surface refactor is dirty. Platform ownership is part
+  of the contract because `system-ui` is intentionally stack-native: Darwin
+  and Linux captures never compare against one another. React CI pins the
+  blocking Linux capture to Ubuntu 24.04 and uploads actual plus diff images on
+  failure; manual baseline-capture runs upload review artifacts before commit.
 - `web:admin-bundle-budget` reads the built Vite manifest and ratchets both the
   admin entry chunk and largest async chunk. Query/API controllers belong
   behind lazy route wrappers; importing one into `admin/src/app/App.tsx` is a

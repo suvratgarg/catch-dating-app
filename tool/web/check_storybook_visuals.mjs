@@ -59,10 +59,15 @@ const viewports = [
   {name: "desktop", width: 1280, height: 800},
   {name: "mobile", width: 375, height: 812},
 ];
-const baselineRoot = fromRepo(`design/visual_baselines/${args.surface}`);
-const diffRoot = fromRepo(`artifacts/visual-diffs/${args.surface}`);
+const capturePlatform = process.platform;
+const baselineRoot = fromRepo(platformCapturePath("design/visual_baselines", args.surface, capturePlatform));
+const diffRoot = fromRepo(platformCapturePath("artifacts/visual-diffs", args.surface, capturePlatform));
+const actualRoot = fromRepo(platformCapturePath("artifacts/visual-actuals", args.surface, capturePlatform));
 fs.mkdirSync(baselineRoot, {recursive: true});
+fs.rmSync(diffRoot, {recursive: true, force: true});
+fs.rmSync(actualRoot, {recursive: true, force: true});
 fs.mkdirSync(diffRoot, {recursive: true});
+fs.mkdirSync(actualRoot, {recursive: true});
 
 const server = await startServer(storybookRoot);
 const browser = await chromium.launch({headless: true});
@@ -104,14 +109,17 @@ try {
       const actual = await page.screenshot({animations: "disabled", fullPage: false});
       const fileName = `${sanitize(story.id)}.${viewport.name}.png`;
       const baselinePath = path.join(baselineRoot, fileName);
+      const actualPath = path.join(actualRoot, fileName);
       if (args.update) {
         fs.writeFileSync(baselinePath, actual);
       } else if (!fs.existsSync(baselinePath)) {
+        fs.writeFileSync(actualPath, actual);
         failures.push(`${story.id} (${viewport.name}): missing baseline`);
       } else {
         const comparison = comparePng(fs.readFileSync(baselinePath), actual, args.threshold);
         if (!comparison.matches) {
           const diffPath = path.join(diffRoot, fileName);
+          fs.writeFileSync(actualPath, actual);
           fs.writeFileSync(diffPath, comparison.diff);
           failures.push(
             `${story.id} (${viewport.name}): ${(comparison.ratio * 100).toFixed(3)}% pixels changed; ` +
@@ -142,7 +150,8 @@ if (failures.length > 0) {
 
 console.log(
   `Storybook visuals ${args.update ? "updated" : "passed"}: ` +
-  `${resolvedStories.length} ready story(s), ${jobs.length} capture(s), surface ${args.surface}.`
+  `${resolvedStories.length} ready story(s), ${jobs.length} capture(s), ` +
+  `surface ${args.surface}, platform ${capturePlatform}.`
 );
 
 function readyStories(document, previewKey) {
@@ -267,6 +276,10 @@ function sanitize(value) {
   return String(value).replace(/[^a-z0-9_.-]+/giu, "-");
 }
 
+function platformCapturePath(root, surface, platform) {
+  return path.posix.join(root, surface, platform);
+}
+
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
@@ -315,6 +328,14 @@ function runSelfTest() {
   const changed = comparePng(PNG.sync.write(first), PNG.sync.write(second), 0.1);
   assert.equal(changed.matches, false);
   assert.equal(changed.ratio, 0.5);
+  assert.equal(
+    platformCapturePath("design/visual_baselines", "admin", "darwin"),
+    "design/visual_baselines/admin/darwin"
+  );
+  assert.notEqual(
+    platformCapturePath("design/visual_baselines", "admin", "darwin"),
+    platformCapturePath("design/visual_baselines", "admin", "linux")
+  );
   const stories = [
     {componentId: "one", exportName: "One", storyPath: "One.stories.tsx"},
     {componentId: "two", exportName: "Two", storyPath: "Two.stories.tsx"},
@@ -331,8 +352,8 @@ Options:
   --surface website|admin|webui  Registry surface to capture.
   --storybook <path>             Built Storybook directory.
   --component <registry-id>      Limit to one ready registry component; repeatable.
-  --update                       Write committed baselines.
-  --check                        Compare against committed baselines (default).
+  --update                       Write committed baselines for the current platform.
+  --check                        Compare against current-platform baselines (default).
   --threshold <ratio>            Maximum changed-pixel ratio (default 0.001).
   --self-test                    Run deterministic pixel-comparison proof.
 `);

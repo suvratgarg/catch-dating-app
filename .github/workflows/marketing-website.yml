@@ -51,6 +51,12 @@ on:
       - "tool/host_discovery/**"
       - "tool/organizer_intake/**"
   workflow_dispatch:
+    inputs:
+      update_visual_baselines:
+        description: Capture Ubuntu visual baselines and upload them for review
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: marketing-website-${{ github.ref }}
@@ -62,7 +68,7 @@ permissions:
 jobs:
   validate:
     name: Validate marketing website
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
 
     steps:
@@ -117,7 +123,40 @@ jobs:
         run: npm --workspace catch-marketing run build:storybook
 
       - name: Run marketing and shared web UI visual regression
+        id: visual-check
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.update_visual_baselines }}
         run: npm --workspace catch-marketing run test:visual
+
+      - name: Capture marketing and shared web UI visual baselines
+        id: visual-update
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines }}
+        run: |
+          node tool/web/check_storybook_visuals.mjs --surface website --update
+          node tool/web/check_storybook_visuals.mjs --surface webui --update
+
+      - name: Upload marketing visual diagnostics
+        if: ${{ always() && steps.visual-check.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketing-visual-diagnostics-${{ github.run_id }}
+          path: |
+            artifacts/visual-actuals/website
+            artifacts/visual-actuals/webui
+            artifacts/visual-diffs/website
+            artifacts/visual-diffs/webui
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload marketing visual baselines
+        if: ${{ steps.visual-update.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketing-visual-baselines-${{ github.run_id }}
+          path: |
+            design/visual_baselines/website/linux
+            design/visual_baselines/webui/linux
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Run Storybook accessibility gate
         run: npm --workspace catch-marketing run test:storybook:a11y

@@ -55,6 +55,12 @@ on:
       - "tool/web/react_controller_test_targets.json"
       - "tool/organizer_intake/**"
   workflow_dispatch:
+    inputs:
+      update_visual_baselines:
+        description: Capture Ubuntu visual baselines and upload them for review
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: admin-website-${{ github.ref }}
@@ -66,7 +72,7 @@ permissions:
 jobs:
   validate:
     name: Validate admin website
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
 
     steps:
@@ -115,7 +121,34 @@ jobs:
         run: npm --workspace catch-admin run build:storybook
 
       - name: Run admin visual regression
+        id: visual-check
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.update_visual_baselines }}
         run: npm --workspace catch-admin run test:visual
+
+      - name: Capture admin visual baselines
+        id: visual-update
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines }}
+        run: node tool/web/check_storybook_visuals.mjs --surface admin --update
+
+      - name: Upload admin visual diagnostics
+        if: ${{ always() && steps.visual-check.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-visual-diagnostics-${{ github.run_id }}
+          path: |
+            artifacts/visual-actuals/admin
+            artifacts/visual-diffs/admin
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload admin visual baselines
+        if: ${{ steps.visual-update.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-visual-baselines-${{ github.run_id }}
+          path: design/visual_baselines/admin/linux
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Run Storybook accessibility gate
         run: npm --workspace catch-admin run test:storybook:a11y

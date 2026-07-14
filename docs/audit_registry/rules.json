@@ -2406,9 +2406,12 @@
         "website/**",
         "admin/**",
         "packages/web-ui/**",
-        "design/visual_baselines/**"
+        "design/visual_baselines/**",
+        "tool/web/check_storybook_visuals.mjs",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/marketing-website.yml"
       ],
-      "instruction": "Every Storybook registry entry marked ready must resolve to a built story and match committed desktop and mobile baselines with reduced motion, loaded fonts, and the configured pixel tolerance.",
+      "instruction": "Every Storybook registry entry marked ready must resolve to a built story and match committed desktop and mobile baselines for the current operating system with reduced motion, loaded fonts, and the configured pixel tolerance. Never compare Darwin-authored system-ui pixels against Linux; blocking CI uses reviewed Ubuntu 24.04 baselines and retains actual plus diff artifacts on failure.",
       "sunset_when": [
         "A replacement visual-regression service enforces the same registry-backed coverage"
       ],
