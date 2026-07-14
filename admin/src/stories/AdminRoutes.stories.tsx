@@ -36,10 +36,13 @@ import {EventPublishingWorkspace} from "../features/events/ui/EventPublishingScr
 import eventIntakeBridgeFixture from "../generated/eventIntakeBridge.json";
 import type {EventIntakeController} from "../features/intake/events/controllers/useEventIntakeController";
 import {EventIntakePreviewWorkspace} from "../features/intake/events/ui/EventIntakeWorkspace";
+import type {IntakeOperationsController} from "../features/intake/operations/controllers/useIntakeOperationsController";
+import {IntakeOperationsPreviewWorkspace} from "../features/intake/operations/ui/IntakeOperationsWorkspace";
 import organizerIntakeBridgeFixture from "../features/intake/organizer/generated/organizerIntakeBridge.json";
 import type {OrganizerIntakeController} from "../features/intake/organizer/controllers/useOrganizerIntakeController";
 import {OrganizerIntakeWorkspace} from "../features/intake/organizer/ui/OrganizerIntakeScreen";
 import {IntakeWorkspace} from "../features/intake/ui/IntakeWorkspaceScreen";
+import {sampleIntakeOperations} from "../shared/operations/sampleIntakeOperations";
 import {
   buildFinanceIssueReview,
   type FinanceIssueKind,
@@ -249,6 +252,13 @@ const eventIntakeController: EventIntakeController = {
   ) => {
     noop();
   },
+};
+const intakeOperationsController: IntakeOperationsController = {
+  data: sampleIntakeOperations(),
+  isLoading: false,
+  isLoadingMore: false,
+  loadMore: async () => false,
+  refresh: async () => true,
 };
 const organizerIntakeBridge =
   organizerIntakeBridgeFixture as unknown as OrganizerIntakeController["bridge"];
@@ -1480,6 +1490,14 @@ const renderOrganizerIntakeWorkspace = () => (
   </AdminWorkspace>
 );
 
+const renderIntakeOperationsWorkspace = () => (
+  <AdminWorkspace>
+    <IntakeOperationsPreviewWorkspace
+      controller={intakeOperationsController}
+    />
+  </AdminWorkspace>
+);
+
 const renderMarketingOpsWorkspace = () => (
   <AdminWorkspace>
     <MarketingOpsWorkspace controller={marketingOpsController} />
@@ -1497,6 +1515,7 @@ const renderIntakeWorkspace = () => (
     <IntakeWorkspace
       activeWorkspace="events"
       eventsContent={<EventIntakePreviewWorkspace controller={eventIntakeController} />}
+      operationsContent={<IntakeOperationsPreviewWorkspace controller={intakeOperationsController} />}
       organizersContent={<OrganizerIntakeWorkspace controller={organizerIntakeController} />}
       onWorkspaceChange={noop}
     />
@@ -1698,6 +1717,17 @@ export const OrganizerIntakeWorkspaceStory: Story = {
     },
   },
   render: renderOrganizerIntakeWorkspace,
+};
+
+export const IntakeOperationsWorkspaceStory: Story = {
+  name: "Supply Intake Automation Workspace",
+  parameters: {
+    catchComponent: {
+      id: "workspace_intake_operations",
+      states: ["default", "human-review", "read-only-boundary"],
+    },
+  },
+  render: renderIntakeOperationsWorkspace,
 };
 
 export const MarketingOpsRouteStory: Story = {

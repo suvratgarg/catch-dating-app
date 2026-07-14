@@ -1,6 +1,6 @@
 {
-  "version": "4.5.143",
-  "updated": "2026-07-05",
+  "version": "4.5.144",
+  "updated": "2026-07-14",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -300,6 +300,19 @@
       ],
       "skip_when": [
         "No backend write ownership or notification behavior is touched"
+      ]
+    },
+    "docs/operations_platform.md": {
+      "purpose": "Canonical architecture and safety boundary for durable, resumable business workflows; Supply Intake is the reference workflow, tool remains repository automation rather than workflow runtime, and the admin projection crosses into Firestore only through the trusted dry-run-first importer.",
+      "read_when": [
+        "Adding or changing a durable admin or agent-operated workflow",
+        "Changing operation runs, work items, leases, budgets, decisions, receipts, learning rules, or publication plans",
+        "Deciding whether behavior belongs under operations or tool",
+        "Activating source fetches, model calls, or public writes"
+      ],
+      "skip_when": [
+        "Only changing a stateless repository check, generator, migration, deploy helper, or data repair command",
+        "Only changing an ordinary request-response admin feature with no durable workflow state"
       ]
     },
     "docs/audit_registry/README.md": {

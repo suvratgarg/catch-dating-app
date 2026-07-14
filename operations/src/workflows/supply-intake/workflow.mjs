@@ -1,26 +1,64 @@
 import {hashValue, shortHash} from "../../platform/canonical-json.mjs";
-import {PRIMARY_STAGES, safeId, uniqueSorted} from "../../platform/contracts.mjs";
+import {
+  assertWorkItem as assertPlatformWorkItem,
+  MAX_WORK_ITEMS_PER_RUN,
+  safeId,
+  uniqueSorted,
+} from "../../platform/contracts.mjs";
 import {invariant} from "../../platform/errors.mjs";
 import {LegacyIntakeArtifactAdapter, stripArtifactData} from "./adapters/legacy-artifacts.mjs";
 import {loadSourceProfiles} from "./sources/index.mjs";
+import {
+  SUPPLY_INTAKE_ENTITY_KINDS,
+  SUPPLY_INTAKE_LIFECYCLE_SEMANTICS,
+  SUPPLY_INTAKE_LIFECYCLE_STATUSES,
+  SUPPLY_INTAKE_PRIMARY_STAGES,
+  SUPPLY_INTAKE_TRANSITIONS,
+} from "./definition.mjs";
+
+export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
+export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
+export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.1.0";
 
 export class SupplyIntakeWorkflow {
-  constructor({repoRoot, adapter = new LegacyIntakeArtifactAdapter({repoRoot})} = {}) {
-    this.workflowId = "supply-intake";
-    this.version = "0.1.0";
+  constructor({
+    repoRoot,
+    adapter = new LegacyIntakeArtifactAdapter({repoRoot}),
+    sourceProfilesLoader = loadSourceProfiles,
+  } = {}) {
+    this.workflowId = SUPPLY_INTAKE_WORKFLOW_ID;
+    this.version = SUPPLY_INTAKE_WORKFLOW_VERSION;
+    this.primaryStages = SUPPLY_INTAKE_PRIMARY_STAGES;
+    this.lifecycleStatuses = SUPPLY_INTAKE_LIFECYCLE_STATUSES;
+    this.lifecycleSemantics = SUPPLY_INTAKE_LIFECYCLE_SEMANTICS;
+    this.entityKinds = SUPPLY_INTAKE_ENTITY_KINDS;
+    this.allowedTransitions = SUPPLY_INTAKE_TRANSITIONS;
     this.adapter = adapter;
+    this.sourceProfilesLoader = sourceProfilesLoader;
   }
 
   async createPlan({market = "mumbai", through, now}) {
     invariant(/^[a-z][a-z0-9-]{1,49}$/.test(market), "INVALID_MARKET", "Market must be a lowercase slug.", {market});
     invariant(/^\d{4}-\d{2}-\d{2}$/.test(through ?? ""), "INVALID_THROUGH", "--through YYYY-MM-DD is required.", {through});
     const generatedAt = new Date(now).toISOString();
-    const profiles = await loadSourceProfiles();
+    const profiles = await this.sourceProfilesLoader();
     const artifactSnapshotWithData = await this.adapter.snapshot({market});
     const artifactSnapshot = stripArtifactData(artifactSnapshotWithData);
-    const plannedItems = Object.values(artifactSnapshot.artifacts).reduce((sum, artifact) =>
-      sum + Object.values(artifact.counts ?? {}).filter(Number.isFinite).reduce((inner, count) => inner + count, 0), 0
+    const plannedItems = plannedWorkItemCount(artifactSnapshot, profiles.length);
+    invariant(
+      plannedItems <= MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN,
+      "RUN_SHARD_REQUIRED",
+      `Supply Intake plans are limited to ${MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN} work items; split the source scope before running.`,
+      {plannedItems, maximum: MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN}
     );
+    const sourceProfiles = profiles.map(snapshotSourceProfile);
+    const policy = {
+      staleAfterHours: 168,
+      randomAuditBasisPoints: 10_000,
+      autoPublicationEnabled: false,
+      editorialSourcesDiscoveryOnly: true,
+    };
+    const promotionPolicyHash = hashValue({workflowPolicy: policy, sourceProfiles});
     const basis = {
       schemaVersion: 1,
       workflowId: this.workflowId,
@@ -28,12 +66,19 @@ export class SupplyIntakeWorkflow {
       market,
       through,
       mode: "shadow",
+      workflowContract: {
+        primaryStages: [...this.primaryStages],
+        lifecycleStatuses: [...this.lifecycleStatuses],
+        lifecycleSemantics: copyLifecycleSemantics(
+          this.lifecycleSemantics
+        ),
+        entityKinds: [...this.entityKinds],
+        allowedTransitions: this.allowedTransitions,
+      },
       artifactSnapshot,
-      sourceProfiles: profiles.map((profile) => ({
-        sourceProfileId: profile.sourceProfileId,
-        versionHash: hashValue(profile),
-        status: profile.status,
-      })),
+      sourceProfiles,
+      policy,
+      promotionPolicyHash,
       capabilities: {network: false, modelCalls: false, publicWrites: false, ruleDeployment: false},
     };
     const basisHash = hashValue(basis);
@@ -43,7 +88,7 @@ export class SupplyIntakeWorkflow {
       basisHash,
       generatedAt,
       budgets: {
-        workItems: Math.max(1_000, plannedItems + profiles.length),
+        workItems: Math.max(1_000, plannedItems),
         networkRequests: 0,
         modelCalls: 0,
         modelInputTokens: 0,
@@ -51,20 +96,56 @@ export class SupplyIntakeWorkflow {
         modelCostMicros: 0,
         publicWrites: 0,
       },
-      policy: {
-        staleAfterHours: 168,
-        randomAuditBasisPoints: 10_000,
-        autoPublicationEnabled: false,
-        editorialSourcesDiscoveryOnly: true,
-      },
       guardrails: [
         "The plan reads reviewed local artifacts only.",
         "No network, model, public write, scheduler, or rule deployment capability is granted.",
         "Editorial sources are discovery-only until an official source is resolved.",
       ],
     };
-    const {generatedAt: _generatedAt, ...hashablePlan} = plan;
-    return {...plan, planContentHash: hashValue(hashablePlan)};
+    return finalizePlan(plan);
+  }
+
+  createReconciliationPlan(sourceRun, {now}) {
+    invariant(sourceRun?.workflowId === this.workflowId,
+      "INVALID_RECONCILIATION_SOURCE",
+      "A Supply Intake reconciliation must start from a Supply Intake run.");
+    this.assertPlan(sourceRun.plan);
+    invariant(sourceRun.status === "completed" &&
+      typeof sourceRun.inventoryHash === "string",
+    "INVALID_RECONCILIATION_SOURCE",
+    "Reconciliation requires an immutable completed source snapshot.");
+    const generatedAt = new Date(now).toISOString();
+    const window = generatedAt.slice(0, 10);
+    const reconciliation = {
+      schemaVersion: 1,
+      kind: "reconciliation_snapshot",
+      sourceRunId: sourceRun.runId,
+      sourcePlanHash: sourceRun.planHash,
+      sourceInventoryHash: sourceRun.inventoryHash,
+      window,
+    };
+    const basisHash = hashValue({
+      workflowId: this.workflowId,
+      workflowVersion: this.version,
+      reconciliation,
+    });
+    const {
+      planContentHash: _sourcePlanContentHash,
+      reconciliation: _priorReconciliation,
+      ...sourcePlan
+    } = sourceRun.plan;
+    return finalizePlan({
+      ...sourcePlan,
+      planId: `supply-reconcile-${window}-${basisHash.slice(0, 12)}`,
+      basisHash,
+      generatedAt,
+      reconciliation,
+      budgets: {...sourceRun.plan.budgets},
+      guardrails: [
+        ...sourceRun.plan.guardrails,
+        "Reconciliation creates a new immutable run snapshot; it never edits its source run.",
+      ],
+    });
   }
 
   assertPlan(plan) {
@@ -72,18 +153,95 @@ export class SupplyIntakeWorkflow {
     invariant(plan.workflowId === this.workflowId, "INVALID_PLAN", "Plan belongs to another workflow.");
     invariant(plan.workflowVersion === this.version, "INVALID_PLAN", "Plan workflow version is stale.");
     invariant(plan.mode === "shadow", "UNSAFE_MODE", "Only shadow mode is supported.");
-    invariant(PRIMARY_STAGES.length === 4, "INVALID_STAGE_CONTRACT", "Supply Intake must expose exactly four primary stages.");
-    invariant(!plan.capabilities.network && !plan.capabilities.modelCalls && !plan.capabilities.publicWrites, "UNSAFE_CAPABILITY", "Shadow plan grants an unsafe capability.");
+    invariant(
+      hashValue(plan.workflowContract) === hashValue({
+        primaryStages: this.primaryStages,
+        lifecycleStatuses: this.lifecycleStatuses,
+        lifecycleSemantics: this.lifecycleSemantics,
+        entityKinds: this.entityKinds,
+        allowedTransitions: this.allowedTransitions,
+      }),
+      "INVALID_STAGE_CONTRACT",
+      "Supply Intake workflow contract is missing or stale."
+    );
+    invariant(
+      !plan.capabilities.network &&
+        !plan.capabilities.modelCalls &&
+        !plan.capabilities.publicWrites &&
+        !plan.capabilities.ruleDeployment,
+      "UNSAFE_CAPABILITY",
+      "Shadow plan grants an unsafe capability."
+    );
+    invariant(
+      plan.promotionPolicyHash === hashValue({workflowPolicy: plan.policy, sourceProfiles: plan.sourceProfiles}),
+      "INVALID_PLAN",
+      "Plan promotion policy snapshot is stale or invalid."
+    );
+    if (plan.reconciliation !== undefined) {
+      invariant(
+        plan.reconciliation?.schemaVersion === 1 &&
+          plan.reconciliation.kind === "reconciliation_snapshot" &&
+          typeof plan.reconciliation.sourceRunId === "string" &&
+          typeof plan.reconciliation.sourcePlanHash === "string" &&
+          typeof plan.reconciliation.sourceInventoryHash === "string" &&
+          /^\d{4}-\d{2}-\d{2}$/.test(plan.reconciliation.window ?? "") &&
+          plan.reconciliation.window === plan.generatedAt.slice(0, 10) &&
+          plan.basisHash === hashValue({
+            workflowId: this.workflowId,
+            workflowVersion: this.version,
+            reconciliation: plan.reconciliation,
+          }),
+        "INVALID_RECONCILIATION_PLAN",
+        "Reconciliation plan lineage is missing or stale."
+      );
+    }
+    const plannedItems = plannedWorkItemCount(
+      plan.artifactSnapshot,
+      Array.isArray(plan.sourceProfiles) ? plan.sourceProfiles.length : NaN
+    );
+    invariant(
+      plannedItems <= MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN,
+      "RUN_SHARD_REQUIRED",
+      `Supply Intake plans are limited to ${MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN} work items; split the source scope before running.`,
+      {plannedItems, maximum: MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN}
+    );
+    invariant(
+      Number.isSafeInteger(plan.budgets?.workItems) &&
+        plan.budgets.workItems >= plannedItems &&
+        plan.budgets.workItems <= MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN,
+      "RUN_SHARD_REQUIRED",
+      "The plan work-item budget must cover its inventory without exceeding the canonical shard limit.",
+      {
+        plannedItems,
+        workItemBudget: plan.budgets?.workItems ?? null,
+        maximum: MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN,
+      }
+    );
     invariant(typeof plan.planId === "string" && plan.planId.includes(plan.basisHash.slice(0, 12)), "INVALID_PLAN", "Plan id is not bound to its basis hash.");
     const {planContentHash, generatedAt: _generatedAt, ...content} = plan;
     invariant(planContentHash === hashValue(content), "INVALID_PLAN", "Plan content hash is stale or invalid.");
     return plan;
   }
 
+  assertWorkItem(item) {
+    assertPlatformWorkItem(item);
+    invariant(item.workflowId === this.workflowId, "INVALID_WORK_ITEM",
+      "Work item belongs to another workflow.");
+    invariant(this.primaryStages.includes(item.primaryStage),
+      "INVALID_WORK_ITEM", "Work item has an invalid Supply Intake stage.");
+    invariant(this.lifecycleStatuses.includes(item.lifecycleStatus),
+      "INVALID_WORK_ITEM",
+      "Work item has an invalid Supply Intake lifecycle status.");
+    invariant(this.entityKinds.includes(item.entityKind),
+      "INVALID_WORK_ITEM",
+      "Work item has an invalid Supply Intake entity kind.");
+    return item;
+  }
+
   async project(plan, {runId, now}) {
     this.assertPlan(plan);
     const artifacts = await this.adapter.reload(plan.artifactSnapshot);
-    const profiles = await loadSourceProfiles();
+    const profiles = await this.sourceProfilesLoader();
     const plannedProfileHashes = new Map(plan.sourceProfiles.map((profile) => [profile.sourceProfileId, profile.versionHash]));
     for (const profile of profiles) {
       invariant(
@@ -125,6 +283,34 @@ export class SupplyIntakeWorkflow {
     return reviewSourceProfile(item, now);
   }
 
+  async promotionEligibility(item, {run} = {}) {
+    const blockers = [];
+    if (!["event", "organizer"].includes(item.entityKind)) {
+      blockers.push("entity_kind_not_publishable");
+    }
+    if (item.blockers.length > 0) blockers.push("work_item_has_blockers");
+    if (item.owner === "human" || item.taskFlags.includes("human_review_required")) {
+      blockers.push("human_review_required");
+    }
+    const profile = run?.plan?.sourceProfiles?.find((candidate) =>
+      candidate.sourceProfileId === item.source?.sourceProfileId);
+    if (item.entityKind === "event") {
+      if (!profile) blockers.push("source_policy_snapshot_missing");
+      if (profile?.publication?.autoEligible !== true) {
+        blockers.push("source_not_auto_eligible");
+      }
+      if (profile?.publication?.discoveryOnly || profile?.publication?.requiresOfficialSource) {
+        blockers.push("official_source_policy_required");
+      }
+    }
+    return {eligible: blockers.length === 0, blockers: uniqueSorted(blockers)};
+  }
+
+  promotionCandidates(items) {
+    return items.filter((item) =>
+      item.primaryStage === "ready" && item.lifecycleStatus === "active");
+  }
+
   reconcile(item, {now}) {
     const reasons = [];
     const taskFlags = [];
@@ -141,13 +327,59 @@ export class SupplyIntakeWorkflow {
       reasons.push("evidence_stale");
     }
     return {
-      changed: lifecycleStatus !== item.lifecycleStatus || taskFlags.some((flag) => !item.taskFlags.includes(flag)),
+      changed: lifecycleStatus !== item.lifecycleStatus ||
+        taskFlags.some((flag) => !item.taskFlags.includes(flag)) ||
+        blockers.some((blocker) => !item.blockers.includes(blocker)) ||
+        (lifecycleStatus !== "active" &&
+          (item.owner === "human" ||
+            item.taskFlags.includes("human_review_required") ||
+            item.blockers.includes("human_review_required"))),
       lifecycleStatus,
       taskFlags,
       blockers,
       reasons,
     };
   }
+}
+
+function copyLifecycleSemantics(semantics) {
+  return {
+    activeStatuses: [...semantics.activeStatuses],
+    publishedStatuses: [...semantics.publishedStatuses],
+    expiredStatuses: [...semantics.expiredStatuses],
+  };
+}
+
+function plannedWorkItemCount(artifactSnapshot, sourceProfileCount) {
+  const eventCounts = artifactSnapshot?.artifacts?.eventIntakeBridge?.counts ?? {};
+  const organizerCounts = artifactSnapshot?.artifacts?.organizerPublicationPackets?.counts ?? {};
+  const counts = [
+    eventCounts.sourceProfiles,
+    eventCounts.sourceResults,
+    eventCounts.eventCandidates,
+    organizerCounts.organizers,
+    sourceProfileCount,
+  ].map((count) => count ?? 0);
+  invariant(
+    counts.every((count) => Number.isSafeInteger(count) && count >= 0),
+    "INVALID_PLAN",
+    "Planned work-item counts must be non-negative safe integers."
+  );
+  return counts.reduce((sum, count) => sum + count, 0);
+}
+
+function snapshotSourceProfile(profile) {
+  return {
+    sourceProfileId: profile.sourceProfileId,
+    versionHash: hashValue(profile),
+    status: profile.status,
+    publication: {
+      autoEligible: profile.publication?.autoEligible === true,
+      discoveryOnly: profile.publication?.discoveryOnly === true,
+      requiresOfficialSource: profile.publication?.requiresOfficialSource === true,
+      requiresPolicyApproval: profile.publication?.requiresPolicyApproval === true,
+    },
+  };
 }
 
 function baseWorkItem({runId, now, market, entityKind, id, title, source, evidence, raw, observedAt = null, expiresAt = null}) {
@@ -409,7 +641,10 @@ function outcome(item, {primaryStage, lifecycleStatus = "active", blockers, task
     primaryStage,
     lifecycleStatus,
     blockers: uniqueSorted(blockers),
-    taskFlags: uniqueSorted(taskFlags),
+    taskFlags: uniqueSorted([
+      ...taskFlags,
+      ...(owner === "human" ? ["human_review_required"] : []),
+    ]),
     owner,
     reason,
     confidence: {
@@ -466,6 +701,11 @@ function endOfDate(value) {
 function addHours(value, hours) {
   const parsed = Date.parse(value);
   return Number.isNaN(parsed) ? null : new Date(parsed + hours * 60 * 60 * 1000).toISOString();
+}
+
+function finalizePlan(plan) {
+  const {generatedAt: _generatedAt, ...hashablePlan} = plan;
+  return {...plan, planContentHash: hashValue(hashablePlan)};
 }
 
 function dedupeItems(items) {

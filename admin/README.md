@@ -265,6 +265,12 @@ payments, or waitlists. Organizer Intake records review, curation, policy, and
 location decisions; canonical organizer publication, route indexing, and claim
 handoff still pass through promotion tooling and the Organizers workspace.
 
+The third Intake workspace, Automation, reads canonical Supply Intake runs and
+work items through `adminListIntakeOperations`. It mirrors the persisted
+Incoming, Verify, Resolve, and Ready stages and highlights the human exception
+queue. It is read-only in both sample and live mode: the browser cannot request
+a run, fetch a source, call a model, deploy a rule, or publish a listing.
+
 ```bash
 node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs \
   --week 2026-06-22 \

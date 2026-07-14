@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  operationRunSchema,
+  operationWorkItemSchema,
   profilePromptAnswerSchema,
   photoPromptAnswerSchema,
   profilePhotoSchema,
@@ -82,6 +84,7 @@ import {
   adminDecideOrganizerIntakeCallablePayloadSchema,
   adminRecordOrganizerCurationCallablePayloadSchema,
   adminRecordEventIntakeReviewDecisionCallablePayloadSchema,
+  adminListIntakeOperationsCallablePayloadSchema,
   adminDecideOrganizerEventCandidateCallablePayloadSchema,
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
   adminResolveOrganizerEventLocationCallablePayloadSchema,
@@ -179,6 +182,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateOperationRun = ajv.compile(operationRunSchema);
+export const validateOperationWorkItem = ajv.compile(operationWorkItemSchema);
 export const validateProfilePromptAnswer = ajv.compile(profilePromptAnswerSchema);
 export const validatePhotoPromptAnswer = ajv.compile(photoPromptAnswerSchema);
 export const validateProfilePhoto = ajv.compile(profilePhotoSchema);
@@ -258,6 +263,7 @@ export const validateAdminDecideClubClaimCallablePayload = ajv.compile(adminDeci
 export const validateAdminDecideOrganizerIntakeCallablePayload = ajv.compile(adminDecideOrganizerIntakeCallablePayloadSchema);
 export const validateAdminRecordOrganizerCurationCallablePayload = ajv.compile(adminRecordOrganizerCurationCallablePayloadSchema);
 export const validateAdminRecordEventIntakeReviewDecisionCallablePayload = ajv.compile(adminRecordEventIntakeReviewDecisionCallablePayloadSchema);
+export const validateAdminListIntakeOperationsCallablePayload = ajv.compile(adminListIntakeOperationsCallablePayloadSchema);
 export const validateAdminDecideOrganizerEventCandidateCallablePayload = ajv.compile(adminDecideOrganizerEventCandidateCallablePayloadSchema);
 export const validateAdminDecideOrganizerPolicyGapCallablePayload = ajv.compile(adminDecideOrganizerPolicyGapCallablePayloadSchema);
 export const validateAdminResolveOrganizerEventLocationCallablePayload = ajv.compile(adminResolveOrganizerEventLocationCallablePayloadSchema);

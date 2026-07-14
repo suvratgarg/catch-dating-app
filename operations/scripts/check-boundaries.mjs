@@ -21,6 +21,57 @@ if (isMain()) {
 
 export async function checkBoundaries({repoRoot, baseline}) {
   const findings = [];
+  const toolFiles = await codeFiles(
+    path.join(repoRoot, baseline.toolRoot ?? "tool"),
+    baseline.codeExtensions
+  );
+  const markerGroups = new Map();
+  for (const file of toolFiles) {
+    const fileRelative = relative(repoRoot, file);
+    const content = await fs.readFile(file, "utf8");
+    for (const forbidden of baseline.forbiddenLegacyImports) {
+      if (content.includes(forbidden)) {
+        findings.push({
+          id: "tool-imports-operations-runtime",
+          path: fileRelative,
+          token: forbidden,
+          message: "Durable business workflows belong under operations/, not tool/.",
+        });
+      }
+    }
+    const matchedMarkers = (baseline.durableWorkflowMarkers ?? [])
+      .filter((marker) => content.includes(marker));
+    if (matchedMarkers.length > 0) {
+      const group = firstToolSubtree(fileRelative);
+      const evidence = markerGroups.get(group) ?? {
+        markers: new Set(),
+        paths: new Set(),
+      };
+      matchedMarkers.forEach((marker) => evidence.markers.add(marker));
+      evidence.paths.add(fileRelative);
+      markerGroups.set(group, evidence);
+    }
+    if (matchedMarkers.length >=
+        (baseline.durableWorkflowMarkerThreshold ?? 2)) {
+      findings.push({
+        id: "durable-workflow-markers-under-tool",
+        path: relative(repoRoot, file),
+        markers: matchedMarkers,
+        message: "Business-workflow orchestration must be implemented under operations/.",
+      });
+    }
+  }
+  for (const [toolSubtree, evidence] of markerGroups) {
+    if (evidence.markers.size <
+        (baseline.durableWorkflowMarkerThreshold ?? 2)) continue;
+    findings.push({
+      id: "durable-workflow-markers-under-tool-root",
+      path: toolSubtree,
+      markers: [...evidence.markers].sort(),
+      evidencePaths: [...evidence.paths].sort(),
+      message: "Split business-workflow orchestration must be implemented under operations/.",
+    });
+  }
   for (const legacyRoot of baseline.legacyRoots) {
     const files = await codeFiles(path.join(repoRoot, legacyRoot.path), baseline.codeExtensions);
     if (files.length > legacyRoot.codeFileCeiling) {
@@ -31,19 +82,6 @@ export async function checkBoundaries({repoRoot, baseline}) {
         actual: files.length,
         message: "New runtime code belongs under operations/, not a legacy tool workflow.",
       });
-    }
-    for (const file of files) {
-      const content = await fs.readFile(file, "utf8");
-      for (const forbidden of baseline.forbiddenLegacyImports) {
-        if (content.includes(forbidden)) {
-          findings.push({
-            id: "legacy-imports-operations-runtime",
-            path: relative(repoRoot, file),
-            token: forbidden,
-            message: "Legacy tools are adapter inputs and must not become an operations runtime host.",
-          });
-        }
-      }
     }
   }
 
@@ -71,6 +109,18 @@ export async function checkBoundaries({repoRoot, baseline}) {
         message: "Operations may read legacy JSON artifacts but must not import executable tool code.",
       });
     }
+    const loaderKinds = [];
+    if (/\bimport\s*\(/u.test(content)) loaderKinds.push("dynamic_import");
+    if (/(?:^|[^\w$])(?:module\.)?require\s*\(/u.test(content)) loaderKinds.push("commonjs_require");
+    if (/\bcreateRequire\b/u.test(content)) loaderKinds.push("create_require");
+    if (loaderKinds.length > 0) {
+      findings.push({
+        id: "operations-executable-loader-not-allowed",
+        path: fileRelative,
+        loaderKinds,
+        message: "Operations runtime dependencies must use statically inspectable ESM imports.",
+      });
+    }
   }
   return {
     schemaVersion: 1,
@@ -79,6 +129,7 @@ export async function checkBoundaries({repoRoot, baseline}) {
     findings,
     checked: {
       legacyRoots: baseline.legacyRoots.length,
+      toolCodeFiles: toolFiles.length,
       operationsSourceFiles: operationFiles.length,
     },
   };
@@ -106,6 +157,11 @@ async function codeFiles(root, extensions) {
 
 function relative(root, file) {
   return path.relative(root, file).split(path.sep).join("/");
+}
+
+function firstToolSubtree(file) {
+  const parts = file.split("/");
+  return parts.length > 2 ? parts.slice(0, 2).join("/") : parts[0];
 }
 
 function valueAfter(argv, flag) {

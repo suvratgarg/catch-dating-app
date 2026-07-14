@@ -2,6 +2,708 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const operationRunSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/run.schema.json",
+  "title": "OperationRun",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "workflowId",
+    "revision",
+    "mode",
+    "status",
+    "scope",
+    "rulesetVersion",
+    "policyVersion",
+    "inputHash",
+    "budgets",
+    "counters",
+    "checkpoint",
+    "createdAt",
+    "updatedAt",
+    "startedAt",
+    "finishedAt",
+    "failure",
+    "metadata"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "workflowId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "shadow",
+        "assisted",
+        "autonomous"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "queued",
+        "running",
+        "paused",
+        "completed",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": true,
+      "maxProperties": 40
+    },
+    "rulesetVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "policyVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "inputHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxWorkItems",
+        "maxModelCalls",
+        "maxModelTokens",
+        "maxCostMicros",
+        "deadlineAt"
+      ],
+      "properties": {
+        "maxWorkItems": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "maxModelCalls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxModelTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxCostMicros": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deadlineAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "counters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "discovered",
+        "processed",
+        "modelCalls",
+        "modelTokens",
+        "costMicros",
+        "escalated",
+        "published",
+        "failed"
+      ],
+      "properties": {
+        "discovered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "processed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "modelCalls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "modelTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "costMicros": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "escalated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "published": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lastSequence",
+        "cursor"
+      ],
+      "properties": {
+        "lastSequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "startedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "finishedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "failure": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z][a-z0-9_.:-]*$"
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "maxProperties": 40
+    }
+  }
+} as const;
+
+export const operationWorkItemSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/work_item.schema.json",
+  "title": "OperationWorkItem",
+  "description": "One exclusively staged unit of work. Task flags are orthogonal and may overlap.",
+  "type": "object",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "lifecycleStatus": {
+            "const": "terminal"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "not": {
+              "const": "published"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lifecycleStatus": {
+            "const": "published"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "outcome": {
+            "const": "published"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lifecycleStatus": {
+            "enum": [
+              "queued",
+              "in_progress",
+              "waiting",
+              "ready"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "outcome": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          {
+            "required": [
+              "blockerCodes"
+            ],
+            "properties": {
+              "blockerCodes": {
+                "contains": {
+                  "const": "human_review_required"
+                }
+              }
+            }
+          },
+          {
+            "required": [
+              "normalizedPayload"
+            ],
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "owner"
+                ],
+                "properties": {
+                  "owner": {
+                    "const": "human"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "taskFlags": {
+            "contains": {
+              "const": "human_review_required"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "lifecycleStatus"
+        ],
+        "properties": {
+          "lifecycleStatus": {
+            "enum": [
+              "published",
+              "terminal"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "taskFlags": {
+            "not": {
+              "contains": {
+                "const": "human_review_required"
+              }
+            }
+          },
+          "blockerCodes": {
+            "not": {
+              "contains": {
+                "const": "human_review_required"
+              }
+            }
+          },
+          "normalizedPayload": {
+            "not": {
+              "required": [
+                "owner"
+              ],
+              "properties": {
+                "owner": {
+                  "const": "human"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "required": [
+    "schemaVersion",
+    "workItemId",
+    "workflowId",
+    "runId",
+    "entityKind",
+    "externalKey",
+    "revision",
+    "candidateHash",
+    "primaryStage",
+    "lifecycleStatus",
+    "outcome",
+    "taskFlags",
+    "blockerCodes",
+    "warningCodes",
+    "priority",
+    "attemptCount",
+    "evidenceRefs",
+    "fieldProvenance",
+    "normalizedPayload",
+    "decisionId",
+    "publicationPlanId",
+    "createdAt",
+    "updatedAt",
+    "staleAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "workItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "workflowId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "entityKind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "externalKey": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "candidateHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "primaryStage": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "lifecycleStatus": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "in_progress",
+        "waiting",
+        "ready",
+        "published",
+        "terminal"
+      ]
+    },
+    "outcome": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "taskFlags": {
+      "type": "array",
+      "maxItems": 40,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "pattern": "^[a-z][a-z0-9_.:-]*$"
+      }
+    },
+    "blockerCodes": {
+      "type": "array",
+      "maxItems": 40,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "pattern": "^[a-z][a-z0-9_.:-]*$"
+      }
+    },
+    "warningCodes": {
+      "type": "array",
+      "maxItems": 40,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "pattern": "^[a-z][a-z0-9_.:-]*$"
+      }
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "attemptCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifactId",
+          "contentHash",
+          "observedAt",
+          "locator"
+        ],
+        "properties": {
+          "artifactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locator": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          }
+        }
+      }
+    },
+    "fieldProvenance": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "artifactId",
+          "contentHash",
+          "locator",
+          "extractedBy",
+          "extractorVersion",
+          "confidence"
+        ],
+        "properties": {
+          "field": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "artifactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "locator": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "extractedBy": {
+            "type": "string",
+            "enum": [
+              "deterministic",
+              "model",
+              "human"
+            ]
+          },
+          "extractorVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "confidence": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "normalizedPayload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "decisionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publicationPlanId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "staleAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+} as const;
+
 export const profilePromptAnswerSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/embedded/profile_prompt_answer.schema.json",
@@ -19652,6 +20354,144 @@ export const adminRecordEventIntakeReviewDecisionCallablePayloadSchema: Record<s
           "type": "boolean"
         }
       }
+    }
+  }
+} as const;
+
+export const adminListIntakeOperationsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_intake_operations_payload.schema.json",
+  "title": "AdminListIntakeOperationsCallablePayload",
+  "description": "Read-only filters for the durable Supply Intake operations inventory. This callable never requests or executes a run.",
+  "type": "object",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "humanReviewRequired"
+        ],
+        "properties": {
+          "humanReviewRequired": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "primaryStage": {
+            "type": "null"
+          },
+          "entityKind": {
+            "type": "null"
+          },
+          "lifecycleStatus": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "workflowId": {
+      "type": "string",
+      "enum": [
+        "supply-intake"
+      ]
+    },
+    "runId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "primaryStage": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "incoming",
+        "verify",
+        "resolve",
+        "ready",
+        null
+      ]
+    },
+    "entityKind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "event",
+        "organizer",
+        "source_result",
+        "source_profile",
+        null
+      ]
+    },
+    "lifecycleStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "queued",
+        "in_progress",
+        "waiting",
+        "ready",
+        "published",
+        "terminal",
+        null
+      ]
+    },
+    "runStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "planned",
+        "queued",
+        "running",
+        "paused",
+        "completed",
+        "failed",
+        "cancelled",
+        null
+      ]
+    },
+    "humanReviewRequired": {
+      "type": "boolean",
+      "description": "When true, returns only work items carrying the canonical human_review_required task flag."
+    },
+    "runLimit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 25
+    },
+    "workItemLimit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "runCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "workItemCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
     }
   }
 } as const;

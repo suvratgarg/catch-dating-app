@@ -20,6 +20,12 @@ import externalEventImportExecutionPlanJson
   from "../../generated/externalEventImportExecutionPlan.json";
 import externalEventImportPlanJson
   from "../../generated/externalEventImportPlan.json";
+import {sampleIntakeOperations} from
+  "../operations/sampleIntakeOperations";
+import type {
+  AdminListIntakeOperationsPayload,
+  AdminListIntakeOperationsResponse,
+} from "../operations/operationsTypes";
 import {
   AdminAssignSafetyTriageItemPayload,
   AdminAssignSafetyTriageItemResponse,
@@ -790,6 +796,22 @@ export async function loadEventIntakeDashboard():
     "adminGetEventIntakeDashboard"
   );
   const result = await callable({});
+  return result.data;
+}
+
+export async function listIntakeOperations(
+  payload: AdminListIntakeOperationsPayload = {}
+): Promise<AdminListIntakeOperationsResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+    return sampleIntakeOperations(payload);
+  }
+
+  const callable = httpsCallable<
+    AdminListIntakeOperationsPayload,
+    AdminListIntakeOperationsResponse
+  >(functions, "adminListIntakeOperations");
+  const result = await callable(payload);
   return result.data;
 }
 

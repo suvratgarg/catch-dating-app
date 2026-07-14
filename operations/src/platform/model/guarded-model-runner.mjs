@@ -48,11 +48,11 @@ export class GuardedModelRunner {
       });
     }
     invariant(this.provider?.run, "MODEL_PROVIDER_MISSING", "An enabled model runner requires a provider.");
-    this.budget.consume({
+    const reservation = this.budget.reserve({
       modelCalls: 1,
-      modelInputTokens: request.estimatedInputTokens ?? 0,
-      modelOutputTokens: request.maxOutputTokens ?? 0,
-      modelCostMicros: request.maxCostMicros ?? 0,
+      modelInputTokens: requiredEstimate(request, "estimatedInputTokens"),
+      modelOutputTokens: requiredEstimate(request, "maxOutputTokens"),
+      modelCostMicros: requiredEstimate(request, "maxCostMicros"),
     }, {reason: `${request.task}:${request.promptVersion}`});
     const response = await this.provider.run({
       task: request.task,
@@ -60,7 +60,16 @@ export class GuardedModelRunner {
       input: request.input,
       outputSchema: request.outputSchema,
       modelId: this.modelId,
+      maxOutputTokens: request.maxOutputTokens,
+      maxCostMicros: request.maxCostMicros,
     });
+    const usage = validateUsage(response?.usage);
+    this.budget.reconcileReservation(reservation, {
+      modelCalls: 1,
+      modelInputTokens: usage.inputTokens,
+      modelOutputTokens: usage.outputTokens,
+      modelCostMicros: usage.costMicros,
+    }, {reason: `${request.task}:${request.promptVersion}`});
     const validation = validateJsonSchema(request.outputSchema, response.output);
     if (!validation.valid) {
       throw new OperationsError("MODEL_OUTPUT_INVALID", "Model output failed schema validation.", {
@@ -76,12 +85,40 @@ export class GuardedModelRunner {
         modelId: this.modelId,
         cacheKey,
         cacheHit: false,
-        usage: response.usage ?? null,
+        usage,
       },
     };
     await this.cache.put(cacheKey, record);
     return {output: record.output, provenance: record.provenance};
   }
+}
+
+function requiredEstimate(request, key) {
+  const value = request[key];
+  invariant(
+    Number.isSafeInteger(value) && value >= 0,
+    "MODEL_BUDGET_ESTIMATE_REQUIRED",
+    `${key} must be an explicit non-negative safe integer.`,
+    {key, value}
+  );
+  return value;
+}
+
+function validateUsage(usage) {
+  invariant(usage && typeof usage === "object", "MODEL_USAGE_REQUIRED", "Model providers must return usage.");
+  for (const key of ["inputTokens", "outputTokens", "costMicros"]) {
+    invariant(
+      Number.isSafeInteger(usage[key]) && usage[key] >= 0,
+      "MODEL_USAGE_INVALID",
+      `Model usage ${key} must be a non-negative safe integer.`,
+      {key, value: usage[key]}
+    );
+  }
+  return {
+    inputTokens: usage.inputTokens,
+    outputTokens: usage.outputTokens,
+    costMicros: usage.costMicros,
+  };
 }
 
 export function modelCachePort(store) {

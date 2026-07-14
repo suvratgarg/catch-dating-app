@@ -29,6 +29,7 @@ export interface WorkItemListQuery {
   primaryStage?: WorkItemPrimaryStage;
   entityKind?: string;
   lifecycleStatus?: WorkItemLifecycleStatus;
+  humanReviewRequired?: boolean;
   limit: number;
   cursor?: string | null;
 }

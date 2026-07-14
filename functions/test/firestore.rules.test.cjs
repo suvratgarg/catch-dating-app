@@ -2633,6 +2633,29 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps durable operations records server-owned", async () => {
+      const collections = [
+        "operationRuns",
+        "operationWorkItems",
+        "operationActionReceipts",
+        "operationDecisions",
+        "operationLeases",
+        "operationPublicationPlans",
+        "operationRuleProposals",
+        "operationRuleEvaluations",
+      ];
+      for (const collectionName of collections) {
+        await seed([collectionName, "record-1"], {schemaVersion: 1});
+        const reference = doc(
+          authedDb("user-1"),
+          collectionName,
+          "record-1",
+        );
+        await assertFails(getDoc(reference));
+        await assertFails(setDoc(reference, {schemaVersion: 1}));
+      }
+    });
+
     it("hides blocked matches from participants", async () => {
       await seed(["matches", "match-1"], {
         user1Id: "user-1",

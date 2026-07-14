@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 4,
+  "version": 5,
   "updated": "2026-07-14",
   "owner": "web_surface_architecture",
   "statuses": {
@@ -42,6 +42,11 @@
     {
       "source": "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
       "test": "admin/src/features/intake/events/controllers/useEventIntakeController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
+      "test": "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
       "status": "required"
     },
     {

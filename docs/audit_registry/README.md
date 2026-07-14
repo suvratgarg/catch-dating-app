@@ -1,6 +1,6 @@
 ---
 doc_id: audit_registry
-version: 2.6.4
+version: 2.6.5
 updated: 2026-07-14
 owner: recursive_audit_loop
 status: active
@@ -41,9 +41,10 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `new_widget_inventory_scan.json` | Generated report comparing the working tree to a base ref for newly added widgets, private widget classes, widget-returning helpers, and Widgetbook/catalog coverage gaps. |
 | `archive/` | Historical detail that should be searched only when a debt id or rule requires it. |
 
-The inventory includes native Android, iOS, macOS, and Flutter web files in
-addition to Dart, tests, tooling, design, and documentation, so release identity
-changes receive the same pass history as application code.
+The inventory includes native Android, iOS, macOS, Flutter web, and Functions
+operator scripts in addition to Dart, tests, tooling, design, and documentation,
+so release identity and trusted operations changes receive the same pass history
+as application code.
 
 ## Enforcement Metadata
 

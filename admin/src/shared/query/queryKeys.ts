@@ -30,6 +30,10 @@ export const adminQueryKeys = {
       [...adminQueryKeys.all, "event-intake", "dashboard-bridge"] as const,
     decision: () => [...adminQueryKeys.all, "event-intake", "decision"] as const,
   },
+  intakeOperations: {
+    list: (payloadKey: string) =>
+      [...adminQueryKeys.all, "intake-operations", "list", payloadKey] as const,
+  },
   finance: {
     overview: () => [...adminQueryKeys.all, "finance", "overview"] as const,
     hostAnalytics: () =>

@@ -1,12 +1,18 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
 import {hashValue} from "./canonical-json.mjs";
-import {PRIMARY_STAGES, safeId, uniqueSorted} from "./contracts.mjs";
+import {
+  MAX_WORK_ITEMS_PER_RUN,
+  safeId,
+  uniqueSorted,
+} from "./contracts.mjs";
 import {OperationsError} from "./errors.mjs";
-import {validateJsonSchema} from "./json-schema.mjs";
 
 export function summarizeRun(run, items, actions = [], checkpoints = []) {
-  const activeItems = items.filter((item) => item.lifecycleStatus === "active");
+  const contract = workflowContract(run, items);
+  const activeItems = items.filter((item) => isActive(item, contract));
   return {
     schemaVersion: 1,
     run: toCanonicalRunRecord(run, items, actions, checkpoints),
@@ -14,31 +20,47 @@ export function summarizeRun(run, items, actions = [], checkpoints = []) {
       totalItems: items.length,
       activeItems: activeItems.length,
       terminalItems: items.length - activeItems.length,
-      stageCounts: counts(PRIMARY_STAGES, activeItems, (item) => item.primaryStage),
+      stageCounts: counts(contract.primaryStages, activeItems,
+        (item) => item.primaryStage),
       lifecycleCounts: counts(
-        ["active", "published", "rejected", "expired", "cancelled", "taken_down"],
+        contract.lifecycleStatuses,
         items,
         (item) => item.lifecycleStatus
       ),
-      entityCounts: counts(["event", "organizer", "source_result", "source_profile"], items, (item) => item.entityKind),
+      entityCounts: counts(contract.entityKinds, items,
+        (item) => item.entityKind),
       ownerCounts: dynamicCounts(activeItems, (item) => item.owner),
       blockerCounts: dynamicCounts(activeItems.flatMap((item) => item.blockers), (value) => value),
       taskFlagCounts: dynamicCounts(activeItems.flatMap((item) => item.taskFlags), (value) => value),
-      actions: actions.length,
+      actions: run.status === "completed" ?
+        run.counters.actions : actions.length,
       checkpoints: checkpoints.length,
     },
   };
 }
 
-export function queueProjection(items, {limit = 100} = {}) {
+export function queueProjection(items, {
+  limit = 100,
+  includeTerminal = false,
+  primaryStages,
+  lifecycleSemantics,
+} = {}) {
+  const stages = primaryStages ?? uniqueSorted(items.map((item) =>
+    item.primaryStage));
+  const contract = projectionContract({
+    primaryStages: stages,
+    lifecycleSemantics,
+  });
   return items
-    .sort(compareQueueItems)
+    .filter((item) => includeTerminal || isActive(item, contract))
+    .sort((left, right) => compareQueueItems(left, right, contract))
     .slice(0, limit)
-    .map(toCanonicalWorkItemRecord);
+    .map((item) => toCanonicalWorkItemRecord(item, contract));
 }
 
 export function buildAdminProjection(run, items, actions = [], checkpoints = []) {
   const status = summarizeRun(run, items, actions, checkpoints);
+  const contract = workflowContract(run, items);
   return {
     schemaVersion: 1,
     program: "catch-operations-admin-projection",
@@ -47,8 +69,13 @@ export function buildAdminProjection(run, items, actions = [], checkpoints = [])
     generatedAt: run.updatedAt,
     run: status.run,
     summary: status.summary,
-    stageOrder: [...PRIMARY_STAGES],
-    items: queueProjection(items, {limit: Number.MAX_SAFE_INTEGER}),
+    stageOrder: [...contract.primaryStages],
+    items: queueProjection(items, {
+      limit: Number.MAX_SAFE_INTEGER,
+      includeTerminal: true,
+      primaryStages: contract.primaryStages,
+      lifecycleSemantics: contract.lifecycleSemantics,
+    }),
     guardrails: [
       "Run and item records conform to contracts/operations/run.schema.json and work_item.schema.json.",
       "This projection is read-only and contains no raw provider payloads.",
@@ -63,6 +90,7 @@ export function toCanonicalRunRecord(run, items = [], actions = [], checkpoints 
     checkpoints.find((checkpoint) => checkpoint.stepId === "project-artifacts") ?? null;
   const consumed = run.budget?.consumed ?? {};
   const limits = run.budget?.limits ?? {};
+  const contract = workflowContract(run, items);
   return {
     schemaVersion: 1,
     runId: run.runId,
@@ -87,16 +115,21 @@ export function toCanonicalRunRecord(run, items = [], actions = [], checkpoints 
     },
     counters: {
       discovered: items.length,
-      processed: items.filter((item) => item.primaryStage !== "incoming" || item.lifecycleStatus !== "active").length,
+      processed: items.filter((item) =>
+        item.primaryStage !== contract.primaryStages[0] ||
+          !isActive(item, contract)).length,
       modelCalls: consumed.modelCalls ?? 0,
       modelTokens: (consumed.modelInputTokens ?? 0) + (consumed.modelOutputTokens ?? 0),
       costMicros: consumed.modelCostMicros ?? 0,
-      escalated: items.filter((item) => item.owner === "human" && item.lifecycleStatus === "active").length,
-      published: items.filter((item) => item.lifecycleStatus === "published").length,
+      escalated: items.filter((item) =>
+        item.owner === "human" && isActive(item, contract)).length,
+      published: items.filter((item) =>
+        isPublished(item, contract)).length,
       failed: run.status === "failed" ? 1 : 0,
     },
     checkpoint: {
-      lastSequence: actions.length,
+      lastSequence: run.status === "completed" ?
+        run.counters.actions : actions.length,
       cursor: latestCheckpoint?.stepId ?? null,
     },
     createdAt: run.createdAt,
@@ -117,7 +150,14 @@ export function toCanonicalRunRecord(run, items = [], actions = [], checkpoints 
   };
 }
 
-export function toCanonicalWorkItemRecord(item) {
+export function toCanonicalWorkItemRecord(item, {
+  primaryStages,
+  lifecycleSemantics,
+} = {}) {
+  const contract = projectionContract({
+    primaryStages,
+    lifecycleSemantics,
+  });
   const artifactId = safeId(`artifact-${item.evidence.artifactHash.slice(0, 32)}`);
   const evidenceRef = {
     artifactId,
@@ -125,7 +165,7 @@ export function toCanonicalWorkItemRecord(item) {
     observedAt: item.timestamps.observedAt ?? item.createdAt,
     locator: item.evidence.artifactRef ?? null,
   };
-  const terminal = item.lifecycleStatus !== "active";
+  const terminal = !isActive(item, contract);
   const confidence = boundedConfidence(item.confidence.overall);
   return {
     schemaVersion: 1,
@@ -141,7 +181,7 @@ export function toCanonicalWorkItemRecord(item) {
       decisionInputHash: item.decisionProvenance.inputHash,
     }),
     primaryStage: item.primaryStage,
-    lifecycleStatus: canonicalLifecycleStatus(item),
+    lifecycleStatus: canonicalLifecycleStatus(item, contract),
     outcome: terminal ? item.lifecycleStatus : null,
     taskFlags: uniqueSorted([
       ...item.taskFlags,
@@ -149,7 +189,7 @@ export function toCanonicalWorkItemRecord(item) {
     ]).map(canonicalCode),
     blockerCodes: uniqueSorted(item.blockers).map(canonicalCode),
     warningCodes: [],
-    priority: priorityFor(item),
+    priority: priorityFor(item, contract.primaryStages),
     attemptCount: Math.max(1, (item.stageHistory?.length ?? 0) + 1),
     evidenceRefs: [evidenceRef],
     fieldProvenance: [
@@ -196,19 +236,101 @@ export async function validateCanonicalProjection({repoRoot, projection, require
       cause: error,
     });
   }
-  const registry = {"common.schema.json": common};
-  const run = validateJsonSchema(runSchema, projection.run, {registry});
-  const items = projection.items.map((item) => validateJsonSchema(itemSchema, item, {registry}));
+  const ajv = new Ajv({allErrors: true, strict: false});
+  addFormats(ajv);
+  ajv.addSchema(common);
+  const validateRun = ajv.compile(runSchema);
+  const validateItem = ajv.compile(itemSchema);
+  validateRun(projection.run);
+  const runErrors = schemaErrors(validateRun.errors);
+  const hasItemInventory = Array.isArray(projection.items);
+  const projectionItems = hasItemInventory ?
+    projection.items : [];
+  const items = projectionItems.map((item) => {
+    validateItem(item);
+    return schemaErrors(validateItem.errors);
+  });
   const errors = [
-    ...run.errors.map((error) => ({record: "run", ...error})),
-    ...items.flatMap((result, index) => result.errors.map((error) => ({record: `items[${index}]`, ...error}))),
+    ...(!hasItemInventory ? [{
+      record: "projection",
+      path: "/items",
+      keyword: "type",
+      message: "must be an array",
+    }] : []),
+    ...runErrors.map((error) => ({record: "run", ...error})),
+    ...items.flatMap((itemErrors, index) =>
+      itemErrors.map((error) => ({record: `items[${index}]`, ...error}))),
+    ...projectionRelationshipErrors(projection.run, projectionItems),
   ];
   if (errors.length > 0) {
     throw new OperationsError("CANONICAL_PROJECTION_INVALID", "Admin projection does not satisfy canonical operations contracts.", {
       details: {contractRoot, errors: errors.slice(0, 100)},
     });
   }
-  return {status: "validated", valid: true, contractRoot, runRecords: 1, workItemRecords: projection.items.length};
+  return {status: "validated", valid: true, contractRoot, runRecords: 1, workItemRecords: projectionItems.length};
+}
+
+function projectionRelationshipErrors(run, items) {
+  const errors = [];
+  if (!Array.isArray(items)) {
+    return [{
+      record: "projection",
+      path: "/items",
+      keyword: "type",
+      message: "must be an array",
+    }];
+  }
+  const ids = new Set();
+  items.forEach((item, index) => {
+    if (item?.runId !== run?.runId || item?.workflowId !== run?.workflowId) {
+      errors.push({
+        record: `items[${index}]`,
+        path: "/runId",
+        keyword: "projectionJoin",
+        message: "must belong to the exported run and workflow",
+      });
+    }
+    if (typeof item?.workItemId === "string") {
+      if (ids.has(item.workItemId)) {
+        errors.push({
+          record: `items[${index}]`,
+          path: "/workItemId",
+          keyword: "uniqueProjectionItem",
+          message: "must be unique within the exported inventory",
+        });
+      }
+      ids.add(item.workItemId);
+    }
+  });
+  const maxWorkItems = run?.budgets?.maxWorkItems;
+  if (Number.isSafeInteger(maxWorkItems) &&
+      (items.length > maxWorkItems ||
+        items.length > MAX_WORK_ITEMS_PER_RUN)) {
+    errors.push({
+      record: "projection",
+      path: "/items",
+      keyword: "frozenBudget",
+      message: "must not exceed the run or platform work-item capacity",
+    });
+  }
+  if (Number.isSafeInteger(run?.counters?.discovered) &&
+      run.counters.discovered !== items.length) {
+    errors.push({
+      record: "run",
+      path: "/counters/discovered",
+      keyword: "projectionCardinality",
+      message: "must equal the exported work-item inventory",
+    });
+  }
+  return errors;
+}
+
+function schemaErrors(errors) {
+  return (errors ?? []).map((error) => ({
+    path: error.instancePath || "/",
+    keyword: error.keyword,
+    message: error.message ?? "failed validation",
+  }));
 }
 
 function fieldProvenance(field, item, artifactId, confidence) {
@@ -223,21 +345,85 @@ function fieldProvenance(field, item, artifactId, confidence) {
   };
 }
 
-function canonicalLifecycleStatus(item) {
-  if (item.lifecycleStatus === "published") return "published";
-  if (item.lifecycleStatus !== "active") return "terminal";
-  if (item.primaryStage === "incoming") return "queued";
-  if (item.primaryStage === "verify") return "in_progress";
-  if (item.primaryStage === "resolve") return "waiting";
-  return "ready";
+function canonicalLifecycleStatus(item, contract) {
+  if (isPublished(item, contract)) return "published";
+  if (!isActive(item, contract)) return "terminal";
+  const index = contract.primaryStages.indexOf(item.primaryStage);
+  if (index < 0) {
+    throw new OperationsError(
+      "INVALID_WORKFLOW_PROJECTION",
+      `Stage ${item.primaryStage} is absent from the frozen workflow contract.`
+    );
+  }
+  if (index === contract.primaryStages.length - 1) return "ready";
+  if (index === 0) return "queued";
+  if (index === contract.primaryStages.length - 2) return "waiting";
+  return "in_progress";
 }
 
-function priorityFor(item) {
-  const stageBase = {incoming: 400_000, verify: 500_000, resolve: 800_000, ready: 100_000}[item.primaryStage];
+function priorityFor(item, primaryStages = []) {
+  const stageIndex = Math.max(0, primaryStages.indexOf(item.primaryStage));
+  const stageBase = stageIndex === primaryStages.length - 1 ?
+    100_000 : 400_000 + stageIndex * 100_000;
   const expiration = Date.parse(item.expiresAt);
   if (Number.isNaN(expiration)) return stageBase;
   const days = Math.max(0, Math.min(30, Math.ceil((expiration - Date.parse(item.updatedAt)) / 86_400_000)));
   return Math.max(0, Math.min(1_000_000, stageBase + (30 - days) * 1_000));
+}
+
+function workflowContract(run, items) {
+  const frozen = run?.plan?.workflowContract ?? {};
+  const primaryStages = Array.isArray(frozen.primaryStages) ?
+    frozen.primaryStages : uniqueSorted(items.map((item) => item.primaryStage));
+  const lifecycleStatuses = Array.isArray(frozen.lifecycleStatuses) ?
+    frozen.lifecycleStatuses :
+    uniqueSorted(items.map((item) => item.lifecycleStatus));
+  const entityKinds = Array.isArray(frozen.entityKinds) ?
+    frozen.entityKinds : uniqueSorted(items.map((item) => item.entityKind));
+  return {
+    ...projectionContract({
+      primaryStages,
+      lifecycleSemantics: frozen.lifecycleSemantics,
+    }),
+    lifecycleStatuses,
+    entityKinds,
+  };
+}
+
+function projectionContract({primaryStages, lifecycleSemantics}) {
+  const stages = Array.isArray(primaryStages) ? primaryStages : [];
+  const activeStatuses = lifecycleSemantics?.activeStatuses;
+  const publishedStatuses = lifecycleSemantics?.publishedStatuses;
+  const expiredStatuses = lifecycleSemantics?.expiredStatuses;
+  const valid = stages.length > 0 &&
+    Array.isArray(activeStatuses) && activeStatuses.length > 0 &&
+    Array.isArray(publishedStatuses) && Array.isArray(expiredStatuses);
+  if (!valid) {
+    throw new OperationsError(
+      "INVALID_WORKFLOW_PROJECTION",
+      "The frozen workflow contract requires ordered stages and lifecycle semantics."
+    );
+  }
+  return {
+    primaryStages: [...stages],
+    lifecycleSemantics: {
+      activeStatuses: [...activeStatuses],
+      publishedStatuses: [...publishedStatuses],
+      expiredStatuses: [...expiredStatuses],
+    },
+  };
+}
+
+function isActive(item, contract) {
+  return contract.lifecycleSemantics.activeStatuses.includes(
+    item.lifecycleStatus
+  );
+}
+
+function isPublished(item, contract) {
+  return contract.lifecycleSemantics.publishedStatuses.includes(
+    item.lifecycleStatus
+  );
 }
 
 function boundedConfidence(value) {
@@ -254,10 +440,12 @@ function canonicalCode(value) {
   return code || "unknown";
 }
 
-function compareQueueItems(left, right) {
-  const lifecycle = Number(left.lifecycleStatus !== "active") - Number(right.lifecycleStatus !== "active");
+function compareQueueItems(left, right, contract) {
+  const lifecycle = Number(!isActive(left, contract)) -
+    Number(!isActive(right, contract));
   if (lifecycle !== 0) return lifecycle;
-  const priority = priorityFor(right) - priorityFor(left);
+  const priority = priorityFor(right, contract.primaryStages) -
+    priorityFor(left, contract.primaryStages);
   if (priority !== 0) return priority;
   return left.workItemId.localeCompare(right.workItemId);
 }

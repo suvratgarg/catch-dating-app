@@ -24,6 +24,7 @@ import {
   validateOperationWorkItem,
   ValidationResult,
 } from "./validation";
+import {decodeRunCursor, encodeRunCursor} from "./runPagination";
 
 type DurableOperationsRepository =
   OperationRunRepository & OperationWorkItemRepository;
@@ -109,9 +110,15 @@ export class FirestoreOperationsRepository implements
     if (query.status) {
       firestoreQuery = firestoreQuery.where("status", "==", query.status);
     }
-    firestoreQuery = firestoreQuery.orderBy(FieldPath.documentId());
+    firestoreQuery = firestoreQuery
+      .orderBy("updatedAt", "desc")
+      .orderBy(FieldPath.documentId(), "desc");
     if (query.cursor) {
-      firestoreQuery = firestoreQuery.startAfter(query.cursor);
+      const cursor = decodeRunCursor(query.cursor);
+      firestoreQuery = firestoreQuery.startAfter(
+        cursor.updatedAt,
+        cursor.runId
+      );
     }
     const snapshot = await firestoreQuery.limit(query.limit + 1).get();
     const hasMore = snapshot.docs.length > query.limit;
@@ -122,7 +129,7 @@ export class FirestoreOperationsRepository implements
     )));
     return {
       items,
-      nextCursor: hasMore ? docs[docs.length - 1].id : null,
+      nextCursor: hasMore ? encodeRunCursor(items[items.length - 1]) : null,
     };
   }
 
@@ -183,6 +190,13 @@ export class FirestoreOperationsRepository implements
       if (value !== undefined) {
         firestoreQuery = firestoreQuery.where(field, "==", value);
       }
+    }
+    if (query.humanReviewRequired) {
+      firestoreQuery = firestoreQuery.where(
+        "taskFlags",
+        "array-contains",
+        "human_review_required"
+      );
     }
     firestoreQuery = firestoreQuery.orderBy(FieldPath.documentId());
     if (query.cursor) {

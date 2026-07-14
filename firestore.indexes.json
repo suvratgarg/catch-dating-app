@@ -647,6 +647,35 @@
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "ASCENDING"}
       ]
+    },
+    {
+      "collectionGroup": "operationRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "workflowId", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "operationRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "workflowId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "operationWorkItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "workflowId", "mode": "ASCENDING"},
+        {"fieldPath": "runId", "mode": "ASCENDING"},
+        {"fieldPath": "taskFlags", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
     }
   ],
   "fieldOverrides": [

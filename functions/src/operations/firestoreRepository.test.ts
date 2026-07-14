@@ -39,16 +39,16 @@ class FakeQuery {
   constructor(
     protected readonly firestore: FakeFirestore,
     protected readonly collectionPath: string,
-    private readonly filters: Array<[string, unknown]> = [],
+    private readonly filters: Array<[string, string, unknown]> = [],
     private readonly cursor: string | null = null,
     private readonly pageLimit: number | null = null
   ) {}
 
-  where(field: string, _operator: string, value: unknown): FakeQuery {
+  where(field: string, operator: string, value: unknown): FakeQuery {
     return new FakeQuery(
       this.firestore,
       this.collectionPath,
-      [...this.filters, [field, value]],
+      [...this.filters, [field, operator, value]],
       this.cursor,
       this.pageLimit
     );
@@ -86,8 +86,12 @@ class FakeQuery {
       .map(([path, value]) =>
         new FakeSnapshot(path.slice(prefix.length), value))
       .filter((snapshot) => !this.cursor || snapshot.id > this.cursor)
-      .filter((snapshot) => this.filters.every(([field, value]) =>
-        snapshot.data()?.[field] === value))
+      .filter((snapshot) => this.filters.every(([field, operator, value]) => {
+        const stored = snapshot.data()?.[field];
+        return operator === "array-contains" ?
+          Array.isArray(stored) && stored.includes(value) :
+          stored === value;
+      }))
       .sort((left, right) => left.id.localeCompare(right.id));
     return {
       docs: this.pageLimit === null ? docs : docs.slice(0, this.pageLimit),
@@ -223,5 +227,27 @@ test("Firestore repository filters before stable document-id pagination",
     });
     assert.deepEqual(second.items.map((item) => item.workItemId), [
       "work:event:1",
+    ]);
+  });
+
+test("Firestore repository can page the canonical human-review queue",
+  async () => {
+    const {repository} = harness();
+    await repository.createWorkItem(operationWorkItem({
+      workItemId: "work:event:ordinary",
+    }));
+    await repository.createWorkItem(operationWorkItem({
+      workItemId: "work:event:human",
+      taskFlags: ["human_review_required"],
+      normalizedPayload: {owner: "human"},
+    }));
+    const page = await repository.listWorkItems({
+      workflowId: "supply-intake",
+      runId: "run:mumbai:2026-07-14",
+      humanReviewRequired: true,
+      limit: 200,
+    });
+    assert.deepEqual(page.items.map((item) => item.workItemId), [
+      "work:event:human",
     ]);
   });

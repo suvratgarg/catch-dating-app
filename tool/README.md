@@ -1,8 +1,18 @@
 # Tooling
 
-The `tool/` tree is organized by operational ownership. Use `node tool/run.mjs`
-to discover, validate, and run tools by stable id instead of memorizing file
-paths.
+The `tool/` tree owns repository checks, generators, migrations, deploy helpers,
+and bounded data-repair commands. Use `node tool/run.mjs` to discover, validate,
+and run tools by stable id instead of memorizing file paths.
+
+Durable business workflows do not belong here. Resumable workflow runs, work
+items, leases, budgets, agent decisions, and receipts live in `operations/` and
+are governed by `docs/operations_platform.md`. The existing organizer-intake,
+host-discovery, and event-guide scripts are compatibility producers for Supply
+Intake adapters; add new orchestration to `operations/`, not another tool
+subtree. Stable workflow checks remain discoverable through
+`operations:boundaries` and `operations:workflow-manifest` in
+`tools_manifest.json`. `remote_ops_manifest.json` remains the separate inventory
+for commands that can touch external systems.
 
 ```sh
 node tool/run.mjs list
@@ -29,7 +39,8 @@ node tool/run.mjs run demo:ops --help
 - `env/`: checked-in Dart define files for app environments.
 - `firebase/`: Firebase project/config helper scripts.
 - `host_discovery/`: organizer acquisition backlog, deterministic search plans,
-  seed listing fixtures, and dedupe indexes for claimable organizer pages.
+  seed listing fixtures, and dedupe indexes consumed through the legacy Supply
+  Intake adapter. New workflow orchestration belongs in `operations/`.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
 - Completed one-time migration tools are retired after prod verification; historical
   evidence lives in the audit registry and migration contract metadata.
@@ -282,7 +293,7 @@ node tool/web/check_storybook_visuals.mjs --surface webui --check
 npm --workspace catch-admin run build:storybook
 node tool/web/check_storybook_visuals.mjs --surface admin --check
 # Limit a baseline update/check to task-owned registry entries in a dirty refactor.
-node tool/web/check_storybook_visuals.mjs --surface admin --component workspace_intake_workspace --update
+node tool/web/check_storybook_visuals.mjs --surface admin --component workspace_intake_operations --update
 ```
 
 Use repeatable `--component <registry-id>` filters to isolate a task-owned

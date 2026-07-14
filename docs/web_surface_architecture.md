@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.148
+version: 0.7.150
 updated: 2026-07-14
 owner: web_platform
 status: active
@@ -166,7 +166,7 @@ Canonical list/workspace roots are `/overview`, `/safety`, `/access`, `/growth`,
 `/organizers`, `/organizers/claims`, `/events`, `/events/readiness`,
 `/events/external`, `/users`, `/finance`, `/quality`, and `/admin-roles`.
 
-Intake owns `/intake/organizers` and `/intake/events`.
+Intake owns `/intake/organizers`, `/intake/events`, and `/intake/operations`.
 Marketing owns `/marketing` (default Posts), `/marketing/posts`,
 `/marketing/new`, `/marketing/events`, `/marketing/media`,
 `/marketing/activity`, and `/marketing/diagnostics`; draft composition uses
@@ -198,6 +198,44 @@ owning callable has validation, authorization, pending, success, and receipt
 behavior. The UI must not imply direct social publishing, money movement,
 canonical intake promotion, rollback, scheduler execution history, or broad
 member/Auth search without dedicated contracts.
+
+## Admin Intake Operations Projection
+
+`/intake/operations` is the third Intake workspace, labelled Automation. It is
+a read-only projection of canonical `operationRuns` and `operationWorkItems`;
+it does not derive execution state from the older Event or Organizer Intake tab
+filters. The UI displays the same exclusive Incoming, Verify, Resolve, and
+Ready stage values persisted by the operations worker, with task flags and
+blockers rendered as overlapping review concerns.
+
+The feature follows the standard repository/controller/workspace split under
+`admin/src/features/intake/operations/`. Live data crosses only
+`adminListIntakeOperations`; sample mode uses a contract-shaped fixture. The
+browser offers refresh, search, stage/entity filters, and hash-bound evidence
+inspection, but intentionally exposes no Run, model, deploy-rule, or Publish
+action. Those capabilities require separate trusted-worker and policy
+boundaries rather than a browser toggle.
+
+The callable orders runs by persisted `updatedAt` plus document id and reads
+whole-run stage, work-item, and human-review aggregates from the imported run
+metadata and fails closed when they are absent or inconsistent. The controller
+pins that run, loads one ordinary page, and drains only the server-filtered
+human-exception cursor before rendering. Every counted active exception can be
+opened immediately; ordinary items advance through **Load 200 more**, preserve
+already-loaded exceptions, and cannot overwrite a newer refresh. Published and
+terminal history is excluded from the active stage rail. Run pagination is
+separate: `loadedRunCount`, `nextRunCursor`, `nextWorkItemCursor`, and the
+workspace copy describe loaded pages rather than a false persisted total. The
+query disables automatic retry so the 10,000-item/200-page/120-per-minute
+capacity contract remains bounded. The separate apply-guarded importer is a
+trusted operator, not a browser route or callable.
+
+An exception is resolved in the owning Event or Organizer Intake surface. The
+Automation workspace does not write an `OperationDecision` or resume the same
+run; a later Supply Intake run can see that decision only after the owning
+compatibility artifact is regenerated. Reconciliation creates a separate
+immutable child run for expiry and stale-evidence changes rather than editing an
+already imported run.
 
 ## Admin Callable Validation Boundary
 

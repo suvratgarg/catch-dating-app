@@ -3770,6 +3770,110 @@
       }
     },
     {
+      "id": "operations:cli",
+      "category": "operations",
+      "path": "operations/src/cli/main.mjs",
+      "command": "node operations/src/cli/main.mjs",
+      "safety": "local-write-explicit",
+      "status": "active",
+      "role": "operator",
+      "description": "Runs durable business workflows with shadow-safe defaults and stable JSON output.",
+      "checks": [
+        "node --check operations/src/cli/main.mjs",
+        "node operations/src/cli/main.mjs help"
+      ]
+    },
+    {
+      "id": "operations:import-admin-projection",
+      "category": "operations",
+      "path": "functions/scripts/operations/import-shadow-projection.cjs",
+      "command": "npm --prefix functions run operations:import-projection --",
+      "safety": "remote-write-explicit",
+      "status": "active",
+      "role": "operator",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Validates a Supply Intake admin export locally by default and, only with explicit apply, alias-bound environment/project, production, and run confirmation flags, imports or repairs the immutable shadow projection in server-owned Firestore collections.",
+      "checks": [
+        "node --check functions/scripts/operations/import-shadow-projection.cjs",
+        "npm --prefix functions run build",
+        "node --test functions/lib/operations/projectionImporter.test.js",
+        "node --test functions/test/operations-import-shadow-projection.test.cjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "functions/src/operations/projectionImporter.test.ts",
+        "contains": [
+          "rejects projections that grant a shadow run unsafe authority",
+          "applies items before the run and replays the same artifact",
+          "replay repairs missing items without recreating the run",
+          "replay rejects tampered items with matching metadata",
+          "rejects inventory above its frozen work budget",
+          "rejects a changed artifact for an imported immutable run"
+        ]
+      }
+    },
+    {
+      "id": "operations:boundaries",
+      "category": "operations",
+      "path": "operations/scripts/check-boundaries.mjs",
+      "command": "node operations/scripts/check-boundaries.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "ratchet",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "baseline": "operations/governance/legacy_tool_baseline.json",
+      "description": "Keeps durable business workflows under operations/ by scanning every tool code root for runtime imports or orchestration markers, while ratcheting known legacy artifact producers.",
+      "checks": [
+        "node --check operations/scripts/check-boundaries.mjs",
+        "node --test operations/test/boundaries.test.mjs",
+        "node operations/scripts/check-boundaries.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "operations/test/boundaries.test.mjs",
+        "contains": [
+          "boundary checker rejects new orchestration code in a legacy tool root",
+          "boundary checker rejects operations imports in any new tool root",
+          "boundary checker rejects reimplemented workflow markers in tool code",
+          "boundary checker aggregates workflow markers across a new tool root",
+          "boundary checker rejects legacy path knowledge outside the declared adapter",
+          "boundary checker rejects executable tool imports from operations",
+          "computed dynamic imports"
+        ]
+      }
+    },
+    {
+      "id": "operations:workflow-manifest",
+      "category": "operations",
+      "path": "operations/scripts/check-workflow-manifest.mjs",
+      "command": "node operations/scripts/check-workflow-manifest.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "ratchet",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Binds each durable workflow manifest to its live CLI commands, ordered stage and lifecycle contracts, source profiles, disabled capabilities, and platform capacity.",
+      "checks": [
+        "node --check operations/scripts/check-workflow-manifest.mjs",
+        "node --test operations/test/workflow-manifest.test.mjs",
+        "node operations/scripts/check-workflow-manifest.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "operations/test/workflow-manifest.test.mjs",
+        "contains": [
+          "workflow manifest fails when a live CLI command is omitted",
+          "workflow manifest fails on stage or lifecycle ordering drift",
+          "workflow manifest fails when the loaded source inventory drifts"
+        ]
+      }
+    },
+    {
       "id": "design:widget-dedupe-fingerprint-tests",
       "category": "design",
       "path": "tool/widget_dedupe/test/fingerprint_extractor_test.dart",

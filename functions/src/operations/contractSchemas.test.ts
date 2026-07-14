@@ -4,6 +4,8 @@ import path from "node:path";
 import test from "node:test";
 import Ajv, {AnySchema} from "ajv";
 import addFormats from "ajv-formats";
+import {RATE_LIMITS} from "../shared/rateLimit";
+import {MAX_OPERATION_WORK_ITEMS_PER_RUN} from "./models";
 
 const schemaNames = [
   "common",
@@ -15,6 +17,7 @@ const schemaNames = [
   "publication_plan",
   "rule_proposal",
   "rule_evaluation",
+  "workflow_manifest",
 ] as const;
 
 function contractsDirectory(): string {
@@ -70,6 +73,7 @@ test("draft-07 operation schemas reject unsafe lifecycle fixtures", () => {
   }
   const fixtures = [
     ["work_item", "work_item_terminal_without_outcome"],
+    ["work_item", "work_item_terminal_human_review"],
     ["rule_proposal", "rule_proposal_without_approval"],
   ] as const;
   for (const [schemaName, fixtureName] of fixtures) {
@@ -85,4 +89,56 @@ test("draft-07 operation schemas reject unsafe lifecycle fixtures", () => {
     assert.ok(validate, `validator should exist for ${schemaName}`);
     assert.equal(validate(fixture.document), false, fixtureName);
   }
+});
+
+test("two maximum exception inventories fit inside one admin rate " +
+  "window", () => {
+  const directory = contractsDirectory();
+  const runSchema = readJson(path.join(directory, "run.schema.json")) as {
+    properties: {budgets: {properties: {maxWorkItems: {maximum: number}}}};
+  };
+  const callableSchema = readJson(path.join(
+    directory,
+    "..",
+    "callables",
+    "admin_list_intake_operations_payload.schema.json"
+  )) as {properties: {workItemLimit: {maximum: number}}};
+  const runLimit = runSchema.properties.budgets.properties.maxWorkItems.maximum;
+  const pageLimit = callableSchema.properties.workItemLimit.maximum;
+  const requestLimit = RATE_LIMITS.adminListIntakeOperations.maxRequests;
+
+  assert.equal(runLimit, MAX_OPERATION_WORK_ITEMS_PER_RUN);
+  assert.ok(
+    (1 + Math.ceil(runLimit / pageLimit)) * 2 <= requestLimit,
+    JSON.stringify({runLimit, pageLimit, requestLimit})
+  );
+  assert.ok(
+    2 * Math.ceil(runLimit / pageLimit) - 1 <= requestLimit,
+    JSON.stringify({runLimit, pageLimit, requestLimit})
+  );
+});
+
+test("Firestore declares the canonical human-review queue index", () => {
+  const directory = contractsDirectory();
+  const indexes = readJson(path.resolve(
+    directory,
+    "..",
+    "..",
+    "firestore.indexes.json"
+  )) as {
+    indexes: Array<{
+      collectionGroup: string;
+      queryScope: string;
+      fields: Array<Record<string, string>>;
+    }>;
+  };
+  assert.ok(indexes.indexes.some((index) =>
+    index.collectionGroup === "operationWorkItems" &&
+    index.queryScope === "COLLECTION" &&
+    JSON.stringify(index.fields) === JSON.stringify([
+      {fieldPath: "workflowId", mode: "ASCENDING"},
+      {fieldPath: "runId", mode: "ASCENDING"},
+      {fieldPath: "taskFlags", arrayConfig: "CONTAINS"},
+      {fieldPath: "__name__", mode: "ASCENDING"},
+    ])));
 });

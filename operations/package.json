@@ -10,9 +10,14 @@
   "bin": {
     "catch-operations": "./src/cli/main.mjs"
   },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
   "scripts": {
     "boundaries": "node scripts/check-boundaries.mjs",
-    "check": "npm run test && npm run boundaries && npm run smoke",
+    "check": "npm run test && npm run boundaries && npm run manifests && npm run smoke",
+    "manifests": "node scripts/check-workflow-manifest.mjs",
     "smoke": "node src/cli/main.mjs help",
     "test": "node --test test/*.test.mjs"
   }

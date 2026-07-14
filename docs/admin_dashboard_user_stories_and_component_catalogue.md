@@ -1,6 +1,6 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.2.23
+version: 0.2.25
 updated: 2026-07-14
 owner: admin_console
 status: active
@@ -49,6 +49,9 @@ Files inspected:
 - `admin/src/features/intake/events/api/eventIntakeRepository.ts`
 - `admin/src/features/intake/events/controllers/useEventIntakeController.ts`
 - `admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx`
+- `admin/src/features/intake/operations/api/intakeOperationsRepository.ts`
+- `admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts`
+- `admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx`
 - `admin/src/features/intake/organizer/api/organizerIntakeRepository.ts`
 - `admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.ts`
 - `admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts`
@@ -148,7 +151,7 @@ placeholder screen structure.
 | Launch access | `features/access`; Overview provides route-only queue previews | `adminGetOverview` capped access queue; direct `adminGetAccessApplicationDetails`; `adminDecideAccessApplication` | URL-owned list/detail review, inspect source evidence, enter a required note/cohort, choose exact backed outcomes, receive completion feedback | Real launch-gate review workflow; full directory, cohort catalogue, invitation, notification, and durable history still need contracts |
 | Growth | `features/growth` | independently loaded overview metrics and host analytics | inspect four backed outcomes, apply endpoint-owned range, filter URL-owned signals, inspect accessible trend/table and source basis | Complete approved read-only KPI workflow; cohort conversion, attribution, referral, paid ROI, and retention claims remain absent |
 | Marketing | `features/marketing` | immutable marketing ops bridge snapshot plus session working copies | URL-owned board/composer/libraries/activity/diagnostics, draft creation, edit, rights confirmation, review, manual export-ready decisions | Complete approved content-studio workflow; arbitrary edits remain session-only and direct social publishing/autosave remain absent |
-| Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake reads generated organizer bridge artifacts | review event and organizer intake | Strong task-first review workspaces; canonical promotion and durable discovery execution remain contract-first |
+| Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake reads generated organizer bridge artifacts; Automation reads canonical operations records through `adminListIntakeOperations` | review event and organizer intake, inspect persisted shadow runs and human exceptions | Strong but dense; Automation is deliberately read-only until a trusted worker and publication authority are enabled |
 | Organizers | `features/organizers` | canonical `clubs/{id}` list/detail and bounded claims queue via admin callables | URL-owned Directory/Claims, inspect one record, edit task-ordered fields, diff, validate, save, publish/index through dedicated callable, review one claim | Complete approved canonical publishing workflow; Intake handoff waits for a validated canonical target |
 | Events | `features/events` | canonical `events/{id}` list/detail, bounded `externalEvents/{id}` supply, and `eventSupplyReadiness/current` snapshots | URL-owned canonical/readiness/external workspaces, URL filters, safe listing edits, backed performance, preflight evidence, publication checklist | Complete approved event workflow; external point read, organizer-owned lifecycle mutations, and Intake handoff remain contract-first |
 | Users | `features/users` | one exact-UID `adminGetUserAnalytics` aggregate response | validate exact UID, mask prior UID while loading, inspect four outcomes and accessible activity summary with explicit missing/forbidden/stale/partial states | Complete approved read-only analytics lookup; broad identity search and account, safety, payment, or support actions remain absent |
@@ -435,7 +438,7 @@ before they become canonical, public, or available to Marketing.
 
 Acceptance criteria:
 
-- Separate but adjacent event and organizer workspaces.
+- Separate but adjacent event, organizer, and automation workspaces.
 - Explicit status gates for source evidence, duplication, location, policy,
   publication, and claim handoff.
 - Review decisions with notes and audit trail.
@@ -444,8 +447,22 @@ Acceptance criteria:
 
 Current adherence:
 
-- Good: Intake covers Event Intake and Organizer Intake without presenting an
-  unbacked automation surface in the production console.
+- Good: Intake now covers Event Intake, Organizer Intake, and the durable
+  Automation projection.
+- Good: Automation displays canonical run/work-item inventory using the same
+  four persisted primary stages as the CLI, rather than inferring run progress
+  from the overlapping Event and Organizer review tabs.
+- Good: the Automation workspace is explicitly read-only. It exposes evidence,
+  blockers, run receipts, and human exceptions without browser controls for
+  source fetches, models, rule deployment, or publication.
+- Good: stage and exception totals come from the complete imported run rather
+  than the current 200-item page. The controller drains the run-pinned,
+  server-filtered human-exception lane before rendering, validates it against
+  authoritative aggregates, and pages ordinary items only through **Load 200
+  more**. Active stage queues exclude published/terminal history; run and item
+  pages remain explicitly labelled as loaded when another cursor exists.
+- Good: expiry and stale-evidence reconciliation produces a new lineage-bound
+  run instead of mutating an immutable imported snapshot.
 - Good: the default experience is now a task-first review workbench rather than
   the generated diagnostic wall. Both workspaces expose backed search and
   filters, Incoming/Verify/Resolve/Ready stages, a selectable queue, source
@@ -491,6 +508,12 @@ Current adherence:
   and does not pretend to run a job.
 - Weak: Event Intake approvals remain decision records only; canonical import
   and external event promotion still need a dedicated reviewed write path.
+- Weak: Automation does not join those backed decisions directly. A later run
+  sees them only after the owning Event or Organizer compatibility artifact is
+  regenerated.
+- Weak: no production worker currently persists Supply Intake runs; live mode
+  remains empty until worker IAM, source policy, model budget, and publication
+  authority are approved and deployed.
 
 Recommended next work:
 
@@ -498,6 +521,9 @@ Recommended next work:
   the repo-file workflow is stable enough to replace with audited mutations.
 - Define a discovery-job contract with durable progress, failure, retry,
   generated-at, and output receipts before adding a Run discovery action.
+- Activate the `operations/` worker in shadow mode first, measure correction and
+  escalation rates, and keep the browser read-only while calibration is below
+  the documented promotion thresholds.
 - Define canonical event import and promotion side effects before adding a
   Promote action to the stage spine.
 - Keep organizer publication, app visibility, and public website listing output

@@ -778,6 +778,9 @@ function titleForAdminSection(activeNav: AdminNavId, pathname = ""): string {
   }
   if (activeNav === "organizer-intake") {
     if (pathname.startsWith("/intake/events")) return "Event intake";
+    if (pathname.startsWith("/intake/operations")) {
+      return "Supply intake operations";
+    }
     return "Organizer intake";
   }
   if (activeNav === "events") {

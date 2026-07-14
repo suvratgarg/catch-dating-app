@@ -13,7 +13,8 @@
       "then": {
         "properties": {
           "outcome": {
-            "enum": ["rejected", "expired", "cancelled", "taken_down"]
+            "type": "string",
+            "not": {"const": "published"}
           }
         }
       }
@@ -36,6 +37,61 @@
       },
       "then": {
         "properties": {"outcome": {"type": "null"}}
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          {
+            "required": ["blockerCodes"],
+            "properties": {
+              "blockerCodes": {
+                "contains": {"const": "human_review_required"}
+              }
+            }
+          },
+          {
+            "required": ["normalizedPayload"],
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": ["owner"],
+                "properties": {"owner": {"const": "human"}}
+              }
+            }
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "taskFlags": {
+            "contains": {"const": "human_review_required"}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["lifecycleStatus"],
+        "properties": {
+          "lifecycleStatus": {"enum": ["published", "terminal"]}
+        }
+      },
+      "then": {
+        "properties": {
+          "taskFlags": {
+            "not": {"contains": {"const": "human_review_required"}}
+          },
+          "blockerCodes": {
+            "not": {"contains": {"const": "human_review_required"}}
+          },
+          "normalizedPayload": {
+            "not": {
+              "required": ["owner"],
+              "properties": {"owner": {"const": "human"}}
+            }
+          }
+        }
       }
     }
   ],
@@ -82,7 +138,9 @@
     "candidateHash": {"$ref": "common.schema.json#/definitions/sha256"},
     "primaryStage": {
       "type": "string",
-      "enum": ["incoming", "verify", "resolve", "ready"]
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z][a-z0-9_]*$"
     },
     "lifecycleStatus": {
       "type": "string",
@@ -97,14 +155,8 @@
     },
     "outcome": {
       "type": ["string", "null"],
-      "enum": [
-        null,
-        "published",
-        "rejected",
-        "expired",
-        "cancelled",
-        "taken_down"
-      ]
+      "maxLength": 120,
+      "pattern": "^[a-z][a-z0-9_]*$"
     },
     "taskFlags": {
       "type": "array",

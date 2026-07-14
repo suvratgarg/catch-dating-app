@@ -12,32 +12,7 @@ import {
   validateOperationRun,
   validateOperationWorkItem,
 } from "./validation";
-
-export interface WorkItemStageDefinition {
-  lifecycleStatus: WorkItemLifecycleStatus;
-}
-
-export interface WorkItemStagePolicy {
-  workflowId: string;
-  stages: Readonly<Record<string, WorkItemStageDefinition>>;
-  transitions: Readonly<Record<string, readonly string[]>>;
-}
-
-export const supplyIntakeStagePolicy: WorkItemStagePolicy = {
-  workflowId: "supply-intake",
-  stages: {
-    incoming: {lifecycleStatus: "queued"},
-    verify: {lifecycleStatus: "in_progress"},
-    resolve: {lifecycleStatus: "waiting"},
-    ready: {lifecycleStatus: "ready"},
-  },
-  transitions: {
-    incoming: ["verify"],
-    verify: ["incoming", "resolve", "ready"],
-    resolve: ["verify", "ready"],
-    ready: ["verify", "resolve"],
-  },
-};
+import {WorkItemStagePolicy} from "./workflowPolicy";
 
 export interface WorkItemTransitionCommand {
   actionId: string;
@@ -135,18 +110,15 @@ export function reduceWorkItemTransition(
   const publicationPlanId = command.publicationPlanId === undefined ?
     current.publicationPlanId : command.publicationPlanId;
 
-  if (command.targetStage === "ready" &&
-      (blockerCodes.length > 0 || decisionId === null)) {
+  const gatesFailed =
+    (target.requiresNoBlockers && blockerCodes.length > 0) ||
+    (target.requiresDecision && decisionId === null) ||
+    (target.requiresPublicationPlan && publicationPlanId === null);
+  if (gatesFailed) {
     throw new OperationDomainError(
-      "ready_gates_not_met",
-      "Ready work requires no blockers and an accepted decision"
-    );
-  }
-  if (command.targetStage === "published" &&
-      (decisionId === null || publicationPlanId === null)) {
-    throw new OperationDomainError(
-      "publication_receipt_required",
-      "Published work requires decision and publication plan receipts"
+      target.gateErrorCode ?? "stage_gates_not_met",
+      target.gateErrorMessage ??
+        `Stage ${command.targetStage} requirements are not met`
     );
   }
 
@@ -216,7 +188,8 @@ export interface WorkItemLifecycleCommand {
 
 export function reduceWorkItemLifecycle(
   current: OperationWorkItem,
-  command: WorkItemLifecycleCommand
+  command: WorkItemLifecycleCommand,
+  policy: WorkItemStagePolicy
 ): WorkItemTransitionResult {
   const currentValidation = validateOperationWorkItem(current);
   if (!currentValidation.ok) {
@@ -231,6 +204,12 @@ export function reduceWorkItemLifecycle(
       `Expected revision ${command.expectedRevision}; found ${current.revision}`
     );
   }
+  if (current.workflowId !== policy.workflowId) {
+    throw new OperationDomainError(
+      "workflow_policy_mismatch",
+      `Policy ${policy.workflowId} cannot reduce ${current.workflowId}`
+    );
+  }
   if (current.lifecycleStatus === "terminal") {
     throw new OperationDomainError(
       "terminal_work_item",
@@ -241,32 +220,36 @@ export function reduceWorkItemLifecycle(
     current.decisionId : command.decisionId;
   const publicationPlanId = command.publicationPlanId === undefined ?
     current.publicationPlanId : command.publicationPlanId;
-  if (command.targetOutcome === "published") {
-    if (current.primaryStage !== "ready" ||
-        current.lifecycleStatus !== "ready" ||
-        decisionId === null || publicationPlanId === null) {
+  const publication = policy.publication;
+  if (publication && command.targetOutcome === publication.outcome) {
+    const stage = policy.stages[current.primaryStage];
+    if (!publication.readyStages.includes(current.primaryStage) ||
+        stage?.lifecycleStatus !== current.lifecycleStatus ||
+        (publication.requiresDecision && decisionId === null) ||
+        (publication.requiresPublicationPlan && publicationPlanId === null)) {
       throw new OperationDomainError(
         "publication_receipt_required",
         "Publishing requires ready review, decision, and publication receipts"
       );
     }
   } else if (current.lifecycleStatus === "published") {
-    if (!["expired", "cancelled", "taken_down"].includes(
-      command.targetOutcome
-    )) {
+    if (!publication?.followupOutcomes.includes(command.targetOutcome)) {
       throw new OperationDomainError(
         "lifecycle_transition_not_allowed",
         `Published work cannot transition to ${command.targetOutcome}`
       );
     }
-  } else if (command.targetOutcome === "taken_down") {
+  } else if (publication?.publishedOnlyOutcomes.includes(
+    command.targetOutcome
+  )) {
     throw new OperationDomainError(
       "lifecycle_transition_not_allowed",
       "Only published work can be taken down"
     );
   }
   const lifecycleStatus: WorkItemLifecycleStatus =
-    command.targetOutcome === "published" ? "published" : "terminal";
+    publication && command.targetOutcome === publication.outcome ?
+      "published" : "terminal";
   const workItem: OperationWorkItem = {
     ...current,
     revision: current.revision + 1,

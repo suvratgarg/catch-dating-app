@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.2.7
-updated: 2026-07-10
+version: 1.2.13
+updated: 2026-07-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -57,6 +57,54 @@ should be repairable from edge/source documents.
 | Storage Trigger | Function reacts to Storage object finalize/delete. | Storage rules plus trigger validation/moderation. |
 | HTTP Function | External web/client POST endpoint. | CORS, validation, rate limiting, server writes. |
 | Server/Admin Only | No client write surface. | Firestore rules deny client writes. |
+
+## Durable Operations Platform
+
+Long-running, resumable admin workflows use the canonical contracts under
+`contracts/operations/` and the server-only collections below. Direct client
+reads and writes are denied; a separately authorized worker owns mutations.
+The current admin callable is a role-gated, rate-limited read projection only.
+
+| Collection | Record | Owner |
+|---|---|---|
+| `operationRuns/{runId}` | Frozen scope, budgets, counters, checkpoint, and terminal state | Trusted operations worker |
+| `operationWorkItems/{workItemId}` | One exclusive primary stage plus orthogonal task/blocker flags | Trusted operations worker |
+| `operationActionReceipts/{actionId}` | Immutable idempotency and action evidence | Trusted operations worker |
+| `operationDecisions/{decisionId}` | Revision-bound proposed or accepted decision | Trusted worker or reviewed admin path |
+| `operationLeases/{leaseId}` | Fenced worker ownership and heartbeat | Trusted operations worker |
+| `operationPublicationPlans/{publicationPlanId}` | Hash-bound preflight plan; not publication authority by itself | Trusted publisher boundary |
+| `operationRuleProposals/{ruleProposalId}` | Evidence-derived extractor/rule proposal | Trusted learning worker |
+| `operationRuleEvaluations/{ruleEvaluationId}` | Replay, holdout, shadow, and canary metrics | Trusted evaluation worker |
+
+`adminListIntakeOperations` reads runs and work items for workflow
+`supply-intake`. It grants no run-request, network, model, rule-deployment, or
+public-write capability. The four persisted primary stages are exactly
+`incoming`, `verify`, `resolve`, and `ready`; publication and terminal outcomes
+remain lifecycle state rather than additional tabs.
+
+`functions/scripts/operations/import-shadow-projection.cjs` is the only shipped
+local-to-Firestore bridge. It is dry-run by default and requires explicit apply,
+an environment whose configured alias exactly matches the project id,
+project-aware production confirmation, and matching run confirmation. It
+revalidates contracts, shadow authority, joins, totals, hashes, and the frozen
+work-item budget; creates `operationWorkItems` before `operationRuns`; repairs
+missing items on exact replay; rejects changed records; and never writes a
+public product collection. Imported run ids are immutable snapshots. Whole-run
+stage and human-review aggregates are stored in run metadata and are required
+for reads. The callable supports a canonical `humanReviewRequired` server
+filter backed by the `taskFlags` array index; that filter cannot be combined
+with unindexed stage/entity/lifecycle filters. The admin controller eagerly
+hydrates only that exception lane and lazily pages ordinary inventory, while
+`loadedRunCount`, `nextRunCursor`, and `nextWorkItemCursor` describe loaded
+inventory honestly. The 10,000-item run cap, 200-item pages, and 120/minute read
+limit are cross-contract tested.
+
+The portable work-item schema remains workflow-neutral; the Supply Intake
+callable rejects any work item outside its four-stage vocabulary. Local
+reconciliation creates a new immutable child run bound to the source plan and
+inventory hashes, so imported snapshots are never updated in place. The shipped
+promotion command creates only a blocked review receipt; it does not create an
+`operationPublicationPlans` record or execute a public write.
 
 ## Current Audit Findings
 

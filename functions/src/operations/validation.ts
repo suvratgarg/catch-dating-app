@@ -1,3 +1,8 @@
+import {ValidateFunction} from "ajv";
+import {
+  validateOperationRun as validateOperationRunContract,
+  validateOperationWorkItem as validateOperationWorkItemContract,
+} from "../shared/generated/schemaValidators";
 import {
   OperationActionReceipt,
   OperationDecision,
@@ -8,6 +13,7 @@ import {
   OperationRuleProposal,
   OperationRun,
   OperationWorkItem,
+  MAX_OPERATION_WORK_ITEMS_PER_RUN,
 } from "./models";
 
 export interface ValidationIssue {
@@ -81,13 +87,16 @@ function checkInteger(
   value: unknown,
   path: string,
   issues: ValidationIssue[],
-  minimum = 0
+  minimum = 0,
+  maximum = Number.MAX_SAFE_INTEGER
 ): value is number {
-  if (!Number.isInteger(value) || (value as number) < minimum) {
+  if (!Number.isInteger(value) ||
+      (value as number) < minimum ||
+      (value as number) > maximum) {
     issues.push({
       path,
       code: "invalid_integer",
-      message: `${path} must be an integer >= ${minimum}`,
+      message: `${path} must be an integer from ${minimum} to ${maximum}`,
     });
     return false;
   }
@@ -297,6 +306,23 @@ function finish<T>(value: unknown, issues: ValidationIssue[]):
   return {ok: true, value: value as T, issues: []};
 }
 
+function checkCanonicalSchema<T>(
+  validator: ValidateFunction<T>,
+  value: unknown,
+  issues: ValidationIssue[]
+): void {
+  if (validator(value)) return;
+  for (const error of validator.errors ?? []) {
+    const missingProperty = typeof error.params?.missingProperty === "string" ?
+      `/${error.params.missingProperty}` : "";
+    issues.push({
+      path: `${error.instancePath || "$"}${missingProperty}`,
+      code: `schema_${error.keyword}`,
+      message: error.message ?? "value failed canonical schema validation",
+    });
+  }
+}
+
 export function validateOperationRun(value: unknown):
   ValidationResult<OperationRun> {
   const issues: ValidationIssue[] = [];
@@ -347,7 +373,13 @@ export function validateOperationRun(value: unknown):
     issues.push({path: "budgets", code: "invalid_budgets",
       message: "budgets must be an object"});
   } else {
-    checkInteger(budgets.maxWorkItems, "budgets.maxWorkItems", issues, 1);
+    checkInteger(
+      budgets.maxWorkItems,
+      "budgets.maxWorkItems",
+      issues,
+      1,
+      MAX_OPERATION_WORK_ITEMS_PER_RUN
+    );
     checkInteger(budgets.maxModelCalls, "budgets.maxModelCalls", issues);
     checkInteger(budgets.maxModelTokens, "budgets.maxModelTokens", issues);
     checkInteger(budgets.maxCostMicros, "budgets.maxCostMicros", issues);
@@ -396,6 +428,7 @@ export function validateOperationRun(value: unknown):
     issues.push({path: "failure", code: "run_failure_required",
       message: "failed runs require failure details"});
   }
+  checkCanonicalSchema(validateOperationRunContract, value, issues);
   return finish<OperationRun>(value, issues);
 }
 
@@ -426,16 +459,12 @@ export function validateOperationWorkItem(value: unknown):
   checkOptionalString(item.externalKey, "externalKey", issues);
   checkInteger(item.revision, "revision", issues);
   checkString(item.candidateHash, "candidateHash", issues, SHA256_PATTERN);
-  checkEnum(item.primaryStage, "primaryStage", [
-    "incoming", "verify", "resolve", "ready",
-  ], issues);
+  checkString(item.primaryStage, "primaryStage", issues, STAGE_PATTERN);
   checkEnum(item.lifecycleStatus, "lifecycleStatus", [
     "queued", "in_progress", "waiting", "ready", "published", "terminal",
   ], issues);
   if (item.outcome !== null) {
-    checkEnum(item.outcome, "outcome", [
-      "published", "rejected", "expired", "cancelled", "taken_down",
-    ], issues);
+    checkString(item.outcome, "outcome", issues, CODE_PATTERN);
   }
   checkStringArray(
     item.taskFlags,
@@ -454,9 +483,23 @@ export function validateOperationWorkItem(value: unknown):
     issues.push({path: "fieldProvenance", code: "invalid_field_provenance",
       message: "fieldProvenance must be an array"});
   }
-  if (!recordValue(item.normalizedPayload)) {
+  const normalizedPayload = recordValue(item.normalizedPayload);
+  if (!normalizedPayload) {
     issues.push({path: "normalizedPayload", code: "invalid_payload",
       message: "normalizedPayload must be an object"});
+  }
+  const humanReviewSignalled = (
+    Array.isArray(item.blockerCodes) &&
+      item.blockerCodes.includes("human_review_required")
+  ) || normalizedPayload?.owner === "human";
+  if (humanReviewSignalled &&
+      (!Array.isArray(item.taskFlags) ||
+        !item.taskFlags.includes("human_review_required"))) {
+    issues.push({
+      path: "taskFlags",
+      code: "human_review_task_flag_required",
+      message: "human review signals require the canonical task flag",
+    });
   }
   if (item.decisionId !== null) {
     checkString(item.decisionId, "decisionId", issues, ID_PATTERN);
@@ -486,6 +529,7 @@ export function validateOperationWorkItem(value: unknown):
     issues.push({path: "outcome", code: "work_item_published_outcome",
       message: "published work items require the published outcome"});
   }
+  checkCanonicalSchema(validateOperationWorkItemContract, value, issues);
   return finish<OperationWorkItem>(value, issues);
 }
 

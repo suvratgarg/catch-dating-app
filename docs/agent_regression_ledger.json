@@ -1,8 +1,294 @@
 {
-  "version": 9,
+  "version": 10,
   "updated": "2026-07-14",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-OPERATIONS-BOUNDARY-001",
+      "title": "Durable workflow orchestration grows back under tool",
+      "status": "active",
+      "applies_to": [
+        "operations/**",
+        "tool/**"
+      ],
+      "symptom": "A future admin workflow adds queues, leases, retries, receipts, or agent execution to an unrelated tool subtree and recreates the current tooling sprawl.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check operations:boundaries",
+        "guardEvidence": "boundary checker rejects legacy growth, operations imports in any new tool root, per-file orchestration markers, and split-file markers aggregated by tool subtree"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "tool/README.md"
+      ],
+      "notes": "Tools may produce bounded artifacts; operations owns durable orchestration. The v2 scanner covers all tool code while retaining file-count ratchets for known legacy producers."
+    },
+    {
+      "id": "REG-OPERATIONS-PROJECTION-001",
+      "title": "CLI shadow inventory and admin Firestore inventory diverge",
+      "status": "active",
+      "applies_to": [
+        "operations/src/platform/read-models.mjs",
+        "functions/src/operations/projectionImporter.ts",
+        "functions/scripts/operations/import-shadow-projection.cjs",
+        "functions/src/admin/intakeOperations.ts",
+        "admin/src/features/intake/operations/**"
+      ],
+      "symptom": "The local agent completes a run and exports valid stages, but no trusted path imports that exact inventory into the Firestore projection read by the admin UI, or page-sized counts are presented as full-run totals.",
+      "guard": {
+        "type": "command",
+        "command": "node --test functions/lib/operations/projectionImporter.test.js",
+        "guardEvidence": "applies items before the run and replays the same artifact"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/backend_operation_catalog.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "The bridge is dry-run first, imports only immutable shadow run/work-item projections, and carries full-run aggregates independently of callable pagination."
+    },
+    {
+      "id": "REG-OPERATIONS-RUNTIME-RECOVERY-001",
+      "title": "A process crash leaves an operations run unrecoverable or understates consumed budget",
+      "status": "active",
+      "applies_to": [
+        "operations/src/cli/main.mjs",
+        "operations/src/platform/engine.mjs",
+        "operations/src/platform/storage/file-store.mjs",
+        "operations/test/cli.test.mjs",
+        "operations/test/platform.test.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "A deterministic workflow clock freezes lease heartbeats, mixed or replaced guard owners break mutual exclusion, a live owner appears during stale inspection and is quarantined, a requested run-id collision poisons idempotency, an idempotency crash leaves a planned orphan, a completed checkpoint resumes with zero work-item consumption, or completion, promotion, and reconciliation lose their deterministic companion actions.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix operations test",
+        "guardEvidence": "separate live lease clock, recovery-marker owner recheck, inode-bound mixed-owner guard recovery, run-collision cleanup, mapping-first run repair, checkpoint budget reconstruction, and completion/promotion/reconciliation action repair tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md"
+      ],
+      "notes": "Lease safety never uses --now; stale recovery installs a unique marker and rechecks directory identity plus every owner before quarantine; idempotency changes are serialized, and durable side effects are reconstructed from persisted state before replay returns success."
+    },
+    {
+      "id": "REG-OPERATIONS-PROMOTION-POLICY-SNAPSHOT-001",
+      "title": "Promotion eligibility changes when a live source profile changes after the run",
+      "status": "active",
+      "applies_to": [
+        "operations/src/platform/engine.mjs",
+        "operations/src/workflows/supply-intake/workflow.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "Replaying promotion for an incomplete or old run reloads mutable source policy, trusts mutated run capability/budget copies or a tampered frozen plan, accepts candidates outside durable workflow-owned selection, accepts forged companion-action provenance, changes the eligible set, or allows a blocked receipt's safety fields to be overwritten without changing its id or hash.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "promotion requires a completed inventory-hash-bound run, validates workflow-owned candidate membership, revalidates frozen authority and companion-action provenance, and detects overwrite or replay tampering"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md"
+      ],
+      "notes": "The plan freezes publication policy per source; all run entrypoints bind persisted authority copies back to it, and every immutable receipt plus companion action binds canonical identity, actor, time, payload, policy hash, blocked outcome, blockers, and guardrails."
+    },
+    {
+      "id": "REG-OPERATIONS-LEARNING-LATEST-EVAL-001",
+      "title": "A source rule advances from an older pass after its latest evaluation failed",
+      "status": "active",
+      "applies_to": [
+        "operations/src/workflows/supply-intake/learning.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "Canary creation searches for any historical pass, compares ISO timestamp strings instead of instants, chooses arbitrarily between equal-time evidence, or trusts a stale latestEvaluationId after a crash persisted a newer failed immutable evaluation but did not update the proposal pointer.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "shadow canary derives the newest immutable evaluation by parsed instant, rejects ambiguous equal-time evidence, repairs a stale pointer, blocks on failure, and binds a later pass"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md"
+      ],
+      "notes": "Evaluation and canary operations are serialized per proposal; offset timestamps are ordered by epoch and conflicting evidence at one latest instant fails closed. The newest immutable failure repairs stale proposal state and blocks canary creation even when an older evaluation passed."
+    },
+    {
+      "id": "REG-OPERATIONS-PROJECTION-IMPORT-002",
+      "title": "Projection apply trusts a partial replay or a mislabeled Firebase target",
+      "status": "active",
+      "applies_to": [
+        "functions/src/operations/projectionImporter.ts",
+        "functions/src/operations/projectionImporter.test.ts",
+        "functions/scripts/operations/import-shadow-projection.cjs",
+        "functions/test/operations-import-shadow-projection.test.cjs",
+        "tool/tools_manifest.json"
+      ],
+      "symptom": "An existing run is reported idempotent while work items are missing or changed, the export exceeds maxWorkItems, or a production project id is passed with a non-production environment label to bypass confirmation.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/operations/projectionImporter.test.js functions/test/operations-import-shadow-projection.test.cjs",
+        "guardEvidence": "missing-item repair, immutable-item conflict, work-budget rejection, environment-alias binding, and project-aware production confirmation tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/backend_operation_catalog.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "Apply is a repairable immutable import, and environment plus project must identify the same configured Firebase target."
+    },
+    {
+      "id": "REG-OPERATIONS-ADMIN-EXCEPTION-PAGINATION-001",
+      "title": "A counted human exception cannot be opened because it is beyond the first admin page",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
+        "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
+        "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
+        "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx"
+      ],
+      "symptom": "The run summary reports a human-review count, but the read-only workspace loads only the first 200 work items and cannot retrieve or open a later active exception; run page counts may also be labeled as persisted totals.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx",
+        "guardEvidence": "controller drains the run-pinned server-filtered exception cursor, rejects summary/cardinality drift, and UI labels run and ordinary-item pages as loaded"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/admin_dashboard_user_stories_and_component_catalogue.md"
+      ],
+      "notes": "The controller eagerly validates only the active exception lane, preserves a lazy ordinary cursor, prevents stale load-more writes after refresh, and keeps terminal history out of active stage queues."
+    },
+    {
+      "id": "REG-OPERATIONS-ADMIN-PAGINATION-CAPACITY-001",
+      "title": "A maximum Supply Intake run exhausts the admin read window or is downloaded eagerly",
+      "status": "active",
+      "applies_to": [
+        "contracts/callables/admin_list_intake_operations_payload.schema.json",
+        "contracts/operations/run.schema.json",
+        "firestore.indexes.json",
+        "functions/src/admin/intakeOperations.ts",
+        "functions/src/shared/rateLimit.ts",
+        "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts"
+      ],
+      "symptom": "A run exceeds the bounded shard size, a small caller page causes thousands of exception reads, an unindexed filter combination reaches Firestore, or refresh eagerly drains ordinary inventory and breaches the callable rate window.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/operations/contractSchemas.test.js && npm --workspace catch-admin test -- --run src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
+        "guardEvidence": "1-to-10000 run capacity, committed human-review index, 200-item exception lane, two-load rate proof, maximum exception hydration, and lazy maximum ordinary-run tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/backend_operation_catalog.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "The callable requires authoritative run aggregates, accepts only the indexed whole-run human filter, allows 120 reads per minute, and disables automatic client retries; ordinary pages are explicit."
+    },
+    {
+      "id": "REG-OPERATIONS-WORKFLOW-MANIFEST-001",
+      "title": "A durable workflow manifest drifts from its executable surface",
+      "status": "active",
+      "applies_to": [
+        "contracts/operations/workflow_manifest.schema.json",
+        "operations/src/cli/main.mjs",
+        "operations/src/workflows/supply-intake/manifest.json",
+        "operations/scripts/check-workflow-manifest.mjs",
+        "operations/test/workflow-manifest.test.mjs"
+      ],
+      "symptom": "A workflow folder, factory, command subset, stage transition, lifecycle semantic mapping, source loader, capability, or capacity changes without updating its executable inventory, or a second workflow passes metadata checks while generic runtime behavior still assumes Supply Intake vocabulary.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check operations:workflow-manifest",
+        "guardEvidence": "schema-backed discovery binds registry, manifest, factory methods, command subsets, stage-closed transitions, lifecycle semantics, optional source loaders, profiles, capabilities, and capacity; custom lifecycle projection tests prove runtime behavior"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md"
+      ],
+      "notes": "The registry and checked manifest are the extension seam for future admin workflows. Ordered stages and explicit active/published/expired semantic groups drive generic queue, export, counter, and reconciliation behavior."
+    },
+    {
+      "id": "REG-OPERATIONS-SCHEMA-PARITY-001",
+      "title": "Operations runtime accepts records rejected by the canonical schemas",
+      "status": "active",
+      "applies_to": [
+        "contracts/operations/work_item.schema.json",
+        "operations/src/platform/read-models.mjs",
+        "functions/src/operations/validation.ts",
+        "tool/contracts/generate_schema_contracts.mjs"
+      ],
+      "symptom": "A lightweight or hand-written validator ignores draft-07 conditionals, hardcodes Supply Intake vocabulary into the generic base contract, or allows incompatible terminal outcomes or unqueryable human-review signals into export, import, or Firestore.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix operations test && npm --prefix functions run build && node --test functions/lib/operations/validation.test.js",
+        "guardEvidence": "generic validators accept valid future workflow tokens while Supply Intake response validators reject foreign stages; Ajv also rejects missing human flags, incompatible terminal outcomes, and terminal human-review ownership"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/data_contracts.md",
+        "contracts/README.md"
+      ],
+      "notes": "Canonical base schemas allow workflow-owned tokens; consumer-specific Supply Intake schemas and runtime policy narrow them at trust boundaries. The lightweight model-output validator remains limited to its declared subset."
+    },
+    {
+      "id": "REG-OPERATIONS-RECONCILIATION-SNAPSHOT-001",
+      "title": "Reconciliation mutates or under-budgets an imported completed run",
+      "status": "active",
+      "applies_to": [
+        "operations/src/platform/engine.mjs",
+        "operations/src/workflows/supply-intake/workflow.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "Reconciliation edits the source snapshot in place, drops the source work-item capacity after through-date filtering, creates a different child for a same-day replay, accepts direct start outside the reconciliation entrypoint, or leaves terminal human-review ownership behind.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "immutable lineage-bound child runs, source preservation, same-window replay, source-budget retention, entrypoint rejection, terminal cleanup, blocker repair, and interrupted receipt repair tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md"
+      ],
+      "notes": "A reconciliation child binds source run, plan hash, inventory hash, and UTC window and receives new work-item ids."
+    },
+    {
+      "id": "REG-OPERATIONS-LEARNING-CANDIDATE-EVAL-001",
+      "title": "Rule evaluation passes by running shipped code instead of the frozen candidate",
+      "status": "active",
+      "applies_to": [
+        "operations/src/workflows/supply-intake/learning.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "A deliberately wrong source mapping passes because evaluation ignores candidate content, duplicate outputs inflate precision or recall, unsupported code executes, or proposal identity, fixture, extractor, or candidate evidence is mutated between proposal, evaluation, and canary.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "wrong mappings fail, allowlisted CN Traveller and Luma candidates execute, multiset metrics preserve duplicates, unknown candidates fail closed, and proposal mutations are rejected"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md"
+      ],
+      "notes": "Candidate families remain code-owned and non-deploying; the guard proves evaluation fidelity without claiming automatic discovery or activation."
+    },
+    {
+      "id": "REG-OPERATIONS-INVENTORY-IMMUTABILITY-001",
+      "title": "A completed run keeps its ids and counts while durable content drifts",
+      "status": "active",
+      "applies_to": [
+        "operations/src/platform/engine.mjs",
+        "operations/src/platform/read-models.mjs",
+        "operations/src/platform/storage/file-store.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "A deterministic work-item id is reused with changed content, a completed inventory changes without changing cardinality, a forged completion action is accepted, promotion evidence changes a previously exportable snapshot, or the same export path is overwritten with changed content.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "content-bound if-absent writes, completed inventory hashes, deterministic completion action validation, stable post-promotion export, and immutable admin export conflict tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md"
+      ],
+      "notes": "Completed run counters and inventory hashes freeze the canonical export; post-run audit receipts are stored without changing that snapshot."
+    },
     {
       "id": "REG-AGENT-001",
       "title": "Broad cleanup skips the deterministic audit registry loop",
@@ -492,9 +778,9 @@
         "command": "node tool/run.mjs check web:admin-callable-validators && npm --workspace catch-admin run test",
         "guardEvidence": "generator discovers every adminApi callable and validator tests cover strict request families plus invalid response paths"
       },
-    "owner_docs": [
-      "docs/web_surface_architecture.md"
-    ],
+      "owner_docs": [
+        "docs/web_surface_architecture.md"
+      ],
       "notes": "Schema-backed contracts are strict. Callables without a dedicated JSON contract still receive a generated top-level object validator and remain visible in validation coverage until their strict contract lands."
     },
     {
