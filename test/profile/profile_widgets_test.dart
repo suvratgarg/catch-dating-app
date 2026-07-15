@@ -1,3 +1,5 @@
+// ignore_for_file: scoped_providers_should_specify_dependencies
+
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -111,6 +113,7 @@ Widget _editableProfileTab(
 ) {
   return ProviderScope(
     overrides: [
+      // Test-only scoped overrides deliberately replace app-root providers.
       uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
       errorLoggerProvider.overrideWithValue(_SilentErrorLogger()),
       userProfileRepositoryProvider.overrideWithValue(repository),

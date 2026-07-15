@@ -1143,18 +1143,22 @@
       "status": "active",
       "applies_to": [
         "lib/core/widgets/catch_field.dart",
+        "lib/core/widgets/catch_form_field_label.dart",
+        "lib/core/widgets/catch_toggle.dart",
         "lib/**/presentation/**inline_editor**",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
         "test/core/catch_field_focus_semantics_test.dart",
         "test/core/catch_primitives_test.dart",
+        "test/chats/chat_input_bar_test.dart",
+        "test/events/location_picker_screen_test.dart",
         "test/profile/profile_widgets_test.dart",
         "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
       ],
-      "symptom": "Static fields display edit affordances, editable fields lose them, direct inputs add a duplicate keyboard Tab stop, pointer-down and focus require separate taps, secondary pointers or drags leave press chrome behind, tap-away cancels before pointer-up or during a scroll, blank drawer taps or descendant keyboard events toggle the row, local Done does not close after submit, saving fields still cancel or submit, disclosure height snaps or remounts draft state, an equal profile refresh resets a staged multi-choice draft, focus changes label typography/supporting-content order, toggle anatomy falls off-axis, choice summaries drift into feature-formatted comma lists, Optional copy is used as the final-selection policy, or empty editable rows mix bare labels, plus-prefixed values, and input instructions.",
+      "symptom": "Static fields display edit affordances, editable fields lose them, direct inputs add a duplicate keyboard Tab stop, pointer-down and focus require separate taps, secondary pointers or drags leave press chrome behind, tap-away cancels before pointer-up or during a scroll, blank drawer taps or descendant keyboard events toggle the row, local Done does not close after submit, saving fields still cancel or submit, disclosure height snaps or remounts draft state, an equal profile refresh resets a staged multi-choice draft, focus changes label typography/supporting-content order, an Optional suffix absorbs the field name instead of leaving it as a distinct text descendant, a hidden label also suppresses its same-name input hint, toggle anatomy falls off-axis or bypasses CatchToggle, choice summaries drift into feature-formatted comma lists, Optional copy is used as the final-selection policy, or empty editable rows mix bare labels, plus-prefixed values, and input instructions.",
       "guard": {
         "type": "command",
-        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart",
-        "guardEvidence": "single-gesture press-to-focus/open behavior, one native keyboard focus stop per direct input, field-to-field handoff, primary-pointer press filtering, drag exit cleanup, pointer-up tap-away timing, drawer tap and keyboard propagation barriers, local-versus-controlled Done ownership, loading cancellation/submit guards, native cursor placement, onBlur delivery, persistent disclosure identity, equal-refresh multi-choice draft preservation, centered toggle anatomy, affordance matrix, localized empty-value fallback, midpoint expansion/collapse height, stable label metrics, explicit-save content ordering, source-option-order choice summaries joined with a middle dot, explicit body override, and clearability independent from visible Optional copy"
+        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/chats/chat_input_bar_test.dart test/events/location_picker_screen_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/hosts/host_create_event_screen_test.dart test/event_success/event_success_live_screens_test.dart test/reviews/reviews_widgets_test.dart",
+        "guardEvidence": "single-gesture press-to-focus/open behavior, one native keyboard focus stop per direct input, field-to-field handoff, primary-pointer press filtering, drag exit cleanup, pointer-up tap-away timing, drawer tap and keyboard propagation barriers, local-versus-controlled Done ownership, loading cancellation/submit guards, native cursor placement, onBlur delivery, persistent disclosure identity, equal-refresh multi-choice draft preservation, centered toggle anatomy through canonical CatchToggle composition, distinct optional-label text with combined semantics, retained same-name hints when labels are hidden, affordance matrix, localized empty-value fallback, midpoint expansion/collapse height, stable label metrics, explicit-save content ordering, source-option-order choice summaries joined with a middle dot, explicit body override, and clearability independent from visible Optional copy"
       },
       "owner_docs": [
         "docs/widget_catalog.md",

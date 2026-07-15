@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-15T03:03:12.301Z",
+  "generatedAt": "2026-07-15T03:55:22.787Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"

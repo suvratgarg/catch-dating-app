@@ -50,9 +50,6 @@ void main() {
     expect(pillRect.right, 390 - CatchSpacing.screenPx);
     expect(find.byTooltip('Send an image'), findsOneWidget);
     expect(find.byTooltip('Send message'), findsOneWidget);
-    expect(
-      tester.widget<TextField>(find.byType(TextField)).decoration?.hintText,
-      'Message...',
-    );
+    expect(find.text('Message...'), findsOneWidget);
   });
 }

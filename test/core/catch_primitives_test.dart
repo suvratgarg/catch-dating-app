@@ -3855,7 +3855,8 @@ void main() {
 
     await tester.tap(find.text('Add religion · Optional'));
     await _pumpCatchFieldMotion(tester);
-    expect(find.text('Religion · Optional'), findsOneWidget);
+    expect(find.text('Religion'), findsOneWidget);
+    expect(find.text(' · Optional'), findsOneWidget);
     expect(find.text('Hindu'), findsOneWidget);
   });
 
@@ -3875,6 +3876,7 @@ void main() {
     );
 
     expect(find.byKey(const ValueKey('catch-field-toggle')), findsOneWidget);
+    expect(find.byType(CatchToggle), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('catch-field-toggle')));
@@ -4814,8 +4816,8 @@ void main() {
       ),
     );
 
-    expect(find.text('Bio · Optional'), findsOneWidget);
-    expect(find.text('Bio'), findsNothing);
+    expect(find.text('Bio'), findsOneWidget);
+    expect(find.text(' · Optional'), findsOneWidget);
     expect(find.text('Optional'), findsNothing);
     expect(
       find.byWidgetPredicate(
@@ -5212,6 +5214,27 @@ void main() {
       (iconRect.center.dy - fieldRect.center.dy).abs(),
       lessThanOrEqualTo(2),
     );
+  });
+
+  testWidgets('CatchField keeps a same-name hint when its label is hidden', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 320,
+          child: CatchField.input(
+            title: 'Search for a meeting point',
+            showLabel: false,
+            placeholder: 'Search for a meeting point',
+            size: CatchFieldSize.floating,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Search for a meeting point'), findsOneWidget);
   });
 
   testWidgets('CatchSearchField renders pill search and clear behavior', (

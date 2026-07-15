@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -1362,7 +1363,9 @@ class _CatchFieldState extends State<CatchField> {
     if (hint == null || hint.isEmpty) return null;
 
     final label = _title?.trim();
-    if (label != null && label.toLowerCase() == hint.toLowerCase()) {
+    if (widget.showLabel &&
+        label != null &&
+        label.toLowerCase() == hint.toLowerCase()) {
       return null;
     }
     return hint;
@@ -3400,53 +3403,10 @@ class CatchFieldToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final canChange = onChanged != null;
-    return Semantics(
-      button: true,
-      enabled: canChange,
-      toggled: value,
-      label: semanticLabel,
-      child: Opacity(
-        opacity: canChange ? 1 : CatchFieldTokens.savingToggleOpacity,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: canChange ? () => onChanged!.call(!value) : null,
-          child: SizedBox(
-            key: const ValueKey('catch-field-toggle'),
-            width: CatchFieldTokens.toggleTrackWidth,
-            height: CatchFieldTokens.toggleTrackHeight,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: value ? t.primary : t.line2,
-                borderRadius: BorderRadius.circular(CatchRadius.pill),
-              ),
-              child: AnimatedAlign(
-                duration: _fieldDuration(context, CatchFieldTokens.standard),
-                curve: CatchFieldTokens.curve,
-                alignment: value
-                    ? AlignmentDirectional.centerEnd
-                    : AlignmentDirectional.centerStart,
-                child: Padding(
-                  padding: const EdgeInsets.all(
-                    CatchFieldTokens.toggleTrackInset,
-                  ),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: t.surface,
-                      shape: BoxShape.circle,
-                      boxShadow: CatchElevation.toggleKnob,
-                    ),
-                    child: const SizedBox.square(
-                      dimension: CatchFieldTokens.toggleKnobExtent,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return CatchToggle.field(
+      value: value,
+      onChanged: onChanged,
+      semanticLabel: semanticLabel,
     );
   }
 }

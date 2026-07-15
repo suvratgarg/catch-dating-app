@@ -49,9 +49,9 @@
     },
     {
       "hammingBucket": "30-34",
-      "pairs": 80,
+      "pairs": 81,
       "jaccardMin": 0.1818,
-      "jaccardMean": 0.4075,
+      "jaccardMean": 0.4047,
       "jaccardMax": 0.619
     },
     {
@@ -65,40 +65,40 @@
       "hammingBucket": "40-44",
       "pairs": 430,
       "jaccardMin": 0,
-      "jaccardMean": 0.2255,
+      "jaccardMean": 0.2247,
       "jaccardMax": 0.5
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 1113,
+      "pairs": 1116,
       "jaccardMin": 0,
       "jaccardMean": 0.1559,
       "jaccardMax": 0.5
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 2170,
+      "pairs": 2167,
       "jaccardMin": 0,
       "jaccardMean": 0.0992,
       "jaccardMax": 0.4444
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 3309,
+      "pairs": 3308,
       "jaccardMin": 0,
       "jaccardMean": 0.0621,
       "jaccardMax": 0.3133
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3411,
+      "pairs": 3413,
       "jaccardMin": 0,
-      "jaccardMean": 0.0378,
+      "jaccardMean": 0.0377,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1968,
+      "pairs": 1965,
       "jaccardMin": 0,
       "jaccardMean": 0.0238,
       "jaccardMax": 0.2143
@@ -112,9 +112,9 @@
     },
     {
       "hammingBucket": "75-79",
-      "pairs": 105,
+      "pairs": 104,
       "jaccardMin": 0,
-      "jaccardMean": 0.0106,
+      "jaccardMean": 0.0105,
       "jaccardMax": 0.0816
     },
     {
@@ -143,7 +143,7 @@
     "nameFamilies": 204,
     "relatedEdges": 30,
     "screenClusters": 12,
-    "skippedTrivial": 89,
+    "skippedTrivial": 90,
     "absorbCandidates": 7
   },
   "groundTruthRecall": [
@@ -300,6 +300,7 @@
     "CatchAsyncScreenLoading",
     "CatchAsyncValueView",
     "CatchCodeInput",
+    "CatchFieldToggle",
     "CatchFieldTrailing",
     "CatchFormStepBody",
     "CatchKicker",
@@ -2004,7 +2005,7 @@
       "simhash128": "2c51d8ef807214fa239ca241bb52ce37",
       "tokenStreamLength": 892,
       "coarseTokenStreamLength": 892,
-      "usageCountRaw": 255,
+      "usageCountRaw": 256,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -2043,7 +2044,7 @@
       "simhash128": "04c35ae8b7793f27b221ac5435c092cb",
       "tokenStreamLength": 48,
       "coarseTokenStreamLength": 48,
-      "usageCountRaw": 5,
+      "usageCountRaw": 6,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2090,12 +2091,12 @@
       "name": "CatchFieldToggle",
       "file": "lib/core/widgets/catch_field.dart",
       "role": "composition",
-      "shapeHash": "aaa33d5d97e99d30a5242982893b79b91d039910e2d9db06cee377fa10ce4036",
-      "coarseShapeHash": "8c8c7b7baa18ec1a44e8b85140c1170d8422688dd1f8ddc26bb9e472e39b7cf9",
-      "simhash128": "64494809bbe2af9ae74fc485f8597c66",
-      "tokenStreamLength": 63,
-      "coarseTokenStreamLength": 63,
-      "usageCountRaw": 5,
+      "shapeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coarseShapeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "simhash128": "ffffffffffffffffffffffffffffffff",
+      "tokenStreamLength": 0,
+      "coarseTokenStreamLength": 0,
+      "usageCountRaw": 6,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2129,11 +2130,11 @@
       "name": "CatchFormFieldLabel",
       "file": "lib/core/widgets/catch_form_field_label.dart",
       "role": "composition",
-      "shapeHash": "0487b8e4bf6e217b3df8bea28e4a9fe3fc0c7f2c8955e676b2897860dd49bcbd",
-      "coarseShapeHash": "d6f5cdb73301388fd10f4f06efe7c3380c1d55083e0a76d987eac4393966b266",
-      "simhash128": "28d2881f4aba10991e506c90126c9ab5",
-      "tokenStreamLength": 43,
-      "coarseTokenStreamLength": 43,
+      "shapeHash": "bdc7e8c00654e3c221d245b9272e6cbcbaca457f293ea7e5ef3c5b3cad1f4fc1",
+      "coarseShapeHash": "07ecdaffba297449f5ba4faec1b4b0ea381a2dffdf12e3709b40b6495db87dac",
+      "simhash128": "2af1b8cf67da70993e50cc903ca993f5",
+      "tokenStreamLength": 51,
+      "coarseTokenStreamLength": 51,
       "usageCountRaw": 36,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -3468,12 +3469,12 @@
       "name": "CatchToggle",
       "file": "lib/core/widgets/catch_toggle.dart",
       "role": "atom",
-      "shapeHash": "41c3b5c5fcf590eb226e4c238e3a5a86e9107f93ec0410b7494dafcd0cbe6de8",
-      "coarseShapeHash": "1e1563798a597118a2c9c359db85cadba2d753793ea4f2196497fca7a4c58c50",
-      "simhash128": "e45728c42b82ee2e6ddf04119479d46b",
-      "tokenStreamLength": 60,
-      "coarseTokenStreamLength": 60,
-      "usageCountRaw": 11,
+      "shapeHash": "1d4bb5e552d0cdd7e23868bb6b9fee3bbdb1bce412a0b45fae049ff68fa05b0c",
+      "coarseShapeHash": "d31cc83bcd5bf3e3b5257b05a60f978d3fa1c205382d46f67135f67a27c751f7",
+      "simhash128": "b4476cd933a2ce3ac751e417dd51dc7a",
+      "tokenStreamLength": 78,
+      "coarseTokenStreamLength": 78,
+      "usageCountRaw": 12,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -20815,7 +20816,18 @@
       "scope": "mixed"
     },
     {
-      "id": "n111-host-pane",
+      "id": "n111-field-button",
+      "stem": "FieldButton",
+      "stemType": "outer",
+      "members": [
+        "CatchFieldCommitButton",
+        "CatchFieldRepeatButton"
+      ],
+      "usageSum": 11,
+      "scope": "widget"
+    },
+    {
+      "id": "n112-host-pane",
       "stem": "HostPane",
       "stemType": "outer",
       "members": [
@@ -20826,7 +20838,7 @@
       "scope": "widget"
     },
     {
-      "id": "n112-photo-picker",
+      "id": "n113-photo-picker",
       "stem": "PhotoPicker",
       "stemType": "final-two",
       "members": [
@@ -20837,7 +20849,7 @@
       "scope": "widget"
     },
     {
-      "id": "n113-photo-strip",
+      "id": "n114-photo-strip",
       "stem": "PhotoStrip",
       "stemType": "final-two",
       "members": [
@@ -20848,7 +20860,7 @@
       "scope": "widget"
     },
     {
-      "id": "n114-reviews-section",
+      "id": "n115-reviews-section",
       "stem": "ReviewsSection",
       "stemType": "final-two",
       "members": [
@@ -20859,7 +20871,7 @@
       "scope": "widget"
     },
     {
-      "id": "n115-club-row",
+      "id": "n116-club-row",
       "stem": "ClubRow",
       "stemType": "outer",
       "members": [
@@ -20870,23 +20882,12 @@
       "scope": "widget"
     },
     {
-      "id": "n116-defaults-step",
+      "id": "n117-defaults-step",
       "stem": "DefaultsStep",
       "stemType": "final-two",
       "members": [
         "ClubEventSuccessDefaultsStep",
         "ClubHostDefaultsStep"
-      ],
-      "usageSum": 10,
-      "scope": "widget"
-    },
-    {
-      "id": "n117-field-button",
-      "stem": "FieldButton",
-      "stemType": "outer",
-      "members": [
-        "CatchFieldCommitButton",
-        "CatchFieldRepeatButton"
       ],
       "usageSum": 10,
       "scope": "widget"

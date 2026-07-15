@@ -100,67 +100,67 @@
         {
           "class": "_CatchFieldState",
           "name": "_buildAdd",
-          "line": 1488,
+          "line": 1491,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildRow",
-          "line": 1506,
+          "line": 1509,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildBody",
-          "line": 1883,
+          "line": 1886,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildTextEntryBody",
-          "line": 2012,
+          "line": 2015,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildFieldContent",
-          "line": 2022,
+          "line": 2025,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildTextEntryField",
-          "line": 2275,
+          "line": 2278,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildTextEntryInput",
-          "line": 2438,
+          "line": 2441,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildTextEntryMotion",
-          "line": 2570,
+          "line": 2569,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildSelectField",
-          "line": 2583,
+          "line": 2582,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildSelectTrigger",
-          "line": 2625,
+          "line": 2624,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildFieldChrome",
-          "line": 2730,
+          "line": 2729,
           "is_private": true
         }
       ]
@@ -437,77 +437,77 @@
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildAdd",
-      "line": 1488,
+      "line": 1491,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildRow",
-      "line": 1506,
+      "line": 1509,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildBody",
-      "line": 1883,
+      "line": 1886,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildTextEntryBody",
-      "line": 2012,
+      "line": 2015,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildFieldContent",
-      "line": 2022,
+      "line": 2025,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildTextEntryField",
-      "line": 2275,
+      "line": 2278,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildTextEntryInput",
-      "line": 2438,
+      "line": 2441,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildTextEntryMotion",
-      "line": 2570,
+      "line": 2569,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildSelectField",
-      "line": 2583,
+      "line": 2582,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildSelectTrigger",
-      "line": 2625,
+      "line": 2624,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildFieldChrome",
-      "line": 2730,
+      "line": 2729,
       "action": "extract-to-widget-class"
     },
     {

@@ -47,25 +47,31 @@ class CatchFormFieldLabel extends StatelessWidget {
 
     if (inlineOptional) {
       final effectiveStyle = style ?? labelStyle;
-      final text = Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(text: label),
-            if (isOptional)
-              TextSpan(
-                text: context.l10n.coreCatchFieldTextOptionalSuffix,
-                style: effectiveStyle.copyWith(
-                  color: hasError ? t.danger : t.ink3,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-          ],
-        ),
+      final labelText = Text(
+        label,
         style: effectiveStyle,
         maxLines: maxLines,
         overflow: TextOverflow.ellipsis,
       );
-      if (!isOptional) return text;
+      if (!isOptional) return labelText;
+
+      // Keep the visible label as its own text node so clients can target the
+      // field name without folding the optional qualifier into that name.
+      final text = Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Flexible(child: labelText),
+          Text(
+            context.l10n.coreCatchFieldTextOptionalSuffix,
+            style: effectiveStyle.copyWith(
+              color: hasError ? t.danger : t.ink3,
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 1,
+          ),
+        ],
+      );
       return Semantics(
         label: context.l10n.coreCatchFormFieldLabelLabelLabelOptional(
           label: label,
