@@ -168,6 +168,7 @@ function unifiedReleaseManifest() {
       channel: "testflight",
       uploadMode: "automatic-main",
       signingStyle: "automatic",
+      developmentIdentitySource: "reusable-ci-p12",
       distributionSigningStage: "export",
       uploadArtifact: "verified-ipa",
       uploadTool: "altool",
@@ -213,6 +214,25 @@ jobs:
       matrix:
         app_role: roles
     steps:
+      - name: Install reusable iOS CI development identity
+        env:
+          P12: \${{ secrets.IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64 }}
+          PASSWORD: \${{ secrets.IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD }}
+          SHA256: \${{ vars.IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256 }}
+          EXPIRES: \${{ vars.IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT }}
+        run: |
+          security import "$p12_path" -k "$keychain_path" -f pkcs12 -P "$PASSWORD" -x -T /usr/bin/codesign
+          certificate_subject="CN=Apple Development: CI,OU=$expected_team_id"
+          expected_team_id="$(/usr/libexec/PlistBuddy -c 'Print :teamID' ios/ExportOptions.prod.plist)"
+          if [[ "$certificate_subject" != *"CN=Apple Development:"* || "$certificate_subject" != *"OU=$expected_team_id"* ]]; then exit 1; fi
+          expected_sha256="$IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256"
+          actual_sha256="$(openssl x509 -in "$certificate_pem_path" -noout -fingerprint -sha256)"
+          if [[ "$actual_sha256" != "$expected_sha256" ]]; then exit 1; fi
+          configured_expiry_epoch="$IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT"
+          actual_expiry_epoch="example"
+          if [[ "$actual_expiry_epoch" != "$configured_expiry_epoch" ]]; then exit 1; fi
+          openssl x509 -in "$certificate_pem_path" -checkend 2592000 -noout
+          security find-identity -v -p codesigning "$keychain_path"
       - name: Upload to TestFlight
       - run: xcodebuild \\
           -exportArchive
@@ -229,6 +249,9 @@ jobs:
           --api-key "$ASC_KEY_ID" \\
           --api-issuer "$ASC_ISSUER_ID"
       - run: node tool/platform/verify_app_store_build.mjs
+      - name: Remove ephemeral iOS signing material
+        if: \${{ always() }}
+        run: security delete-keychain "$IOS_CI_KEYCHAIN_PATH"
   prod-android:
     environment: prod-mobile
     strategy:
@@ -275,6 +298,64 @@ test("release ownership rejects an explicit iOS archive signing identity", () =>
   assert.ok(
     result.findings.some((finding) =>
       finding.includes("defer CODE_SIGN_IDENTITY to Xcode automatic signing"),
+    ),
+  );
+});
+
+test("release ownership rejects a missing reusable iOS CI identity import", () => {
+  const manifest = unifiedReleaseManifest();
+  const workflowSource = unifiedWorkflow.replace(
+    '          security import "$p12_path" -k "$keychain_path" -f pkcs12 -P "$PASSWORD" -x -T /usr/bin/codesign\n',
+    "",
+  );
+
+  const result = validateReleaseOwnership({manifest, workflowSource});
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("non-extractable reusable iOS identity import"),
+    ),
+  );
+});
+
+test("release ownership rejects missing reusable iOS identity cleanup", () => {
+  const manifest = unifiedReleaseManifest();
+  const workflowSource = unifiedWorkflow.replace(
+    '        run: security delete-keychain "$IOS_CI_KEYCHAIN_PATH"\n',
+    "        run: echo cleanup-missing\n",
+  );
+
+  const result = validateReleaseOwnership({manifest, workflowSource});
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("always-run reusable iOS identity cleanup"),
+    ),
+  );
+});
+
+test("release ownership rejects incomplete reusable iOS identity verification", () => {
+  const manifest = unifiedReleaseManifest();
+  const workflowSource = unifiedWorkflow
+    .replace("-fingerprint -sha256", "-serial")
+    .replace(
+      '          if [[ "$actual_expiry_epoch" != "$configured_expiry_epoch" ]]; then exit 1; fi\n',
+      "",
+    )
+    .replace("-checkend 2592000", "-noout");
+
+  const result = validateReleaseOwnership({manifest, workflowSource});
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("reusable iOS identity fingerprint derivation"),
+    ),
+  );
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("reusable iOS identity validity floor"),
+    ),
+  );
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("reusable iOS identity expiry metadata validation"),
     ),
   );
 });

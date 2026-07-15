@@ -1749,7 +1749,10 @@
         "path": "tool/platform/check_app_targets.test.mjs",
         "contains": [
           "validateManifestShape rejects a duplicate role/environment target",
-          "release ownership rejects split or incomplete workflow ownership"
+          "release ownership rejects split or incomplete workflow ownership",
+          "release ownership rejects a missing reusable iOS CI identity import",
+          "release ownership rejects missing reusable iOS identity cleanup",
+          "release ownership rejects incomplete reusable iOS identity verification"
         ]
       }
     },

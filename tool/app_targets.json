@@ -65,6 +65,7 @@
       "channel": "testflight",
       "uploadMode": "automatic-main",
       "signingStyle": "automatic",
+      "developmentIdentitySource": "reusable-ci-p12",
       "distributionSigningStage": "export",
       "uploadArtifact": "verified-ipa",
       "uploadTool": "altool"

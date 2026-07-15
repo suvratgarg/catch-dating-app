@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.9.5
-updated: 2026-07-13
+version: 1.9.6
+updated: 2026-07-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -219,12 +219,39 @@ The environment-scoped `Mobile Internal Release` workflow needs these
 - `APP_STORE_CONNECT_API_KEY_ID`
 - `APP_STORE_CONNECT_API_ISSUER_ID`
 - `APP_STORE_CONNECT_API_KEY_BASE64`
+- `IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64`
+- `IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD`
 - `GOOGLE_MAPS_IOS_API_KEY_PROD`
 
 `APP_STORE_CONNECT_API_KEY_BASE64` is the base64-encoded contents of the
 downloaded `AuthKey_<key-id>.p8` file. Keep the raw `.p8` out of git; it is
 ignored by `.gitignore` and should live only in secure local storage and GitHub
 Actions secrets.
+
+The reusable iOS archive identity is a dedicated Apple Development certificate,
+not a personal signing identity. Store its encrypted PKCS#12 payload and
+password in the two `IOS_CI_DEVELOPMENT_CERTIFICATE_*` secrets. Keep these
+non-secret `prod-mobile` environment variables beside it:
+
+- `IOS_CI_DEVELOPMENT_CERTIFICATE_ID`
+- `IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256`
+- `IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT`
+
+Each iOS matrix runner imports that same identity into an ephemeral keychain,
+checks the certificate type, Apple team, SHA-256 fingerprint, and 30-day
+validity floor, then deletes the decoded PKCS#12, public certificate copy,
+temporary keychain, and materialized App Store Connect key. Keep Xcode archive
+signing automatic and keep `-allowProvisioningUpdates`; the persistent private
+key prevents a clean runner from asking Apple to create another development
+certificate, while Xcode can still create or repair role-specific profiles.
+
+Rotate the CI identity before the 30-day floor by creating one replacement
+certificate/private-key pair, importing the replacement PKCS#12 locally to
+prove it is a usable code-signing identity, updating both secrets and all three
+variables, and running both iOS release lanes. Re-query Apple certificates and
+profile relationships after the run. Revoke the old CI certificate only after
+both roles process successfully with the replacement and no new certificate id
+appears. Never auto-revoke the active CI certificate at job teardown.
 
 Android release jobs require these `prod-mobile` environment secrets:
 
@@ -328,13 +355,19 @@ functions in non-interactive CI.
 
 ## Release Setup Evidence Snapshot
 
-Current setup/build/signing/distribution verdict: there is no known local
-build, Firebase, Firestore, Gradle, Xcode, Apple signing, Developer ID,
-notarization, App Check, or trust-chain blocker remaining in the current
-workspace. Mobile store distribution still needs external product-release
-evidence: current TestFlight group assignment/install proof for both roles and
-Play enrollment, processing, tester, signing-fingerprint, install, and launch
-proof.
+Current setup/build/signing/distribution verdict: local builds and the native
+signing contract are healthy. On 2026-07-15, GitHub run `29388936845` exposed
+an Apple certificate-capacity blocker in both iOS archive jobs: ephemeral
+runners had no reusable development private key, so automatic signing had
+accumulated one unusable API-created certificate per runner. Nineteen verified
+unused development certificates were revoked, the three working human
+Development/Distribution/Developer ID identities were preserved, and dedicated
+CI certificate `7P698XNLRP` was installed in `prod-mobile`. The reusable-keychain
+workflow still requires a successful main run before this incident is closed as
+end-to-end release proof. Mobile store distribution also still needs external
+product-release evidence: current TestFlight group assignment/install proof for
+both roles and Play enrollment, processing, tester, signing-fingerprint,
+install, and launch proof.
 
 Verified setup state:
 
@@ -986,6 +1019,19 @@ same checksum-verified IPA, and reached App Store Connect `VALID` as build
 that exact GitHub run. Retirement dispatch `29168662623` downloaded those
 receipts, re-verified both live builds, and disabled both app-scoped `Default`
 workflows. Independent App Store Connect reads confirmed both remain disabled.
+
+Run `29388936845` on main SHA
+`6d042bc77ef943b1278013906c3dec3714586771` failed both iOS archive jobs on
+2026-07-15 after Xcode reported the Apple Development certificate limit and no
+matching iOS App Development profile for either production bundle id. Android
+completed successfully. Live inventory proved that 17 API-created development
+certificates had no surviving private key or live profile relationship; two
+additional human-named development certificates also had no private key or live
+profile relationship. All 19 were revoked by exact id. The remaining live set
+was reduced to the working human Apple Development, Apple Distribution, and
+Developer ID identities, then dedicated reusable CI development certificate
+`7P698XNLRP` was added. Do not rerun `29388936845`: its old workflow does not
+import the reusable private key and would recreate the leak.
 
 Current cutover status:
 

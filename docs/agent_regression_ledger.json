@@ -1,8 +1,31 @@
 {
-  "version": 11,
+  "version": 12,
   "updated": "2026-07-15",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-IOS-CI-SIGNING-001",
+      "title": "Ephemeral iOS release runners leak Apple Development certificates",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/mobile-internal-release.yml",
+        "tool/app_targets.json",
+        "tool/platform/check_app_targets.mjs",
+        "tool/platform/check_app_targets.test.mjs",
+        "docs/release_operations.md"
+      ],
+      "symptom": "A clean macOS release runner has no persistent Apple Development private key, so Xcode automatic signing creates another API development certificate, the runner discards its private key, repeated releases exhaust Apple's certificate capacity, and both Consumer and Host archives fail before provisioning.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check platform:app-targets",
+        "guardEvidence": "the app-target contract requires a reusable CI PKCS#12 source, protected secret references, non-extractable temporary-keychain import, Apple team and SHA-256 checks, a 30-day validity floor, exactly one valid development identity, and always-run signing-material cleanup while continuing to prohibit CODE_SIGN_IDENTITY overrides"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "docs/app_architecture.md"
+      ],
+      "notes": "On 2026-07-15, 17 orphaned API-created certificates and two additional development certificates without private keys or live profile relationships were revoked by exact id. The working human Development, Distribution, and Developer ID identities were preserved. Dedicated CI certificate 7P698XNLRP is intentionally retained and shared by both isolated role runners; it must not be revoked at job teardown."
+    },
     {
       "id": "REG-OPERATIONS-BOUNDARY-001",
       "title": "Durable workflow orchestration grows back under tool",
