@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
-enum CatchKickerSize { md, lg }
+enum CatchKickerSize { md, lg, fieldSection }
 
 /// Handoff `Kicker`: uppercase mono eyebrow for section starts and editorial
 /// labels.
@@ -29,6 +29,10 @@ class CatchKicker extends StatelessWidget {
     return switch (size) {
       CatchKickerSize.md => CatchTextStyles.kicker(context, color: color),
       CatchKickerSize.lg => CatchTextStyles.kickerLg(context, color: color),
+      CatchKickerSize.fieldSection => CatchTextStyles.fieldSectionKicker(
+        context,
+        color: color,
+      ),
     };
   }
 

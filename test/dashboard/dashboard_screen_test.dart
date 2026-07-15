@@ -727,9 +727,15 @@ void main() {
       expect(field.showChevron, isFalse);
 
       expect(find.text('2H'), findsOneWidget);
-      final titleTop = tester.getTopLeft(find.text('Event starts tomorrow')).dy;
-      final timeTop = tester.getTopLeft(find.text('2H')).dy;
-      expect((timeTop - titleTop).abs(), lessThan(10));
+      final titleRect = tester.getRect(find.text('Event starts tomorrow'));
+      final bodyRect = tester.getRect(
+        find.text('Sundowner 5K meets at Carter Road Jetty.'),
+      );
+      final timeRect = tester.getRect(find.text('2H'));
+      expect(
+        timeRect.center.dy,
+        closeTo((titleRect.top + bodyRect.bottom) / 2, 0.5),
+      );
 
       await tester.tap(find.text('2H'));
       await tester.pump();

@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -54,6 +53,7 @@ class CatchField extends StatefulWidget {
     this.action,
     this.titleMaxLines = 1,
     this.bodyMaxLines = 2,
+    this._contentRow = false,
     this.mode,
     this.emphasis = CatchFieldEmphasis.body,
     this.tone = CatchFieldTone.normal,
@@ -179,6 +179,54 @@ class CatchField extends StatefulWidget {
          valid: valid,
          status: status,
          divider: divider,
+       );
+
+  /// A natural-height title plus supporting-copy row.
+  ///
+  /// The React handoff calls its supporting copy `body`, while legacy Flutter
+  /// CatchField rows use [body] as their primary value. Keeping this as an
+  /// explicit constructor preserves those existing value rows while exposing
+  /// the handoff's independent two-line title and three-line body contract.
+  const CatchField.content({
+    Key? key,
+    required String title,
+    required String body,
+    Widget? action,
+    VoidCallback? onTap,
+    int titleMaxLines = 2,
+    int bodyMaxLines = 3,
+    CatchFieldEmphasis emphasis = CatchFieldEmphasis.body,
+    CatchFieldTone tone = CatchFieldTone.normal,
+    IconData? icon,
+    Color? iconColor,
+    String? valueText,
+    int valueMaxLines = 1,
+    bool? showChevron,
+    bool isOptional = false,
+    bool valid = false,
+    CatchFieldStatus status = CatchFieldStatus.idle,
+    bool divider = false,
+  }) : this._(
+         key: key,
+         title: title,
+         body: body,
+         action: action,
+         titleMaxLines: titleMaxLines,
+         bodyMaxLines: bodyMaxLines,
+         contentRow: true,
+         mode: onTap == null ? CatchFieldMode.read : CatchFieldMode.nav,
+         emphasis: emphasis,
+         tone: tone,
+         icon: icon,
+         iconColor: iconColor,
+         valueText: valueText,
+         valueMaxLines: valueMaxLines,
+         showChevron: showChevron,
+         isOptional: isOptional,
+         valid: valid,
+         status: status,
+         divider: divider,
+         onTap: onTap,
        );
 
   const CatchField.nav({
@@ -887,6 +935,7 @@ class CatchField extends StatefulWidget {
 
   final int titleMaxLines;
   final int bodyMaxLines;
+  final bool _contentRow;
 
   final CatchFieldMode? mode;
   final CatchFieldEmphasis emphasis;
@@ -1694,9 +1743,10 @@ class _CatchFieldState extends State<CatchField>
       ),
       content: Text(
         _title ?? '',
-        style: CatchTextStyles.fieldRowTitle(
+        style: _fieldValueTextStyle(
           context,
           color: _toneColor(t, primaryFallback: t.primary),
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -1744,19 +1794,29 @@ class _CatchFieldState extends State<CatchField>
     } else {
       rowAction = null;
     }
-    final centerVertically = _mode == CatchFieldMode.toggle;
-    final baselineTopPadding = centerVertically ? 0.0 : _rowTrailingTopPadding;
+    final centerVertically =
+        _mode == CatchFieldMode.toggle ||
+        (widget._contentRow && widget.emphasis == CatchFieldEmphasis.title);
+    final leadingTopPadding = centerVertically
+        ? 0.0
+        : widget._contentRow
+        ? CatchSpacing.micro2
+        : _rowTrailingTopPadding;
     final trailingSlot = _buildTrailingSlot(t);
     final positionsTrailing = _hasControl || _usesPositionedClearTrailing;
     final rowContent = CatchFieldRow.standard(
       constraints: _rowConstraints,
-      padding: _rowPadding,
+      padding: _rowHeaderPadding,
       leading: _buildLeadingSlot(t),
       trailing: positionsTrailing ? null : trailingSlot,
       crossAxisAlignment: centerVertically
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
-      leadingTopPadding: baselineTopPadding,
+      leadingTopPadding: leadingTopPadding,
+      paddingDuration: _hasControl
+          ? _expansionMotionDuration(context)
+          : Duration.zero,
+      paddingCurve: CatchFieldTokens.curve,
       content: _buildBody(t),
     );
     final row = positionsTrailing && trailingSlot != null
@@ -1765,21 +1825,21 @@ class _CatchFieldState extends State<CatchField>
               rowContent,
               PositionedDirectional(
                 top: _usesPositionedClearTrailing
-                    ? _rowPadding.top +
+                    ? _rowHeaderPadding.top +
                           CatchFieldTokens.captionExtent +
                           (CatchFieldTokens.valueLineExtent - CatchSpacing.s6) /
                               2 +
                           CatchSpacing.micro3
-                    : _rowPadding.top + _rowTrailingTopPadding,
-                end: _rowPadding.right,
+                    : _rowHeaderPadding.top + _rowTrailingTopPadding,
+                end: _rowHeaderPadding.right,
                 child: trailingSlot,
               ),
             ],
           )
         : rowContent;
-    if (rowAction == null && !_active) return row;
     final action = rowAction;
     final canInteract = action != null;
+    if (!canInteract && !_active && !_hasControl) return row;
     final highlighted = _active || _pressed;
     final decoration = BoxDecoration(
       color: _pressed
@@ -1796,38 +1856,14 @@ class _CatchFieldState extends State<CatchField>
     final overlayBleed = CatchFieldInsetScope.flushOf(context)
         ? CatchFieldTokens.dividedRowBleed
         : 0.0;
-    final stack = Stack(
-      fit: StackFit.passthrough,
-      clipBehavior: Clip.none,
-      children: [
-        PositionedDirectional(
-          start: -overlayBleed,
-          end: -overlayBleed,
-          top: -CatchStroke.hairline,
-          bottom: -CatchStroke.hairline,
-          child: IgnorePointer(
-            child: AnimatedContainer(
-              key: const ValueKey('catch-field-active-overlay'),
-              duration: _fieldDuration(
-                context,
-                _pressed ? CatchFieldTokens.pressIn : CatchFieldTokens.standard,
-              ),
-              curve: CatchFieldTokens.curve,
-              decoration: decoration,
-            ),
-          ),
-        ),
-        row,
-      ],
-    );
     final mouseCursor = canInteract
         ? _isEdit
               ? SystemMouseCursors.text
               : SystemMouseCursors.click
         : SystemMouseCursors.basic;
     final tapRegion = _isEdit
-        ? TextFieldTapRegion(groupId: _textFieldTapRegionGroup, child: stack)
-        : stack;
+        ? TextFieldTapRegion(groupId: _textFieldTapRegionGroup, child: row)
+        : row;
     final isToggle = _mode == CatchFieldMode.toggle;
     final toggleStatusValue = switch (widget.status) {
       CatchFieldStatus.idle => null,
@@ -1846,10 +1882,10 @@ class _CatchFieldState extends State<CatchField>
         child: tapRegion,
       ),
     );
-    final keyboardTarget = _isEdit
+    final keyboardTarget = _isEdit || isToggle
         // Editable rows already own one native focus target through TextField.
-        // A second row Focus node would insert an empty Tab stop before the
-        // cursor-bearing control while adding no keyboard capability.
+        // Toggle rows likewise delegate keyboard ownership to their nested
+        // switch. A second row Focus node would insert an empty Tab stop.
         ? pointerTarget
         : FocusableActionDetector(
             enabled: canInteract,
@@ -1870,6 +1906,86 @@ class _CatchFieldState extends State<CatchField>
             },
             child: pointerTarget,
           );
+    final rowPadding = _rowPadding;
+    final disclosureStartPadding =
+        rowPadding.left + (_hasLeadingSlot ? CatchFieldRow.textLaneInset : 0.0);
+    final disclosureControl = widget._explicitSaveInput
+        ? CatchFieldExplicitSaveControl(
+            supporting: widget._supporting,
+            feedback: widget._feedback,
+            secondaryAction: widget._secondaryAction,
+          )
+        : widget.control;
+    final actionBar = widget._onSubmit == null
+        ? null
+        : CatchFieldActionBar(
+            revealTargetKey: _actionBarRevealTargetKey,
+            loading: _isSaving,
+            actionLeading: widget._actionLeading,
+            onCancel: _handleCancel,
+            onSubmit: _handleSubmit,
+          );
+    final rootError = _hasControl ? _displayError?.trim() : null;
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        keyboardTarget,
+        if (_hasControl)
+          CatchFieldDisclosureDrawer(
+            open: _isOpen,
+            offstage: _disclosureOffstage,
+            revealTargetKey: _disclosureRevealTargetKey,
+            control: disclosureControl!,
+            actionBar: actionBar,
+            startPadding: disclosureStartPadding,
+            endPadding: rowPadding.right,
+            bottomPadding: rowPadding.bottom,
+            revealDuration: _expansionMotionDuration(context),
+            opacityDuration: _fieldDuration(context, CatchFieldTokens.standard),
+            onRevealEnd: _handleExpansionAnimationEnd,
+          ),
+        if (rootError?.isNotEmpty == true)
+          CatchFieldSupportRow(
+            key: const ValueKey('catch-field-root-support'),
+            text: rootError,
+            color: t.danger,
+            showErrorIcon: true,
+            padding: EdgeInsetsDirectional.only(
+              start: disclosureStartPadding,
+              end: rowPadding.right,
+              bottom: rowPadding.bottom,
+            ),
+          ),
+      ],
+    );
+    final stack = Stack(
+      fit: StackFit.passthrough,
+      clipBehavior: Clip.none,
+      children: [
+        PositionedDirectional(
+          start: -overlayBleed,
+          end: -overlayBleed,
+          top: -CatchStroke.hairline,
+          bottom: -CatchStroke.hairline,
+          child: IgnorePointer(
+            child: AnimatedContainer(
+              key: const ValueKey('catch-field-active-overlay'),
+              duration: _fieldDuration(
+                context,
+                _pressed
+                    ? CatchFieldTokens.pressIn
+                    : _active
+                    ? CatchFieldTokens.standard
+                    : CatchFieldTokens.pressOut,
+              ),
+              curve: CatchFieldTokens.curve,
+              decoration: decoration,
+            ),
+          ),
+        ),
+        content,
+      ],
+    );
     return Semantics(
       container: isToggle,
       excludeSemantics: isToggle,
@@ -1884,7 +2000,7 @@ class _CatchFieldState extends State<CatchField>
       child: MouseRegion(
         cursor: mouseCursor,
         onExit: canInteract ? _handlePointerExit : null,
-        child: keyboardTarget,
+        child: stack,
       ),
     );
   }
@@ -2070,6 +2186,7 @@ class _CatchFieldState extends State<CatchField>
   }
 
   double get _rowTrailingTopPadding {
+    if (widget._contentRow) return 0;
     if (!_isEdit && widget.emphasis == CatchFieldEmphasis.title) {
       return 0;
     }
@@ -2104,18 +2221,20 @@ class _CatchFieldState extends State<CatchField>
             children: [
               TextSpan(
                 text: addText,
-                style: CatchTextStyles.fieldRowTitle(
+                style: _fieldValueTextStyle(
                   context,
                   color: t.primary,
-                ).copyWith(fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               if (optionalSuffix != null)
                 TextSpan(
                   text: optionalSuffix,
-                  style: CatchTextStyles.fieldRowTitle(
+                  style: _fieldValueTextStyle(
                     context,
                     color: t.ink3,
-                  ).copyWith(fontWeight: FontWeight.w500),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
             ],
           ),
@@ -2126,36 +2245,6 @@ class _CatchFieldState extends State<CatchField>
     }
     if (widget._explicitSaveInput) {
       final error = _displayError?.trim();
-      final supportingChildren = <Widget>[];
-      void addSupportingChild(Widget child) {
-        if (supportingChildren.isNotEmpty) {
-          supportingChildren.add(const SizedBox(height: CatchSpacing.s2));
-        }
-        supportingChildren.add(child);
-      }
-
-      if (widget._supporting case final supporting?) {
-        addSupportingChild(
-          Align(alignment: Alignment.centerRight, child: supporting),
-        );
-      }
-      if (error?.isNotEmpty == true) {
-        addSupportingChild(
-          Text(
-            error!,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.supporting(context, color: t.danger),
-          ),
-        );
-      }
-      if (widget._feedback case final feedback?) {
-        addSupportingChild(feedback);
-      }
-      if (widget._secondaryAction case final secondaryAction?) {
-        addSupportingChild(secondaryAction);
-      }
-
       final input = IgnorePointer(
         ignoring: !_isOpen,
         child: _buildTextEntryField(
@@ -2173,14 +2262,8 @@ class _CatchFieldState extends State<CatchField>
         t,
         label: _title,
         valueWidget: input,
-        control: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: supportingChildren,
-        ),
-        controlExpanded: _isOpen,
         hasError: error?.isNotEmpty == true,
-        labelStyle: CatchTextStyles.fieldLabel(
+        labelStyle: _fieldCaptionTextStyle(
           context,
           color: error?.isNotEmpty == true
               ? t.danger
@@ -2191,6 +2274,18 @@ class _CatchFieldState extends State<CatchField>
       );
     }
     if (_isEdit) return _buildTextEntryBody(t);
+    if (widget._contentRow) {
+      final hasError = _displayError?.trim().isNotEmpty == true;
+      return CatchFieldContentRow(
+        title: _title?.trim() ?? '',
+        body: _body?.trim() ?? '',
+        titleMaxLines: widget.titleMaxLines,
+        bodyMaxLines: widget.bodyMaxLines,
+        isOptional: widget.isOptional,
+        titleColor: hasError ? t.danger : _toneColor(t, primaryFallback: t.ink),
+        bodyColor: t.ink2,
+      );
+    }
 
     final title = _title?.trim();
     final value = _body?.trim().isNotEmpty == true
@@ -2205,9 +2300,7 @@ class _CatchFieldState extends State<CatchField>
       t,
       label: title,
       value: value,
-      supportText: error?.isNotEmpty == true ? error : null,
-      control: widget.control,
-      controlExpanded: _isOpen,
+      supportText: !_hasControl && error?.isNotEmpty == true ? error : null,
       labelEmphasized: widget.emphasis == CatchFieldEmphasis.title || !hasValue,
       valueIsPlaceholder: !_hasValue,
       valueMaxLines: widget.bodyMaxLines,
@@ -2232,8 +2325,6 @@ class _CatchFieldState extends State<CatchField>
     Widget? valueWidget,
     String? supportText,
     String? counterText,
-    Widget? control,
-    bool controlExpanded = true,
     bool hasError = false,
     bool labelEmphasized = false,
     bool valueIsPlaceholder = false,
@@ -2250,98 +2341,39 @@ class _CatchFieldState extends State<CatchField>
     final counter = counterText?.trim();
     final hasCounter = counter != null && counter.isNotEmpty;
     final hasSupport = (support != null && support.isNotEmpty) || hasCounter;
-    final hasControl = control != null;
     final headerTrailingReserve = _hasControl
         ? CatchFieldTokens.trailingGap + CatchFieldTokens.disclosureGlyphExtent
         : _usesPositionedClearTrailing
         ? CatchFieldTokens.trailingGap + CatchSpacing.s6
         : 0.0;
 
-    if (!hasLabel && !hasValue && !hasSupport && !hasControl) {
+    if (!hasLabel && !hasValue && !hasSupport) {
       return const SizedBox.shrink();
     }
 
     final effectiveLabelStyle =
         labelStyle ??
         (labelEmphasized
-            ? CatchTextStyles.fieldRowTitle(
+            ? _fieldValueTextStyle(
                 context,
                 color: hasError
                     ? t.danger
                     : _toneColor(t, primaryFallback: t.ink),
               )
-            : CatchTextStyles.fieldLabel(
+            : _fieldCaptionTextStyle(
                 context,
                 color: hasError ? t.danger : t.ink3,
               ));
     final effectiveValueStyle =
         valueStyle ??
         (labelEmphasized
-            ? CatchTextStyles.supporting(context, color: t.ink3)
-            : CatchTextStyles.fieldRowTitle(
+            ? _fieldCaptionTextStyle(context, color: t.ink2)
+            : _fieldValueTextStyle(
                 context,
                 color: valueIsPlaceholder
                     ? t.ink3
                     : _toneColor(t, primaryFallback: t.ink),
               ));
-    final actionBar = KeyedSubtree(
-      key: _actionBarRevealTargetKey,
-      child: SizedBox(
-        key: const ValueKey('catch-field-action-bar'),
-        width: double.infinity,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final cancelButton = CatchFieldCommitButton(
-              key: const ValueKey('catch-field-cancel'),
-              label: context.l10n.coreCatchFieldLabelCancel,
-              onPressed: _isSaving ? null : _handleCancel,
-            );
-            final doneButton = CatchFieldCommitButton(
-              key: const ValueKey('catch-field-done'),
-              label: _isSaving
-                  ? context.l10n.coreCatchFieldLabelSaving
-                  : context.l10n.coreCatchFieldLabelDone,
-              primary: true,
-              loading: _isSaving,
-              onPressed: _isSaving ? null : _handleSubmit,
-            );
-
-            if (constraints.maxWidth <
-                CatchLayout.fieldActionBarWrapBreakpoint) {
-              return Wrap(
-                alignment: WrapAlignment.end,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: CatchFieldTokens.actionButtonGap,
-                runSpacing: CatchSpacing.s2,
-                children: [
-                  if (widget._actionLeading != null) widget._actionLeading!,
-                  cancelButton,
-                  doneButton,
-                ],
-              );
-            }
-
-            return Row(
-              children: [
-                if (widget._actionLeading != null)
-                  Expanded(
-                    child: Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: widget._actionLeading,
-                    ),
-                  )
-                else
-                  const Spacer(),
-                cancelButton,
-                const SizedBox(width: CatchFieldTokens.actionButtonGap),
-                doneButton,
-              ],
-            );
-          },
-        ),
-      ),
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -2388,101 +2420,13 @@ class _CatchFieldState extends State<CatchField>
         if (hasSupport) ...[
           if (hasLabel || hasValue)
             const SizedBox(height: CatchFieldTokens.supportingTopGap),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (support != null && support.isNotEmpty)
-                Expanded(
-                  child: Text(
-                    support,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: hasError ? t.danger : _supportColor(t),
-                    ),
-                  ),
-                )
-              else
-                const Spacer(),
-              if (hasCounter) ...[
-                if (support != null && support.isNotEmpty)
-                  const SizedBox(width: CatchSpacing.s2),
-                Text(
-                  counter,
-                  style: CatchTextStyles.monoLabel(
-                    context,
-                    color: t.ink3,
-                  ).copyWith(fontSize: CatchFieldTokens.counterFontSize),
-                ),
-              ],
-            ],
+          CatchFieldSupportRow(
+            text: support,
+            counter: hasCounter ? counter : null,
+            color: hasError ? t.danger : _supportColor(t),
+            showErrorIcon: hasError,
           ),
         ],
-        if (hasControl)
-          ExcludeSemantics(
-            excluding: !controlExpanded,
-            child: ExcludeFocus(
-              excluding: !controlExpanded,
-              child: IgnorePointer(
-                ignoring: !controlExpanded,
-                child: TweenAnimationBuilder<double>(
-                  key: const ValueKey('catch-field-expansion'),
-                  duration: _expansionMotionDuration(context),
-                  curve: CatchFieldTokens.curve,
-                  tween: Tween<double>(end: controlExpanded ? 1 : 0),
-                  onEnd: _handleExpansionAnimationEnd,
-                  child: KeyedSubtree(
-                    key: _disclosureRevealTargetKey,
-                    child: GestureDetector(
-                      key: const ValueKey('catch-field-control-tap-barrier'),
-                      behavior: HitTestBehavior.opaque,
-                      // The control drawer is a sibling interaction region in
-                      // the React handoff. Consume blank-space taps here so they
-                      // cannot bubble to the enclosing row disclosure gesture;
-                      // descendant controls still win their own gesture arenas.
-                      onTap: () {},
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: hasLabel || hasValue || hasSupport
-                              ? CatchFieldTokens.controlTopGap
-                              : 0,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            control,
-                            if (widget._onSubmit != null) ...[
-                              const SizedBox(
-                                height: CatchFieldTokens.actionBarTopGap,
-                              ),
-                              actionBar,
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  builder: (context, reveal, child) => Offstage(
-                    offstage:
-                        _disclosureOffstage ||
-                        (!controlExpanded && reveal == 0),
-                    child: ClipRect(
-                      child: Opacity(
-                        opacity: reveal,
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          heightFactor: reveal,
-                          child: child,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }
@@ -2528,7 +2472,7 @@ class _CatchFieldState extends State<CatchField>
                 ? '${_controller.text.characters.length} / ${widget.maxLength}'
                 : null,
             hasError: hasError,
-            labelStyle: CatchTextStyles.fieldLabel(
+            labelStyle: _fieldCaptionTextStyle(
               context,
               color: hasError
                   ? t.danger
@@ -2543,10 +2487,7 @@ class _CatchFieldState extends State<CatchField>
                 if (widget.leadingUnit != null) ...[
                   Text(
                     widget.leadingUnit!,
-                    style: CatchTextStyles.fieldRowTitle(
-                      context,
-                      color: t.ink2,
-                    ),
+                    style: _fieldValueTextStyle(context, color: t.ink2),
                   ),
                   const SizedBox(width: CatchSpacing.s1),
                 ],
@@ -2604,7 +2545,7 @@ class _CatchFieldState extends State<CatchField>
                 !_useFloatingLabel(effectiveVariant, effectiveShowLabel)) ...[
               CatchFormFieldLabel.inline(
                 label: _title ?? '',
-                style: CatchTextStyles.fieldLabel(
+                style: _fieldCaptionTextStyle(
                   context,
                   color: hasError ? t.danger : t.ink3,
                 ),
@@ -2615,33 +2556,12 @@ class _CatchFieldState extends State<CatchField>
             field,
             if (hasMeta) ...[
               const SizedBox(height: CatchFieldTokens.supportingTopGap),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (supportText != null)
-                    Expanded(
-                      child: Text(
-                        supportText,
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: hasError ? t.danger : _supportColor(t),
-                        ),
-                      ),
-                    )
-                  else
-                    const Spacer(),
-                  if (counterText != null) ...[
-                    if (supportText != null)
-                      const SizedBox(width: CatchSpacing.s2),
-                    Text(
-                      counterText,
-                      style: CatchTextStyles.monoLabel(
-                        context,
-                        color: t.ink3,
-                      ).copyWith(fontSize: CatchFieldTokens.counterFontSize),
-                    ),
-                  ],
-                ],
+              CatchFieldSupportRow(
+                text: supportText,
+                counter: counterText,
+                color: hasError ? t.danger : _supportColor(t),
+                showErrorIcon:
+                    hasError && effectiveVariant != CatchFieldVariant.underline,
               ),
             ],
           ],
@@ -2666,14 +2586,31 @@ class _CatchFieldState extends State<CatchField>
         canInteractOverride ?? (!widget.readOnly || widget.onTap != null);
     final readOnly = readOnlyOverride ?? widget.readOnly;
     final effectiveFocused = _focusNode.hasFocus || widget.focused;
+    final multiline =
+        !widget.obscureText &&
+        (widget.maxLines != 1 || (widget.minLines ?? 1) > 1);
+    final multilineValueStyle = _fieldValueTextStyle(
+      context,
+      color: widget.enabled ? t.ink : t.ink3,
+      fontWeight: FontWeight.w500,
+    ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
+    final multilineHintStyle = _fieldValueTextStyle(
+      context,
+      color: t.ink2,
+      fontWeight: FontWeight.w500,
+    ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
     final inputStyle = valueEmphasis
-        ? CatchTextStyles.fieldRowTitle(
-            context,
-            color: widget.enabled ? t.ink : t.ink3,
-          )
+        ? multiline
+              ? multilineValueStyle
+              : _fieldValueTextStyle(
+                  context,
+                  color: widget.enabled ? t.ink : t.ink3,
+                )
         : _textStyle(context, color: widget.enabled ? t.ink : t.ink3);
     final hintStyle = valueEmphasis
-        ? CatchTextStyles.fieldRowTitle(context, color: t.ink2)
+        ? multiline
+              ? multilineHintStyle
+              : _fieldValueTextStyle(context, color: t.ink2)
         : widget.size == CatchFieldSize.floating
         ? CatchTextStyles.bodyL(context, color: t.ink2)
         : _textStyle(context, color: t.ink2);
@@ -2731,7 +2668,7 @@ class _CatchFieldState extends State<CatchField>
               )
             : null,
         floatingLabelStyle: _useFloatingLabel(variant, showLabel)
-            ? CatchTextStyles.fieldLabel(
+            ? _fieldCaptionTextStyle(
                 context,
                 color: hasError
                     ? t.danger
@@ -2915,11 +2852,11 @@ class _CatchFieldState extends State<CatchField>
                     supportText: supportText,
                     hasError: hasError,
                     valueIsPlaceholder: label == null,
-                    labelStyle: CatchTextStyles.fieldLabel(
+                    labelStyle: _fieldCaptionTextStyle(
                       context,
                       color: hasError ? tokens.danger : tokens.ink3,
                     ),
-                    valueStyle: CatchTextStyles.fieldRowTitle(
+                    valueStyle: _fieldValueTextStyle(
                       context,
                       color: label == null || !widget.enabled
                           ? tokens.ink3
@@ -2955,22 +2892,51 @@ class _CatchFieldState extends State<CatchField>
     }
 
     final active = focused || hasError;
-    return AnimatedContainer(
-      duration: _motionDuration(context),
-      curve: CatchFieldTokens.curve,
+    final baselineColor = hasError
+        ? tokens.danger
+        : widget.enabled
+        ? tokens.line2
+        : tokens.line;
+    final sweepColor = hasError ? tokens.danger : tokens.ink;
+    return ConstrainedBox(
       constraints: BoxConstraints(
         minHeight: CatchControlMetrics.minHeight(_controlSize),
       ),
-      padding: EdgeInsets.zero,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: _borderColor(tokens, hasError: hasError, focused: focused),
-            width: active ? CatchStroke.underline : CatchStroke.hairline,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          DecoratedBox(
+            key: const ValueKey('catch-field-underline-baseline'),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: baselineColor)),
+            ),
+            child: child,
           ),
-        ),
+          PositionedDirectional(
+            start: 0,
+            end: 0,
+            bottom: -(CatchStroke.underline - CatchStroke.hairline),
+            height: CatchStroke.underline,
+            child: LayoutBuilder(
+              builder: (context, constraints) => TweenAnimationBuilder<double>(
+                key: const ValueKey('catch-field-underline-sweep'),
+                duration: _fieldDuration(context, CatchFieldTokens.reveal),
+                curve: CatchFieldTokens.curve,
+                tween: Tween<double>(end: active ? 1 : 0),
+                builder: (context, progress, _) => Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: SizedBox(
+                    key: const ValueKey('catch-field-underline-sweep-bar'),
+                    width: constraints.maxWidth * progress,
+                    height: CatchStroke.underline,
+                    child: ColoredBox(color: sweepColor),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-      child: child,
     );
   }
 
@@ -3039,8 +3005,12 @@ class _CatchFieldState extends State<CatchField>
       return EdgeInsets.zero;
     }
     if (variant == CatchFieldVariant.underline) {
-      final multiline = widget.maxLines != 1 || widget.minLines != null;
-      return EdgeInsets.only(bottom: multiline ? CatchSpacing.s1 : 0);
+      return const EdgeInsets.fromLTRB(
+        0,
+        CatchSpacing.micro2,
+        0,
+        CatchSpacing.s2,
+      );
     }
     return CatchControlMetrics.textFieldContentPadding(_controlSize);
   }
@@ -3066,17 +3036,6 @@ class _CatchFieldState extends State<CatchField>
       CatchFieldSupportTone.brand => t.primary,
       CatchFieldSupportTone.success => t.success,
     };
-  }
-
-  Color _borderColor(
-    CatchTokens t, {
-    required bool hasError,
-    required bool focused,
-  }) {
-    if (hasError) return t.danger;
-    if (!widget.enabled) return t.line;
-    if (focused) return t.primary;
-    return t.line2;
   }
 
   BoxConstraints? get _iconConstraints {
@@ -3151,6 +3110,17 @@ class _CatchFieldState extends State<CatchField>
     );
   }
 
+  EdgeInsets get _rowHeaderPadding {
+    final padding = _rowPadding;
+    if (!_hasControl) return padding;
+    return EdgeInsets.fromLTRB(
+      padding.left,
+      padding.top,
+      padding.right,
+      _isOpen ? 0 : padding.bottom,
+    );
+  }
+
   BoxConstraints get _rowConstraints {
     if (_compactTextEntry) {
       return const BoxConstraints(
@@ -3188,6 +3158,25 @@ Duration _fieldDuration(BuildContext context, Duration duration) {
   final disableAnimations = MediaQuery.maybeOf(context)?.disableAnimations;
   return disableAnimations == true ? Duration.zero : duration;
 }
+
+TextStyle _fieldValueTextStyle(
+  BuildContext context, {
+  required Color color,
+  FontWeight fontWeight = FontWeight.w700,
+}) => CatchTextStyles.fieldRowTitle(context, color: color).copyWith(
+  fontSize: CatchFieldTokens.valueFontSize,
+  fontWeight: fontWeight,
+  height: CatchFieldTokens.valueLineHeight,
+);
+
+TextStyle _fieldCaptionTextStyle(
+  BuildContext context, {
+  required Color color,
+}) => CatchTextStyles.fieldLabel(context, color: color).copyWith(
+  fontSize: CatchFieldTokens.captionFontSize,
+  fontWeight: FontWeight.w500,
+  height: CatchFieldTokens.supportLineHeight,
+);
 
 /// Ambient visibility contract for disclosure fields inside obstructed scroll
 /// surfaces.
@@ -3245,6 +3234,66 @@ class CatchFieldInsetScope extends InheritedWidget {
       flush != oldWidget.flush;
 }
 
+/// Exact natural-height title and supporting-copy lane used by
+/// [CatchField.content].
+class CatchFieldContentRow extends StatelessWidget {
+  const CatchFieldContentRow({
+    super.key,
+    required this.title,
+    required this.body,
+    this.titleMaxLines = 2,
+    this.bodyMaxLines = 3,
+    this.isOptional = false,
+    this.titleColor,
+    this.bodyColor,
+  });
+
+  final String title;
+  final String body;
+  final int titleMaxLines;
+  final int bodyMaxLines;
+  final bool isOptional;
+  final Color? titleColor;
+  final Color? bodyColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final normalizedBody = body.trim();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchFormFieldLabel.inline(
+          label: title.trim(),
+          style: _fieldValueTextStyle(
+            context,
+            color: titleColor ?? t.ink,
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: titleMaxLines,
+          isOptional: isOptional,
+        ),
+        if (normalizedBody.isNotEmpty) ...[
+          const SizedBox(height: CatchFieldTokens.contentBodyTopGap),
+          Text(
+            normalizedBody,
+            key: const ValueKey('catch-field-content-body'),
+            maxLines: bodyMaxLines,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.bodyS(context, color: bodyColor ?? t.ink2)
+                .copyWith(
+                  fontSize: CatchFieldTokens.contentBodyFontSize,
+                  fontWeight: FontWeight.w400,
+                  height: CatchFieldTokens.contentBodyLineHeight,
+                ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 class CatchFieldRow extends StatelessWidget {
   const CatchFieldRow.standard({
     super.key,
@@ -3256,6 +3305,8 @@ class CatchFieldRow extends StatelessWidget {
     this.padding = _defaultPadding,
     this.crossAxisAlignment = CrossAxisAlignment.start,
     this.leadingTopPadding = 0,
+    this.paddingDuration = Duration.zero,
+    this.paddingCurve = Curves.linear,
   }) : leadingGap = leadingSlotGap,
        trailingGap = CatchFieldTokens.trailingGap;
 
@@ -3272,6 +3323,8 @@ class CatchFieldRow extends StatelessWidget {
        ),
        crossAxisAlignment = CrossAxisAlignment.start,
        leadingTopPadding = 0,
+       paddingDuration = Duration.zero,
+       paddingCurve = Curves.linear,
        leadingGap = leadingSlotGap,
        trailingGap = CatchFieldTokens.trailingGap;
 
@@ -3304,12 +3357,16 @@ class CatchFieldRow extends StatelessWidget {
   final double leadingTopPadding;
   final double leadingGap;
   final double trailingGap;
+  final Duration paddingDuration;
+  final Curve paddingCurve;
 
   @override
   Widget build(BuildContext context) {
     final row = ConstrainedBox(
       constraints: constraints,
-      child: Padding(
+      child: AnimatedPadding(
+        duration: paddingDuration,
+        curve: paddingCurve,
         padding: padding,
         child: LayoutBuilder(
           builder: (context, rowConstraints) {
@@ -3394,7 +3451,11 @@ class CatchFieldTrailing extends StatelessWidget {
             textAlign: TextAlign.right,
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.supporting(context, color: t.ink),
+            style: _fieldValueTextStyle(
+              context,
+              color: t.ink2,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         );
       },
@@ -3410,7 +3471,7 @@ class CatchFieldTrailing extends StatelessWidget {
     topPadding: topPadding,
     builder: (context) => Icon(
       CatchIcons.chevronRightRounded,
-      size: CatchIcon.control,
+      size: CatchFieldTokens.disclosureGlyphExtent,
       color: color ?? CatchTokens.of(context).ink3,
     ),
   );
@@ -3425,11 +3486,11 @@ class CatchFieldTrailing extends StatelessWidget {
     topPadding: topPadding,
     builder: (context) => AnimatedRotation(
       turns: open ? 0.5 : 0,
-      duration: _fieldDuration(context, CatchFieldTokens.standard),
+      duration: _fieldDuration(context, CatchFieldTokens.reveal),
       curve: CatchFieldTokens.curve,
       child: Icon(
         CatchIcons.expandMoreRounded,
-        size: CatchIcon.control,
+        size: CatchFieldTokens.disclosureGlyphExtent,
         color: color ?? CatchTokens.of(context).ink3,
       ),
     ),
@@ -3450,15 +3511,12 @@ class CatchFieldTrailing extends StatelessWidget {
       children: [
         if (status == CatchFieldStatus.saving)
           SizedBox.square(
-            dimension: CatchIcon.sm,
-            child: CatchLoadingIndicator(
-              strokeWidth: 1.8,
-              color: CatchTokens.of(context).ink,
-            ),
+            dimension: CatchFieldTokens.spinnerExtent,
+            child: CatchFieldSpinner(color: CatchTokens.of(context).ink3),
           )
         else if (status == CatchFieldStatus.saved)
           Icon(
-            CatchIcons.checkCircle,
+            CatchIcons.checkCircleFilled,
             key: const ValueKey('catch-field-saved'),
             size: CatchFieldTokens.disclosureGlyphExtent,
             color: CatchTokens.of(context).success,
@@ -3483,11 +3541,8 @@ class CatchFieldTrailing extends StatelessWidget {
           liveRegion: true,
           child: ExcludeSemantics(
             child: SizedBox.square(
-              dimension: CatchIcon.sm,
-              child: CatchLoadingIndicator(
-                strokeWidth: 1.8,
-                color: CatchTokens.of(context).ink,
-              ),
+              dimension: CatchFieldTokens.spinnerExtent,
+              child: CatchFieldSpinner(color: CatchTokens.of(context).ink3),
             ),
           ),
         ),
@@ -3502,7 +3557,7 @@ class CatchFieldTrailing extends StatelessWidget {
           liveRegion: true,
           child: ExcludeSemantics(
             child: Icon(
-              CatchIcons.checkCircle,
+              CatchIcons.checkCircleFilled,
               key: const ValueKey('catch-field-saved'),
               size: CatchFieldTokens.disclosureGlyphExtent,
               color: CatchTokens.of(context).success,
@@ -3566,8 +3621,323 @@ class CatchFieldTrailing extends StatelessWidget {
   );
 }
 
+/// Field helper/error and optional counter row.
+class CatchFieldSupportRow extends StatelessWidget {
+  const CatchFieldSupportRow({
+    super.key,
+    this.text,
+    this.counter,
+    required this.color,
+    this.showErrorIcon = false,
+    this.padding = EdgeInsets.zero,
+  });
+
+  final String? text;
+  final String? counter;
+  final Color color;
+  final bool showErrorIcon;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final normalizedText = text?.trim();
+    final normalizedCounter = counter?.trim();
+    final hasText = normalizedText?.isNotEmpty == true;
+    final hasCounter = normalizedCounter?.isNotEmpty == true;
+    if (!hasText && !hasCounter) return const SizedBox.shrink();
+
+    final label = Text(
+      normalizedText ?? '',
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: CatchTextStyles.supporting(context, color: color).copyWith(
+        fontSize: CatchFieldTokens.captionFontSize,
+        fontWeight: FontWeight.w500,
+        height: CatchFieldTokens.supportLineHeight,
+      ),
+    );
+    final support = showErrorIcon
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ExcludeSemantics(
+                child: Icon(
+                  CatchIcons.fieldWarning,
+                  size: CatchFieldTokens.errorGlyphExtent,
+                  color: color,
+                ),
+              ),
+              const SizedBox(width: CatchFieldTokens.errorGlyphGap),
+              Flexible(child: label),
+            ],
+          )
+        : label;
+
+    return Padding(
+      padding: padding,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          if (hasText) Expanded(child: support) else const Spacer(),
+          if (hasCounter) ...[
+            if (hasText)
+              const SizedBox(width: CatchFieldTokens.supportingCounterGap),
+            Text(
+              normalizedCounter!,
+              style: CatchTextStyles.monoLabel(
+                context,
+                color: CatchTokens.of(context).ink3,
+              ).copyWith(fontSize: CatchFieldTokens.counterFontSize),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Supporting metadata shown inside an explicit-save disclosure before its
+/// commit bar. Validation remains a root-level [CatchFieldSupportRow].
+class CatchFieldExplicitSaveControl extends StatelessWidget {
+  const CatchFieldExplicitSaveControl({
+    super.key,
+    this.supporting,
+    this.feedback,
+    this.secondaryAction,
+  });
+
+  final Widget? supporting;
+  final Widget? feedback;
+  final Widget? secondaryAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final children = <Widget>[];
+
+    void addChild(Widget child) {
+      if (children.isNotEmpty) {
+        children.add(const SizedBox(height: CatchSpacing.s2));
+      }
+      children.add(child);
+    }
+
+    if (supporting case final supporting?) {
+      addChild(Align(alignment: Alignment.centerRight, child: supporting));
+    }
+    if (feedback case final feedback?) addChild(feedback);
+    if (secondaryAction case final secondaryAction?) {
+      addChild(secondaryAction);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: children,
+    );
+  }
+}
+
+/// Trailing Cancel/Done group used by explicit-save field drawers.
+class CatchFieldActionBar extends StatelessWidget {
+  const CatchFieldActionBar({
+    super.key,
+    required this.onCancel,
+    required this.onSubmit,
+    this.loading = false,
+    this.actionLeading,
+    this.revealTargetKey,
+  });
+
+  final VoidCallback onCancel;
+  final VoidCallback onSubmit;
+  final bool loading;
+  final Widget? actionLeading;
+  final Key? revealTargetKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final cancelButton = CatchFieldCommitButton(
+      key: const ValueKey('catch-field-cancel'),
+      label: context.l10n.coreCatchFieldLabelCancel,
+      onPressed: loading ? null : onCancel,
+    );
+    final doneButton = CatchFieldCommitButton(
+      key: const ValueKey('catch-field-done'),
+      label: loading
+          ? context.l10n.coreCatchFieldLabelSaving
+          : context.l10n.coreCatchFieldLabelDone,
+      primary: true,
+      loading: loading,
+      onPressed: loading ? null : onSubmit,
+    );
+
+    return KeyedSubtree(
+      key: revealTargetKey,
+      child: SizedBox(
+        key: const ValueKey('catch-field-action-bar'),
+        width: double.infinity,
+        child: Row(
+          children: [
+            if (actionLeading != null)
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: actionLeading,
+                ),
+              )
+            else
+              const Spacer(),
+            cancelButton,
+            const SizedBox(width: CatchFieldTokens.actionButtonGap),
+            doneButton,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Full-row disclosure sibling below a [CatchField] header.
+class CatchFieldDisclosureDrawer extends StatelessWidget {
+  const CatchFieldDisclosureDrawer({
+    super.key,
+    required this.open,
+    required this.offstage,
+    required this.control,
+    required this.startPadding,
+    required this.endPadding,
+    required this.bottomPadding,
+    required this.revealDuration,
+    required this.opacityDuration,
+    required this.onRevealEnd,
+    this.actionBar,
+    this.revealTargetKey,
+  });
+
+  final bool open;
+  final bool offstage;
+  final Widget control;
+  final Widget? actionBar;
+  final double startPadding;
+  final double endPadding;
+  final double bottomPadding;
+  final Duration revealDuration;
+  final Duration opacityDuration;
+  final VoidCallback onRevealEnd;
+  final Key? revealTargetKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final revealedContent = KeyedSubtree(
+      key: revealTargetKey,
+      child: GestureDetector(
+        key: const ValueKey('catch-field-control-tap-barrier'),
+        behavior: HitTestBehavior.opaque,
+        onTap: () {},
+        child: Padding(
+          padding: EdgeInsetsDirectional.only(
+            start: startPadding,
+            end: endPadding,
+            top: CatchFieldTokens.controlTopGap,
+            bottom: bottomPadding,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              control,
+              if (actionBar != null) ...[
+                const SizedBox(height: CatchFieldTokens.actionBarTopGap),
+                actionBar!,
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+
+    return ExcludeSemantics(
+      excluding: !open,
+      child: ExcludeFocus(
+        excluding: !open,
+        child: IgnorePointer(
+          ignoring: !open,
+          child: TweenAnimationBuilder<double>(
+            key: const ValueKey('catch-field-expansion'),
+            duration: revealDuration,
+            curve: CatchFieldTokens.curve,
+            tween: Tween<double>(end: open ? 1 : 0),
+            onEnd: onRevealEnd,
+            child: revealedContent,
+            builder: (context, reveal, child) => Offstage(
+              offstage: offstage || (!open && reveal == 0),
+              child: ClipRect(
+                clipper: const _CatchFieldDisclosureClipper(),
+                child: AnimatedOpacity(
+                  key: const ValueKey('catch-field-control-opacity'),
+                  duration: opacityDuration,
+                  curve: CatchFieldTokens.curve,
+                  opacity: open ? 1 : 0,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    heightFactor: reveal,
+                    child: child,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Fixed-cadence Phosphor spinner from the Field handoff.
+class CatchFieldSpinner extends StatefulWidget {
+  const CatchFieldSpinner({
+    super.key,
+    this.size = CatchFieldTokens.spinnerExtent,
+    required this.color,
+  });
+
+  final double size;
+  final Color color;
+
+  @override
+  State<CatchFieldSpinner> createState() => _CatchFieldSpinnerState();
+}
+
+class _CatchFieldSpinnerState extends State<CatchFieldSpinner>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _rotation = AnimationController(
+    vsync: this,
+    duration: CatchFieldTokens.spinnerPeriod,
+  )..repeat();
+
+  @override
+  void dispose() {
+    _rotation.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RotationTransition(
+      key: const ValueKey('catch-field-spinner'),
+      turns: _rotation,
+      child: Icon(
+        CatchIcons.fieldSpinner,
+        size: widget.size,
+        color: widget.color,
+      ),
+    );
+  }
+}
+
 /// Exact Cancel/Done action used by a disclosed [CatchField] editor.
-class CatchFieldCommitButton extends StatelessWidget {
+class CatchFieldCommitButton extends StatefulWidget {
   const CatchFieldCommitButton({
     super.key,
     required this.label,
@@ -3582,50 +3952,99 @@ class CatchFieldCommitButton extends StatelessWidget {
   final bool loading;
 
   @override
+  State<CatchFieldCommitButton> createState() => _CatchFieldCommitButtonState();
+}
+
+class _CatchFieldCommitButtonState extends State<CatchFieldCommitButton> {
+  late final FocusNode _focusNode = FocusNode(
+    debugLabel: widget.primary
+        ? 'CatchField Done button'
+        : 'CatchField Cancel button',
+  );
+  bool _showFocusHighlight = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_updateFocusHighlight);
+    FocusManager.instance.addHighlightModeListener(_updateFocusHighlight);
+  }
+
+  @override
+  void dispose() {
+    _focusNode
+      ..removeListener(_updateFocusHighlight)
+      ..dispose();
+    FocusManager.instance.removeHighlightModeListener(_updateFocusHighlight);
+    super.dispose();
+  }
+
+  void _updateFocusHighlight([FocusHighlightMode? _]) {
+    final show =
+        _focusNode.hasFocus &&
+        FocusManager.instance.highlightMode == FocusHighlightMode.traditional;
+    if (show != _showFocusHighlight && mounted) {
+      setState(() => _showFocusHighlight = show);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final background = primary ? t.ink : t.surface;
-    final foreground = primary ? t.surface : t.ink;
+    final background = widget.primary ? t.ink : t.surface;
+    final foreground = widget.primary ? t.primaryInk : t.ink;
     final button = CatchTextButton(
-      label: label,
-      onPressed: onPressed,
+      label: widget.label,
+      onPressed: widget.onPressed,
       foregroundColor: foreground,
       backgroundColor: background,
       disabledForegroundColor: foreground,
       disabledBackgroundColor: background,
+      focusNode: _focusNode,
       minimumSize: Size.zero,
       padding: const EdgeInsets.symmetric(
         horizontal: CatchFieldTokens.actionButtonHorizontalPadding,
         vertical: CatchFieldTokens.actionButtonVerticalPadding,
       ),
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      side: BorderSide(color: primary ? Colors.transparent : t.line2),
+      side: BorderSide(color: widget.primary ? Colors.transparent : t.line2),
       shape: const StadiumBorder(),
       textStyle: CatchTextStyles.fieldRowTitle(context).copyWith(
         fontSize: CatchFieldTokens.actionButtonFontSize,
         fontWeight: FontWeight.w600,
         height: 1,
       ),
-      leading: loading
+      leading: widget.loading
           ? ExcludeSemantics(
               child: SizedBox.square(
-                dimension: CatchIcon.sm,
-                child: CatchLoadingIndicator(
-                  strokeWidth: 1.8,
+                dimension: CatchFieldTokens.actionSpinnerExtent,
+                child: CatchFieldSpinner(
+                  size: CatchFieldTokens.actionSpinnerExtent,
                   color: foreground,
                 ),
               ),
             )
           : null,
-      leadingGap: CatchFieldTokens.actionButtonGap,
+      leadingGap: CatchFieldTokens.actionButtonSpinnerGap,
     );
     return Semantics(
-      liveRegion: loading,
-      child: Opacity(
-        opacity: onPressed == null && !primary
+      liveRegion: widget.loading,
+      child: AnimatedOpacity(
+        duration: _fieldDuration(context, CatchFieldTokens.fast),
+        curve: CatchFieldTokens.curve,
+        opacity: widget.onPressed == null && !widget.primary
             ? CatchFieldTokens.savingCancelOpacity
             : 1,
-        child: button,
+        child: CatchFieldFocusOutline(
+          debugKey: ValueKey(
+            widget.primary
+                ? 'catch-field-done-focus-outline'
+                : 'catch-field-cancel-focus-outline',
+          ),
+          show: _showFocusHighlight,
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          child: button,
+        ),
       ),
     );
   }
@@ -3741,13 +4160,98 @@ class CatchFieldChoiceChip extends StatefulWidget {
   State<CatchFieldChoiceChip> createState() => _CatchFieldChoiceChipState();
 }
 
-class _CatchFieldChoiceChipState extends State<CatchFieldChoiceChip> {
-  bool _pressed = false;
+class CatchFieldFocusOutline extends StatelessWidget {
+  const CatchFieldFocusOutline({
+    super.key,
+    required this.debugKey,
+    required this.show,
+    required this.borderRadius,
+    required this.child,
+  });
+
+  final Key debugKey;
+  final bool show;
+  final BorderRadius borderRadius;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final foreground = widget.selected ? t.surface : t.ink;
+    return Stack(
+      key: debugKey,
+      fit: StackFit.passthrough,
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        if (show)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _CatchFieldFocusOutlinePainter(
+                  color: t.ink,
+                  borderRadius: borderRadius,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _CatchFieldFocusOutlinePainter extends CustomPainter {
+  const _CatchFieldFocusOutlinePainter({
+    required this.color,
+    required this.borderRadius,
+  });
+
+  final Color color;
+  final BorderRadius borderRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final reach =
+        CatchFieldTokens.focusRingOffset + CatchFieldTokens.focusRingWidth / 2;
+    final outline = borderRadius.toRRect(Offset.zero & size).inflate(reach);
+    canvas.drawRRect(
+      outline,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = CatchFieldTokens.focusRingWidth,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_CatchFieldFocusOutlinePainter oldDelegate) =>
+      color != oldDelegate.color || borderRadius != oldDelegate.borderRadius;
+}
+
+class _CatchFieldDisclosureClipper extends CustomClipper<Rect> {
+  const _CatchFieldDisclosureClipper();
+
+  @override
+  Rect getClip(Size size) => Rect.fromLTRB(
+    0,
+    0,
+    size.width,
+    size.height +
+        CatchFieldTokens.focusRingOffset +
+        CatchFieldTokens.focusRingWidth,
+  );
+
+  @override
+  bool shouldReclip(_CatchFieldDisclosureClipper oldClipper) => false;
+}
+
+class _CatchFieldChoiceChipState extends State<CatchFieldChoiceChip> {
+  bool _pressed = false;
+  bool _showFocusHighlight = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final foreground = widget.selected ? t.primaryInk : t.ink;
     final background = widget.selected ? t.ink : t.surface;
     final visual = AnimatedScale(
       duration: _fieldDuration(
@@ -3788,10 +4292,12 @@ class _CatchFieldChoiceChipState extends State<CatchFieldChoiceChip> {
                 widget.label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.fieldRowTitle(
-                  context,
-                  color: foreground,
-                ).copyWith(fontSize: CatchFieldTokens.chipFontSize, height: 1),
+                style: CatchTextStyles.fieldRowTitle(context, color: foreground)
+                    .copyWith(
+                      fontSize: CatchFieldTokens.chipFontSize,
+                      fontWeight: FontWeight.w600,
+                      height: 1,
+                    ),
               ),
             ),
           ],
@@ -3804,21 +4310,48 @@ class _CatchFieldChoiceChipState extends State<CatchFieldChoiceChip> {
       checked: widget.selected,
       inMutuallyExclusiveGroup: !widget.multi,
       label: widget.label,
-      child: Opacity(
-        opacity: widget.enabled ? 1 : CatchFieldTokens.disabledOpacity,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: widget.enabled ? widget.onPressed : null,
-          onTapDown: widget.enabled
-              ? (_) => setState(() => _pressed = true)
-              : null,
-          onTapUp: widget.enabled
-              ? (_) => setState(() => _pressed = false)
-              : null,
-          onTapCancel: widget.enabled
-              ? () => setState(() => _pressed = false)
-              : null,
-          child: visual,
+      child: FocusableActionDetector(
+        enabled: widget.enabled,
+        shortcuts: const <ShortcutActivator, Intent>{
+          SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+          SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+        },
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (_) {
+              widget.onPressed();
+              return null;
+            },
+          ),
+        },
+        onShowFocusHighlight: (show) {
+          if (_showFocusHighlight != show) {
+            setState(() => _showFocusHighlight = show);
+          }
+        },
+        child: Opacity(
+          opacity: widget.enabled ? 1 : CatchFieldTokens.disabledOpacity,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.enabled ? widget.onPressed : null,
+            onTapDown: widget.enabled
+                ? (_) => setState(() => _pressed = true)
+                : null,
+            onTapUp: widget.enabled
+                ? (_) => setState(() => _pressed = false)
+                : null,
+            onTapCancel: widget.enabled
+                ? () => setState(() => _pressed = false)
+                : null,
+            child: CatchFieldFocusOutline(
+              debugKey: ValueKey(
+                'catch-field-choice-${widget.label}-focus-outline',
+              ),
+              show: _showFocusHighlight,
+              borderRadius: BorderRadius.circular(CatchRadius.pill),
+              child: visual,
+            ),
+          ),
         ),
       ),
     );
@@ -3857,48 +4390,46 @@ class CatchFieldStepper extends StatelessWidget {
     final t = CatchTokens.of(context);
     final number = formatter?.call(value) ?? _formatNumber(value);
     final formatted = unit == null ? number : '$number $unit';
-    return Transform.translate(
-      offset: const Offset(-CatchFieldTokens.stepperVisualEdgeInset, 0),
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Row(
-          key: const ValueKey('catch-field-stepper'),
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CatchFieldRepeatButton(
-              icon: CatchIcons.removeRounded,
-              semanticLabel: decreaseSemanticLabel,
-              enabled:
-                  enabled && onChanged != null && (min == null || value > min!),
-              onStep: () => onChanged?.call(_nextValue(-step)),
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Row(
+        key: const ValueKey('catch-field-stepper'),
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CatchFieldRepeatButton(
+            icon: CatchIcons.removeRounded,
+            semanticLabel: decreaseSemanticLabel,
+            enabled:
+                enabled && onChanged != null && (min == null || value > min!),
+            onStep: () => onChanged?.call(_nextValue(-step)),
+          ),
+          const SizedBox(width: CatchFieldTokens.stepperLayoutGap),
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              minWidth: CatchFieldTokens.stepperValueMinWidth,
             ),
-            const SizedBox(width: CatchFieldTokens.stepperLayoutGap),
-            ConstrainedBox(
-              constraints: const BoxConstraints(
-                minWidth: CatchFieldTokens.stepperValueMinWidth,
-              ),
-              child: Text(
-                formatted,
-                key: const ValueKey('catch-field-stepper-value'),
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                style: CatchTextStyles.fieldRowTitle(context, color: t.ink)
-                    .copyWith(
-                      fontSize: CatchFieldTokens.stepperValueFontSize,
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
+            child: Text(
+              formatted,
+              key: const ValueKey('catch-field-stepper-value'),
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: CatchTextStyles.fieldRowTitle(context, color: t.ink)
+                  .copyWith(
+                    fontSize: CatchFieldTokens.stepperValueFontSize,
+                    fontWeight: FontWeight.w700,
+                    height: CatchFieldTokens.valueLineHeight,
+                  ),
             ),
-            const SizedBox(width: CatchFieldTokens.stepperLayoutGap),
-            CatchFieldRepeatButton(
-              icon: CatchIcons.addRounded,
-              semanticLabel: increaseSemanticLabel,
-              enabled:
-                  enabled && onChanged != null && (max == null || value < max!),
-              onStep: () => onChanged?.call(_nextValue(step)),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(width: CatchFieldTokens.stepperLayoutGap),
+          CatchFieldRepeatButton(
+            icon: CatchIcons.addRounded,
+            semanticLabel: increaseSemanticLabel,
+            enabled:
+                enabled && onChanged != null && (max == null || value < max!),
+            onStep: () => onChanged?.call(_nextValue(step)),
+          ),
+        ],
       ),
     );
   }
@@ -3923,12 +4454,14 @@ class CatchFieldRepeatButton extends StatefulWidget {
     required this.semanticLabel,
     required this.enabled,
     required this.onStep,
+    this.visualAlignment = Alignment.center,
   });
 
   final IconData icon;
   final String semanticLabel;
   final bool enabled;
   final VoidCallback onStep;
+  final AlignmentGeometry visualAlignment;
 
   @override
   State<CatchFieldRepeatButton> createState() => _CatchFieldRepeatButtonState();
@@ -3937,8 +4470,10 @@ class CatchFieldRepeatButton extends StatefulWidget {
 class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
   Timer? _delay;
   Timer? _repeat;
+  int? _pressedPointer;
   int _ticks = 0;
   bool _pressed = false;
+  bool _showFocusHighlight = false;
 
   @override
   void didUpdateWidget(CatchFieldRepeatButton oldWidget) {
@@ -3953,24 +4488,49 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
   }
 
   void _start() {
-    if (!widget.enabled) return;
+    if (!widget.enabled || _pressed) return;
     _stop();
     setState(() => _pressed = true);
     widget.onStep();
-    _delay = Timer(CatchFieldTokens.repeatDelay, _scheduleRepeat);
+    _delay = Timer(CatchFieldTokens.repeatDelay, _repeatOnce);
   }
 
-  void _scheduleRepeat() {
+  void _handlePointerDown(PointerDownEvent event) {
+    if (_pressedPointer != null || event.buttons & kPrimaryButton == 0) return;
+    _start();
+    if (_pressed) _pressedPointer = event.pointer;
+  }
+
+  void _handlePointerEnd(PointerEvent event) {
+    if (_pressedPointer != event.pointer) return;
+    _pressedPointer = null;
+    _stop();
+  }
+
+  void _handlePointerMove(PointerMoveEvent event) {
+    if (_pressedPointer != event.pointer) return;
+    final bounds =
+        Offset.zero & const Size.square(CatchFieldTokens.stepperHitExtent);
+    if (!bounds.contains(event.localPosition)) {
+      _pressedPointer = null;
+      _stop();
+    }
+  }
+
+  void _handlePointerExit(PointerExitEvent event) {
+    if (_pressedPointer == null) return;
+    _pressedPointer = null;
+    _stop();
+  }
+
+  void _repeatOnce() {
     if (!mounted || !_pressed || !widget.enabled) return;
-    final interval = _ticks >= CatchFieldTokens.repeatAccelerationTicks
+    widget.onStep();
+    _ticks += 1;
+    final interval = _ticks > CatchFieldTokens.repeatAccelerationTicks
         ? CatchFieldTokens.repeatAccelerated
         : CatchFieldTokens.repeatNormal;
-    _repeat = Timer(interval, () {
-      if (!mounted || !_pressed || !widget.enabled) return;
-      _ticks += 1;
-      widget.onStep();
-      _scheduleRepeat();
-    });
+    _repeat = Timer(interval, _repeatOnce);
   }
 
   void _stop({bool updateState = true}) {
@@ -3978,6 +4538,7 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
     _repeat?.cancel();
     _delay = null;
     _repeat = null;
+    _pressedPointer = null;
     _ticks = 0;
     if (_pressed && updateState && mounted) setState(() => _pressed = false);
     if (!updateState) _pressed = false;
@@ -4002,7 +4563,11 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
         ),
         child: SizedBox.square(
           dimension: CatchFieldTokens.stepperVisualExtent,
-          child: Icon(widget.icon, size: CatchIcon.sm, color: t.ink),
+          child: Icon(
+            widget.icon,
+            size: CatchFieldTokens.stepperGlyphExtent,
+            color: t.ink,
+          ),
         ),
       ),
     );
@@ -4013,16 +4578,52 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
         enabled: widget.enabled,
         label: widget.semanticLabel,
         onTap: widget.enabled ? widget.onStep : null,
-        child: Opacity(
-          opacity: widget.enabled ? 1 : CatchFieldTokens.boundedStepperOpacity,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTapDown: widget.enabled ? (_) => _start() : null,
-            onTapUp: widget.enabled ? (_) => _stop() : null,
-            onTapCancel: widget.enabled ? _stop : null,
-            child: SizedBox.square(
-              dimension: CatchFieldTokens.stepperHitExtent,
-              child: Center(child: visual),
+        child: FocusableActionDetector(
+          enabled: widget.enabled,
+          shortcuts: const <ShortcutActivator, Intent>{
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+          },
+          actions: <Type, Action<Intent>>{
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (_) {
+                widget.onStep();
+                return null;
+              },
+            ),
+          },
+          onShowFocusHighlight: (show) {
+            if (_showFocusHighlight != show) {
+              setState(() => _showFocusHighlight = show);
+            }
+          },
+          child: Opacity(
+            opacity: widget.enabled
+                ? 1
+                : CatchFieldTokens.boundedStepperOpacity,
+            child: MouseRegion(
+              onExit: widget.enabled ? _handlePointerExit : null,
+              child: Listener(
+                behavior: HitTestBehavior.opaque,
+                onPointerDown: widget.enabled ? _handlePointerDown : null,
+                onPointerMove: widget.enabled ? _handlePointerMove : null,
+                onPointerUp: widget.enabled ? _handlePointerEnd : null,
+                onPointerCancel: widget.enabled ? _handlePointerEnd : null,
+                child: CatchFieldFocusOutline(
+                  debugKey: ValueKey(
+                    'catch-field-stepper-${widget.semanticLabel}-focus-outline',
+                  ),
+                  show: _showFocusHighlight,
+                  borderRadius: BorderRadius.circular(CatchRadius.pill),
+                  child: SizedBox.square(
+                    dimension: CatchFieldTokens.stepperHitExtent,
+                    child: Align(
+                      alignment: widget.visualAlignment,
+                      child: visual,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),

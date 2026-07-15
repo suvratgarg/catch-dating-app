@@ -1,3 +1,5 @@
+// ignore_for_file: scoped_providers_should_specify_dependencies
+
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -172,11 +174,8 @@ Widget _editableProfileTab(
   return ProviderScope(
     overrides: [
       // Test-only scoped overrides deliberately replace app-root providers.
-      // ignore: scoped_providers_should_specify_dependencies
       uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-      // ignore: scoped_providers_should_specify_dependencies
       errorLoggerProvider.overrideWithValue(_SilentErrorLogger()),
-      // ignore: scoped_providers_should_specify_dependencies
       userProfileRepositoryProvider.overrideWithValue(repository),
     ],
     child: _ProfileEditProviderPrimer(
@@ -255,7 +254,7 @@ Finder _catchChip(String label) => find.byWidgetPredicate(
 int _loadingCatchButtonCount(WidgetTester tester) => find
     .descendant(
       of: find.byKey(const ValueKey('catch-field-done')),
-      matching: find.byType(CircularProgressIndicator),
+      matching: find.byKey(const ValueKey('catch-field-spinner')),
     )
     .evaluate()
     .length;
@@ -263,7 +262,7 @@ int _loadingCatchButtonCount(WidgetTester tester) => find
 int _promptAnswerSavingCount(int index) => find
     .descendant(
       of: _promptAnswerField(index),
-      matching: find.byType(CircularProgressIndicator),
+      matching: find.byKey(const ValueKey('catch-field-spinner')),
     )
     .evaluate()
     .length;

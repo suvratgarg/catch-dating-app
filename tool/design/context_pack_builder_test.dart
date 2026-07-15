@@ -953,6 +953,12 @@ final _styleRegistry = <_StyleEntry>[
     CatchTextStyles.kickerLg,
     casePolicy: 'uppercase',
   ),
+  _StyleEntry.single(
+    'fieldSectionKicker',
+    'data',
+    CatchTextStyles.fieldSectionKicker,
+    casePolicy: 'uppercase',
+  ),
   _StyleEntry.single('monoLabel', 'data', CatchTextStyles.monoLabel),
   _StyleEntry.single('sectionCount', 'data', CatchTextStyles.sectionCount),
   _StyleEntry.single(

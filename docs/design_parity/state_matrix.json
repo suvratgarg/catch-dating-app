@@ -4196,8 +4196,13 @@
             },
             {
               "id": "DP-PROFILE-SELF-005",
+              "status": "closed",
+              "nextAction": "Closed for the implementation-safe primitive tranche. CatchField, CatchSection, and CatchToggle implement and test the handoff footer/header metrics, 16 px caret, exact field typography, spinner/status/error anatomy, directional underline and disclosure motion, animated saving states, repeat boundary, keyboard activation, focus-visible rings, dedicated 2/3-line content clamps, and unchanged legacy 1/2-line value-row defaults. Existing semantic colors already match, so no palette values changed."
+            },
+            {
+              "id": "DP-PROFILE-SELF-006",
               "status": "blocked",
-              "nextAction": "Review-gated Field handoff delta; do not promote without design/product approval. Primitive metrics still differ for the contained-footer top inset (React 2 px, Flutter 8 px), disclosure caret (16 px vs 20 px), divided-section trailing header API, chip/Add/stepper typography, spinner geometry and 0.8 s cadence, filled saved check-circle, row-error warning icon, directional underline sweep, 200 ms control-opacity reveal, toggle/Cancel opacity transitions, hold-repeat acceleration boundary, direct-input stable-label behavior, hardware-keyboard focus/activation and focus-visible rings for choice/toggle/stepper atoms, and single-choice auto-commit/deselection policy. Profile/domain differences remain DOB helper/mono formatting, pace visibility, lifestyle footer, workout control, prompt 6/140 vs production 3/300, icon/row ordering, and colors."
+              "nextAction": "Owner/product/schema approval required. Preserve production behavior for empty direct-input label geometry; single-choice persistence, clearability, deselection, and save policy; DOB helper and mono formatting; pace visibility; lifestyle footer; enum-backed workout control; three prompts and 300-character answers rather than six/140; and profile icon/row ordering. Do not promote these differences as primitive parity without explicit approval."
             }
           ]
         },

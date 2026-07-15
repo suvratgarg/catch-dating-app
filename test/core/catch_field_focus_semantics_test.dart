@@ -137,6 +137,58 @@ void main() {
   });
 
   testWidgets(
+    'toggle rows contribute one keyboard focus stop and switch node',
+    (tester) async {
+      final before = FocusNode(debugLabel: 'before toggle');
+      final after = FocusNode(debugLabel: 'after toggle');
+      final semantics = tester.ensureSemantics();
+      addTearDown(before.dispose);
+      addTearDown(after.dispose);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Column(
+              children: [
+                TextButton(
+                  focusNode: before,
+                  onPressed: () {},
+                  child: const Text('Before'),
+                ),
+                CatchField.toggle(
+                  title: 'Show my pace',
+                  value: true,
+                  onChanged: (_) {},
+                ),
+                TextButton(
+                  focusNode: after,
+                  onPressed: () {},
+                  child: const Text('After'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      before.requestFocus();
+      await tester.pump();
+      final scope = FocusScope.of(tester.element(find.byType(Scaffold)));
+      expect(scope.nextFocus(), isTrue);
+      await tester.pump();
+      expect(before.hasFocus, isFalse);
+      expect(after.hasFocus, isFalse);
+      expect(find.bySemanticsLabel('Show my pace'), findsOneWidget);
+
+      expect(scope.nextFocus(), isTrue);
+      await tester.pump();
+      expect(after.hasPrimaryFocus, isTrue);
+      semantics.dispose();
+    },
+  );
+
+  testWidgets(
     'pressed outline appears on pointer down and focus arrives on pointer up',
     (tester) async {
       final controller = TextEditingController();
@@ -164,6 +216,9 @@ void main() {
 
       expect(pressedDecoration().border, isNotNull);
       expect(focusNode.hasFocus, isFalse);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(pressedDecoration().border, isNotNull);
+      expect(pressedDecoration().color, isNot(equals(Colors.transparent)));
 
       await gesture.up();
       await tester.pump();

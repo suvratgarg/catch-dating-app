@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.292
+version: 0.2.293
 updated: 2026-07-15
 owner: product_design_parity
 status: active
@@ -1460,12 +1460,14 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 
 ### P1 profiles
 
-- [ ] `profile.self` (16 state follow-ups, 0 open gaps; 1 blocked reference gap)
+- [ ] `profile.self` (16 state follow-ups, 0 open gaps; 1 blocked reference gap and 1 blocked owner/product/schema gap)
   - tested: `photo_grid`, `inline_text_edit`, `inline_choice_edit`, `inline_save_pending`, `inline_save_error`, `settings_navigation`
   - captured: `profile_loading`, `profile_error`, `profile_unavailable`, `edit_tab_default`, `photo_upload_mutation`, `inline_save_pending`, `inline_save_error`, `preview_tab_default`, `settings_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - DP-PROFILE-SELF-002: Blocked after the 2026-07-03 reference refresh and fixture alignment. Deterministic captures are registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, inline save pending/error drawers, text scale, reduced motion, and paired light/dark. Settings navigation proof is covered by `profile_widgets_test`. Fresh edit/preview handoff exports still model a compact two-tab header and older edit field/photo-grid layout while production `ProfileScreen` intentionally renders Edit, Preview, and Insights plus current photo/editor rows. The refreshed advisory compare remains above threshold: preview 26.84% mismatch / 46.15 meanDelta, edit 13.67% mismatch / 20.03 meanDelta.
   - DP-PROFILE-SELF-003: Closed by SelfProfileScreenState owning profile provider waves, preview projection, upload/save mutation modes, and retry intent; SelfProfileEditTabState owning photo-grid, prompt-slot, basics/about/running/lifestyle row descriptors; SelfProfilePhotoActionController owning photo editor/delete/reorder intents; and SelfProfileInlineEditPatchFactory owning inline edit patch creation.
   - DP-PROFILE-SELF-004: Closed by exported self-profile edit and preview references plus masks in `design/reference_screens/screen.profile.self`.
+  - DP-PROFILE-SELF-005: Closed for the implementation-safe Field primitive tranche: exact footer/header metrics, caret and typography values, spinner/status/error anatomy, underline/disclosure motion, animated saving states, repeat timing, keyboard activation, focus-visible rings, dedicated content-row 2/3-line clamps, and unchanged legacy value-row 1/2-line defaults are implemented and tested. Existing semantic colors already match, so no palette values changed.
+  - DP-PROFILE-SELF-006: Blocked on explicit owner/product/schema approval for direct-input stable-label policy; single-choice persistence, clearability, deselection, and save behavior; DOB helper/mono formatting; pace visibility; lifestyle footer; enum-backed workout control; three prompts/300 characters versus six/140; and profile icon/row ordering.
 - [x] `profile.public` (14 state follow-ups, 0 open gaps)
   - tested: `report_mutation`, `shared_snackbar_feedback`
   - captured: `loading_without_initial_profile`, `loading_with_initial_profile`, `load_error`, `profile_unavailable`, `public_profile`, `viewer_context`, `report_sheet`, `block_confirmation`, `block_mutation`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`

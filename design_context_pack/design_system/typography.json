@@ -27,8 +27,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 56,
-    "covered": 55,
+    "publicStaticTextStyleMethods": 57,
+    "covered": 56,
     "excluded": 1
   },
   "excluded": {
@@ -913,6 +913,23 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
+      },
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
+      ],
+      "casePolicy": "uppercase"
+    },
+    "fieldSectionKicker": {
+      "role": "data",
+      "family": "IBM Plex Mono",
+      "size": 11.0,
+      "weight": 600,
+      "lineHeight": 1.15,
+      "tracking": 1.43,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#544F47",
+        "dark": "#BAB2A7"
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"

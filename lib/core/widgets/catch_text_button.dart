@@ -23,6 +23,7 @@ class CatchTextButton extends StatelessWidget {
     this.textStyle,
     this.leading,
     this.leadingGap = CatchSpacing.micro6,
+    this.focusNode,
     this.tapTargetSize,
     this.minimumSize = const Size.square(CatchSpacing.s10),
     this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
@@ -40,6 +41,7 @@ class CatchTextButton extends StatelessWidget {
   final TextStyle? textStyle;
   final Widget? leading;
   final double leadingGap;
+  final FocusNode? focusNode;
   final MaterialTapTargetSize? tapTargetSize;
   final Size minimumSize;
   final EdgeInsetsGeometry padding;
@@ -60,6 +62,7 @@ class CatchTextButton extends StatelessWidget {
 
     return TextButton(
       onPressed: onPressed,
+      focusNode: focusNode,
       style: TextButton.styleFrom(
         foregroundColor: color,
         backgroundColor: backgroundColor,

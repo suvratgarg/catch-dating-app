@@ -416,6 +416,17 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink2,
   );
 
+  /// Exact FieldSection kicker from the canonical Field handoff.
+  static TextStyle fieldSectionKicker(BuildContext context, {Color? color}) =>
+      _mono(
+        context,
+        size: CatchFieldTokens.sectionKickerFontSize,
+        weight: FontWeight.w600,
+        height: 1.15,
+        letterSpacing: CatchFieldTokens.sectionKickerLetterSpacing,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
+
   /// Larger uppercase kicker for editorial sashes (`TONIGHT'S PICK`).
   static TextStyle kickerLg(BuildContext context, {Color? color}) => _mono(
     context,

@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Catch settings toggle.
 ///
 /// Matches the handoff `Toggle`: pill track, primary fill when on, quiet
 /// hairline-grey track when off, and a surface knob.
-class CatchToggle extends StatelessWidget {
+class CatchToggle extends StatefulWidget {
   const CatchToggle({
     super.key,
     required this.value,
@@ -30,68 +31,126 @@ class CatchToggle extends StatelessWidget {
   final bool _field;
 
   @override
+  State<CatchToggle> createState() => _CatchToggleState();
+}
+
+class _CatchToggleState extends State<CatchToggle> {
+  bool _showFocusHighlight = false;
+
+  void _activate() {
+    final onChanged = widget.onChanged;
+    if (onChanged != null) onChanged(!widget.value);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final enabled = onChanged != null;
-    final trackColor = value ? t.primary : t.line2;
-    final trackWidth = _field
+    final enabled = widget.onChanged != null;
+    final trackColor = widget.value ? t.primary : t.line2;
+    final trackWidth = widget._field
         ? CatchFieldTokens.toggleTrackWidth
         : CatchLayout.toggleTrackWidth;
-    final trackHeight = _field
+    final trackHeight = widget._field
         ? CatchFieldTokens.toggleTrackHeight
         : CatchLayout.toggleTrackHeight;
-    final trackInset = _field
+    final trackInset = widget._field
         ? CatchFieldTokens.toggleTrackInset
         : CatchLayout.toggleTrackPadding;
-    final knobExtent = _field
+    final knobExtent = widget._field
         ? CatchFieldTokens.toggleKnobExtent
         : CatchLayout.toggleKnobExtent;
-    final disabledOpacity = _field
+    final disabledOpacity = widget._field
         ? CatchFieldTokens.savingToggleOpacity
         : CatchOpacity.disabledControl;
     final disableAnimations = MediaQuery.maybeOf(context)?.disableAnimations;
     final alignmentDuration = disableAnimations == true
         ? Duration.zero
-        : _field
+        : widget._field
         ? CatchFieldTokens.standard
         : CatchMotion.fast;
 
     return Semantics(
-      label: semanticLabel,
+      label: widget.semanticLabel,
       button: true,
-      toggled: value,
+      toggled: widget.value,
       enabled: enabled,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: enabled ? () => onChanged!(!value) : null,
-        child: Opacity(
-          opacity: enabled ? CatchOpacity.visible : disabledOpacity,
-          child: SizedBox(
-            key: _field ? const ValueKey('catch-field-toggle') : null,
-            width: trackWidth,
-            height: trackHeight,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: trackColor,
-                borderRadius: BorderRadius.circular(CatchRadius.pill),
-              ),
-              child: AnimatedAlign(
-                duration: alignmentDuration,
-                curve: _field
-                    ? CatchFieldTokens.curve
-                    : CatchMotion.standardCurve,
-                alignment: value
-                    ? AlignmentDirectional.centerEnd
-                    : AlignmentDirectional.centerStart,
-                child: Padding(
-                  padding: EdgeInsets.all(trackInset),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: t.surface,
-                      borderRadius: BorderRadius.circular(CatchRadius.pill),
-                      boxShadow: CatchElevation.toggleKnob,
+      child: FocusableActionDetector(
+        enabled: enabled,
+        shortcuts: const <ShortcutActivator, Intent>{
+          SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+          SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+        },
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (_) {
+              _activate();
+              return null;
+            },
+          ),
+        },
+        onShowFocusHighlight: (show) {
+          if (_showFocusHighlight != show) {
+            setState(() => _showFocusHighlight = show);
+          }
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: enabled ? _activate : null,
+          child: AnimatedOpacity(
+            duration: alignmentDuration,
+            curve: widget._field
+                ? CatchFieldTokens.curve
+                : CatchMotion.standardCurve,
+            opacity: enabled ? CatchOpacity.visible : disabledOpacity,
+            child: SizedBox(
+              key: widget._field ? const ValueKey('catch-field-toggle') : null,
+              width: trackWidth,
+              height: trackHeight,
+              child: DecoratedBox(
+                key: widget._field
+                    ? const ValueKey('catch-field-toggle-focus-outline')
+                    : null,
+                position: DecorationPosition.foreground,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(CatchRadius.pill),
+                  border: _showFocusHighlight
+                      ? Border.all(
+                          color: t.ink,
+                          width: CatchFieldTokens.focusRingWidth,
+                        )
+                      : null,
+                ),
+                child: AnimatedContainer(
+                  key: widget._field
+                      ? const ValueKey('catch-field-toggle-track')
+                      : null,
+                  duration: alignmentDuration,
+                  curve: widget._field
+                      ? CatchFieldTokens.curve
+                      : CatchMotion.standardCurve,
+                  decoration: BoxDecoration(
+                    color: trackColor,
+                    borderRadius: BorderRadius.circular(CatchRadius.pill),
+                  ),
+                  child: AnimatedAlign(
+                    duration: alignmentDuration,
+                    curve: widget._field
+                        ? CatchFieldTokens.curve
+                        : CatchMotion.standardCurve,
+                    alignment: widget.value
+                        ? AlignmentDirectional.centerEnd
+                        : AlignmentDirectional.centerStart,
+                    child: Padding(
+                      padding: EdgeInsets.all(trackInset),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: t.surface,
+                          borderRadius: BorderRadius.circular(CatchRadius.pill),
+                          boxShadow: CatchElevation.toggleKnob,
+                        ),
+                        child: SizedBox.square(dimension: knobExtent),
+                      ),
                     ),
-                    child: SizedBox.square(dimension: knobExtent),
                   ),
                 ),
               ),
