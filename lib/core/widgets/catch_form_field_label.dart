@@ -10,12 +10,27 @@ class CatchFormFieldLabel extends StatelessWidget {
     this.isOptional = false,
     this.hasError = false,
     this.large = false,
-  });
+  }) : inlineOptional = false,
+       style = null,
+       maxLines = 1;
+
+  const CatchFormFieldLabel.inline({
+    super.key,
+    required this.label,
+    required this.style,
+    this.isOptional = false,
+    this.hasError = false,
+    this.maxLines = 1,
+  }) : inlineOptional = true,
+       large = false;
 
   final String label;
   final bool isOptional;
   final bool hasError;
   final bool large;
+  final bool inlineOptional;
+  final TextStyle? style;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +44,42 @@ class CatchFormFieldLabel extends StatelessWidget {
             context,
             color: hasError ? t.danger : null,
           );
+
+    if (inlineOptional) {
+      final effectiveStyle = style ?? labelStyle;
+      final labelText = Text(
+        label,
+        style: effectiveStyle,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+      );
+      if (!isOptional) return labelText;
+
+      // Keep the visible label as its own text node so clients can target the
+      // field name without folding the optional qualifier into that name.
+      final text = Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Flexible(child: labelText),
+          Text(
+            context.l10n.coreCatchFieldTextOptionalSuffix,
+            style: effectiveStyle.copyWith(
+              color: hasError ? t.danger : t.ink3,
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 1,
+          ),
+        ],
+      );
+      return Semantics(
+        label: context.l10n.coreCatchFormFieldLabelLabelLabelOptional(
+          label: label,
+        ),
+        excludeSemantics: true,
+        child: text,
+      );
+    }
 
     return Semantics(
       label: isOptional

@@ -354,6 +354,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreCatchFieldLabelDone => 'Done';
 
   @override
+  String get coreCatchFieldLabelSaving => 'Saving…';
+
+  @override
+  String get coreCatchFieldTextOptionalSuffix => ' · Optional';
+
+  @override
+  String get coreCatchFieldSemanticSaving => 'Saving';
+
+  @override
+  String get coreCatchFieldSemanticSaved => 'Saved';
+
+  @override
   String get coreCatchFormFieldLabelTextOptional => 'Optional';
 
   @override
@@ -3067,6 +3079,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get userProfileInlineEditorPromptSubtitlePickTheQuestionThis =>
       'Pick the question this answer responds to.';
+
+  @override
+  String userProfileInlineEditorPromptLabelPromptNumber({
+    required Object number,
+  }) {
+    return 'Prompt $number';
+  }
+
+  @override
+  String get userProfileInlineEditorPromptLabelAnswer => 'Answer';
+
+  @override
+  String get userProfileInlineEditorPromptLabelAddAnotherPrompt =>
+      'Add another prompt';
 
   @override
   String get userProfileProfileSliverHeaderTooltipSettings => 'Settings';
@@ -11543,5 +11569,10 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object toLowerCase,
   }) {
     return 'Select $toLowerCase';
+  }
+
+  @override
+  String coreCatchFieldVisiblecopyAddFieldLabel({required Object fieldLabel}) {
+    return 'Add $fieldLabel';
   }
 }

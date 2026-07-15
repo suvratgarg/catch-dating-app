@@ -954,6 +954,7 @@ final _styleRegistry = <_StyleEntry>[
     casePolicy: 'uppercase',
   ),
   _StyleEntry.single('monoLabel', 'data', CatchTextStyles.monoLabel),
+  _StyleEntry.single('sectionCount', 'data', CatchTextStyles.sectionCount),
   _StyleEntry.single(
     'monoCapsLabel',
     'data',

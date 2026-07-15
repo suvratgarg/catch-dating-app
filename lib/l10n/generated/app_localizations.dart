@@ -727,6 +727,30 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get coreCatchFieldLabelDone;
 
+  /// Product copy used by lib/core/widgets/catch_field.dart (saving label).
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get coreCatchFieldLabelSaving;
+
+  /// Muted suffix appended to an empty optional field add affordance.
+  ///
+  /// In en, this message translates to:
+  /// **' · Optional'**
+  String get coreCatchFieldTextOptionalSuffix;
+
+  /// Live accessibility status for a CatchField save in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving'**
+  String get coreCatchFieldSemanticSaving;
+
+  /// Live accessibility status for a successfully saved CatchField.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get coreCatchFieldSemanticSaved;
+
   /// Product copy used by lib/core/widgets/catch_form_field_label.dart (Text).
   ///
   /// In en, this message translates to:
@@ -5401,6 +5425,26 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick the question this answer responds to.'**
   String get userProfileInlineEditorPromptSubtitlePickTheQuestionThis;
+
+  /// Numbered prompt-question field label in the profile editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt {number}'**
+  String userProfileInlineEditorPromptLabelPromptNumber({
+    required Object number,
+  });
+
+  /// Prompt-answer field label in the profile editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get userProfileInlineEditorPromptLabelAnswer;
+
+  /// Action that opens the next empty profile prompt card.
+  ///
+  /// In en, this message translates to:
+  /// **'Add another prompt'**
+  String get userProfileInlineEditorPromptLabelAddAnotherPrompt;
 
   /// Product copy used by lib/user_profile/presentation/widgets/profile_sliver_header.dart (tooltip).
   ///
@@ -17937,6 +17981,12 @@ abstract class AppLocalizations {
   String coreCatchFieldVisiblecopySelectTolowercase({
     required Object toLowerCase,
   });
+
+  /// Canonical empty editable-row copy used by lib/core/widgets/catch_field.dart (visibleCopy).
+  ///
+  /// In en, this message translates to:
+  /// **'Add {fieldLabel}'**
+  String coreCatchFieldVisiblecopyAddFieldLabel({required Object fieldLabel});
 }
 
 class _AppLocalizationsDelegate

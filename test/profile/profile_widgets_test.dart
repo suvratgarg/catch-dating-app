@@ -1,3 +1,5 @@
+// ignore_for_file: scoped_providers_should_specify_dependencies
+
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -8,15 +10,12 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchLayout, CatchMotion, CatchStroke;
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+    show CatchFieldTokens, CatchInsets, CatchLayout, CatchMotion, CatchTokens;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -30,14 +29,12 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_prompt.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -105,28 +102,34 @@ Future<void> _pumpEditableProfileTab(
   tester.view.physicalSize = const Size(390, 2200);
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
-  await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-        errorLoggerProvider.overrideWithValue(_SilentErrorLogger()),
-        userProfileRepositoryProvider.overrideWithValue(repository),
-      ],
-      child: _ProfileEditProviderPrimer(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: ProfileTab(
-              user: user,
-              uploadState: (loadingIndices: <int>{}, uploadError: null),
-            ),
+  await tester.pumpWidget(_editableProfileTab(user, repository));
+  await tester.pump();
+  await tester.pump();
+}
+
+Widget _editableProfileTab(
+  UserProfile user,
+  FakeProfileEditUserProfileRepository repository,
+) {
+  return ProviderScope(
+    overrides: [
+      // Test-only scoped overrides deliberately replace app-root providers.
+      uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+      errorLoggerProvider.overrideWithValue(_SilentErrorLogger()),
+      userProfileRepositoryProvider.overrideWithValue(repository),
+    ],
+    child: _ProfileEditProviderPrimer(
+      child: MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: ProfileTab(
+            user: user,
+            uploadState: (loadingIndices: <int>{}, uploadError: null),
           ),
         ),
       ),
     ),
   );
-  await tester.pump();
-  await tester.pump();
 }
 
 Future<void> _dragProfileTabUntilVisible(
@@ -157,7 +160,7 @@ Future<void> _dragProfileTabUntilTappable(
 Finder _profileInfoTile(String label) => find.byWidgetPredicate(
   (widget) =>
       widget is CatchField &&
-      widget.title == label &&
+      (widget.title == label || widget.body == label) &&
       widget.variant == CatchFieldVariant.row,
 );
 
@@ -167,30 +170,66 @@ Finder _editableTextForProfileField(String label) => find.descendant(
 );
 
 Finder _inlinePromptEditableText() => find.descendant(
-  of: find.byType(ProfileInlineTextValue),
+  of: find.byKey(const ValueKey('profile-prompt-answer-0')),
+  matching: find.byType(EditableText),
+);
+
+Finder _promptQuestionField(int index) =>
+    find.byKey(ValueKey('profile-prompt-question-$index'));
+
+Finder _promptAnswerField(int index) =>
+    find.byKey(ValueKey('profile-prompt-answer-$index'));
+
+Finder _promptAnswerEditableText(int index) => find.descendant(
+  of: _promptAnswerField(index),
   matching: find.byType(EditableText),
 );
 
 Finder _profileOptionGroup() => find.byType(CatchOptionGroup<int>);
 
 Finder _catchChip(String label) => find.byWidgetPredicate(
-  (widget) => widget is CatchChip && widget.label == label,
+  (widget) => widget is CatchFieldChoiceChip && widget.label == label,
 );
 
-int _loadingCatchButtonCount(WidgetTester tester) => tester
-    .widgetList<CatchButton>(find.byType(CatchButton))
-    .where((button) => button.isLoading)
+int _loadingCatchButtonCount(WidgetTester tester) => find
+    .descendant(
+      of: find.byKey(const ValueKey('catch-field-done')),
+      matching: find.byType(CircularProgressIndicator),
+    )
+    .evaluate()
     .length;
 
+int _promptAnswerSavingCount(int index) => find
+    .descendant(
+      of: _promptAnswerField(index),
+      matching: find.byType(CircularProgressIndicator),
+    )
+    .evaluate()
+    .length;
+
+Future<void> _blurPromptAnswer(WidgetTester tester, {int index = 0}) async {
+  tester
+      .widget<EditableText>(_promptAnswerEditableText(index))
+      .focusNode
+      .unfocus();
+  await tester.pump();
+}
+
 Future<void> _tapInlineDone(WidgetTester tester) async {
-  final doneButton = find.widgetWithText(CatchButton, 'Done');
-  tester.widget<CatchButton>(doneButton).onPressed?.call();
+  final doneButton = find.descendant(
+    of: find.byKey(const ValueKey('catch-field-done')),
+    matching: find.byType(TextButton),
+  );
+  tester.widget<TextButton>(doneButton).onPressed?.call();
   await tester.pump();
 }
 
 Future<void> _tapInlineCancel(WidgetTester tester) async {
-  final cancelButton = find.widgetWithText(CatchTextButton, 'Cancel');
-  tester.widget<CatchTextButton>(cancelButton).onPressed?.call();
+  final cancelButton = find.descendant(
+    of: find.byKey(const ValueKey('catch-field-cancel')),
+    matching: find.byType(TextButton),
+  );
+  tester.widget<TextButton>(cancelButton).onPressed?.call();
   await tester.pump();
 }
 
@@ -616,7 +655,7 @@ void main() {
     );
   });
 
-  testWidgets('ProfileTab shows add affordance for empty email', (
+  testWidgets('ProfileTab derives consistent empty editable-row copy', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1.0;
@@ -643,12 +682,35 @@ void main() {
     );
     await tester.pump();
 
-    // Email row is visible with add affordance (shows "+ Email")
-    expect(find.textContaining('Email'), findsAtLeastNWidgets(1));
-    await _dragProfileTabUntilVisible(tester, find.text('Engineer'));
-    expect(find.text('Engineer'), findsOneWidget);
     await _dragProfileTabUntilVisible(tester, find.text('+919876543210'));
     expect(find.text('+919876543210'), findsOneWidget);
+
+    for (final (label, emptyValue) in [
+      ('Email', 'Add email'),
+      ('Instagram', 'Add instagram'),
+    ]) {
+      final tile = _profileInfoTile(label);
+      await _dragProfileTabUntilVisible(tester, tile);
+      expect(
+        find.descendant(of: tile, matching: find.text(emptyValue)),
+        findsOneWidget,
+      );
+      expect(find.text('+ $label'), findsNothing);
+    }
+
+    await _dragProfileTabUntilVisible(tester, find.text('Engineer'));
+    expect(find.text('Engineer'), findsOneWidget);
+
+    final workoutTile = _profileInfoTile('Workout');
+    await _dragProfileTabUntilVisible(tester, workoutTile);
+    expect(
+      find.descendant(
+        of: workoutTile,
+        matching: find.textContaining('Add workout', findRichText: true),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('+ Workout'), findsNothing);
   });
 
   testWidgets('ProfileTab starts with handoff profile edit sections', (
@@ -685,6 +747,58 @@ void main() {
     expect(find.text('RUNNING'), findsOneWidget);
     expect(find.text('LIFESTYLE'), findsOneWidget);
     expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
+
+    final photosSection = find.ancestor(
+      of: find.byType(PhotoGrid),
+      matching: find.byType(CatchSection),
+    );
+    final photosRule = find.descendant(
+      of: photosSection,
+      matching: find.byType(CatchDivider),
+    );
+    expect(photosRule, findsOneWidget);
+    expect(tester.getRect(photosRule).left, tester.getRect(photosSection).left);
+    expect(
+      tester.getRect(photosRule).right,
+      tester.getRect(photosSection).right,
+    );
+    expect(
+      tester.getRect(find.byType(PhotoGrid)).top -
+          tester.getRect(photosRule).bottom,
+      CatchSpacing.s3,
+    );
+  });
+
+  testWidgets('Profile photo skeleton preserves the ready header rule rhythm', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      _profileWidgetHarness(
+        const Padding(
+          padding: CatchInsets.content,
+          child: ProfilePhotosSkeletonSection(),
+        ),
+      ),
+    );
+
+    final section = find.byType(CatchSection);
+    final rule = find.descendant(
+      of: section,
+      matching: find.byType(CatchDivider),
+    );
+    final grid = find.byType(GridView);
+    expect(rule, findsOneWidget);
+    expect(tester.getRect(rule).left, tester.getRect(section).left);
+    expect(tester.getRect(rule).right, tester.getRect(section).right);
+    expect(
+      tester.getRect(grid).top - tester.getRect(rule).bottom,
+      CatchSpacing.s3,
+    );
   });
 
   testWidgets('ProfileTab field rows honor fixed screen gutters', (
@@ -709,15 +823,25 @@ void main() {
 
     // Every section divider aligns to the field text lane (derived from the
     // leading-slot metrics) and terminates on the row's trailing edge.
-    final dividers = find.byWidgetPredicate(
-      (widget) =>
-          widget is ColoredBox &&
-          widget.child is SizedBox &&
-          (widget.child as SizedBox).height == CatchStroke.hairline,
+    final aboutSection = find.ancestor(
+      of: displayNameTile,
+      matching: find.byType(CatchSection),
+    );
+    final dividers = find.descendant(
+      of: aboutSection,
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchDivider &&
+            widget.role == CatchDividerRole.fieldSection,
+      ),
     );
     expect(dividers, findsWidgets);
     for (final element in dividers.evaluate()) {
-      final box = element.renderObject! as RenderBox;
+      final coloredBox = find.descendant(
+        of: find.byElementPredicate((candidate) => candidate == element),
+        matching: find.byType(ColoredBox),
+      );
+      final box = tester.renderObject<RenderBox>(coloredBox);
       final dividerRect = box.localToGlobal(Offset.zero) & box.size;
       expect(dividerRect.left - rowRect.left, CatchFieldRow.textLaneInset);
       expect(dividerRect.right, rowRect.right);
@@ -745,6 +869,7 @@ void main() {
 
       expect(displayNameTile.mode, CatchFieldMode.edit);
       expect(displayNameTile.enabled, isTrue);
+      expect(displayNameTile.showClearButton, isTrue);
       expect(
         find.descendant(
           of: _profileInfoTile('Display name'),
@@ -753,10 +878,33 @@ void main() {
         findsWidgets,
       );
       expect(find.text('Name'), findsNothing);
-      expect(dobTile.mode, CatchFieldMode.nav);
+      expect(dobTile.mode, CatchFieldMode.read);
       expect(dobTile.onTap, isNull);
-      expect(genderTile.mode, CatchFieldMode.nav);
+      expect(genderTile.mode, CatchFieldMode.read);
       expect(genderTile.onTap, isNull);
+      expect(
+        find.descendant(
+          of: _profileInfoTile('Display name'),
+          matching: find.byIcon(CatchIcons.expandMoreRounded),
+        ),
+        findsNothing,
+      );
+      for (final label in ['Date of birth', 'Gender']) {
+        expect(
+          find.descendant(
+            of: _profileInfoTile(label),
+            matching: find.byIcon(CatchIcons.chevronRightRounded),
+          ),
+          findsNothing,
+        );
+        expect(
+          find.descendant(
+            of: _profileInfoTile(label),
+            matching: find.byIcon(CatchIcons.expandMoreRounded),
+          ),
+          findsNothing,
+        );
+      }
       expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
 
       final instagramTile = tester.widget<CatchField>(
@@ -764,7 +912,17 @@ void main() {
       );
       expect(instagramTile.mode, CatchFieldMode.edit);
       expect(instagramTile.enabled, isTrue);
-      expect(find.text('@suvrat_events'), findsOneWidget);
+      expect(instagramTile.leadingUnit, '@');
+      expect(instagramTile.showClearButton, isTrue);
+      expect(find.text('@'), findsOneWidget);
+      expect(find.text('suvrat_events'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: _profileInfoTile('Instagram'),
+          matching: find.byIcon(CatchIcons.clearCircle),
+        ),
+        findsOneWidget,
+      );
     },
   );
 
@@ -803,114 +961,37 @@ void main() {
     expect(repository.updatedFields, {'displayName': 'S.'});
   });
 
-  testWidgets('inline text value edits through CatchField input primitive', (
+  testWidgets('direct text Saved state survives an equal profile refresh', (
     tester,
   ) async {
-    final controller = TextEditingController(text: '+919131404263');
-    addTearDown(controller.dispose);
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Builder(
-          builder: (context) {
-            return MediaQuery(
-              data: MediaQuery.of(
-                context,
-              ).copyWith(textScaler: const TextScaler.linear(1.35)),
-              child: Scaffold(
-                body: Center(
-                  child: SizedBox(
-                    width: 340,
-                    child: ProfileInlineTextValue(
-                      label: 'Phone',
-                      displayValue: controller.text,
-                      controller: controller,
-                      isEditing: true,
-                      enabled: true,
-                      keyboardType: TextInputType.phone,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(
+      name: 'Suvrat Garg',
+      firstName: 'Suvrat',
+      lastName: 'Garg',
+      displayName: 'Suvrat',
     );
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final displayNameTile = _profileInfoTile('Display name');
+    await tester.tap(displayNameTile);
+    await tester.enterText(_editableTextForProfileField('Display name'), 'S.');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await _pumpProfileSheet(tester);
+
+    Finder savedStatus() => find.descendant(
+      of: displayNameTile,
+      matching: find.byKey(const ValueKey('catch-field-saved')),
+    );
+    expect(savedStatus(), findsOneWidget);
+
+    final refreshed = user.copyWith(displayName: 'S.');
+    repository.latestProfile = refreshed;
+    await tester.pumpWidget(_editableProfileTab(refreshed, repository));
     await tester.pump();
 
-    final input = find.descendant(
-      of: find.byType(ProfileInlineTextValue),
-      matching: find.byType(CatchField),
-    );
-    final field = tester.widget<CatchField>(input);
-    final textField = tester.widget<TextField>(
-      find.descendant(of: input, matching: find.byType(TextField)),
-    );
-
-    expect(input, findsOneWidget);
-    expect(field.variant, CatchFieldVariant.underline);
-    expect(field.size, CatchFieldSize.floating);
-    expect(field.showLabel, isFalse);
-    expect(field.controller, same(controller));
-    expect(textField.controller, same(controller));
-    expect(textField.keyboardType, TextInputType.phone);
-    expect(textField.autofocus, isTrue);
+    expect(savedStatus(), findsOneWidget);
   });
-
-  testWidgets(
-    'multiline prompt text wires formatters through CatchField input',
-    (tester) async {
-      final controller = TextEditingController(
-        text: 'This is the widest prompt line\nshort',
-      );
-      addTearDown(controller.dispose);
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: Center(
-              child: SizedBox(
-                width: 300,
-                child: ProfileInlineTextValue(
-                  label: _perfectRunPromptTitle,
-                  displayValue: '',
-                  controller: controller,
-                  isEditing: true,
-                  enabled: true,
-                  maxLines: null,
-                  maxLength: maximumProfilePromptAnswerLength,
-                  collapseStackedBlankLines: true,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pump();
-
-      final input = find.descendant(
-        of: find.byType(ProfileInlineTextValue),
-        matching: find.byType(CatchField),
-      );
-      final field = tester.widget<CatchField>(input);
-      final textField = tester.widget<TextField>(
-        find.descendant(of: input, matching: find.byType(TextField)),
-      );
-
-      expect(input, findsOneWidget);
-      expect(field.maxLines, isNull);
-      expect(field.inputFormatters, hasLength(2));
-      expect(
-        field.inputFormatters!.whereType<LengthLimitingTextInputFormatter>(),
-        hasLength(1),
-      );
-      expect(textField.maxLines, isNull);
-      expect(textField.inputFormatters, same(field.inputFormatters));
-    },
-  );
 
   testWidgets('profile inline drawers animate open and closed', (tester) async {
     final user = buildUser(name: 'Suvrat Garg').copyWith(height: 172);
@@ -918,18 +999,143 @@ void main() {
 
     final heightTile = _profileInfoTile('Height');
     await _dragProfileTabUntilVisible(tester, heightTile);
+    final collapsedTop = tester.getTopLeft(heightTile).dy;
+    final collapsedHeight = tester.getSize(heightTile).height;
     await tester.tap(heightTile);
-    await _pumpProfileSheet(tester);
+    await tester.pump();
+    await pumpFeatureUiFor(
+      tester,
+      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+    );
+    final openingHeight = tester.getSize(heightTile).height;
+    expect(openingHeight, greaterThan(collapsedHeight));
+    expect(tester.getTopLeft(heightTile).dy, closeTo(collapsedTop, 0.1));
+
+    await pumpFeatureUiFor(
+      tester,
+      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+    );
+    final expandedHeight = tester.getSize(heightTile).height;
+    expect(openingHeight, lessThan(expandedHeight));
 
     expect(find.byTooltip('Increase height'), findsOneWidget);
-    expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
+    expect(find.byKey(const ValueKey('catch-field-done')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: heightTile,
+        matching: find.textContaining('Optional'),
+      ),
+      findsNothing,
+    );
     expect(find.text('Cancel'), findsOneWidget);
 
     await _tapInlineCancel(tester);
-    await _pumpProfileSheet(tester);
+    await pumpFeatureUiFor(
+      tester,
+      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+    );
+    final closingHeight = tester.getSize(heightTile).height;
+    expect(closingHeight, greaterThan(collapsedHeight));
+    expect(closingHeight, lessThan(expandedHeight));
+
+    await pumpFeatureUiFor(
+      tester,
+      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+    );
 
     expect(find.byTooltip('Increase height'), findsNothing);
+    expect(tester.getSize(heightTile).height, closeTo(collapsedHeight, 0.1));
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('choice tiles keep their controls through the close animation', (
+    tester,
+  ) async {
+    var open = true;
+
+    await tester.pumpWidget(
+      _profileWidgetHarness(
+        StatefulBuilder(
+          builder: (context, setState) => ProfileMultiEnumEntry<Language>(
+            icon: CatchIcons.languageOutlined,
+            label: 'Languages',
+            values: Language.values,
+            selected: const [Language.english, Language.hindi],
+            fieldName: 'languages',
+            patchForValues: (values) =>
+                UpdateUserProfilePatch(languages: values),
+            isExpanded: open,
+            onTap: () => setState(() => open = !open),
+            onSaved: () => setState(() => open = false),
+            onCancel: () => setState(() => open = false),
+          ),
+        ),
+      ),
+    );
+
+    expect(_catchChip(Language.english.label), findsOneWidget);
+    await _tapInlineCancel(tester);
+    await pumpFeatureUiFor(
+      tester,
+      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+    );
+
+    expect(_catchChip(Language.english.label), findsOneWidget);
+
+    await pumpFeatureUiFor(
+      tester,
+      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+    );
+    expect(_catchChip(Language.english.label), findsNothing);
+  });
+
+  testWidgets('equal profile refresh preserves a multi-choice draft', (
+    tester,
+  ) async {
+    late StateSetter rebuild;
+    var selected = <Language>[Language.english];
+
+    await tester.pumpWidget(
+      _profileWidgetHarness(
+        StatefulBuilder(
+          builder: (context, setState) {
+            rebuild = setState;
+            return ProfileMultiEnumEntry<Language>(
+              icon: CatchIcons.languageOutlined,
+              label: 'Languages',
+              values: Language.values,
+              selected: List<Language>.of(selected),
+              fieldName: 'languages',
+              patchForValues: (values) =>
+                  UpdateUserProfilePatch(languages: values),
+              isExpanded: true,
+              onTap: () {},
+              onSaved: () {},
+              onCancel: () {},
+            );
+          },
+        ),
+      ),
+    );
+
+    await tester.tap(_catchChip(Language.hindi.label));
+    await _pumpProfileSheet(tester);
+    expect(
+      tester
+          .widget<CatchFieldChoiceChip>(_catchChip(Language.hindi.label))
+          .selected,
+      isTrue,
+    );
+
+    rebuild(() => selected = <Language>[Language.english]);
+    await _pumpProfileSheet(tester);
+
+    expect(
+      tester
+          .widget<CatchFieldChoiceChip>(_catchChip(Language.hindi.label))
+          .selected,
+      isTrue,
+    );
   });
 
   testWidgets('ProfileTab omits private discovery filters', (tester) async {
@@ -1001,53 +1207,253 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('inline text edit owns its controller through dismissal', (
-    tester,
-  ) async {
-    final user = buildUser(name: 'Suvrat Garg');
-    await _pumpProfileTab(tester, user);
-
-    await tester.tap(find.text('Here for the event.'));
-    await _pumpProfileSheet(tester);
-
-    expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
-
-    await _tapInlineDone(tester);
-    await _pumpProfileSheet(tester);
-
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('prompt edit uses the stable profile row-owned text primitive', (
+  testWidgets('prompt card separates explicit question and blur-save answer', (
     tester,
   ) async {
     final repository = FakeProfileEditUserProfileRepository();
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
-    await tester.tap(promptTile);
+    final card = find.byKey(const ValueKey('profile-prompt-card-0'));
+    final question = _promptQuestionField(0);
+    final answer = _promptAnswerField(0);
+    expect(card, findsOneWidget);
+    expect(
+      find.descendant(of: card, matching: find.byType(CatchField)),
+      findsNWidgets(2),
+    );
+
+    final collapsedQuestion = tester.widget<CatchField>(question);
+    expect(collapsedQuestion.title, 'Prompt 1');
+    expect(collapsedQuestion.body, _perfectRunPromptTitle);
+    expect(collapsedQuestion.open, isFalse);
+
+    final answerField = tester.widget<CatchField>(answer);
+    expect(answerField.title, 'Answer');
+    expect(answerField.variant, CatchFieldVariant.row);
+    expect(answerField.keyboardType, TextInputType.multiline);
+    expect(answerField.textInputAction, TextInputAction.newline);
+    expect(answerField.maxLines, isNull);
+    expect(answerField.minLines, 1);
+    expect(answerField.maxLength, maximumProfilePromptAnswerLength);
+    expect(answerField.inputFormatters, hasLength(1));
+    expect(_promptAnswerEditableText(0), findsOneWidget);
+    expect(
+      find.descendant(of: question, matching: find.byType(TextField)),
+      findsNothing,
+    );
+
+    await tester.tap(question);
     await _pumpProfileSheet(tester);
 
-    expect(find.byType(ProfileInlineTextValue), findsOneWidget);
-    final promptField = tester.widget<ProfileInlineTextValue>(
-      find.byType(ProfileInlineTextValue),
+    expect(tester.widget<CatchField>(question).open, isTrue);
+    expect(find.byKey(const ValueKey('catch-field-cancel')), findsOneWidget);
+    expect(find.byKey(const ValueKey('catch-field-done')), findsOneWidget);
+    expect(_catchChip(_perfectRunPromptTitle), findsOneWidget);
+    expect(_promptAnswerEditableText(0), findsOneWidget);
+
+    BoxDecoration promptSurfaceDecoration() {
+      final surface = tester.widget<AnimatedContainer>(
+        find
+            .descendant(of: card, matching: find.byType(AnimatedContainer))
+            .first,
+      );
+      return surface.foregroundDecoration! as BoxDecoration;
+    }
+
+    int highlightedPromptFields() => tester
+        .widgetList<AnimatedContainer>(
+          find.descendant(
+            of: card,
+            matching: find.byKey(const ValueKey('catch-field-active-overlay')),
+          ),
+        )
+        .where(
+          (overlay) => (overlay.decoration! as BoxDecoration).border != null,
+        )
+        .length;
+
+    expect(
+      promptSurfaceDecoration().border,
+      Border.all(color: CatchTokens.editorialLight.line2),
     );
-    expect(promptField.maxLines, isNull);
-    expect(promptField.minLines, isNull);
-    expect(promptField.maxLength, maximumProfilePromptAnswerLength);
+    expect(highlightedPromptFields(), 1);
+
+    await tester.tap(_promptAnswerEditableText(0));
+    await _pumpProfileSheet(tester);
+    expect(tester.widget<CatchField>(question).open, isFalse);
+    expect(
+      promptSurfaceDecoration().border,
+      Border.all(color: CatchTokens.editorialLight.line2),
+    );
+    expect(highlightedPromptFields(), 1);
+    expect(find.byKey(const ValueKey('catch-field-cancel')), findsNothing);
+    expect(find.byKey(const ValueKey('catch-field-done')), findsNothing);
+    expect(_promptAnswerEditableText(0), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('prompt answer trims and saves implicitly when focus leaves', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(name: 'Suvrat Garg');
+    await _pumpEditableProfileTab(tester, user, repository);
 
     await tester.enterText(_inlinePromptEditableText(), ' Updated bio ');
-    await _tapInlineDone(tester);
+    expect(find.byKey(const ValueKey('catch-field-done')), findsNothing);
+
+    await _blurPromptAnswer(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
       containsPair('answer', 'Updated bio'),
     ]);
-    expect(_inlinePromptEditableText(), findsNothing);
+    expect(
+      tester
+          .widget<EditableText>(_inlinePromptEditableText())
+          .focusNode
+          .hasFocus,
+      isFalse,
+    );
+    expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
   });
 
-  testWidgets('prompt picker excludes prompts used by other rows', (
+  testWidgets(
+    'prompt answer blur preserves a question selection until explicit Done',
+    (tester) async {
+      final repository = FakeProfileEditUserProfileRepository();
+      final user = buildUser(name: 'Suvrat Garg');
+      final originalPromptId = user.profilePrompts.first.promptId;
+      final alternatePrompt = profilePromptDefinition('favoriteRoute');
+      await _pumpEditableProfileTab(tester, user, repository);
+
+      await tester.tap(_promptQuestionField(0));
+      await _pumpProfileSheet(tester);
+      await tester.tap(_catchChip(alternatePrompt.title));
+      await tester.pump();
+      expect(
+        tester.widget<CatchField>(_promptQuestionField(0)).body,
+        alternatePrompt.title,
+      );
+
+      await tester.enterText(
+        _promptAnswerEditableText(0),
+        'Answer saved against the committed question.',
+      );
+      await _blurPromptAnswer(tester);
+      await _pumpProfileSheet(tester);
+
+      final savedPrompts =
+          repository.updatedFields?['profilePrompts'] as List<Object?>;
+      expect((savedPrompts.single as Map)['promptId'], originalPromptId);
+      expect(
+        (savedPrompts.single as Map)['answer'],
+        'Answer saved against the committed question.',
+      );
+      expect(
+        tester.widget<CatchField>(_promptQuestionField(0)).body,
+        alternatePrompt.title,
+      );
+    },
+  );
+
+  testWidgets('prompt Done and answer blur serialize without dropping either', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository()
+      ..updateCompleter = Completer<void>();
+    final user = buildUser(name: 'Suvrat Garg');
+    final originalAnswer = user.profilePrompts.first.answer;
+    final alternatePrompt = profilePromptDefinition('favoriteRoute');
+    const updatedAnswer = 'The answer that blurred while Done was saving.';
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    await tester.tap(_promptQuestionField(0));
+    await _pumpProfileSheet(tester);
+    await tester.tap(_catchChip(alternatePrompt.title));
+    await tester.pump();
+    await tester.enterText(_promptAnswerEditableText(0), updatedAnswer);
+
+    final doneButton = tester.widget<TextButton>(
+      find.descendant(
+        of: find.byKey(const ValueKey('catch-field-done')),
+        matching: find.byType(TextButton),
+      ),
+    );
+    doneButton.onPressed!.call();
+    tester
+        .widget<EditableText>(_promptAnswerEditableText(0))
+        .focusNode
+        .unfocus();
+    await tester.pump();
+
+    expect(repository.updateHistory, hasLength(1));
+    final questionSave =
+        repository.updateHistory.single['profilePrompts'] as List<Object?>;
+    expect((questionSave.single as Map)['promptId'], alternatePrompt.id);
+    expect((questionSave.single as Map)['answer'], originalAnswer);
+
+    repository.updateCompleter!.complete();
+    await _pumpProfileSheet(tester);
+
+    expect(repository.updateHistory, hasLength(2));
+    final answerSave =
+        repository.updateHistory.last['profilePrompts'] as List<Object?>;
+    expect((answerSave.single as Map)['promptId'], alternatePrompt.id);
+    expect((answerSave.single as Map)['answer'], updatedAnswer);
+    expect(repository.updatedFields, repository.updateHistory.last);
+  });
+
+  testWidgets(
+    'profile prompt cards remain capped at the three-prompt contract',
+    (tester) async {
+      final prompts = [
+        for (final promptId in defaultProfilePromptIds.take(
+          maxProfilePromptAnswers,
+        ))
+          profilePromptAnswerFor(
+            definition: profilePromptDefinition(promptId),
+            answer: 'Answer for $promptId',
+          ),
+      ];
+      await _pumpProfileTab(
+        tester,
+        buildUser(name: 'Suvrat Garg', profilePrompts: prompts),
+      );
+
+      expect(
+        find.byType(ProfileInlinePromptEntryEditor),
+        findsNWidgets(maxProfilePromptAnswers),
+      );
+      for (var index = 0; index < maxProfilePromptAnswers; index++) {
+        expect(
+          find.byKey(ValueKey('profile-prompt-card-$index')),
+          findsOneWidget,
+        );
+      }
+      expect(
+        find.byKey(const ValueKey('inline-profilePrompt:3-entry-editor')),
+        findsNothing,
+      );
+    },
+  );
+
+  testWidgets('profile keeps all three prompt slots available when empty', (
+    tester,
+  ) async {
+    await _pumpProfileTab(
+      tester,
+      buildUser(name: 'Suvrat Garg', profilePrompts: const []),
+    );
+
+    expect(
+      find.byType(ProfileInlinePromptEntryEditor),
+      findsNWidgets(maxProfilePromptAnswers),
+    );
+  });
+
+  testWidgets('inline prompt choices exclude questions used by other cards', (
     tester,
   ) async {
     final repository = FakeProfileEditUserProfileRepository();
@@ -1071,42 +1477,46 @@ void main() {
     final promptEditor = find.byKey(
       const ValueKey('inline-profilePrompt:2-entry-editor'),
     );
-    await tester.tap(promptEditor);
+    await _dragProfileTabUntilVisible(tester, promptEditor);
+    tester.widget<ProfileInlinePromptEntryEditor>(promptEditor).onTap();
+    await tester.pump();
     await _pumpProfileSheet(tester);
+    expect(tester.widget<CatchField>(_promptQuestionField(2)).open, isTrue);
+    expect(_catchChip(_perfectRunPromptTitle), findsNothing);
+    expect(_catchChip(usedPrompt.title), findsNothing);
+    expect(_catchChip(favoriteRoute.title), findsOneWidget);
 
-    await tester.tap(
-      find.byKey(const ValueKey('profile-inline-change-prompt')),
-    );
+    await tester.tap(_catchChip(favoriteRoute.title));
     await _pumpProfileSheet(tester);
 
     expect(
-      find.widgetWithText(PromptOptionTile, _perfectRunPromptTitle),
-      findsNothing,
+      tester.widget<CatchField>(_promptQuestionField(2)).body,
+      favoriteRoute.title,
     );
-    expect(
-      find.widgetWithText(PromptOptionTile, usedPrompt.title),
-      findsNothing,
-    );
-    await tester.tap(
-      find.widgetWithText(PromptOptionTile, favoriteRoute.title),
-    );
-    await _pumpProfileSheet(tester);
+    expect(repository.updatedFields, isNull);
 
-    // The expanded row header reflects the newly selected question live.
-    expect(
-      find.descendant(
-        of: promptEditor,
-        matching: find.text(favoriteRoute.title),
-      ),
-      findsOneWidget,
-    );
-
+    tester
+        .widget<EditableText>(_promptAnswerEditableText(2))
+        .focusNode
+        .requestFocus();
+    await tester.pump();
     await tester.enterText(
-      find.descendant(of: promptEditor, matching: find.byType(EditableText)),
+      _promptAnswerEditableText(2),
       'Sunday loops with a view.',
     );
+    await _blurPromptAnswer(tester, index: 2);
+    await _pumpProfileSheet(tester);
+
+    expect(repository.updateHistory, isEmpty);
+    expect(find.byKey(const ValueKey('catch-field-done')), findsOneWidget);
+
     await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
+
+    expect(promptEditor, findsOneWidget);
+    expect(find.byKey(const ValueKey('profile-prompt-card-2')), findsOneWidget);
+    expect(_promptAnswerField(2), findsOneWidget);
+    expect(repository.updateHistory, hasLength(1));
 
     final savedPrompts =
         repository.updatedFields?['profilePrompts'] as List<Object?>;
@@ -1115,49 +1525,9 @@ void main() {
       'afterEvent',
       'favoriteRoute',
     ]);
+    expect((savedPrompts.last as Map)['answer'], 'Sunday loops with a view.');
+    expect(find.byKey(const ValueKey('profile-prompt-add-3')), findsNothing);
   });
-
-  testWidgets(
-    'prompt edit keeps the row anchored with CatchField input chrome',
-    (tester) async {
-      final user = buildUser(name: 'Suvrat Garg');
-      await _pumpProfileTab(tester, user);
-
-      final promptTile = _profileInfoTile(_perfectRunPromptTitle);
-      final collapsedTileTop = tester.getTopLeft(promptTile).dy;
-      final collapsedTileHeight = tester.getSize(promptTile).height;
-
-      await tester.tap(promptTile);
-      await tester.pump();
-      await pumpFeatureUiFor(tester, const Duration(milliseconds: 80));
-
-      expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
-      expect(
-        tester.getSize(promptTile).height,
-        greaterThan(collapsedTileHeight),
-      );
-
-      await _pumpProfileSheet(tester);
-
-      final promptFields = tester.widgetList<CatchField>(
-        find.descendant(
-          of: find.byType(ProfileInlineTextValue),
-          matching: find.byType(CatchField),
-        ),
-      );
-      final promptInput = promptFields.singleWhere(
-        (field) =>
-            field.variant == CatchFieldVariant.underline &&
-            field.size == CatchFieldSize.floating &&
-            !field.showLabel,
-      );
-
-      expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
-      expect(promptInput.variant, CatchFieldVariant.underline);
-      expect(promptInput.size, CatchFieldSize.floating);
-      expect(promptInput.showLabel, isFalse);
-    },
-  );
 
   testWidgets('inline email edit uses the email keyboard', (tester) async {
     final user = buildUser(name: 'Suvrat Garg');
@@ -1210,17 +1580,18 @@ void main() {
     await tester.tap(heightTile);
     await _pumpProfileSheet(tester);
 
-    expect(find.text('172 cm'), findsOneWidget);
+    expect(tester.widget<CatchField>(heightTile).isOptional, isFalse);
+    expect(find.text('172 cm'), findsNWidgets(2));
     expect(find.text('120-220 cm'), findsNothing);
     expect(find.byTooltip('Decrease height'), findsOneWidget);
     expect(find.byTooltip('Increase height'), findsOneWidget);
-    expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
+    expect(find.byKey(const ValueKey('catch-field-done')), findsOneWidget);
 
     await tester.tap(find.byTooltip('Increase height'));
     await tester.pump();
 
     expect(find.text('172 cm'), findsNothing);
-    expect(find.text('173 cm'), findsOneWidget);
+    expect(find.text('173 cm'), findsNWidgets(2));
 
     await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
@@ -1255,7 +1626,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('text edit failure keeps the inline editor open with an error', (
+  testWidgets('prompt answer save failure stays inline with field error', (
     tester,
   ) async {
     final repository = FakeProfileEditUserProfileRepository()
@@ -1263,18 +1634,15 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
-    await tester.tap(promptTile);
-    await _pumpProfileSheet(tester);
     await tester.enterText(_inlinePromptEditableText(), 'Updated bio');
-    await _tapInlineDone(tester);
+    await _blurPromptAnswer(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
       containsPair('answer', 'Updated bio'),
     ]);
     expect(_inlinePromptEditableText(), findsOneWidget);
-    expect(find.byType(CatchErrorBanner), findsOneWidget);
+    expect(tester.widget<CatchField>(_promptAnswerField(0)).error, isNotNull);
     expect(
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
@@ -1288,9 +1656,6 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
-    await tester.tap(promptTile);
-    await _pumpProfileSheet(tester);
     await tester.enterText(
       _inlinePromptEditableText(),
       'a' * (maximumProfilePromptAnswerLength + 1),
@@ -1308,8 +1673,13 @@ void main() {
       '$maximumProfilePromptAnswerLength / $maximumProfilePromptAnswerLength',
     );
     expect(counter, findsOneWidget);
+    final answerBottom = tester.getBottomLeft(_inlinePromptEditableText()).dy;
+    final counterTop = tester.getTopLeft(counter).dy;
+    expect(answerBottom, lessThan(counterTop));
+    expect(find.byKey(const ValueKey('catch-field-cancel')), findsNothing);
+    expect(find.byKey(const ValueKey('catch-field-done')), findsNothing);
 
-    await _tapInlineDone(tester);
+    await _blurPromptAnswer(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
@@ -1321,7 +1691,6 @@ void main() {
       ),
       findsNothing,
     );
-    expect(_inlinePromptEditableText(), findsNothing);
   });
 
   testWidgets('prompt edit collapses repeated empty lines while typing', (
@@ -1331,9 +1700,6 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
-    await tester.tap(promptTile);
-    await _pumpProfileSheet(tester);
     await tester.enterText(
       _inlinePromptEditableText(),
       'first\n\n\nsecond\n \n \nthird',
@@ -1345,7 +1711,7 @@ void main() {
     );
     expect(editableText.controller.text, 'first\n\nsecond\n\nthird');
 
-    await _tapInlineDone(tester);
+    await _blurPromptAnswer(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
@@ -1353,34 +1719,42 @@ void main() {
     ]);
   });
 
-  testWidgets('text edit waits for save before closing', (tester) async {
+  testWidgets('prompt answer shows saving then saved status after blur', (
+    tester,
+  ) async {
     final repository = FakeProfileEditUserProfileRepository()
       ..updateCompleter = Completer<void>();
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
-    await tester.tap(promptTile);
-    await _pumpProfileSheet(tester);
     await tester.enterText(_inlinePromptEditableText(), 'Updated bio');
-    await _tapInlineDone(tester);
-    await tester.pump();
+    await _blurPromptAnswer(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
       containsPair('answer', 'Updated bio'),
     ]);
     expect(_inlinePromptEditableText(), findsOneWidget);
-    expect(_loadingCatchButtonCount(tester), 1);
+    expect(_promptAnswerSavingCount(0), 1);
+    expect(tester.widget<CatchField>(_promptAnswerField(0)).readOnly, isTrue);
 
     repository.updateCompleter!.complete();
     await _pumpProfileSheet(tester);
 
-    expect(_inlinePromptEditableText(), findsNothing);
+    expect(_promptAnswerSavingCount(0), 0);
+    expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
+    expect(tester.widget<CatchField>(_promptAnswerField(0)).readOnly, isFalse);
+    expect(
+      tester
+          .widget<EditableText>(_inlinePromptEditableText())
+          .focusNode
+          .hasFocus,
+      isFalse,
+    );
     expect(tester.takeException(), isNull);
   });
 
   testWidgets(
-    'optional single-choice inline editors open with no selected chip',
+    'clearable single-choice inline editors open with no selected chip',
     (tester) async {
       final repository = FakeProfileEditUserProfileRepository();
       final user = buildUser(name: 'Suvrat Garg');
@@ -1392,10 +1766,10 @@ void main() {
         await tester.tap(tile);
         await _pumpProfileSheet(tester);
 
-        final firstChip = tester.widget<CatchChip>(
+        final firstChip = tester.widget<CatchFieldChoiceChip>(
           _catchChip(field.firstLabel),
         );
-        expect(firstChip.active, isFalse, reason: field.tileLabel);
+        expect(firstChip.selected, isFalse, reason: field.tileLabel);
 
         await _tapInlineCancel(tester);
         await _pumpProfileSheet(tester);
@@ -1415,10 +1789,10 @@ void main() {
     await tester.tap(drinkingTile);
     await _pumpProfileSheet(tester);
 
-    final neverChip = tester.widget<CatchChip>(
+    final neverChip = tester.widget<CatchFieldChoiceChip>(
       _catchChip(DrinkingHabit.never.label),
     );
-    expect(neverChip.active, isFalse);
+    expect(neverChip.selected, isFalse);
   });
 
   testWidgets('inline chip editors do not repeat the field label', (
@@ -1477,7 +1851,6 @@ void main() {
           values: Language.values,
           selected: const [Language.english, Language.hindi],
           fieldName: 'languages',
-          placeholder: 'Languages',
           patchForValues: (values) => UpdateUserProfilePatch(languages: values),
           isExpanded: false,
           onTap: () {},
@@ -1493,7 +1866,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Languages'), findsOneWidget);
-    expect(find.text('English, Hindi'), findsOneWidget);
+    expect(find.text('English · Hindi'), findsOneWidget);
   });
 
   testWidgets('single-choice chip saves only after Done', (tester) async {
@@ -1511,8 +1884,10 @@ void main() {
     expect(repository.updatedFields, isNull);
     expect(
       tester
-          .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
-          .active,
+          .widget<CatchFieldChoiceChip>(
+            _catchChip(EducationLevel.values.first.label),
+          )
+          .selected,
       isTrue,
     );
 
@@ -1539,23 +1914,34 @@ void main() {
     await tester.tap(educationTile);
     await _pumpProfileSheet(tester);
 
+    expect(
+      find.descendant(
+        of: educationTile,
+        matching: find.textContaining('Optional'),
+      ),
+      findsNothing,
+    );
     expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
     expect(
       tester
-          .widget<CatchChip>(_catchChip(EducationLevel.highSchool.label))
-          .active,
+          .widget<CatchFieldChoiceChip>(
+            _catchChip(EducationLevel.highSchool.label),
+          )
+          .selected,
       isTrue,
     );
 
     await tester.tap(_catchChip(EducationLevel.highSchool.label));
     await _pumpProfileSheet(tester);
 
-    expect(find.text('+ Education'), findsWidgets);
+    expect(find.text('Add education'), findsWidgets);
     expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
     expect(
       tester
-          .widget<CatchChip>(_catchChip(EducationLevel.highSchool.label))
-          .active,
+          .widget<CatchFieldChoiceChip>(
+            _catchChip(EducationLevel.highSchool.label),
+          )
+          .selected,
       isFalse,
     );
 
@@ -1564,6 +1950,42 @@ void main() {
 
     expect(repository.updatedFields, {'education': null});
     expect(_catchChip(EducationLevel.highSchool.label), findsNothing);
+  });
+
+  testWidgets('languages can clear the last value without Optional copy', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(
+      name: 'Suvrat Garg',
+    ).copyWith(languages: const [Language.english]);
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final languagesTile = _profileInfoTile('Languages');
+    await _dragProfileTabUntilVisible(tester, languagesTile);
+    await tester.tap(languagesTile);
+    await _pumpProfileSheet(tester);
+
+    expect(
+      find.descendant(
+        of: languagesTile,
+        matching: find.textContaining('Optional'),
+      ),
+      findsNothing,
+    );
+    await tester.tap(_catchChip(Language.english.label));
+    await _pumpProfileSheet(tester);
+    expect(
+      tester
+          .widget<CatchFieldChoiceChip>(_catchChip(Language.english.label))
+          .selected,
+      isFalse,
+    );
+
+    await _tapInlineDone(tester);
+    await _pumpProfileSheet(tester);
+
+    expect(repository.updatedFields, {'languages': <String>[]});
   });
 
   testWidgets('single-choice empty draft does not show stale saved value', (
@@ -1587,11 +2009,13 @@ void main() {
 
     final relationshipTexts = find.text(RelationshipGoal.relationship.label);
     expect(relationshipTexts, findsOneWidget);
-    expect(find.text('+ Looking for'), findsWidgets);
+    expect(find.text('Add looking for'), findsWidgets);
     expect(
       tester
-          .widget<CatchChip>(_catchChip(RelationshipGoal.relationship.label))
-          .active,
+          .widget<CatchFieldChoiceChip>(
+            _catchChip(RelationshipGoal.relationship.label),
+          )
+          .selected,
       isFalse,
     );
   });
@@ -1611,19 +2035,27 @@ void main() {
     await _pumpProfileSheet(tester);
 
     expect(_catchChip(Language.english.label), findsOneWidget);
-    final selectedLanguageChip = tester.widget<CatchChip>(
+    final selectedLanguageChip = tester.widget<CatchFieldChoiceChip>(
       _catchChip(Language.english.label),
     );
-    expect(selectedLanguageChip.active, isTrue);
-    expect(selectedLanguageChip.icon, isA<Icon>());
-    expect((selectedLanguageChip.icon! as Icon).icon, CatchIcons.checkRounded);
+    expect(selectedLanguageChip.selected, isTrue);
+    expect(selectedLanguageChip.multi, isTrue);
+    expect(
+      find.descendant(
+        of: _catchChip(Language.english.label),
+        matching: find.byIcon(CatchIcons.checkRounded),
+      ),
+      findsOneWidget,
+    );
 
     await tester.tap(_catchChip(Language.english.label));
     await _pumpProfileSheet(tester);
 
     expect(_catchChip(Language.english.label), findsOneWidget);
     expect(
-      tester.widget<CatchChip>(_catchChip(Language.english.label)).active,
+      tester
+          .widget<CatchFieldChoiceChip>(_catchChip(Language.english.label))
+          .selected,
       isFalse,
     );
     expect(repository.updatedFields, isNull);
@@ -1655,7 +2087,9 @@ void main() {
     expect(_loadingCatchButtonCount(tester), 1);
     expect(
       tester
-          .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
+          .widget<CatchFieldChoiceChip>(
+            _catchChip(EducationLevel.values.first.label),
+          )
           .enabled,
       isFalse,
     );
@@ -1692,8 +2126,10 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(
         tester
-            .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
-            .active,
+            .widget<CatchFieldChoiceChip>(
+              _catchChip(EducationLevel.values.first.label),
+            )
+            .selected,
         isTrue,
       );
     },
@@ -1717,8 +2153,10 @@ void main() {
 
       expect(
         tester
-            .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
-            .active,
+            .widget<CatchFieldChoiceChip>(
+              _catchChip(EducationLevel.values.first.label),
+            )
+            .selected,
         isTrue,
       );
 
@@ -1731,7 +2169,9 @@ void main() {
       await _pumpProfileSheet(tester);
 
       expect(
-        tester.widget<CatchChip>(_catchChip(DrinkingHabit.never.label)).active,
+        tester
+            .widget<CatchFieldChoiceChip>(_catchChip(DrinkingHabit.never.label))
+            .selected,
         isFalse,
       );
     },
@@ -1929,6 +2369,7 @@ class FakeProfileEditUserProfileRepository extends Fake
   UserProfile? latestProfile;
   String? updatedUid;
   Map<String, dynamic>? updatedFields;
+  final List<Map<String, dynamic>> updateHistory = [];
 
   @override
   Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
@@ -1941,11 +2382,25 @@ class FakeProfileEditUserProfileRepository extends Fake
     String action = 'update_profile',
   }) async {
     updatedUid = uid;
-    updatedFields = Map<String, dynamic>.from(patch.toFieldsJson());
+    final fields = Map<String, dynamic>.from(patch.toFieldsJson());
+    updatedFields = fields;
+    updateHistory.add(fields);
     final error = updateError;
     if (error != null) throw error;
     final completer = updateCompleter;
     if (completer != null) await completer.future;
+
+    final promptFields = fields['profilePrompts'];
+    if (promptFields case final List<Object?> promptValues) {
+      latestProfile = latestProfile?.copyWith(
+        profilePrompts: [
+          for (final promptValue in promptValues)
+            ProfilePromptAnswer.fromJson(
+              Map<String, dynamic>.from(promptValue! as Map),
+            ),
+        ],
+      );
+    }
   }
 }
 

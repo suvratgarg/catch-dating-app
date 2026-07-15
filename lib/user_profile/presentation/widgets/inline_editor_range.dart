@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
+import 'package:catch_dating_app/core/theme/catch_tokens.dart'
+    show CatchFieldTokens;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 class ProfileInlineRangeEditor extends ConsumerStatefulWidget {
   const ProfileInlineRangeEditor({
@@ -62,6 +66,8 @@ class _ProfileInlineRangeEditorState
     widget.currentMin.toDouble(),
     widget.currentMax.toDouble(),
   );
+  CatchFieldStatus _status = CatchFieldStatus.idle;
+  Timer? _savedStatusTimer;
 
   @override
   void didUpdateWidget(covariant ProfileInlineRangeEditor oldWidget) {
@@ -75,12 +81,20 @@ class _ProfileInlineRangeEditorState
     }
   }
 
+  @override
+  void dispose() {
+    _savedStatusTimer?.cancel();
+    super.dispose();
+  }
+
   void _cancel() {
+    _savedStatusTimer?.cancel();
     setState(() {
       _range = RangeValues(
         widget.currentMin.toDouble(),
         widget.currentMax.toDouble(),
       );
+      _status = CatchFieldStatus.idle;
     });
     widget.onCancel();
   }
@@ -101,7 +115,18 @@ class _ProfileInlineRangeEditorState
         : await saveFieldsFromLatest(
             (latest) => patchForLatestProfile(latest, newMin, newMax),
           );
-    if (saved && mounted) widget.onSaved();
+    if (saved && mounted) {
+      _showSaved();
+      widget.onSaved();
+    }
+  }
+
+  void _showSaved() {
+    _savedStatusTimer?.cancel();
+    setState(() => _status = CatchFieldStatus.saved);
+    _savedStatusTimer = Timer(CatchFieldTokens.savedStatusHold, () {
+      if (mounted) setState(() => _status = CatchFieldStatus.idle);
+    });
   }
 
   @override
@@ -112,14 +137,18 @@ class _ProfileInlineRangeEditorState
             labelText2: widget.labelText(_range.end),
           )
         : widget.value;
-    return CatchField.actions(
+    return CatchField.control(
       icon: widget.icon,
       title: widget.title,
       body: body,
-      initiallyExpanded: widget.isExpanded,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (isSaving || expanded == widget.isExpanded) return;
+        widget.onTap();
+      },
       isLoading: isSaving,
+      status: isSaving ? CatchFieldStatus.saving : _status,
       error: _errorMessage(),
-      onTap: isSaving ? null : widget.onTap,
       control: CatchRangeSlider(
         min: widget.sliderMin,
         max: widget.sliderMax,
@@ -127,7 +156,13 @@ class _ProfileInlineRangeEditorState
         values: _range,
         onChanged: isSaving
             ? null
-            : (values) => setState(() => _range = values),
+            : (values) {
+                _savedStatusTimer?.cancel();
+                setState(() {
+                  _range = values;
+                  _status = CatchFieldStatus.idle;
+                });
+              },
       ),
       onCancel: _cancel,
       onSubmit: _submit,

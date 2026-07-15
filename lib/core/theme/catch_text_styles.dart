@@ -426,6 +426,16 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink,
   );
 
+  /// Compact count paired with a section kicker in the field handoff.
+  static TextStyle sectionCount(BuildContext context, {Color? color}) => _mono(
+    context,
+    size: CatchFieldTokens.sectionCountFontSize,
+    weight: FontWeight.w600,
+    height: 1.15,
+    letterSpacing: CatchFieldTokens.sectionCountLetterSpacing,
+    color: color ?? CatchTokens.of(context).ink3,
+  );
+
   /// Sentence/data mono label — ticket meta, counts, and compact phrases.
   /// This role is deliberately untracked because its content is not caps-only.
   static TextStyle monoLabel(BuildContext context, {Color? color}) => _mono(

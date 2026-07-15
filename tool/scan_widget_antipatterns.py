@@ -29,9 +29,13 @@ CORE_PRIMITIVES = {
     # Widget name → file
     "CatchField": "catch_field.dart",
     "CatchField.nav": "catch_field.dart",
+    "CatchField.action": "catch_field.dart",
     "CatchField.read": "catch_field.dart",
     "CatchField.input": "catch_field.dart",
-    "CatchField.expanding": "catch_field.dart",
+    "CatchField.inputActions": "catch_field.dart",
+    "CatchField.control": "catch_field.dart",
+    "CatchField.choices": "catch_field.dart",
+    "CatchField.stepper": "catch_field.dart",
     "CatchField.actions": "catch_field.dart",
     "CatchField.select": "catch_field.dart",
     "CatchField.toggle": "catch_field.dart",
@@ -62,7 +66,7 @@ PATTERN_MATCHERS = [
     # (name_regex, body_keywords, core_primitive, confidence)
     (r'nav|tile|row.*display|label.*row', ['CatchField.nav', 'CatchField.read'], 'CatchField.nav/CatchField.read', 'medium'),
     (r'input|text.*(field|entry|edit)', ['TextField', 'TextEditingController'], 'CatchField.input', 'high'),
-    (r'expand|collapse|disclosure|drawer', ['AnimatedSize', 'AnimatedSwitcher'], 'CatchField.expanding/CatchField.actions', 'high'),
+    (r'expand|collapse|disclosure|drawer', ['AnimatedSize', 'AnimatedSwitcher'], 'CatchField.control/CatchField.inputActions', 'high'),
     (r'chip|select|choice|picker', ['CatchChip', 'Wrap', 'CatchSelectChip'], 'CatchChipField', 'medium'),
     (r'search.*morph|search.*animat', ['AnimationController', 'TweenAnimationBuilder'], 'CatchTopBar (search)', 'high'),
     (r'skeleton|loading.*placeholder|shimmer', ['CatchSkeleton'], 'CatchSkeleton', 'high'),

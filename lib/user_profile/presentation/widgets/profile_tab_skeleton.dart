@@ -31,7 +31,7 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
                   CatchSectionList(
                     gap: 0,
                     children: [
-                      ProfilePhotosSkeletonSection(),
+                      const ProfilePhotosSkeletonSection(),
                       ProfileInfoSkeletonSection(
                         title: context
                             .l10n
@@ -74,24 +74,27 @@ class ProfilePhotosSkeletonSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
+    return CatchSection.fieldRows(
       title: context.l10n.userProfileProfileTabSkeletonTitlePhotos,
       count: context.l10n.userProfileProfileTabSkeletonVisiblecopyLoading,
       first: true,
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: CatchSpacing.s2,
-          crossAxisSpacing: CatchSpacing.s2,
-          childAspectRatio: CatchAspectRatio.portrait3x4,
-        ),
-        itemCount: maximumProfilePhotoCount,
-        itemBuilder: (context, index) => CatchSkeleton.box(
-          width: double.infinity,
-          height: double.infinity,
-          radius: CatchRadius.lg,
+      child: Padding(
+        padding: CatchInsets.fieldSectionChildTop,
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: CatchSpacing.s2,
+            crossAxisSpacing: CatchSpacing.s2,
+            childAspectRatio: CatchAspectRatio.portrait3x4,
+          ),
+          itemCount: maximumProfilePhotoCount,
+          itemBuilder: (context, index) => CatchSkeleton.box(
+            width: double.infinity,
+            height: double.infinity,
+            radius: CatchRadius.lg,
+          ),
         ),
       ),
     );
