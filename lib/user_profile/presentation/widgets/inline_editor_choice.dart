@@ -1,18 +1,18 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchSpacing, CatchTokens;
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+    show CatchFieldTokens;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 // ── Single-choice editor ──────────────────────────────────────────────────────
 
@@ -22,7 +22,6 @@ class ProfileInlineSingleChoiceEntryEditor<T extends Labelled>
     super.key,
     required this.icon,
     required this.label,
-    required this.value,
     required this.values,
     required this.currentValue,
     required this.fieldName,
@@ -31,19 +30,22 @@ class ProfileInlineSingleChoiceEntryEditor<T extends Labelled>
     required this.onSaved,
     required this.onCancel,
     required this.patchForValue,
+    this.emptyValueText,
     this.isAddAffordance = false,
     this.allowEmptySelection = true,
+    this.showOptionalLabel = false,
   });
 
   final IconData icon;
   final String label;
-  final String value;
   final List<T> values;
   final T? currentValue;
   final String fieldName;
   final bool isExpanded;
   final bool isAddAffordance;
   final bool allowEmptySelection;
+  final bool showOptionalLabel;
+  final String? emptyValueText;
   final VoidCallback onTap;
   final InlineSaveCallback onSaved;
   final VoidCallback onCancel;
@@ -58,6 +60,8 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
     extends ConsumerState<ProfileInlineSingleChoiceEntryEditor<T>>
     with InlineSaveState<ProfileInlineSingleChoiceEntryEditor<T>> {
   late T? _selected = widget.currentValue;
+  CatchFieldStatus _status = CatchFieldStatus.idle;
+  Timer? _savedStatusTimer;
 
   @override
   void didUpdateWidget(
@@ -70,8 +74,18 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
     }
   }
 
+  @override
+  void dispose() {
+    _savedStatusTimer?.cancel();
+    super.dispose();
+  }
+
   void _cancel() {
-    setState(() => _selected = widget.currentValue);
+    _savedStatusTimer?.cancel();
+    setState(() {
+      _selected = widget.currentValue;
+      _status = CatchFieldStatus.idle;
+    });
     widget.onCancel();
   }
 
@@ -83,68 +97,49 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
     }
     final saved = await saveFields(widget.patchForValue(_selected));
     if (saved && mounted) {
+      _showSaved();
       widget.onSaved();
     }
   }
 
-  void _toggleSelectedValue(T value) {
-    if (isSaving) return;
-    setState(() {
-      if (_selected == value && widget.allowEmptySelection) {
-        _selected = null;
-      } else {
-        _selected = value;
-      }
+  void _showSaved() {
+    _savedStatusTimer?.cancel();
+    setState(() => _status = CatchFieldStatus.saved);
+    _savedStatusTimer = Timer(CatchFieldTokens.savedStatusHold, () {
+      if (mounted) setState(() => _status = CatchFieldStatus.idle);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final availableValues = widget.values
-        .where((value) => value != _selected)
-        .toList(growable: false);
-    final headerValue = _selected?.label ?? widget.label;
-
-    return CatchField.actions(
+    return CatchField.choices<T>(
       icon: widget.icon,
       title: widget.label,
-      body: _selected == null
-          ? context.l10n.userProfileInlineEditorChoiceBodyLabel(
-              label: widget.label,
-            )
-          : headerValue,
+      emptyValueText: widget.emptyValueText,
+      addable: widget.isAddAffordance,
+      isOptional: widget.showOptionalLabel,
       tone: widget.isAddAffordance || _selected == null
           ? CatchFieldTone.primary
           : CatchFieldTone.normal,
-      initiallyExpanded: widget.isExpanded,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (isSaving || expanded == widget.isExpanded) return;
+        widget.onTap();
+      },
       isLoading: isSaving,
+      status: isSaving ? CatchFieldStatus.saving : _status,
       error: _errorMessage(),
-      onTap: isSaving ? null : widget.onTap,
-      control: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.isExpanded)
-            ProfileSingleChipValue<T>(
-              emptyValue: widget.label,
-              displayValue: widget.value,
-              isEditing: widget.isExpanded,
-              selected: _selected,
-              enabled: !isSaving,
-              isAddAffordance: widget.isAddAffordance,
-              allowEmptySelection: widget.allowEmptySelection,
-              onSelectedTap: _toggleSelectedValue,
-            ),
-          if (widget.isExpanded && availableValues.isNotEmpty) ...[
-            const SizedBox(height: CatchSpacing.s3),
-            ProfileChipOptions<T>(
-              values: availableValues,
-              enabled: !isSaving,
-              selected: const {},
-              onTap: _toggleSelectedValue,
-            ),
-          ],
-        ],
-      ),
+      values: widget.values,
+      itemLabel: (value) => value.label,
+      selected: {?_selected},
+      allowEmptySelection: widget.allowEmptySelection,
+      onSelectionChanged: (selection) {
+        _savedStatusTimer?.cancel();
+        setState(() {
+          _selected = selection.isEmpty ? null : selection.first;
+          _status = CatchFieldStatus.idle;
+        });
+      },
       onCancel: _cancel,
       onSubmit: _submit,
     );
@@ -169,7 +164,6 @@ class ProfileInlineMultiChoiceEntryEditor<T extends Labelled>
     super.key,
     required this.icon,
     required this.label,
-    required this.value,
     required this.values,
     required this.currentValues,
     required this.fieldName,
@@ -180,18 +174,21 @@ class ProfileInlineMultiChoiceEntryEditor<T extends Labelled>
     required this.patchForValues,
     this.patchForLatestProfile,
     this.isAddAffordance = false,
-    this.isOptional = true,
+    this.allowEmptySelection = true,
+    this.showOptionalLabel = false,
+    this.emptyValueText,
   });
 
   final IconData icon;
   final String label;
-  final String value;
   final List<T> values;
   final List<T> currentValues;
   final String fieldName;
   final bool isExpanded;
   final bool isAddAffordance;
-  final bool isOptional;
+  final bool allowEmptySelection;
+  final bool showOptionalLabel;
+  final String? emptyValueText;
   final VoidCallback onTap;
   final InlineSaveCallback onSaved;
   final VoidCallback onCancel;
@@ -208,6 +205,8 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
     extends ConsumerState<ProfileInlineMultiChoiceEntryEditor<T>>
     with InlineSaveState<ProfileInlineMultiChoiceEntryEditor<T>> {
   late Set<T> _selected = widget.currentValues.toSet();
+  CatchFieldStatus _status = CatchFieldStatus.idle;
+  Timer? _savedStatusTimer;
 
   @override
   void didUpdateWidget(
@@ -215,13 +214,26 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
   ) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.fieldName != widget.fieldName ||
-        oldWidget.currentValues != widget.currentValues) {
+        !setEquals(
+          oldWidget.currentValues.toSet(),
+          widget.currentValues.toSet(),
+        )) {
       _selected = widget.currentValues.toSet();
     }
   }
 
+  @override
+  void dispose() {
+    _savedStatusTimer?.cancel();
+    super.dispose();
+  }
+
   void _cancel() {
-    setState(() => _selected = widget.currentValues.toSet());
+    _savedStatusTimer?.cancel();
+    setState(() {
+      _selected = widget.currentValues.toSet();
+      _status = CatchFieldStatus.idle;
+    });
     widget.onCancel();
   }
 
@@ -239,70 +251,51 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
         : await saveFieldsFromLatest(
             (latest) => patchForLatestProfile(latest, selectedValues),
           );
-    if (saved && mounted) widget.onSaved();
+    if (saved && mounted) {
+      _showSaved();
+      widget.onSaved();
+    }
   }
 
-  void _toggleSelectedValue(T value) {
-    if (isSaving) return;
-    setState(() {
-      if (_selected.contains(value)) {
-        if (widget.isOptional || _selected.length > 1) {
-          _selected = {..._selected}..remove(value);
-        }
-      } else {
-        _selected = {..._selected, value};
-      }
+  void _showSaved() {
+    _savedStatusTimer?.cancel();
+    setState(() => _status = CatchFieldStatus.saved);
+    _savedStatusTimer = Timer(CatchFieldTokens.savedStatusHold, () {
+      if (mounted) setState(() => _status = CatchFieldStatus.idle);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final availableValues = widget.values
-        .where((value) => !_selected.contains(value))
-        .toList(growable: false);
-    final headerValue = _selected.isEmpty
-        ? widget.label
-        : _selected.map((value) => value.label).join(', ');
-
-    return CatchField.actions(
+    return CatchField.choices<T>(
       icon: widget.icon,
       title: widget.label,
-      body: _selected.isEmpty
-          ? context.l10n.userProfileInlineEditorChoiceBodyLabel(
-              label: widget.label,
-            )
-          : headerValue,
+      emptyValueText: widget.emptyValueText,
+      addable: widget.isAddAffordance,
+      isOptional: widget.showOptionalLabel,
       tone: widget.isAddAffordance || _selected.isEmpty
           ? CatchFieldTone.primary
           : CatchFieldTone.normal,
-      initiallyExpanded: widget.isExpanded,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (isSaving || expanded == widget.isExpanded) return;
+        widget.onTap();
+      },
       isLoading: isSaving,
+      status: isSaving ? CatchFieldStatus.saving : _status,
       error: _errorMessage(),
-      onTap: isSaving ? null : widget.onTap,
-      control: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.isExpanded)
-            ProfileMultiChipValue<T>(
-              emptyValue: widget.label,
-              displayValue: widget.value,
-              isEditing: widget.isExpanded,
-              selected: _selected,
-              enabled: !isSaving,
-              isAddAffordance: widget.isAddAffordance,
-              onSelectedTap: _toggleSelectedValue,
-            ),
-          if (widget.isExpanded && availableValues.isNotEmpty) ...[
-            const SizedBox(height: CatchSpacing.s3),
-            ProfileChipOptions<T>(
-              values: availableValues,
-              enabled: !isSaving,
-              selected: const {},
-              onTap: _toggleSelectedValue,
-            ),
-          ],
-        ],
-      ),
+      values: widget.values,
+      itemLabel: (value) => value.label,
+      selected: _selected,
+      multi: true,
+      allowEmptySelection: widget.allowEmptySelection,
+      onSelectionChanged: (selection) {
+        _savedStatusTimer?.cancel();
+        setState(() {
+          _selected = selection;
+          _status = CatchFieldStatus.idle;
+        });
+      },
       onCancel: _cancel,
       onSubmit: _submit,
     );
@@ -315,165 +308,6 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
       error,
       l10n: context.l10n,
       context: AppErrorContext.profile,
-    );
-  }
-}
-
-// ── Shared chip rendering widgets ─────────────────────────────────────────────
-
-class ProfileSingleChipValue<T extends Labelled> extends StatelessWidget {
-  const ProfileSingleChipValue({
-    super.key,
-    required this.emptyValue,
-    required this.displayValue,
-    required this.isEditing,
-    required this.selected,
-    required this.enabled,
-    required this.isAddAffordance,
-    required this.allowEmptySelection,
-    required this.onSelectedTap,
-  });
-
-  final String emptyValue;
-  final String displayValue;
-  final bool isEditing;
-  final T? selected;
-  final bool enabled;
-  final bool isAddAffordance;
-  final bool allowEmptySelection;
-  final ValueChanged<T> onSelectedTap;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!isEditing) {
-      return ProfileChipPlaceholder(
-        value: displayValue,
-        isAddAffordance: isAddAffordance,
-      );
-    }
-
-    final currentSelected = selected;
-    if (currentSelected == null) {
-      return ProfileChipPlaceholder(value: emptyValue, isAddAffordance: true);
-    }
-
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: CatchChip(
-        label: currentSelected.label,
-        active: true,
-        enabled: enabled,
-        onTap: allowEmptySelection
-            ? () => onSelectedTap(currentSelected)
-            : null,
-      ),
-    );
-  }
-}
-
-class ProfileMultiChipValue<T extends Labelled> extends StatelessWidget {
-  const ProfileMultiChipValue({
-    super.key,
-    required this.emptyValue,
-    required this.displayValue,
-    required this.isEditing,
-    required this.selected,
-    required this.enabled,
-    required this.isAddAffordance,
-    required this.onSelectedTap,
-  });
-
-  final String emptyValue;
-  final String displayValue;
-  final bool isEditing;
-  final Set<T> selected;
-  final bool enabled;
-  final bool isAddAffordance;
-  final ValueChanged<T> onSelectedTap;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!isEditing) {
-      return ProfileChipPlaceholder(
-        value: displayValue,
-        isAddAffordance: isAddAffordance,
-      );
-    }
-
-    if (selected.isEmpty) {
-      return ProfileChipPlaceholder(value: emptyValue, isAddAffordance: true);
-    }
-
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        for (final value in selected)
-          CatchChip(
-            label: value.label,
-            active: true,
-            icon: Icon(CatchIcons.checkRounded),
-            enabled: enabled,
-            onTap: () => onSelectedTap(value),
-          ),
-      ],
-    );
-  }
-}
-
-class ProfileChipPlaceholder extends StatelessWidget {
-  const ProfileChipPlaceholder({
-    super.key,
-    required this.value,
-    required this.isAddAffordance,
-  });
-
-  final String value;
-  final bool isAddAffordance;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Text(
-      isAddAffordance
-          ? context.l10n.userProfileInlineEditorChoiceTextValue(value: value)
-          : value,
-      style: CatchTextStyles.profileAnswer(
-        context,
-        color: isAddAffordance ? t.ink3 : null,
-      ),
-    );
-  }
-}
-
-class ProfileChipOptions<T extends Labelled> extends StatelessWidget {
-  const ProfileChipOptions({
-    super.key,
-    required this.values,
-    required this.selected,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  final List<T> values;
-  final Set<T> selected;
-  final bool enabled;
-  final ValueChanged<T> onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s3,
-      runSpacing: CatchSpacing.s3,
-      children: [
-        for (final value in values)
-          CatchChip(
-            label: value.label,
-            active: selected.contains(value),
-            enabled: enabled,
-            onTap: () => onTap(value),
-          ),
-      ],
     );
   }
 }

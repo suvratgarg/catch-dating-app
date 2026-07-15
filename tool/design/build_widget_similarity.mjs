@@ -662,7 +662,7 @@ function buildGroundTruthRecall({
       id: "loading-card-family",
       members: [
         "DashboardFocusLoadingCard",
-        "DashboardStrideLoadingCard",
+        "HostPaymentAccountLoadingCard",
         "ClubDirectorySkeletonCard",
       ],
       expectedDetectors: ["name", "ranked-pair"],

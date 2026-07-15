@@ -1,6 +1,6 @@
 {
-  "version": 10,
-  "updated": "2026-07-14",
+  "version": 11,
+  "updated": "2026-07-15",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -1136,6 +1136,58 @@
         "design_context_pack/design_system/typography.json"
       ],
       "notes": "Native Flutter bundles Archivo-Roman-VF.ttf and its OFL; web surfaces may retain WOFF2. Tracking is zero by default, with named uppercase roles and the welcome reel exception owned by CatchTextStyles."
+    },
+    {
+      "id": "REG-FIELD-001",
+      "title": "CatchField editability and explicit-editor states drift by call site",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_field.dart",
+        "lib/**/presentation/**inline_editor**",
+        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "test/core/catch_field_focus_semantics_test.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/profile/profile_widgets_test.dart",
+        "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
+      ],
+      "symptom": "Static fields display edit affordances, editable fields lose them, direct inputs add a duplicate keyboard Tab stop, pointer-down and focus require separate taps, secondary pointers or drags leave press chrome behind, tap-away cancels before pointer-up or during a scroll, blank drawer taps or descendant keyboard events toggle the row, local Done does not close after submit, saving fields still cancel or submit, disclosure height snaps or remounts draft state, an equal profile refresh resets a staged multi-choice draft, focus changes label typography/supporting-content order, toggle anatomy falls off-axis, choice summaries drift into feature-formatted comma lists, Optional copy is used as the final-selection policy, or empty editable rows mix bare labels, plus-prefixed values, and input instructions.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart",
+        "guardEvidence": "single-gesture press-to-focus/open behavior, one native keyboard focus stop per direct input, field-to-field handoff, primary-pointer press filtering, drag exit cleanup, pointer-up tap-away timing, drawer tap and keyboard propagation barriers, local-versus-controlled Done ownership, loading cancellation/submit guards, native cursor placement, onBlur delivery, persistent disclosure identity, equal-refresh multi-choice draft preservation, centered toggle anatomy, affordance matrix, localized empty-value fallback, midpoint expansion/collapse height, stable label metrics, explicit-save content ordering, source-option-order choice summaries joined with a middle dot, explicit body override, and clearability independent from visible Optional copy"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json"
+      ],
+      "notes": "New code derives affordances structurally; showChevron and the deprecated expanding/actions constructors remain source-compatible adapters to the canonical renderer. Non-text disclosure editors use CatchField.control; explicit-save text editors use CatchField.inputActions instead of nesting a second field primitive. Press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up. Explicit-save tap-away waits for pointer-up, ignores drag/scroll, and cannot cancel while saving. Disclosure children remain mounted while closed. CatchField.choices derives collapsed summaries in source option order with ' · ' unless an explicit body override is supplied. isOptional is visible/semantic copy only; allowEmptySelection independently governs whether the final selection may be removed. Editable empty display copy is primitive-derived and must not be recreated with feature-local plus strings."
+    },
+    {
+      "id": "REG-FIELD-HANDOFF-001",
+      "title": "Production profile fields drift back to the legacy disclosure and prompt composition",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_field.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/core/theme/catch_tokens.dart",
+        "lib/user_profile/presentation/widgets/inline_editor_*.dart",
+        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "test/core/catch_field_focus_semantics_test.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "symptom": "A field requires one tap for an outline and another for focus or text editing, disclosure content flickers instead of animating one tile, Cancel/Done drifts away from the trailing lane, complex controls use feature-local chip/stepper/toggle geometry, Photos or a headerless FieldSection loses its top rule, wrapped adapter rows lose text-lane dividers, the global legacy row divider becomes too strong, Profile choice summaries bypass the primitive, clearable Education/Languages rows incorrectly display Optional, Religion loses its Optional suffix, or Profile Edit prompt cards draw competing/misaligned outer and child focus borders or collapse back into one divided explicit-save row with a modal question picker.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/profile/profile_widgets_test.dart test/profile/self_profile_edit_tab_state_test.dart && node tool/run.mjs check design:component-contracts",
+        "guardEvidence": "focused primitive tests cover pointer-down to pointer-up focus transfer, native cursor ownership, pressed/active chrome, reveal motion, wrapping choices, stepper/toggle geometry, status states, source-order middle-dot summaries, clearability independent from Optional copy, Religion-only Optional presentation, full-strength versus legacy-muted divider roles, headerless and wrapped-row FieldSection behavior, foreground-painted contained perimeters at active edge rows, Cancel/Done edge geometry, the Photos header rule, and production prompt question/answer composition"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json",
+        "docs/design_parity/state_matrix.json"
+      ],
+      "notes": "The Flutter canonical primitives implement the approved portion of handoff revision field-sys-20260714-195933-640b9906. Ordinary focus in contained field rows is child-owned; explicit section focus/error alone may change the outer perimeter. Profile keeps the existing three-prompt and 300-character business contracts. DP-PROFILE-SELF-005 records the remaining unapproved footer/caret/header-slot, typography, spinner, motion, single-choice, color, icon, and domain/API deltas; none may be silently promoted as parity."
     }
   ]
 }

@@ -1,28 +1,29 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchIcon, CatchInsets, CatchRadius, CatchTokens;
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+    show CatchFieldTokens;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// One contained prompt card: a staged question selector followed by a
+/// separate multiline answer that saves implicitly on blur.
 class ProfileInlinePromptEntryEditor extends ConsumerStatefulWidget {
   const ProfileInlinePromptEntryEditor({
     super.key,
     required this.icon,
     required this.label,
-    required this.value,
     required this.currentAnswer,
     required this.currentPrompts,
     required this.promptIndex,
@@ -32,13 +33,16 @@ class ProfileInlinePromptEntryEditor extends ConsumerStatefulWidget {
     required this.onTap,
     required this.onSaved,
     required this.onCancel,
+    this.value,
     this.currentPromptId,
     this.isAddAffordance = false,
   });
 
   final IconData icon;
   final String label;
-  final String value;
+
+  @Deprecated('Prompt empty display and input hints are primitive-owned.')
+  final String? value;
   final String currentAnswer;
   final String? currentPromptId;
   final List<ProfilePromptAnswer> currentPrompts;
@@ -61,20 +65,39 @@ class _ProfileInlinePromptEntryEditorState
     with InlineSaveState<ProfileInlinePromptEntryEditor> {
   late final TextEditingController _controller;
   late String _selectedPromptId = _initialPromptId();
+  String? _committedPromptId;
   String? _validationError;
+  String? _deferredAnswer;
+  bool _answerHasFocus = false;
+  bool _draftingNewPrompt = false;
+  bool _saveErrorBelongsToQuestion = false;
+  Future<void> _saveTail = Future<void>.value();
+  CatchFieldStatus _questionStatus = CatchFieldStatus.idle;
+  CatchFieldStatus _answerStatus = CatchFieldStatus.idle;
+  Timer? _questionSavedTimer;
+  Timer? _answerSavedTimer;
 
   @override
   void initState() {
     super.initState();
+    _committedPromptId = widget.currentPromptId;
+    _draftingNewPrompt = widget.isAddAffordance && widget.isExpanded;
     _controller = TextEditingController(text: widget.currentAnswer);
-    _controller.addListener(_clearValidationError);
+    _controller.addListener(_handleAnswerChanged);
   }
 
   @override
   void didUpdateWidget(covariant ProfileInlinePromptEntryEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.fieldName != widget.fieldName ||
-        oldWidget.currentAnswer != widget.currentAnswer) {
+    if (!widget.isAddAffordance) {
+      _draftingNewPrompt = false;
+    } else if (widget.isExpanded) {
+      _draftingNewPrompt = true;
+    }
+    if (!_answerHasFocus &&
+        (oldWidget.fieldName != widget.fieldName ||
+            oldWidget.currentAnswer != widget.currentAnswer) &&
+        _controller.text != widget.currentAnswer) {
       _controller.text = widget.currentAnswer;
     }
     if (oldWidget.fieldName != widget.fieldName ||
@@ -82,11 +105,18 @@ class _ProfileInlinePromptEntryEditorState
         !listEquals(oldWidget.availablePromptIds, widget.availablePromptIds)) {
       _selectedPromptId = _initialPromptId();
     }
+    if (oldWidget.fieldName != widget.fieldName ||
+        oldWidget.currentPromptId != widget.currentPromptId) {
+      _committedPromptId = widget.currentPromptId;
+      _deferredAnswer = null;
+    }
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_clearValidationError);
+    _questionSavedTimer?.cancel();
+    _answerSavedTimer?.cancel();
+    _controller.removeListener(_handleAnswerChanged);
     _controller.dispose();
     super.dispose();
   }
@@ -97,264 +127,312 @@ class _ProfileInlinePromptEntryEditorState
         widget.availablePromptIds.contains(currentPromptId)) {
       return currentPromptId;
     }
-    return widget.availablePromptIds.first;
+    if (widget.availablePromptIds.isNotEmpty) {
+      return widget.availablePromptIds.first;
+    }
+    return profilePromptCatalog.first.id;
   }
 
-  void _clearValidationError() {
-    if (_validationError == null) return;
-    setState(() => _validationError = null);
+  void _handleAnswerChanged() {
+    if (_validationError == null &&
+        _answerStatus == CatchFieldStatus.idle &&
+        saveError == null) {
+      return;
+    }
+    _answerSavedTimer?.cancel();
+    setState(() {
+      _validationError = null;
+      _answerStatus = CatchFieldStatus.idle;
+      clearSaveError();
+    });
   }
 
-  void _cancel() {
-    _controller.text = widget.currentAnswer;
-    setState(() => _selectedPromptId = _initialPromptId());
+  void _cancelQuestion() {
+    _questionSavedTimer?.cancel();
+    setState(() {
+      final committedPromptId = _committedPromptId;
+      _selectedPromptId =
+          committedPromptId != null &&
+              widget.availablePromptIds.contains(committedPromptId)
+          ? committedPromptId
+          : _initialPromptId();
+      _deferredAnswer = null;
+      _draftingNewPrompt = false;
+      _questionStatus = CatchFieldStatus.idle;
+      clearSaveError();
+    });
     widget.onCancel();
   }
 
-  Future<void> _submit() async {
-    if (isSaving) return;
-    final normalizedText = normalizeProfilePromptAnswer(_controller.text);
-    if (normalizedText != _controller.text) {
-      _controller.text = normalizedText;
+  void _handleAnswerFocusChanged(bool focused) {
+    _answerHasFocus = focused;
+    if (!focused) unawaited(_saveAnswer());
+  }
+
+  Future<void> _saveQuestion() async {
+    final selectedPromptId = _selectedPromptId;
+    if (selectedPromptId == _committedPromptId) {
+      widget.onSaved();
+      return;
     }
 
-    final validationError = validateOptionalProfilePromptAnswer(normalizedText);
+    _questionSavedTimer?.cancel();
+    setState(() => _questionStatus = CatchFieldStatus.saving);
+    final saved = await _enqueuePromptSave(
+      question: true,
+      save: () => saveFieldsFromLatest((latest) {
+        final current = normalizeProfilePromptAnswers(latest.profilePrompts);
+        // A question save changes only the question. The answer comes from the
+        // latest persisted prompt, never from the live answer controller.
+        final persistedAnswer = widget.promptIndex < current.length
+            ? current[widget.promptIndex].answer
+            : '';
+        final updated = replaceProfilePromptAnswerAtIndex(
+          current: current,
+          index: widget.promptIndex,
+          definition: profilePromptDefinition(selectedPromptId),
+          answer: persistedAnswer,
+        );
+        if (listEquals(updated, current)) {
+          return UpdateUserProfilePatch.raw(const {});
+        }
+        return UpdateUserProfilePatch(profilePrompts: updated);
+      }),
+    );
+    if (!mounted) return;
+    if (!saved) {
+      setState(() => _questionStatus = CatchFieldStatus.idle);
+      return;
+    }
+
+    _committedPromptId = selectedPromptId;
+    _showSaved(question: true);
+
+    // A new prompt cannot exist in the persisted schema without an answer.
+    // If answer blur happened as Done was pressed, retain that answer until
+    // the explicit question commit has succeeded, then save it separately.
+    final deferredAnswer = _deferredAnswer;
+    _deferredAnswer = null;
+    if (deferredAnswer != null) {
+      final answerSaved = await _saveAnswerValue(deferredAnswer);
+      if (!mounted || !answerSaved) return;
+    }
+    widget.onSaved();
+  }
+
+  Future<void> _saveAnswer() async {
+    final normalizedAnswer = normalizeProfilePromptAnswer(_controller.text);
+    if (normalizedAnswer != _controller.text) {
+      _controller.value = TextEditingValue(
+        text: normalizedAnswer,
+        selection: TextSelection.collapsed(offset: normalizedAnswer.length),
+      );
+    }
+    final validationError = validateOptionalProfilePromptAnswer(
+      normalizedAnswer,
+    );
     if (validationError != null) {
       setState(() => _validationError = validationError);
       return;
     }
 
-    final selectedDefinition = profilePromptDefinition(_selectedPromptId);
-    final updatedPrompts = replaceProfilePromptAnswerAtIndex(
-      current: widget.currentPrompts,
-      index: widget.promptIndex,
-      definition: selectedDefinition,
-      answer: normalizedText,
-    );
-    final currentPrompts = normalizeProfilePromptAnswers(widget.currentPrompts);
-    if (listEquals(updatedPrompts, currentPrompts)) {
-      _cancel();
+    if (_committedPromptId == widget.currentPromptId &&
+        normalizedAnswer ==
+            normalizeProfilePromptAnswer(widget.currentAnswer)) {
       return;
     }
 
-    final saved = await saveFieldsFromLatest((latest) {
-      final latestPrompts = normalizeProfilePromptAnswers(
-        latest.profilePrompts,
-      );
-      final latestUpdatedPrompts = replaceProfilePromptAnswerAtIndex(
-        current: latest.profilePrompts,
-        index: widget.promptIndex,
-        definition: selectedDefinition,
-        answer: normalizedText,
-      );
-      if (listEquals(latestUpdatedPrompts, latestPrompts)) {
-        return UpdateUserProfilePatch.raw(const {});
-      }
-      return UpdateUserProfilePatch(profilePrompts: latestUpdatedPrompts);
+    // An add card has no persisted question until the question's explicit
+    // Done action succeeds. Keep the blurred answer pending rather than
+    // letting it implicitly commit the merely staged question.
+    if (_committedPromptId == null) {
+      _deferredAnswer = normalizedAnswer.isEmpty ? null : normalizedAnswer;
+      return;
+    }
+
+    await _saveAnswerValue(normalizedAnswer);
+  }
+
+  Future<bool> _saveAnswerValue(String normalizedAnswer) async {
+    _answerSavedTimer?.cancel();
+    setState(() => _answerStatus = CatchFieldStatus.saving);
+    final saved = await _enqueuePromptSave(
+      question: false,
+      save: () => saveFieldsFromLatest((latest) {
+        final current = normalizeProfilePromptAnswers(latest.profilePrompts);
+        // The latest persisted question is authoritative. This keeps answer
+        // blur from committing a staged selection and also lets a queued
+        // answer follow a successful question save without reverting it.
+        final promptId = widget.promptIndex < current.length
+            ? current[widget.promptIndex].promptId
+            : _committedPromptId;
+        if (promptId == null) {
+          return UpdateUserProfilePatch.raw(const {});
+        }
+        final updated = replaceProfilePromptAnswerAtIndex(
+          current: current,
+          index: widget.promptIndex,
+          definition: profilePromptDefinition(promptId),
+          answer: normalizedAnswer,
+        );
+        if (listEquals(updated, current)) {
+          return UpdateUserProfilePatch.raw(const {});
+        }
+        return UpdateUserProfilePatch(profilePrompts: updated);
+      }),
+    );
+    if (!mounted) return false;
+    if (!saved) {
+      setState(() => _answerStatus = CatchFieldStatus.idle);
+      return false;
+    }
+    _showSaved(question: false);
+    return true;
+  }
+
+  Future<bool> _enqueuePromptSave({
+    required bool question,
+    required Future<bool> Function() save,
+  }) {
+    final queued = _saveTail.then((_) async {
+      if (!mounted) return false;
+      _saveErrorBelongsToQuestion = question;
+      return save();
     });
-    if (saved && mounted) widget.onSaved();
+    _saveTail = queued.then<void>((_) {});
+    return queued;
   }
 
-  Future<void> _pickPrompt() async {
-    final selected = await showPromptPickerSheet(
-      context,
-      promptIds: widget.availablePromptIds,
-      selectedPromptId: _selectedPromptId,
+  void _showSaved({required bool question}) {
+    final timer = Timer(CatchFieldTokens.savedStatusHold, () {
+      if (!mounted) return;
+      setState(() {
+        if (question) {
+          _questionStatus = CatchFieldStatus.idle;
+        } else {
+          _answerStatus = CatchFieldStatus.idle;
+        }
+      });
+    });
+    setState(() {
+      if (question) {
+        _questionSavedTimer?.cancel();
+        _questionSavedTimer = timer;
+        _questionStatus = CatchFieldStatus.saved;
+      } else {
+        _answerSavedTimer?.cancel();
+        _answerSavedTimer = timer;
+        _answerStatus = CatchFieldStatus.saved;
+      }
+    });
+  }
+
+  String? _saveError({required bool question}) {
+    final error = saveError;
+    if (error == null || _saveErrorBelongsToQuestion != question) return null;
+    return appErrorMessage(
+      error,
+      l10n: context.l10n,
+      context: AppErrorContext.profile,
     );
-    if (selected == null || !mounted) return;
-    setState(() => _selectedPromptId = selected);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isAddAffordance && !_draftingNewPrompt) {
+      return CatchField.add(
+        key: ValueKey('profile-prompt-add-${widget.promptIndex}'),
+        icon: CatchIcons.addCircleOutlineRounded,
+        title: context.l10n.userProfileInlineEditorPromptLabelAddAnotherPrompt,
+        onTap: () {
+          setState(() => _draftingNewPrompt = true);
+          widget.onTap();
+        },
+      );
+    }
+
     final selectedDefinition = profilePromptDefinition(_selectedPromptId);
-    final saveErrorBanner = buildSaveError();
-
-    return CatchField.actions(
-      icon: widget.icon,
-      // While editing, the header shows the live selected question and the
-      // answer lives only in the editable input below — the collapsed body
-      // is not duplicated alongside it.
-      title: widget.isExpanded ? selectedDefinition.title : widget.label,
-      body: widget.isExpanded
-          ? null
-          : (widget.isAddAffordance
-                ? context.l10n.userProfileInlineEditorPromptBodyValue(
-                    value: widget.value,
-                  )
-                : widget.value),
-      tone: widget.isAddAffordance
-          ? CatchFieldTone.primary
-          : CatchFieldTone.normal,
-      initiallyExpanded: widget.isExpanded,
-      isLoading: isSaving,
-      error: _validationError,
-      onTap: isSaving ? null : widget.onTap,
-      actionLeading: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => Text(
-          context.l10n
-              .userProfileInlineEditorPromptTextLengthMaximumprofilepromptanswerlength(
-                length: _controller.text.length,
-                maximumProfilePromptAnswerLength:
-                    maximumProfilePromptAnswerLength,
-              ),
-          key: ValueKey(
-            context.l10n.userProfileInlineEditorPromptTextProfileInlineCounter,
+    final questionSaving = _questionStatus == CatchFieldStatus.saving;
+    final answerSaving = _answerStatus == CatchFieldStatus.saving;
+    return CatchSection.containedFieldRows(
+      key: ValueKey('profile-prompt-card-${widget.promptIndex}'),
+      hasError: _validationError != null || saveError != null,
+      children: [
+        CatchField.choices<String>(
+          key: ValueKey('profile-prompt-question-${widget.promptIndex}'),
+          icon: widget.icon,
+          title: context.l10n.userProfileInlineEditorPromptLabelPromptNumber(
+            number: widget.promptIndex + 1,
           ),
-          style: CatchTextStyles.labelM(context),
+          body: selectedDefinition.title,
+          values: widget.availablePromptIds,
+          itemLabel: (promptId) => profilePromptDefinition(promptId).title,
+          selected: {_selectedPromptId},
+          onSelectionChanged: (selection) {
+            if (selection.isEmpty || questionSaving) return;
+            _questionSavedTimer?.cancel();
+            setState(() {
+              _selectedPromptId = selection.single;
+              _questionStatus = CatchFieldStatus.idle;
+              clearSaveError();
+            });
+          },
+          open: widget.isExpanded,
+          onOpenChanged: (expanded) {
+            if (expanded == widget.isExpanded || questionSaving) {
+              return;
+            }
+            widget.onTap();
+          },
+          onCancel: _cancelQuestion,
+          onSubmit: _saveQuestion,
+          isLoading: questionSaving,
+          status: questionSaving ? CatchFieldStatus.saving : _questionStatus,
+          error: _saveError(question: true),
         ),
-      ),
-      control: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.isExpanded) ...[
-            ProfileInlineTextValue(
-              label: selectedDefinition.title,
-              displayValue: widget.value,
-              placeholder: selectedDefinition.placeholder,
-              controller: _controller,
-              isEditing: widget.isExpanded,
-              enabled: !isSaving,
-              isAddAffordance: widget.isAddAffordance,
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              maxLength: maximumProfilePromptAnswerLength,
-              collapseStackedBlankLines: true,
-              onSubmitted: (_) => _submit(),
-            ),
-            gapH8,
-            CatchTextButton(
-              key: const ValueKey('profile-inline-change-prompt'),
-              label:
-                  context.l10n.userProfileInlineEditorPromptLabelChangePrompt,
-              tone: CatchTextButtonTone.neutral,
-              minimumSize: const Size(0, CatchSpacing.s8),
-              padding: EdgeInsets.zero,
-              onPressed: isSaving ? null : _pickPrompt,
-            ),
-            if (saveErrorBanner != null) ...[
-              const SizedBox(height: CatchSpacing.s3),
-              saveErrorBanner,
-            ],
-          ],
-        ],
-      ),
-      onCancel: _cancel,
-      onSubmit: _submit,
+        CatchField.input(
+          key: ValueKey('profile-prompt-answer-${widget.promptIndex}'),
+          title: context.l10n.userProfileInlineEditorPromptLabelAnswer,
+          controller: _controller,
+          inputHint: selectedDefinition.placeholder,
+          keyboardType: TextInputType.multiline,
+          textInputAction: TextInputAction.newline,
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: null,
+          minLines: 1,
+          maxLength: maximumProfilePromptAnswerLength,
+          inputFormatters: const [_PromptStackedBlankLinesFormatter()],
+          readOnly: questionSaving || answerSaving,
+          status: answerSaving ? CatchFieldStatus.saving : _answerStatus,
+          error: _validationError ?? _saveError(question: false),
+          onFocusChanged: _handleAnswerFocusChanged,
+        ),
+      ],
     );
   }
 }
 
-/// Opens the prompt-question picker and resolves with the chosen prompt id,
-/// or null when dismissed.
-Future<String?> showPromptPickerSheet(
-  BuildContext context, {
-  required List<String> promptIds,
-  required String selectedPromptId,
-}) {
-  return showCatchBottomSheet<String>(
-    context: context,
-    builder: (_) => PromptPickerSheet(
-      promptIds: promptIds,
-      selectedPromptId: selectedPromptId,
-    ),
-  );
-}
-
-class PromptPickerSheet extends StatelessWidget {
-  const PromptPickerSheet({
-    super.key,
-    required this.promptIds,
-    required this.selectedPromptId,
-  });
-
-  final List<String> promptIds;
-  final String selectedPromptId;
+class _PromptStackedBlankLinesFormatter extends TextInputFormatter {
+  const _PromptStackedBlankLinesFormatter();
 
   @override
-  Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
-      title: context.l10n.userProfileInlineEditorPromptTitlePrompt,
-      subtitle:
-          context.l10n.userProfileInlineEditorPromptSubtitlePickTheQuestionThis,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.56,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (final promptId in promptIds)
-                PromptOptionTile(
-                  title: profilePromptDefinition(promptId).title,
-                  selected: promptId == selectedPromptId,
-                  onTap: () => Navigator.of(context).pop(promptId),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final collapsed = collapseStackedPromptBlankLines(newValue.text);
+    if (collapsed == newValue.text) return newValue;
 
-class PromptOptionTile extends StatelessWidget {
-  const PromptOptionTile({
-    super.key,
-    required this.title,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String title;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: context.l10n.userProfileInlineEditorPromptLabelSelectPromptTitle(
-        title: title,
-      ),
-      child: Material(
-        color: selected ? t.primarySoft : Colors.transparent,
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: CatchInsets.listBody,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: CatchTextStyles.bodyL(
-                      context,
-                      color: selected ? t.primary : t.ink,
-                    ),
-                  ),
-                ),
-                if (selected) ...[
-                  const SizedBox(width: CatchSpacing.s2),
-                  Icon(
-                    CatchIcons.checkRounded,
-                    size: CatchIcon.sm,
-                    color: t.primary,
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
+    final selectionEnd = newValue.selection.end;
+    final normalizedOffset = selectionEnd < 0
+        ? collapsed.length
+        : collapseStackedPromptBlankLines(
+            newValue.text.substring(0, selectionEnd),
+          ).length;
+    final offset = normalizedOffset.clamp(0, collapsed.length);
+    return TextEditingValue(
+      text: collapsed,
+      selection: TextSelection.collapsed(offset: offset),
     );
   }
 }

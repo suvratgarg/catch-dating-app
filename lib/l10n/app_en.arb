@@ -796,6 +796,34 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
+  "coreCatchFieldLabelSaving": "Saving…",
+  "@coreCatchFieldLabelSaving": {
+    "description": "Product copy used by lib/core/widgets/catch_field.dart (saving label).",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.widgets.catch_field"
+  },
+  "coreCatchFieldTextOptionalSuffix": " · Optional",
+  "@coreCatchFieldTextOptionalSuffix": {
+    "description": "Muted suffix appended to an empty optional field add affordance.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.widgets.catch_field"
+  },
+  "coreCatchFieldSemanticSaving": "Saving",
+  "@coreCatchFieldSemanticSaving": {
+    "description": "Live accessibility status for a CatchField save in progress.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.widgets.catch_field"
+  },
+  "coreCatchFieldSemanticSaved": "Saved",
+  "@coreCatchFieldSemanticSaved": {
+    "description": "Live accessibility status for a successfully saved CatchField.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.widgets.catch_field"
+  },
   "coreCatchFormFieldLabelTextOptional": "Optional",
   "@coreCatchFormFieldLabelTextOptional": {
     "description": "Product copy used by lib/core/widgets/catch_form_field_label.dart (Text).",
@@ -6224,6 +6252,30 @@
   "userProfileInlineEditorPromptSubtitlePickTheQuestionThis": "Pick the question this answer responds to.",
   "@userProfileInlineEditorPromptSubtitlePickTheQuestionThis": {
     "description": "Product copy used by lib/user_profile/presentation/widgets/inline_editor_prompt.dart (subtitle).",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.inline_editor_prompt"
+  },
+  "userProfileInlineEditorPromptLabelPromptNumber": "Prompt {number}",
+  "@userProfileInlineEditorPromptLabelPromptNumber": {
+    "description": "Numbered prompt-question field label in the profile editor.",
+    "placeholders": {
+      "number": {}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.inline_editor_prompt"
+  },
+  "userProfileInlineEditorPromptLabelAnswer": "Answer",
+  "@userProfileInlineEditorPromptLabelAnswer": {
+    "description": "Prompt-answer field label in the profile editor.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.inline_editor_prompt"
+  },
+  "userProfileInlineEditorPromptLabelAddAnotherPrompt": "Add another prompt",
+  "@userProfileInlineEditorPromptLabelAddAnotherPrompt": {
+    "description": "Action that opens the next empty profile prompt card.",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "user_profile.presentation.widgets.inline_editor_prompt"
@@ -21026,6 +21078,16 @@
     "description": "Product copy used by lib/core/widgets/catch_field.dart (visibleCopy).",
     "placeholders": {
       "toLowerCase": {}
+    },
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.widgets.catch_field"
+  },
+  "coreCatchFieldVisiblecopyAddFieldLabel": "Add {fieldLabel}",
+  "@coreCatchFieldVisiblecopyAddFieldLabel": {
+    "description": "Canonical empty editable-row copy used by lib/core/widgets/catch_field.dart (visibleCopy).",
+    "placeholders": {
+      "fieldLabel": {}
     },
     "x-audience": "shared",
     "x-owner": "product",

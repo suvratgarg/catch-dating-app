@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-11",
+  "updated": "2026-07-15",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -3882,12 +3882,18 @@
           "id": "profile.self",
           "routeId": "profileScreen",
           "implementationPaths": [
-            "lib/user_profile/presentation/profile_screen.dart",
-            "lib/user_profile/presentation/profile_edit_controller.dart",
-            "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-            "lib/user_profile/presentation/widgets/profile_tab.dart",
-            "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
-            "lib/user_profile/presentation/widgets/preview_tab.dart",
+              "lib/user_profile/presentation/profile_screen.dart",
+              "lib/user_profile/presentation/profile_edit_controller.dart",
+              "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+              "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+              "lib/user_profile/presentation/widgets/profile_tab.dart",
+              "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
+              "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+              "lib/user_profile/presentation/widgets/inline_editor_height.dart",
+              "lib/user_profile/presentation/widgets/inline_editor_prompt.dart",
+              "lib/user_profile/presentation/widgets/inline_editor_range.dart",
+              "lib/user_profile/presentation/widgets/inline_editor_text.dart",
+              "lib/user_profile/presentation/widgets/preview_tab.dart",
             "lib/image_uploads/shared/photo_grid.dart",
             "lib/image_uploads/shared/photo_upload_controller.dart",
             "lib/swipes/shared/profile_surface/profile_surface.dart"
@@ -3896,9 +3902,11 @@
             "catch.button",
             "catch.chip",
             "catch.field",
-            "catch.icon_button",
-            "catch.segmented_control",
-            "catch.surface",
+              "catch.icon_button",
+              "catch.range_slider",
+              "catch.segmented_control",
+              "catch.section",
+              "catch.surface",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -3970,7 +3978,7 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "profile_self_edit_tab captures the full edit-tab route with photos, analytics, prompts, profile sections, and header/tab chrome.",
+              "notes": "profile_self_edit_tab captures the full edit-tab route with photos, prompts, About you, Running, Lifestyle, and header/tab chrome.",
               "previewIds": [
                 "ProfileScreen/Self route states"
               ],
@@ -3986,7 +3994,7 @@
                 "test/profile/profile_widgets_test.dart",
                 "test/image_uploads/photo_grid_test.dart"
               ],
-              "notes": "_ProfilePhotosSection composes PhotoGrid with upload loading indices, delete, reorder, and slot-edit callbacks. Add Widgetbook states for empty, minimum, full, loading, reorder, delete-disabled, and long prompt photo-grid states.",
+              "notes": "ProfilePhotosSection and ProfilePhotosSkeletonSection compose the ready/loading grids inside CatchSection.fieldRows. The canonical section owns the full-width header rule and the grid starts 12 px below it; upload loading indices, delete, reorder, and slot-edit callbacks remain parent-owned. Widgetbook covers ready, upload-pending, and loading-skeleton composition; empty, minimum, reorder, delete-disabled, and long-prompt states remain future variants.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ]
@@ -4014,7 +4022,19 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "ProfileInlineTextEntryEditor validates and saves text fields through ProfileEditController.saveFieldsMutation. Promote inline editor previews for default, open, validation error, save pending, and save failure states.",
+              "notes": "ProfileDirectTextEntryField keeps a native CatchField.input mounted, validates direct text edits, and saves them through ProfileEditController.saveFieldsMutation. Promote inline editor previews for default, focused, validation error, save pending, and save failure states.",
+              "previewIds": [
+                "ProfileScreen/Self section states"
+              ]
+            },
+            {
+              "id": "inline_prompt_edit",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/profile/profile_widgets_test.dart"
+              ],
+              "notes": "Each prompt renders as one CatchSection.containedFieldRows card with an inline CatchField.choices question editor and a separate multiline CatchField.input answer. Ordinary focus chrome is owned by exactly one child field while the outer perimeter stays neutral; section errors may still own the outer danger border. Question changes use staged Cancel/Done, answers save on blur, and production preserves the existing three-prompt and 300-character business limits. Widgetbook covers collapsed and question-expanded production compositions plus primitive focus ownership; deterministic route captures still need refreshing against the 2026-07-14 Field handoff.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ]
@@ -4026,7 +4046,7 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "ProfileInlineSingleChoiceEntryEditor, ProfileInlineMultiChoiceEntryEditor, height stepper, and pace range editor provide row-owned field editing. Add Widgetbook states for single-choice, multi-choice, nullable, required, range, and height editors.",
+              "notes": "ProfileInlineSingleChoiceEntryEditor and ProfileInlineMultiChoiceEntryEditor delegate wrapping controls, source-order ' · ' summaries, Cancel/Done orientation, and final-selection policy to CatchField.choices. allowEmptySelection controls whether a final selection may be removed independently from showOptionalLabel; Education and Languages are clearable without Optional copy, while Religion is both clearable and visibly Optional. Height delegates to CatchField.stepper, pace delegates disclosure/action chrome to CatchField.control while retaining CatchRangeSlider, and prompt pairs use CatchSection.containedFieldRows.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ]
@@ -4038,7 +4058,7 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "Inline editors hold the drawer open and expose pending Done behavior until ProfileEditController save completes. profile_self_inline_save_pending captures a real single-choice inline save held pending through ProfileEditController.",
+              "notes": "Explicit multi-adjustment editors hold their disclosure open and expose pending Done behavior until ProfileEditController save completes. Direct text and prompt-answer fields remain in place while blur saves expose the field-owned saving status. profile_self_inline_save_pending currently captures the explicit single-choice path and should be refreshed with a prompt-answer blur-save variant.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ],
@@ -4053,7 +4073,7 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "Inline save failures keep the editor open and render the shared inline error banner copy. profile_self_inline_save_error captures a real prompt inline save failure through ProfileEditController.",
+              "notes": "Inline save failures keep the relevant field/card visible and render error copy within the owning CatchField/CatchSection chrome. profile_self_inline_save_error predates the contained prompt-pair migration and should be refreshed against the inline prompt answer error state.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ],
@@ -4157,7 +4177,7 @@
             {
               "id": "DP-PROFILE-SELF-001",
               "status": "closed",
-              "nextAction": "Add Widgetbook states for self-profile sections and hard-to-reach mutation/accessibility/theme variants."
+              "nextAction": "Closed by ProfileScreen/Self route and section Widgetbook states plus focused primitive and profile tests for default, mutation, focus, save, accessibility, and theme variants."
             },
             {
               "id": "DP-PROFILE-SELF-002",
@@ -4173,6 +4193,11 @@
               "id": "DP-PROFILE-SELF-004",
               "status": "closed",
               "nextAction": "Closed by exported self-profile edit and preview references plus masks in design/reference_screens/screen.profile.self and manifest wiring for advisory pixel comparison."
+            },
+            {
+              "id": "DP-PROFILE-SELF-005",
+              "status": "blocked",
+              "nextAction": "Review-gated Field handoff delta; do not promote without design/product approval. Primitive metrics still differ for the contained-footer top inset (React 2 px, Flutter 8 px), disclosure caret (16 px vs 20 px), divided-section trailing header API, chip/Add/stepper typography, spinner geometry and 0.8 s cadence, filled saved check-circle, row-error warning icon, directional underline sweep, 200 ms control-opacity reveal, toggle/Cancel opacity transitions, hold-repeat acceleration boundary, direct-input stable-label behavior, hardware-keyboard focus/activation and focus-visible rings for choice/toggle/stepper atoms, and single-choice auto-commit/deselection policy. Profile/domain differences remain DOB helper/mono formatting, pace visibility, lifestyle footer, workout control, prompt 6/140 vs production 3/300, icon/row ordering, and colors."
             }
           ]
         },

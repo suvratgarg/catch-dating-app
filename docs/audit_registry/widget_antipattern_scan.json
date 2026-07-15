@@ -1,32 +1,11 @@
 {
   "summary": {
-    "files_scanned": 55,
-    "widget_functions": 101,
-    "private_widget_classes": 4,
-    "builder_methods_on_state": 17
+    "files_scanned": 15,
+    "widget_functions": 16,
+    "private_widget_classes": 5,
+    "builder_methods_on_state": 16
   },
   "findings": [
-    {
-      "file": "lib/auth/presentation/phone_page.dart",
-      "widget_functions": [
-        {
-          "name": "_countryCodeSelector",
-          "line": 147,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _countryCodeSelector({\n  required BuildContext context,\n  required String countryCode,\n  required ValueChanged<String> onChanged,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchChipField",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
     {
       "file": "lib/core/motion/catch_transitions.dart",
       "widget_functions": [
@@ -61,7 +40,7 @@
       "widget_functions": [
         {
           "name": "appShellNavigationBar",
-          "line": 186,
+          "line": 216,
           "has_widgetref": false,
           "is_private": false,
           "body_preview": "Widget appShellNavigationBar({\n  required StatefulNavigationShell navigationShell,\n  required int unreadCount,\n}",
@@ -82,7 +61,7 @@
       "widget_functions": [
         {
           "name": "_buildCupertinoPickerSheet",
-          "line": 103,
+          "line": 105,
           "has_widgetref": false,
           "is_private": true,
           "body_preview": "Widget _buildCupertinoPickerSheet(\n  BuildContext context, {\n  required String title,\n  required Widget child,\n  required VoidCallback onCancel,\n  required VoidCallback onDone,\n}",
@@ -99,252 +78,14 @@
       "builder_methods_on_state": []
     },
     {
-      "file": "lib/core/widgets/catch_bottom_sheet.dart",
-      "widget_functions": [
-        {
-          "name": "_buildPlainSheetHeader",
-          "line": 107,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildPlainSheetHeader(\n  BuildContext context, {\n  required String? title,\n  required String? subtitle,\n  required Widget? trailing,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_buildBrandedSheetHeader",
-          "line": 143,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildBrandedSheetHeader(\n  BuildContext context, {\n  required IconData glyph,\n  required String? title,\n  required String? subtitle,\n  required Widget? trailing,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_button.dart",
-      "widget_functions": [
-        {
-          "name": "_buildButtonLabel",
-          "line": 168,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildButtonLabel({\n  required String label,\n  required Color color,\n  required Widget? icon,\n  required double gap,\n  required bool fullWidth,\n  required TextStyle textStyle,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_buildLoadingDots",
-          "line": 205,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildLoadingDots(Color color) {\n  return Row(\n    key: const ValueKey('catch-button-loading'),\n    mainAxisSize: MainAxisSize.min,\n    mainAxisAlignment: MainAxisAlignment.center,\n    children: List.generate(3, (index) {\n      return Padding(\n        padding: EdgeInsets.only(left: index == 0 ? 0 : CatchSpacing.s1),\n        child: DecoratedBox(\n          decoration: BoxDecoration(\n            color: color.withValues(\n              alpha: CatchOpacity.loadingDotAlphas[index],\n            )",
-          "core_matches": [
-            {
-              "primitive": "CatchSurface",
-              "confidence": "low",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_chip.dart",
-      "widget_functions": [
-        {
-          "name": "_buildRemoveButton",
-          "line": 121,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildRemoveButton({\n  required Color color,\n  required VoidCallback? onRemove,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_day_section_header.dart",
-      "widget_functions": [
-        {
-          "name": "_buildAnimatedCount",
-          "line": 59,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildAnimatedCount(BuildContext context, int count, Color color) {\n  return AnimatedSwitcher(\n    duration: CatchMotion.base,\n    switchInCurve: CatchMotion.springCurve,\n    switchOutCurve: CatchMotion.standardCurve,\n    transitionBuilder: (child, animation) {\n      final slide = Tween<Offset>(\n        begin: const Offset(0, 0.4),\n        end: Offset.zero,\n      ).animate(animation);",
-          "core_matches": [
-            {
-              "primitive": "CatchField.expanding/CatchField.actions",
-              "confidence": "high",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
-      "widget_functions": [
-        {
-          "name": "_buildCatchDetailHeroFallback",
-          "line": 45,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildCatchDetailHeroFallback(BuildContext context) {\n  final t = CatchTokens.of(context);",
-          "core_matches": []
-        },
-        {
-          "name": "_buildCatchDetailHeroScrim",
-          "line": 64,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildCatchDetailHeroScrim() {\n  return DecoratedBox(\n    decoration: BoxDecoration(\n      gradient: LinearGradient(\n        begin: Alignment.topCenter,\n        end: Alignment.bottomCenter,\n        stops: const [0.0, 0.45, 1.0],\n        colors: [\n          CatchTokens.editorialDark.withValues(\n            alpha: CatchOpacity.photoScrimLight,\n          ),\n          CatchTokens.editorialDark.withValues(\n            alpha: CatchOpacity.photoScrimMedium,\n          ),\n          CatchTokens.edi",
-          "core_matches": [
-            {
-              "primitive": "CatchSurface",
-              "confidence": "low",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_empty_state.dart",
-      "widget_functions": [
-        {
-          "name": "_buildStackedEmptyStateContent",
-          "line": 92,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildStackedEmptyStateContent(\n  BuildContext context, {\n  required IconData? icon,\n  required CatchEmptyStateIconStyle iconStyle,\n  required double? iconSize,\n  required double? iconContainerSize,\n  required String? title,\n  required String? message,\n  required Widget? action,\n  required TextStyle titleStyle,\n  required TextStyle messageStyle,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchEmptyState",
-              "confidence": "medium",
-              "score": 2
-            }
-          ]
-        },
-        {
-          "name": "_buildInlineEmptyStateContent",
-          "line": 128,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildInlineEmptyStateContent(\n  BuildContext context, {\n  required IconData? icon,\n  required CatchEmptyStateIconStyle iconStyle,\n  required double? iconSize,\n  required double? iconContainerSize,\n  required String? title,\n  required String? message,\n  required Widget? action,\n  required TextStyle titleStyle,\n  required TextStyle messageStyle,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchEmptyState",
-              "confidence": "medium",
-              "score": 2
-            }
-          ]
-        },
-        {
-          "name": "_buildEmptyStateIcon",
-          "line": 170,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildEmptyStateIcon(\n  BuildContext context, {\n  required IconData icon,\n  required CatchEmptyStateIconStyle style,\n  required double? size,\n  required double? containerSize,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchEmptyState",
-              "confidence": "medium",
-              "score": 2
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_error_state.dart",
-      "widget_functions": [
-        {
-          "name": "_buildCatchErrorBody",
-          "line": 85,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildCatchErrorBody(\n  BuildContext context, {\n  required _CatchErrorSpec spec,\n  required CatchErrorStateMode mode,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchErrorState",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
       "file": "lib/core/widgets/catch_event_activity_cards.dart",
       "widget_functions": [
         {
           "name": "_buildOutlineStamp",
-          "line": 455,
+          "line": 192,
           "has_widgetref": false,
           "is_private": true,
           "body_preview": "Widget _buildOutlineStamp(BuildContext context, String label) {\n  final t = CatchTokens.of(context);",
-          "core_matches": []
-        },
-        {
-          "name": "_buildDarkTimeChip",
-          "line": 475,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildDarkTimeChip(\n  BuildContext context, {\n  required String label,\n  required String sublabel,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchChipField",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_buildRoundGlyph",
-          "line": 509,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildRoundGlyph(IconData icon) {\n  return CatchSurface(\n    width: CatchLayout.eventActivityGlyphExtent,\n    height: CatchLayout.eventActivityGlyphExtent,\n    radius: CatchRadius.pill,\n    backgroundColor: CatchTokens.editorialLight.withValues(\n      alpha: CatchOpacity.lightOverlayFill,\n    ),\n    borderColor: CatchTokens.editorialLight.withValues(\n      alpha: CatchOpacity.lightOverlayBorder,\n    ),\n    child: Icon(\n      icon,\n      color: CatchTokens.editorialLight,\n      size: Catch",
-          "core_matches": [
-            {
-              "primitive": "CatchSurface",
-              "confidence": "low",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_event_thumbnail.dart",
-      "widget_functions": [
-        {
-          "name": "_buildActivityFallback",
-          "line": 92,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildActivityFallback(\n  BuildContext context, {\n  required ActivityKind activityKind,\n  required Alignment iconAlignment,\n  required double? iconSize,\n  required double iconOpacity,\n  required double patternOpacity,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_buildScrim",
-          "line": 110,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildScrim(CatchEventThumbnailScrim style) {\n  final colors = switch (style) {\n    CatchEventThumbnailScrim.none => const [Colors.transparent],\n    CatchEventThumbnailScrim.bottom => [\n      Colors.transparent,\n      Colors.transparent,\n      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),\n      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),\n    ],\n    CatchEventThumbnailScrim.full => [\n      CatchTokens.editorialDark.withValues(\n        a",
           "core_matches": []
         }
       ],
@@ -354,347 +95,97 @@
     {
       "file": "lib/core/widgets/catch_field.dart",
       "widget_functions": [],
-      "private_widget_classes": [
-        {
-          "name": "_CatchFieldRow",
-          "line": 1823,
-          "parent": "StatelessWidget"
-        },
-        {
-          "name": "_CatchFieldTrailing",
-          "line": 1897,
-          "parent": "StatelessWidget"
-        }
-      ],
+      "private_widget_classes": [],
       "builder_methods_on_state": [
         {
           "class": "_CatchFieldState",
           "name": "_buildAdd",
-          "line": 783,
+          "line": 1488,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildRow",
-          "line": 801,
+          "line": 1506,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildBody",
-          "line": 996,
-          "is_private": true
-        },
-        {
-          "class": "_CatchFieldState",
-          "name": "_buildFieldLabel",
-          "line": 1019,
+          "line": 1883,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildTextEntryBody",
-          "line": 1039,
+          "line": 2012,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildFieldContent",
-          "line": 1049,
-          "is_private": true
-        },
-        {
-          "class": "_CatchFieldState",
-          "name": "_buildActionBar",
-          "line": 1149,
+          "line": 2022,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildTextEntryField",
-          "line": 1182,
+          "line": 2275,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildTextEntryInput",
-          "line": 1300,
+          "line": 2438,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildTextEntryMotion",
-          "line": 1411,
+          "line": 2570,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildSelectField",
-          "line": 1424,
+          "line": 2583,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildSelectTrigger",
-          "line": 1466,
+          "line": 2625,
           "is_private": true
         },
         {
           "class": "_CatchFieldState",
           "name": "_buildFieldChrome",
-          "line": 1596,
+          "line": 2730,
           "is_private": true
         }
       ]
     },
     {
-      "file": "lib/core/widgets/catch_form_field_label.dart",
-      "widget_functions": [
-        {
-          "name": "_buildOptionalBadge",
-          "line": 54,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildOptionalBadge(BuildContext context, bool hasError) {\n  final t = CatchTokens.of(context);",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_framework_error_view.dart",
-      "widget_functions": [
-        {
-          "name": "_buildDebugDetails",
-          "line": 86,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildDebugDetails(String details) {\n  var expanded = false;",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_journey_steps.dart",
-      "widget_functions": [
-        {
-          "name": "_buildJourneyNode",
-          "line": 100,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildJourneyNode(BuildContext context, Color accent) {\n  final t = CatchTokens.of(context);",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_meta_row.dart",
-      "widget_functions": [
-        {
-          "name": "_buildMetaEntryFlow",
-          "line": 63,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildMetaEntryFlow(\n  BuildContext context, {\n  required List<CatchMetaEntry> entries,\n  required Color color,\n  required double iconSize,\n  required int maxLines,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_buildEntry",
-          "line": 98,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildEntry(\n  BuildContext context,\n  CatchMetaEntry entry,\n  Color inkColor, {\n  required double iconSize,\n  required int maxLines,\n  bool isStrong = false,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_metric_strip.dart",
-      "widget_functions": [
-        {
-          "name": "_buildCatchMetricCell",
-          "line": 76,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildCatchMetricCell(\n  BuildContext context, {\n  required CatchMetricStripItem item,\n  Color? valueColor,\n  Color? unitColor,\n  Color? labelColor,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_buildCatchMetricDivider",
-          "line": 128,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildCatchMetricDivider(Color color) {\n  return Container(\n    width: CatchStroke.hairline,\n    height: CatchSpacing.s9,\n    color: color,\n  );",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_mini_bar_chart.dart",
+      "file": "lib/core/widgets/catch_search_field.dart",
       "widget_functions": [],
       "private_widget_classes": [
         {
-          "name": "_CatchMiniBar",
-          "line": 76,
+          "name": "_ExpandingSearchTrailing",
+          "line": 413,
           "parent": "StatelessWidget"
         }
       ],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_otp_code_field.dart",
-      "widget_functions": [
-        {
-          "name": "_buildCodeInputRow",
-          "line": 138,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildCodeInputRow(\n  BuildContext context, {\n  required int length,\n  required String value,\n  required int? active,\n  required bool caret,\n  required double height,\n  required double gap,\n  required String cellKeyPrefix,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchField.input",
-              "confidence": "high",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_buildCodeInputCell",
-          "line": 175,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildCodeInputCell({\n  required Key key,\n  required String digit,\n  required bool isActive,\n  required bool showCaret,\n  required double height,\n  required TextStyle? textStyle,\n  required CatchTokens tokens,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchField.input",
-              "confidence": "high",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_buildCodeInputCaret",
-          "line": 205,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildCodeInputCaret(CatchTokens tokens) {\n  return DecoratedBox(\n    decoration: BoxDecoration(\n      color: tokens.ink,\n      borderRadius: BorderRadius.circular(CatchRadius.pill),\n    ),\n    child: const SizedBox(\n      width: CatchLayout.otpCaretWidth,\n      height: CatchLayout.otpCaretHeight,\n    ),\n  );",
-          "core_matches": [
-            {
-              "primitive": "CatchField.input",
-              "confidence": "high",
-              "score": 1
-            },
-            {
-              "primitive": "CatchSurface",
-              "confidence": "low",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_person_avatar.dart",
-      "widget_functions": [
-        {
-          "name": "_buildVeiledPersonAvatar",
-          "line": 337,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildVeiledPersonAvatar(\n  BuildContext context, {\n  required double size,\n  required ActivityKind activityKind,\n  required double borderWidth,\n  required Color borderColor,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchField.nav/CatchField.read",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_buildActivityInitialsPlaceholder",
-          "line": 367,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildActivityInitialsPlaceholder(\n  BuildContext context, {\n  required ActivityKind kind,\n  required String initials,\n  required double size,\n  required bool dim,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_buildInitialsPlaceholder",
-          "line": 446,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildInitialsPlaceholder(\n  BuildContext context, {\n  required String name,\n  required String? initials,\n  required double size,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_person_row.dart",
-      "widget_functions": [
-        {
-          "name": "_buildChatLayout",
-          "line": 177,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildChatLayout(BuildContext context, CatchPersonRowData data) {\n  final t = CatchTokens.of(context);",
-          "core_matches": []
-        },
-        {
-          "name": "_buildChatTrailing",
-          "line": 237,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildChatTrailing(BuildContext context, CatchPersonRowData data) {\n  final t = CatchTokens.of(context);",
-          "core_matches": []
-        },
-        {
-          "name": "_buildUnreadCountPill",
-          "line": 273,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildUnreadCountPill(BuildContext context, {required int count}",
-          "core_matches": []
-        },
-        {
-          "name": "_buildRosterLayout",
-          "line": 291,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildRosterLayout(BuildContext context, CatchPersonRowData data) {\n  return Column(\n    crossAxisAlignment: CrossAxisAlignment.start,\n    mainAxisSize: MainAxisSize.min,\n    children: [\n      Text(\n        data.name,\n        style: CatchTextStyles.sectionTitle(context),\n        maxLines: 1,\n        overflow: TextOverflow.ellipsis,\n      ),\n      if (data.metaLine != null) ...[\n        gapH3,\n        Text(\n          data.metaLine!,\n          style: CatchTextStyles.supporting(context),\n   ",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/catch_search_field.dart",
-      "widget_functions": [],
-      "private_widget_classes": [],
       "builder_methods_on_state": [
         {
           "class": "_CatchSearchFieldState",
           "name": "_buildExpandingSearch",
-          "line": 223,
+          "line": 242,
           "is_private": true
         },
         {
           "class": "_CatchSearchFieldState",
           "name": "_buildExpandingSearchAt",
-          "line": 237,
+          "line": 256,
           "is_private": true
         }
       ]
@@ -704,32 +195,32 @@
       "widget_functions": [
         {
           "name": "_buildCatchSectionKicker",
-          "line": 558,
+          "line": 959,
           "has_widgetref": false,
           "is_private": true,
           "body_preview": "Widget _buildCatchSectionKicker(\n  BuildContext context, {\n  required String text,\n  required Color color,\n  Object? count,\n}",
           "core_matches": []
         }
       ],
-      "private_widget_classes": [
-        {
-          "name": "_CatchSectionFocusSurface",
-          "line": 509,
-          "parent": "StatefulWidget"
-        }
-      ],
+      "private_widget_classes": [],
       "builder_methods_on_state": []
     },
     {
-      "file": "lib/core/widgets/catch_tab_dock.dart",
+      "file": "lib/core/widgets/catch_skeleton_layouts.dart",
       "widget_functions": [
         {
-          "name": "_buildTabDockIcon",
-          "line": 135,
+          "name": "_catchSkeletonRowLeadingShape",
+          "line": 75,
           "has_widgetref": false,
           "is_private": true,
-          "body_preview": "Widget _buildTabDockIcon(\n  BuildContext context, {\n  required IconData icon,\n  required Color color,\n  required int badgeCount,\n}",
-          "core_matches": []
+          "body_preview": "Widget _catchSkeletonRowLeadingShape(CatchSkeletonRowLeading leading) {\n  return switch (leading) {\n    CatchSkeletonRowLeading.mediaTile => CatchSkeleton.box(\n      width: CatchLayout.skeletonMediaTileExtent,\n      height: CatchLayout.skeletonMediaTileExtent,\n      radius: CatchRadius.sm,\n    ),\n    CatchSkeletonRowLeading.avatar => CatchSkeleton.circle(\n      size: CatchLayout.skeletonAvatarCompactExtent,\n    ),\n    CatchSkeletonRowLeading.icon => CatchSkeleton.box(\n      width: CatchIcon.md,\n",
+          "core_matches": [
+            {
+              "primitive": "CatchSkeleton",
+              "confidence": "high",
+              "score": 2
+            }
+          ]
         }
       ],
       "private_widget_classes": [],
@@ -740,10 +231,10 @@
       "widget_functions": [
         {
           "name": "_buildCompactTopBarFrame",
-          "line": 372,
+          "line": 612,
           "has_widgetref": false,
           "is_private": true,
-          "body_preview": "Widget _buildCompactTopBarFrame(\n  BuildContext context, {\n  required double height,\n  required bool gutter,\n  required EdgeInsetsGeometry? contentPadding,\n  required bool showDivider,\n  required Widget? leading,\n  required Widget title,\n  required bool searchOpen,\n  required Widget? Function(double maxWidth) search,\n  required Widget? trailing,\n}",
+          "body_preview": "Widget _buildCompactTopBarFrame(\n  BuildContext context, {\n  required double height,\n  required bool gutter,\n  required EdgeInsetsGeometry? contentPadding,\n  required bool showDivider,\n  required Widget? leading,\n  required Widget title,\n  required bool searchOpen,\n  required double searchCollapsedExtent,\n  required Widget? Function(double maxWidth) search,\n  required Widget? trailing,\n}",
           "core_matches": [
             {
               "primitive": "CatchTopBar",
@@ -754,10 +245,10 @@
         },
         {
           "name": "_buildLargeTopBarFrame",
-          "line": 425,
+          "line": 660,
           "has_widgetref": false,
           "is_private": true,
-          "body_preview": "Widget _buildLargeTopBarFrame(\n  BuildContext context, {\n  required double height,\n  required bool gutter,\n  required EdgeInsetsGeometry? contentPadding,\n  required bool showDivider,\n  required Widget? leading,\n  required Widget title,\n  required bool searchOpen,\n  required Widget? Function(double maxWidth) search,\n  required Widget? trailing,\n}",
+          "body_preview": "Widget _buildLargeTopBarFrame(\n  BuildContext context, {\n  required double height,\n  required bool gutter,\n  required EdgeInsetsGeometry? contentPadding,\n  required bool showDivider,\n  required Widget? leading,\n  required Widget title,\n  required bool searchOpen,\n  required double searchCollapsedExtent,\n  required Widget? Function(double maxWidth) search,\n  required Widget? trailing,\n}",
           "core_matches": [
             {
               "primitive": "CatchTopBar",
@@ -768,10 +259,10 @@
         },
         {
           "name": "_buildTopBarTrailingEdge",
-          "line": 480,
+          "line": 778,
           "has_widgetref": false,
           "is_private": true,
-          "body_preview": "Widget _buildTopBarTrailingEdge({\n  required double maxWidth,\n  required Widget? search,\n  required Widget? trailing,\n}",
+          "body_preview": "Widget _buildTopBarTrailingEdge({\n  required double maxWidth,\n  required Widget? trailing,\n}",
           "core_matches": [
             {
               "primitive": "CatchTopBar",
@@ -782,7 +273,7 @@
         },
         {
           "name": "_buildTopBarActionRow",
-          "line": 499,
+          "line": 792,
           "has_widgetref": false,
           "is_private": true,
           "body_preview": "Widget _buildTopBarActionRow(List<Widget> actions) {\n  return Row(\n    mainAxisSize: MainAxisSize.min,\n    children: [\n      for (var index = 0;",
@@ -796,7 +287,7 @@
         },
         {
           "name": "_buildCatchTopBarIdentityTitle",
-          "line": 511,
+          "line": 804,
           "has_widgetref": false,
           "is_private": true,
           "body_preview": "Widget _buildCatchTopBarIdentityTitle(\n  BuildContext context, {\n  required String name,\n  required String? photoUrl,\n  required VoidCallback? onTap,\n}",
@@ -810,7 +301,7 @@
         },
         {
           "name": "_buildCupertinoTabLabel",
-          "line": 640,
+          "line": 935,
           "has_widgetref": false,
           "is_private": true,
           "body_preview": "Widget _buildCupertinoTabLabel(\n  BuildContext context, {\n  required Widget tab,\n  required bool selected,\n}",
@@ -818,45 +309,78 @@
         },
         {
           "name": "_tabChild",
-          "line": 663,
+          "line": 958,
           "has_widgetref": false,
           "is_private": true,
           "body_preview": "Widget _tabChild(Widget tab, TextStyle style) {\n  if (tab is Tab) {\n    final text = tab.text;",
           "core_matches": []
         }
       ],
-      "private_widget_classes": [],
+      "private_widget_classes": [
+        {
+          "name": "_TopBarSearchLane",
+          "line": 712,
+          "parent": "StatelessWidget"
+        }
+      ],
       "builder_methods_on_state": [
         {
           "class": "_CatchTopBarState",
           "name": "_buildTitleBlock",
-          "line": 264,
+          "line": 499,
           "is_private": true
         }
       ]
     },
     {
-      "file": "lib/event_success/presentation/event_success_host_screen.dart",
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
       "widget_functions": [],
       "private_widget_classes": [],
       "builder_methods_on_state": [
         {
-          "class": "_EventSuccessHostPanelState",
-          "name": "_selectedBody",
-          "line": 695,
+          "class": "_FirstHelloCheckInCardState",
+          "name": "_missionEditor",
+          "line": 225,
           "is_private": true
         }
       ]
     },
     {
-      "file": "lib/events/presentation/event_location_map_screen.dart",
+      "file": "lib/explore/presentation/explore_map_screen.dart",
       "widget_functions": [
         {
-          "name": "_chromelessMapScaffold",
-          "line": 258,
+          "name": "_selectedCardTransition",
+          "line": 239,
           "has_widgetref": false,
           "is_private": true,
-          "body_preview": "Widget _chromelessMapScaffold({required Widget child}",
+          "body_preview": "Widget _selectedCardTransition(Widget child, Animation<double> animation) {\n  final offsetAnimation = animation.drive(\n    Tween<Offset>(\n      begin: const Offset(0, 0.08),\n      end: Offset.zero,\n    ).chain(CurveTween(curve: Curves.easeOutCubic)),\n  );",
+          "core_matches": [
+            {
+              "primitive": "CatchChipField",
+              "confidence": "medium",
+              "score": 1
+            }
+          ]
+        }
+      ],
+      "private_widget_classes": [
+        {
+          "name": "_ExploreMapSelectedEventCard",
+          "line": 206,
+          "parent": "StatelessWidget"
+        }
+      ],
+      "builder_methods_on_state": []
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widget_functions": [
+        {
+          "name": "_exploreMixedFeedCard",
+          "line": 293,
+          "has_widgetref": false,
+          "is_private": true,
+          "body_preview": "Widget _exploreMixedFeedCard(\n  List<ExploreMixedCard> cards,\n  int index, {\n  required ExploreEventSelected? onEventSelected,\n  required ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,\n  required ValueChanged<Club>? onClubSelected,\n}",
           "core_matches": []
         }
       ],
@@ -864,1277 +388,237 @@
       "builder_methods_on_state": []
     },
     {
-      "file": "lib/events/presentation/event_map_screen.dart",
-      "widget_functions": [
+      "file": "lib/explore/presentation/widgets/explore_header.dart",
+      "widget_functions": [],
+      "private_widget_classes": [
         {
-          "name": "_noPinnedEventsState",
-          "line": 168,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _noPinnedEventsState() {\n  return Center(\n    child: CatchEmptyState(\n      icon: CatchIcons.pinOutlined,\n      title: 'No exact pins yet',\n      message:\n          'These events are visible, but none have pinned starting points.',\n    ),\n  );",
-          "core_matches": [
-            {
-              "primitive": "CatchEmptyState",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_mapEmptyState",
-          "line": 179,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _mapEmptyState() {\n  return Center(\n    child: CatchEmptyState(\n      icon: CatchIcons.map,\n      title: 'No mapped events yet',\n      message:\n          'Join clubs, book events, or save future events to see starting points here.',\n    ),\n  );",
-          "core_matches": [
-            {
-              "primitive": "CatchEmptyState",
-              "confidence": "medium",
-              "score": 2
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/events/presentation/widgets/booking_conflict_sheet.dart",
-      "widget_functions": [
-        {
-          "name": "_bookingConflictEventRow",
-          "line": 153,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _bookingConflictEventRow(\n  BuildContext context, {\n  required String tag,\n  required Color tagColor,\n  required BookingConflictEvent event,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_agenda_list.dart",
-      "widget_functions": [
-        {
-          "name": "_eventAgendaTileSkeleton",
-          "line": 201,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventAgendaTileSkeleton(BuildContext context) {\n  final t = CatchTokens.of(context);",
-          "core_matches": [
-            {
-              "primitive": "CatchField.nav/CatchField.read",
-              "confidence": "medium",
-              "score": 1
-            },
-            {
-              "primitive": "CatchSkeleton",
-              "confidence": "high",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_agendaDayGroup",
-          "line": 288,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _agendaDayGroup(\n  BuildContext context, {\n  required DateTime date,\n  required List<Event> events,\n  required DateTime today,\n  required ValueChanged<Event>? onEventSelected,\n  required String? badgeLabel,\n  required EventBadgeLabelBuilder? badgeLabelBuilder,\n  required ClubNameBuilder? clubNameBuilder,\n  required EventTileStatusBuilder? statusBuilder,\n  required bool showClubName,\n  required double dayLabelBottomGap,\n  required double itemGap,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "widget_functions": [
-        {
-          "name": "_legacyEventHeroSurface",
+          "name": "_ExploreDiscoveryTopBar",
           "line": 172,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _legacyEventHeroSurface(BuildContext context, {required Event event}",
-          "core_matches": [
-            {
-              "primitive": "CatchSurface",
-              "confidence": "low",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_eventDetailTicketHeroSurface",
-          "line": 211,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventDetailTicketHeroSurface(\n  BuildContext context, {\n  required Event event,\n  required EventDetailPresentationMode presentationMode,\n  Object? heroTag,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchSurface",
-              "confidence": "low",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_eventDetailTicketSurface",
-          "line": 226,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventDetailTicketSurface(\n  BuildContext context, {\n  required Event event,\n  required EventDetailPresentationMode presentationMode,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchSurface",
-              "confidence": "low",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_heroActivityBadge",
-          "line": 387,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _heroActivityBadge(\n  BuildContext context, {\n  required EventActivityVisualSpec visual,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_heroTimeChip",
-          "line": 413,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _heroTimeChip(BuildContext context, {required Event event}",
-          "core_matches": [
-            {
-              "primitive": "CatchChipField",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
+          "parent": "StatelessWidget"
         }
       ],
-      "private_widget_classes": [],
       "builder_methods_on_state": []
     },
     {
-      "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "widget_functions": [
-        {
-          "name": "_eventDescription",
-          "line": 132,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventDescription(\n  BuildContext context, {\n  required String description,\n  EventDetailSurfaceStyle? surfaceStyle,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_whatToExpectSection",
-          "line": 168,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _whatToExpectSection(\n  BuildContext context, {\n  required Event event,\n  EventDetailSurfaceStyle? surfaceStyle,\n}",
-          "core_matches": []
-        }
-      ],
+      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "widget_functions": [],
       "private_widget_classes": [],
-      "builder_methods_on_state": []
+      "builder_methods_on_state": [
+        {
+          "class": "_HostEventParticipantsListState",
+          "name": "buildBoard",
+          "line": 514,
+          "is_private": false
+        }
+      ]
     },
     {
-      "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
-      "widget_functions": [
+      "file": "lib/routing/go_router.dart",
+      "widget_functions": [],
+      "private_widget_classes": [
         {
-          "name": "_guestWhoIsGoing",
-          "line": 90,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _guestWhoIsGoing(\n  BuildContext context, {\n  EventDetailSurfaceStyle? surfaceStyle,\n  bool showHeader = true,\n}",
-          "core_matches": []
+          "name": "_RouteLoadingScreen",
+          "line": 618,
+          "parent": "StatelessWidget"
         }
       ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_pins_map.dart",
-      "widget_functions": [
-        {
-          "name": "_eventPinsMapPlaceholder",
-          "line": 330,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventPinsMapPlaceholder(\n  BuildContext context, {\n  required List<EventMapItem> items,\n  required String? selectedEventId,\n  required IconData markerIcon,\n  required ValueChanged<Event>? onEventSelected,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_share_card.dart",
-      "widget_functions": [
-        {
-          "name": "_eventShareMetaRow",
-          "line": 225,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventShareMetaRow(\n  BuildContext context, {\n  required IconData icon,\n  required String label,\n  required Color accent,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_eventSharePill",
-          "line": 248,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventSharePill(BuildContext context, {required String label}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/core/widgets/event_ticket_surface.dart",
-      "widget_functions": [
-        {
-          "name": "eventHeroSurface",
-          "line": 11,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget eventHeroSurface({required Object tag, required Widget child}",
-          "core_matches": [
-            {
-              "primitive": "CatchSurface",
-              "confidence": "low",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_tiles/event_action_card.dart",
-      "widget_functions": [
-        {
-          "name": "_eventActionCardHeader",
-          "line": 170,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventActionCardHeader({\n  required List<EventActionCardBadge> badges,\n  required String? indexLabel,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_eventActionCardActions",
-          "line": 200,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventActionCardActions({required List<EventActionCardAction> actions}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_tiles/event_compact_row.dart",
-      "widget_functions": [
-        {
-          "name": "_eventCompactDatePill",
-          "line": 123,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _eventCompactDatePill(\n  BuildContext context, {\n  required DateTime date,\n  required Color accent,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_tiles/event_date_marker.dart",
-      "widget_functions": [
-        {
-          "name": "_weekMarker",
-          "line": 58,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _weekMarker(\n  BuildContext context, {\n  required DateTime date,\n  required bool active,\n  required bool hasEvent,\n  required VoidCallback onTap,\n  String? label,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "_monthMarker",
-          "line": 117,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _monthMarker(\n  BuildContext context, {\n  required DateTime date,\n  required bool active,\n  required bool today,\n  required bool hasEvent,\n  required bool enabled,\n  required VoidCallback onTap,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart",
-      "widget_functions": [
-        {
-          "name": "_perforationLine",
-          "line": 374,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _perforationLine({required Color color}",
-          "core_matches": []
-        },
-        {
-          "name": "_dateRail",
-          "line": 404,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _dateRail(\n  BuildContext context, {\n  required DateTime startTime,\n  required Color color,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
-      "widget_functions": [
-        {
-          "name": "_buildExploreCityPickerSheet",
-          "line": 203,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildExploreCityPickerSheet(\n  BuildContext context, {\n  required List<CityData> cities,\n  required CityData selectedCity,\n  required ValueChanged<CityData> onSelected,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchChipField",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_buildCityOptionTile",
-          "line": 275,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _buildCityOptionTile(\n  BuildContext context, {\n  required CityData city,\n  required bool selected,\n  required VoidCallback onTap,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchField.nav/CatchField.read",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "widget_functions": [
-        {
-          "name": "_buildSelectedEventLead",
-          "line": 226,
-          "has_widgetref": true,
-          "is_private": true,
-          "body_preview": "Widget _buildSelectedEventLead(\n  WidgetRef ref, {\n  required ExploreEventItem item,\n  required String? spotlightEventId,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchChipField",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/image_uploads/presentation/profile_photo_editor_screen.dart",
-      "widget_functions": [
-        {
-          "name": "_photoEditorPreview",
-          "line": 309,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _photoEditorPreview({\n  required BuildContext context,\n  required GlobalKey cropKey,\n  required Uint8List? bytes,\n  required String? url,\n  required bool loading,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/image_uploads/presentation/widgets/ordered_photo_picker.dart",
-      "widget_functions": [
-        {
-          "name": "_orderedPhotoTile",
-          "line": 155,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _orderedPhotoTile({\n  required Key key,\n  required OrderedPhotoPreview photo,\n  required int index,\n  required bool canReorder,\n  required bool showCoverBadge,\n  required bool showReorderHandle,\n  VoidCallback? onRemove,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchField.nav/CatchField.read",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "_addPhotoTile",
-          "line": 277,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _addPhotoTile({required String label, required VoidCallback? onTap}",
-          "core_matches": [
-            {
-              "primitive": "CatchField.nav/CatchField.read",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/onboarding/presentation/onboarding_screen.dart",
-      "widget_functions": [
-        {
-          "name": "_onboardingTopBar",
-          "line": 143,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _onboardingTopBar({\n  required OnboardingStep step,\n  required bool profileCompletionOnly,\n  required bool runPreferencesOnly,\n  required VoidCallback? onBack,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchTopBar",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/onboarding/presentation/widgets/onboarding_step_layout.dart",
-      "widget_functions": [
-        {
-          "name": "onboardingStepLayout",
-          "line": 6,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget onboardingStepLayout({\n  Key? key,\n  required List<Widget> children,\n  Widget? footer,\n  EdgeInsetsGeometry padding = const EdgeInsets.fromLTRB(\n    CatchSpacing.s5,\n    CatchSpacing.s5,\n    CatchSpacing.s5,\n    CatchSpacing.s0,\n  ),\n  EdgeInsetsGeometry footerPadding = const EdgeInsets.fromLTRB(\n    CatchSpacing.s5,\n    CatchSpacing.s3,\n    CatchSpacing.s5,\n    CatchSpacing.s6,\n  ),\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "widget_functions": [
-        {
-          "name": "paymentConfirmationLoadingScreen",
-          "line": 71,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget paymentConfirmationLoadingScreen() {\n  return Builder(\n    builder: (context) {\n      final t = CatchTokens.of(context);",
-          "core_matches": []
-        },
-        {
-          "name": "pendingCheckoutBody",
-          "line": 139,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget pendingCheckoutBody({\n  required PaymentConfirmationData data,\n  required Event event,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "paymentCheckoutEventBackdrop",
-          "line": 218,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget paymentCheckoutEventBackdrop({required Event event}",
-          "core_matches": []
-        },
-        {
-          "name": "confirmationBody",
-          "line": 442,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget confirmationBody({\n  required PaymentConfirmationData data,\n  required Event event,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/payments/presentation/payment_history_screen.dart",
-      "widget_functions": [
-        {
-          "name": "paymentHistoryList",
-          "line": 55,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget paymentHistoryList({required String userId}",
-          "core_matches": []
-        },
-        {
-          "name": "paymentHistorySkeleton",
-          "line": 101,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget paymentHistorySkeleton() {\n  return ListView.separated(\n    padding: CatchInsets.listBody,\n    itemCount: 5,\n    separatorBuilder: (context, _) => Center(\n      child: ConstrainedBox(\n        constraints: const BoxConstraints(\n          maxWidth: CatchLayout.maxContentWidth,\n        ),\n        child: Divider(color: CatchTokens.of(context).line, height: 1),\n      ),\n    ),\n    itemBuilder: (context, _) => Center(\n      child: ConstrainedBox(\n        constraints: const BoxConstraints(\n     ",
-          "core_matches": [
-            {
-              "primitive": "CatchSkeleton",
-              "confidence": "high",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "paymentHistoryTileSkeleton",
-          "line": 124,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget paymentHistoryTileSkeleton() {\n  return Padding(\n    padding: CatchInsets.contentVertical,\n    child: Padding(\n      padding: const EdgeInsets.symmetric(\n        horizontal: CatchSpacing.s1,\n        vertical: CatchSpacing.s2,\n      ),\n      child: Row(\n        crossAxisAlignment: CrossAxisAlignment.start,\n        children: [\n          Expanded(\n            child: Column(\n              crossAxisAlignment: CrossAxisAlignment.start,\n              children: [\n                CatchSkeleton.tex",
-          "core_matches": [
-            {
-              "primitive": "CatchSkeleton",
-              "confidence": "high",
-              "score": 2
-            },
-            {
-              "primitive": "CatchField.nav/CatchField.read",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "paymentHistoryEmpty",
-          "line": 168,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget paymentHistoryEmpty({\n  required IconData icon,\n  required String title,\n  required String message,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "widget_functions": [
-        {
-          "name": "reviewsHistoryProfileGate",
-          "line": 55,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget reviewsHistoryProfileGate({required String uid}",
-          "core_matches": []
-        },
-        {
-          "name": "reviewsHistoryReviewsGate",
-          "line": 77,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget reviewsHistoryReviewsGate({\n  required String uid,\n  required UserProfile user,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "reviewsHistoryBody",
-          "line": 125,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget reviewsHistoryBody({\n  required ReviewsHistoryState state,\n  required VoidCallback onRetryProfile,\n  required VoidCallback? onRetryReviews,\n  required ValueChanged<ReviewsHistoryRow>? onEditReview,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "reviewsHistoryList",
-          "line": 153,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget reviewsHistoryList({\n  required List<ReviewsHistoryRow> rows,\n  required ValueChanged<ReviewsHistoryRow>? onEditReview,\n}",
-          "core_matches": []
-        },
-        {
-          "name": "reviewsHistoryEmpty",
-          "line": 200,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget reviewsHistoryEmpty({required String title, required String message}",
-          "core_matches": []
-        },
-        {
-          "name": "reviewsHistorySkeleton",
-          "line": 213,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget reviewsHistorySkeleton() {\n  return ListView.separated(\n    padding: CatchInsets.pageBodyRelaxed,\n    itemCount: 4,\n    separatorBuilder: (_, _) => gapH14,\n    itemBuilder: (context, _) => reviewHistoryItemSkeleton(context),\n  );",
-          "core_matches": [
-            {
-              "primitive": "CatchSkeleton",
-              "confidence": "high",
-              "score": 1
-            }
-          ]
-        },
-        {
-          "name": "reviewHistoryItemSkeleton",
-          "line": 222,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget reviewHistoryItemSkeleton(BuildContext context) {\n  final t = CatchTokens.of(context);",
-          "core_matches": [
-            {
-              "primitive": "CatchSkeleton",
-              "confidence": "high",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/user_profile/presentation/profile_screen.dart",
-      "widget_functions": [
-        {
-          "name": "_profileUnavailableBody",
-          "line": 245,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _profileUnavailableBody() {\n  return Center(\n    child: CatchEmptyState(\n      icon: CatchIcons.personOffOutlined,\n      title: 'Profile not available',\n      message: 'Finish onboarding or sign in again to load your profile.',\n    ),\n  );",
-          "core_matches": [
-            {
-              "primitive": "CatchField.nav/CatchField.read",
-              "confidence": "medium",
-              "score": 1
-            },
-            {
-              "primitive": "CatchEmptyState",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
-      "widget_functions": [
-        {
-          "name": "_profileChipPlaceholder",
-          "line": 393,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _profileChipPlaceholder(\n  BuildContext context, {\n  required String value,\n  required bool isAddAffordance,\n}",
-          "core_matches": [
-            {
-              "primitive": "CatchChipField",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/user_profile/presentation/widgets/profile_info_section.dart",
-      "widget_functions": [
-        {
-          "name": "profileSectionDivider",
-          "line": 19,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget profileSectionDivider(BuildContext context) {\n  final t = CatchTokens.of(context);",
-          "core_matches": []
-        },
-        {
-          "name": "profileInfoSection",
-          "line": 39,
-          "has_widgetref": false,
-          "is_private": false,
-          "body_preview": "Widget profileInfoSection({\n  Key? key,\n  required BuildContext context,\n  required List<Widget> children,\n  String? title,\n  String? subtitle,\n  bool grouped = false,\n  bool first = false,\n  bool fullBleedRows = false,\n}",
-          "core_matches": []
-        }
-      ],
-      "private_widget_classes": [],
-      "builder_methods_on_state": []
-    },
-    {
-      "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "widget_functions": [
-        {
-          "name": "_settingsButton",
-          "line": 91,
-          "has_widgetref": false,
-          "is_private": true,
-          "body_preview": "Widget _settingsButton(BuildContext context) {\n  return CatchTopBarIconAction(\n    icon: CatchIcons.settingsOutlined,\n    tooltip: 'Settings',\n    onPressed: () => context.pushNamed(Routes.settingsScreen.name),\n  );",
-          "core_matches": [
-            {
-              "primitive": "CatchTopBar",
-              "confidence": "medium",
-              "score": 1
-            }
-          ]
-        }
-      ],
-      "private_widget_classes": [],
       "builder_methods_on_state": []
     }
   ],
   "migration_ready": [
     {
-      "file": "lib/core/widgets/catch_bottom_sheet.dart",
-      "name": "_buildPlainSheetHeader",
-      "line": 107,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_bottom_sheet.dart",
-      "name": "_buildBrandedSheetHeader",
-      "line": 143,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_button.dart",
-      "name": "_buildButtonLabel",
-      "line": 168,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_chip.dart",
-      "name": "_buildRemoveButton",
-      "line": 121,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_day_section_header.dart",
-      "name": "_buildAnimatedCount",
-      "line": 59,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.expanding/CatchField.actions",
-      "confidence": "high",
-      "action": "replace-with-primitive"
-    },
-    {
-      "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
-      "name": "_buildCatchDetailHeroFallback",
-      "line": 45,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
       "file": "lib/core/widgets/catch_event_activity_cards.dart",
       "name": "_buildOutlineStamp",
-      "line": 455,
+      "line": 192,
       "has_widgetref": false,
       "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_event_thumbnail.dart",
-      "name": "_buildActivityFallback",
-      "line": 92,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_event_thumbnail.dart",
-      "name": "_buildScrim",
-      "line": 110,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_field.dart",
-      "name": "_CatchFieldRow",
-      "line": 1823,
-      "parent": "StatelessWidget",
-      "action": "make-public"
-    },
-    {
-      "file": "lib/core/widgets/catch_field.dart",
-      "name": "_CatchFieldTrailing",
-      "line": 1897,
-      "parent": "StatelessWidget",
-      "action": "make-public"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildAdd",
-      "line": 783,
+      "line": 1488,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildRow",
-      "line": 801,
+      "line": 1506,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildBody",
-      "line": 996,
-      "action": "extract-to-widget-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_field.dart",
-      "class": "_CatchFieldState",
-      "name": "_buildFieldLabel",
-      "line": 1019,
+      "line": 1883,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildTextEntryBody",
-      "line": 1039,
+      "line": 2012,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildFieldContent",
-      "line": 1049,
-      "action": "extract-to-widget-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_field.dart",
-      "class": "_CatchFieldState",
-      "name": "_buildActionBar",
-      "line": 1149,
+      "line": 2022,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildTextEntryField",
-      "line": 1182,
+      "line": 2275,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildTextEntryInput",
-      "line": 1300,
+      "line": 2438,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildTextEntryMotion",
-      "line": 1411,
+      "line": 2570,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildSelectField",
-      "line": 1424,
+      "line": 2583,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildSelectTrigger",
-      "line": 1466,
+      "line": 2625,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
       "class": "_CatchFieldState",
       "name": "_buildFieldChrome",
-      "line": 1596,
+      "line": 2730,
       "action": "extract-to-widget-class"
     },
     {
-      "file": "lib/core/widgets/catch_form_field_label.dart",
-      "name": "_buildOptionalBadge",
-      "line": 54,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_framework_error_view.dart",
-      "name": "_buildDebugDetails",
-      "line": 86,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_journey_steps.dart",
-      "name": "_buildJourneyNode",
-      "line": 100,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_meta_row.dart",
-      "name": "_buildMetaEntryFlow",
-      "line": 63,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_meta_row.dart",
-      "name": "_buildEntry",
-      "line": 98,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_metric_strip.dart",
-      "name": "_buildCatchMetricCell",
-      "line": 76,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_metric_strip.dart",
-      "name": "_buildCatchMetricDivider",
-      "line": 128,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_mini_bar_chart.dart",
-      "name": "_CatchMiniBar",
-      "line": 76,
+      "file": "lib/core/widgets/catch_search_field.dart",
+      "name": "_ExpandingSearchTrailing",
+      "line": 413,
       "parent": "StatelessWidget",
       "action": "make-public"
-    },
-    {
-      "file": "lib/core/widgets/catch_otp_code_field.dart",
-      "name": "_buildCodeInputRow",
-      "line": 138,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.input",
-      "confidence": "high",
-      "action": "replace-with-primitive"
-    },
-    {
-      "file": "lib/core/widgets/catch_otp_code_field.dart",
-      "name": "_buildCodeInputCell",
-      "line": 175,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.input",
-      "confidence": "high",
-      "action": "replace-with-primitive"
-    },
-    {
-      "file": "lib/core/widgets/catch_otp_code_field.dart",
-      "name": "_buildCodeInputCaret",
-      "line": 205,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.input",
-      "confidence": "high",
-      "action": "replace-with-primitive"
-    },
-    {
-      "file": "lib/core/widgets/catch_person_avatar.dart",
-      "name": "_buildActivityInitialsPlaceholder",
-      "line": 367,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_person_avatar.dart",
-      "name": "_buildInitialsPlaceholder",
-      "line": 446,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_person_row.dart",
-      "name": "_buildChatLayout",
-      "line": 177,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_person_row.dart",
-      "name": "_buildChatTrailing",
-      "line": 237,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_person_row.dart",
-      "name": "_buildUnreadCountPill",
-      "line": 273,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/core/widgets/catch_person_row.dart",
-      "name": "_buildRosterLayout",
-      "line": 291,
-      "has_widgetref": false,
-      "action": "convert-to-class"
     },
     {
       "file": "lib/core/widgets/catch_search_field.dart",
       "class": "_CatchSearchFieldState",
       "name": "_buildExpandingSearch",
-      "line": 223,
+      "line": 242,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_search_field.dart",
       "class": "_CatchSearchFieldState",
       "name": "_buildExpandingSearchAt",
-      "line": 237,
+      "line": 256,
       "action": "extract-to-widget-class"
     },
     {
       "file": "lib/core/widgets/catch_section_layout.dart",
       "name": "_buildCatchSectionKicker",
-      "line": 558,
+      "line": 959,
       "has_widgetref": false,
       "action": "convert-to-class"
     },
     {
-      "file": "lib/core/widgets/catch_section_layout.dart",
-      "name": "_CatchSectionFocusSurface",
-      "line": 509,
-      "parent": "StatefulWidget",
-      "action": "make-public"
-    },
-    {
-      "file": "lib/core/widgets/catch_tab_dock.dart",
-      "name": "_buildTabDockIcon",
-      "line": 135,
+      "file": "lib/core/widgets/catch_skeleton_layouts.dart",
+      "name": "_catchSkeletonRowLeadingShape",
+      "line": 75,
       "has_widgetref": false,
-      "action": "convert-to-class"
+      "suggested_primitive": "CatchSkeleton",
+      "confidence": "high",
+      "action": "replace-with-primitive"
     },
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
       "name": "_buildCupertinoTabLabel",
-      "line": 640,
+      "line": 935,
       "has_widgetref": false,
       "action": "convert-to-class"
     },
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
       "name": "_tabChild",
-      "line": 663,
+      "line": 958,
       "has_widgetref": false,
       "action": "convert-to-class"
     },
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
+      "name": "_TopBarSearchLane",
+      "line": 712,
+      "parent": "StatelessWidget",
+      "action": "make-public"
+    },
+    {
+      "file": "lib/core/widgets/catch_top_bar.dart",
       "class": "_CatchTopBarState",
       "name": "_buildTitleBlock",
-      "line": 264,
+      "line": 499,
       "action": "extract-to-widget-class"
     },
     {
-      "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "class": "_EventSuccessHostPanelState",
-      "name": "_selectedBody",
-      "line": 695,
-      "action": "extract-to-widget-class"
-    },
-    {
-      "file": "lib/events/presentation/event_location_map_screen.dart",
-      "name": "_chromelessMapScaffold",
-      "line": 258,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/booking_conflict_sheet.dart",
-      "name": "_bookingConflictEventRow",
-      "line": 153,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_agenda_list.dart",
-      "name": "_agendaDayGroup",
-      "line": 288,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "name": "_heroActivityBadge",
-      "line": 387,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "name": "_eventDescription",
-      "line": 132,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "name": "_whatToExpectSection",
-      "line": 168,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
-      "name": "_guestWhoIsGoing",
-      "line": 90,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_pins_map.dart",
-      "name": "_eventPinsMapPlaceholder",
-      "line": 330,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_share_card.dart",
-      "name": "_eventShareMetaRow",
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
+      "class": "_FirstHelloCheckInCardState",
+      "name": "_missionEditor",
       "line": 225,
+      "action": "extract-to-widget-class"
+    },
+    {
+      "file": "lib/explore/presentation/explore_map_screen.dart",
+      "name": "_ExploreMapSelectedEventCard",
+      "line": 206,
+      "parent": "StatelessWidget",
+      "action": "make-public"
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "name": "_exploreMixedFeedCard",
+      "line": 293,
       "has_widgetref": false,
       "action": "convert-to-class"
     },
     {
-      "file": "lib/events/presentation/widgets/event_share_card.dart",
-      "name": "_eventSharePill",
-      "line": 248,
-      "has_widgetref": false,
-      "action": "convert-to-class"
+      "file": "lib/explore/presentation/widgets/explore_header.dart",
+      "name": "_ExploreDiscoveryTopBar",
+      "line": 172,
+      "parent": "StatelessWidget",
+      "action": "make-public"
     },
     {
-      "file": "lib/events/presentation/widgets/event_tiles/event_action_card.dart",
-      "name": "_eventActionCardHeader",
-      "line": 170,
-      "has_widgetref": false,
-      "action": "convert-to-class"
+      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "class": "_HostEventParticipantsListState",
+      "name": "buildBoard",
+      "line": 514,
+      "action": "extract-to-widget-class"
     },
     {
-      "file": "lib/events/presentation/widgets/event_tiles/event_action_card.dart",
-      "name": "_eventActionCardActions",
-      "line": 200,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_tiles/event_compact_row.dart",
-      "name": "_eventCompactDatePill",
-      "line": 123,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_tiles/event_date_marker.dart",
-      "name": "_weekMarker",
-      "line": 58,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_tiles/event_date_marker.dart",
-      "name": "_monthMarker",
-      "line": 117,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart",
-      "name": "_perforationLine",
-      "line": 374,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart",
-      "name": "_dateRail",
-      "line": 404,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/image_uploads/presentation/profile_photo_editor_screen.dart",
-      "name": "_photoEditorPreview",
-      "line": 309,
-      "has_widgetref": false,
-      "action": "convert-to-class"
-    },
-    {
-      "file": "lib/payments/presentation/payment_history_screen.dart",
-      "name": "paymentHistorySkeleton",
-      "line": 101,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSkeleton",
-      "confidence": "high",
-      "action": "replace-with-primitive"
-    },
-    {
-      "file": "lib/payments/presentation/payment_history_screen.dart",
-      "name": "paymentHistoryTileSkeleton",
-      "line": 124,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSkeleton",
-      "confidence": "high",
-      "action": "replace-with-primitive"
-    },
-    {
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "name": "reviewsHistorySkeleton",
-      "line": 213,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSkeleton",
-      "confidence": "high",
-      "action": "replace-with-primitive"
-    },
-    {
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "name": "reviewHistoryItemSkeleton",
-      "line": 222,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSkeleton",
-      "confidence": "high",
-      "action": "replace-with-primitive"
+      "file": "lib/routing/go_router.dart",
+      "name": "_RouteLoadingScreen",
+      "line": 618,
+      "parent": "StatelessWidget",
+      "action": "make-public"
     }
   ],
   "needs_judgment": [
-    {
-      "file": "lib/auth/presentation/phone_page.dart",
-      "name": "_countryCodeSelector",
-      "line": 147,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchChipField",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
     {
       "file": "lib/core/motion/catch_transitions.dart",
       "name": "catchFadeScalePageTransition",
@@ -2154,7 +638,7 @@
     {
       "file": "lib/core/presentation/app_shell.dart",
       "name": "appShellNavigationBar",
-      "line": 186,
+      "line": 216,
       "has_widgetref": false,
       "suggested_primitive": "CatchField.nav/CatchField.read",
       "confidence": "medium",
@@ -2163,97 +647,16 @@
     {
       "file": "lib/core/widgets/catch_adaptive_picker.dart",
       "name": "_buildCupertinoPickerSheet",
-      "line": 103,
+      "line": 105,
       "has_widgetref": false,
       "suggested_primitive": "CatchChipField",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/catch_button.dart",
-      "name": "_buildLoadingDots",
-      "line": 205,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSurface",
-      "confidence": "low",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
-      "name": "_buildCatchDetailHeroScrim",
-      "line": 64,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSurface",
-      "confidence": "low",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/catch_empty_state.dart",
-      "name": "_buildStackedEmptyStateContent",
-      "line": 92,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchEmptyState",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/catch_empty_state.dart",
-      "name": "_buildInlineEmptyStateContent",
-      "line": 128,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchEmptyState",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/catch_empty_state.dart",
-      "name": "_buildEmptyStateIcon",
-      "line": 170,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchEmptyState",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/catch_error_state.dart",
-      "name": "_buildCatchErrorBody",
-      "line": 85,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchErrorState",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/catch_event_activity_cards.dart",
-      "name": "_buildDarkTimeChip",
-      "line": 475,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchChipField",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/catch_event_activity_cards.dart",
-      "name": "_buildRoundGlyph",
-      "line": 509,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSurface",
-      "confidence": "low",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/catch_person_avatar.dart",
-      "name": "_buildVeiledPersonAvatar",
-      "line": 337,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.nav/CatchField.read",
       "confidence": "medium",
       "action": "needs-judgment"
     },
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
       "name": "_buildCompactTopBarFrame",
-      "line": 372,
+      "line": 612,
       "has_widgetref": false,
       "suggested_primitive": "CatchTopBar",
       "confidence": "medium",
@@ -2262,7 +665,7 @@
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
       "name": "_buildLargeTopBarFrame",
-      "line": 425,
+      "line": 660,
       "has_widgetref": false,
       "suggested_primitive": "CatchTopBar",
       "confidence": "medium",
@@ -2271,7 +674,7 @@
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
       "name": "_buildTopBarTrailingEdge",
-      "line": 480,
+      "line": 778,
       "has_widgetref": false,
       "suggested_primitive": "CatchTopBar",
       "confidence": "medium",
@@ -2280,7 +683,7 @@
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
       "name": "_buildTopBarActionRow",
-      "line": 499,
+      "line": 792,
       "has_widgetref": false,
       "suggested_primitive": "CatchTopBar",
       "confidence": "medium",
@@ -2289,260 +692,18 @@
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
       "name": "_buildCatchTopBarIdentityTitle",
-      "line": 511,
+      "line": 804,
       "has_widgetref": false,
       "suggested_primitive": "CatchTopBar",
       "confidence": "medium",
       "action": "needs-judgment"
     },
     {
-      "file": "lib/events/presentation/event_map_screen.dart",
-      "name": "_noPinnedEventsState",
-      "line": 168,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchEmptyState",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/events/presentation/event_map_screen.dart",
-      "name": "_mapEmptyState",
-      "line": 179,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchEmptyState",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_agenda_list.dart",
-      "name": "_eventAgendaTileSkeleton",
-      "line": 201,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.nav/CatchField.read",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "name": "_legacyEventHeroSurface",
-      "line": 172,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSurface",
-      "confidence": "low",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "name": "_eventDetailTicketHeroSurface",
-      "line": 211,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSurface",
-      "confidence": "low",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "name": "_eventDetailTicketSurface",
-      "line": 226,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSurface",
-      "confidence": "low",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "name": "_heroTimeChip",
-      "line": 413,
+      "file": "lib/explore/presentation/explore_map_screen.dart",
+      "name": "_selectedCardTransition",
+      "line": 239,
       "has_widgetref": false,
       "suggested_primitive": "CatchChipField",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/core/widgets/event_ticket_surface.dart",
-      "name": "eventHeroSurface",
-      "line": 11,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchSurface",
-      "confidence": "low",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
-      "name": "_buildExploreCityPickerSheet",
-      "line": 203,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchChipField",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
-      "name": "_buildCityOptionTile",
-      "line": 275,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.nav/CatchField.read",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "name": "_buildSelectedEventLead",
-      "line": 226,
-      "has_widgetref": true,
-      "suggested_primitive": "CatchChipField",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/image_uploads/presentation/widgets/ordered_photo_picker.dart",
-      "name": "_orderedPhotoTile",
-      "line": 155,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.nav/CatchField.read",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/image_uploads/presentation/widgets/ordered_photo_picker.dart",
-      "name": "_addPhotoTile",
-      "line": 277,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.nav/CatchField.read",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/onboarding/presentation/onboarding_screen.dart",
-      "name": "_onboardingTopBar",
-      "line": 143,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchTopBar",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/onboarding/presentation/widgets/onboarding_step_layout.dart",
-      "name": "onboardingStepLayout",
-      "line": 6,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "name": "paymentConfirmationLoadingScreen",
-      "line": 71,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "name": "pendingCheckoutBody",
-      "line": 139,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "name": "paymentCheckoutEventBackdrop",
-      "line": 218,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "name": "confirmationBody",
-      "line": 442,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/payments/presentation/payment_history_screen.dart",
-      "name": "paymentHistoryList",
-      "line": 55,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/payments/presentation/payment_history_screen.dart",
-      "name": "paymentHistoryEmpty",
-      "line": 168,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "name": "reviewsHistoryProfileGate",
-      "line": 55,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "name": "reviewsHistoryReviewsGate",
-      "line": 77,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "name": "reviewsHistoryBody",
-      "line": 125,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "name": "reviewsHistoryList",
-      "line": 153,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "name": "reviewsHistoryEmpty",
-      "line": 200,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/user_profile/presentation/profile_screen.dart",
-      "name": "_profileUnavailableBody",
-      "line": 245,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchField.nav/CatchField.read",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
-      "name": "_profileChipPlaceholder",
-      "line": 393,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchChipField",
-      "confidence": "medium",
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/user_profile/presentation/widgets/profile_info_section.dart",
-      "name": "profileSectionDivider",
-      "line": 19,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/user_profile/presentation/widgets/profile_info_section.dart",
-      "name": "profileInfoSection",
-      "line": 39,
-      "has_widgetref": false,
-      "action": "needs-judgment"
-    },
-    {
-      "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "name": "_settingsButton",
-      "line": 91,
-      "has_widgetref": false,
-      "suggested_primitive": "CatchTopBar",
       "confidence": "medium",
       "action": "needs-judgment"
     }

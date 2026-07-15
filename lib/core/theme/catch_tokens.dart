@@ -544,6 +544,12 @@ abstract final class CatchInsets {
     top: CatchSpacing.s2,
   );
 
+  /// Top separation between a divided field-section rule and custom content
+  /// such as the profile photo grid.
+  static const EdgeInsets fieldSectionChildTop = EdgeInsets.only(
+    top: CatchSpacing.s3,
+  );
+
   /// Inline error offset below form controls inside step forms.
   static const EdgeInsets formFieldError = EdgeInsets.only(
     top: CatchSpacing.s1,
@@ -894,6 +900,19 @@ abstract final class CatchElevation {
     BoxShadow(color: t.primarySoft, spreadRadius: CatchSpacing.micro3),
   ];
 
+  /// Exact active-field lift from the Field handoff. Field rows deliberately
+  /// use one shadow layer so the pressed-to-focused handoff reads as one tile
+  /// instead of two competing elevations.
+  static List<BoxShadow> fieldActive(Brightness brightness) => <BoxShadow>[
+    BoxShadow(
+      color: brightness == Brightness.dark
+          ? const Color.fromRGBO(0, 0, 0, 0.55)
+          : const Color.fromRGBO(22, 20, 15, 0.08),
+      blurRadius: brightness == Brightness.dark ? 22 : 18,
+      offset: Offset(0, brightness == Brightness.dark ? 8 : 6),
+    ),
+  ];
+
   static List<BoxShadow> segmentedSelected(CatchTokens t) => <BoxShadow>[
     BoxShadow(
       color: t.ink.withValues(alpha: CatchOpacity.controlOverlayPressed),
@@ -1089,8 +1108,10 @@ abstract final class CatchOpacity {
   static const double photoDragGhost = 0.35;
   static const double profileInfoDivider = 0.62;
 
-  /// Inset hairline divider between on-surface rows (FieldRow / settings / chat
-  /// inbox) — design-system color-mix(line 38%, transparent).
+  /// Legacy low-contrast inset divider treatment used outside the canonical
+  /// FieldSection contract. CatchDividerRole.fieldSection uses the full
+  /// `line` token; CatchDividerRole.fieldRow keeps this muted compatibility
+  /// treatment for existing non-FieldSection rows.
   static const double fieldRowDivider = 0.38;
   static const double profileProgressTrack = 0.70;
   static const double profileShadowDark = 0.34;
@@ -1502,6 +1523,107 @@ abstract final class CatchMotion {
 // ── Layout ───────────────────────────────────────────────────────────────────
 
 /// Layout constants for constraint-based sizing.
+/// Exact component tokens for the canonical Field + FieldSection system.
+///
+/// These values mirror revision `field-sys-20260714-195933-640b9906`. Keep
+/// field-specific geometry here rather than spreading raw values through the
+/// renderer or feature adapters.
+abstract final class CatchFieldTokens {
+  static const double rowHorizontalPadding = CatchSpacing.s4;
+  static const double dividedRowBleed = CatchSpacing.micro10;
+  static const double rowVerticalPadding = CatchSpacing.s3;
+  static const double leadingIconExtent = CatchIcon.md;
+  static const double leadingGap = CatchSpacing.micro14;
+  static const double textLaneInset = leadingIconExtent + leadingGap;
+  static const double captionExtent = CatchSpacing.micro18;
+  static const double valueLineExtent = 18.9;
+  static const double supportingTopGap = CatchSpacing.micro6;
+
+  static const double trailingGap = CatchSpacing.s2;
+  static const double disclosureGlyphExtent = CatchSpacing.s4;
+  static const double largeGlyphExtent = CatchSpacing.micro18;
+  static const double trailingValueMaxWidth = 160;
+  static const double controlTopGap = CatchSpacing.micro10;
+  static const double actionBarTopGap = CatchSpacing.s4;
+
+  static const double chipHorizontalGap = CatchSpacing.s2;
+  static const double chipVerticalGap = CatchSpacing.s2;
+  static const double chipVisualMinHeight = 30;
+  static const double chipRunSpacing = chipVerticalGap;
+  static const double chipHorizontalPadding = CatchSpacing.micro14;
+  static const double chipVerticalPadding = CatchSpacing.s2;
+  static const double chipSelectedGlyphExtent = CatchSpacing.s3;
+  static const double chipSelectedGlyphGap = CatchSpacing.micro6;
+
+  static const double actionButtonHorizontalPadding = CatchSpacing.micro18;
+  static const double actionButtonVerticalPadding = CatchSpacing.micro10;
+  static const double actionButtonGap = CatchSpacing.s2;
+
+  static const double stepperHitExtent = CatchSpacing.s11;
+  static const double stepperVisualExtent = CatchSpacing.s8;
+  static const double stepperVisualEdgeInset =
+      (stepperHitExtent - stepperVisualExtent) / 2;
+  static const double stepperGap = CatchSpacing.s4;
+  static const double stepperLayoutGap = stepperGap - stepperVisualEdgeInset;
+  static const double stepperValueMinWidth = 30;
+  static const double stepperValueFontSize = 15;
+
+  static const double toggleTrackWidth = CatchSpacing.s11;
+  static const double toggleTrackHeight = 26;
+  static const double toggleTrackInset = CatchSpacing.micro3;
+  static const double toggleKnobExtent = 20;
+  static const double toggleKnobOnOffset = 21;
+
+  static const double tileRadius = CatchRadius.interactiveTile;
+  static const double sectionRadius = CatchRadius.md;
+  static const double sectionHeaderTopPadding = CatchSpacing.micro14;
+  static const double sectionHeaderBottomPadding = CatchSpacing.micro2;
+  static const double sectionHeaderGap = CatchSpacing.s3;
+  static const double sectionRuleGap = CatchSpacing.s2;
+  static const double sectionFooterTopPadding = CatchSpacing.s2;
+  static const double sectionCountFontSize = 9.5;
+  static const double sectionCountLetterSpacing = 0.76;
+
+  static const double valueFontSize = 14;
+  static const double captionFontSize = 11.5;
+  static const double counterFontSize = 10.5;
+  static const double chipFontSize = 14;
+  static const double actionButtonFontSize = 14;
+  static const double valueLineHeight = 1.35;
+  static const double supportLineHeight = 1.45;
+
+  static const double activeTintAlpha = 0.04;
+  static const double pressedTintAlpha = 0.06;
+  static const double disabledOpacity = 0.40;
+  static const double boundedStepperOpacity = 0.32;
+  static const double savingCancelOpacity = 0.45;
+  static const double savingToggleOpacity = 0.55;
+  static const double chipPressedScale = 0.97;
+  static const double stepperPressedScale = 0.92;
+  static const Duration fast = Duration(milliseconds: 150);
+  static const Duration standard = Duration(milliseconds: 200);
+  static const Duration reveal = Duration(milliseconds: 300);
+  static const Duration pressIn = Duration(milliseconds: 80);
+  static const Duration pressOut = Duration(milliseconds: 180);
+  static const Duration singleChoiceCloseDelay = Duration(milliseconds: 180);
+  static const Duration savedStatusHold = Duration(milliseconds: 900);
+  static const Duration repeatDelay = Duration(milliseconds: 400);
+  static const Duration repeatNormal = Duration(milliseconds: 110);
+  static const Duration repeatAccelerated = Duration(milliseconds: 55);
+  static const int repeatAccelerationTicks = 10;
+  static const Curve curve = Cubic(0.2, 0.7, 0.2, 1);
+
+  static Color activeSurface(CatchTokens tokens) => Color.alphaBlend(
+    tokens.ink.withValues(alpha: activeTintAlpha),
+    tokens.surface,
+  );
+
+  static Color pressedSurface(CatchTokens tokens) => Color.alphaBlend(
+    tokens.ink.withValues(alpha: pressedTintAlpha),
+    tokens.surface,
+  );
+}
+
 abstract final class CatchLayout {
   /// Content max-width clamp for large phones / foldables.
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
@@ -1661,11 +1783,13 @@ abstract final class CatchLayout {
   static const double activityArtGlyphScale = 0.95;
   static const double statStripVerticalPadding = 13.0;
   static const double statStripLabelFontSize = 9.0;
-  static const double fieldRowVerticalPadding = 13.0;
+  static const double fieldRowVerticalPadding =
+      CatchFieldTokens.rowVerticalPadding;
   static const double fieldActionBarWrapBreakpoint = 220.0;
-  static const double fieldRowTextLaneInset = CatchIcon.md + CatchSpacing.s3;
+  static const double fieldRowTextLaneInset = CatchFieldTokens.textLaneInset;
   static const double fieldRowDividerIconInset = fieldRowTextLaneInset;
-  static const double fieldTrailingValueMaxWidth = 160.0;
+  static const double fieldTrailingValueMaxWidth =
+      CatchFieldTokens.trailingValueMaxWidth;
   static const double searchFieldIconSize = 15.0;
   static const double searchFieldIconGap = 10.0;
   static const double searchFieldClearSize = 32.0;

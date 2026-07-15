@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.291
-updated: 2026-07-11
+version: 0.2.292
+updated: 2026-07-15
 owner: product_design_parity
 status: active
 ---
@@ -32,11 +32,11 @@ ledgers as the source of truth when counts differ:
   validation failures.
 - Contracted section states: 1,110.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
-  46 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 12 feature groups, 36 screens, 625 matrix states, and
+  47 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 567 captured, 13 implemented, 1 planned, and
-  40 tested.
+- Matrix state status spread: 571 captured, 14 implemented, 1 planned, and
+  39 tested.
 - Capture coverage registry: 627 capture ids across 37 captured route entries,
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349

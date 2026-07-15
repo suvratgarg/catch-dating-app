@@ -1604,14 +1604,18 @@ void main() {
     );
     await tester.enterText(
       find.descendant(
-        of: find.widgetWithText(CatchField, 'Role title'),
+        of: find.byWidgetPredicate(
+          (widget) => widget is CatchField && widget.title == 'Role title',
+        ),
         matching: find.byType(TextField),
       ),
       'Lead organizer',
     );
     await tester.enterText(
       find.descendant(
-        of: find.widgetWithText(CatchField, 'Bio'),
+        of: find.byWidgetPredicate(
+          (widget) => widget is CatchField && widget.title == 'Bio',
+        ),
         matching: find.byType(TextField),
       ),
       'Curates social runs.',

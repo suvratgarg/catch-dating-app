@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-enum CatchDividerRole { section, fieldRow }
+enum CatchDividerRole { section, fieldSection, fieldRow }
 
 class CatchDivider extends StatelessWidget {
   const CatchDivider({
@@ -26,6 +26,13 @@ class CatchDivider extends StatelessWidget {
     this.color,
   }) : role = CatchDividerRole.fieldRow;
 
+  const CatchDivider.fieldSection({
+    super.key,
+    this.indent = CatchLayout.fieldRowTextLaneInset,
+    this.endIndent = 0,
+    this.color,
+  }) : role = CatchDividerRole.fieldSection;
+
   final CatchDividerRole role;
   final double indent;
   final double endIndent;
@@ -34,6 +41,7 @@ class CatchDivider extends StatelessWidget {
   static Color colorFor(CatchTokens tokens, CatchDividerRole role) {
     return switch (role) {
       CatchDividerRole.section => tokens.line,
+      CatchDividerRole.fieldSection => tokens.line,
       CatchDividerRole.fieldRow => tokens.line.withValues(
         alpha: CatchOpacity.fieldRowDivider,
       ),

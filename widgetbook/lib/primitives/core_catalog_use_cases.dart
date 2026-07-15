@@ -469,8 +469,8 @@ Widget catchFormFieldLabelCatalogStates(BuildContext context) {
   return _CatalogScreen(
     title: 'CatchFormFieldLabel',
     catalogId: 'core.widgets.catch_form_field_label',
-    children: const [
-      _StateCard(
+    children: [
+      const _StateCard(
         label: 'required / optional / error / large',
         child: _InlineWrap(
           children: [
@@ -479,6 +479,14 @@ Widget catchFormFieldLabelCatalogStates(BuildContext context) {
             CatchFormFieldLabel(label: 'Activity', hasError: true),
             CatchFormFieldLabel(label: 'Host copy', large: true),
           ],
+        ),
+      ),
+      _StateCard(
+        label: 'field inline optional suffix',
+        child: CatchFormFieldLabel.inline(
+          label: 'Religion',
+          isOptional: true,
+          style: CatchTextStyles.fieldRowTitle(context),
         ),
       ),
     ],

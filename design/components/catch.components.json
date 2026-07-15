@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 1,
-  "updated": "2026-07-11",
+  "updated": "2026-07-15",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -1352,20 +1352,7 @@
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
-      "summary": "Unified field primitive with a stable row anatomy: optional leading icon, label/value column with configurable emphasis, and an optional trailing value, chevron, toggle, expanded control, select trigger, or add action.",
-      "dart": {
-        "symbol": "CatchField",
-        "file": "lib/core/widgets/catch_field.dart",
-        "constructors": [
-          "CatchField.read",
-          "CatchField.nav",
-          "CatchField.toggle",
-          "CatchField.input",
-          "CatchField.expanding",
-          "CatchField.add",
-          "CatchField.select"
-        ]
-      },
+      "summary": "Unified handoff field primitive with stable label/value geometry, one-gesture press-to-focus transfer, native cursor placement, persistent animated disclosure controls, wrapping choices, bounded steppers, exact toggles, async status, direct and explicit-save text editing, select triggers, and add actions.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1401,6 +1388,12 @@
             "type": "string",
             "required": false,
             "dartType": "String?"
+          },
+          {
+            "name": "showChevron",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool?"
           },
           {
             "name": "action",
@@ -1468,7 +1461,97 @@
             "dartType": "Widget?"
           },
           {
+            "name": "supporting",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "secondaryAction",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "open",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool?"
+          },
+          {
+            "name": "initiallyOpen",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "addable",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "isOptional",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "Presentation and accessibility copy only; renders the inline ' · Optional' suffix and never controls whether a selection may be cleared."
+          },
+          {
+            "name": "allowEmptySelection",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "CatchField.choices selection policy for both single and multi controls. Independent from isOptional."
+          },
+          {
+            "name": "onOpenChanged",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<bool>?"
+          },
+          {
+            "name": "onBlur",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<String>?"
+          },
+          {
+            "name": "status",
+            "type": "enum",
+            "required": false,
+            "default": "idle",
+            "dartType": "CatchFieldStatus",
+            "values": [
+              "idle",
+              "saving",
+              "saved"
+            ]
+          },
+          {
+            "name": "maxLength",
+            "type": "number",
+            "required": false,
+            "dartType": "int?"
+          },
+          {
             "name": "placeholder",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "emptyValueText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "inputHint",
             "type": "string",
             "required": false,
             "dartType": "String?"
@@ -1544,9 +1627,28 @@
           "row-title",
           "value-line",
           "chevron",
-          "toggle",
-          "expanded-control",
-          "text-entry",
+          "toggle-on",
+          "toggle-off",
+          "control-collapsed",
+          "control-open",
+          "disclosure-active-pressed",
+          "choices-wrapped",
+          "choices-clearable",
+          "choices-retain-final-selection",
+          "choices-derived-summary",
+          "choices-explicit-summary",
+          "stepper-open",
+          "direct-input-one-tap",
+          "direct-input-focused-cursor",
+          "read-only-row",
+          "editable-row",
+          "saving",
+          "saved",
+          "explicit-save-collapsed",
+          "explicit-save-focused",
+          "explicit-save-error",
+          "editable-empty-at-rest",
+          "editable-empty-focused",
           "edit-empty",
           "edit-filled",
           "edit-focused",
@@ -1569,6 +1671,16 @@
             "name": "control",
             "kind": "optional-expanded-widget",
             "notes": "Use for option groups, chips, steppers, or other controlled primitives."
+          },
+          {
+            "name": "supporting",
+            "kind": "optional-supporting-widget",
+            "notes": "In explicit-save editors this follows the value lane and precedes secondary and commit actions."
+          },
+          {
+            "name": "secondaryAction",
+            "kind": "optional-secondary-action-widget",
+            "notes": "In explicit-save editors this follows supporting metadata or errors and precedes Cancel/Done."
           },
           {
             "name": "prefixIcon",
@@ -1596,15 +1708,17 @@
           "theme.light.color.ink",
           "theme.light.color.ink2",
           "theme.light.color.danger",
-          "theme.light.color.line"
+          "theme.light.color.line",
+          "theme.light.color.line2"
         ],
         "dartRoles": [
+          "CatchFieldTokens",
+          "CatchElevation.fieldActive",
           "CatchFormFieldLabel",
           "CatchRadius.sm",
           "CatchStroke.hairline",
           "CatchTextStyles.fieldLabel",
-          "CatchTextStyles.titleS",
-          "CatchToggle"
+          "CatchTextStyles.titleS"
         ],
         "goldens": [],
         "members": [
@@ -1615,6 +1729,7 @@
             "states": [
               "default",
               "optional",
+              "inline-optional-suffix",
               "error",
               "large"
             ],
@@ -1649,6 +1764,79 @@
             "file": "lib/core/widgets/catch_field.dart"
           },
           {
+            "id": "catch.field.choice_control",
+            "symbol": "CatchFieldChoiceControl",
+            "summary": "Field-owned wrapping single- or multi-choice control with staged selection and canonical commit actions.",
+            "states": [
+              "single",
+              "multi",
+              "allow-empty-selection",
+              "retain-final-selection",
+              "wrapped"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.choice_chip",
+            "symbol": "CatchFieldChoiceChip",
+            "summary": "Exact single-line field-choice tile whose visual and hit box are identical, with selected check, pressed scale, and 8 px wrapped-run spacing.",
+            "states": [
+              "selected",
+              "unselected",
+              "disabled",
+              "pressed"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.stepper",
+            "symbol": "CatchFieldStepper",
+            "summary": "Bounded minus-value-plus control with 44 px hit areas and accelerated press-and-hold repetition.",
+            "states": [
+              "default",
+              "minimum",
+              "maximum",
+              "repeating"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.commit_button",
+            "symbol": "CatchFieldCommitButton",
+            "summary": "Field-owned Cancel or Done pill with exact 18 by 10 padding and the Saving ellipsis state.",
+            "states": [
+              "cancel",
+              "done",
+              "saving",
+              "disabled"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.toggle",
+            "symbol": "CatchFieldToggle",
+            "summary": "Exact 44 by 26 field switch retained and dimmed while its row is saving.",
+            "states": [
+              "off",
+              "on",
+              "saving",
+              "disabled"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.repeat_button",
+            "symbol": "CatchFieldRepeatButton",
+            "summary": "Stepper-owned 44 px repeat target with a 32 px visual circle and accelerated hold cadence.",
+            "states": [
+              "enabled",
+              "disabled",
+              "pressed",
+              "repeating"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
             "id": "catch.field.form_field_label.optional_badge",
             "symbol": "CatchFormFieldOptionalBadge",
             "file": "lib/core/widgets/catch_form_field_label.dart",
@@ -1668,8 +1856,15 @@
         ],
         "notes": [
           "CatchField is the only global field primitive. Its row anatomy is leadingIcon? | label/value column | trailingSlot?, and title/body emphasis is controlled by CatchFieldEmphasis.",
-          "Use the named constructors read, nav, toggle, input, select, expanding, and add so call sites select one field family explicitly.",
-          "Text entry collapses to the single-line row shape while empty and unfocused, then expands/floats the label when focused or populated.",
+          "Use the named constructors read, nav, action, toggle, input, inputActions, control, choices, stepper, select, and add so new call sites select one field capability explicitly. Existing actions and deprecated expanding callers are retained as source-compatible inputs to the same control renderer.",
+          "Trailing affordances are derived by the constructor contract: read, action, and direct input never synthesize a chevron; actionable nav derives a fixed chevron; control, choices, stepper, inputActions, and select derive rotating disclosure glyphs. Existing nav callers may still supply showChevron while they migrate to structural action or nav constructors.",
+          "Explicit-save order is editor, supporting metadata or error, secondary action, then Cancel and Done. Focus may change color but never label size, weight, baseline, or position.",
+          "Press feedback begins on pointer down; focus or disclosure ownership transfers once on pointer up. The pressed and active states animate one opaque surface rather than flickering between layers. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchFieldTokens.reveal, and becomes instantaneous when reduced motion is enabled.",
+          "Choice chips use a compact full-width wrapping layout, identical visual/hit boxes, and an 8 px visual run gap; explicit-save choices preserve staged selection until Done, while a single choice without a save bar closes after 180 ms. Steppers keep their value centered between bounded 44 px repeat targets; toggle tracks are 44 by 26 px, stay visible but disabled while saving, and vertically center with the leading icon and text lane.",
+          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
+          "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
+          "Direct text entry keeps one native editable mounted while its row changes between empty-at-rest and focused/populated label geometry, preventing focus flicker and preserving cursor placement from the initiating gesture.",
+          "Review-gated parity delta: the React handoff uses a 16 px disclosure caret, 600-weight chip/Add labels, a 15 px stepper glyph, 16 px field spinner, 13 px Done spinner with a 7 px gap and fixed 0.8 s rotation, a filled saved check-circle, a row-error warning icon, a directional underline sweep, a 200 ms control-opacity reveal, animated toggle/Cancel state changes, an 11-tick hold-repeat acceleration boundary, hardware-keyboard focus/activation plus focus-visible rings for choice/toggle/stepper atoms, and auto-commit single choices without a commit bar. Flutter intentionally retains its current values/behavior until design and product approve those cross-app changes.",
           "CatchField does not own rounded section or input-container chrome; use CatchSection contained focus/error chrome when fields need a grouped rounded surface.",
           "Field labels and support/error text belong to catch.field; shared container chrome belongs to CatchSection."
         ]
@@ -1685,6 +1880,25 @@
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
       },
+      "dart": {
+        "symbol": "CatchField",
+        "file": "lib/core/widgets/catch_field.dart",
+        "constructors": [
+          "CatchField.read",
+          "CatchField.nav",
+          "CatchField.action",
+          "CatchField.toggle",
+          "CatchField.input",
+          "CatchField.inputActions",
+          "CatchField.expanding",
+          "CatchField.actions",
+          "CatchField.control",
+          "CatchField.choices",
+          "CatchField.stepper",
+          "CatchField.add",
+          "CatchField.select"
+        ]
+      },
       "surfaces": {
         "flutter": "CatchField",
         "website": "TextField",
@@ -1697,16 +1911,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical information-grouping primitive for divided hairline sections, contained rounded sections, and plain titled content groups. Call sites use the named constructors CatchSection.divided, CatchSection.contained, and CatchSection.plain so section anatomy is explicit.",
-      "dart": {
-        "symbol": "CatchSection",
-        "file": "lib/core/widgets/catch_section_layout.dart",
-        "constructors": [
-          "CatchSection.divided",
-          "CatchSection.contained",
-          "CatchSection.plain"
-        ]
-      },
+      "summary": "Canonical information-grouping primitive for divided field rows, exact contained field-row surfaces, generic contained sections, and plain titled content groups. Call sites use named constructors so header, divider, focus, and surface ownership stay explicit.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1735,6 +1940,37 @@
             "titleColor",
             "bodyGap",
             "showInternalDividers",
+            "children",
+            "child"
+          ],
+          "CatchSection.fieldRows": [
+            "title",
+            "count",
+            "activityKind",
+            "lead",
+            "first",
+            "footer",
+            "dividerColor",
+            "dividerInset",
+            "dividerRole",
+            "titleColor",
+            "bodyGap",
+            "showInternalDividers",
+            "children",
+            "child"
+          ],
+          "CatchSection.containedFieldRows": [
+            "title",
+            "count",
+            "trailing",
+            "footer",
+            "backgroundColor",
+            "borderColor",
+            "titleColor",
+            "dividerInset",
+            "showInternalDividers",
+            "focused",
+            "hasError",
             "children",
             "child"
           ],
@@ -1849,6 +2085,12 @@
             "dartType": "Color?"
           },
           {
+            "name": "dividerInset",
+            "type": "number",
+            "required": false,
+            "dartType": "double?"
+          },
+          {
             "name": "titleColor",
             "type": "color",
             "required": false,
@@ -1875,6 +2117,12 @@
             "dartType": "bool"
           },
           {
+            "name": "footer",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
             "name": "children",
             "type": "list",
             "required": false,
@@ -1891,6 +2139,9 @@
           "divided-section",
           "contained-section",
           "plain-section",
+          "divided-field-rows",
+          "contained-field-rows-child-active",
+          "contained-field-rows-explicit-focused",
           "field-list",
           "mixed-modes",
           "single-field",
@@ -1935,6 +2186,8 @@
         "dartRoles": [
           "CatchSurface.card",
           "CatchField",
+          "CatchFieldTokens",
+          "CatchDividerRole.fieldSection",
           "CatchKicker",
           "CatchSectionHeader",
           "CatchSectionLabel",
@@ -1978,11 +2231,13 @@
             "id": "catch.section.focus_surface",
             "symbol": "CatchSectionFocusSurface",
             "file": "lib/core/widgets/catch_section_layout.dart",
-            "summary": "Public contained-section focus and error chrome member used by CatchSection.contained.",
+            "summary": "Public contained-section focus and error chrome member. Generic contained sections may reflect descendant focus; contained field-row cards keep descendant focus child-owned and change their perimeter only for explicit focused or error state.",
             "states": [
               "default",
               "focused",
-              "error"
+              "error",
+              "field-rows-child-active",
+              "field-rows-explicit-focused"
             ]
           },
           {
@@ -2045,9 +2300,10 @@
         ],
         "notes": [
           "Use divided sections for top-level information groups when nested rounded rectangles would add visual clutter.",
-          "Use contained sections for grouped field rows or carded content that needs one bounded surface.",
+          "Use containedFieldRows for the handoff field surface: it owns a clipped 14 px radius, neutral line border, explicit section-focus/error border, inset internal rules, and no generic elevation. Descendant field focus remains child-owned so the outer perimeter and active row never draw competing rings. Its optional title, right-aligned count, and trailing slot use 14 px / 16 px / 2 px in-card header padding; its optional footer stays inside the border with 2 px / 16 px / 12 px padding. Divided fieldRows footers render outside the rows with 8 px top padding and the field-caption style. Headerless prompt cards begin directly with their first field row. Use contained for non-field carded content that needs one bounded surface.",
           "Use plain sections for compact titled blocks without a container or divider.",
-          "The section owns the outer grouping and internal dividers. Fields own information content and interaction mode.",
+          "The section owns the outer grouping and internal dividers. Divided field sections use the full line token so an active field's 10 px bleed can cover the shared boundary. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
+          "Review-gated parity delta: React uses 2 px top padding for contained field-section footers while Flutter currently shares the divided 8 px value, and React exposes a trailing header slot for both section variants while Flutter currently exposes it only for containedFieldRows.",
           "Section headers, section labels, day headers, vertical sections, and horizontal rails are public members of this grouping family, not separate section systems."
         ]
       },
@@ -2061,6 +2317,17 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchSection",
+        "file": "lib/core/widgets/catch_section_layout.dart",
+        "constructors": [
+          "CatchSection.divided",
+          "CatchSection.fieldRows",
+          "CatchSection.containedFieldRows",
+          "CatchSection.contained",
+          "CatchSection.plain"
+        ]
       }
     },
     {

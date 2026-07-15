@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-14T13:13:48.330Z",
+  "generatedAt": "2026-07-15T03:03:12.301Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 863,
-    "components": 828,
-    "stateCards": 1751,
+    "useCases": 865,
+    "components": 827,
+    "stateCards": 1759,
     "reviewCandidates": 40,
     "oversizedUseCases": 44,
-    "multiUseCaseComponents": 34
+    "multiUseCaseComponents": 37
   },
   "reviewCandidates": [
     {
@@ -845,6 +845,128 @@
       ]
     },
     {
+      "component": "CatchSection",
+      "useCaseCount": 2,
+      "stateCardCount": 16,
+      "paths": [
+        "[Core primitives]/Sections",
+        "[P1 product surfaces]/Profiles/Sections"
+      ],
+      "labels": [
+        "contained-error",
+        "contained-field-rows-child-active",
+        "contained-field-rows-explicit-focused",
+        "contained-focused",
+        "contained-section",
+        "count and first section",
+        "divided-field-rows",
+        "divided-section",
+        "field-list",
+        "footer slot",
+        "lead-accent",
+        "long-copy",
+        "mixed-modes",
+        "plain-section",
+        "running section",
+        "single-field"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchSectionContractStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchSectionContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Sections",
+          "stateCardCount": 13,
+          "stateCards": [
+            {
+              "label": "contained-section",
+              "normalizedLabel": "contained section"
+            },
+            {
+              "label": "contained-focused",
+              "normalizedLabel": "contained focused"
+            },
+            {
+              "label": "contained-error",
+              "normalizedLabel": "contained error"
+            },
+            {
+              "label": "mixed-modes",
+              "normalizedLabel": "mixed modes"
+            },
+            {
+              "label": "single-field",
+              "normalizedLabel": "single field"
+            },
+            {
+              "label": "divided-section",
+              "normalizedLabel": "divided section"
+            },
+            {
+              "label": "divided-field-rows",
+              "normalizedLabel": "divided field rows"
+            },
+            {
+              "label": "contained-field-rows-child-active",
+              "normalizedLabel": "contained field rows child active"
+            },
+            {
+              "label": "contained-field-rows-explicit-focused",
+              "normalizedLabel": "contained field rows explicit focused"
+            },
+            {
+              "label": "field-list",
+              "normalizedLabel": "field list"
+            },
+            {
+              "label": "long-copy",
+              "normalizedLabel": "long copy"
+            },
+            {
+              "label": "lead-accent",
+              "normalizedLabel": "lead accent"
+            },
+            {
+              "label": "plain-section",
+              "normalizedLabel": "plain section"
+            }
+          ]
+        },
+        {
+          "name": "Field row section states",
+          "functionName": "profileFieldRowSectionStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Sections",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "running section",
+              "normalizedLabel": "running section"
+            },
+            {
+              "label": "count and first section",
+              "normalizedLabel": "count and first section"
+            },
+            {
+              "label": "footer slot",
+              "normalizedLabel": "footer slot"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ProfileScreen",
       "useCaseCount": 2,
       "stateCardCount": 16,
@@ -1394,113 +1516,6 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchSection",
-      "useCaseCount": 2,
-      "stateCardCount": 13,
-      "paths": [
-        "[Core primitives]/Sections",
-        "[P1 product surfaces]/Profiles/Sections"
-      ],
-      "labels": [
-        "contained-error",
-        "contained-focused",
-        "contained-section",
-        "count and first section",
-        "divided-section",
-        "field-list",
-        "footer slot",
-        "lead-accent",
-        "long-copy",
-        "mixed-modes",
-        "plain-section",
-        "running section",
-        "single-field"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix",
-          "split-across-use-cases"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "catchSectionContractStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchSectionContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Sections",
-          "stateCardCount": 10,
-          "stateCards": [
-            {
-              "label": "contained-section",
-              "normalizedLabel": "contained section"
-            },
-            {
-              "label": "contained-focused",
-              "normalizedLabel": "contained focused"
-            },
-            {
-              "label": "contained-error",
-              "normalizedLabel": "contained error"
-            },
-            {
-              "label": "mixed-modes",
-              "normalizedLabel": "mixed modes"
-            },
-            {
-              "label": "single-field",
-              "normalizedLabel": "single field"
-            },
-            {
-              "label": "divided-section",
-              "normalizedLabel": "divided section"
-            },
-            {
-              "label": "field-list",
-              "normalizedLabel": "field list"
-            },
-            {
-              "label": "long-copy",
-              "normalizedLabel": "long copy"
-            },
-            {
-              "label": "lead-accent",
-              "normalizedLabel": "lead accent"
-            },
-            {
-              "label": "plain-section",
-              "normalizedLabel": "plain section"
-            }
-          ]
-        },
-        {
-          "name": "Field row section states",
-          "functionName": "profileFieldRowSectionStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Sections",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "running section",
-              "normalizedLabel": "running section"
-            },
-            {
-              "label": "count and first section",
-              "normalizedLabel": "count and first section"
-            },
-            {
-              "label": "footer slot",
-              "normalizedLabel": "footer slot"
             }
           ]
         }
@@ -4807,6 +4822,128 @@
       ]
     },
     {
+      "component": "CatchSection",
+      "useCaseCount": 2,
+      "stateCardCount": 16,
+      "paths": [
+        "[Core primitives]/Sections",
+        "[P1 product surfaces]/Profiles/Sections"
+      ],
+      "labels": [
+        "contained-error",
+        "contained-field-rows-child-active",
+        "contained-field-rows-explicit-focused",
+        "contained-focused",
+        "contained-section",
+        "count and first section",
+        "divided-field-rows",
+        "divided-section",
+        "field-list",
+        "footer slot",
+        "lead-accent",
+        "long-copy",
+        "mixed-modes",
+        "plain-section",
+        "running section",
+        "single-field"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchSectionContractStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchSectionContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Sections",
+          "stateCardCount": 13,
+          "stateCards": [
+            {
+              "label": "contained-section",
+              "normalizedLabel": "contained section"
+            },
+            {
+              "label": "contained-focused",
+              "normalizedLabel": "contained focused"
+            },
+            {
+              "label": "contained-error",
+              "normalizedLabel": "contained error"
+            },
+            {
+              "label": "mixed-modes",
+              "normalizedLabel": "mixed modes"
+            },
+            {
+              "label": "single-field",
+              "normalizedLabel": "single field"
+            },
+            {
+              "label": "divided-section",
+              "normalizedLabel": "divided section"
+            },
+            {
+              "label": "divided-field-rows",
+              "normalizedLabel": "divided field rows"
+            },
+            {
+              "label": "contained-field-rows-child-active",
+              "normalizedLabel": "contained field rows child active"
+            },
+            {
+              "label": "contained-field-rows-explicit-focused",
+              "normalizedLabel": "contained field rows explicit focused"
+            },
+            {
+              "label": "field-list",
+              "normalizedLabel": "field list"
+            },
+            {
+              "label": "long-copy",
+              "normalizedLabel": "long copy"
+            },
+            {
+              "label": "lead-accent",
+              "normalizedLabel": "lead accent"
+            },
+            {
+              "label": "plain-section",
+              "normalizedLabel": "plain section"
+            }
+          ]
+        },
+        {
+          "name": "Field row section states",
+          "functionName": "profileFieldRowSectionStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Sections",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "running section",
+              "normalizedLabel": "running section"
+            },
+            {
+              "label": "count and first section",
+              "normalizedLabel": "count and first section"
+            },
+            {
+              "label": "footer slot",
+              "normalizedLabel": "footer slot"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ProfileScreen",
       "useCaseCount": 2,
       "stateCardCount": 16,
@@ -5356,113 +5493,6 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchSection",
-      "useCaseCount": 2,
-      "stateCardCount": 13,
-      "paths": [
-        "[Core primitives]/Sections",
-        "[P1 product surfaces]/Profiles/Sections"
-      ],
-      "labels": [
-        "contained-error",
-        "contained-focused",
-        "contained-section",
-        "count and first section",
-        "divided-section",
-        "field-list",
-        "footer slot",
-        "lead-accent",
-        "long-copy",
-        "mixed-modes",
-        "plain-section",
-        "running section",
-        "single-field"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix",
-          "split-across-use-cases"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "catchSectionContractStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchSectionContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Sections",
-          "stateCardCount": 10,
-          "stateCards": [
-            {
-              "label": "contained-section",
-              "normalizedLabel": "contained section"
-            },
-            {
-              "label": "contained-focused",
-              "normalizedLabel": "contained focused"
-            },
-            {
-              "label": "contained-error",
-              "normalizedLabel": "contained error"
-            },
-            {
-              "label": "mixed-modes",
-              "normalizedLabel": "mixed modes"
-            },
-            {
-              "label": "single-field",
-              "normalizedLabel": "single field"
-            },
-            {
-              "label": "divided-section",
-              "normalizedLabel": "divided section"
-            },
-            {
-              "label": "field-list",
-              "normalizedLabel": "field list"
-            },
-            {
-              "label": "long-copy",
-              "normalizedLabel": "long copy"
-            },
-            {
-              "label": "lead-accent",
-              "normalizedLabel": "lead accent"
-            },
-            {
-              "label": "plain-section",
-              "normalizedLabel": "plain section"
-            }
-          ]
-        },
-        {
-          "name": "Field row section states",
-          "functionName": "profileFieldRowSectionStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Sections",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "running section",
-              "normalizedLabel": "running section"
-            },
-            {
-              "label": "count and first section",
-              "normalizedLabel": "count and first section"
-            },
-            {
-              "label": "footer slot",
-              "normalizedLabel": "footer slot"
             }
           ]
         }
@@ -10867,6 +10897,58 @@
       ]
     },
     {
+      "component": "CatchSectionFocusSurface",
+      "useCaseCount": 1,
+      "stateCardCount": 5,
+      "paths": [
+        "[Core primitives]/Sections"
+      ],
+      "labels": [
+        "default",
+        "error",
+        "field-rows-child-active",
+        "field-rows-explicit-focused",
+        "focused"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchSectionFocusSurfaceContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Sections",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "default",
+              "normalizedLabel": "default"
+            },
+            {
+              "label": "focused",
+              "normalizedLabel": "focused"
+            },
+            {
+              "label": "error",
+              "normalizedLabel": "error"
+            },
+            {
+              "label": "field-rows-child-active",
+              "normalizedLabel": "field rows child active"
+            },
+            {
+              "label": "field-rows-explicit-focused",
+              "normalizedLabel": "field rows explicit focused"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchSegmentedControl",
       "useCaseCount": 1,
       "stateCardCount": 5,
@@ -11495,6 +11577,62 @@
             {
               "label": "long-copy",
               "normalizedLabel": "long copy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldChoiceControl",
+      "useCaseCount": 2,
+      "stateCardCount": 4,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "disabled",
+        "disabled wrap",
+        "enabled selected",
+        "selected and unselected wrap"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Canonical choice option states",
+          "functionName": "profileChipOptionsStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "enabled selected",
+              "normalizedLabel": "enabled selected"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
+            }
+          ]
+        },
+        {
+          "name": "Canonical wrapping choice control states",
+          "functionName": "profileMultiChipValueStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "selected and unselected wrap",
+              "normalizedLabel": "selected and unselected wrap"
+            },
+            {
+              "label": "disabled wrap",
+              "normalizedLabel": "disabled wrap"
             }
           ]
         }
@@ -13463,6 +13601,57 @@
       ]
     },
     {
+      "component": "CatchFieldStepper",
+      "useCaseCount": 2,
+      "stateCardCount": 3,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "disabled",
+        "enabled",
+        "minimum and maximum endpoints"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Canonical height stepper bounds",
+          "functionName": "profileHeightStepButtonStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "minimum and maximum endpoints",
+              "normalizedLabel": "minimum and maximum endpoints"
+            }
+          ]
+        },
+        {
+          "name": "Canonical height stepper states",
+          "functionName": "profileHeightStepperControlsStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "enabled",
+              "normalizedLabel": "enabled"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchMenu",
       "useCaseCount": 2,
       "stateCardCount": 3,
@@ -14090,6 +14279,48 @@
       ]
     },
     {
+      "component": "CatchFieldChoiceChip",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "selected",
+        "selected disabled",
+        "unselected"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Canonical single-choice chip states",
+          "functionName": "profileSingleChipValueStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "selected",
+              "normalizedLabel": "selected"
+            },
+            {
+              "label": "unselected",
+              "normalizedLabel": "unselected"
+            },
+            {
+              "label": "selected disabled",
+              "normalizedLabel": "selected disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchFormDialog",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -14630,48 +14861,6 @@
             {
               "label": "profile hero tint",
               "normalizedLabel": "profile hero tint"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchSectionFocusSurface",
-      "useCaseCount": 1,
-      "stateCardCount": 3,
-      "paths": [
-        "[Core primitives]/Sections"
-      ],
-      "labels": [
-        "default",
-        "error",
-        "focused"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchSectionFocusSurfaceContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Sections",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "default",
-              "normalizedLabel": "default"
-            },
-            {
-              "label": "focused",
-              "normalizedLabel": "focused"
-            },
-            {
-              "label": "error",
-              "normalizedLabel": "error"
             }
           ]
         }
@@ -15938,48 +16127,6 @@
       ]
     },
     {
-      "component": "ProfileMultiChipValue",
-      "useCaseCount": 1,
-      "stateCardCount": 3,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "collapsed selected",
-        "editing empty disabled",
-        "editing selected"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Multi chip value states",
-          "functionName": "profileMultiChipValueStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "collapsed selected",
-              "normalizedLabel": "collapsed selected"
-            },
-            {
-              "label": "editing selected",
-              "normalizedLabel": "editing selected"
-            },
-            {
-              "label": "editing empty disabled",
-              "normalizedLabel": "editing empty disabled"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ProfilePhotoEditorPreview",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -16016,48 +16163,6 @@
             {
               "label": "empty",
               "normalizedLabel": "empty"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ProfileSingleChipValue",
-      "useCaseCount": 1,
-      "stateCardCount": 3,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "collapsed selected",
-        "editing empty",
-        "editing selected disabled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Single chip value states",
-          "functionName": "profileSingleChipValueStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "collapsed selected",
-              "normalizedLabel": "collapsed selected"
-            },
-            {
-              "label": "editing empty",
-              "normalizedLabel": "editing empty"
-            },
-            {
-              "label": "editing selected disabled",
-              "normalizedLabel": "editing selected disabled"
             }
           ]
         }
@@ -16949,6 +17054,43 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFormFieldLabel",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core catalog]/Inputs"
+      ],
+      "labels": [
+        "field inline optional suffix",
+        "required / optional / error / large"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchFormFieldLabelCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "required / optional / error / large",
+              "normalizedLabel": "required optional error large"
+            },
+            {
+              "label": "field inline optional suffix",
+              "normalizedLabel": "field inline optional suffix"
             }
           ]
         }
@@ -20766,80 +20908,6 @@
       ]
     },
     {
-      "component": "ProfileChipOptions",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "disabled",
-        "enabled selected"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Chip option states",
-          "functionName": "profileChipOptionsStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "enabled selected",
-              "normalizedLabel": "enabled selected"
-            },
-            {
-              "label": "disabled",
-              "normalizedLabel": "disabled"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ProfileHeightStepperControls",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "disabled",
-        "enabled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Height stepper control states",
-          "functionName": "profileHeightStepperControlsStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "enabled",
-              "normalizedLabel": "enabled"
-            },
-            {
-              "label": "disabled",
-              "normalizedLabel": "disabled"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ProfileHeroWidget",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -20908,6 +20976,43 @@
             {
               "label": "divided rows",
               "normalizedLabel": "divided rows"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ProfileInlinePromptEntryEditor",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "collapsed question + separate answer",
+        "expanded inline question choices + separate answer"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Inline prompt editor states",
+          "functionName": "profileInlinePromptEntryEditorStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "collapsed question + separate answer",
+              "normalizedLabel": "collapsed question separate answer"
+            },
+            {
+              "label": "expanded inline question choices + separate answer",
+              "normalizedLabel": "expanded inline question choices separate answer"
             }
           ]
         }
@@ -21981,6 +22086,47 @@
             {
               "label": "edit review with delete action",
               "normalizedLabel": "edit review with delete action"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchField",
+      "useCaseCount": 2,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core primitives]/Inputs",
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "empty and selected values"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 0,
+          "stateCards": []
+        },
+        {
+          "name": "Canonical collapsed choice states",
+          "functionName": "profileChipPlaceholderStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "empty and selected values",
+              "normalizedLabel": "empty and selected values"
             }
           ]
         }
@@ -23203,14 +23349,14 @@
       ]
     },
     {
-      "component": "CatchFormFieldLabel",
+      "component": "CatchFieldCommitButton",
       "useCaseCount": 1,
       "stateCardCount": 1,
       "paths": [
-        "[Core catalog]/Inputs"
+        "[Core primitives]/Inputs"
       ],
       "labels": [
-        "required / optional / error / large"
+        "cancel / done / saving / disabled"
       ],
       "review": {
         "needsReview": false,
@@ -23220,15 +23366,79 @@
       },
       "useCases": [
         {
-          "name": "Catalog states",
-          "functionName": "catchFormFieldLabelCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Inputs",
+          "name": "Contract states",
+          "functionName": "catchFieldCommitButtonContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
           "stateCardCount": 1,
           "stateCards": [
             {
-              "label": "required / optional / error / large",
-              "normalizedLabel": "required optional error large"
+              "label": "cancel / done / saving / disabled",
+              "normalizedLabel": "cancel done saving disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldRepeatButton",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "enabled / disabled / press / hold to repeat"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldRepeatButtonContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "enabled / disabled / press / hold to repeat",
+              "normalizedLabel": "enabled disabled press hold to repeat"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldToggle",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "off / on / saving / disabled"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldToggleContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "off / on / saving / disabled",
+              "normalizedLabel": "off on saving disabled"
             }
           ]
         }
@@ -27395,38 +27605,6 @@
       ]
     },
     {
-      "component": "ProfileChipPlaceholder",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "empty and filled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Chip placeholder states",
-          "functionName": "profileChipPlaceholderStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "empty and filled",
-              "normalizedLabel": "empty and filled"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ProfileCompatibility",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -27498,7 +27676,7 @@
         "[P1 product surfaces]/Profiles/Inline Editors"
       ],
       "labels": [
-        "focused direct input"
+        "editable and legal identity rows"
       ],
       "review": {
         "needsReview": false,
@@ -27515,8 +27693,8 @@
           "stateCardCount": 1,
           "stateCards": [
             {
-              "label": "focused direct input",
-              "normalizedLabel": "focused direct input"
+              "label": "editable and legal identity rows",
+              "normalizedLabel": "editable and legal identity rows"
             }
           ]
         }
@@ -27581,38 +27759,6 @@
             {
               "label": "descriptor rows",
               "normalizedLabel": "descriptor rows"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ProfileHeightStepButton",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "enabled and disabled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Height step button states",
-          "functionName": "profileHeightStepButtonStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "enabled and disabled",
-              "normalizedLabel": "enabled and disabled"
             }
           ]
         }
@@ -27747,38 +27893,6 @@
       ]
     },
     {
-      "component": "ProfileInlinePromptEntryEditor",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "expanded prompt entry"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Inline prompt editor states",
-          "functionName": "profileInlinePromptEntryEditorStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "expanded prompt entry",
-              "normalizedLabel": "expanded prompt entry"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ProfileInlineRangeEditor",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -27837,38 +27951,6 @@
             {
               "label": "expanded choice set",
               "normalizedLabel": "expanded choice set"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ProfileInlineTextValue",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "display and editing"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Inline text value states",
-          "functionName": "profileInlineTextValueStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "display and editing",
-              "normalizedLabel": "display and editing"
             }
           ]
         }
@@ -29517,31 +29599,6 @@
           "functionName": "eventSuccessStrictCapacityRow",
           "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
           "path": "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "CatchField",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[Core primitives]/Inputs"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchFieldContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Inputs",
           "stateCardCount": 0,
           "stateCards": []
         }

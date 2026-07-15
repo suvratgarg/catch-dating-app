@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-10",
+  "updated": "2026-07-15",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -6687,7 +6687,7 @@
             "symbol": "UserProfileRepository"
           }
         ],
-        "notes": "ProfileScreen owns tab, scroll, and preview bridge lifecycle while SelfProfileScreenState resolves current profile provider waves, upload/save mutation modes, preview projection, and retry intent. SelfProfileEditTabState derives photo-grid view data and prompt slot rows. SelfProfilePhotoActionController resolves photo editor/delete/reorder intents and executes existing photo mutation wrappers. SelfProfileInlineEditPatchFactory owns inline edit patch creation while saves still route through ProfileEditController. Remaining adapter work is immutable basics/about/running/lifestyle row descriptors before visual sections render."
+        "notes": "ProfileScreen owns tab, scroll, and preview bridge lifecycle while SelfProfileScreenState resolves current profile provider waves, upload/save mutation modes, preview projection, and retry intent. SelfProfileEditTabState derives photo-grid state, prompt slots, and immutable basics/about/running/lifestyle row descriptors. SelfProfilePhotoActionController resolves photo editor/delete/reorder intents and executes existing photo mutation wrappers. SelfProfileInlineEditPatchFactory owns inline edit patch creation while saves still route through ProfileEditController."
       },
       "designRefs": [
         {
@@ -6796,7 +6796,7 @@
           "captureIds": [
             "profile_self_loading"
           ],
-          "nextAction": "Route loading is captured; next compare with exported self-profile references and move provider loading state into SelfProfileScreenState."
+          "nextAction": "Route loading is captured and provider loading is owned by SelfProfileScreenState; refresh only when the canonical self-profile reference changes."
         },
         {
           "id": "profile_error",
@@ -6828,7 +6828,7 @@
           "id": "edit_tab_default",
           "kind": "populated",
           "status": "captured",
-          "source": "ProfileTabSliverBody renders Photos, analytics, Prompts, About you, Running, and Lifestyle sections from UserProfile data.",
+          "source": "ProfileTabSliverBody renders Photos, Prompts, About you, Running, and Lifestyle sections from SelfProfileEditTabState descriptors.",
           "tests": [
             "test/profile/profile_widgets_test.dart"
           ],
@@ -6838,13 +6838,13 @@
           "captureIds": [
             "profile_self_edit_tab"
           ],
-          "nextAction": "Edit tab route is captured; next extract row derivation and callbacks into SelfProfileScreenState before visual parity edits."
+          "nextAction": "Edit tab route is captured; preserve descriptor derivation in SelfProfileEditTabState and callback ownership in the existing edit/photo controllers during future parity work."
         },
         {
           "id": "photo_grid",
           "kind": "populated",
           "status": "tested",
-          "source": "_ProfilePhotosSection composes PhotoGrid with upload loading indices, delete, reorder, and slot-edit callbacks.",
+          "source": "ProfilePhotosSection composes PhotoGrid inside CatchSection.fieldRows so the Photos title/count use the canonical full-width header rule and 12 px rule-to-grid gap; upload loading indices, delete, reorder, and slot-edit callbacks remain parent-owned.",
           "tests": [
             "test/profile/profile_widgets_test.dart",
             "test/image_uploads/photo_grid_test.dart"
@@ -6875,11 +6875,24 @@
           "id": "inline_text_edit",
           "kind": "mutation",
           "status": "tested",
-          "source": "ProfileInlineTextEntryEditor validates and saves text fields through ProfileEditController.saveFieldsMutation.",
+          "source": "ProfileDirectTextEntryField keeps a native CatchField.input mounted, validates direct text edits, and saves them through ProfileEditController.saveFieldsMutation.",
           "tests": [
             "test/profile/profile_widgets_test.dart"
           ],
           "nextAction": "Promote inline editor previews for default, open, validation error, save pending, and save failure states.",
+          "previewIds": [
+            "ProfileScreen/Self section states"
+          ]
+        },
+        {
+          "id": "inline_prompt_edit",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "ProfileInlinePromptEntryEditor renders each prompt as a CatchSection.containedFieldRows question/answer pair. CatchField.choices stages the question behind Cancel/Done, while a separate multiline CatchField.input saves the answer on blur through serialized profile patches. The focused child field is the sole ordinary focus-chrome owner; the outer card remains neutral unless section focus or error is explicit.",
+          "tests": [
+            "test/profile/profile_widgets_test.dart"
+          ],
+          "nextAction": "Refresh deterministic profile prompt captures against the 2026-07-14 Field handoff; preserve the existing three-prompt and 300-character business limits.",
           "previewIds": [
             "ProfileScreen/Self section states"
           ]
@@ -7057,7 +7070,7 @@
               "preview",
               "upload_error"
             ],
-            "migration": "SelfProfileScreenState now owns provider wave handling, preview projection, upload/save mutation modes, and retry intent. SelfProfileEditTabState now owns photo-grid and prompt-slot view data. SelfProfilePhotoActionController now owns photo editor/delete/reorder intents. SelfProfileInlineEditPatchFactory now owns inline edit patch creation. Continue by extracting basics/about/running/lifestyle row descriptors into adapter-owned immutable view data.",
+            "migration": "SelfProfileScreenState owns provider wave handling, preview projection, upload/save mutation modes, and retry intent. SelfProfileEditTabState owns photo-grid state, prompt slots, and basics/about/running/lifestyle row descriptors. SelfProfilePhotoActionController owns photo editor/delete/reorder intents, and SelfProfileInlineEditPatchFactory owns inline edit patch creation.",
             "previewIds": [
               "ProfileScreen/Self route states"
             ]
@@ -7110,7 +7123,8 @@
             "currentOwner": "ProfileScreen",
             "targetOwner": "provider-free profile edit tab section",
             "dependencies": [
-              "catch.surface"
+              "catch.field",
+              "catch.section"
             ],
             "states": [
               "default",
@@ -7118,7 +7132,7 @@
               "long_values",
               "text_scale_2"
             ],
-            "migration": "SelfProfileEditTabState derives photo-grid state and prompt slot rows, SelfProfilePhotoActionController owns photo editor/delete/reorder intents, and SelfProfileInlineEditPatchFactory owns inline edit patch creation. Continue by moving basics/about/running/lifestyle row widget descriptors out of ProfileTabContent.",
+            "migration": "SelfProfileEditTabState derives photo-grid state, prompt slots, and immutable basics/about/running/lifestyle row descriptors. ProfileTabContent renders those descriptors through canonical CatchSection and CatchField composition while photo and inline-save behavior remain owned by their existing controllers.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]
@@ -7136,7 +7150,7 @@
               "file": "lib/image_uploads/shared/photo_grid.dart",
               "symbol": "PhotoGrid"
             },
-            "currentOwner": "_ProfilePhotosSection",
+            "currentOwner": "ProfilePhotosSection",
             "targetOwner": "registered provider-free profile photo grid compound",
             "dependencies": [
               "catch.icon_button",
@@ -7171,7 +7185,8 @@
             "currentOwner": "ProfileTabSliverBody",
             "targetOwner": "provider-free profile info section list",
             "dependencies": [
-              "catch.surface"
+              "catch.field",
+              "catch.section"
             ],
             "states": [
               "prompts",
@@ -7182,7 +7197,7 @@
               "ungrouped",
               "empty_optional"
             ],
-            "migration": "Pass immutable rows generated by a profile adapter; keep row visual primitives stable across self-profile, host profile, and future settings reuse.",
+            "migration": "SelfProfileEditTabState supplies immutable rows and ProfileTabContent renders them through CatchSection/CatchField. Keep the primitive contracts stable across self-profile, host profile, and future settings reuse.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]
@@ -7204,10 +7219,9 @@
             "currentOwner": "ProfileTabSliverBody",
             "targetOwner": "registered inline profile editor compound",
             "dependencies": [
-              "catch.button",
-              "catch.chip",
               "catch.field",
-              "catch.field"
+              "catch.range_slider",
+              "catch.section"
             ],
             "states": [
               "closed",
@@ -7220,7 +7234,7 @@
               "range",
               "height"
             ],
-            "migration": "Keep editor save orchestration in ProfileEditController and add Widgetbook states before visual parity edits.",
+            "migration": "Keep editor save orchestration in ProfileEditController. CatchField owns choice summaries, clearability policy, wrapped controls, steppers, action orientation, and focus transfer; CatchSection owns prompt-card perimeter and dividers; CatchRangeSlider remains the range control. Widgetbook covers the canonical field states and production profile compositions.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]

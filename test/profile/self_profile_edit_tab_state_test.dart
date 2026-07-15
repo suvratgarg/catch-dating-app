@@ -85,6 +85,7 @@ void main() {
     expect(state.promptSlots[0].isAddAffordance, isFalse);
     expect(state.promptSlots[1].currentPromptId, usedPrompt.id);
     expect(state.promptSlots[1].isAddAffordance, isFalse);
+    expect(state.promptSlots[2].currentPromptId, isNull);
     expect(
       state.promptSlots[2].availablePromptIds,
       isNot(contains(profilePromptPerfectEventId)),
@@ -163,14 +164,33 @@ void main() {
       final instagram =
           state.basicRows.singleWhere((row) => row.id == 'instagramHandle')
               as SelfProfileTextFieldRowDescriptor;
-      expect(instagram.currentValue, '@suvrat_events');
+      expect(instagram.currentValue, 'suvrat_events');
       expect(instagram.currentFieldValue, 'suvrat_events');
+      expect(instagram.leadingUnit, '@');
 
       final height =
           state.basicRows.singleWhere((row) => row.id == 'height')
               as SelfProfileHeightFieldRowDescriptor;
       expect(height.value, '178 cm');
       expect(height.isAddAffordance, isFalse);
+
+      final education =
+          state.aboutRows.singleWhere((row) => row.id == 'education')
+              as SelfProfileSingleChoiceFieldRowDescriptor;
+      expect(education.allowEmptySelection, isTrue);
+      expect(education.showOptionalLabel, isFalse);
+
+      final religion =
+          state.aboutRows.singleWhere((row) => row.id == 'religion')
+              as SelfProfileSingleChoiceFieldRowDescriptor;
+      expect(religion.allowEmptySelection, isTrue);
+      expect(religion.showOptionalLabel, isTrue);
+
+      final languages =
+          state.aboutRows.singleWhere((row) => row.id == 'languages')
+              as SelfProfileMultiChoiceFieldRowDescriptor;
+      expect(languages.allowEmptySelection, isTrue);
+      expect(languages.showOptionalLabel, isFalse);
 
       final paceRange =
           state.runningRows.first as SelfProfileRangeFieldRowDescriptor;

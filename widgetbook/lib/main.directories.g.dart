@@ -2012,6 +2012,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldCommitButton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchFieldCommitButtonContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldRepeatButton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchFieldRepeatButtonContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFieldRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2019,6 +2041,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchFieldRowContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldToggle',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchFieldToggleContractStates,
               ),
             ],
           ),
@@ -8899,22 +8932,52 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Inline Editors',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileChipOptions<Labelled>',
+                name: 'CatchField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Chip option states',
+                    name: 'Canonical collapsed choice states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileChipOptionsStates,
+                        .profileChipPlaceholderStates,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileChipPlaceholder',
+                name: 'CatchFieldChoiceChip',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Chip placeholder states',
+                    name: 'Canonical single-choice chip states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileChipPlaceholderStates,
+                        .profileSingleChipValueStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchFieldChoiceControl',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Canonical choice option states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileChipOptionsStates,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Canonical wrapping choice control states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileMultiChipValueStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchFieldStepper',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Canonical height stepper bounds',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileHeightStepButtonStates,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Canonical height stepper states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileHeightStepperControlsStates,
                   ),
                 ],
               ),
@@ -8925,26 +8988,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Direct text entry states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileDirectTextEntryFieldStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileHeightStepButton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Height step button states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileHeightStepButtonStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileHeightStepperControls',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Height stepper control states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileHeightStepperControlsStates,
                   ),
                 ],
               ),
@@ -8995,36 +9038,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Inline single choice editor states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileInlineSingleChoiceEntryEditorStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileInlineTextValue',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Inline text value states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileInlineTextValueStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileMultiChipValue<Labelled>',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Multi chip value states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileMultiChipValueStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileSingleChipValue<Labelled>',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Single chip value states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileSingleChipValueStates,
                   ),
                 ],
               ),

@@ -63,6 +63,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
@@ -73,6 +74,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -1360,9 +1362,28 @@ Widget catchFieldContractStates(BuildContext context) {
       'row-title',
       'value-line',
       'chevron',
-      'toggle',
-      'expanded-control',
-      'text-entry',
+      'toggle-on',
+      'toggle-off',
+      'control-collapsed',
+      'control-open',
+      'disclosure-active-pressed',
+      'choices-wrapped',
+      'choices-clearable',
+      'choices-retain-final-selection',
+      'choices-derived-summary',
+      'choices-explicit-summary',
+      'stepper-open',
+      'direct-input-one-tap',
+      'direct-input-focused-cursor',
+      'read-only-row',
+      'editable-row',
+      'saving',
+      'saved',
+      'explicit-save-collapsed',
+      'explicit-save-focused',
+      'explicit-save-error',
+      'editable-empty-at-rest',
+      'editable-empty-focused',
       'edit-empty',
       'edit-filled',
       'edit-focused',
@@ -1417,33 +1438,158 @@ Widget catchFieldContractStates(BuildContext context) {
           onTap: _noop,
         ),
       ),
-      fieldState(label: 'toggle', child: const _ToggleFieldDemo()),
+      fieldState(label: 'toggle-on', child: const _ToggleFieldDemo()),
       fieldState(
-        label: 'expanded-control',
-        child: CatchField.expanding(
-          title: 'Capacity',
-          body: '24 seats',
-          icon: CatchIcons.group,
-          initiallyExpanded: true,
-          control: _InlineWrap(
-            children: [
-              CatchChip(label: '16', onTap: _noop),
-              CatchChip(label: '24', active: true, onTap: _noop),
-              CatchChip(label: '32', onTap: _noop),
-            ],
-          ),
+        label: 'toggle-off',
+        child: const _ToggleFieldDemo(initialValue: false),
+      ),
+      fieldState(label: 'control-collapsed', child: const _ChoiceFieldDemo()),
+      fieldState(
+        label: 'control-open',
+        child: const _ChoiceFieldDemo(initiallyOpen: true),
+      ),
+      fieldState(
+        label: 'disclosure-active-pressed',
+        description:
+            'The open card holds active chrome. Press and hold its row to inspect the contact outline before release.',
+        child: const _ChoiceFieldDemo(initiallyOpen: true),
+      ),
+      fieldState(
+        label: 'choices-wrapped',
+        description:
+            'Selected and unselected chips share the canonical 8px wrap gap.',
+        child: const _ChoiceFieldDemo(initiallyOpen: true),
+      ),
+      fieldState(
+        label: 'choices-clearable',
+        description:
+            'Selection policy allows the final selected value to be removed independently from Optional presentation copy.',
+        child: const _ChoiceFieldDemo(
+          initiallyOpen: true,
+          allowEmptySelection: true,
+          initialSelection: {'English'},
         ),
       ),
       fieldState(
-        label: 'text-entry',
-        description: 'Tap the collapsed label; focus reveals the value line.',
+        label: 'choices-retain-final-selection',
+        description:
+            'Required selection policy keeps the final selected value active.',
+        child: const _ChoiceFieldDemo(
+          initiallyOpen: true,
+          initialSelection: {'English'},
+        ),
+      ),
+      fieldState(
+        label: 'choices-derived-summary',
+        description:
+            'Without an explicit body, the primitive derives its summary in source-option order.',
+        child: const _ChoiceFieldDemo(initialSelection: {'Marathi', 'English'}),
+      ),
+      fieldState(
+        label: 'choices-explicit-summary',
+        description:
+            'An explicit body remains available when product copy should override the derived selection summary.',
+        child: const _ChoiceFieldDemo(body: 'Three languages selected'),
+      ),
+      fieldState(
+        label: 'stepper-open',
+        description:
+            'The 44px repeat targets flank one centered value without a nested tile.',
+        child: const _StepperFieldDemo(),
+      ),
+      fieldState(
+        label: 'direct-input-one-tap',
+        description:
+            'Tap anywhere in the row once: the native input receives focus and positions its cursor. No edit caret is synthesized.',
         child: const _TextEntryFieldDemo(),
+      ),
+      fieldState(
+        label: 'direct-input-focused-cursor',
+        description:
+            'Autofocus makes the native insertion cursor deterministic for visual review.',
+        child: const _TextEntryFieldDemo(autofocus: true),
+      ),
+      fieldState(
+        label: 'read-only-row',
+        description: 'Static profile data never receives an edit chevron.',
+        child: CatchField.read(
+          title: 'Date of birth',
+          body: '16/07/1994 (31 years)',
+          icon: CatchIcons.cakeOutlined,
+        ),
+      ),
+      fieldState(
+        label: 'editable-row',
+        description:
+            'Editable rows expose the native text cursor on tap, not a synthesized trailing chevron.',
+        child: CatchField.input(
+          title: 'Display name',
+          initialValue: 'Suvrat',
+          icon: CatchIcons.personOutlined,
+        ),
+      ),
+      fieldState(
+        label: 'saving',
+        description: 'The trailing lane owns the in-flight save indicator.',
+        child: CatchField.read(
+          title: 'Display name',
+          body: 'Suvrat',
+          icon: CatchIcons.personOutlined,
+          status: CatchFieldStatus.saving,
+        ),
+      ),
+      fieldState(
+        label: 'saved',
+        description: 'The trailing lane owns the transient saved tick.',
+        child: CatchField.read(
+          title: 'Display name',
+          body: 'Suvrat',
+          icon: CatchIcons.personOutlined,
+          status: CatchFieldStatus.saved,
+        ),
+      ),
+      fieldState(
+        label: 'explicit-save-collapsed',
+        child: const _ExplicitSaveFieldDemo(),
+      ),
+      fieldState(
+        label: 'explicit-save-focused',
+        description:
+            'Answer, counter, secondary action, and commit footer keep one order.',
+        child: const _ExplicitSaveFieldDemo(initiallyExpanded: true),
+      ),
+      fieldState(
+        label: 'explicit-save-error',
+        child: const _ExplicitSaveFieldDemo(
+          initiallyExpanded: true,
+          error: 'Keep the answer under 300 characters.',
+        ),
+      ),
+      fieldState(
+        label: 'editable-empty-at-rest',
+        description:
+            'The stable label and localized add value render before focus.',
+        child: const CatchField.input(
+          title: 'Public name',
+          inputHint: 'e.g. Aanya',
+        ),
+      ),
+      fieldState(
+        label: 'editable-empty-focused',
+        description:
+            'The add value gives way to an input-only hint without moving the label.',
+        child: const CatchField.input(
+          title: 'Public name',
+          inputHint: 'e.g. Aanya',
+          focused: true,
+        ),
       ),
       fieldState(
         label: 'edit-empty',
         child: const CatchField.input(
           title: 'Name',
-          placeholder: 'Add a public name',
+          emptyValueText: 'Add a public name',
+          inputHint: 'e.g. Aanya',
         ),
       ),
       fieldState(
@@ -1575,6 +1721,111 @@ Widget catchFieldContractStates(BuildContext context) {
           title: 'Add another time',
           icon: CatchIcons.add,
           onTap: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldCommitButton,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldCommitButtonContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchFieldCommitButton',
+    contractId: 'catch.field.commit_button',
+    states: const ['cancel', 'done', 'saving', 'disabled'],
+    children: [
+      _StateCard(
+        label: 'cancel / done / saving / disabled',
+        child: _InlineWrap(
+          children: [
+            CatchFieldCommitButton(label: 'Cancel', onPressed: _noop),
+            CatchFieldCommitButton(
+              label: 'Done',
+              primary: true,
+              onPressed: _noop,
+            ),
+            const CatchFieldCommitButton(
+              label: 'Saving…',
+              primary: true,
+              loading: true,
+              onPressed: null,
+            ),
+            const CatchFieldCommitButton(
+              label: 'Done',
+              primary: true,
+              onPressed: null,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldToggle,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldToggleContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchFieldToggle',
+    contractId: 'catch.field.toggle',
+    states: const ['off', 'on', 'saving', 'disabled'],
+    children: [
+      _StateCard(
+        label: 'off / on / saving / disabled',
+        child: _InlineWrap(
+          children: [
+            CatchFieldToggle(value: false, onChanged: (_) {}),
+            CatchFieldToggle(value: true, onChanged: (_) {}),
+            const CatchFieldToggle(value: true, onChanged: null),
+            const CatchFieldToggle(value: false, onChanged: null),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldRepeatButton,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldRepeatButtonContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchFieldRepeatButton',
+    contractId: 'catch.field.repeat_button',
+    states: const ['enabled', 'disabled', 'pressed', 'repeating'],
+    children: [
+      _StateCard(
+        label: 'enabled / disabled / press / hold to repeat',
+        child: _InlineWrap(
+          children: [
+            CatchFieldRepeatButton(
+              icon: CatchIcons.removeRounded,
+              semanticLabel: 'Decrease',
+              enabled: true,
+              onStep: _noop,
+            ),
+            CatchFieldRepeatButton(
+              icon: CatchIcons.addRounded,
+              semanticLabel: 'Increase',
+              enabled: true,
+              onStep: _noop,
+            ),
+            CatchFieldRepeatButton(
+              icon: CatchIcons.addRounded,
+              semanticLabel: 'Increase disabled',
+              enabled: false,
+              onStep: _noop,
+            ),
+          ],
         ),
       ),
     ],
@@ -1732,6 +1983,9 @@ Widget catchSectionContractStates(BuildContext context) {
       'divided-section',
       'contained-section',
       'plain-section',
+      'divided-field-rows',
+      'contained-field-rows-child-active',
+      'contained-field-rows-explicit-focused',
       'field-list',
       'mixed-modes',
       'single-field',
@@ -1859,10 +2113,11 @@ Widget catchSectionContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'field-list',
+        label: 'divided-field-rows',
         child: _FieldWidth(
-          child: CatchSection.contained(
-            title: 'Profile basics',
+          child: CatchSection.fieldRows(
+            title: 'About you',
+            count: '3 fields',
             children: [
               CatchField.input(
                 title: 'Public name',
@@ -1880,6 +2135,73 @@ Widget catchSectionContractStates(BuildContext context) {
                 initialValue: '@catchapp',
                 icon: CatchIcons.alternateEmailOutlined,
                 showClearButton: true,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'contained-field-rows-child-active',
+        child: _FieldWidth(
+          child: CatchSection.containedFieldRows(
+            children: [
+              CatchField.choices<String>(
+                title: 'Languages',
+                body: 'English · Hindi · Marathi',
+                icon: CatchIcons.languageOutlined,
+                values: const [
+                  'English',
+                  'Hindi',
+                  'Marathi',
+                  'Tamil',
+                  'Gujarati',
+                ],
+                itemLabel: (value) => value,
+                selected: const {'English', 'Hindi', 'Marathi'},
+                multi: true,
+                initiallyOpen: true,
+                onSelectionChanged: (_) {},
+                onCancel: _noop,
+                onSubmit: _noop,
+              ),
+              const CatchField.input(
+                title: 'Answer',
+                initialValue: 'Social miles and good coffee.',
+                maxLines: null,
+                minLines: 1,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'contained-field-rows-explicit-focused',
+        child: _FieldWidth(
+          child: CatchSection.containedFieldRows(
+            focused: true,
+            children: [
+              CatchField.read(
+                title: 'Section-owned validation state',
+                body: 'The outer perimeter is explicitly focused.',
+                icon: CatchIcons.infoOutlineRounded,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'field-list',
+        child: _FieldWidth(
+          child: CatchSectionList(
+            gap: CatchSpacing.s4,
+            children: [
+              CatchSection.fieldRows(
+                title: 'First section',
+                children: [CatchField.read(title: 'Name', body: 'Suvrat')],
+              ),
+              CatchSection.fieldRows(
+                title: 'Second section',
+                children: [CatchField.read(title: 'City', body: 'Delhi NCR')],
               ),
             ],
           ),
@@ -1937,7 +2259,13 @@ Widget catchSectionFocusSurfaceContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchSectionFocusSurface',
     contractId: 'catch.section.focus_surface',
-    states: const ['default', 'focused', 'error'],
+    states: const [
+      'default',
+      'focused',
+      'error',
+      'field-rows-child-active',
+      'field-rows-explicit-focused',
+    ],
     children: [
       _StateCard(
         label: 'default',
@@ -1969,6 +2297,37 @@ Widget catchSectionFocusSurfaceContractStates(BuildContext context) {
             focused: false,
             hasError: true,
             child: const Text('Error contained section content'),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'field-rows-child-active',
+        child: _FieldWidth(
+          child: CatchSectionFocusSurface(
+            padding: EdgeInsets.zero,
+            focused: false,
+            hasError: false,
+            fieldRows: true,
+            child: CatchField.input(
+              title: 'Answer',
+              initialValue: 'The child owns this focus ring.',
+              focused: true,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'field-rows-explicit-focused',
+        child: _FieldWidth(
+          child: CatchSectionFocusSurface(
+            padding: EdgeInsets.zero,
+            focused: true,
+            hasError: false,
+            fieldRows: true,
+            child: CatchField.read(
+              title: 'Section validation',
+              body: 'Explicit focus belongs to the outer perimeter.',
+            ),
           ),
         ),
       ),
@@ -7441,14 +7800,22 @@ class _SegmentedControlDemoState<T> extends State<_SegmentedControlDemo<T>> {
 }
 
 class _ToggleFieldDemo extends StatefulWidget {
-  const _ToggleFieldDemo();
+  const _ToggleFieldDemo({this.initialValue = true});
+
+  final bool initialValue;
 
   @override
   State<_ToggleFieldDemo> createState() => _ToggleFieldDemoState();
 }
 
 class _ToggleFieldDemoState extends State<_ToggleFieldDemo> {
-  bool _enabled = true;
+  late bool _enabled;
+
+  @override
+  void initState() {
+    super.initState();
+    _enabled = widget.initialValue;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -7463,7 +7830,9 @@ class _ToggleFieldDemoState extends State<_ToggleFieldDemo> {
 }
 
 class _TextEntryFieldDemo extends StatefulWidget {
-  const _TextEntryFieldDemo();
+  const _TextEntryFieldDemo({this.autofocus = false});
+
+  final bool autofocus;
 
   @override
   State<_TextEntryFieldDemo> createState() => _TextEntryFieldDemoState();
@@ -7484,9 +7853,147 @@ class _TextEntryFieldDemoState extends State<_TextEntryFieldDemo> {
       title: 'Public name',
       controller: _controller,
       icon: CatchIcons.personOutlined,
-      placeholder: 'Add a public name',
+      emptyValueText: 'Add a public name',
+      inputHint: 'e.g. Aanya',
+      autofocus: widget.autofocus,
       showClearButton: true,
       onChanged: (_) => setState(() {}),
+    );
+  }
+}
+
+class _ChoiceFieldDemo extends StatefulWidget {
+  const _ChoiceFieldDemo({
+    this.initiallyOpen = false,
+    this.allowEmptySelection = false,
+    this.initialSelection = const {'English', 'Hindi', 'Marathi'},
+    this.body,
+  });
+
+  final bool initiallyOpen;
+  final bool allowEmptySelection;
+  final Set<String> initialSelection;
+  final String? body;
+
+  @override
+  State<_ChoiceFieldDemo> createState() => _ChoiceFieldDemoState();
+}
+
+class _ChoiceFieldDemoState extends State<_ChoiceFieldDemo> {
+  static const _values = ['English', 'Hindi', 'Marathi', 'Tamil', 'Gujarati'];
+  late Set<String> _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = Set<String>.of(widget.initialSelection);
+  }
+
+  @override
+  void didUpdateWidget(covariant _ChoiceFieldDemo oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!setEquals(oldWidget.initialSelection, widget.initialSelection)) {
+      _selected = Set<String>.of(widget.initialSelection);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchField.choices<String>(
+      title: 'Languages',
+      body: widget.body,
+      icon: CatchIcons.languageOutlined,
+      values: _values,
+      itemLabel: (value) => value,
+      selected: _selected,
+      multi: true,
+      allowEmptySelection: widget.allowEmptySelection,
+      initiallyOpen: widget.initiallyOpen,
+      onSelectionChanged: (selection) {
+        setState(() => _selected = selection);
+      },
+      onCancel: _noop,
+      onSubmit: _noop,
+    );
+  }
+}
+
+class _StepperFieldDemo extends StatefulWidget {
+  const _StepperFieldDemo();
+
+  @override
+  State<_StepperFieldDemo> createState() => _StepperFieldDemoState();
+}
+
+class _StepperFieldDemoState extends State<_StepperFieldDemo> {
+  num _value = 168;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchField.stepper(
+      title: 'Height',
+      body: '${_value.toInt()} cm',
+      icon: CatchIcons.heightOutlined,
+      value: _value,
+      min: 120,
+      max: 220,
+      unit: 'cm',
+      initiallyOpen: true,
+      decreaseSemanticLabel: 'Decrease height',
+      increaseSemanticLabel: 'Increase height',
+      onChanged: (value) => setState(() => _value = value),
+      onCancel: _noop,
+      onSubmit: _noop,
+    );
+  }
+}
+
+class _ExplicitSaveFieldDemo extends StatefulWidget {
+  const _ExplicitSaveFieldDemo({this.initiallyExpanded = false, this.error});
+
+  final bool initiallyExpanded;
+  final String? error;
+
+  @override
+  State<_ExplicitSaveFieldDemo> createState() => _ExplicitSaveFieldDemoState();
+}
+
+class _ExplicitSaveFieldDemoState extends State<_ExplicitSaveFieldDemo> {
+  late final TextEditingController _controller;
+  late bool _expanded;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: 'Catch me if you can');
+    _expanded = widget.initiallyExpanded;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchField.inputActions(
+      title: 'A perfect event with me looks like...',
+      controller: _controller,
+      icon: CatchIcons.formatQuoteRounded,
+      open: _expanded,
+      onOpenChanged: (expanded) => setState(() => _expanded = expanded),
+      supporting: const Text('19 / 300'),
+      secondaryAction: CatchTextButton(
+        label: 'Change prompt',
+        onPressed: _noop,
+        padding: EdgeInsets.zero,
+      ),
+      error: widget.error,
+      onCancel: () => setState(() => _expanded = false),
+      onSubmit: _noop,
+      maxLines: null,
+      textInputAction: TextInputAction.newline,
     );
   }
 }
