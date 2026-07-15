@@ -997,9 +997,12 @@ class CatchField extends StatefulWidget {
   State<CatchField> createState() => _CatchFieldState();
 }
 
-class _CatchFieldState extends State<CatchField> {
+class _CatchFieldState extends State<CatchField>
+    with SingleTickerProviderStateMixin {
   final _fieldKey = GlobalKey<FormFieldState<String>>();
   final _selectFieldKey = GlobalKey<FormFieldState<Object?>>();
+  final _disclosureRevealTargetKey = GlobalKey();
+  final _actionBarRevealTargetKey = GlobalKey();
   final _menuController = MenuController();
   final Object _tapRegionGroup = Object();
   final FocusNode _rowFocusNode = FocusNode(debugLabel: 'CatchField row');
@@ -1018,6 +1021,11 @@ class _CatchFieldState extends State<CatchField> {
   late bool _open;
   late bool _disclosureOffstage;
   bool _pendingExpansionFocus = false;
+  bool _expandedContentRevealScheduled = false;
+  late final AnimationController _expandedContentRevealController;
+  ScrollPosition? _activeExpandedContentRevealPosition;
+  double _expandedContentRevealStart = 0;
+  double _expandedContentRevealDestination = 0;
   Timer? _singleChoiceCloseTimer;
   late bool _inputWasEmpty;
   bool _textEntryHasValidationError = false;
@@ -1028,6 +1036,9 @@ class _CatchFieldState extends State<CatchField> {
   @override
   void initState() {
     super.initState();
+    _expandedContentRevealController = AnimationController(vsync: this)
+      ..addListener(_handleExpandedContentRevealTick)
+      ..addStatusListener(_handleExpandedContentRevealStatus);
     _open = widget.open ?? (widget.initiallyOpen && widget.control != null);
     _disclosureOffstage = !_isOpen;
     _attachFocusNode(widget.focusNode);
@@ -1064,7 +1075,12 @@ class _CatchFieldState extends State<CatchField> {
       _open = widget.initiallyOpen && widget.control != null;
     }
     final isOpen = _isOpen;
-    if (!wasOpen && isOpen) _disclosureOffstage = false;
+    if (!wasOpen && isOpen) {
+      _disclosureOffstage = false;
+      _scheduleExpandedContentReveal();
+    } else if (wasOpen && !isOpen) {
+      _cancelExpandedContentReveal();
+    }
     if (widget._explicitSaveInput && !wasOpen && isOpen) {
       _pendingExpansionFocus = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1097,6 +1113,8 @@ class _CatchFieldState extends State<CatchField> {
 
   @override
   void dispose() {
+    _activeExpandedContentRevealPosition = null;
+    _expandedContentRevealController.dispose();
     _singleChoiceCloseTimer?.cancel();
     _listenedController?.removeListener(_syncFieldValue);
     _detachFocusNode();
@@ -1182,19 +1200,187 @@ class _CatchFieldState extends State<CatchField> {
 
   void _requestExpansion(bool expanded) {
     if (_isOpen == expanded) return;
-    if (!expanded) _singleChoiceCloseTimer?.cancel();
+    if (!expanded) {
+      _singleChoiceCloseTimer?.cancel();
+      _cancelExpandedContentReveal();
+    }
     if (widget.open == null) {
       setState(() {
         _open = expanded;
         if (expanded) _disclosureOffstage = false;
       });
+      if (expanded) _scheduleExpandedContentReveal();
     }
     widget.onOpenChanged?.call(expanded);
+  }
+
+  void _cancelExpandedContentReveal() {
+    _expandedContentRevealController.stop();
+    _activeExpandedContentRevealPosition = null;
+  }
+
+  void _startExpandedContentReveal({
+    required ScrollPosition position,
+    required double destination,
+    required Duration duration,
+  }) {
+    _expandedContentRevealController.stop();
+    _activeExpandedContentRevealPosition = position;
+    _expandedContentRevealStart = position.pixels;
+    _expandedContentRevealDestination = destination;
+    _expandedContentRevealController
+      ..duration = duration
+      ..value = 0
+      ..forward();
+  }
+
+  void _handleExpandedContentRevealTick() {
+    final position = _activeExpandedContentRevealPosition;
+    if (!_isOpen || position == null || !position.hasPixels) {
+      _expandedContentRevealController.stop();
+      _activeExpandedContentRevealPosition = null;
+      return;
+    }
+    if (position.isScrollingNotifier.value) {
+      // A direct user drag always wins over the automatic field reveal.
+      _expandedContentRevealController.stop();
+      _activeExpandedContentRevealPosition = null;
+      return;
+    }
+
+    final progress = CatchFieldTokens.curve.transform(
+      _expandedContentRevealController.value,
+    );
+    final requested =
+        _expandedContentRevealStart +
+        (_expandedContentRevealDestination - _expandedContentRevealStart) *
+            progress;
+    final available = requested
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (available > position.pixels) position.jumpTo(available);
+  }
+
+  void _handleExpandedContentRevealStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _activeExpandedContentRevealPosition = null;
+    }
+  }
+
+  ScrollableState? _expandedContentRevealScrollable() {
+    BuildContext searchContext = context;
+    ScrollableState? nearestVertical;
+    final visited = <ScrollableState>{};
+    while (true) {
+      final candidate = Scrollable.maybeOf(searchContext);
+      if (candidate == null || !visited.add(candidate)) break;
+      final position = candidate.position;
+      if (position.axis == Axis.vertical) {
+        nearestVertical ??= candidate;
+        if (position.hasContentDimensions &&
+            position.maxScrollExtent > position.minScrollExtent) {
+          return candidate;
+        }
+      }
+      // A Scrollable's own context sits outside its private inherited scope,
+      // so the next lookup walks to the next enclosing scroll owner.
+      searchContext = candidate.context;
+    }
+    return nearestVertical;
+  }
+
+  void _scheduleExpandedContentReveal({Duration? duration}) {
+    if (_expandedContentRevealScheduled) return;
+    _expandedContentRevealScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _expandedContentRevealScheduled = false;
+      if (!mounted || !_isOpen) return;
+
+      final targetContext =
+          _actionBarRevealTargetKey.currentContext ??
+          _disclosureRevealTargetKey.currentContext;
+      final target = targetContext?.findRenderObject();
+      if (target is! RenderBox || !target.attached || !target.hasSize) return;
+
+      final visibility = CatchFieldVisibilityScope.maybeOf(context);
+      final bottomClearance =
+          (visibility?.bottomObstruction ?? 0) +
+          (visibility?.revealPadding ?? CatchSpacing.s2);
+      final prioritizesActionBar =
+          _actionBarRevealTargetKey.currentContext != null;
+      final targetTop = prioritizesActionBar
+          ? 0.0
+          : target.size.height > 1
+          ? target.size.height - 1
+          : 0.0;
+      final targetHeight = prioritizesActionBar ? target.size.height : 1.0;
+      final revealDuration = duration ?? _expansionMotionDuration(context);
+      final scrollable = _expandedContentRevealScrollable();
+      final scrollPosition = scrollable?.position;
+      final scrollViewport = scrollable?.context.findRenderObject();
+      if (scrollPosition != null &&
+          scrollPosition.axis == Axis.vertical &&
+          scrollViewport is RenderBox &&
+          scrollViewport.attached &&
+          scrollViewport.hasSize) {
+        final targetBottom = target
+            .localToGlobal(Offset(0, targetTop + targetHeight))
+            .dy;
+        final viewportBottom = scrollViewport
+            .localToGlobal(Offset(0, scrollViewport.size.height))
+            .dy;
+        final scrollDelta = targetBottom + bottomClearance - viewportBottom;
+        if (scrollDelta > 0) {
+          final destination = scrollPosition.pixels + scrollDelta;
+          if (revealDuration == Duration.zero) {
+            _expandedContentRevealController.stop();
+            _activeExpandedContentRevealPosition = null;
+            final available = destination
+                .clamp(
+                  scrollPosition.minScrollExtent,
+                  scrollPosition.maxScrollExtent,
+                )
+                .toDouble();
+            if (available > scrollPosition.pixels) {
+              scrollPosition.jumpTo(available);
+              return;
+            }
+          } else {
+            // The field and viewport share one motion curve. Driving the
+            // offset frame-by-frame lets the scroll extent grow with the
+            // disclosure instead of clamping an animateTo target to the
+            // collapsed card and snapping at the end.
+            _startExpandedContentReveal(
+              position: scrollPosition,
+              destination: destination,
+              duration: revealDuration,
+            );
+            return;
+          }
+        }
+      }
+
+      target.showOnScreen(
+        rect: Rect.fromLTWH(
+          0,
+          targetTop,
+          target.size.width,
+          targetHeight + bottomClearance,
+        ),
+        duration: revealDuration,
+        curve: CatchFieldTokens.curve,
+      );
+    });
   }
 
   void _handleExpansionAnimationEnd() {
     if (!_isOpen && !_disclosureOffstage) {
       setState(() => _disclosureOffstage = true);
+    } else if (_isOpen) {
+      // The Align height factor reaches its final scroll extent only at the
+      // end of the reveal. Correct any earlier clamp without introducing a
+      // second visible animation.
+      _scheduleExpandedContentReveal(duration: Duration.zero);
     }
     _requestPendingExpansionFocus();
   }
@@ -1352,6 +1538,15 @@ class _CatchFieldState extends State<CatchField> {
       !_usesUnderlineChrome &&
       !_compactTextEntry &&
       (widget.showClearButton || widget.suffixIcon != null || _action != null);
+  bool get _usesPositionedClearTrailing =>
+      _usesRowTextEntryTrailing &&
+      widget.showClearButton &&
+      widget.showLabel &&
+      (_title?.isNotEmpty ?? false) &&
+      _hasInputValue &&
+      !_isSaving &&
+      widget.status == CatchFieldStatus.idle &&
+      !(widget.valid && !_hasError);
   bool get _hasLeadingSlot => widget.icon != null || _usesRowPrefixIcon;
   String? get _title => widget.title;
   String? get _body => widget.body;
@@ -1552,23 +1747,30 @@ class _CatchFieldState extends State<CatchField> {
     final centerVertically = _mode == CatchFieldMode.toggle;
     final baselineTopPadding = centerVertically ? 0.0 : _rowTrailingTopPadding;
     final trailingSlot = _buildTrailingSlot(t);
+    final positionsTrailing = _hasControl || _usesPositionedClearTrailing;
     final rowContent = CatchFieldRow.standard(
       constraints: _rowConstraints,
       padding: _rowPadding,
       leading: _buildLeadingSlot(t),
-      trailing: _hasControl ? null : trailingSlot,
+      trailing: positionsTrailing ? null : trailingSlot,
       crossAxisAlignment: centerVertically
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       leadingTopPadding: baselineTopPadding,
       content: _buildBody(t),
     );
-    final row = _hasControl && trailingSlot != null
+    final row = positionsTrailing && trailingSlot != null
         ? Stack(
             children: [
               rowContent,
               PositionedDirectional(
-                top: _rowPadding.top + _rowTrailingTopPadding,
+                top: _usesPositionedClearTrailing
+                    ? _rowPadding.top +
+                          CatchFieldTokens.captionExtent +
+                          (CatchFieldTokens.valueLineExtent - CatchSpacing.s6) /
+                              2 +
+                          CatchSpacing.micro3
+                    : _rowPadding.top + _rowTrailingTopPadding,
                 end: _rowPadding.right,
                 child: trailingSlot,
               ),
@@ -1808,7 +2010,7 @@ class _CatchFieldState extends State<CatchField> {
             _controller.clear();
             widget.onChanged?.call('');
           },
-          topPadding: _rowTrailingTopPadding,
+          topPadding: _usesPositionedClearTrailing ? 0 : _rowTrailingTopPadding,
         );
       },
     );
@@ -2051,6 +2253,8 @@ class _CatchFieldState extends State<CatchField> {
     final hasControl = control != null;
     final headerTrailingReserve = _hasControl
         ? CatchFieldTokens.trailingGap + CatchFieldTokens.disclosureGlyphExtent
+        : _usesPositionedClearTrailing
+        ? CatchFieldTokens.trailingGap + CatchSpacing.s6
         : 0.0;
 
     if (!hasLabel && !hasValue && !hasSupport && !hasControl) {
@@ -2080,57 +2284,61 @@ class _CatchFieldState extends State<CatchField> {
                     ? t.ink3
                     : _toneColor(t, primaryFallback: t.ink),
               ));
-    final actionBar = SizedBox(
-      key: const ValueKey('catch-field-action-bar'),
-      width: double.infinity,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final cancelButton = CatchFieldCommitButton(
-            key: const ValueKey('catch-field-cancel'),
-            label: context.l10n.coreCatchFieldLabelCancel,
-            onPressed: _isSaving ? null : _handleCancel,
-          );
-          final doneButton = CatchFieldCommitButton(
-            key: const ValueKey('catch-field-done'),
-            label: _isSaving
-                ? context.l10n.coreCatchFieldLabelSaving
-                : context.l10n.coreCatchFieldLabelDone,
-            primary: true,
-            loading: _isSaving,
-            onPressed: _isSaving ? null : _handleSubmit,
-          );
+    final actionBar = KeyedSubtree(
+      key: _actionBarRevealTargetKey,
+      child: SizedBox(
+        key: const ValueKey('catch-field-action-bar'),
+        width: double.infinity,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final cancelButton = CatchFieldCommitButton(
+              key: const ValueKey('catch-field-cancel'),
+              label: context.l10n.coreCatchFieldLabelCancel,
+              onPressed: _isSaving ? null : _handleCancel,
+            );
+            final doneButton = CatchFieldCommitButton(
+              key: const ValueKey('catch-field-done'),
+              label: _isSaving
+                  ? context.l10n.coreCatchFieldLabelSaving
+                  : context.l10n.coreCatchFieldLabelDone,
+              primary: true,
+              loading: _isSaving,
+              onPressed: _isSaving ? null : _handleSubmit,
+            );
 
-          if (constraints.maxWidth < CatchLayout.fieldActionBarWrapBreakpoint) {
-            return Wrap(
-              alignment: WrapAlignment.end,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: CatchFieldTokens.actionButtonGap,
-              runSpacing: CatchSpacing.s2,
+            if (constraints.maxWidth <
+                CatchLayout.fieldActionBarWrapBreakpoint) {
+              return Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: CatchFieldTokens.actionButtonGap,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  if (widget._actionLeading != null) widget._actionLeading!,
+                  cancelButton,
+                  doneButton,
+                ],
+              );
+            }
+
+            return Row(
               children: [
-                if (widget._actionLeading != null) widget._actionLeading!,
+                if (widget._actionLeading != null)
+                  Expanded(
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: widget._actionLeading,
+                    ),
+                  )
+                else
+                  const Spacer(),
                 cancelButton,
+                const SizedBox(width: CatchFieldTokens.actionButtonGap),
                 doneButton,
               ],
             );
-          }
-
-          return Row(
-            children: [
-              if (widget._actionLeading != null)
-                Expanded(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: widget._actionLeading,
-                  ),
-                )
-              else
-                const Spacer(),
-              cancelButton,
-              const SizedBox(width: CatchFieldTokens.actionButtonGap),
-              doneButton,
-            ],
-          );
-        },
+          },
+        ),
       ),
     );
 
@@ -2224,32 +2432,35 @@ class _CatchFieldState extends State<CatchField> {
                   curve: CatchFieldTokens.curve,
                   tween: Tween<double>(end: controlExpanded ? 1 : 0),
                   onEnd: _handleExpansionAnimationEnd,
-                  child: GestureDetector(
-                    key: const ValueKey('catch-field-control-tap-barrier'),
-                    behavior: HitTestBehavior.opaque,
-                    // The control drawer is a sibling interaction region in
-                    // the React handoff. Consume blank-space taps here so they
-                    // cannot bubble to the enclosing row disclosure gesture;
-                    // descendant controls still win their own gesture arenas.
-                    onTap: () {},
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        top: hasLabel || hasValue || hasSupport
-                            ? CatchFieldTokens.controlTopGap
-                            : 0,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          control,
-                          if (widget._onSubmit != null) ...[
-                            const SizedBox(
-                              height: CatchFieldTokens.actionBarTopGap,
-                            ),
-                            actionBar,
+                  child: KeyedSubtree(
+                    key: _disclosureRevealTargetKey,
+                    child: GestureDetector(
+                      key: const ValueKey('catch-field-control-tap-barrier'),
+                      behavior: HitTestBehavior.opaque,
+                      // The control drawer is a sibling interaction region in
+                      // the React handoff. Consume blank-space taps here so they
+                      // cannot bubble to the enclosing row disclosure gesture;
+                      // descendant controls still win their own gesture arenas.
+                      onTap: () {},
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          top: hasLabel || hasValue || hasSupport
+                              ? CatchFieldTokens.controlTopGap
+                              : 0,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            control,
+                            if (widget._onSubmit != null) ...[
+                              const SizedBox(
+                                height: CatchFieldTokens.actionBarTopGap,
+                              ),
+                              actionBar,
+                            ],
                           ],
-                        ],
+                        ),
                       ),
                     ),
                   ),
@@ -2978,6 +3189,34 @@ Duration _fieldDuration(BuildContext context, Duration duration) {
   return disableAnimations == true ? Duration.zero : duration;
 }
 
+/// Ambient visibility contract for disclosure fields inside obstructed scroll
+/// surfaces.
+///
+/// A shell that overlays navigation on top of its body publishes the covered
+/// bottom extent here. When a [CatchField] opens, it asks the nearest viewport
+/// to reveal its commit controls plus this clearance, keeping the entire
+/// interaction one gesture even when the field starts near the screen edge.
+class CatchFieldVisibilityScope extends InheritedWidget {
+  const CatchFieldVisibilityScope({
+    super.key,
+    required this.bottomObstruction,
+    this.revealPadding = CatchSpacing.s2,
+    required super.child,
+  }) : assert(bottomObstruction >= 0),
+       assert(revealPadding >= 0);
+
+  final double bottomObstruction;
+  final double revealPadding;
+
+  static CatchFieldVisibilityScope? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<CatchFieldVisibilityScope>();
+
+  @override
+  bool updateShouldNotify(CatchFieldVisibilityScope oldWidget) =>
+      bottomObstruction != oldWidget.bottomObstruction ||
+      revealPadding != oldWidget.revealPadding;
+}
+
 /// Ambient contract for who owns a field row's horizontal gutter.
 ///
 /// By default a [CatchField] row insets itself horizontally so it can sit
@@ -3285,6 +3524,10 @@ class CatchFieldTrailing extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       padding: EdgeInsets.zero,
       constraints: CatchControlMetrics.squareConstraints(CatchSpacing.s6),
+      style: IconButton.styleFrom(
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
       icon: Icon(
         CatchIcons.clearCircle,
         size: CatchFieldTokens.largeGlyphExtent,

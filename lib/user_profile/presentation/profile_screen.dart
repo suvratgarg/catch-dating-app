@@ -1,12 +1,15 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -121,7 +124,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               final headerSlivers = CatchSliverHeader(
                 title: CatchScreenHeaderTitle.block(
                   title: context.l10n.userProfileProfileScreenTitleYourProfile,
-                  actions: [ProfileSettingsButton()],
+                  actions: const [ProfileSettingsButton()],
                 ),
                 bottomHeight: CatchLayout.tabRailHeight,
                 bottom: ProfileTabBar(controller: _tabController),
@@ -235,6 +238,7 @@ class SelfProfileTabBody extends StatelessWidget {
           children: [
             ProfileTabScrollView(
               scrollKey: const PageStorageKey('profile-edit-tab-scroll'),
+              managesFieldVisibility: true,
               slivers: [
                 ProfileTabSliverBody(
                   user: user,
@@ -268,14 +272,21 @@ class ProfileTabScrollView extends StatelessWidget {
     super.key,
     required this.scrollKey,
     required this.slivers,
+    this.managesFieldVisibility = false,
   });
 
   final PageStorageKey<String> scrollKey;
   final List<Widget> slivers;
+  final bool managesFieldVisibility;
 
   @override
   Widget build(BuildContext context) {
-    return CatchPagerFocusBoundary(
+    final bottomOverlayInset = AppShellActiveTab.bottomOverlayInsetOf(context);
+    final terminalClearance = AppShellActiveTab.bottomOverlayClearanceOf(
+      context,
+      minimum: CatchSpacing.s2,
+    );
+    final scrollView = CatchPagerFocusBoundary(
       child: Builder(
         builder: (context) {
           return CustomScrollView(
@@ -287,10 +298,20 @@ class ProfileTabScrollView extends StatelessWidget {
                 ),
               ),
               ...slivers,
+              if (managesFieldVisibility)
+                CatchSliverTerminalPadding(
+                  extra: terminalClearance,
+                  includeSafeArea: false,
+                ),
             ],
           );
         },
       ),
+    );
+    if (!managesFieldVisibility) return scrollView;
+    return CatchFieldVisibilityScope(
+      bottomObstruction: bottomOverlayInset,
+      child: scrollView,
     );
   }
 }

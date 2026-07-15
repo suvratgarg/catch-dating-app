@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-15T03:55:31.633Z",
-  "baseRef": "HEAD^",
+  "generatedAt": "2026-07-15T17:11:14.921Z",
+  "baseRef": "HEAD",
   "baseStatus": "git-ref",
   "baseWarning": null,
   "current": "working tree",
@@ -10,95 +10,20 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 6,
-    "addedPublicWidgetClasses": 6,
+    "addedWidgetClasses": 0,
+    "addedPublicWidgetClasses": 0,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
     "movedWidgetClasses": 0,
     "movedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 6,
+    "coveredNewWidgets": 0,
     "unresolved": 0,
-    "widgetsByStatus": {
-      "covered": 6
-    },
+    "widgetsByStatus": {},
     "helpersByStatus": {},
     "issues": {}
   },
   "movedWidgets": [],
   "movedWidgetHelpers": [],
-  "addedWidgets": [
-    {
-      "name": "CatchFieldCommitButton",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 3323,
-      "file": "lib/core/widgets/catch_field.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CatchFieldToggle",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 3388,
-      "file": "lib/core/widgets/catch_field.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CatchFieldChoiceControl",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 3411,
-      "file": "lib/core/widgets/catch_field.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CatchFieldChoiceChip",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 3477,
-      "file": "lib/core/widgets/catch_field.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CatchFieldStepper",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 3582,
-      "file": "lib/core/widgets/catch_field.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CatchFieldRepeatButton",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 3672,
-      "file": "lib/core/widgets/catch_field.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    }
-  ],
+  "addedWidgets": [],
   "addedWidgetHelpers": []
 }

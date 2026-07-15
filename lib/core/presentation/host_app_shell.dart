@@ -27,6 +27,8 @@ class HostAppShell extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
     final uid = uidAsync.asData?.value ?? '';
     final isAuthenticated = uid.isNotEmpty;
+    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final showAuthenticatedNavigation = isAuthenticated && !keyboardVisible;
     final unreadCount = isAuthenticated
         ? ref.watch(totalUnreadCountProvider(uid))
         : 0;
@@ -71,12 +73,13 @@ class HostAppShell extends ConsumerWidget {
       }
     });
 
+    final usesFloatingTabLayout = CatchTabBar.floatsFor(context);
     final authenticatedTabBarFloats =
-        isAuthenticated && CatchTabBar.floatsFor(context);
+        showAuthenticatedNavigation && usesFloatingTabLayout;
     final authenticatedBottomOverlayInset = authenticatedTabBarFloats
         ? CatchTabBar.reservedBottomInset(context)
         : 0.0;
-    final authenticatedNavigationBar = isAuthenticated
+    final authenticatedNavigationBar = showAuthenticatedNavigation
         ? AppShellNavigationBar(
             currentIndex: navigationShell.currentIndex,
             unreadCount: unreadCount,
@@ -99,22 +102,23 @@ class HostAppShell extends ConsumerWidget {
     return Scaffold(
       key: AppShellKeys.scaffold,
       extendBody: authenticatedTabBarFloats,
-      body: authenticatedTabBarFloats
+      body: usesFloatingTabLayout
           ? Stack(
               children: [
                 Positioned.fill(child: body),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: authenticatedNavigationBar!,
-                ),
+                if (authenticatedTabBarFloats)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: authenticatedNavigationBar!,
+                  ),
               ],
             )
           : body,
       bottomNavigationBar: authenticatedTabBarFloats
           ? null
-          : isAuthenticated
+          : showAuthenticatedNavigation
           ? authenticatedNavigationBar
           : null,
     );

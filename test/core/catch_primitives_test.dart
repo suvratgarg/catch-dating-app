@@ -4338,6 +4338,182 @@ void main() {
     expect(tester.getTopLeft(field).dy, anchoredTop);
   });
 
+  testWidgets('CatchField cancels an in-flight reveal when it closes', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(400, 600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final scrollController = ScrollController();
+    addTearDown(scrollController.dispose);
+    var open = false;
+    late void Function(bool value) setOpen;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: CatchFieldVisibilityScope(
+            bottomObstruction: 120,
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                setOpen = (value) => setState(() => open = value);
+                return ListView(
+                  controller: scrollController,
+                  children: [
+                    const SizedBox(height: 460),
+                    CatchField.control(
+                      title: 'Diet',
+                      body: 'Jain',
+                      open: open,
+                      onOpenChanged: setOpen,
+                      control: const SizedBox(height: 180),
+                      onCancel: () => setOpen(false),
+                      onSubmit: _noop,
+                    ),
+                    const SizedBox(height: 160),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Diet'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+    await tester.pump(const Duration(milliseconds: 16));
+    expect(scrollController.offset, greaterThan(0));
+
+    setOpen(false);
+    await tester.pump();
+    final offsetAfterClose = scrollController.offset;
+    await tester.pump(CatchFieldTokens.reveal);
+
+    expect(scrollController.offset, lessThanOrEqualTo(offsetAfterClose + 0.1));
+  });
+
+  testWidgets('CatchField automatic reveal yields to direct user scrolling', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(400, 600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final scrollController = ScrollController();
+    addTearDown(scrollController.dispose);
+    var open = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: CatchFieldVisibilityScope(
+            bottomObstruction: 120,
+            child: StatefulBuilder(
+              builder: (context, setState) => ListView(
+                controller: scrollController,
+                children: [
+                  const SizedBox(height: 460),
+                  CatchField.control(
+                    title: 'Diet',
+                    body: 'Jain',
+                    open: open,
+                    onOpenChanged: (value) => setState(() => open = value),
+                    control: const SizedBox(height: 180),
+                    onCancel: _noop,
+                    onSubmit: _noop,
+                  ),
+                  const SizedBox(height: 160),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Diet'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+    await tester.pump(const Duration(milliseconds: 16));
+    expect(scrollController.offset, greaterThan(0));
+
+    final drag = await tester.startGesture(const Offset(200, 300));
+    await drag.moveBy(const Offset(0, -40));
+    await tester.pump();
+    expect(scrollController.position.isScrollingNotifier.value, isTrue);
+    final offsetDuringDrag = scrollController.offset;
+    await tester.pump(
+      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+    );
+    expect(scrollController.offset, closeTo(offsetDuringDrag, 0.1));
+
+    await drag.up();
+    await tester.pumpAndSettle();
+    expect(open, isTrue);
+  });
+
+  testWidgets('CatchField reveal jumps immediately with reduced motion', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(400, 600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final scrollController = ScrollController();
+    addTearDown(scrollController.dispose);
+    var open = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: CatchFieldVisibilityScope(
+              bottomObstruction: 120,
+              child: StatefulBuilder(
+                builder: (context, setState) => ListView(
+                  controller: scrollController,
+                  children: [
+                    const SizedBox(height: 460),
+                    CatchField.control(
+                      title: 'Diet',
+                      body: 'Jain',
+                      open: open,
+                      onOpenChanged: (value) => setState(() => open = value),
+                      control: const SizedBox(height: 180),
+                      onCancel: _noop,
+                      onSubmit: _noop,
+                    ),
+                    const SizedBox(height: 160),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Diet'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(scrollController.offset, greaterThan(0));
+    expect(
+      tester.getRect(find.byKey(const ValueKey('catch-field-done'))).bottom,
+      lessThanOrEqualTo(472.1),
+    );
+    final offsetAfterReveal = scrollController.offset;
+    await tester.pump(CatchFieldTokens.reveal);
+    expect(scrollController.offset, closeTo(offsetAfterReveal, 0.1));
+  });
+
   testWidgets('CatchField explicit-save preserves label metrics and order', (
     tester,
   ) async {
@@ -5039,6 +5215,53 @@ void main() {
     expect(latest, isEmpty);
     expect(find.byIcon(CatchIcons.search), findsOneWidget);
   });
+
+  testWidgets(
+    'CatchField populated clear target does not change collapsed row height',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 320,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CatchField.input(
+                  key: ValueKey('plain-populated-field'),
+                  title: 'Public name',
+                  initialValue: 'Run',
+                ),
+                CatchField.input(
+                  key: ValueKey('clearable-populated-field'),
+                  title: 'Display name',
+                  initialValue: 'Run',
+                  showClearButton: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final plainHeight = tester
+          .getSize(find.byKey(const ValueKey('plain-populated-field')))
+          .height;
+      final clearableHeight = tester
+          .getSize(find.byKey(const ValueKey('clearable-populated-field')))
+          .height;
+      final clearableEditable = find.descendant(
+        of: find.byKey(const ValueKey('clearable-populated-field')),
+        matching: find.byType(EditableText),
+      );
+
+      expect(clearableHeight, closeTo(plainHeight, 0.1));
+      expect(find.byTooltip('Clear Display name'), findsOneWidget);
+      expect(
+        tester.getCenter(find.byTooltip('Clear Display name')).dy,
+        closeTo(tester.getCenter(clearableEditable).dy, 0.5),
+      );
+    },
+  );
 
   testWidgets('CatchField valid row renders success trailing state', (
     tester,

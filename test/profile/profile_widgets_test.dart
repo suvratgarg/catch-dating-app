@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -88,6 +89,65 @@ UserProfile _profilePreviewScrollFixture() {
     diet: DietaryPreference.vegetarian,
     children: ChildrenStatus.wantSomeday,
   );
+}
+
+const _obstructedProfileScreenSize = Size(393, 852);
+const _profileBottomOverlayInset = 102.0;
+
+Future<void> _pumpObstructedProfileScreen(WidgetTester tester) async {
+  tester.view.devicePixelRatio = 1.0;
+  tester.view.physicalSize = _obstructedProfileScreenSize;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        watchUserProfileProvider.overrideWith(
+          (ref) => Stream.value(_profilePreviewScrollFixture()),
+        ),
+      ],
+      child: MaterialApp(
+        theme: AppTheme.light,
+        home: const MediaQuery(
+          data: MediaQueryData(
+            size: _obstructedProfileScreenSize,
+            padding: EdgeInsets.only(bottom: 34),
+            viewPadding: EdgeInsets.only(bottom: 34),
+          ),
+          child: AppShellActiveTab(
+            index: appShellProfileTabIndex,
+            bottomOverlayInset: _profileBottomOverlayInset,
+            child: ProfileScreen(),
+          ),
+        ),
+      ),
+    ),
+  );
+  await pumpFeatureUi(tester);
+}
+
+Future<ScrollPosition> _positionProfileFieldNearOverlay(
+  WidgetTester tester,
+  Finder field,
+) async {
+  await tester.dragUntilVisible(
+    field,
+    find.byKey(const PageStorageKey('profile-edit-tab-scroll')),
+    const Offset(0, -320),
+  );
+  await tester.pump();
+
+  final position = Scrollable.of(tester.element(field)).position;
+  final fieldRect = tester.getRect(field);
+  position.jumpTo(
+    (position.pixels + fieldRect.bottom - 740)
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble(),
+  );
+  await tester.pump();
+  expect(tester.getRect(field).bottom, inInclusiveRange(739, 742.1));
+  return position;
 }
 
 Future<void> _pumpEditableProfileTab(
@@ -463,6 +523,181 @@ void main() {
       greaterThanOrEqualTo(0),
     );
   });
+
+  testWidgets('ProfileScreen limits field terminal clearance to Edit', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(_profilePreviewScrollFixture()),
+          ),
+        ],
+        child: MaterialApp(theme: AppTheme.light, home: const ProfileScreen()),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    Finder activeTabWrapper(PageStorageKey<String> key) => find.ancestor(
+      of: find.byKey(key),
+      matching: find.byType(ProfileTabScrollView),
+    );
+
+    final editWrapper = activeTabWrapper(
+      const PageStorageKey<String>('profile-edit-tab-scroll'),
+    );
+    expect(editWrapper, findsOneWidget);
+    expect(
+      tester.widget<ProfileTabScrollView>(editWrapper).managesFieldVisibility,
+      isTrue,
+    );
+    expect(
+      tester
+          .widget<CustomScrollView>(
+            find.byKey(const PageStorageKey<String>('profile-edit-tab-scroll')),
+          )
+          .slivers
+          .whereType<CatchSliverTerminalPadding>(),
+      hasLength(1),
+    );
+
+    await tester.tap(find.text('Preview'));
+    await pumpFeatureUi(tester);
+    final previewWrapper = activeTabWrapper(
+      const PageStorageKey<String>('profile-preview-tab-scroll'),
+    );
+    expect(previewWrapper, findsOneWidget);
+    expect(
+      tester
+          .widget<ProfileTabScrollView>(previewWrapper)
+          .managesFieldVisibility,
+      isFalse,
+    );
+    expect(
+      tester
+          .widget<CustomScrollView>(
+            find.byKey(
+              const PageStorageKey<String>('profile-preview-tab-scroll'),
+            ),
+          )
+          .slivers
+          .whereType<CatchSliverTerminalPadding>(),
+      isEmpty,
+    );
+
+    await tester.tap(find.text('Insights'));
+    await pumpFeatureUi(tester);
+    final insightsWrapper = activeTabWrapper(
+      const PageStorageKey<String>('profile-insights-tab-scroll'),
+    );
+    expect(insightsWrapper, findsOneWidget);
+    expect(
+      tester
+          .widget<ProfileTabScrollView>(insightsWrapper)
+          .managesFieldVisibility,
+      isFalse,
+    );
+    expect(
+      tester
+          .widget<CustomScrollView>(
+            find.byKey(
+              const PageStorageKey<String>('profile-insights-tab-scroll'),
+            ),
+          )
+          .slivers
+          .whereType<CatchSliverTerminalPadding>(),
+      isEmpty,
+    );
+  });
+
+  testWidgets(
+    'ProfileScreen reveals expanded Diet actions above floating navigation',
+    (tester) async {
+      await _pumpObstructedProfileScreen(tester);
+
+      final dietTile = _profileInfoTile('Diet');
+      final position = await _positionProfileFieldNearOverlay(tester, dietTile);
+      final beforeOpenPixels = position.pixels;
+      final beforeOpenTop = tester.getTopLeft(dietTile).dy;
+
+      await tester.tap(dietTile);
+      await tester.pump();
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
+      await pumpFeatureUiFor(
+        tester,
+        Duration(
+          milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2 - 16,
+        ),
+      );
+      expect(
+        position.pixels > beforeOpenPixels ||
+            tester.getTopLeft(dietTile).dy < beforeOpenTop,
+        isTrue,
+      );
+      await pumpFeatureUi(tester);
+
+      final doneRect = tester.getRect(
+        find.byKey(const ValueKey('catch-field-done')),
+      );
+      expect(
+        doneRect.bottom,
+        lessThanOrEqualTo(
+          _obstructedProfileScreenSize.height -
+              _profileBottomOverlayInset +
+              0.1,
+        ),
+      );
+    },
+  );
+
+  testWidgets(
+    'ProfileScreen terminal clearance reveals final Children actions',
+    (tester) async {
+      await _pumpObstructedProfileScreen(tester);
+
+      final childrenTile = _profileInfoTile('Children');
+      final position = await _positionProfileFieldNearOverlay(
+        tester,
+        childrenTile,
+      );
+
+      await tester.tap(childrenTile);
+      await tester.pump();
+      final framesBeforeEnd =
+          (CatchFieldTokens.reveal.inMilliseconds + 15) ~/ 16 - 1;
+      for (var frame = 0; frame < framesBeforeEnd; frame++) {
+        await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
+      }
+      final offsetBeforeExpansionEnd = position.pixels;
+      for (var frame = 0; frame < 2; frame++) {
+        await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
+      }
+      await tester.pump();
+      expect(
+        (position.pixels - offsetBeforeExpansionEnd).abs(),
+        lessThan(12),
+        reason: 'The final extent correction must not create a visible snap.',
+      );
+
+      final doneRect = tester.getRect(
+        find.byKey(const ValueKey('catch-field-done')),
+      );
+      expect(
+        doneRect.bottom,
+        lessThanOrEqualTo(
+          _obstructedProfileScreenSize.height -
+              _profileBottomOverlayInset +
+              0.1,
+        ),
+      );
+    },
+  );
 
   testWidgets('ProfileScreen surfaces profile photo upload failures', (
     tester,
@@ -923,6 +1158,10 @@ void main() {
           matching: find.byIcon(CatchIcons.clearCircle),
         ),
         findsOneWidget,
+      );
+      expect(
+        tester.getSize(_profileInfoTile('Display name')).height,
+        closeTo(tester.getSize(_profileInfoTile('Date of birth')).height, 0.1),
       );
     },
   );

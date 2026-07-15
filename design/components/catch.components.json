@@ -1352,7 +1352,7 @@
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
-      "summary": "Unified handoff field primitive with stable label/value geometry, one-gesture press-to-focus transfer, native cursor placement, persistent animated disclosure controls, wrapping choices, bounded steppers, exact toggles, async status, direct and explicit-save text editing, select triggers, and add actions.",
+      "summary": "Unified handoff field primitive with stable label/value geometry, one-gesture press-to-focus transfer, native cursor placement, height-neutral clear targets, obstruction-aware animated disclosure controls, wrapping choices, bounded steppers, exact toggles, async status, direct and explicit-save text editing, select triggers, and add actions.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1713,6 +1713,7 @@
         ],
         "dartRoles": [
           "CatchFieldTokens",
+          "CatchFieldVisibilityScope",
           "CatchElevation.fieldActive",
           "CatchFormFieldLabel",
           "CatchRadius.sm",
@@ -1864,6 +1865,8 @@
           "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Direct text entry keeps one native editable mounted while its row changes between empty-at-rest and focused/populated label geometry, preventing focus flicker and preserving cursor placement from the initiating gesture.",
+          "A populated labeled direct input reserves and overlays its 24 px clear hit target; the target must never participate in intrinsic collapsed-row height. Label-less compact clear inputs retain their own control geometry.",
+          "Disclosure opening drives the nearest existing vertical scroll owner frame by frame with the same CatchFieldTokens.reveal duration and curve, revealing the commit bar above CatchFieldVisibilityScope bottom obstruction as new extent becomes available, with a disclosure-bottom fallback when no commit bar exists. Rapid close cancels the drive, direct user scrolling wins, reduced motion jumps immediately, and a zero-duration final correction covers any residual collapsed-extent clamp. CatchField never creates or owns a ScrollController.",
           "Review-gated parity delta: the React handoff uses a 16 px disclosure caret, 600-weight chip/Add labels, a 15 px stepper glyph, 16 px field spinner, 13 px Done spinner with a 7 px gap and fixed 0.8 s rotation, a filled saved check-circle, a row-error warning icon, a directional underline sweep, a 200 ms control-opacity reveal, animated toggle/Cancel state changes, an 11-tick hold-repeat acceleration boundary, hardware-keyboard focus/activation plus focus-visible rings for choice/toggle/stepper atoms, and auto-commit single choices without a commit bar. Flutter intentionally retains its current values/behavior until design and product approve those cross-app changes.",
           "CatchField does not own rounded section or input-container chrome; use CatchSection contained focus/error chrome when fields need a grouped rounded surface.",
           "Field labels and support/error text belong to catch.field; shared container chrome belongs to CatchSection."

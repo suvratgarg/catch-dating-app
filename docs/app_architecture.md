@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.24
+version: 1.4.25
 updated: 2026-07-15
 owner: recursive_audit_loop
 status: active
@@ -325,6 +325,16 @@ bottom spacers. When a route uses this terminal sliver inside a `SafeArea`, the
 screen-level `SafeArea` must leave `bottom: false` so the device bottom inset
 remains visible to the sliver and becomes scrollable clearance.
 
+Software-keyboard visibility is defined by `MediaQuery.viewInsets.bottom > 0`,
+not by focus. While that inset is nonzero, both `AppShell` and `HostAppShell`
+omit authenticated navigation, the consumer shell also omits its guest auth
+CTA, floating `extendBody` behavior is disabled, and
+`AppShellActiveTab.bottomOverlayInset` is zero. Floating shells keep the route
+body in the same stack position while removing only the navigation sibling, so
+the focused editable element, text, cursor selection, and keyboard connection
+survive the inset transition. A hardware keyboard leaves `viewInsets.bottom`
+at zero, so navigation remains available.
+
 ## Layout, Spacing, And UI Architecture
 
 Use `CatchSpacing` from `lib/core/theme/catch_tokens.dart` for reusable layout
@@ -501,6 +511,15 @@ For `NestedScrollView` plus pinned tab rows:
 - If the intended UX is one continuous gesture, bridge both directions:
   child-upward scroll collapses the parent header first, and leading overscroll
   at the child top expands the parent header again.
+- Expandable fields reuse the nearest existing vertical scroll position. A tab
+  body that sits behind shell chrome publishes the obstruction through
+  `CatchFieldVisibilityScope` and supplies enough terminal scroll extent for its
+  final field to clear that chrome. `CatchField` drives the chosen position
+  frame by frame with the same duration and curve as the disclosure geometry so
+  newly available extent is consumed without an end snap. Rapid close cancels
+  the drive, direct user scrolling wins, reduced motion jumps immediately, and
+  a zero-duration final correction covers any residual clamp. Do not add a
+  second `ScrollController` inside the `NestedScrollView` to implement this.
 
 ### Current Screen Layout Decisions
 
@@ -511,7 +530,7 @@ For `NestedScrollView` plus pinned tab rows:
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
 | Club detail | Keep sliver-native with agenda-style event list. |
-| User profile | Keep the current tested tab/scroll contract; preserve overlap injection and preview-card scroll bridge if the surface uses `NestedScrollView`. |
+| User profile | Keep the tested `ProfileTabScrollView` contract: preserve overlap injection and the preview-card scroll bridge, while only the Edit tab publishes field obstruction and terminal clearance for expanding field actions. |
 | Map-heavy screens | Audit before migrating. Stable map viewport may matter more than sliver composition. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Do not migrate just for consistency. |
