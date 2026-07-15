@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-13",
+  "updated": "2026-07-15",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -340,6 +340,7 @@
       "requiredChecks": [
         "node tool/run.mjs check platform:app-targets platform:mobile-build-number platform:verify-ios-release-identity platform:verify-app-store-build platform:verify-ios-processing-receipts platform:verify-android-release-identity platform:probe-google-play-access",
         "App-relevant main pushes fan out Consumer and Host on independent iOS and Android runners under approval-free, main-only prod-mobile credentials; reviewer-protected prod remains isolated for backend/data operations, and one global non-cancelling concurrency group prevents overlapping store edits.",
+        "Each ephemeral iOS runner must import the same dedicated prod-mobile Apple Development PKCS#12, verify its team, fingerprint, and validity floor, and remove the decoded identity and temporary keychain after the job while leaving automatic signing enabled.",
         "Verify iOS archive/export identity plus App Store processing and Android AAB signature/certificate/compiled role/Firebase/Maps/version identity before claiming internal delivery.",
         "Play publishing is limited to the qa track and forbidden for production.",
         "Before enabling upload, a manual probe creates an edit, reads qa, and deletes the edit for both app records without uploading or committing.",
@@ -349,6 +350,7 @@
         "GitHub Actions is canonical for both roles and both mobile platforms; public store promotion remains separate.",
         "Mobile Internal Release preflights an 18-digit monotonic iOS candidate against App Store Connect and reserves two Android retry digits, then writes identity and processing receipts.",
         "Mobile Internal Release run 29168074271 processed Consumer and Host build 202607110000000301 as VALID; retirement run 29168662623 verified those receipts and disabled both app-scoped Default workflows.",
+        "Run 29388936845 exposed an ephemeral-runner Apple Development certificate leak. Nineteen verified-unused certificates were revoked on 2026-07-15, three working human identities were preserved, and dedicated reusable CI certificate 7P698XNLRP was stored in prod-mobile pending repaired main-run proof.",
         "Apple Developer App ID Catch Host/com.catchdates.host and App Store Connect app id 6778927317 were created on 2026-06-10; SKU is catch-host-ios.",
         "Legacy Catch | Default and Runner | Default Xcode Cloud workflows are disabled and retained only as rollback/audit surfaces.",
         "Android Publisher API and the dedicated github-actions-play-publisher OIDC identity are ready with zero project roles; Play upload remains disabled until APP-TARGET-ANDROID-PLAY-001 closes app-record, app-scoped permission, App Signing, tester, and install proof.",

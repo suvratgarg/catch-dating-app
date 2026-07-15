@@ -162,6 +162,11 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ["iOS channel", policy.ios?.channel, "testflight"],
     ["iOS upload mode", policy.ios?.uploadMode, "automatic-main"],
     ["iOS signing style", policy.ios?.signingStyle, "automatic"],
+    [
+      "iOS development identity source",
+      policy.ios?.developmentIdentitySource,
+      "reusable-ci-p12",
+    ],
     ["iOS distribution signing stage", policy.ios?.distributionSigningStage, "export"],
     ["iOS upload artifact", policy.ios?.uploadArtifact, "verified-ipa"],
     ["iOS upload tool", policy.ios?.uploadTool, "altool"],
@@ -208,6 +213,58 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ["iOS role matrix", /prod-ios:[\s\S]*?matrix:[\s\S]*?app_role/u],
     ["Android role matrix", /prod-android:[\s\S]*?matrix:[\s\S]*?app_role/u],
     ["mobile credentials environment", /environment:\s*prod-mobile/u],
+    [
+      "reusable iOS development certificate secret",
+      /secrets\.IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64/u,
+    ],
+    [
+      "reusable iOS development certificate password secret",
+      /secrets\.IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD/u,
+    ],
+    [
+      "reusable iOS development certificate fingerprint",
+      /vars\.IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256/u,
+    ],
+    [
+      "reusable iOS development certificate expiry metadata",
+      /vars\.IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT/u,
+    ],
+    [
+      "non-extractable reusable iOS identity import",
+      /security import "\$p12_path"[\s\S]*?-f pkcs12[\s\S]*?-x[\s\S]*?-T \/usr\/bin\/codesign/u,
+    ],
+    [
+      "reusable iOS identity team validation",
+      /PlistBuddy -c 'Print :teamID' ios\/ExportOptions\.prod\.plist/u,
+    ],
+    [
+      "reusable iOS identity certificate subject validation",
+      /certificate_subject[\s\S]*?CN=Apple Development:[\s\S]*?OU=\$expected_team_id/u,
+    ],
+    [
+      "reusable iOS identity fingerprint derivation",
+      /actual_sha256=.*openssl x509[\s\S]*?-fingerprint -sha256/u,
+    ],
+    [
+      "reusable iOS identity fingerprint validation",
+      /"\$actual_sha256" != "\$expected_sha256"/u,
+    ],
+    [
+      "reusable iOS identity expiry metadata validation",
+      /"\$actual_expiry_epoch" != "\$configured_expiry_epoch"/u,
+    ],
+    [
+      "reusable iOS identity validity floor",
+      /openssl x509[\s\S]*?-checkend 2592000/u,
+    ],
+    [
+      "single valid reusable iOS development identity",
+      /security find-identity -v -p codesigning/u,
+    ],
+    [
+      "always-run reusable iOS identity cleanup",
+      /Remove ephemeral iOS signing material[\s\S]*?if:\s*\$\{\{ always\(\) \}\}[\s\S]*?security delete-keychain/u,
+    ],
     ["TestFlight upload", /Upload to TestFlight/u],
     ["automatic iOS distribution export", /xcodebuild\s*\\\s*\n\s*-exportArchive/u],
     ["post-export iOS identity verification", /verify_ios_release_identity\.mjs\s*\\[\s\S]*?--app/u],

@@ -269,9 +269,10 @@ jobs:
           fi
           asc_key_dir="$HOME/.appstoreconnect/private_keys"
           mkdir -p "$asc_key_dir"
-          /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
-          chmod 600 "$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
-          echo "ASC_KEY_PATH=$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8" >> "$GITHUB_ENV"
+          asc_key_path="$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
+          echo "ASC_KEY_PATH=$asc_key_path" >> "$GITHUB_ENV"
+          /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$asc_key_path"
+          chmod 600 "$asc_key_path"
 
       - name: Verify App Store build-number floor
         run: |
@@ -282,6 +283,114 @@ jobs:
             --issuer-id "$ASC_ISSUER_ID" \
             --key-path "$ASC_KEY_PATH" \
             --check-candidate
+
+      - name: Install reusable iOS CI development identity
+        env:
+          IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64 }}
+          IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD }}
+          IOS_CI_DEVELOPMENT_CERTIFICATE_ID: ${{ vars.IOS_CI_DEVELOPMENT_CERTIFICATE_ID }}
+          IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256: ${{ vars.IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256 }}
+          IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT: ${{ vars.IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT }}
+        run: |
+          set -euo pipefail
+
+          keychain_path="$RUNNER_TEMP/catch-ios-ci-signing.keychain-db"
+          p12_path="$RUNNER_TEMP/catch-ios-ci-development.p12"
+          certificate_pem_path="$RUNNER_TEMP/catch-ios-ci-development.pem"
+          {
+            echo "IOS_CI_KEYCHAIN_PATH=$keychain_path"
+            echo "IOS_CI_P12_PATH=$p12_path"
+            echo "IOS_CI_CERTIFICATE_PEM_PATH=$certificate_pem_path"
+          } >> "$GITHUB_ENV"
+
+          if [[ -z "${IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64:-}" || \
+                -z "${IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD:-}" || \
+                -z "${IOS_CI_DEVELOPMENT_CERTIFICATE_ID:-}" || \
+                -z "${IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256:-}" || \
+                -z "${IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT:-}" ]]; then
+            echo "Missing reusable iOS CI development identity inputs."
+            exit 1
+          fi
+
+          /usr/bin/printf '%s' "$IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64" | \
+            /usr/bin/base64 -D > "$p12_path"
+          chmod 600 "$p12_path"
+
+          keychain_password="$(openssl rand -base64 48)"
+          security create-keychain -p "$keychain_password" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$keychain_password" "$keychain_path"
+          security import "$p12_path" \
+            -k "$keychain_path" \
+            -f pkcs12 \
+            -P "$IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD" \
+            -x \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "$keychain_password" \
+            "$keychain_path"
+          security list-keychains -d user -s "$keychain_path"
+          security default-keychain -d user -s "$keychain_path"
+          rm -f "$p12_path"
+
+          identity_count="$(security find-identity -v -p codesigning "$keychain_path" | \
+            grep -c '"Apple Development:' || true)"
+          if [[ "$identity_count" != "1" ]]; then
+            echo "Expected exactly one valid Apple Development identity; found $identity_count."
+            exit 1
+          fi
+
+          security find-certificate -a -p "$keychain_path" > "$certificate_pem_path"
+          certificate_subject="$(openssl x509 -in "$certificate_pem_path" -noout -subject -nameopt RFC2253)"
+          expected_team_id="$(/usr/libexec/PlistBuddy -c 'Print :teamID' ios/ExportOptions.prod.plist)"
+          if [[ "$certificate_subject" != *"CN=Apple Development:"* || \
+                "$certificate_subject" != *"OU=$expected_team_id"* ]]; then
+            echo "The reusable identity is not an Apple Development certificate for team $expected_team_id."
+            exit 1
+          fi
+
+          expected_sha256="$(/usr/bin/printf '%s' "$IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256" | \
+            tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+          actual_sha256="$(openssl x509 -in "$certificate_pem_path" -noout -fingerprint -sha256 | \
+            cut -d= -f2 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+          if [[ ! "$expected_sha256" =~ ^[A-F0-9]{64}$ || "$actual_sha256" != "$expected_sha256" ]]; then
+            echo "The reusable iOS CI certificate fingerprint does not match prod-mobile configuration."
+            exit 1
+          fi
+
+          configured_expiry_epoch="$(node -e '
+            const value = Date.parse(process.argv[1]);
+            if (!Number.isFinite(value)) process.exit(1);
+            process.stdout.write(String(Math.floor(value / 1000)));
+          ' "$IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT")"
+          actual_expiry_epoch="$(node -e '
+            const fs = require("node:fs");
+            const {X509Certificate} = require("node:crypto");
+            const certificate = new X509Certificate(fs.readFileSync(process.argv[1]));
+            process.stdout.write(String(Math.floor(Date.parse(certificate.validTo) / 1000)));
+          ' "$certificate_pem_path")"
+          if [[ "$actual_expiry_epoch" != "$configured_expiry_epoch" ]]; then
+            echo "The reusable iOS CI certificate expiry does not match prod-mobile configuration."
+            exit 1
+          fi
+
+          if ! openssl x509 -in "$certificate_pem_path" -checkend 2592000 -noout; then
+            echo "The reusable iOS CI development certificate expires within 30 days."
+            exit 1
+          fi
+
+          {
+            echo "## Reusable iOS development identity"
+            echo
+            echo "- Certificate id: \`$IOS_CI_DEVELOPMENT_CERTIFICATE_ID\`"
+            echo "- Team: \`$expected_team_id\`"
+            echo "- SHA-256: \`$actual_sha256\`"
+            echo "- Expires: \`$IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT\`"
+            echo "- Remaining validity: more than 30 days"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Prepare prod Flutter iOS configuration
         run: ./tool/flutter_with_env.sh prod --role "$APP_ROLE" build ios --release --config-only --build-name="$FLUTTER_BUILD_NAME" --build-number="$FLUTTER_BUILD_NUMBER"
@@ -432,6 +541,22 @@ jobs:
           path: build/ios/release-evidence/${{ matrix.app_role }}-testflight.json
           if-no-files-found: error
           retention-days: 14
+
+      - name: Remove ephemeral iOS signing material
+        if: ${{ always() }}
+        run: |
+          set +e
+          if [[ -n "${IOS_CI_KEYCHAIN_PATH:-}" ]]; then
+            security delete-keychain "$IOS_CI_KEYCHAIN_PATH" 2>/dev/null || true
+          fi
+          for secret_path in \
+            "${IOS_CI_P12_PATH:-}" \
+            "${IOS_CI_CERTIFICATE_PEM_PATH:-}" \
+            "${ASC_KEY_PATH:-}"; do
+            if [[ -n "$secret_path" ]]; then
+              rm -f "$secret_path"
+            fi
+          done
 
   prod-android:
     name: Android internal (${{ matrix.app_role }})

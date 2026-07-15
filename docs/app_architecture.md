@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.23
-updated: 2026-07-12
+version: 1.4.24
+updated: 2026-07-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -1463,7 +1463,11 @@ Current native policy:
   approval-free merge-driven workflow fans out by role: iOS archives upload to
   TestFlight and Android produces signed AABs for Play internal testing. Its
   credentials live in the main-only `prod-mobile` environment, not the shared
-  backend/data `prod` environment. Xcode Cloud is a
+  backend/data `prod` environment. Each ephemeral iOS runner imports the same
+  dedicated, fingerprint-checked CI Apple Development identity before invoking
+  automatic signing; Xcode still owns profile updates and distribution
+  re-signing at export. A runner must never create and then abandon a new
+  development certificate. Xcode Cloud is a
   legacy cutover surface only; Play upload remains gated by
   `APP-TARGET-ANDROID-PLAY-001` until console enrollment and publisher access
   are proven.
