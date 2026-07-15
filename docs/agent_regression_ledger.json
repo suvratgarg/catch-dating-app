@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "updated": "2026-07-15",
   "owner": "agent_operating_model",
   "entries": [
@@ -1169,6 +1169,7 @@
         "lib/core/widgets/catch_form_field_label.dart",
         "lib/core/widgets/catch_toggle.dart",
         "lib/**/presentation/**inline_editor**",
+        "lib/user_profile/presentation/profile_screen.dart",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
         "test/core/catch_field_focus_semantics_test.dart",
         "test/core/catch_primitives_test.dart",
@@ -1177,17 +1178,40 @@
         "test/profile/profile_widgets_test.dart",
         "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
       ],
-      "symptom": "Static fields display edit affordances, editable fields lose them, direct inputs add a duplicate keyboard Tab stop, pointer-down and focus require separate taps, secondary pointers or drags leave press chrome behind, tap-away cancels before pointer-up or during a scroll, blank drawer taps or descendant keyboard events toggle the row, local Done does not close after submit, saving fields still cancel or submit, disclosure height snaps or remounts draft state, an equal profile refresh resets a staged multi-choice draft, focus changes label typography/supporting-content order, an Optional suffix absorbs the field name instead of leaving it as a distinct text descendant, a hidden label also suppresses its same-name input hint, toggle anatomy falls off-axis or bypasses CatchToggle, choice summaries drift into feature-formatted comma lists, Optional copy is used as the final-selection policy, or empty editable rows mix bare labels, plus-prefixed values, and input instructions.",
+      "symptom": "Static fields display edit affordances, editable fields lose them, direct inputs add a duplicate keyboard Tab stop, pointer-down and focus require separate taps, secondary pointers or drags leave press chrome behind, tap-away cancels before pointer-up or during a scroll, blank drawer taps or descendant keyboard events toggle the row, local Done does not close after submit, saving fields still cancel or submit, disclosure height snaps or remounts draft state, automatic reveal continues after rapid close or fights a direct user scroll, reduced motion still animates the viewport, expanded commit controls remain under an overlaid shell bar, a final field cannot consume enough terminal extent to clear that bar, a populated 24 px clear target increases the canonical collapsed row height or sits off the editable value line, an equal profile refresh resets a staged multi-choice draft, focus changes label typography/supporting-content order, an Optional suffix absorbs the field name instead of leaving it as a distinct text descendant, a hidden label also suppresses its same-name input hint, toggle anatomy falls off-axis or bypasses CatchToggle, choice summaries drift into feature-formatted comma lists, Optional copy is used as the final-selection policy, or empty editable rows mix bare labels, plus-prefixed values, and input instructions.",
       "guard": {
         "type": "command",
         "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/chats/chat_input_bar_test.dart test/events/location_picker_screen_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/hosts/host_create_event_screen_test.dart test/event_success/event_success_live_screens_test.dart test/reviews/reviews_widgets_test.dart",
-        "guardEvidence": "single-gesture press-to-focus/open behavior, one native keyboard focus stop per direct input, field-to-field handoff, primary-pointer press filtering, drag exit cleanup, pointer-up tap-away timing, drawer tap and keyboard propagation barriers, local-versus-controlled Done ownership, loading cancellation/submit guards, native cursor placement, onBlur delivery, persistent disclosure identity, equal-refresh multi-choice draft preservation, centered toggle anatomy through canonical CatchToggle composition, distinct optional-label text with combined semantics, retained same-name hints when labels are hidden, affordance matrix, localized empty-value fallback, midpoint expansion/collapse height, stable label metrics, explicit-save content ordering, source-option-order choice summaries joined with a middle dot, explicit body override, and clearability independent from visible Optional copy"
+        "guardEvidence": "single-gesture press-to-focus/open behavior, one native keyboard focus stop per direct input, field-to-field handoff, primary-pointer press filtering, drag exit cleanup, pointer-up tap-away timing, drawer tap and keyboard propagation barriers, local-versus-controlled Done ownership, loading cancellation/submit guards, native cursor placement, onBlur delivery, persistent disclosure identity, equal clear/no-clear populated row height with the 24 px clear target centered on the editable value line, midpoint frame-driven reveal progress, rapid-close cancellation, direct-drag handoff, immediate reduced-motion reveal, final commit-bar clearance above a 102 px shell obstruction on a 393 by 852 profile viewport, final-Children terminal clearance without a visible end snap, Edit-only terminal-sliver ownership with Preview and Insights unchanged, equal-refresh multi-choice draft preservation, centered toggle anatomy through canonical CatchToggle composition, distinct optional-label text with combined semantics, retained same-name hints when labels are hidden, affordance matrix, localized empty-value fallback, midpoint expansion/collapse height, stable label metrics, explicit-save content ordering, source-option-order choice summaries joined with a middle dot, explicit body override, and clearability independent from visible Optional copy"
       },
       "owner_docs": [
         "docs/widget_catalog.md",
         "design/components/catch.components.json"
       ],
-      "notes": "New code derives affordances structurally; showChevron and the deprecated expanding/actions constructors remain source-compatible adapters to the canonical renderer. Non-text disclosure editors use CatchField.control; explicit-save text editors use CatchField.inputActions instead of nesting a second field primitive. Press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up. Explicit-save tap-away waits for pointer-up, ignores drag/scroll, and cannot cancel while saving. Disclosure children remain mounted while closed. CatchField.choices derives collapsed summaries in source option order with ' · ' unless an explicit body override is supplied. isOptional is visible/semantic copy only; allowEmptySelection independently governs whether the final selection may be removed. Editable empty display copy is primitive-derived and must not be recreated with feature-local plus strings."
+      "notes": "New code derives affordances structurally; showChevron and the deprecated expanding/actions constructors remain source-compatible adapters to the canonical renderer. Non-text disclosure editors use CatchField.control; explicit-save text editors use CatchField.inputActions instead of nesting a second field primitive. Press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up. Explicit-save tap-away waits for pointer-up, ignores drag/scroll, and cannot cancel while saving. Disclosure children remain mounted while closed. A labeled clear target is overlaid with reserved width so its hit box cannot alter row height. CatchFieldVisibilityScope publishes obstruction only; fields reuse the nearest existing vertical scroll position and never create a second controller. Automatic reveal shares the disclosure duration and curve, advances frame by frame as scroll extent grows, yields to direct user scrolling, cancels on rapid close, jumps under reduced motion, and uses only a zero-duration final correction. CatchField.choices derives collapsed summaries in source option order with ' · ' unless an explicit body override is supplied. isOptional is visible/semantic copy only; allowEmptySelection independently governs whether the final selection may be removed. Editable empty display copy is primitive-derived and must not be recreated with feature-local plus strings."
+    },
+    {
+      "id": "REG-APP-SHELL-KEYBOARD-001",
+      "title": "Software keyboards leave shell navigation covering editable content",
+      "status": "active",
+      "applies_to": [
+        "lib/core/presentation/app_shell.dart",
+        "lib/core/presentation/host_app_shell.dart",
+        "lib/core/presentation/app_shell_active_tab.dart",
+        "test/routing/app_shell_guest_cta_test.dart",
+        "test/routing/host_shell_navigation_test.dart"
+      ],
+      "symptom": "Consumer or Host navigation remains visible or is lifted above a software keyboard, the guest CTA competes with keyboard input, floating extend-body behavior remains enabled, or AppShellActiveTab publishes a nonzero bottom obstruction while viewInsets.bottom is nonzero.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/routing/app_shell_guest_cta_test.dart test/routing/host_shell_navigation_test.dart",
+        "guardEvidence": "real consumer and Host router shells hide navigation for nonzero software-keyboard viewInsets on floating iOS and anchored Android layouts, disable floating extend-body behavior where applicable, remove anchored bottom chrome, publish zero AppShellActiveTab obstruction, and preserve a focused route editor's element identity, text, and cursor selection while floating chrome disappears"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Keyboard chrome policy is keyed to viewInsets.bottom, not FocusManager state, so hardware keyboards retain tab navigation. Consumer guest auth chrome follows the same software-keyboard suppression rule. Floating shells keep the route body in one stable stack slot and conditionally remove only the navigation sibling, preventing keyboard appearance from reparenting or disposing the focused editor."
     },
     {
       "id": "REG-FIELD-HANDOFF-001",

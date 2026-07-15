@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -129,6 +130,15 @@ void main() {
     expect(find.text('Chats'), findsNothing);
     expect(find.text('Profile'), findsNothing);
 
+    tester.view.viewInsets = const FakeViewPadding(bottom: 318);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pump();
+    expect(find.text('Continue with phone'), findsNothing);
+
+    tester.view.resetViewInsets();
+    await tester.pump();
+    expect(find.text('Continue with phone'), findsOneWidget);
+
     await tester.tap(find.text('Continue with phone'));
     await tester.pump();
     await tester.pump();
@@ -200,6 +210,33 @@ void main() {
     await tester.pump();
 
     expect(find.text('Profile screen loaded'), findsOneWidget);
+    expect(
+      tester
+          .widget<Scaffold>(find.byKey(AppShellKeys.scaffold))
+          .bottomNavigationBar,
+      isNotNull,
+    );
+
+    tester.view.viewInsets = const FakeViewPadding(bottom: 318);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pump();
+    expect(find.byType(AppShellNavigationBar), findsNothing);
+    expect(
+      tester
+          .widget<Scaffold>(find.byKey(AppShellKeys.scaffold))
+          .bottomNavigationBar,
+      isNull,
+    );
+
+    tester.view.resetViewInsets();
+    await tester.pump();
+    expect(find.byType(AppShellNavigationBar), findsOneWidget);
+    expect(
+      tester
+          .widget<Scaffold>(find.byKey(AppShellKeys.scaffold))
+          .bottomNavigationBar,
+      isNotNull,
+    );
   });
 
   testWidgets('authenticated iOS shell overlays the floating tab bar', (
@@ -208,6 +245,10 @@ void main() {
     AppConfig.configureEntrypointRole(AppRole.consumer);
     final previousPlatformOverride = debugDefaultTargetPlatformOverride;
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final editorController = TextEditingController(text: 'Runner');
+    final editorFocusNode = FocusNode();
+    addTearDown(editorController.dispose);
+    addTearDown(editorFocusNode.dispose);
     try {
       final router = GoRouter(
         initialLocation: Routes.dashboardScreen.path,
@@ -216,7 +257,20 @@ void main() {
             builder: (_, _, navigationShell) =>
                 AppShell(navigationShell: navigationShell),
             branches: [
-              _branch(Routes.dashboardScreen.path, 'Home screen loaded'),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: Routes.dashboardScreen.path,
+                    builder: (_, _) => Scaffold(
+                      body: TextField(
+                        key: const ValueKey('shell-focus-continuity-editor'),
+                        controller: editorController,
+                        focusNode: editorFocusNode,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               _branch(Routes.exploreScreen.path, 'Explore screen loaded'),
               _branch(Routes.matchesListScreen.path, 'Chats screen loaded'),
               _branch(Routes.profileScreen.path, 'Profile screen loaded'),
@@ -245,6 +299,57 @@ void main() {
       expect(
         find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
         findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .bottomOverlayInset,
+        greaterThan(0),
+      );
+
+      final editor = find.byKey(
+        const ValueKey('shell-focus-continuity-editor'),
+      );
+      await tester.tap(editor);
+      await tester.pump();
+      editorController
+        ..text = 'Runner One'
+        ..selection = const TextSelection.collapsed(offset: 6);
+      final editorElement = tester.element(editor);
+
+      tester.view.viewInsets = const FakeViewPadding(bottom: 318);
+      addTearDown(tester.view.resetViewInsets);
+      await tester.pump();
+
+      final keyboardScaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      expect(find.byType(AppShellNavigationBar), findsNothing);
+      expect(keyboardScaffold.extendBody, isFalse);
+      expect(keyboardScaffold.bottomNavigationBar, isNull);
+      expect(keyboardScaffold.body, isA<Stack>());
+      expect(tester.element(editor), same(editorElement));
+      expect(editorFocusNode.hasFocus, isTrue);
+      expect(editorController.text, 'Runner One');
+      expect(
+        editorController.selection,
+        const TextSelection.collapsed(offset: 6),
+      );
+      expect(
+        tester
+            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .bottomOverlayInset,
+        0,
+      );
+
+      tester.view.resetViewInsets();
+      await tester.pump();
+      expect(find.byType(AppShellNavigationBar), findsOneWidget);
+      expect(
+        tester
+            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .bottomOverlayInset,
+        greaterThan(0),
       );
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatformOverride;
