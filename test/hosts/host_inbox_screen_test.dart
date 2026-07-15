@@ -196,17 +196,17 @@ Widget _app({
   return ProviderScope(
     overrides: [
       // Test-only scoped overrides deliberately replace app-root providers.
-      // ignore: scoped_providers_should_specify_dependencies
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       uidProvider.overrideWith((ref) => Stream.value('host-1')),
-      // ignore: scoped_providers_should_specify_dependencies
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
-      // ignore: scoped_providers_should_specify_dependencies
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       watchEventsForClubsProvider(
         eventsQuery,
       ).overrideWith((ref) => Stream.value([event])),
-      // ignore: scoped_providers_should_specify_dependencies
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       chatsListViewModelProvider.overrideWithValue(AsyncData(inbox)),
-      // ignore: scoped_providers_should_specify_dependencies
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       watchEventParticipationsForEventProvider(
         event.id,
       ).overrideWith((ref) => Stream.value(participations)),
