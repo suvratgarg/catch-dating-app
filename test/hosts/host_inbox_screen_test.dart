@@ -1,5 +1,3 @@
-// ignore_for_file: scoped_providers_should_specify_dependencies
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -197,12 +195,18 @@ Widget _app({
   final eventsQuery = EventsForClubsQuery([club.id]);
   return ProviderScope(
     overrides: [
+      // Test-only scoped overrides deliberately replace app-root providers.
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       uidProvider.overrideWith((ref) => Stream.value('host-1')),
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       watchEventsForClubsProvider(
         eventsQuery,
       ).overrideWith((ref) => Stream.value([event])),
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       chatsListViewModelProvider.overrideWithValue(AsyncData(inbox)),
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       watchEventParticipationsForEventProvider(
         event.id,
       ).overrideWith((ref) => Stream.value(participations)),

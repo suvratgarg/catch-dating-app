@@ -283,6 +283,7 @@ class CatchSection extends StatelessWidget {
     Key? key,
     String? title,
     Object? count,
+    Widget? trailing,
     ActivityKind? activityKind,
     bool lead = false,
     bool first = false,
@@ -299,6 +300,7 @@ class CatchSection extends StatelessWidget {
          key: key,
          title: title,
          count: count,
+         trailing: trailing,
          activityKind: activityKind,
          lead: lead,
          first: first,
@@ -318,6 +320,7 @@ class CatchSection extends StatelessWidget {
     Key? key,
     String? title,
     Object? count,
+    Widget? trailing,
     ActivityKind? activityKind,
     bool lead = false,
     bool first = false,
@@ -334,6 +337,7 @@ class CatchSection extends StatelessWidget {
          key: key,
          title: title,
          count: count,
+         trailing: trailing,
          activityKind: activityKind,
          lead: lead,
          first: first,
@@ -506,7 +510,7 @@ class CatchSection extends StatelessWidget {
         if (_fieldRows)
           Padding(
             padding: const EdgeInsets.only(
-              top: CatchFieldTokens.sectionFooterTopPadding,
+              top: CatchFieldTokens.dividedSectionFooterTopPadding,
             ),
             child: DefaultTextStyle.merge(
               style: CatchTextStyles.fieldLabel(
@@ -528,18 +532,29 @@ class CatchSection extends StatelessWidget {
         ? null
         : ActivityPalette.resolve(context, activityKind!).accent;
     final effectiveTitleColor =
-        titleColor ?? (lead && activityAccent != null ? activityAccent : t.ink);
+        titleColor ??
+        (lead && activityAccent != null
+            ? activityAccent
+            : _fieldRows
+            ? t.ink2
+            : t.ink);
     final displayTitle = title?.trim();
+    final displayCount = count?.toString().trim();
+    final hasTitle = displayTitle != null && displayTitle.isNotEmpty;
+    final hasCount = displayCount != null && displayCount.isNotEmpty;
+    final hasHeader = hasTitle || hasCount || trailing != null;
     if (_fieldRows) {
       final fieldContent = Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (displayTitle != null && displayTitle.isNotEmpty) ...[
+          if (hasHeader) ...[
             _buildCatchSectionKicker(
               context,
-              text: displayTitle,
-              count: count,
+              text: hasTitle ? displayTitle : null,
+              count: hasCount ? displayCount : null,
+              trailing: trailing,
               color: effectiveTitleColor,
+              size: CatchKickerSize.fieldSection,
             ),
             SizedBox(height: bodyGap),
           ],
@@ -563,11 +578,12 @@ class CatchSection extends StatelessWidget {
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (displayTitle != null && displayTitle.isNotEmpty) ...[
+        if (hasHeader) ...[
           _buildCatchSectionKicker(
             context,
-            text: displayTitle,
-            count: count,
+            text: hasTitle ? displayTitle : null,
+            count: hasCount ? displayCount : null,
+            trailing: trailing,
             color: effectiveTitleColor,
           ),
           SizedBox(height: bodyGap),
@@ -621,38 +637,13 @@ class CatchSection extends StatelessWidget {
                     CatchFieldTokens.rowHorizontalPadding,
                     CatchFieldTokens.sectionHeaderBottomPadding,
                   ),
-                  child: Row(
-                    children: [
-                      if (hasTitle)
-                        Expanded(
-                          child: CatchKicker(
-                            label: displayTitle,
-                            color: titleColor ?? t.ink2,
-                          ),
-                        ),
-                      if (!hasTitle) const Spacer(),
-                      if (hasCount)
-                        Text(
-                          displayCount,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.end,
-                          style: CatchTextStyles.sectionCount(
-                            context,
-                            color: t.ink3,
-                          ),
-                        ),
-                      if (hasCount && sectionTrailing != null)
-                        const SizedBox(width: CatchSpacing.s3),
-                      if (sectionTrailing != null)
-                        DefaultTextStyle.merge(
-                          style: CatchTextStyles.sectionCount(
-                            context,
-                            color: t.ink3,
-                          ),
-                          child: sectionTrailing,
-                        ),
-                    ],
+                  child: _buildCatchSectionKicker(
+                    context,
+                    text: hasTitle ? displayTitle : null,
+                    count: hasCount ? displayCount : null,
+                    trailing: sectionTrailing,
+                    color: titleColor ?? t.ink2,
+                    size: CatchKickerSize.fieldSection,
                   ),
                 ),
               _body(context, t),
@@ -660,7 +651,7 @@ class CatchSection extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
                     CatchFieldTokens.rowHorizontalPadding,
-                    CatchFieldTokens.sectionFooterTopPadding,
+                    CatchFieldTokens.containedSectionFooterTopPadding,
                     CatchFieldTokens.rowHorizontalPadding,
                     CatchFieldTokens.rowVerticalPadding,
                   ),
@@ -958,27 +949,48 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
 
 Widget _buildCatchSectionKicker(
   BuildContext context, {
-  required String text,
+  required String? text,
   required Color color,
   Object? count,
+  Widget? trailing,
+  CatchKickerSize size = CatchKickerSize.md,
 }) {
   final t = CatchTokens.of(context);
-  if (count == null || count.toString().isEmpty) {
-    return CatchKicker(label: text, color: color);
+  final displayText = text?.trim();
+  final hasText = displayText != null && displayText.isNotEmpty;
+  final displayCount = count?.toString().trim();
+  final hasCount = displayCount != null && displayCount.isNotEmpty;
+  if (hasText && !hasCount && trailing == null) {
+    return CatchKicker(label: displayText, color: color, size: size);
   }
   return Row(
+    crossAxisAlignment: CrossAxisAlignment.baseline,
+    textBaseline: TextBaseline.alphabetic,
     children: [
-      Expanded(
-        child: CatchKicker(label: text, color: color),
-      ),
-      const SizedBox(width: CatchSpacing.s3),
-      Text(
-        count.toString(),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.end,
-        style: CatchTextStyles.sectionCount(context, color: t.ink3),
-      ),
+      if (hasText)
+        Expanded(
+          child: CatchKicker(label: displayText, color: color, size: size),
+        )
+      else
+        const Spacer(),
+      if (hasCount) ...[
+        if (hasText) const SizedBox(width: CatchFieldTokens.sectionHeaderGap),
+        Text(
+          displayCount,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.end,
+          style: CatchTextStyles.sectionCount(context, color: t.ink3),
+        ),
+      ],
+      if (trailing != null) ...[
+        if (hasText || hasCount)
+          const SizedBox(width: CatchFieldTokens.sectionHeaderGap),
+        DefaultTextStyle.merge(
+          style: CatchTextStyles.sectionCount(context, color: t.ink3),
+          child: trailing,
+        ),
+      ],
     ],
   );
 }

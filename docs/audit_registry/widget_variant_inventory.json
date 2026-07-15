@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-15T03:55:22.787Z",
+  "generatedAt": "2026-07-15T20:19:22.301Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 865,
-    "components": 827,
-    "stateCards": 1759,
-    "reviewCandidates": 40,
+    "useCases": 874,
+    "components": 834,
+    "stateCards": 1793,
+    "reviewCandidates": 42,
     "oversizedUseCases": 44,
-    "multiUseCaseComponents": 37
+    "multiUseCaseComponents": 38
   },
   "reviewCandidates": [
     {
@@ -847,7 +847,7 @@
     {
       "component": "CatchSection",
       "useCaseCount": 2,
-      "stateCardCount": 16,
+      "stateCardCount": 17,
       "paths": [
         "[Core primitives]/Sections",
         "[P1 product surfaces]/Profiles/Sections"
@@ -863,6 +863,7 @@
         "divided-section",
         "field-list",
         "footer slot",
+        "header-footer-metrics",
         "lead-accent",
         "long-copy",
         "mixed-modes",
@@ -887,7 +888,7 @@
           "functionName": "catchSectionContractStates",
           "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
           "path": "[Core primitives]/Sections",
-          "stateCardCount": 13,
+          "stateCardCount": 14,
           "stateCards": [
             {
               "label": "contained-section",
@@ -916,6 +917,10 @@
             {
               "label": "divided-field-rows",
               "normalizedLabel": "divided field rows"
+            },
+            {
+              "label": "header-footer-metrics",
+              "normalizedLabel": "header footer metrics"
             },
             {
               "label": "contained-field-rows-child-active",
@@ -3471,6 +3476,94 @@
       ]
     },
     {
+      "component": "CatchFieldStepper",
+      "useCaseCount": 3,
+      "stateCardCount": 8,
+      "paths": [
+        "[Core primitives]/Inputs",
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "default",
+        "disabled",
+        "enabled",
+        "keyboard-focused · use Tab",
+        "maximum",
+        "minimum",
+        "minimum and maximum endpoints",
+        "repeating · press and hold"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldStepperContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "default",
+              "normalizedLabel": "default"
+            },
+            {
+              "label": "minimum",
+              "normalizedLabel": "minimum"
+            },
+            {
+              "label": "maximum",
+              "normalizedLabel": "maximum"
+            },
+            {
+              "label": "repeating · press and hold",
+              "normalizedLabel": "repeating press and hold"
+            },
+            {
+              "label": "keyboard-focused · use Tab",
+              "normalizedLabel": "keyboard focused use tab"
+            }
+          ]
+        },
+        {
+          "name": "Canonical height stepper bounds",
+          "functionName": "profileHeightStepButtonStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "minimum and maximum endpoints",
+              "normalizedLabel": "minimum and maximum endpoints"
+            }
+          ]
+        },
+        {
+          "name": "Canonical height stepper states",
+          "functionName": "profileHeightStepperControlsStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "enabled",
+              "normalizedLabel": "enabled"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchControlShell",
       "useCaseCount": 2,
       "stateCardCount": 8,
@@ -3914,6 +4007,75 @@
             {
               "label": "mixed read state",
               "normalizedLabel": "mixed read state"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldChoiceChip",
+      "useCaseCount": 2,
+      "stateCardCount": 6,
+      "paths": [
+        "[Core primitives]/Inputs",
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "keyboard-focused · use Tab",
+        "pressed · press and hold",
+        "selected",
+        "selected / unselected / disabled",
+        "selected disabled",
+        "unselected"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldChoiceChipContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "selected / unselected / disabled",
+              "normalizedLabel": "selected unselected disabled"
+            },
+            {
+              "label": "pressed · press and hold",
+              "normalizedLabel": "pressed press and hold"
+            },
+            {
+              "label": "keyboard-focused · use Tab",
+              "normalizedLabel": "keyboard focused use tab"
+            }
+          ]
+        },
+        {
+          "name": "Canonical single-choice chip states",
+          "functionName": "profileSingleChipValueStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "selected",
+              "normalizedLabel": "selected"
+            },
+            {
+              "label": "unselected",
+              "normalizedLabel": "unselected"
+            },
+            {
+              "label": "selected disabled",
+              "normalizedLabel": "selected disabled"
             }
           ]
         }
@@ -4824,7 +4986,7 @@
     {
       "component": "CatchSection",
       "useCaseCount": 2,
-      "stateCardCount": 16,
+      "stateCardCount": 17,
       "paths": [
         "[Core primitives]/Sections",
         "[P1 product surfaces]/Profiles/Sections"
@@ -4840,6 +5002,7 @@
         "divided-section",
         "field-list",
         "footer slot",
+        "header-footer-metrics",
         "lead-accent",
         "long-copy",
         "mixed-modes",
@@ -4864,7 +5027,7 @@
           "functionName": "catchSectionContractStates",
           "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
           "path": "[Core primitives]/Sections",
-          "stateCardCount": 13,
+          "stateCardCount": 14,
           "stateCards": [
             {
               "label": "contained-section",
@@ -4893,6 +5056,10 @@
             {
               "label": "divided-field-rows",
               "normalizedLabel": "divided field rows"
+            },
+            {
+              "label": "header-footer-metrics",
+              "normalizedLabel": "header footer metrics"
             },
             {
               "label": "contained-field-rows-child-active",
@@ -7448,6 +7615,94 @@
       ]
     },
     {
+      "component": "CatchFieldStepper",
+      "useCaseCount": 3,
+      "stateCardCount": 8,
+      "paths": [
+        "[Core primitives]/Inputs",
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "default",
+        "disabled",
+        "enabled",
+        "keyboard-focused · use Tab",
+        "maximum",
+        "minimum",
+        "minimum and maximum endpoints",
+        "repeating · press and hold"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldStepperContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "default",
+              "normalizedLabel": "default"
+            },
+            {
+              "label": "minimum",
+              "normalizedLabel": "minimum"
+            },
+            {
+              "label": "maximum",
+              "normalizedLabel": "maximum"
+            },
+            {
+              "label": "repeating · press and hold",
+              "normalizedLabel": "repeating press and hold"
+            },
+            {
+              "label": "keyboard-focused · use Tab",
+              "normalizedLabel": "keyboard focused use tab"
+            }
+          ]
+        },
+        {
+          "name": "Canonical height stepper bounds",
+          "functionName": "profileHeightStepButtonStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "minimum and maximum endpoints",
+              "normalizedLabel": "minimum and maximum endpoints"
+            }
+          ]
+        },
+        {
+          "name": "Canonical height stepper states",
+          "functionName": "profileHeightStepperControlsStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "enabled",
+              "normalizedLabel": "enabled"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchControlShell",
       "useCaseCount": 2,
       "stateCardCount": 8,
@@ -7891,6 +8146,75 @@
             {
               "label": "mixed read state",
               "normalizedLabel": "mixed read state"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldChoiceChip",
+      "useCaseCount": 2,
+      "stateCardCount": 6,
+      "paths": [
+        "[Core primitives]/Inputs",
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "keyboard-focused · use Tab",
+        "pressed · press and hold",
+        "selected",
+        "selected / unselected / disabled",
+        "selected disabled",
+        "unselected"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldChoiceChipContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "selected / unselected / disabled",
+              "normalizedLabel": "selected unselected disabled"
+            },
+            {
+              "label": "pressed · press and hold",
+              "normalizedLabel": "pressed press and hold"
+            },
+            {
+              "label": "keyboard-focused · use Tab",
+              "normalizedLabel": "keyboard focused use tab"
+            }
+          ]
+        },
+        {
+          "name": "Canonical single-choice chip states",
+          "functionName": "profileSingleChipValueStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "selected",
+              "normalizedLabel": "selected"
+            },
+            {
+              "label": "unselected",
+              "normalizedLabel": "unselected"
+            },
+            {
+              "label": "selected disabled",
+              "normalizedLabel": "selected disabled"
             }
           ]
         }
@@ -9540,6 +9864,63 @@
       ]
     },
     {
+      "component": "CatchKicker",
+      "useCaseCount": 1,
+      "stateCardCount": 6,
+      "paths": [
+        "[Core primitives]/Typography"
+      ],
+      "labels": [
+        "kicker-field-section",
+        "kicker-lg",
+        "kicker-md",
+        "mono-label",
+        "tinted",
+        "truncated"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchTypographyContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Typography",
+          "stateCardCount": 6,
+          "stateCards": [
+            {
+              "label": "kicker-md",
+              "normalizedLabel": "kicker md"
+            },
+            {
+              "label": "kicker-lg",
+              "normalizedLabel": "kicker lg"
+            },
+            {
+              "label": "kicker-field-section",
+              "normalizedLabel": "kicker field section"
+            },
+            {
+              "label": "tinted",
+              "normalizedLabel": "tinted"
+            },
+            {
+              "label": "truncated",
+              "normalizedLabel": "truncated"
+            },
+            {
+              "label": "mono-label",
+              "normalizedLabel": "mono label"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchNumberStepper",
       "useCaseCount": 1,
       "stateCardCount": 6,
@@ -10637,58 +11018,6 @@
       ]
     },
     {
-      "component": "CatchKicker",
-      "useCaseCount": 1,
-      "stateCardCount": 5,
-      "paths": [
-        "[Core primitives]/Typography"
-      ],
-      "labels": [
-        "kicker-lg",
-        "kicker-md",
-        "mono-label",
-        "tinted",
-        "truncated"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchTypographyContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Typography",
-          "stateCardCount": 5,
-          "stateCards": [
-            {
-              "label": "kicker-md",
-              "normalizedLabel": "kicker md"
-            },
-            {
-              "label": "kicker-lg",
-              "normalizedLabel": "kicker lg"
-            },
-            {
-              "label": "tinted",
-              "normalizedLabel": "tinted"
-            },
-            {
-              "label": "truncated",
-              "normalizedLabel": "truncated"
-            },
-            {
-              "label": "mono-label",
-              "normalizedLabel": "mono label"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchMetricStrip",
       "useCaseCount": 1,
       "stateCardCount": 5,
@@ -10995,6 +11324,58 @@
             {
               "label": "compact-mono",
               "normalizedLabel": "compact mono"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchToggle",
+      "useCaseCount": 1,
+      "stateCardCount": 5,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "disabled",
+        "keyboard-focused · use Tab",
+        "off",
+        "on",
+        "semantic-labelled"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchToggleContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "off",
+              "normalizedLabel": "off"
+            },
+            {
+              "label": "on",
+              "normalizedLabel": "on"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
+            },
+            {
+              "label": "semantic-labelled",
+              "normalizedLabel": "semantic labelled"
+            },
+            {
+              "label": "keyboard-focused · use Tab",
+              "normalizedLabel": "keyboard focused use tab"
             }
           ]
         }
@@ -12082,6 +12463,100 @@
       ]
     },
     {
+      "component": "CatchFieldActionBar",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "leading",
+        "ready",
+        "saving",
+        "wrapped"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldActionBarContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "ready",
+              "normalizedLabel": "ready"
+            },
+            {
+              "label": "saving",
+              "normalizedLabel": "saving"
+            },
+            {
+              "label": "leading",
+              "normalizedLabel": "leading"
+            },
+            {
+              "label": "wrapped",
+              "normalizedLabel": "wrapped"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldContentRow",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "empty-body",
+        "optional",
+        "title-body",
+        "two-three-clamp"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldContentRowContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "title-body",
+              "normalizedLabel": "title body"
+            },
+            {
+              "label": "optional",
+              "normalizedLabel": "optional"
+            },
+            {
+              "label": "empty-body",
+              "normalizedLabel": "empty body"
+            },
+            {
+              "label": "two-three-clamp",
+              "normalizedLabel": "two three clamp"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchIconBadge",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -12499,53 +12974,6 @@
             {
               "label": "custom-time",
               "normalizedLabel": "custom time"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchToggle",
-      "useCaseCount": 1,
-      "stateCardCount": 4,
-      "paths": [
-        "[Core primitives]/Inputs"
-      ],
-      "labels": [
-        "disabled",
-        "off",
-        "on",
-        "semantic-labelled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchToggleContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Inputs",
-          "stateCardCount": 4,
-          "stateCards": [
-            {
-              "label": "off",
-              "normalizedLabel": "off"
-            },
-            {
-              "label": "on",
-              "normalizedLabel": "on"
-            },
-            {
-              "label": "disabled",
-              "normalizedLabel": "disabled"
-            },
-            {
-              "label": "semantic-labelled",
-              "normalizedLabel": "semantic labelled"
             }
           ]
         }
@@ -13601,57 +14029,6 @@
       ]
     },
     {
-      "component": "CatchFieldStepper",
-      "useCaseCount": 2,
-      "stateCardCount": 3,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "disabled",
-        "enabled",
-        "minimum and maximum endpoints"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Canonical height stepper bounds",
-          "functionName": "profileHeightStepButtonStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "minimum and maximum endpoints",
-              "normalizedLabel": "minimum and maximum endpoints"
-            }
-          ]
-        },
-        {
-          "name": "Canonical height stepper states",
-          "functionName": "profileHeightStepperControlsStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "enabled",
-              "normalizedLabel": "enabled"
-            },
-            {
-              "label": "disabled",
-              "normalizedLabel": "disabled"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchMenu",
       "useCaseCount": 2,
       "stateCardCount": 3,
@@ -14279,16 +14656,16 @@
       ]
     },
     {
-      "component": "CatchFieldChoiceChip",
+      "component": "CatchFieldExplicitSaveControl",
       "useCaseCount": 1,
       "stateCardCount": 3,
       "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
+        "[Core primitives]/Inputs"
       ],
       "labels": [
-        "selected",
-        "selected disabled",
-        "unselected"
+        "feedback",
+        "secondary-action",
+        "supporting"
       ],
       "review": {
         "needsReview": false,
@@ -14298,23 +14675,65 @@
       },
       "useCases": [
         {
-          "name": "Canonical single-choice chip states",
-          "functionName": "profileSingleChipValueStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "name": "Contract states",
+          "functionName": "catchFieldExplicitSaveControlContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
           "stateCardCount": 3,
           "stateCards": [
             {
-              "label": "selected",
-              "normalizedLabel": "selected"
+              "label": "supporting",
+              "normalizedLabel": "supporting"
             },
             {
-              "label": "unselected",
-              "normalizedLabel": "unselected"
+              "label": "feedback",
+              "normalizedLabel": "feedback"
             },
             {
-              "label": "selected disabled",
-              "normalizedLabel": "selected disabled"
+              "label": "secondary-action",
+              "normalizedLabel": "secondary action"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldSupportRow",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "counter",
+        "error",
+        "helper"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldSupportRowContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "helper",
+              "normalizedLabel": "helper"
+            },
+            {
+              "label": "counter",
+              "normalizedLabel": "counter"
+            },
+            {
+              "label": "error",
+              "normalizedLabel": "error"
             }
           ]
         }
@@ -17054,6 +17473,228 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldCommitButton",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "cancel / done / saving / disabled",
+        "keyboard-focused · use Tab"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldCommitButtonContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "cancel / done / saving / disabled",
+              "normalizedLabel": "cancel done saving disabled"
+            },
+            {
+              "label": "keyboard-focused · use Tab",
+              "normalizedLabel": "keyboard focused use tab"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldDisclosureDrawer",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "closed",
+        "open"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldDisclosureDrawerContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "closed",
+              "normalizedLabel": "closed"
+            },
+            {
+              "label": "open",
+              "normalizedLabel": "open"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldFocusOutline",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "hidden",
+        "visible"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldFocusOutlineContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "hidden",
+              "normalizedLabel": "hidden"
+            },
+            {
+              "label": "visible",
+              "normalizedLabel": "visible"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldRepeatButton",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "enabled / disabled / press / hold to repeat",
+        "keyboard-focused · use Tab"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldRepeatButtonContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "enabled / disabled / press / hold to repeat",
+              "normalizedLabel": "enabled disabled press hold to repeat"
+            },
+            {
+              "label": "keyboard-focused · use Tab",
+              "normalizedLabel": "keyboard focused use tab"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldSpinner",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "commit",
+        "field"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldSpinnerContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "field",
+              "normalizedLabel": "field"
+            },
+            {
+              "label": "commit",
+              "normalizedLabel": "commit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldToggle",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "keyboard-focused · use Tab",
+        "off / on / saving / disabled"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldToggleContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "off / on / saving / disabled",
+              "normalizedLabel": "off on saving disabled"
+            },
+            {
+              "label": "keyboard-focused · use Tab",
+              "normalizedLabel": "keyboard focused use tab"
             }
           ]
         }
@@ -23343,102 +23984,6 @@
             {
               "label": "scrim styles",
               "normalizedLabel": "scrim styles"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchFieldCommitButton",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core primitives]/Inputs"
-      ],
-      "labels": [
-        "cancel / done / saving / disabled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchFieldCommitButtonContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Inputs",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "cancel / done / saving / disabled",
-              "normalizedLabel": "cancel done saving disabled"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchFieldRepeatButton",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core primitives]/Inputs"
-      ],
-      "labels": [
-        "enabled / disabled / press / hold to repeat"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchFieldRepeatButtonContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Inputs",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "enabled / disabled / press / hold to repeat",
-              "normalizedLabel": "enabled disabled press hold to repeat"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchFieldToggle",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core primitives]/Inputs"
-      ],
-      "labels": [
-        "off / on / saving / disabled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchFieldToggleContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Inputs",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "off / on / saving / disabled",
-              "normalizedLabel": "off on saving disabled"
             }
           ]
         }

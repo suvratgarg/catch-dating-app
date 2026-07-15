@@ -1464,6 +1464,7 @@ abstract final class CatchOpacity {
 abstract final class CatchStroke {
   static const double hairline = 1.0;
   static const double underline = 1.5;
+  static const double focusRing = 2.0;
   static const double selection = 3.0;
   static const double clubMemberSeal = 2.0;
 }
@@ -1558,6 +1559,7 @@ abstract final class CatchFieldTokens {
   static const double actionButtonHorizontalPadding = CatchSpacing.micro18;
   static const double actionButtonVerticalPadding = CatchSpacing.micro10;
   static const double actionButtonGap = CatchSpacing.s2;
+  static const double actionButtonSpinnerGap = 7;
 
   static const double stepperHitExtent = CatchSpacing.s11;
   static const double stepperVisualExtent = CatchSpacing.s8;
@@ -1567,6 +1569,7 @@ abstract final class CatchFieldTokens {
   static const double stepperLayoutGap = stepperGap - stepperVisualEdgeInset;
   static const double stepperValueMinWidth = 30;
   static const double stepperValueFontSize = 15;
+  static const double stepperGlyphExtent = 15;
 
   static const double toggleTrackWidth = CatchSpacing.s11;
   static const double toggleTrackHeight = 26;
@@ -1580,17 +1583,34 @@ abstract final class CatchFieldTokens {
   static const double sectionHeaderBottomPadding = CatchSpacing.micro2;
   static const double sectionHeaderGap = CatchSpacing.s3;
   static const double sectionRuleGap = CatchSpacing.s2;
-  static const double sectionFooterTopPadding = CatchSpacing.s2;
+  static const double containedSectionFooterTopPadding = CatchSpacing.micro2;
+  static const double dividedSectionFooterTopPadding = CatchSpacing.s2;
   static const double sectionCountFontSize = 9.5;
   static const double sectionCountLetterSpacing = 0.76;
+  static const double sectionKickerFontSize = 11;
+  static const double sectionKickerLetterSpacing = 1.43;
 
   static const double valueFontSize = 14;
   static const double captionFontSize = 11.5;
+  static const double contentBodyFontSize = 13;
   static const double counterFontSize = 10.5;
   static const double chipFontSize = 14;
   static const double actionButtonFontSize = 14;
   static const double valueLineHeight = 1.35;
+  static const double multilineValueLineHeight = 1.5;
+  static const double contentBodyLineHeight = 1.45;
+  static const double contentBodyTopGap = CatchSpacing.micro3;
   static const double supportLineHeight = 1.45;
+  static const double supportingCounterGap = CatchSpacing.s3;
+  static const double errorGlyphGap = CatchSpacing.micro6;
+  static const double errorGlyphExtent = captionFontSize;
+
+  static const double spinnerExtent = CatchSpacing.s4;
+  static const double actionSpinnerExtent = 13;
+  static const Duration spinnerPeriod = Duration(milliseconds: 800);
+
+  static const double focusRingWidth = CatchStroke.focusRing;
+  static const double focusRingOffset = CatchSpacing.micro2;
 
   static const double activeTintAlpha = 0.04;
   static const double pressedTintAlpha = 0.06;
@@ -1785,7 +1805,6 @@ abstract final class CatchLayout {
   static const double statStripLabelFontSize = 9.0;
   static const double fieldRowVerticalPadding =
       CatchFieldTokens.rowVerticalPadding;
-  static const double fieldActionBarWrapBreakpoint = 220.0;
   static const double fieldRowTextLaneInset = CatchFieldTokens.textLaneInset;
   static const double fieldRowDividerIconInset = fieldRowTextLaneInset;
   static const double fieldTrailingValueMaxWidth =

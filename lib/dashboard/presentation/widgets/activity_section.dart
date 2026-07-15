@@ -287,12 +287,11 @@ class NotificationRow extends StatelessWidget {
               title: title,
               body: body,
             ),
-      child: CatchField.nav(
+      child: CatchField.content(
         icon: visual.icon,
         iconColor: visual.accent,
         title: title,
         body: body,
-        titleMaxLines: 2,
         emphasis: CatchFieldEmphasis.title,
         showChevron: false,
         action: timeLabel.isEmpty

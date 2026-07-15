@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
@@ -645,6 +647,67 @@ void main() {
     expect(valueRight, lessThanOrEqualTo(fieldRight));
   });
 
+  testWidgets('CatchField content rows own the exact handoff type and clamps', (
+    tester,
+  ) async {
+    const title = 'A long field title that wraps across exactly two lines';
+    const body =
+        'Supporting copy can use as many as three complete lines before it truncates.';
+
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 160,
+          child: CatchField.content(title: title, body: body),
+        ),
+      ),
+    );
+
+    final titleFinder = find.text(title);
+    final bodyFinder = find.text(body);
+    final titleText = tester.widget<Text>(titleFinder);
+    final bodyText = tester.widget<Text>(bodyFinder);
+    final titleRect = tester.getRect(titleFinder);
+    final bodyRect = tester.getRect(bodyFinder);
+
+    expect(titleText.maxLines, 2);
+    expect(titleText.style?.fontSize, CatchFieldTokens.valueFontSize);
+    expect(titleText.style?.fontWeight, FontWeight.w600);
+    expect(titleText.style?.height, CatchFieldTokens.valueLineHeight);
+    expect(bodyText.maxLines, 3);
+    expect(bodyText.style?.fontSize, CatchFieldTokens.contentBodyFontSize);
+    expect(bodyText.style?.fontWeight, FontWeight.w400);
+    expect(bodyText.style?.height, CatchFieldTokens.contentBodyLineHeight);
+    expect(titleRect.height, greaterThan(CatchFieldTokens.valueLineExtent));
+    expect(
+      bodyRect.height,
+      greaterThan(CatchFieldTokens.contentBodyFontSize * 2),
+    );
+    expect(
+      bodyRect.top - titleRect.bottom,
+      closeTo(CatchFieldTokens.contentBodyTopGap, 0.1),
+    );
+  });
+
+  testWidgets('CatchField legacy value rows retain their 1/2 clamps', (
+    tester,
+  ) async {
+    const title = 'A legacy value label that would otherwise wrap';
+    const body = 'A legacy field value that may use up to two lines.';
+
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 160,
+          child: CatchField.read(title: title, body: body),
+        ),
+      ),
+    );
+
+    expect(tester.widget<Text>(find.text(title)).maxLines, 1);
+    expect(tester.widget<Text>(find.text(body)).maxLines, 2);
+  });
+
   testWidgets('CatchField row keeps its own horizontal gutter by default', (
     tester,
   ) async {
@@ -881,7 +944,7 @@ void main() {
 
     expect(
       footerRect.top - fieldRect.bottom,
-      closeTo(CatchFieldTokens.sectionFooterTopPadding, 0.001),
+      closeTo(CatchFieldTokens.dividedSectionFooterTopPadding, 0.001),
     );
     expect(footerStyle.color, CatchTokens.editorialLight.ink3);
     expect(footerStyle.height, 1.5);
@@ -2554,13 +2617,21 @@ void main() {
           .first;
       final surfaceRect = tester.getRect(surfaceFinder);
       final titleRect = tester.getRect(find.text('WHERE'));
+      final title = tester.widget<Text>(find.text('WHERE'));
       final countRect = tester.getRect(find.text('2 OF 4'));
       final trailingRect = tester.getRect(find.text('Ready'));
+      final fieldRect = tester.getRect(find.byType(CatchField));
       final footerRect = tester.getRect(
         find.text('Attendees see this on event cards.'),
       );
 
       expect(find.text('Where · 2 OF 4'), findsNothing);
+      expect(title.style?.fontSize, CatchFieldTokens.sectionKickerFontSize);
+      expect(title.style?.fontWeight, FontWeight.w600);
+      expect(
+        title.style?.letterSpacing,
+        CatchFieldTokens.sectionKickerLetterSpacing,
+      );
       expect(
         titleRect.left - surfaceRect.left,
         CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
@@ -2577,6 +2648,10 @@ void main() {
       expect(
         surfaceRect.bottom - footerRect.bottom,
         CatchStroke.hairline + CatchFieldTokens.rowVerticalPadding,
+      );
+      expect(
+        footerRect.top - fieldRect.bottom,
+        closeTo(CatchFieldTokens.containedSectionFooterTopPadding, 0.001),
       );
       expect(
         find.ancestor(
@@ -2636,6 +2711,40 @@ void main() {
       CatchElevation.focusRing(CatchTokens.editorialLight),
     );
   });
+
+  testWidgets(
+    'CatchSection divided field rows expose the trailing header slot',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 360,
+            child: CatchSection.fieldRows(
+              first: true,
+              title: 'Prompts',
+              count: '3 OF 3 ANSWERED',
+              trailing: Text('Edit'),
+              children: [CatchField.read(title: 'Prompt', body: 'Answer')],
+            ),
+          ),
+        ),
+      );
+
+      final titleRect = tester.getRect(find.text('PROMPTS'));
+      final titleText = tester.widget<Text>(find.text('PROMPTS'));
+      final countRect = tester.getRect(find.text('3 OF 3 ANSWERED'));
+      final trailingRect = tester.getRect(find.text('Edit'));
+      expect(titleRect.left, lessThan(countRect.left));
+      expect(countRect.right, lessThan(trailingRect.left));
+      expect(titleText.style?.color, CatchTokens.editorialLight.ink2);
+      expect(titleText.style?.fontSize, CatchFieldTokens.sectionKickerFontSize);
+      expect(titleText.style?.fontWeight, FontWeight.w600);
+      expect(
+        titleText.style?.letterSpacing,
+        CatchFieldTokens.sectionKickerLetterSpacing,
+      );
+    },
+  );
 
   testWidgets(
     'CatchSection contained field rows leave descendant focus to the field',
@@ -2763,12 +2872,47 @@ void main() {
         );
         final background = surface.decoration! as BoxDecoration;
         final perimeter = surface.foregroundDecoration! as BoxDecoration;
+        final overlayFinder = find.byKey(
+          const ValueKey('catch-field-active-overlay'),
+        );
+        final activeOverlayIndex =
+            List.generate(
+              overlayFinder.evaluate().length,
+              (index) => index,
+            ).singleWhere((index) {
+              final overlay = tester.widget<AnimatedContainer>(
+                overlayFinder.at(index),
+              );
+              return (overlay.decoration! as BoxDecoration).border != null;
+            });
+        final activeOverlayRect = tester.getRect(
+          overlayFinder.at(activeOverlayIndex),
+        );
+        final surfaceRect = tester.getRect(
+          find.byType(CatchSectionFocusSurface),
+        );
 
         expect(background.border, isNull);
         expect(
           perimeter.border,
           Border.all(color: CatchTokens.editorialLight.line2),
         );
+        expect(
+          activeOverlayRect.left,
+          closeTo(surfaceRect.left + CatchStroke.hairline, 0.1),
+        );
+        expect(
+          activeOverlayRect.right,
+          closeTo(surfaceRect.right - CatchStroke.hairline, 0.1),
+        );
+        if (firstOpen) {
+          expect(activeOverlayRect.top, lessThanOrEqualTo(surfaceRect.top));
+        } else {
+          expect(
+            activeOverlayRect.bottom,
+            greaterThanOrEqualTo(surfaceRect.bottom),
+          );
+        }
       }
     },
   );
@@ -3436,13 +3580,38 @@ void main() {
         tester.getTopLeft(find.byKey(ValueKey('catch-field-choice-$label'))).dy,
     ];
     expect(chipTops.toSet().length, greaterThan(1));
+    final chipRects = [
+      for (final label in const ['English', 'Hindi', 'Marathi', 'Gujarati'])
+        tester.getRect(find.byKey(ValueKey('catch-field-choice-$label'))),
+    ];
+    final firstRowTop = chipRects.map((rect) => rect.top).reduce(math.min);
+    final firstRowBottom = chipRects
+        .where((rect) => (rect.top - firstRowTop).abs() < 0.1)
+        .map((rect) => rect.bottom)
+        .reduce(math.max);
+    final secondRowTop = chipRects
+        .where((rect) => rect.top > firstRowTop + 0.1)
+        .map((rect) => rect.top)
+        .reduce(math.min);
+    expect(
+      secondRowTop - firstRowBottom,
+      closeTo(CatchFieldTokens.chipRunSpacing, 0.1),
+    );
     final englishRect = tester.getRect(
       find.byKey(const ValueKey('catch-field-choice-English')),
+    );
+    final englishLabel = tester.widget<Text>(
+      find.descendant(
+        of: find.byKey(const ValueKey('catch-field-choice-English')),
+        matching: find.text('English'),
+      ),
     );
     expect(
       englishRect.height,
       closeTo(CatchFieldTokens.chipVisualMinHeight, 2.1),
     );
+    expect(englishLabel.style?.fontWeight, FontWeight.w600);
+    expect(englishLabel.style?.color, CatchTokens.editorialLight.primaryInk);
     final fieldRect = tester.getRect(find.byType(CatchField));
     final controlRect = tester.getRect(
       find.byWidgetPredicate((widget) => widget is CatchFieldChoiceControl),
@@ -3451,9 +3620,128 @@ void main() {
       controlRect.right,
       closeTo(fieldRect.right - CatchFieldTokens.rowHorizontalPadding, 0.1),
     );
+    expect(
+      tester
+          .widget<AnimatedOpacity>(
+            find.byKey(const ValueKey('catch-field-control-opacity')),
+          )
+          .duration,
+      CatchFieldTokens.standard,
+    );
 
     await tester.tap(find.byKey(const ValueKey('catch-field-choice-Hindi')));
     expect(nextSelection, const {'English', 'Hindi'});
+  });
+
+  testWidgets('CatchField drawer controls do not enter header pressed state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchField.choices<String>(
+          title: 'Languages',
+          body: 'English',
+          values: const ['English', 'Hindi'],
+          itemLabel: (value) => value,
+          selected: const {'English'},
+          multi: true,
+          initiallyOpen: true,
+          onSelectionChanged: (_) {},
+          onCancel: () {},
+          onSubmit: () {},
+        ),
+      ),
+    );
+
+    BoxDecoration overlayDecoration() =>
+        tester
+                .widget<AnimatedContainer>(
+                  find.byKey(const ValueKey('catch-field-active-overlay')),
+                )
+                .decoration
+            as BoxDecoration;
+
+    expect(
+      overlayDecoration().color,
+      CatchFieldTokens.activeSurface(CatchTokens.editorialLight),
+    );
+    final chipGesture = await tester.startGesture(
+      tester.getCenter(find.byKey(const ValueKey('catch-field-choice-Hindi'))),
+    );
+    await tester.pump();
+    expect(
+      overlayDecoration().color,
+      CatchFieldTokens.activeSurface(CatchTokens.editorialLight),
+    );
+    await chipGesture.up();
+    await tester.pump();
+    expect(find.text('Hindi').hitTestable(), findsOneWidget);
+
+    final cancelGesture = await tester.startGesture(
+      tester.getCenter(find.byKey(const ValueKey('catch-field-cancel'))),
+    );
+    await tester.pump();
+    expect(
+      overlayDecoration().color,
+      CatchFieldTokens.activeSurface(CatchTokens.editorialLight),
+    );
+    await cancelGesture.up();
+  });
+
+  testWidgets('CatchField collapsed disclosure bottom padding stays tappable', (
+    tester,
+  ) async {
+    final openChanges = <bool>[];
+    await tester.pumpWidget(
+      _wrap(
+        CatchField.control(
+          title: 'Height',
+          body: '168 cm',
+          control: const Text('Height control'),
+          onOpenChanged: openChanges.add,
+        ),
+      ),
+    );
+
+    final collapsedRect = tester.getRect(find.byType(CatchField));
+    await tester.tapAt(
+      Offset(collapsedRect.center.dx, collapsedRect.bottom - 2),
+    );
+    await _pumpCatchFieldMotion(tester);
+
+    expect(openChanges, const [true]);
+    expect(find.text('Height control').hitTestable(), findsOneWidget);
+  });
+
+  testWidgets('CatchField disclosure validation follows its commit bar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchField.control(
+          title: 'Languages',
+          body: 'English',
+          control: const Text('Language control'),
+          initiallyOpen: true,
+          error: 'Choose at least one language.',
+          onCancel: () {},
+          onSubmit: () {},
+        ),
+      ),
+    );
+
+    final doneRect = tester.getRect(
+      find.byKey(const ValueKey('catch-field-done')),
+    );
+    final errorRect = tester.getRect(
+      find.text('Choose at least one language.'),
+    );
+
+    expect(errorRect.top, greaterThan(doneRect.bottom));
+    expect(
+      find.byKey(const ValueKey('catch-field-root-support')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('CatchField choices derives its multi summary in option order', (
@@ -3601,6 +3889,35 @@ void main() {
     );
   });
 
+  testWidgets('CatchField action bar stays on one row at compact width', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          key: const ValueKey('compact-action-bar'),
+          width: 220,
+          child: CatchFieldActionBar(onCancel: () {}, onSubmit: () {}),
+        ),
+      ),
+    );
+
+    final barRect = tester.getRect(
+      find.byKey(const ValueKey('compact-action-bar')),
+    );
+    final cancelRect = tester.getRect(
+      find.byKey(const ValueKey('catch-field-cancel')),
+    );
+    final doneRect = tester.getRect(
+      find.byKey(const ValueKey('catch-field-done')),
+    );
+
+    expect(cancelRect.top, doneRect.top);
+    expect(cancelRect.bottom, doneRect.bottom);
+    expect(doneRect.right, barRect.right);
+    expect(doneRect.left - cancelRect.right, CatchFieldTokens.actionButtonGap);
+  });
+
   testWidgets('CatchField divided action bar reaches the flush trailing edge', (
     tester,
   ) async {
@@ -3744,23 +4061,123 @@ void main() {
     final decreaseVisual = tester.getRect(
       find.byKey(const ValueKey('catch-field-stepper-Decrease height-visual')),
     );
+    final decreaseHit = tester.getRect(
+      find.byKey(
+        const ValueKey('catch-field-stepper-Decrease height-focus-outline'),
+      ),
+    );
     final stepperValue = tester.getRect(
       find.byKey(const ValueKey('catch-field-stepper-value')),
+    );
+    final increaseVisual = tester.getRect(
+      find.byKey(const ValueKey('catch-field-stepper-Increase height-visual')),
+    );
+    final increaseHit = tester.getRect(
+      find.byKey(
+        const ValueKey('catch-field-stepper-Increase height-focus-outline'),
+      ),
     );
     expect(
       stepperValue.left - decreaseVisual.right,
       closeTo(CatchFieldTokens.stepperGap, 0.1),
     );
+    expect(
+      increaseVisual.left - stepperValue.right,
+      closeTo(CatchFieldTokens.stepperGap, 0.1),
+    );
+    expect(decreaseVisual.center, decreaseHit.center);
+    expect(increaseVisual.center, increaseHit.center);
 
     final increase = tester.widget<Semantics>(
-      find
-          .ancestor(
-            of: find.byIcon(CatchIcons.addRounded),
-            matching: find.byType(Semantics),
-          )
-          .first,
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics && widget.properties.label == 'Increase height',
+      ),
     );
     expect(increase.properties.enabled, isFalse);
+    expect(
+      tester.widget<Icon>(find.byIcon(CatchIcons.addRounded)).size,
+      CatchFieldTokens.stepperGlyphExtent,
+    );
+  });
+
+  testWidgets('CatchField stepper hold cadence matches the handoff boundary', (
+    tester,
+  ) async {
+    var steps = 0;
+    await tester.pumpWidget(
+      _wrap(
+        CatchFieldStepper(
+          value: 168,
+          min: 100,
+          max: 220,
+          decreaseSemanticLabel: 'Decrease height',
+          increaseSemanticLabel: 'Increase height',
+          onChanged: (_) => steps += 1,
+        ),
+      ),
+    );
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.bySemanticsLabel('Increase height')),
+    );
+    await tester.pump();
+    expect(steps, 1);
+
+    await tester.pump(
+      CatchFieldTokens.repeatDelay - const Duration(milliseconds: 1),
+    );
+    expect(steps, 1);
+    await tester.pump(const Duration(milliseconds: 1));
+    expect(steps, 2);
+
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(steps, 11);
+    await tester.pump(const Duration(milliseconds: 99));
+    expect(steps, 11);
+    await tester.pump(const Duration(milliseconds: 1));
+    expect(steps, 12);
+    await tester.pump(
+      CatchFieldTokens.repeatAccelerated - const Duration(milliseconds: 1),
+    );
+    expect(steps, 12);
+    await tester.pump(const Duration(milliseconds: 1));
+    expect(steps, 13);
+    await gesture.up();
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(steps, 13);
+  });
+
+  testWidgets('CatchField stepper stops touch repeat after drag exit', (
+    tester,
+  ) async {
+    var steps = 0;
+    await tester.pumpWidget(
+      _wrap(
+        CatchFieldStepper(
+          value: 168,
+          min: 100,
+          max: 220,
+          decreaseSemanticLabel: 'Decrease height',
+          increaseSemanticLabel: 'Increase height',
+          onChanged: (_) => steps += 1,
+        ),
+      ),
+    );
+
+    final target = find.bySemanticsLabel('Increase height');
+    final gesture = await tester.startGesture(tester.getCenter(target));
+    await tester.pump();
+    expect(steps, 1);
+
+    await gesture.moveTo(
+      tester.getRect(target).bottomRight + const Offset(8, 8),
+    );
+    await tester.pump(
+      CatchFieldTokens.repeatDelay + const Duration(seconds: 1),
+    );
+    expect(steps, 1);
+    await gesture.up();
   });
 
   testWidgets('CatchField exposes saving and saved trailing status', (
@@ -3781,6 +4198,10 @@ void main() {
     );
 
     expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
+    expect(
+      tester.widget<Icon>(find.byKey(const ValueKey('catch-field-saved'))).icon,
+      CatchIcons.checkCircleFilled,
+    );
 
     await tester.pumpWidget(
       _wrap(
@@ -3796,12 +4217,232 @@ void main() {
       ),
     );
 
-    expect(find.byType(CircularProgressIndicator), findsNWidgets(2));
+    expect(find.byKey(const ValueKey('catch-field-spinner')), findsNWidgets(2));
+    final spinnerIcons = tester
+        .widgetList<Icon>(find.byIcon(CatchIcons.fieldSpinner))
+        .toList();
+    expect(
+      spinnerIcons.map((icon) => icon.size),
+      unorderedEquals([
+        CatchFieldTokens.spinnerExtent,
+        CatchFieldTokens.actionSpinnerExtent,
+      ]),
+    );
+    final spinnerRotation = tester.widget<RotationTransition>(
+      find.byKey(const ValueKey('catch-field-spinner')).first,
+    );
+    expect(
+      (spinnerRotation.turns as AnimationController).duration,
+      CatchFieldTokens.spinnerPeriod,
+    );
     expect(find.text('Saving…'), findsOneWidget);
+    final cancelOpacity = tester.widget<AnimatedOpacity>(
+      find.descendant(
+        of: find.byKey(const ValueKey('catch-field-cancel')),
+        matching: find.byType(AnimatedOpacity),
+      ),
+    );
+    expect(cancelOpacity.opacity, CatchFieldTokens.savingCancelOpacity);
+    expect(cancelOpacity.duration, CatchFieldTokens.fast);
+    final doneSpinnerRect = tester.getRect(
+      find.descendant(
+        of: find.byKey(const ValueKey('catch-field-done')),
+        matching: find.byIcon(CatchIcons.fieldSpinner),
+      ),
+    );
+    final savingLabelRect = tester.getRect(find.text('Saving…'));
+    expect(
+      savingLabelRect.left - doneSpinnerRect.right,
+      closeTo(CatchFieldTokens.actionButtonSpinnerGap, 0.1),
+    );
     expect(
       tester.getSize(find.byKey(const ValueKey('catch-field-done'))).height,
       34,
     );
+  });
+
+  testWidgets(
+    'CatchField choice toggle and stepper atoms activate from hardware keys',
+    (tester) async {
+      final previousHighlightStrategy = FocusManager.instance.highlightStrategy;
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(
+        () =>
+            FocusManager.instance.highlightStrategy = previousHighlightStrategy,
+      );
+      var selected = <String>{'English'};
+      var height = 168;
+      var visible = false;
+
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CatchField.choices<String>(
+                  title: 'Languages',
+                  values: const ['English', 'Hindi'],
+                  itemLabel: (value) => value,
+                  selected: selected,
+                  multi: true,
+                  initiallyOpen: true,
+                  onSelectionChanged: (next) => setState(() => selected = next),
+                  onCancel: () {},
+                  onSubmit: () {},
+                ),
+                CatchField.stepper(
+                  title: 'Height',
+                  value: height,
+                  min: 160,
+                  max: 180,
+                  initiallyOpen: true,
+                  decreaseSemanticLabel: 'Decrease height',
+                  increaseSemanticLabel: 'Increase height',
+                  onChanged: (next) => setState(() => height = next.toInt()),
+                  onCancel: () {},
+                  onSubmit: () {},
+                ),
+                CatchField.toggle(
+                  title: 'Show my pace',
+                  value: visible,
+                  onChanged: (next) => setState(() => visible = next),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final chipOutline = find.byKey(
+        const ValueKey('catch-field-choice-Hindi-focus-outline'),
+      );
+      Focus.of(tester.element(chipOutline)).requestFocus();
+      await tester.pump();
+      expect(
+        find.descendant(
+          of: chipOutline,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is CustomPaint &&
+                widget.painter.runtimeType.toString() ==
+                    '_CatchFieldFocusOutlinePainter',
+          ),
+        ),
+        findsOneWidget,
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(selected, {'English', 'Hindi'});
+
+      final stepperOutline = find.byKey(
+        const ValueKey('catch-field-stepper-Increase height-focus-outline'),
+      );
+      Focus.of(tester.element(stepperOutline)).requestFocus();
+      await tester.pump();
+      expect(
+        find.descendant(
+          of: stepperOutline,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is CustomPaint &&
+                widget.painter.runtimeType.toString() ==
+                    '_CatchFieldFocusOutlinePainter',
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester.getSize(stepperOutline),
+        const Size.square(CatchFieldTokens.stepperHitExtent),
+      );
+      expect(
+        tester.getSize(
+          find.byKey(
+            const ValueKey('catch-field-stepper-Increase height-visual'),
+          ),
+        ),
+        const Size.square(CatchFieldTokens.stepperVisualExtent),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(height, 169);
+
+      final toggleFinder = find.byKey(const ValueKey('catch-field-toggle'));
+      final toggleRectBeforeFocus = tester.getRect(toggleFinder);
+      Focus.of(tester.element(toggleFinder)).requestFocus();
+      await tester.pump();
+      final focusDecoration =
+          tester
+                  .widget<DecoratedBox>(
+                    find.byKey(
+                      const ValueKey('catch-field-toggle-focus-outline'),
+                    ),
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect(
+        focusDecoration.border?.top.width,
+        CatchFieldTokens.focusRingWidth,
+      );
+      expect(tester.getRect(toggleFinder), toggleRectBeforeFocus);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(visible, isTrue);
+    },
+  );
+
+  testWidgets('CatchField commit buttons paint immediate outer focus rings', (
+    tester,
+  ) async {
+    final previousHighlightStrategy = FocusManager.instance.highlightStrategy;
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy = previousHighlightStrategy,
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const CatchField.control(
+          title: 'Height',
+          body: '168 cm',
+          initiallyOpen: true,
+          control: Text('Height control'),
+          onCancel: _noop,
+          onSubmit: _noop,
+        ),
+      ),
+    );
+
+    for (final key in const [
+      ValueKey('catch-field-cancel'),
+      ValueKey('catch-field-done'),
+    ]) {
+      final buttonRoot = find.byKey(key);
+      final textButtonFinder = find.descendant(
+        of: buttonRoot,
+        matching: find.byType(TextButton),
+      );
+      final buttonRect = tester.getRect(textButtonFinder);
+      tester.widget<TextButton>(textButtonFinder).focusNode!.requestFocus();
+      await tester.pump();
+
+      final outline = find.descendant(
+        of: buttonRoot,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CustomPaint &&
+              widget.painter.runtimeType.toString() ==
+                  '_CatchFieldFocusOutlinePainter',
+        ),
+      );
+      expect(outline, findsOneWidget);
+      expect(tester.getRect(textButtonFinder), buttonRect);
+      expect(CatchFieldTokens.focusRingWidth, 2);
+      expect(CatchFieldTokens.focusRingOffset, 2);
+    }
   });
 
   testWidgets('CatchField single choice closes after the handoff delay', (
@@ -3877,7 +4518,23 @@ void main() {
 
     expect(find.byKey(const ValueKey('catch-field-toggle')), findsOneWidget);
     expect(find.byType(CatchToggle), findsOneWidget);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
+    final opacity = tester.widget<AnimatedOpacity>(
+      find.descendant(
+        of: find.byType(CatchToggle),
+        matching: find.byType(AnimatedOpacity),
+      ),
+    );
+    expect(opacity.opacity, CatchFieldTokens.savingToggleOpacity);
+    expect(opacity.duration, CatchFieldTokens.standard);
+    expect(
+      tester
+          .widget<AnimatedContainer>(
+            find.byKey(const ValueKey('catch-field-toggle-track')),
+          )
+          .duration,
+      CatchFieldTokens.standard,
+    );
 
     await tester.tap(find.byKey(const ValueKey('catch-field-toggle')));
     await tester.tap(find.text('Show my pace'));
@@ -5083,6 +5740,54 @@ void main() {
     expect(find.text('Instagram'), findsOneWidget);
   });
 
+  testWidgets('CatchField row multiline input uses textarea typography', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 320,
+          child: CatchField.input(
+            title: 'Answer',
+            initialValue: 'Catch me if you can',
+            maxLines: 3,
+            minLines: 2,
+          ),
+        ),
+      ),
+    );
+
+    var editable = tester.widget<EditableText>(find.byType(EditableText));
+    var field = tester.widget<TextField>(find.byType(TextField));
+    expect(editable.style.fontSize, CatchFieldTokens.valueFontSize);
+    expect(editable.style.fontWeight, FontWeight.w500);
+    expect(editable.style.height, CatchFieldTokens.multilineValueLineHeight);
+    expect(field.decoration?.hintStyle?.fontWeight, FontWeight.w500);
+    expect(
+      field.decoration?.hintStyle?.height,
+      CatchFieldTokens.multilineValueLineHeight,
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 320,
+          child: CatchField.input(title: 'Display name', initialValue: 'Aanya'),
+        ),
+      ),
+    );
+
+    editable = tester.widget<EditableText>(find.byType(EditableText));
+    field = tester.widget<TextField>(find.byType(TextField));
+    expect(editable.style.fontWeight, FontWeight.w700);
+    expect(editable.style.height, CatchFieldTokens.valueLineHeight);
+    expect(field.decoration?.hintStyle?.fontWeight, FontWeight.w700);
+    expect(
+      field.decoration?.hintStyle?.height,
+      CatchFieldTokens.valueLineHeight,
+    );
+  });
+
   testWidgets('CatchField collapsed text entry reports focus changes', (
     tester,
   ) async {
@@ -5296,6 +6001,37 @@ void main() {
 
     final helper = tester.widget<Text>(find.text('Invite code is available.'));
     expect(helper.style?.color, CatchTokens.editorialLight.success);
+    expect(helper.style?.fontSize, CatchFieldTokens.captionFontSize);
+    expect(helper.style?.fontWeight, FontWeight.w500);
+    expect(helper.style?.height, CatchFieldTokens.supportLineHeight);
+  });
+
+  testWidgets('CatchField row errors pair warning anatomy with caption text', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchField.input(
+          title: 'Invite code',
+          initialValue: 'TAKEN',
+          errorText: 'Invite code is unavailable.',
+        ),
+      ),
+    );
+
+    final icon = tester.widget<Icon>(find.byIcon(CatchIcons.fieldWarning));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.fieldWarning));
+    final errorFinder = find.text('Invite code is unavailable.');
+    final error = tester.widget<Text>(errorFinder);
+    final errorRect = tester.getRect(errorFinder);
+    expect(icon.size, CatchFieldTokens.errorGlyphExtent);
+    expect(icon.color, CatchTokens.editorialLight.danger);
+    expect(
+      errorRect.left - iconRect.right,
+      closeTo(CatchFieldTokens.errorGlyphGap, 0.1),
+    );
+    expect(error.style?.fontSize, CatchFieldTokens.captionFontSize);
+    expect(error.style?.height, CatchFieldTokens.supportLineHeight);
   });
 
   testWidgets('CatchField supports underline, action suffix, and mono data', (
@@ -5322,16 +6058,14 @@ void main() {
     );
 
     final editableText = tester.widget<EditableText>(find.byType(EditableText));
-    final shell = tester.widget<AnimatedContainer>(
-      find
-          .descendant(
-            of: find.byType(CatchField),
-            matching: find.byType(AnimatedContainer),
-          )
-          .first,
+    final baseline = tester.widget<DecoratedBox>(
+      find.byKey(const ValueKey('catch-field-underline-baseline')),
     );
-    final decoration = shell.decoration! as BoxDecoration;
+    final decoration = baseline.decoration as BoxDecoration;
     final border = decoration.border! as Border;
+    final sweep = tester.widget<TweenAnimationBuilder<double>>(
+      find.byKey(const ValueKey('catch-field-underline-sweep')),
+    );
 
     expect(find.text('KM'), findsOneWidget);
     expect(editableText.textAlign, TextAlign.center);
@@ -5339,7 +6073,17 @@ void main() {
       editableText.style.fontFeatures,
       contains(const FontFeature.tabularFigures()),
     );
-    expect(border.bottom.width, CatchStroke.underline);
+    expect(border.bottom.width, CatchStroke.hairline);
+    expect(sweep.duration, CatchFieldTokens.reveal);
+    await tester.pump(CatchFieldTokens.reveal);
+    expect(
+      tester
+          .getSize(
+            find.byKey(const ValueKey('catch-field-underline-sweep-bar')),
+          )
+          .width,
+      closeTo(tester.getSize(find.byType(TextField)).width, 0.1),
+    );
   });
 
   testWidgets(
@@ -5362,13 +6106,8 @@ void main() {
         ),
       );
 
-      final chrome = tester.widget<AnimatedContainer>(
-        find
-            .descendant(
-              of: find.byType(CatchField),
-              matching: find.byType(AnimatedContainer),
-            )
-            .first,
+      final chrome = tester.widget<TweenAnimationBuilder<double>>(
+        find.byKey(const ValueKey('catch-field-underline-sweep')),
       );
 
       expect(chrome.duration, Duration.zero);
@@ -5402,6 +6141,10 @@ void main() {
         find.byKey(const ValueKey('catch-field-expansion')),
       );
       expect(expansion.duration, Duration.zero);
+      final opacity = tester.widget<AnimatedOpacity>(
+        find.byKey(const ValueKey('catch-field-control-opacity')),
+      );
+      expect(opacity.duration, Duration.zero);
     },
   );
 
@@ -5658,6 +6401,14 @@ void main() {
     expect(label.style?.color, CatchTokens.editorialLight.danger);
     expect(value.style?.color, CatchTokens.editorialLight.ink3);
     expect(chevron.color, CatchTokens.editorialLight.ink3);
+    expect(chevron.size, CatchFieldTokens.disclosureGlyphExtent);
+    final rotation = tester.widget<AnimatedRotation>(
+      find.ancestor(
+        of: find.byIcon(CatchIcons.expandMoreRounded),
+        matching: find.byType(AnimatedRotation),
+      ),
+    );
+    expect(rotation.duration, CatchFieldTokens.reveal);
     expect(iconTheme.color, CatchTokens.editorialLight.ink2);
 
     await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));

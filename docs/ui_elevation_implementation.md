@@ -1,7 +1,7 @@
 ---
 doc_id: ui_elevation_implementation
-version: 2.2.0
-updated: 2026-06-30
+version: 2.2.1
+updated: 2026-07-15
 owner: ui_elevation_initiative
 status: active — mechanical execution checklist for implementing agents
 ---
@@ -72,7 +72,7 @@ per-screen visual review. It pairs with [`marketing_app_media_pipeline.md`](mark
 flutter analyze                                       # must stay clean
 flutter test --concurrency=1                          # serialized (documented isolation issue)
 ./tool/flutter_with_env.sh dev run                    # run the app (dev env)
-flutter run -d chrome -t lib/labs/card_variation_lab_app.dart   # re-skin proof lab
+cd widgetbook && flutter run -d chrome                # canonical re-skin proof surfaces
 ```
 Visual QA every touched screen in **light + dark** at **text scale 1.0 / 1.5 / 2.0**.
 
@@ -97,7 +97,13 @@ As-built reference (already in the tree; do not redo):
   **`proseL`/`proseM`** (Archivo) for editorial reading text. `bodyL/M` stayed platform system font so
   functional controls (`CatchField`, `CatchSelectMenu`, `city_picker.dart`) don't go serif —
   Phase 3 migrations swap editorial copy to `proseL/M`.
-- **Removed** `lib/labs/identity_candidate_lab_app.dart`; kept `card_variation_lab_app.dart`.
+- **Removed** the standalone identity/card executable labs. Re-skin review now
+  lives in Widgetbook foundation and component-contract surfaces;
+  `lib/labs/design_fixtures/**` remains an actively imported fixture library,
+  not a pending lab application.
+- `EventPolicyLabScreen` and `EventSuccessLabScreen` remain active dev/staging
+  routes with Widgetbook and test coverage. They live in their owning feature
+  folders and are not retired standalone lab applications.
 - Native/brand surfaces (Android splash, web manifest/index, Razorpay theme) updated off the old
   orange.
 
@@ -231,8 +237,9 @@ map-style JSON, and `card`/`raised`/`overlay` shadow colors in `CatchElevation`.
 `explore_concept/**`** (33 in `explore_concept_cards.dart` etc.) — that sandbox is retired in Phase 3.
 
 **Task 1a DoD (re-skin proof):** add a temporary debug palette toggle (or tweak one `CatchTokens`
-value), run `card_variation_lab_app.dart` + the live app → the whole app re-skins in light + dark
-with no stranded color outside the allowlist. `flutter analyze` clean; tests green.
+value), run the Widgetbook foundation/component contract surfaces plus the live app → the whole
+app re-skins in light + dark with no stranded color outside the allowlist. `flutter analyze`
+clean; tests green.
 
 ## Task 1b — Sizing/constraint doctrine + Dynamic Type  🟡 doctrine + scanner + migration DONE (`check_sizing.sh` green, wired in CI); remaining: ticket-rail overflow fix + Dynamic-Type spot-check ⬜
 
@@ -354,8 +361,9 @@ historical implementation detail.
    ceremony; re-grade to tokens.
 
 **Then retire dead sandboxes:** verify no `explore_concept/**` sandbox remains under the Explore
-feature and no dev route remains in `lib/routing/` (`rg -n "explore_concept|ExploreConcept" lib/routing`), plus any
-remaining `lib/labs/` not used as the re-skin proof. **DoD:** modernization backlog cleared; no
+feature and no dev route remains in `lib/routing/` (`rg -n "explore_concept|ExploreConcept" lib/routing`).
+Do not delete `lib/labs/design_fixtures/**`; those fixtures are consumed by Widgetbook and tests.
+No standalone executable lab should remain. **DoD:** modernization backlog cleared; no
 placeholder-era screens; anti-drift gate green repo-wide.
 
 ---

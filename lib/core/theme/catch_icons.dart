@@ -103,6 +103,9 @@ abstract final class CatchIcons {
 
   /// Selection-control marks (OptionCard): filled-look check + empty circle.
   static IconData get checkCircle => PhosphorIconsRegular.checkCircle;
+  static IconData get checkCircleFilled => PhosphorIconsFill.checkCircle;
+  static IconData get fieldSpinner => PhosphorIconsRegular.circleNotch;
+  static IconData get fieldWarning => PhosphorIconsFill.warningCircle;
   static IconData get circle => PhosphorIconsRegular.circle;
   static IconData get celebration => Icons.celebration_rounded;
   static IconData get saved => PhosphorIconsFill.bookmarkSimple;

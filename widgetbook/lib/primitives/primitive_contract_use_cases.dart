@@ -608,6 +608,7 @@ Widget catchTypographyContractStates(BuildContext context) {
     states: const [
       'kicker-md',
       'kicker-lg',
+      'kicker-field-section',
       'tinted',
       'truncated',
       'mono-label',
@@ -620,6 +621,13 @@ Widget catchTypographyContractStates(BuildContext context) {
       _StateCard(
         label: 'kicker-lg',
         child: CatchKicker(label: 'Featured format', size: CatchKickerSize.lg),
+      ),
+      const _StateCard(
+        label: 'kicker-field-section',
+        child: CatchKicker(
+          label: 'About you',
+          size: CatchKickerSize.fieldSection,
+        ),
       ),
       _StateCard(
         label: 'tinted',
@@ -1360,6 +1368,7 @@ Widget catchFieldContractStates(BuildContext context) {
     states: const [
       'row-value',
       'row-title',
+      'content-row-2-3-clamp',
       'value-line',
       'chevron',
       'toggle-on',
@@ -1419,6 +1428,17 @@ Widget catchFieldContractStates(BuildContext context) {
           body: 'Private to attendees',
           icon: CatchIcons.lockOutlineRounded,
           emphasis: CatchFieldEmphasis.title,
+        ),
+      ),
+      fieldState(
+        label: 'content-row-2-3-clamp',
+        description:
+            'Dedicated content semantics: 14/600 title (two lines), 13/400 supporting body (three lines), and a 3px gap without changing legacy value rows.',
+        child: CatchField.content(
+          title: 'Event starts tomorrow near Carter Road Jetty',
+          body:
+              'Sundowner 5K meets by the promenade before the group heads out together.',
+          icon: CatchIcons.notificationsNoneRounded,
         ),
       ),
       fieldState(
@@ -1729,6 +1749,375 @@ Widget catchFieldContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchFieldContentRow,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldContentRowContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchFieldContentRow',
+    contractId: 'catch.field.content_row',
+    states: const ['title-body', 'optional', 'empty-body', 'two-three-clamp'],
+    children: const [
+      _StateCard(
+        label: 'title-body',
+        child: CatchFieldContentRow(
+          title: 'Weekend route update',
+          body: 'The start point moved closer to the east gate.',
+        ),
+      ),
+      _StateCard(
+        label: 'optional',
+        child: CatchFieldContentRow(
+          title: 'Race notes',
+          body: 'Shared with runners before the event.',
+          isOptional: true,
+        ),
+      ),
+      _StateCard(
+        label: 'empty-body',
+        child: CatchFieldContentRow(title: 'Registration confirmed', body: ''),
+      ),
+      _StateCard(
+        label: 'two-three-clamp',
+        child: SizedBox(
+          width: 180,
+          child: CatchFieldContentRow(
+            title: 'A deliberately long title that reaches the second line',
+            body:
+                'Supporting copy may use three complete lines before the field truncates the remainder.',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldSupportRow,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldSupportRowContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _ContractScreen(
+    title: 'CatchFieldSupportRow',
+    contractId: 'catch.field.support_row',
+    states: const ['helper', 'counter', 'error'],
+    children: [
+      _StateCard(
+        label: 'helper',
+        child: CatchFieldSupportRow(
+          text: 'Shown on your public profile.',
+          color: t.ink3,
+        ),
+      ),
+      _StateCard(
+        label: 'counter',
+        child: CatchFieldSupportRow(
+          text: 'Keep it concise.',
+          counter: '19 / 300',
+          color: t.ink3,
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: CatchFieldSupportRow(
+          text: 'Choose at least one option.',
+          color: t.danger,
+          showErrorIcon: true,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldExplicitSaveControl,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldExplicitSaveControlContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchFieldExplicitSaveControl',
+    contractId: 'catch.field.explicit_save_control',
+    states: const ['supporting', 'feedback', 'secondary-action'],
+    children: [
+      const _StateCard(
+        label: 'supporting',
+        child: CatchFieldExplicitSaveControl(supporting: Text('19 / 300')),
+      ),
+      const _StateCard(
+        label: 'feedback',
+        child: CatchFieldExplicitSaveControl(feedback: Text('Draft restored.')),
+      ),
+      _StateCard(
+        label: 'secondary-action',
+        child: CatchFieldExplicitSaveControl(
+          secondaryAction: CatchTextButton(
+            label: 'Change prompt',
+            onPressed: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldActionBar,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldActionBarContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchFieldActionBar',
+    contractId: 'catch.field.action_bar',
+    states: const ['ready', 'saving', 'leading', 'wrapped'],
+    children: [
+      _StateCard(
+        label: 'ready',
+        child: CatchFieldActionBar(onCancel: _noop, onSubmit: _noop),
+      ),
+      _StateCard(
+        label: 'saving',
+        child: CatchFieldActionBar(
+          loading: true,
+          onCancel: _noop,
+          onSubmit: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'leading',
+        child: CatchFieldActionBar(
+          actionLeading: const Text('19 / 300'),
+          onCancel: _noop,
+          onSubmit: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'wrapped',
+        child: SizedBox(
+          width: 190,
+          child: CatchFieldActionBar(
+            actionLeading: const Text('19 / 300'),
+            onCancel: _noop,
+            onSubmit: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldDisclosureDrawer,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldDisclosureDrawerContractStates(BuildContext context) {
+  CatchFieldDisclosureDrawer drawer({required bool open}) {
+    return CatchFieldDisclosureDrawer(
+      open: open,
+      offstage: !open,
+      control: const Text('Disclosure control'),
+      startPadding: CatchSpacing.s4,
+      endPadding: CatchSpacing.s4,
+      bottomPadding: CatchFieldTokens.rowVerticalPadding,
+      revealDuration: Duration.zero,
+      opacityDuration: Duration.zero,
+      onRevealEnd: _noop,
+    );
+  }
+
+  return _ContractScreen(
+    title: 'CatchFieldDisclosureDrawer',
+    contractId: 'catch.field.disclosure_drawer',
+    states: const ['closed', 'open'],
+    children: [
+      _StateCard(label: 'closed', child: drawer(open: false)),
+      _StateCard(label: 'open', child: drawer(open: true)),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldSpinner,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldSpinnerContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _ContractScreen(
+    title: 'CatchFieldSpinner',
+    contractId: 'catch.field.spinner',
+    states: const ['field', 'commit'],
+    children: [
+      _StateCard(
+        label: 'field',
+        child: CatchFieldSpinner(color: t.ink3),
+      ),
+      _StateCard(
+        label: 'commit',
+        child: CatchFieldSpinner(
+          size: CatchFieldTokens.actionSpinnerExtent,
+          color: t.ink,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldFocusOutline,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldFocusOutlineContractStates(BuildContext context) {
+  Widget sample({required bool show, required String label}) {
+    return CatchFieldFocusOutline(
+      debugKey: ValueKey('catch-field-focus-outline-$label'),
+      show: show,
+      borderRadius: BorderRadius.circular(CatchRadius.pill),
+      child: const SizedBox(
+        width: 120,
+        height: 44,
+        child: Center(child: Text('Target')),
+      ),
+    );
+  }
+
+  return _ContractScreen(
+    title: 'CatchFieldFocusOutline',
+    contractId: 'catch.field.focus_outline',
+    states: const ['hidden', 'visible'],
+    children: [
+      _StateCard(
+        label: 'hidden',
+        child: sample(show: false, label: 'hidden'),
+      ),
+      _StateCard(
+        label: 'visible',
+        child: sample(show: true, label: 'visible'),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldChoiceChip,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldChoiceChipContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchFieldChoiceChip',
+    contractId: 'catch.field.choice_chip',
+    states: const [
+      'selected',
+      'unselected',
+      'disabled',
+      'pressed',
+      'keyboard-focused',
+    ],
+    children: [
+      _StateCard(
+        label: 'selected / unselected / disabled',
+        child: _InlineWrap(
+          children: [
+            CatchFieldChoiceChip(
+              label: 'English',
+              selected: true,
+              multi: true,
+              enabled: true,
+              onPressed: _noop,
+            ),
+            CatchFieldChoiceChip(
+              label: 'Hindi',
+              selected: false,
+              multi: true,
+              enabled: true,
+              onPressed: _noop,
+            ),
+            CatchFieldChoiceChip(
+              label: 'Tamil',
+              selected: false,
+              multi: true,
+              enabled: false,
+              onPressed: _noop,
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'pressed · press and hold',
+        child: CatchFieldChoiceChip(
+          label: 'Race prep',
+          selected: false,
+          multi: true,
+          enabled: true,
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'keyboard-focused · use Tab',
+        child: CatchFieldChoiceChip(
+          label: 'Social miles',
+          selected: true,
+          multi: true,
+          enabled: true,
+          onPressed: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldStepper,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldStepperContractStates(BuildContext context) {
+  CatchFieldStepper stepper(num value, {num? min, num? max}) {
+    return CatchFieldStepper(
+      value: value,
+      min: min,
+      max: max,
+      unit: 'cm',
+      decreaseSemanticLabel: 'Decrease height',
+      increaseSemanticLabel: 'Increase height',
+      onChanged: (_) {},
+    );
+  }
+
+  return _ContractScreen(
+    title: 'CatchFieldStepper',
+    contractId: 'catch.field.stepper',
+    states: const [
+      'default',
+      'minimum',
+      'maximum',
+      'repeating',
+      'keyboard-focused',
+    ],
+    children: [
+      _StateCard(label: 'default', child: stepper(168, min: 120, max: 220)),
+      _StateCard(label: 'minimum', child: stepper(120, min: 120, max: 220)),
+      _StateCard(label: 'maximum', child: stepper(220, min: 120, max: 220)),
+      _StateCard(
+        label: 'repeating · press and hold',
+        child: stepper(168, min: 120, max: 220),
+      ),
+      _StateCard(
+        label: 'keyboard-focused · use Tab',
+        child: stepper(168, min: 120, max: 220),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchFieldCommitButton,
   path: '[Core primitives]/Inputs',
 )
@@ -1736,7 +2125,7 @@ Widget catchFieldCommitButtonContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchFieldCommitButton',
     contractId: 'catch.field.commit_button',
-    states: const ['cancel', 'done', 'saving', 'disabled'],
+    states: const ['cancel', 'done', 'saving', 'disabled', 'keyboard-focused'],
     children: [
       _StateCard(
         label: 'cancel / done / saving / disabled',
@@ -1762,6 +2151,14 @@ Widget catchFieldCommitButtonContractStates(BuildContext context) {
           ],
         ),
       ),
+      _StateCard(
+        label: 'keyboard-focused · use Tab',
+        child: CatchFieldCommitButton(
+          label: 'Done',
+          primary: true,
+          onPressed: _noop,
+        ),
+      ),
     ],
   );
 }
@@ -1775,7 +2172,7 @@ Widget catchFieldToggleContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchFieldToggle',
     contractId: 'catch.field.toggle',
-    states: const ['off', 'on', 'saving', 'disabled'],
+    states: const ['off', 'on', 'saving', 'disabled', 'keyboard-focused'],
     children: [
       _StateCard(
         label: 'off / on / saving / disabled',
@@ -1787,6 +2184,10 @@ Widget catchFieldToggleContractStates(BuildContext context) {
             const CatchFieldToggle(value: false, onChanged: null),
           ],
         ),
+      ),
+      _StateCard(
+        label: 'keyboard-focused · use Tab',
+        child: CatchFieldToggle(value: true, onChanged: (_) {}),
       ),
     ],
   );
@@ -1801,7 +2202,13 @@ Widget catchFieldRepeatButtonContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchFieldRepeatButton',
     contractId: 'catch.field.repeat_button',
-    states: const ['enabled', 'disabled', 'pressed', 'repeating'],
+    states: const [
+      'enabled',
+      'disabled',
+      'pressed',
+      'repeating',
+      'keyboard-focused',
+    ],
     children: [
       _StateCard(
         label: 'enabled / disabled / press / hold to repeat',
@@ -1826,6 +2233,15 @@ Widget catchFieldRepeatButtonContractStates(BuildContext context) {
               onStep: _noop,
             ),
           ],
+        ),
+      ),
+      _StateCard(
+        label: 'keyboard-focused · use Tab',
+        child: CatchFieldRepeatButton(
+          icon: CatchIcons.addRounded,
+          semanticLabel: 'Increase from keyboard',
+          enabled: true,
+          onStep: _noop,
         ),
       ),
     ],
@@ -1984,6 +2400,7 @@ Widget catchSectionContractStates(BuildContext context) {
       'contained-section',
       'plain-section',
       'divided-field-rows',
+      'header-footer-metrics',
       'contained-field-rows-child-active',
       'contained-field-rows-explicit-focused',
       'field-list',
@@ -2135,6 +2552,34 @@ Widget catchSectionContractStates(BuildContext context) {
                 initialValue: '@catchapp',
                 icon: CatchIcons.alternateEmailOutlined,
                 showClearButton: true,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'header-footer-metrics',
+        child: _FieldWidth(
+          child: Column(
+            children: [
+              CatchSection.fieldRows(
+                title: 'Divided fields',
+                count: '1 field',
+                trailing: Icon(CatchIcons.infoOutlineRounded),
+                footer: const Text('8 px divided footer top inset'),
+                children: const [
+                  CatchField.read(title: 'Name', body: 'Suvrat'),
+                ],
+              ),
+              const SizedBox(height: CatchSpacing.s6),
+              CatchSection.containedFieldRows(
+                title: 'Contained fields',
+                count: '1 field',
+                trailing: Icon(CatchIcons.infoOutlineRounded),
+                footer: const Text('2 px contained footer top inset'),
+                children: const [
+                  CatchField.read(title: 'Height', body: '168 cm'),
+                ],
               ),
             ],
           ),
@@ -4886,7 +5331,13 @@ Widget catchToggleContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchToggle',
     contractId: 'catch.toggle',
-    states: const ['off', 'on', 'disabled', 'semantic-labelled'],
+    states: const [
+      'off',
+      'on',
+      'disabled',
+      'semantic-labelled',
+      'keyboard-focused',
+    ],
     children: [
       _StateCard(
         label: 'off',
@@ -4907,6 +5358,10 @@ Widget catchToggleContractStates(BuildContext context) {
           semanticLabel: 'Allow reminders',
           onChanged: (_) {},
         ),
+      ),
+      _StateCard(
+        label: 'keyboard-focused · use Tab',
+        child: CatchToggle(value: true, onChanged: (_) {}),
       ),
     ],
   );
