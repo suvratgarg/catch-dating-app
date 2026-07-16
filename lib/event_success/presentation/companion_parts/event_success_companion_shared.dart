@@ -1055,7 +1055,7 @@ class CompanionHero extends StatelessWidget {
                 showSelfCheckIn: showSelfCheckIn,
                 eventEnded: eventEnded,
               ),
-              tone: attended ? CatchBadgeTone.success : CatchBadgeTone.live,
+              tone: attended ? CatchBadgeTone.success : CatchBadgeTone.brand,
               icon: attended
                   ? CatchIcons.checkRounded
                   : CatchIcons.qrCode2Rounded,
@@ -1844,8 +1844,8 @@ class _StageBouncyPressState extends State<StageBouncyPress>
   }
 }
 
-/// Stage-native chip that mirrors `CatchChip`'s active/inactive styling but
-/// uses [StageBouncyPress] for tactile feedback instead of Material ink.
+/// Stage-native chip that mirrors `CatchChip.selectable`'s selected/unselected
+/// styling while using [StageBouncyPress] instead of Material ink.
 class StageBouncyChip extends StatelessWidget {
   const StageBouncyChip({
     required this.label,

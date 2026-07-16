@@ -208,7 +208,15 @@ class _SetupTabState extends State<SetupTab> {
           ),
         ),
         gapH16,
-        if (_isDirty && !setupFrozen) ...[const UnsavedChangesPill(), gapH8],
+        if (_isDirty && !setupFrozen) ...[
+          CatchInlineStatus(
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostSetupTextUnsavedChanges,
+            tone: CatchInlineStatusTone.warning,
+          ),
+          gapH8,
+        ],
         CatchButton(
           label: !widget.planIsPersisted && setupFrozen
               ? context
@@ -396,30 +404,6 @@ EventRunOfShowStep? _activeRunOfShowStep(EventSuccessRuntime runtime) {
   if (index <= 0) return steps.first;
   if (index >= steps.length) return steps.last;
   return steps[index];
-}
-
-class UnsavedChangesPill extends StatelessWidget {
-  const UnsavedChangesPill({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          CatchIcons.fiberManualRecord,
-          size: CatchIcon.unsavedDot,
-          color: t.warning,
-        ),
-        gapW6,
-        Text(
-          context.l10n.eventSuccessEventSuccessHostSetupTextUnsavedChanges,
-          style: CatchTextStyles.supporting(context, color: t.warning),
-        ),
-      ],
-    );
-  }
 }
 
 class NoticeCard extends StatelessWidget {

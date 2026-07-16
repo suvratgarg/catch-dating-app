@@ -1,21 +1,19 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:flutter/material.dart';
 
-enum CatchBadgeTone {
-  neutral,
-  brand,
-  success,
-  warning,
-  danger,
-  gold,
-  solid,
-  live,
-}
+enum CatchBadgeTone { neutral, brand, success, warning, danger, gold }
 
 enum CatchBadgeSize { sm, md, action }
 
-/// Canonical small status badge primitive.
+enum _CatchBadgeRecipe { standard, solid, live, onDark, privacy }
+
+/// Canonical small badge for compact, non-interactive metadata and status.
+///
+/// The default constructor preserves authored sentence case. Functional
+/// status must use [CatchBadge.functional], which owns uppercase mono type.
+/// Fixed visual recipes are exposed only through their named constructors.
 class CatchBadge extends StatelessWidget {
   const CatchBadge({
     super.key,
@@ -23,37 +21,135 @@ class CatchBadge extends StatelessWidget {
     this.tone = CatchBadgeTone.neutral,
     this.size = CatchBadgeSize.sm,
     this.icon,
-    this.uppercase = false,
     this.accentColor,
     this.backgroundColor,
     this.foregroundColor,
     this.borderColor,
-  });
+  }) : _functional = false,
+       _recipe = _CatchBadgeRecipe.standard;
+
+  const CatchBadge.functional({
+    super.key,
+    required this.label,
+    this.tone = CatchBadgeTone.neutral,
+    this.size = CatchBadgeSize.sm,
+    this.icon,
+    this.accentColor,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
+  }) : _functional = true,
+       _recipe = _CatchBadgeRecipe.standard;
+
+  /// Fixed editorial solid treatment for badges on light surfaces.
+  const CatchBadge.solid({
+    super.key,
+    required this.label,
+    this.size = CatchBadgeSize.md,
+    this.icon,
+  }) : tone = CatchBadgeTone.neutral,
+       _functional = false,
+       accentColor = null,
+       backgroundColor = null,
+       foregroundColor = null,
+       borderColor = null,
+       _recipe = _CatchBadgeRecipe.solid;
+
+  /// Fixed editorial solid treatment for compact functional status.
+  const CatchBadge.solidStatus({
+    super.key,
+    required this.label,
+    this.size = CatchBadgeSize.sm,
+    this.icon,
+  }) : tone = CatchBadgeTone.neutral,
+       _functional = true,
+       accentColor = null,
+       backgroundColor = null,
+       foregroundColor = null,
+       borderColor = null,
+       _recipe = _CatchBadgeRecipe.solid;
+
+  /// Canonical live-status treatment: live fill, status dot, functional copy.
+  const CatchBadge.live({
+    super.key,
+    required this.label,
+    this.size = CatchBadgeSize.sm,
+  }) : tone = CatchBadgeTone.neutral,
+       icon = null,
+       _functional = true,
+       accentColor = null,
+       backgroundColor = null,
+       foregroundColor = null,
+       borderColor = null,
+       _recipe = _CatchBadgeRecipe.live;
+
+  /// Fixed treatment for compact metadata over dark, media, or art surfaces.
+  const CatchBadge.onDark({super.key, required this.label, this.icon})
+    : tone = CatchBadgeTone.neutral,
+      size = CatchBadgeSize.md,
+      _functional = false,
+      accentColor = null,
+      backgroundColor = null,
+      foregroundColor = null,
+      borderColor = null,
+      _recipe = _CatchBadgeRecipe.onDark;
+
+  /// Fixed on-dark chrome with normalized functional-status typography.
+  const CatchBadge.onDarkStatus({super.key, required this.label, this.icon})
+    : tone = CatchBadgeTone.neutral,
+      size = CatchBadgeSize.md,
+      _functional = true,
+      accentColor = null,
+      backgroundColor = null,
+      foregroundColor = null,
+      borderColor = null,
+      _recipe = _CatchBadgeRecipe.onDark;
+
+  /// Canonical trust/privacy chrome. Domain adapters own localized copy.
+  const CatchBadge.privacy({
+    super.key,
+    required this.label,
+    required IconData icon,
+  }) : icon = icon,
+       tone = CatchBadgeTone.neutral,
+       size = CatchBadgeSize.sm,
+       _functional = true,
+       accentColor = null,
+       backgroundColor = null,
+       foregroundColor = null,
+       borderColor = null,
+       _recipe = _CatchBadgeRecipe.privacy;
 
   final String label;
   final CatchBadgeTone tone;
   final CatchBadgeSize size;
   final IconData? icon;
-  final bool uppercase;
   final Color? accentColor;
   final Color? backgroundColor;
   final Color? foregroundColor;
   final Color? borderColor;
+  final bool _functional;
+  final _CatchBadgeRecipe _recipe;
 
   @override
   Widget build(BuildContext context) {
     final palette = _BadgePalette.from(
       tone,
       CatchTokens.of(context),
+      recipe: _recipe,
       accentColor: accentColor,
     );
-    final metrics = _BadgeMetrics.from(size, uppercase: uppercase);
-    final displayLabel = uppercase ? label.toUpperCase() : label;
+    final metrics = _BadgeMetrics.from(
+      size,
+      functional: _functional,
+      recipe: _recipe,
+    );
+    final displayLabel = _functional ? label.toUpperCase() : label;
     final foreground = foregroundColor ?? palette.foreground;
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final label = Text(
+        final labelWidget = Text(
           displayLabel,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -75,14 +171,8 @@ class CatchBadge extends StatelessWidget {
                     ? MainAxisAlignment.center
                     : MainAxisAlignment.start,
                 children: [
-                  if (tone == CatchBadgeTone.live && accentColor == null) ...[
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: foreground,
-                        borderRadius: BorderRadius.circular(CatchRadius.pill),
-                      ),
-                      child: SizedBox.square(dimension: metrics.dotSize),
-                    ),
+                  if (_recipe == _CatchBadgeRecipe.live) ...[
+                    CatchStatusDot(color: foreground, size: metrics.dotSize),
                     SizedBox(width: metrics.gap),
                   ],
                   if (icon != null) ...[
@@ -90,55 +180,15 @@ class CatchBadge extends StatelessWidget {
                     SizedBox(width: metrics.gap),
                   ],
                   if (constraints.hasBoundedWidth)
-                    Flexible(child: label)
+                    Flexible(child: labelWidget)
                   else
-                    label,
+                    labelWidget,
                 ],
               ),
             ),
           ),
         );
       },
-    );
-  }
-}
-
-/// Overlay badge for icon actions that need an unread/count marker.
-class CatchIconBadge extends StatelessWidget {
-  const CatchIconBadge({
-    super.key,
-    required this.label,
-    required this.child,
-    this.isLabelVisible = true,
-    this.alignment = Alignment.topRight,
-    this.offset = const Offset(-2, 2),
-    this.backgroundColor,
-    this.foregroundColor,
-  });
-
-  final String label;
-  final Widget child;
-  final bool isLabelVisible;
-  final AlignmentGeometry alignment;
-  final Offset offset;
-  final Color? backgroundColor;
-  final Color? foregroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final effectiveForeground = foregroundColor ?? t.primaryInk;
-
-    return Badge(
-      isLabelVisible: isLabelVisible,
-      label: Text(
-        label,
-        style: CatchTextStyles.statusLabel(context, color: effectiveForeground),
-      ),
-      backgroundColor: backgroundColor ?? t.primary,
-      alignment: alignment,
-      offset: offset,
-      child: child,
     );
   }
 }
@@ -162,7 +212,39 @@ class _BadgeMetrics {
   final bool centerContent;
   final TextStyle Function(BuildContext context, Color color) textStyle;
 
-  static _BadgeMetrics from(CatchBadgeSize size, {required bool uppercase}) {
+  static _BadgeMetrics from(
+    CatchBadgeSize size, {
+    required bool functional,
+    required _CatchBadgeRecipe recipe,
+  }) {
+    if (recipe == _CatchBadgeRecipe.onDark) {
+      return _BadgeMetrics(
+        padding: CatchInsets.compactControlContent,
+        minHeight: 0,
+        gap: CatchSpacing.s1,
+        iconSize: CatchIcon.sm,
+        dotSize: CatchSpacing.micro6,
+        centerContent: false,
+        textStyle: functional
+            ? (context, color) => CatchTextStyles.kicker(context, color: color)
+            : (context, color) => CatchTextStyles.labelL(context, color: color),
+      );
+    }
+    if (recipe == _CatchBadgeRecipe.privacy) {
+      return _BadgeMetrics(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.micro10,
+          vertical: CatchSpacing.s1,
+        ),
+        minHeight: 0,
+        gap: CatchSpacing.s1,
+        iconSize: CatchIcon.micro,
+        dotSize: CatchSpacing.micro6,
+        centerContent: false,
+        textStyle: (context, color) =>
+            CatchTextStyles.badgeCaps(context, color: color),
+      );
+    }
     return switch (size) {
       CatchBadgeSize.sm => _BadgeMetrics(
         padding: const EdgeInsets.symmetric(
@@ -174,10 +256,10 @@ class _BadgeMetrics {
         iconSize: CatchIcon.badge,
         dotSize: CatchSpacing.micro6,
         centerContent: false,
-        textStyle: uppercase
+        textStyle: functional
             ? (context, color) =>
                   CatchTextStyles.badgeCaps(context, color: color)
-            : (context, color) => CatchTextStyles.badge(context, color: color),
+            : (context, color) => CatchTextStyles.labelS(context, color: color),
       ),
       CatchBadgeSize.md => _BadgeMetrics(
         padding: const EdgeInsets.symmetric(
@@ -189,8 +271,9 @@ class _BadgeMetrics {
         iconSize: CatchIcon.sm,
         dotSize: CatchLayout.badgeMdDotExtent,
         centerContent: false,
-        textStyle: (context, color) =>
-            CatchTextStyles.labelL(context, color: color),
+        textStyle: functional
+            ? (context, color) => CatchTextStyles.kicker(context, color: color)
+            : (context, color) => CatchTextStyles.labelL(context, color: color),
       ),
       CatchBadgeSize.action => _BadgeMetrics(
         padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.micro14),
@@ -199,8 +282,10 @@ class _BadgeMetrics {
         iconSize: CatchLayout.badgeActionIconSize,
         dotSize: CatchSpacing.micro6,
         centerContent: true,
-        textStyle: (context, color) =>
-            CatchTextStyles.buttonSm(context, color: color),
+        textStyle: functional
+            ? (context, color) => CatchTextStyles.kicker(context, color: color)
+            : (context, color) =>
+                  CatchTextStyles.buttonSm(context, color: color),
       ),
     };
   }
@@ -220,8 +305,41 @@ class _BadgePalette {
   static _BadgePalette from(
     CatchBadgeTone tone,
     CatchTokens t, {
+    required _CatchBadgeRecipe recipe,
     Color? accentColor,
   }) {
+    if (recipe == _CatchBadgeRecipe.onDark) {
+      return _BadgePalette(
+        background: CatchTokens.editorialWhite.withValues(
+          alpha: CatchOpacity.badgeOnDarkFill,
+        ),
+        foreground: CatchTokens.editorialWhite,
+        border: CatchTokens.editorialWhite.withValues(
+          alpha: CatchOpacity.badgeOnDarkBorder,
+        ),
+      );
+    }
+    if (recipe == _CatchBadgeRecipe.privacy) {
+      return _BadgePalette(
+        background: Colors.transparent,
+        foreground: t.ink3,
+        border: t.line2,
+      );
+    }
+    if (recipe == _CatchBadgeRecipe.solid) {
+      return _BadgePalette(
+        background: t.ink,
+        foreground: t.surface,
+        border: Colors.transparent,
+      );
+    }
+    if (recipe == _CatchBadgeRecipe.live) {
+      return _BadgePalette(
+        background: t.primary,
+        foreground: t.primaryInk,
+        border: Colors.transparent,
+      );
+    }
     if (accentColor != null) {
       return _BadgePalette(
         background: accentColor.withValues(alpha: CatchOpacity.subtleFill),
@@ -259,16 +377,6 @@ class _BadgePalette {
         background: t.gold.withValues(alpha: CatchOpacity.subtleFill),
         foreground: t.gold,
         border: t.gold.withValues(alpha: CatchOpacity.subtleBorder),
-      ),
-      CatchBadgeTone.solid => _BadgePalette(
-        background: t.ink,
-        foreground: t.surface,
-        border: Colors.transparent,
-      ),
-      CatchBadgeTone.live => _BadgePalette(
-        background: t.primary,
-        foreground: t.primaryInk,
-        border: Colors.transparent,
       ),
     };
   }

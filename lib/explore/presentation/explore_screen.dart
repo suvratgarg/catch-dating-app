@@ -355,9 +355,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               child: SafeArea(
                 top: false,
                 child: Center(
-                  child: CatchCountPill(
+                  child: CatchCountPill.label(
                     label: screenState.mapLauncherState.actionLabel,
-                    value: screenState.mapLauncherState.countLabel,
+                    count:
+                        int.tryParse(
+                          screenState.mapLauncherState.countLabel ?? '',
+                        ) ??
+                        0,
                     icon: CatchIcons.map,
                     semanticLabel: screenState.mapLauncherState.semanticLabel,
                     onPressed: () {

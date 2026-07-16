@@ -1057,6 +1057,12 @@ abstract final class CatchOpacity {
   /// Translucent pill fills over fixed dark editorial hero surfaces.
   static const double darkHeroPillFill = 0.16;
 
+  /// Canonical light-fill badge treatment over dark, media, or art surfaces.
+  static const double badgeOnDarkFill = 0.12;
+
+  /// Canonical light hairline for badges over dark, media, or art surfaces.
+  static const double badgeOnDarkBorder = 0.18;
+
   /// Backing ring opacity for overlapping avatar stacks on dark/art surfaces.
   static const double avatarStackRing = 0.28;
 
@@ -1850,6 +1856,7 @@ abstract final class CatchLayout {
   static const double noticeTitleMessageGap = CatchSpacing.micro2;
   static const double personUnreadBadgeHorizontalPadding =
       CatchSpacing.micro6 + CatchStroke.hairline;
+  static const double countBadgeMinExtent = 17.0;
   static const double countPillIconSize = CatchIcon.sm + CatchSpacing.micro2;
   static const double countPillMinExtent = CatchSpacing.s11;
   static const double countPillLabelVerticalPadding =

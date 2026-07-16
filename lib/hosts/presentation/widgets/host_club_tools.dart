@@ -78,14 +78,12 @@ class HostClubManagementPanel extends StatelessWidget {
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s1,
                   children: [
-                    CatchBadge(
+                    CatchBadge.functional(
                       label: context.l10n.hostsHostClubToolsLabelHostTools,
                       tone: CatchBadgeTone.brand,
-                      uppercase: true,
                     ),
-                    CatchBadge(
+                    CatchBadge.functional(
                       label: context.l10n.hostsHostClubToolsLabelClub,
-                      uppercase: true,
                     ),
                   ],
                 ),

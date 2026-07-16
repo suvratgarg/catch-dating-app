@@ -330,12 +330,12 @@ class _HostInlineOptionEditorState<T>
             runSpacing: CatchSpacing.s2,
             children: [
               for (final option in widget.options)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: option.label,
-                  active: _selected == option.value,
-                  accentColor: option.accentColor,
+                  selected: _selected == option.value,
+                  accent: option.accentColor,
                   enabled: !saving,
-                  onTap: () => setState(() => _selected = option.value),
+                  onChanged: (_) => setState(() => _selected = option.value),
                 ),
             ],
           ),

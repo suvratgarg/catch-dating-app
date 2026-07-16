@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
@@ -136,6 +137,36 @@ void main() {
   });
 
   group('DashboardScreen', () {
+    testWidgets(
+      'notification action uses the counted icon app-bar contract directly',
+      (tester) async {
+        final user = buildUser();
+        final notifications = [
+          _activityNotification(id: 'unread-1', uid: user.uid),
+          _activityNotification(id: 'unread-2', uid: user.uid),
+        ];
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [_activityNotificationsOverride(user, notifications)],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(body: NotificationsAction(uid: user.uid)),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        final button = tester.widget<CatchIconButton>(
+          find.byType(CatchIconButton),
+        );
+        expect(button.size, CatchIconButton.navSize);
+        expect(find.byIcon(CatchIcons.notificationsRounded), findsOneWidget);
+        expect(find.text('2'), findsOneWidget);
+        expect(find.byTooltip('Notifications'), findsOneWidget);
+      },
+    );
+
     testWidgets('shows a loading state while booked events are loading', (
       tester,
     ) async {

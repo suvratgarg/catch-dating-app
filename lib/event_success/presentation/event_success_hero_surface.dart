@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
@@ -21,33 +20,6 @@ class EventSuccessHeroSurface extends StatelessWidget {
       borderColor: t.surface.withValues(alpha: CatchOpacity.none),
       padding: CatchInsets.contentRelaxed,
       child: child,
-    );
-  }
-}
-
-class EventSuccessDarkPill extends StatelessWidget {
-  const EventSuccessDarkPill({
-    super.key,
-    required this.label,
-    this.foregroundColor,
-  });
-
-  final String label;
-  final Color? foregroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = foregroundColor ?? CatchTokens.editorialWhite;
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialWhite.withValues(
-        alpha: CatchOpacity.revealSurfaceFill,
-      ),
-      borderColor: CatchTokens.editorialWhite.withValues(
-        alpha: CatchOpacity.eventSuccessSubtleBorder,
-      ),
-      padding: CatchInsets.compactControlContent,
-      child: Text(label, style: CatchTextStyles.labelL(context, color: color)),
     );
   }
 }

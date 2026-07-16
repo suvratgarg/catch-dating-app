@@ -116,18 +116,16 @@ class EventPreviewHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: context
                     .l10n
                     .eventSuccessEventSuccessEventPreviewBodyScreenLabelPreviewOnly,
-                tone: CatchBadgeTone.solid,
                 icon: CatchIcons.visibilityOutlined,
               ),
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: context
                     .l10n
                     .eventSuccessEventSuccessEventPreviewBodyScreenLabelDevStaging,
-                tone: CatchBadgeTone.live,
                 icon: CatchIcons.scienceOutlined,
               ),
             ],
@@ -156,31 +154,25 @@ class EventPreviewHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label: context.l10n
                     .eventSuccessEventSuccessEventPreviewBodyScreenLabelCapacitylimitTarget(
                       capacityLimit: event.capacityLimit,
                     ),
-                foregroundColor: t.accentInk,
               ),
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label: context.l10n
                     .eventSuccessEventSuccessEventPreviewBodyScreenLabelBookedcountBooked(
                       bookedCount: preview.livePlan.bookedCount,
                     ),
-                foregroundColor: t.accentInk,
               ),
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label: context.l10n
                     .eventSuccessEventSuccessEventPreviewBodyScreenLabelCheckedincountCheckedIn(
                       checkedInCount: preview.livePlan.checkedInCount,
                     ),
-                foregroundColor: t.accentInk,
               ),
-              EventSuccessDarkPill(
-                label: event.pace.label,
-                foregroundColor: t.accentInk,
-              ),
+              CatchBadge.onDark(label: event.pace.label),
             ],
           ),
         ],

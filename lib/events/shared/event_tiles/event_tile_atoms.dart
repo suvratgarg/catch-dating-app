@@ -73,7 +73,7 @@ CatchBadgeTone eventTileStatusTone(EventTileStatus status) {
     EventTileStatus.joined => CatchBadgeTone.success,
     EventTileStatus.saved => CatchBadgeTone.brand,
     EventTileStatus.recommended => CatchBadgeTone.brand,
-    EventTileStatus.hosted => CatchBadgeTone.live,
+    EventTileStatus.hosted => CatchBadgeTone.brand,
     EventTileStatus.waitlisted => CatchBadgeTone.warning,
     EventTileStatus.attended => CatchBadgeTone.success,
     EventTileStatus.past => CatchBadgeTone.neutral,

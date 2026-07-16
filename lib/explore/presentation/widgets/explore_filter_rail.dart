@@ -3,11 +3,11 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
@@ -85,10 +85,12 @@ class ExploreFilterRail extends StatelessWidget {
       options: _timeOptions(context.l10n),
       scrollable: true,
       backgroundColor: backgroundColor ?? t.bg,
-      trailing: ExploreFilterGlyphButton(
+      trailing: CatchIconButton.counted(
         key: const ValueKey('explore-filter-button'),
-        activeCount: railState.activeCount,
-        semanticLabel: railState.filterButtonSemanticLabel,
+        icon: CatchIcons.tuneRounded,
+        count: railState.activeCount,
+        variant: CatchIconButtonVariant.plain,
+        tooltip: railState.filterButtonSemanticLabel,
         onTap: () => _showExploreFilterSheet(context),
       ),
     );
@@ -106,58 +108,6 @@ class ExploreFilterRail extends StatelessWidget {
         onToggleActivityTag: onToggleActivityTag,
         onToggleArea: onToggleArea,
         onClearFilters: onClearFilters,
-      ),
-    );
-  }
-}
-
-class ExploreFilterGlyphButton extends StatelessWidget {
-  const ExploreFilterGlyphButton({
-    super.key,
-    required this.activeCount,
-    required this.semanticLabel,
-    required this.onTap,
-  });
-
-  final int activeCount;
-  final String semanticLabel;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Tooltip(
-      message: semanticLabel,
-      child: Semantics(
-        button: true,
-        label: semanticLabel,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(CatchRadius.pill),
-            child: CatchIconBadge(
-              label: context.l10n.exploreExploreFilterRailLabelActivecount(
-                activeCount: activeCount,
-              ),
-              isLabelVisible: activeCount > 0,
-              backgroundColor: t.ink,
-              foregroundColor: t.surface,
-              offset: const Offset(-4, 4),
-              child: SizedBox.square(
-                dimension: CatchLayout.iconButtonNavSize,
-                child: Center(
-                  child: Icon(
-                    CatchIcons.tuneRounded,
-                    color: t.ink,
-                    size: CatchIcon.md,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -237,10 +187,12 @@ class ExploreFilterSheet extends StatelessWidget {
                 runSpacing: CatchSpacing.s2,
                 children: [
                   for (final option in sheetState.distanceOptions)
-                    CatchSelectChip(
+                    CatchChip.selectable(
                       label: option.label,
-                      active: filters.distanceFilter == option.value,
-                      onTap: () => onDistanceFilterSelected?.call(option.value),
+                      selected: filters.distanceFilter == option.value,
+                      enabled: onDistanceFilterSelected != null,
+                      onChanged: (_) =>
+                          onDistanceFilterSelected?.call(option.value),
                     ),
                 ],
               ),
@@ -254,16 +206,18 @@ class ExploreFilterSheet extends StatelessWidget {
                 spacing: CatchSpacing.s2,
                 runSpacing: CatchSpacing.s2,
                 children: [
-                  CatchSelectChip(
+                  CatchChip.selectable(
                     label:
                         context.l10n.exploreExploreFilterRailLabelJoinedClubs,
-                    active: filters.joinedOnly,
-                    onTap: onToggleJoinedOnly,
+                    selected: filters.joinedOnly,
+                    enabled: onToggleJoinedOnly != null,
+                    onChanged: (_) => onToggleJoinedOnly?.call(),
                   ),
-                  CatchSelectChip(
+                  CatchChip.selectable(
                     label: context.l10n.exploreExploreFilterRailLabelRated45,
-                    active: filters.highRatedOnly,
-                    onTap: onToggleHighRatedOnly,
+                    selected: filters.highRatedOnly,
+                    enabled: onToggleHighRatedOnly != null,
+                    onChanged: (_) => onToggleHighRatedOnly?.call(),
                   ),
                 ],
               ),
@@ -278,10 +232,14 @@ class ExploreFilterSheet extends StatelessWidget {
                 runSpacing: CatchSpacing.s2,
                 children: [
                   for (final kind in primaryBrowseActivityKinds)
-                    CatchSelectChip(
+                    CatchChip.selectable(
                       label: kind.label,
-                      active: _activityFilterActive(filters.activityTag, kind),
-                      onTap: () => onToggleActivityTag?.call(kind.name),
+                      selected: _activityFilterActive(
+                        filters.activityTag,
+                        kind,
+                      ),
+                      enabled: onToggleActivityTag != null,
+                      onChanged: (_) => onToggleActivityTag?.call(kind.name),
                     ),
                 ],
               ),
@@ -297,10 +255,11 @@ class ExploreFilterSheet extends StatelessWidget {
                   runSpacing: CatchSpacing.s2,
                   children: [
                     for (final area in sheetState.areaOptions)
-                      CatchSelectChip(
+                      CatchChip.selectable(
                         label: area,
-                        active: exploreFilterValuesMatch(filters.area, area),
-                        onTap: () => onToggleArea?.call(area),
+                        selected: exploreFilterValuesMatch(filters.area, area),
+                        enabled: onToggleArea != null,
+                        onChanged: (_) => onToggleArea?.call(area),
                       ),
                   ],
                 ),

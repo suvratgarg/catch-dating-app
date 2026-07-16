@@ -69,15 +69,15 @@ class CatchChipField<T extends Labelled> extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: values.map((v) {
               final isSelected = selected.contains(v);
-              return CatchChip(
+              return CatchChip.selectable(
                 key: chipKeyBuilder?.call(v),
                 label: v.label,
-                active: isSelected,
-                icon: multiSelect && isSelected
+                selected: isSelected,
+                leading: multiSelect && isSelected
                     ? Icon(CatchIcons.checkRounded)
                     : null,
                 enabled: enabled,
-                onTap: () {
+                onChanged: (_) {
                   final next = Set<T>.from(selected);
                   if (!multiSelect) {
                     next.clear();
