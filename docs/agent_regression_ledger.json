@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "updated": "2026-07-16",
   "owner": "agent_operating_model",
   "entries": [
@@ -1554,6 +1554,33 @@
         "design/components/catch.components.json"
       ],
       "notes": "Profile is the reference adopter for the nested shell and retains its specialized two-way Preview bridge. Host Clubs uses the same shell with typed HostClubTab pages and the canonical consumer Club Detail slivers; route actions, membership docks, and interaction effects remain outside the embedded read-only preview."
+    },
+    {
+      "id": "REG-AGENT-010",
+      "title": "Reconciliation ancestry hides dropped conflict-resolution intent",
+      "status": "active",
+      "applies_to": [
+        "lib/user_profile/presentation/profile_screen.dart",
+        "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+        "test/profile/profile_widgets_test.dart",
+        "design/website/**",
+        "website/**",
+        "tool/marketing/**",
+        "tool/web/website_copy_*.json",
+        "docs/audit_registry/reconciliation_*.json"
+      ],
+      "symptom": "A preserved branch is an ancestor of the reconciliation merge, but manual conflict resolution silently restores raw tab indices, stale route/component owners, or copy baseline debt while Git reports every source commit as merged.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart && npm --prefix website run typecheck",
+        "guardEvidence": "typed consumer and Host tab APIs plus the complete route, component, copy, architecture, and TypeScript contract loop"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/app_architecture.md",
+        "docs/marketing_website_architecture.md"
+      ],
+      "notes": "For future non-trivial merges, audit unique source commits with range-diff and patch identity, inspect remerge conflict resolutions, classify exact/equivalent/partial/missing intent, and retain a reconciliation receipt. Ancestry is necessary but not sufficient proof."
     }
   ]
 }

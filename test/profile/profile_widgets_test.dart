@@ -246,7 +246,7 @@ Finder _promptAnswerEditableText(int index) => find.descendant(
   matching: find.byType(EditableText),
 );
 
-Finder _profileOptionGroup() => find.byType(CatchOptionGroup<int>);
+Finder _profileOptionGroup() => find.byType(CatchOptionGroup<SelfProfileTab>);
 
 Finder _catchChip(String label) => find.byWidgetPredicate(
   (widget) => widget is CatchFieldChoiceChip && widget.label == label,
@@ -475,6 +475,32 @@ void main() {
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
     expect(find.byType(PreviewTab), findsNothing);
     expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
+  });
+
+  testWidgets('ProfileScreen accepts a typed initial tab', (tester) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(_profilePreviewScrollFixture()),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ProfileScreen(initialTab: SelfProfileTab.insights),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(ProfileInsightsTabSliverBody), findsOneWidget);
+    expect(find.byType(ProfileTabSliverBody), findsNothing);
+    expect(find.byType(PreviewTab), findsNothing);
   });
 
   testWidgets('ProfileScreen preserves NestedScrollView overlap contract', (
@@ -2538,7 +2564,10 @@ class _ProfileHeaderHarnessState extends State<_ProfileHeaderHarness>
   @override
   void initState() {
     super.initState();
-    _controller = TabController(length: 3, vsync: this);
+    _controller = TabController(
+      length: SelfProfileTab.values.length,
+      vsync: this,
+    );
   }
 
   @override

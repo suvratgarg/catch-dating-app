@@ -1,7 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {HostApplicationFlow} from "../features/host/application/HostApplicationFlow";
 import {CreateEventWalkthrough as CreateEventWalkthroughComponent} from "../features/host/sections/CreateEventWalkthrough";
-import {EventSuccessShowcase as EventSuccessShowcaseComponent} from "../features/host/sections/EventSuccessShowcase";
+import {PlaybookShowcase as PlaybookShowcaseComponent} from "../features/host/sections/PlaybookShowcase";
 import {HostComparisonSection as HostComparisonSectionComponent} from "../features/host/sections/HostComparisonSection";
 import {
   HostApplySection as HostApplySectionComponent,
@@ -15,19 +15,10 @@ import {
   HostWorkflowSection as HostWorkflowSectionComponent,
 } from "../features/host/sections/HostPageSections";
 import {
-  HostPreviewAdmissionSection as HostPreviewAdmissionSectionComponent,
-  HostPreviewAfterSection as HostPreviewAfterSectionComponent,
-  HostPreviewApplySection as HostPreviewApplySectionComponent,
-  HostPreviewCreateFlowSection as HostPreviewCreateFlowSectionComponent,
-  HostPreviewFaqSection as HostPreviewFaqSectionComponent,
-  HostPreviewFormatsSection as HostPreviewFormatsSectionComponent,
-  HostPreviewHeroSection as HostPreviewHeroSectionComponent,
-  HostPreviewLiveSection as HostPreviewLiveSectionComponent,
-  HostPreviewOfferSection as HostPreviewOfferSectionComponent,
-  HostPreviewOperatingLoopSection as HostPreviewOperatingLoopSectionComponent,
-  HostPreviewPaymentsSection as HostPreviewPaymentsSectionComponent,
-  HostPreviewTrustSection as HostPreviewTrustSectionComponent,
-} from "../features/host/sections/HostPreviewSections";
+  HostFaqSection as HostFaqSectionComponent,
+  HostFoundingOfferSection as HostFoundingOfferSectionComponent,
+  HostTrustSection as HostTrustSectionComponent,
+} from "../features/host/sections/HostSupportingSections";
 import {WaitlistSection} from "../shared/ui/primitives";
 import {captures, placeholderCaptures} from "./fixtures/marketingCaptures";
 
@@ -52,7 +43,7 @@ export const CreateEventWalkthroughSection: Story = {
   parameters: {
     catchComponent: {
       id: "host_create_event_walkthrough",
-      routeIds: ["host", "host_preview"],
+      routeIds: ["host"],
       states: ["default", "interactive-steps", "capture-fallback"],
     },
   },
@@ -64,23 +55,23 @@ export const CreateEventWalkthroughFallback: Story = {
   parameters: {
     catchComponent: {
       id: "host_create_event_walkthrough",
-      routeIds: ["host", "host_preview"],
+      routeIds: ["host"],
       states: ["capture-fallback"],
     },
   },
   render: () => <CreateEventWalkthroughComponent captures={placeholderCaptures} />,
 };
 
-export const EventSuccessShowcaseSection: Story = {
-  name: "Event Success showcase",
+export const PlaybookShowcaseSection: Story = {
+  name: "Playbook showcase",
   parameters: {
     catchComponent: {
-      id: "host_event_success_showcase",
+      id: "host_playbook_showcase",
       routeIds: ["host"],
-      states: ["default", "activity", "after", "debrief"],
+      states: ["default", "activity", "after", "debrief", "module-expanded", "deep-link"],
     },
   },
-  render: () => <EventSuccessShowcaseComponent captures={captures} />,
+  render: () => <PlaybookShowcaseComponent captures={captures} />,
 };
 
 export const HostComparisonSectionStory: Story = {
@@ -88,7 +79,7 @@ export const HostComparisonSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "host_comparison_section",
-      routeIds: ["host", "host_preview"],
+      routeIds: ["host"],
       states: ["collapsed", "expanded-interaction"],
     },
   },
@@ -216,173 +207,40 @@ export const HostApplySectionStory: Story = {
   render: () => <HostApplySectionComponent />,
 };
 
-export const HostPreviewHeroSectionStory: Story = {
-  name: "Host preview hero",
+export const HostFoundingOfferSectionStory: Story = {
+  name: "Host founding offer",
   parameters: {
     catchComponent: {
-      id: "host_preview_hero_section",
-      routeIds: ["host_preview"],
-      states: ["default", "capture-fallback"],
-    },
-  },
-  render: () => <HostPreviewHeroSectionComponent captures={captures} />,
-};
-
-export const HostPreviewHeroFallback: Story = {
-  name: "Host preview hero · fallback captures",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_hero_section",
-      routeIds: ["host_preview"],
-      states: ["capture-fallback"],
-    },
-  },
-  render: () => <HostPreviewHeroSectionComponent captures={placeholderCaptures} />,
-};
-
-export const HostPreviewOfferSectionStory: Story = {
-  name: "Host preview offer",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_offer_section",
-      routeIds: ["host_preview"],
+      id: "host_founding_offer_section",
+      routeIds: ["host"],
       states: ["founding-host-offer"],
     },
   },
-  render: () => <HostPreviewOfferSectionComponent />,
+  render: () => <HostFoundingOfferSectionComponent />,
 };
 
-export const HostPreviewFormatsSectionStory: Story = {
-  name: "Host preview formats",
+export const HostTrustSectionStory: Story = {
+  name: "Host trust",
   parameters: {
     catchComponent: {
-      id: "host_preview_formats_section",
-      routeIds: ["host_preview"],
+      id: "host_trust_section",
+      routeIds: ["host"],
       states: ["default"],
     },
   },
-  render: () => <HostPreviewFormatsSectionComponent />,
+  render: () => <HostTrustSectionComponent />,
 };
 
-export const HostPreviewOperatingLoopSectionStory: Story = {
-  name: "Host preview operating loop",
+export const HostFaqSectionStory: Story = {
+  name: "Host FAQ",
   parameters: {
     catchComponent: {
-      id: "host_preview_operating_loop_section",
-      routeIds: ["host_preview"],
+      id: "host_faq_section",
+      routeIds: ["host"],
       states: ["default"],
     },
   },
-  render: () => <HostPreviewOperatingLoopSectionComponent />,
-};
-
-export const HostPreviewCreateFlowSectionStory: Story = {
-  name: "Host preview create flow",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_create_flow_section",
-      routeIds: ["host_preview"],
-      states: ["composes-create-event-walkthrough"],
-    },
-  },
-  render: () => <HostPreviewCreateFlowSectionComponent captures={captures} />,
-};
-
-export const HostPreviewAdmissionSectionStory: Story = {
-  name: "Host preview admission",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_admission_section",
-      routeIds: ["host_preview"],
-      states: ["roster-states"],
-    },
-  },
-  render: () => <HostPreviewAdmissionSectionComponent />,
-};
-
-export const HostPreviewPaymentsSectionStory: Story = {
-  name: "Host preview payments",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_payments_section",
-      routeIds: ["host_preview"],
-      states: ["payment-states"],
-    },
-  },
-  render: () => <HostPreviewPaymentsSectionComponent />,
-};
-
-export const HostPreviewLiveSectionStory: Story = {
-  name: "Host preview live",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_live_section",
-      routeIds: ["host_preview"],
-      states: ["default", "capture-fallback"],
-    },
-  },
-  render: () => <HostPreviewLiveSectionComponent captures={captures} />,
-};
-
-export const HostPreviewLiveFallback: Story = {
-  name: "Host preview live · fallback captures",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_live_section",
-      routeIds: ["host_preview"],
-      states: ["capture-fallback"],
-    },
-  },
-  render: () => <HostPreviewLiveSectionComponent captures={placeholderCaptures} />,
-};
-
-export const HostPreviewAfterSectionStory: Story = {
-  name: "Host preview after",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_after_section",
-      routeIds: ["host_preview"],
-      states: ["capture-grid"],
-    },
-  },
-  render: () => <HostPreviewAfterSectionComponent captures={captures} />,
-};
-
-export const HostPreviewTrustSectionStory: Story = {
-  name: "Host preview trust",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_trust_section",
-      routeIds: ["host_preview"],
-      states: ["default"],
-    },
-  },
-  render: () => <HostPreviewTrustSectionComponent />,
-};
-
-export const HostPreviewFaqSectionStory: Story = {
-  name: "Host preview FAQ",
-  parameters: {
-    catchComponent: {
-      id: "host_preview_faq_section",
-      routeIds: ["host_preview"],
-      states: ["default"],
-    },
-  },
-  render: () => <HostPreviewFaqSectionComponent />,
-};
-
-export const HostPreviewApplySectionStory: Story = {
-  name: "Host preview apply",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "host_preview_apply_section",
-      routeIds: ["host_preview"],
-      states: ["composes-host-application-flow"],
-    },
-  },
-  render: () => <HostPreviewApplySectionComponent />,
+  render: () => <HostFaqSectionComponent />,
 };
 
 export const HostApplicationFlowInitial: Story = {
@@ -391,7 +249,7 @@ export const HostApplicationFlowInitial: Story = {
     a11y: {test: "todo"},
     catchComponent: {
       id: "host_application_flow",
-      routeIds: ["host", "host_preview"],
+      routeIds: ["host"],
       states: ["initial", "interactive-steps"],
     },
   },

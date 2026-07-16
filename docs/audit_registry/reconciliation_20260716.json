@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "updated": "2026-07-16",
+  "owner": "agent_operating_model",
+  "targetBranch": "codex/full-reconciliation-isolated-20260716",
+  "targetHeadBeforeRecovery": "971216df817b0f6b46d69939f090c3294113d5f8",
+  "reconciliationMerge": {
+    "commit": "c968699d8f04844ca6a5bba0ab3ab7a5318bd867",
+    "targetParent": "6bec6517a9338e472f447114a17ff094dd6ffa5f",
+    "preservedParent": "a59af56625eb78f1153bd16b337c3cab7e20881e",
+    "mergeBase": "c323772f334536ba62c6b4c49cac4251b8a069a1"
+  },
+  "classifications": [
+    {
+      "commit": "e5983f26753c897741d51da6ae7ca49965103bdd",
+      "subject": "Point development clients at catchdates-dev",
+      "status": "exact",
+      "evidence": "All four Firebase client configuration files match the preserved commit at the audited target head."
+    },
+    {
+      "commit": "abde92580fd53f383f8cf5bcbdbc73adee226e1f",
+      "subject": "Harden marketing content and deployment contracts",
+      "status": "equivalent",
+      "evidence": "The preserved copy and website series is represented by squash commit d21761dbe; its final source tree matches 0704ca480 exactly."
+    },
+    {
+      "commit": "e57e31313a8e5dd5c7798e47037878e895075e1e",
+      "subject": "Establish mobile typography and copy contracts",
+      "status": "equivalent",
+      "evidence": "Mapped by git range-diff to d21761dbe and included in its exact final source tree."
+    },
+    {
+      "commit": "0704ca480e087c1db10db6817787d2998bba3b0f",
+      "subject": "Record copy and website audit enforcement",
+      "status": "exact-via-squash",
+      "evidence": "The full tree at 0704ca480 is identical to squash commit d21761dbe."
+    },
+    {
+      "commit": "6a60f0c0e1b0ab90cbef4f8a1804bddeeb0ba207",
+      "subject": "feat(operations): add workflow contracts and persistence foundation",
+      "status": "equivalent-superset",
+      "evidence": "Squash commit 4e7594281 contains the preserved operations foundation plus the completed workflow platform."
+    },
+    {
+      "commit": "a094d8a32fe1a7768b9f66af03057b39614ebbf5",
+      "subject": "feat(operations): add supply intake workflow engine",
+      "status": "equivalent-superset",
+      "evidence": "Squash commit 4e7594281 contains and extends the preserved supply-intake engine."
+    },
+    {
+      "commit": "27bc0e3a6f38eed5b0dd41fb1d9a027fc3efe266",
+      "subject": "chore(wip): preserve pending reconciliation snapshot",
+      "status": "recovered",
+      "inventory": {
+        "pathsChangedNoRename": 1802,
+        "exactBeforeRecovery": 632,
+        "preservedParentBeforeRecovery": 1031,
+        "divergentBeforeRecovery": 139,
+        "preservedParentPngs": 1005
+      },
+      "recoveredIntent": [
+        "Consumer Profile accepts SelfProfileTab and renders a typed CatchTabControllerRail.",
+        "Host Preview retirement is represented consistently by Firebase redirects, route and component contracts, Storybook coverage, and canonical Host-page ownership.",
+        "Marketing copy migration has zero baseline debt, generated copy call sites, an exact allowlist, and matching metadata and documentation."
+      ],
+      "supersededIntent": [
+        "The snapshot's CatchBottomDock CTA removal is superseded by the reviewed bottom-dock versus bottom-action component decision and current catalog contracts.",
+        "The snapshot's prototype-lab deletion is not production behavior and was intentionally not imported.",
+        "Older widget-family implementations are superseded by 5785b9aaf, ee0e383a5, b94237f0e, and 971216df8."
+      ]
+    },
+    {
+      "commit": "a59af56625eb78f1153bd16b337c3cab7e20881e",
+      "subject": "test(hosts): attach analytics rows to scroll-offset case",
+      "status": "equivalent",
+      "evidence": "The current Host test keeps generated analytics rows on the independent-scroll-offset case."
+    }
+  ],
+  "verification": [
+    "dart analyze lib/user_profile/presentation/profile_screen.dart lib/user_profile/presentation/widgets/profile_sliver_header.dart test/profile/profile_widgets_test.dart test/ui_captures/catalog/screen_capture_catalog.dart",
+    "flutter test test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart",
+    "npm --prefix website run typecheck",
+    "npm --prefix website run build",
+    "npm --prefix operations test",
+    "npm --prefix operations run check",
+    "node tool/agent/check_agent_readiness.mjs"
+  ],
+  "inheritedBlockers": [
+    {
+      "command": "flutter analyze --no-fatal-infos",
+      "evidence": "The full repository analyzer still exits nonzero on pre-existing missing integration-test harness imports and providers; the four recovered Profile and capture files analyze without errors."
+    },
+    {
+      "command": "node tool/check_enforcement_integrity.mjs",
+      "evidence": "The recovered WEB-COPY-001 sunset review is valid; unrelated existing storage-IAM, provider-topology, repository-hygiene, and reverse tool-rule bindings remain invalid."
+    },
+    {
+      "command": "node tool/agent/check_agent_readiness.mjs",
+      "evidence": "The readiness report scores 100/100 but exits nonzero because seven existing regression-guard command-path findings remain."
+    }
+  ]
+}

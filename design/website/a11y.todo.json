@@ -5,31 +5,125 @@
   "debtId": "WEB-A11Y-001",
   "policy": "Project default is a11y.test=error. Only the exact stories below may use todo while their existing axe findings await a dedicated visual accessibility pass.",
   "stories": [
-    {"file": "website/src/stories/AdapterPrimitives.stories.tsx", "export": "OrganizerActivityMarkAdapterStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/AdapterPrimitives.stories.tsx", "export": "OrganizerStatusBadgeAdapterStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/ListingPrimitives.stories.tsx", "export": "IdentityDisplayShellStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/ListingPrimitives.stories.tsx", "export": "ListingReviewShellStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/ListingPrimitives.stories.tsx", "export": "OrganizerResultShellStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/LayoutPrimitives.stories.tsx", "export": "StepRailStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/LayoutPrimitives.stories.tsx", "export": "ControlRowStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/ClaimSections.stories.tsx", "export": "ClaimWorkspace", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/ClaimSections.stories.tsx", "export": "ClaimWorkspaceListingSearch", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/ClaimSections.stories.tsx", "export": "ClaimWorkspaceRole", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/ClaimSections.stories.tsx", "export": "ClaimWorkspaceSubmitted", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/HostSections.stories.tsx", "export": "HostApplySectionStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/HostSections.stories.tsx", "export": "HostPreviewApplySectionStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/HostSections.stories.tsx", "export": "HostApplicationFlowInitial", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/RouteShellPrimitives.stories.tsx", "export": "HostFeatureSectionShellStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/RouteShellPrimitives.stories.tsx", "export": "HostPreviewShellStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/OrganizerListingSections.stories.tsx", "export": "ListingReviews", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/FeedbackPrimitives.stories.tsx", "export": "StatusBadgeStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/FeedbackPrimitives.stories.tsx", "export": "ReviewSignalBadgeStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/OrganizerSearchSections.stories.tsx", "export": "OrganizerResults", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/HomeSections.stories.tsx", "export": "HomeWaitlistSectionStory", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/MarketingRoutes.stories.tsx", "export": "Home", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/MarketingRoutes.stories.tsx", "export": "Host", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/MarketingRoutes.stories.tsx", "export": "HostPreview", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/MarketingRoutes.stories.tsx", "export": "Claim", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."},
-    {"file": "website/src/stories/MarketingRoutes.stories.tsx", "export": "OrganizerSearch", "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."}
+    {
+      "file": "website/src/stories/AdapterPrimitives.stories.tsx",
+      "export": "OrganizerActivityMarkAdapterStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/AdapterPrimitives.stories.tsx",
+      "export": "OrganizerStatusBadgeAdapterStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/ListingPrimitives.stories.tsx",
+      "export": "IdentityDisplayShellStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/ListingPrimitives.stories.tsx",
+      "export": "ListingReviewShellStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/ListingPrimitives.stories.tsx",
+      "export": "OrganizerResultShellStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/LayoutPrimitives.stories.tsx",
+      "export": "StepRailStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/LayoutPrimitives.stories.tsx",
+      "export": "ControlRowStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/ClaimSections.stories.tsx",
+      "export": "ClaimWorkspace",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/ClaimSections.stories.tsx",
+      "export": "ClaimWorkspaceListingSearch",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/ClaimSections.stories.tsx",
+      "export": "ClaimWorkspaceRole",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/ClaimSections.stories.tsx",
+      "export": "ClaimWorkspaceSubmitted",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/HostSections.stories.tsx",
+      "export": "HostApplySectionStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/HostSections.stories.tsx",
+      "export": "HostApplicationFlowInitial",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/RouteShellPrimitives.stories.tsx",
+      "export": "HostFeatureSectionShellStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/RouteShellPrimitives.stories.tsx",
+      "export": "HostPreviewShellStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/OrganizerListingSections.stories.tsx",
+      "export": "ListingReviews",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/FeedbackPrimitives.stories.tsx",
+      "export": "StatusBadgeStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/FeedbackPrimitives.stories.tsx",
+      "export": "ReviewSignalBadgeStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/OrganizerSearchSections.stories.tsx",
+      "export": "OrganizerResults",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/HomeSections.stories.tsx",
+      "export": "HomeWaitlistSectionStory",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/MarketingRoutes.stories.tsx",
+      "export": "Home",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/MarketingRoutes.stories.tsx",
+      "export": "Host",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/MarketingRoutes.stories.tsx",
+      "export": "Claim",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    },
+    {
+      "file": "website/src/stories/MarketingRoutes.stories.tsx",
+      "export": "OrganizerSearch",
+      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
+    }
   ]
 }

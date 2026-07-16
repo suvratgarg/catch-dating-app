@@ -1,20 +1,19 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 77,
-  "updated": "2026-07-12",
+  "version": 84,
+  "updated": "2026-07-13",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
     "routes": "design/website/routes.json",
     "storybook": "website/src/stories",
-    "componentImports": "Use website/src/shared/site for neutral site chrome, website/src/shared/ui/primitives.tsx for governed visual primitives, and feature folders for domain adapters; website/src/components/site.tsx is retired and scanner-blocked."
+    "componentImports": "Use website/src/shared/site for neutral site chrome, website/src/shared/ui/primitives/ for governed visual primitives, and feature folders for domain adapters; website/src/components/site.tsx is retired and scanner-blocked."
   },
   "coverage": {
     "strategy": "route-plus-sections",
     "currentFocus": [
       "home",
       "host",
-      "host_preview",
       "claim",
       "claim_lookup",
       "not_found",
@@ -35,7 +34,6 @@
       "routeIds": [
         "home",
         "host",
-        "host_preview",
         "claim",
         "claim_lookup",
         "not_found",
@@ -261,11 +259,10 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/media.tsx",
       "exportName": "CaptureCard",
       "css": [
         "website/src/styles/home.css",
@@ -295,7 +292,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/media.tsx",
       "exportName": "ActivityMark",
       "css": [
         "website/src/styles/organizer-public.css",
@@ -321,7 +318,7 @@
         "claim_lookup"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "ProcessStatusPanel",
       "css": [
         "website/src/styles/flows.css",
@@ -417,7 +414,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/media.tsx",
       "exportName": "MarketingSection",
       "css": [
         "website/src/styles/home.css",
@@ -445,7 +442,7 @@
         "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/media.tsx",
       "exportName": "MarketingLoopList",
       "css": [
         "website/src/styles/home.css",
@@ -468,7 +465,6 @@
       "routeIds": [
         "home",
         "host",
-        "host_preview",
         "claim",
         "claim_lookup",
         "organizer_search",
@@ -476,7 +472,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "MarketingConsentBannerShell",
       "css": [
         "website/src/styles/site-footer.css",
@@ -497,12 +493,11 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host_preview",
         "organizer_listing_canonical",
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/actions.tsx",
       "exportName": "AppDownloadCtaGroup",
       "css": [
         "website/src/styles/home.css",
@@ -531,7 +526,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer.tsx",
       "exportName": "FeaturedOrganizerCardGrid",
       "css": [
         "website/src/styles/home.css",
@@ -558,7 +553,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer.tsx",
       "exportName": "ListingSection",
       "css": [
         "website/src/styles/home.css",
@@ -588,7 +583,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer.tsx",
       "exportName": "ListingFactGrid",
       "css": [
         "website/src/styles/home.css",
@@ -615,7 +610,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/actions.tsx",
       "exportName": "EventActionCard",
       "css": [
         "website/src/styles/home.css",
@@ -641,7 +636,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer2.tsx",
       "exportName": "ListingSourceLedger",
       "css": [
         "website/src/styles/home.css",
@@ -667,7 +662,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer.tsx",
       "exportName": "ListingHeroShell",
       "css": [
         "website/src/styles/organizers.css",
@@ -693,7 +688,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer3.tsx",
       "exportName": "ReviewSignalLane",
       "css": [
         "website/src/styles/organizers.css",
@@ -719,7 +714,7 @@
         "organizer_search"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer2.tsx",
       "exportName": "OrganizerResultCardShell",
       "css": [
         "website/src/styles/organizers.css",
@@ -760,6 +755,7 @@
         "exportName": "Host",
         "states": [
           "default",
+          "founding-host-offer",
           "host-application",
           "capture-placeholders"
         ]
@@ -986,267 +982,6 @@
       "notes": "Host route application section wrapper around HostApplicationFlow."
     },
     {
-      "id": "route_host_preview",
-      "kind": "route",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host",
-      "source": "website/src/features/host/HostPreviewPage.tsx",
-      "exportName": "HostPreviewPage",
-      "css": [
-        "website/src/styles/site-shell.css",
-        "website/src/styles/host-foundation.css",
-        "website/src/styles/host.css",
-        "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/MarketingRoutes.stories.tsx",
-        "exportName": "HostPreview",
-        "states": [
-          "default",
-          "founding-host-offer",
-          "create-flow"
-        ]
-      },
-      "notes": "Client-only preview route uses the same host section registry."
-    },
-    {
-      "id": "host_preview_hero_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewHeroSection",
-      "css": [
-        "website/src/styles/host-foundation.css",
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewHeroSectionStory",
-        "states": [
-          "default",
-          "capture-fallback"
-        ]
-      },
-      "notes": "Host Preview route hero section; route-level composition imports this section instead of owning hero/product markup."
-    },
-    {
-      "id": "host_preview_offer_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewOfferSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewOfferSectionStory",
-        "states": [
-          "founding-host-offer"
-        ]
-      },
-      "notes": "Founding host offer section for /host/preview/."
-    },
-    {
-      "id": "host_preview_formats_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewFormatsSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewFormatsSectionStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Host Preview format rail section."
-    },
-    {
-      "id": "host_preview_operating_loop_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewOperatingLoopSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewOperatingLoopSectionStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Host Preview operating-loop section."
-    },
-    {
-      "id": "host_preview_admission_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewAdmissionSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewAdmissionSectionStory",
-        "states": [
-          "roster-states"
-        ]
-      },
-      "notes": "Host Preview admission and roster-state section."
-    },
-    {
-      "id": "host_preview_payments_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewPaymentsSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewPaymentsSectionStory",
-        "states": [
-          "payment-states"
-        ]
-      },
-      "notes": "Host Preview payment-state section."
-    },
-    {
-      "id": "host_preview_live_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewLiveSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewLiveSectionStory",
-        "states": [
-          "default",
-          "capture-fallback"
-        ]
-      },
-      "notes": "Host Preview live-console section."
-    },
-    {
-      "id": "host_preview_after_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewAfterSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewAfterSectionStory",
-        "states": [
-          "capture-grid"
-        ]
-      },
-      "notes": "Host Preview post-event follow-up capture section."
-    },
-    {
-      "id": "host_preview_trust_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewTrustSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewTrustSectionStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Host Preview operational guardrails section."
-    },
-    {
-      "id": "host_preview_faq_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewFaqSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewFaqSectionStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Host Preview FAQ section."
-    },
-    {
       "id": "route_organizer_search",
       "kind": "route",
       "routeIds": [
@@ -1328,8 +1063,7 @@
       "id": "host_create_event_walkthrough",
       "kind": "section",
       "routeIds": [
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "features/host/sections",
       "source": "website/src/features/host/sections/CreateEventWalkthrough.tsx",
@@ -1352,14 +1086,14 @@
       "notes": "Interactive host create-flow section shared by /host/ and /host/preview/; configures shared scanner-enforced Host feature section and phone-capture shell primitives instead of rendering raw section shells."
     },
     {
-      "id": "host_event_success_showcase",
+      "id": "host_playbook_showcase",
       "kind": "section",
       "routeIds": [
         "host"
       ],
       "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/EventSuccessShowcase.tsx",
-      "exportName": "EventSuccessShowcase",
+      "source": "website/src/features/host/sections/PlaybookShowcase.tsx",
+      "exportName": "PlaybookShowcase",
       "css": [
         "website/src/styles/host-foundation.css",
         "website/src/styles/host.css",
@@ -1368,22 +1102,23 @@
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "EventSuccessShowcaseSection",
+        "exportName": "PlaybookShowcaseSection",
         "states": [
           "default",
           "activity",
           "after",
-          "debrief"
+          "debrief",
+          "module-expanded",
+          "deep-link"
         ]
       },
-      "notes": "Host route section for Event Success module review; configures shared scanner-enforced Host feature section shells instead of rendering raw section shells."
+      "notes": "Canonical host Playbook stage rail and semantic module catalog with deep-link and interaction coverage."
     },
     {
       "id": "host_comparison_section",
       "kind": "section",
       "routeIds": [
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "features/host/sections",
       "source": "website/src/features/host/sections/HostComparisonSection.tsx",
@@ -1408,8 +1143,7 @@
       "id": "host_application_flow",
       "kind": "flow",
       "routeIds": [
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "features/host/application",
       "source": "website/src/features/host/application/HostApplicationFlow.tsx",
@@ -1571,7 +1305,7 @@
         "claim_lookup"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer3.tsx",
       "exportName": "ClaimFlowMain",
       "css": [
         "website/src/styles/flows.css",
@@ -1598,7 +1332,6 @@
       "routeIds": [
         "home",
         "host",
-        "host_preview",
         "claim",
         "claim_lookup",
         "organizer_search",
@@ -1606,8 +1339,10 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/layout.tsx",
       "exportName": "UiLabel",
+      "lexicon": true,
+      "lexiconId": "catch.ui_label",
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/host.css",
@@ -1629,11 +1364,10 @@
       "kind": "supporting-component",
       "routeIds": [
         "host",
-        "host_preview",
         "claim"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/forms2.tsx",
       "exportName": "FieldGrid",
       "css": [
         "website/src/styles/flows.css"
@@ -1658,7 +1392,7 @@
         "claim"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/forms2.tsx",
       "exportName": "StepRail",
       "css": [
         "website/src/styles/flows.css",
@@ -1677,15 +1411,17 @@
       "notes": "Shared website operational step rail primitive used by host application and claim flows; raw operational-step-rail shells are blocked by web:react-component-governance."
     },
     {
-      "id": "shared_choice_controls",
+      "id": "shared_choice_chip_controls",
       "kind": "supporting-component",
       "routeIds": [
         "host",
         "claim"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/layout2.tsx",
       "exportName": "ChoiceChip",
+      "lexicon": true,
+      "lexiconId": "catch.chip",
       "css": [
         "website/src/styles/flows.css",
         "website/src/styles/responsive.css"
@@ -1693,14 +1429,40 @@
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/LayoutPrimitives.stories.tsx",
-        "exportName": "ChoiceControlsStory",
+        "exportName": "ChoiceChipControlsStory",
         "states": [
           "chip-grid",
+          "selected"
+        ]
+      },
+      "notes": "Shared website choice chip and chip-grid primitives used by host application and claim flows; raw choice-chip and choice-chip-grid shells are blocked by web:react-component-governance."
+    },
+    {
+      "id": "shared_choice_card_controls",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "claim"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/layout2.tsx",
+      "exportName": "ChoiceCard",
+      "lexicon": true,
+      "lexiconId": "catch.option_card",
+      "css": [
+        "website/src/styles/flows.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/LayoutPrimitives.stories.tsx",
+        "exportName": "ChoiceCardControlsStory",
+        "states": [
           "choice-card",
           "selected"
         ]
       },
-      "notes": "Shared website choice chip, chip-grid, and choice-card primitives used by host application and claim verification flows; raw choice-chip, choice-chip-grid, and choice-card shells are blocked by web:react-component-governance."
+      "notes": "Shared explanatory choice-card primitive used by host application and claim verification flows; raw choice-card shells are blocked by web:react-component-governance."
     },
     {
       "id": "shared_empty_state",
@@ -1713,8 +1475,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
-      "exportName": "EmptyState",
+      "source": "website/src/shared/ui/primitives/feedback.tsx",
       "css": [
         "website/src/styles/home.css",
         "website/src/styles/flows.css",
@@ -1734,7 +1495,10 @@
           "listing-review"
         ]
       },
-      "notes": "Shared website EmptyState shell with named variants for home discovery, claim lookup, organizer search results, review-signal lanes, and listing reviews; raw website empty-state containers or feature-level empty-state shell classes are blocked by web:react-component-governance."
+      "notes": "Shared website EmptyState shell with named variants for home discovery, claim lookup, organizer search results, review-signal lanes, and listing reviews; raw website empty-state containers or feature-level empty-state shell classes are blocked by web:react-component-governance.",
+      "exportName": "EmptyState",
+      "lexicon": true,
+      "lexiconId": "catch.empty_state"
     },
     {
       "id": "shared_live_status",
@@ -1742,12 +1506,11 @@
       "routeIds": [
         "home",
         "host",
-        "host_preview",
         "organizer_listing_canonical",
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "LiveStatus",
       "css": [
         "website/src/styles/home.css",
@@ -1771,14 +1534,13 @@
       "routeIds": [
         "home",
         "host",
-        "host_preview",
         "claim",
         "organizer_search",
         "organizer_listing_canonical",
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "RouteLoadingState",
       "css": [
         "website/src/styles/site-shell.css"
@@ -1803,8 +1565,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
-      "exportName": "StatusBadge",
+      "source": "website/src/shared/ui/primitives/feedback.tsx",
       "css": [
         "website/src/styles/organizer-public.css",
         "website/src/styles/flows.css"
@@ -1819,7 +1580,10 @@
           "unclaimed"
         ]
       },
-      "notes": "Shared website organizer/listing status badge primitive; raw status-badge shells are blocked by web:react-component-governance."
+      "notes": "Shared website organizer/listing status badge primitive; raw status-badge shells are blocked by web:react-component-governance.",
+      "exportName": "StatusBadge",
+      "lexicon": true,
+      "lexiconId": "catch.badge"
     },
     {
       "id": "shared_review_signal_badge",
@@ -1829,7 +1593,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "ReviewSignalBadge",
       "css": [
         "website/src/styles/organizers.css"
@@ -1855,7 +1619,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "BadgeRow",
       "css": [
         "website/src/styles/organizers.css"
@@ -1878,7 +1642,7 @@
         "organizer_search"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/forms2.tsx",
       "exportName": "SearchFormShell",
       "css": [
         "website/src/styles/site-shell.css",
@@ -1906,7 +1670,7 @@
         "organizer_search"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/layout2.tsx",
       "exportName": "FilterRail",
       "css": [
         "website/src/styles/organizer-public.css",
@@ -1928,7 +1692,6 @@
       "routeIds": [
         "home",
         "host",
-        "host_preview",
         "organizer_search",
         "organizer_listing_canonical",
         "organizer_listing_legacy"
@@ -1958,13 +1721,12 @@
       "routeIds": [
         "home",
         "host",
-        "host_preview",
         "claim",
         "organizer_listing_canonical",
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/actions.tsx",
       "exportName": "ActionGroup",
       "css": [
         "website/src/styles/home.css",
@@ -1991,7 +1753,7 @@
         "home"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/layout.tsx",
       "exportName": "ControlRow",
       "css": [
         "website/src/styles/home.css"
@@ -2011,11 +1773,10 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/forms.tsx",
       "exportName": "WaitlistSection",
       "css": [
         "website/src/styles/home.css",
@@ -2040,7 +1801,7 @@
         "home"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/forms.tsx",
       "exportName": "WaitlistFormShell",
       "css": [
         "website/src/styles/organizers.css",
@@ -2065,7 +1826,7 @@
         "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/host.tsx",
       "exportName": "EventSuccessModuleGrid",
       "css": [
         "website/src/styles/host.css",
@@ -2089,7 +1850,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer3.tsx",
       "exportName": "ListingSuccessMetricGrid",
       "css": [
         "website/src/styles/organizers.css",
@@ -2113,7 +1874,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer3.tsx",
       "exportName": "ClaimBandSection",
       "css": [
         "website/src/styles/home.css",
@@ -2141,7 +1902,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/forms.tsx",
       "exportName": "ClaimRequestForm",
       "css": [
         "website/src/styles/organizers.css",
@@ -2170,7 +1931,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/layout.tsx",
       "exportName": "ContentGrid",
       "css": [
         "website/src/styles/home.css",
@@ -2202,7 +1963,7 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/layout.tsx",
       "exportName": "PanelShell",
       "css": [
         "website/src/styles/home.css",
@@ -2228,11 +1989,10 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/layout.tsx",
       "exportName": "ProductShell",
       "css": [
         "website/src/styles/home.css",
@@ -2262,7 +2022,7 @@
         "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/marketing.tsx",
       "exportName": "EvidenceStrip",
       "css": [
         "website/src/styles/home.css",
@@ -2288,7 +2048,7 @@
         "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/host.tsx",
       "exportName": "HostHeroShell",
       "css": [
         "website/src/styles/home.css",
@@ -2311,11 +2071,10 @@
       "id": "shared_host_application_shell",
       "kind": "supporting-component",
       "routeIds": [
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/host3.tsx",
       "exportName": "HostApplicationShell",
       "css": [
         "website/src/styles/flows.css",
@@ -2341,11 +2100,10 @@
       "id": "shared_host_feature_section_shell",
       "kind": "supporting-component",
       "routeIds": [
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/host.tsx",
       "exportName": "HostFeatureSection",
       "css": [
         "website/src/styles/host-foundation.css",
@@ -2370,10 +2128,10 @@
       "id": "shared_host_preview_shell",
       "kind": "supporting-component",
       "routeIds": [
-        "host_preview"
+        "host"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/host.tsx",
       "exportName": "HostPreviewMain",
       "css": [
         "website/src/styles/host.css",
@@ -2394,7 +2152,7 @@
           "faq"
         ]
       },
-      "notes": "Shared Host Preview shell primitives for the main route shell, hero shell, hero store slot, offer shell, section wrapper variants, apply shell, hero product, console, offer card, step rail, section heads, format rail, chip row, loop grid, roster, payment flow, live modules, trust grid, and FAQ list; raw host-preview route shells are blocked by web:react-component-governance."
+      "notes": "Shared legacy-named host offer, trust, and FAQ shell primitives retained by the canonical host route pending the mechanical primitive-family split."
     },
     {
       "id": "shared_organizer_search_section_shell",
@@ -2403,7 +2161,7 @@
         "organizer_search"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives.tsx",
+      "source": "website/src/shared/ui/primitives/organizer.tsx",
       "exportName": "OrganizerSearchSection",
       "css": [
         "website/src/styles/organizers.css",
@@ -2720,8 +2478,7 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "features/host/sections",
       "source": "website/src/features/host/sections/CaptureFrames.tsx",
@@ -2744,8 +2501,7 @@
       "id": "host_phone_capture_frame_adapter",
       "kind": "supporting-component",
       "routeIds": [
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "features/host/sections",
       "source": "website/src/features/host/sections/CaptureFrames.tsx",
@@ -2765,58 +2521,11 @@
       "notes": "Feature adapter that binds capture ids, fallback screenshots, and alt/caption copy to the shared PhoneCaptureShell primitive. Visual shell ownership stays in shared UI primitives."
     },
     {
-      "id": "host_preview_create_flow_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewCreateFlowSection",
-      "css": [
-        "website/src/styles/home.css",
-        "website/src/styles/site-shell.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewCreateFlowSectionStory",
-        "states": [
-          "composes-create-event-walkthrough"
-        ]
-      },
-      "notes": "Host preview route wrapper that anchors the registered host_create_event_walkthrough section inside the route flow."
-    },
-    {
-      "id": "host_preview_apply_section",
-      "kind": "section",
-      "routeIds": [
-        "host_preview"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPreviewSections.tsx",
-      "exportName": "HostPreviewApplySection",
-      "css": [
-        "website/src/styles/home.css",
-        "website/src/styles/site-shell.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostPreviewApplySectionStory",
-        "states": [
-          "composes-host-application-flow"
-        ]
-      },
-      "notes": "Host preview route wrapper that configures the shared HostPreviewApplyShell and registered host_application_flow."
-    },
-    {
       "id": "marketing_consent_banner_adapter",
       "kind": "supporting-component",
       "routeIds": [
         "home",
         "host",
-        "host_preview",
         "claim",
         "claim_lookup",
         "not_found",
@@ -2951,8 +2660,7 @@
       "kind": "flow",
       "routeIds": [
         "home",
-        "host",
-        "host_preview"
+        "host"
       ],
       "owner": "features/waitlist",
       "source": "website/src/features/waitlist/WaitlistForm.tsx",
@@ -2971,6 +2679,78 @@
         ]
       },
       "notes": "Feature flow adapter that binds waitlist form state and city/role options to shared form primitives and WaitlistFormShell."
+    },
+    {
+      "id": "host_founding_offer_section",
+      "kind": "section",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "features/host/sections",
+      "source": "website/src/features/host/sections/HostSupportingSections.tsx",
+      "exportName": "HostFoundingOfferSection",
+      "css": [
+        "website/src/styles/host-foundation.css",
+        "website/src/styles/host.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostSections.stories.tsx",
+        "exportName": "HostFoundingOfferSectionStory",
+        "states": [
+          "founding-host-offer"
+        ]
+      },
+      "notes": "Canonical host supporting section migrated from the retired preview route."
+    },
+    {
+      "id": "host_trust_section",
+      "kind": "section",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "features/host/sections",
+      "source": "website/src/features/host/sections/HostSupportingSections.tsx",
+      "exportName": "HostTrustSection",
+      "css": [
+        "website/src/styles/host-foundation.css",
+        "website/src/styles/host.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostSections.stories.tsx",
+        "exportName": "HostTrustSectionStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Canonical host supporting section migrated from the retired preview route."
+    },
+    {
+      "id": "host_faq_section",
+      "kind": "section",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "features/host/sections",
+      "source": "website/src/features/host/sections/HostSupportingSections.tsx",
+      "exportName": "HostFaqSection",
+      "css": [
+        "website/src/styles/host-foundation.css",
+        "website/src/styles/host.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostSections.stories.tsx",
+        "exportName": "HostFaqSectionStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Canonical host supporting section migrated from the retired preview route."
     }
   ]
 }

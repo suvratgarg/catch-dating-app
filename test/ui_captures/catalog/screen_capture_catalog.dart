@@ -1947,8 +1947,8 @@ List<Object> _publicProfileProviderOverrides({
   ];
 }
 
-Widget _selfProfileCapture({int initialTabIndex = 0}) =>
-    ProfileScreen(initialTabIndex: initialTabIndex);
+Widget _selfProfileCapture({SelfProfileTab initialTab = SelfProfileTab.edit}) =>
+    ProfileScreen(initialTab: initialTab);
 
 Widget _editableSelfProfileCapture() => ProfileTab(
   user: ProfileSurfaceFixtures.viewer,
@@ -7568,14 +7568,16 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _selfProfileProviderOverrides(
       profile: _profileSelfReferenceProfile,
     ),
-    builder: (context) => _selfProfileCapture(initialTabIndex: 1),
+    builder: (context) =>
+        _selfProfileCapture(initialTab: SelfProfileTab.preview),
   ),
   ScreenCaptureEntry(
     id: 'profile_self_insights_tab',
     routeIds: const <String>['profileScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _selfProfileProviderOverrides(),
-    builder: (context) => _selfProfileCapture(initialTabIndex: 2),
+    builder: (context) =>
+        _selfProfileCapture(initialTab: SelfProfileTab.insights),
   ),
   ScreenCaptureEntry(
     id: 'profile_self_photo_upload_pending',
