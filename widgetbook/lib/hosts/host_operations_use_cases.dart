@@ -329,11 +329,6 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostTodayCountdownPill,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
   type: HostTodayHeroMetric,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -519,6 +514,47 @@ Widget hostHomeRouteStates(BuildContext context) {
           child: _HostShellScope(
             themeMode: ThemeMode.dark,
             child: HostOperationsHomeScreen(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Identity switcher states',
+  type: HostTodayClubPill,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostTodayClubPillStates(BuildContext context) {
+  final club = HostOperationsFixtures.primaryClub.copyWith(
+    profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
+  );
+  return _HostCatalog(
+    title: 'HostTodayClubPill',
+    contractId: 'component.host.home.host-today-club-pill',
+    children: [
+      _StateCard(
+        label: 'single club / passive',
+        child: _HostHomeSectionFrame(
+          child: HostTodayClubPill(
+            club: club,
+            currentUid: _hostUid,
+            clubs: [club],
+            showClubPicker: true,
+            onSwitchClubIndex: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'multiple clubs / whole-surface action',
+        child: _HostHomeSectionFrame(
+          child: HostTodayClubPill(
+            club: club,
+            currentUid: _hostUid,
+            clubs: HostOperationsFixtures.clubs,
+            showClubPicker: true,
+            onSwitchClubIndex: (_) {},
           ),
         ),
       ),
@@ -1286,15 +1322,13 @@ Widget _hostHomePreviewFor(String focus) {
       ),
     ),
     'HostTodayClubPill' => HostTodayClubPill(
-      club: club,
+      club: club.copyWith(
+        profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
+      ),
       currentUid: _hostUid,
       clubs: clubs,
       showClubPicker: true,
       onSwitchClubIndex: (_) {},
-    ),
-    'HostTodayCountdownPill' => HostTodayCountdownPill(
-      event: event,
-      now: HostOperationsFixtures.now,
     ),
     'HostTodayDashboardCard' => HostTodayDashboardCard(
       club: club,
@@ -1595,7 +1629,7 @@ Widget _hostEventManagePreviewFor(String focus) {
       filter: HostRosterFilter.all,
       label: 'All',
       value: 3,
-      tone: CatchBadgeTone.solid,
+      tone: CatchBadgeTone.neutral,
     ),
     HostRosterFilterSpec(
       filter: HostRosterFilter.booked,

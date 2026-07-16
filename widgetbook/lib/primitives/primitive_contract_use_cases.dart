@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
@@ -15,7 +14,6 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
@@ -30,6 +28,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
@@ -144,29 +143,77 @@ Widget catchBadgeContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchBadge',
     contractId: 'catch.badge',
-    states: const ['default', 'live', 'with-icon', 'truncated'],
+    states: const [
+      'metadata',
+      'functional',
+      'semantic-tones',
+      'solid',
+      'live',
+      'on-dark',
+      'privacy',
+      'truncated',
+    ],
     children: [
       _StateCard(
-        label: 'default',
+        label: 'metadata / sentence case',
         child: _InlineWrap(
           children: const [
             CatchBadge(label: 'Queued'),
-            CatchBadge(label: 'Brand', tone: CatchBadgeTone.brand),
-            CatchBadge(label: 'Gold', tone: CatchBadgeTone.gold),
             CatchBadge(label: 'Action', size: CatchBadgeSize.action),
           ],
         ),
       ),
       _StateCard(
-        label: 'live',
-        child: const CatchBadge(label: 'Live now', tone: CatchBadgeTone.live),
+        label: 'functional / uppercase mono',
+        child: const _InlineWrap(
+          children: [
+            CatchBadge.functional(label: 'Ready', tone: CatchBadgeTone.success),
+            CatchBadge.solidStatus(label: 'Owner'),
+          ],
+        ),
       ),
       _StateCard(
-        label: 'with-icon',
-        child: CatchBadge(
-          label: 'Verified',
-          tone: CatchBadgeTone.success,
-          icon: CatchIcons.checkCircle,
+        label: 'semantic-tones',
+        child: const _InlineWrap(
+          children: [
+            CatchBadge(label: 'Brand', tone: CatchBadgeTone.brand),
+            CatchBadge(label: 'Success', tone: CatchBadgeTone.success),
+            CatchBadge(label: 'Warning', tone: CatchBadgeTone.warning),
+            CatchBadge(label: 'Danger', tone: CatchBadgeTone.danger),
+            CatchBadge(label: 'Gold', tone: CatchBadgeTone.gold),
+          ],
+        ),
+      ),
+      const _StateCard(
+        label: 'solid metadata',
+        child: CatchBadge.solid(label: '412 members'),
+      ),
+      const _StateCard(
+        label: 'live status',
+        child: CatchBadge.live(label: 'Live now'),
+      ),
+      _StateCard(
+        label: 'on-dark metadata / status',
+        child: CatchSurface(
+          backgroundColor: t.ink,
+          borderWidth: 0,
+          padding: CatchInsets.content,
+          child: _InlineWrap(
+            children: [
+              CatchBadge.onDark(label: 'Starts in 2 hours'),
+              CatchBadge.onDarkStatus(
+                label: 'Preview only',
+                icon: CatchIcons.visibilityOutlined,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'privacy',
+        child: CatchBadge.privacy(
+          label: 'Private to you',
+          icon: CatchIcons.lockOutline,
         ),
       ),
       _StateCard(
@@ -194,7 +241,13 @@ Widget catchCountBadgeContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchCountBadge',
     contractId: 'catch.badge.count_badge',
-    states: const ['hidden', 'count', 'overflow-count'],
+    states: const [
+      'hidden',
+      'count',
+      '99-boundary',
+      'overflow-count',
+      'standalone',
+    ],
     children: [
       _StateCard(
         label: 'hidden',
@@ -211,11 +264,22 @@ Widget catchCountBadgeContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: '99-boundary',
+        child: CatchCountBadge(
+          count: 99,
+          child: Icon(CatchIcons.notificationsOutlined),
+        ),
+      ),
+      _StateCard(
         label: 'overflow-count',
         child: CatchCountBadge(
           count: 104,
           child: Icon(CatchIcons.notificationsOutlined),
         ),
+      ),
+      const _StateCard(
+        label: 'standalone',
+        child: CatchCountBadge.label(count: 12),
       ),
     ],
   );
@@ -223,51 +287,57 @@ Widget catchCountBadgeContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchIconBadge,
+  type: CatchInlineStatus,
   path: '[Core primitives]/Status',
 )
-Widget catchIconBadgeContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
+Widget catchInlineStatusContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchIconBadge',
-    contractId: 'catch.badge.icon_badge',
-    states: const ['count', 'overflow-count', 'hidden', 'custom-colors'],
+    title: 'CatchInlineStatus',
+    contractId: 'catch.badge.inline_status',
+    states: const ['neutral', 'success', 'warning', 'danger', 'live', 'scaled'],
     children: [
-      _StateCard(
-        label: 'count',
-        child: _InlineWrap(
+      const _StateCard(
+        label: 'semantic tones',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchIconBadge(
-              label: '3',
-              child: Icon(CatchIcons.chatBubbleOutlineRounded),
+            CatchInlineStatus(label: 'Draft saved locally'),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Changes saved',
+              tone: CatchInlineStatusTone.success,
             ),
-            CatchIconBadge(label: '9', child: Icon(CatchIcons.group)),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Unsaved changes',
+              tone: CatchInlineStatusTone.warning,
+            ),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Connection lost',
+              tone: CatchInlineStatusTone.danger,
+            ),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Updating live',
+              tone: CatchInlineStatusTone.live,
+            ),
           ],
         ),
       ),
       _StateCard(
-        label: 'overflow-count',
-        child: CatchIconBadge(
-          label: '99+',
-          child: Icon(CatchIcons.notificationsOutlined),
-        ),
-      ),
-      _StateCard(
-        label: 'hidden',
-        child: CatchIconBadge(
-          label: '0',
-          isLabelVisible: false,
-          child: Icon(CatchIcons.savedOutlined),
-        ),
-      ),
-      _StateCard(
-        label: 'custom-colors',
-        child: CatchIconBadge(
-          label: '!',
-          backgroundColor: t.danger,
-          foregroundColor: t.surface,
-          child: Icon(CatchIcons.warningAmberRounded, color: t.ink),
+        label: '2x text / wrapped copy',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: const SizedBox(
+            width: 220,
+            child: CatchInlineStatus(
+              label: 'Unsaved changes with longer localized supporting copy',
+              tone: CatchInlineStatusTone.warning,
+            ),
+          ),
         ),
       ),
     ],
@@ -953,47 +1023,6 @@ Widget catchNoticeContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchCornerSash,
-  path: '[Core primitives]/Status',
-)
-Widget catchCornerSashContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchCornerSash',
-    contractId: 'catch.badge.corner_sash',
-    states: const ['brand', 'success', 'solid', 'surface', 'top-end'],
-    children: [
-      _StateCard(
-        label: 'tones',
-        child: _InlineWrap(
-          children: [
-            CatchCornerSash(label: "You're in", icon: CatchIcons.checkCircle),
-            CatchCornerSash(
-              label: 'Hosted',
-              tone: CatchSashTone.success,
-              icon: CatchIcons.hosted,
-            ),
-            CatchCornerSash(label: 'Saved', tone: CatchSashTone.solid),
-            CatchCornerSash(label: 'Private', tone: CatchSashTone.surface),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'top-end',
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: CatchCornerSash(
-            label: 'Featured',
-            icon: CatchIcons.sparkle,
-            alignment: CatchSashAlignment.topEnd,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchButton,
   path: '[Core primitives]/Actions',
 )
@@ -1160,80 +1189,126 @@ Widget catchChipContractStates(BuildContext context) {
     title: 'CatchChip',
     contractId: 'catch.chip',
     states: const [
-      'default',
-      'active',
-      'disabled',
-      'with-icon',
+      'tag',
+      'selectable-resting',
+      'selectable-selected',
+      'selectable-disabled',
+      'selectable-accented',
+      'selectable-with-leading',
       'removable',
-      'activity-tinted',
+      'activity-soft',
+      'activity-solid',
+      'activity-tappable',
+      'truncated',
     ],
     children: [
       _StateCard(
-        label: 'default',
+        label: 'tag',
+        description: 'Passive metadata: neutral, tinted, and icon-leading.',
         child: _InlineWrap(
           children: [
-            CatchChip(label: 'Tonight', onTap: _noop),
-            CatchChip(label: 'Low key', onTap: _noop),
+            const CatchChip.tag(label: 'Tonight'),
+            CatchChip.tag(
+              label: 'Low key',
+              tintColor: t.primarySoft,
+              inkColor: t.primary,
+            ),
+            CatchChip.tag(label: 'Weekend', leading: Icon(CatchIcons.weekend)),
           ],
         ),
       ),
       _StateCard(
-        label: 'active',
-        child: CatchChip(label: 'Selected', active: true, onTap: _noop),
+        label: 'selectable states',
+        description: 'Resting, selected, and disabled shown side by side.',
+        child: _InlineWrap(
+          children: [
+            CatchChip.selectable(
+              label: 'Resting',
+              selected: false,
+              onChanged: _ignoreBool,
+            ),
+            CatchChip.selectable(
+              label: 'Selected',
+              selected: true,
+              onChanged: _ignoreBool,
+            ),
+            CatchChip.selectable(
+              label: 'Disabled',
+              selected: false,
+              enabled: false,
+              onChanged: _ignoreBool,
+            ),
+          ],
+        ),
       ),
       _StateCard(
-        label: 'disabled',
-        child: const CatchChip(label: 'Sold out', enabled: false),
-      ),
-      _StateCard(
-        label: 'with-icon',
-        child: CatchChip(
-          label: 'Weekend',
-          icon: Icon(CatchIcons.weekend),
-          onTap: _noop,
+        label: 'selectable options',
+        description: 'Optional accent and leading icon stay semantic.',
+        child: _InlineWrap(
+          children: [
+            CatchChip.selectable(
+              label: 'Accent',
+              selected: true,
+              accent: t.like,
+              onChanged: _ignoreBool,
+            ),
+            CatchChip.selectable(
+              label: 'With icon',
+              selected: false,
+              leading: Icon(CatchIcons.favoriteOutlineRounded),
+              onChanged: _ignoreBool,
+            ),
+          ],
         ),
       ),
       _StateCard(
         label: 'removable',
-        child: CatchChip(
-          label: 'Rooftop',
-          icon: Icon(CatchIcons.pinOutlined),
-          onRemove: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'activity-tinted',
-        child: CatchChip(
-          label: 'Run club',
-          tintColor: t.like.withValues(alpha: CatchOpacity.subtleFill),
-          inkColor: t.like,
-          icon: Icon(CatchIcons.directionsRunRounded),
-          onTap: _noop,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchChipRemoveButton,
-  path: '[Core primitives]/Selection',
-)
-Widget catchChipRemoveButtonContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return _ContractScreen(
-    title: 'CatchChipRemoveButton',
-    contractId: 'catch.chip.remove_button',
-    states: const ['enabled', 'disabled'],
-    children: [
-      _StateCard(
-        label: 'remove affordance',
+        description: 'One full-chip removal action; disabled is visibly inert.',
         child: _InlineWrap(
           children: [
-            CatchChipRemoveButton(color: t.ink, onRemove: _noop),
-            CatchChipRemoveButton(color: t.ink3),
+            CatchChip.removable(
+              label: 'Rooftop',
+              leading: Icon(CatchIcons.pinOutlined),
+              onRemove: _noop,
+            ),
+            CatchChip.removable(
+              label: 'Disabled',
+              enabled: false,
+              onRemove: _noop,
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'activity emphasis',
+        description: 'Soft, solid, and tappable activity identity.',
+        child: _InlineWrap(
+          children: [
+            const CatchChip.activity(activityKind: ActivityKind.socialRun),
+            const CatchChip.activity(
+              activityKind: ActivityKind.pickleball,
+              emphasis: CatchChipEmphasis.solid,
+            ),
+            CatchChip.activity(activityKind: ActivityKind.dinner, onTap: _noop),
+          ],
+        ),
+      ),
+      const _StateCard(
+        label: 'truncated',
+        description: 'Long labels ellipsize inside constrained hosts.',
+        child: _InlineWrap(
+          children: [
+            SizedBox(
+              width: 150,
+              child: CatchChip.tag(label: 'A very long passive metadata label'),
+            ),
+            SizedBox(
+              width: 160,
+              child: CatchChip.activity(
+                activityKind: ActivityKind.strengthTraining,
+                label: 'Strength training after work',
+              ),
+            ),
           ],
         ),
       ),
@@ -2849,6 +2924,7 @@ Widget catchIconButtonContractStates(BuildContext context) {
       'bordered',
       'float',
       'plain',
+      'counted',
     ],
     children: [
       _StateCard(
@@ -2900,6 +2976,31 @@ Widget catchIconButtonContractStates(BuildContext context) {
           icon: CatchIcons.tuneRounded,
           variant: CatchIconButtonVariant.plain,
           onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'counted / zero / overflow',
+        child: _InlineWrap(
+          children: [
+            CatchIconButton.counted(
+              icon: CatchIcons.notificationsNoneRounded,
+              count: 0,
+              tooltip: 'Notifications',
+              onTap: _noop,
+            ),
+            CatchIconButton.counted(
+              icon: CatchIcons.notificationsRounded,
+              count: 3,
+              tooltip: 'Notifications, 3 unread',
+              onTap: _noop,
+            ),
+            CatchIconButton.counted(
+              icon: CatchIcons.notificationsRounded,
+              count: 124,
+              tooltip: 'Notifications, 124 unread',
+              onTap: _noop,
+            ),
+          ],
         ),
       ),
     ],
@@ -4763,56 +4864,6 @@ Widget catchNetworkImageFallbackContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchActivityChip,
-  path: '[Core primitives]/Activity',
-)
-Widget catchActivityChipContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchActivityChip',
-    contractId: 'catch.activity_chip',
-    states: const ['soft', 'primary', 'tappable', 'custom-label', 'truncated'],
-    children: [
-      const _StateCard(
-        label: 'soft',
-        child: CatchActivityChip(activityKind: ActivityKind.socialRun),
-      ),
-      const _StateCard(
-        label: 'primary',
-        child: CatchActivityChip(
-          activityKind: ActivityKind.pickleball,
-          primary: true,
-        ),
-      ),
-      _StateCard(
-        label: 'tappable',
-        child: CatchActivityChip(
-          activityKind: ActivityKind.dinner,
-          onTap: _noop,
-        ),
-      ),
-      const _StateCard(
-        label: 'custom-label',
-        child: CatchActivityChip(
-          activityKind: ActivityKind.openActivity,
-          label: 'Anything social',
-        ),
-      ),
-      const _StateCard(
-        label: 'truncated',
-        child: SizedBox(
-          width: 160,
-          child: CatchActivityChip(
-            activityKind: ActivityKind.strengthTraining,
-            label: 'Strength training after work',
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchDistanceRing,
   path: '[Core primitives]/Activity',
 )
@@ -6037,43 +6088,39 @@ Widget catchCountPillContractStates(BuildContext context) {
     title: 'CatchCountPill',
     contractId: 'catch.count_pill',
     states: const [
-      'icon-only',
       'label',
       'label-with-icon',
-      'with-badge',
+      'with-count',
       'semantic-label',
       'text-scale-truncation',
     ],
     children: [
       _StateCard(
-        label: 'icon-only',
-        child: CatchCountPill(icon: CatchIcons.mapOutlined, onPressed: _noop),
-      ),
-      _StateCard(
         label: 'label',
-        child: CatchCountPill(label: '24 places', onPressed: _noop),
+        child: CatchCountPill.label(label: '24 places', onPressed: _noop),
       ),
       _StateCard(
         label: 'label-with-icon',
-        child: CatchCountPill(
+        child: CatchCountPill.label(
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
           onPressed: _noop,
         ),
       ),
       _StateCard(
-        label: 'with-badge',
-        child: CatchCountPill(
+        label: 'with-count',
+        child: CatchCountPill.label(
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
-          badge: '3',
+          count: 3,
           onPressed: _noop,
         ),
       ),
       _StateCard(
         label: 'semantic-label',
-        child: CatchCountPill(
+        child: CatchCountPill.label(
           icon: CatchIcons.listRounded,
+          label: 'List',
           semanticLabel: 'Show list view',
           onPressed: _noop,
         ),
@@ -6082,10 +6129,10 @@ Widget catchCountPillContractStates(BuildContext context) {
         label: 'text-scale-truncation',
         child: SizedBox(
           width: 160,
-          child: CatchCountPill(
+          child: CatchCountPill.label(
             icon: CatchIcons.tuneRounded,
             label: 'Very specific active filters',
-            badge: '12',
+            count: 12,
             onPressed: _noop,
           ),
         ),
@@ -7696,6 +7743,8 @@ Widget notificationRowContractStates(BuildContext context) {
 
 void _noop() {}
 
+void _ignoreBool(bool _) {}
+
 void _ignoreString(String value) {}
 
 final _contractTabBarItems = [
@@ -7854,7 +7903,7 @@ class _BehaviorScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchBadge(label: behaviorId, uppercase: true),
+                CatchBadge.functional(label: behaviorId),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(title, style: CatchTextStyles.headlineS(context)),
                 const SizedBox(height: CatchSpacing.s3),
@@ -7960,7 +8009,7 @@ class _ContractScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchBadge(label: contractId, uppercase: true),
+                CatchBadge.functional(label: contractId),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(title, style: CatchTextStyles.headlineS(context)),
                 const SizedBox(height: CatchSpacing.s3),
@@ -8016,7 +8065,7 @@ class _StateCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchBadge(label: label, uppercase: true),
+              CatchBadge.functional(label: label),
               if (description != null) ...[
                 const SizedBox(width: CatchSpacing.s3),
                 Expanded(
@@ -8057,7 +8106,7 @@ class _CatchFieldStatePreview extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchBadge(label: label, uppercase: true),
+            CatchBadge.functional(label: label),
             if (description != null) ...[
               const SizedBox(width: CatchSpacing.s3),
               Expanded(

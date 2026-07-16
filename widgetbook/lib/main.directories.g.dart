@@ -507,16 +507,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubRatingPill',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Rating pill states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubRatingPillStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ClubTagWrap',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1584,16 +1574,6 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSelectChip',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchSelectChipCatalogStates,
-              ),
-            ],
-          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -1772,17 +1752,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchActivityArtContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchActivityChip',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchActivityChipContractStates,
               ),
             ],
           ),
@@ -2968,17 +2937,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchChipRemoveButton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchChipRemoveButtonContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchOptionCard',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3132,17 +3090,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchCornerSash',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCornerSashContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchCountBadge',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3154,13 +3101,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchIconBadge',
+            name: 'CatchInlineStatus',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchIconBadgeContractStates,
+                        .catchInlineStatusContractStates,
               ),
             ],
           ),
@@ -4145,16 +4092,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ExploreDarkPill',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Dark pill states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .exploreDarkPillStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ExploreMonoLabel',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4169,6 +4106,16 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Controls',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchIconButton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Counted filter action',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreCountedFilterActionStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchOptionGroupItem',
             useCases: [
@@ -4230,16 +4177,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ExploreFilterGlyphButton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Filter glyph states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .exploreFilterGlyphButtonStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ExploreFilterSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4254,16 +4191,6 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Rows',
         children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'ActivityDot',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Activity dot states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .activityDotStates,
-              ),
-            ],
-          ),
           _widgetbook.WidgetbookComponent(
             name: 'ActivityTypeRow',
             useCases: [
@@ -5308,12 +5235,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Dashboard primitives',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'DashboardNotificationBellButton',
+            name: 'CatchIconButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Bell states',
+                name: 'Counted notification action',
                 builder: _widgetbook_workspace_dashboard_dashboard_use_cases
-                    .dashboardNotificationBellButtonReviewStates,
+                    .dashboardCountedNotificationActionReviewStates,
               ),
             ],
           ),
@@ -6138,17 +6065,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessDarkPill',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessDarkPill',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessDarkPill,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessHeroSurface',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6572,17 +6488,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'LiveNowPill',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveNowPill',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveNowPill,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'LiveStepNavigation',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6733,17 +6638,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictTargetAttendeeControl,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'UnsavedChangesPill',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'UnsavedChangesPill',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictUnsavedChangesPill,
                   ),
                 ],
               ),
@@ -6941,17 +6835,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictAttendeeCountdown,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CountdownBeatPill',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'CountdownBeatPill',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictCountdownBeatPill,
                   ),
                 ],
               ),
@@ -8070,6 +7953,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostSettingsRouteStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayClubPill',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Identity switcher states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayClubPillStates,
                   ),
                 ],
               ),

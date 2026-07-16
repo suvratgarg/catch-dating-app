@@ -19,7 +19,14 @@
         "symbol": "CatchBadge",
         "file": "lib/core/widgets/catch_badge.dart",
         "constructors": [
-          "CatchBadge"
+          "CatchBadge",
+          "CatchBadge.functional",
+          "CatchBadge.solid",
+          "CatchBadge.solidStatus",
+          "CatchBadge.live",
+          "CatchBadge.onDark",
+          "CatchBadge.onDarkStatus",
+          "CatchBadge.privacy"
         ]
       },
       "design": {
@@ -58,9 +65,7 @@
               "success",
               "warning",
               "danger",
-              "gold",
-              "solid",
-              "live"
+              "gold"
             ]
           },
           {
@@ -80,19 +85,16 @@
             "type": "object",
             "required": false,
             "dartType": "IconData?"
-          },
-          {
-            "name": "uppercase",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
           }
         ],
         "states": [
-          "default",
+          "metadata",
+          "functional",
+          "semantic-tones",
+          "solid",
           "live",
-          "with-icon",
+          "on-dark",
+          "privacy",
           "truncated"
         ],
         "slots": [],
@@ -107,43 +109,20 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
-          "CatchTextStyles.badge",
+          "CatchTextStyles.badgeCaps",
+          "CatchTextStyles.labelS",
           "CatchTextStyles.labelL",
+          "CatchTextStyles.kicker",
           "CatchTextStyles.buttonSm",
           "CatchIcon.badge",
           "CatchIcon.sm",
           "CatchLayout.badgeActionHeight",
           "CatchCountBadge",
-          "CatchIconBadge",
           "CatchStatusDot",
-          "CatchCornerSash"
+          "CatchInlineStatus"
         ],
         "goldens": [],
         "members": [
-          {
-            "id": "catch.badge.corner_sash",
-            "symbol": "CatchCornerSash",
-            "summary": "Top-corner status mark for event and club cards when one dominant state should read before chip clusters.",
-            "states": [
-              "brand",
-              "success",
-              "solid",
-              "surface",
-              "top-end"
-            ],
-            "file": "lib/core/widgets/catch_corner_sash.dart"
-          },
-          {
-            "id": "catch.badge.icon_badge",
-            "symbol": "CatchIconBadge",
-            "summary": "Anchored unread/count marker for icon actions.",
-            "states": [
-              "count",
-              "overflow-count",
-              "hidden",
-              "custom-colors"
-            ]
-          },
           {
             "id": "catch.badge.count_badge",
             "symbol": "CatchCountBadge",
@@ -151,7 +130,9 @@
             "states": [
               "hidden",
               "count",
-              "overflow-count"
+              "99-boundary",
+              "overflow-count",
+              "standalone"
             ],
             "file": "lib/core/widgets/catch_count_badge.dart"
           },
@@ -167,6 +148,20 @@
               "bordered"
             ],
             "file": "lib/core/widgets/catch_status_dot.dart"
+          },
+          {
+            "id": "catch.badge.inline_status",
+            "symbol": "CatchInlineStatus",
+            "summary": "Quiet unboxed status made from a semantic status dot and wrapping supporting copy.",
+            "states": [
+              "neutral",
+              "success",
+              "warning",
+              "danger",
+              "live",
+              "scaled"
+            ],
+            "file": "lib/core/widgets/catch_inline_status.dart"
           }
         ]
       },
@@ -175,7 +170,8 @@
         "notes": [
           "Use for short factual labels only; long prose belongs in supporting text.",
           "Use activity accent overrides only when the badge meaning is activity-scoped.",
-          "Icon badges, status dots, and corner sashes are public members of the badge/status family, not standalone component families."
+          "Use the named solid, live, and on-dark constructors; those fixed recipes are not generic tone values.",
+          "CatchCountBadge owns numeric overlays, while CatchInlineStatus owns quiet unboxed status."
         ]
       },
       "governance": {
@@ -505,12 +501,15 @@
       "name": "CatchChip",
       "status": "active",
       "kind": "primitive",
-      "summary": "Quiet fact/filter pill with optional icon, selected state, and remove action.",
+      "summary": "Canonical compact-label primitive for passive tags, parent-owned choices, registry-backed activities, and removable values behind explicit named constructors.",
       "dart": {
         "symbol": "CatchChip",
         "file": "lib/core/widgets/catch_chip.dart",
         "constructors": [
-          "CatchChip"
+          "CatchChip.tag",
+          "CatchChip.selectable",
+          "CatchChip.activity",
+          "CatchChip.removable"
         ]
       },
       "design": {
@@ -534,33 +533,68 @@
           {
             "name": "label",
             "type": "string",
-            "required": true,
-            "dartType": "String"
+            "required": false,
+            "dartType": "String?",
+            "notes": "Required by tag, selectable, and removable; optional override for activity."
           },
           {
-            "name": "active",
+            "name": "activityKind",
+            "type": "enum",
+            "required": false,
+            "dartType": "ActivityKind?",
+            "values": [
+              "socialRun",
+              "running",
+              "walking",
+              "pickleball",
+              "padel",
+              "tennis",
+              "badminton",
+              "cycling",
+              "spinClass",
+              "yoga",
+              "strengthTraining",
+              "pubQuiz",
+              "barCrawl",
+              "dinner",
+              "singlesMixer",
+              "openActivity"
+            ],
+            "notes": "Required only by CatchChip.activity."
+          },
+          {
+            "name": "selected",
             "type": "bool",
             "required": false,
             "default": false,
             "dartType": "bool"
           },
           {
-            "name": "icon",
+            "name": "leading",
             "type": "widget",
             "required": false,
             "dartType": "Widget?"
           },
           {
+            "name": "onChanged",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<bool>?",
+            "notes": "Required only by CatchChip.selectable; state remains parent-owned."
+          },
+          {
             "name": "onTap",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "notes": "Optional interaction only for CatchChip.activity."
           },
           {
             "name": "onRemove",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "notes": "Required only by CatchChip.removable; the whole chip is the removal action."
           },
           {
             "name": "enabled",
@@ -568,54 +602,88 @@
             "required": false,
             "default": true,
             "dartType": "bool"
+          },
+          {
+            "name": "accent",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "tintColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "inkColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "emphasis",
+            "type": "enum",
+            "required": false,
+            "default": "soft",
+            "dartType": "CatchChipEmphasis",
+            "values": [
+              "soft",
+              "solid"
+            ]
+          },
+          {
+            "name": "semanticsLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
           }
         ],
         "states": [
-          "default",
-          "active",
-          "disabled",
-          "with-icon",
+          "tag",
+          "selectable-resting",
+          "selectable-selected",
+          "selectable-disabled",
+          "selectable-accented",
+          "selectable-with-leading",
           "removable",
-          "activity-tinted"
+          "activity-soft",
+          "activity-solid",
+          "activity-tappable",
+          "truncated"
         ],
         "slots": [
           {
-            "name": "icon",
+            "name": "leading",
             "kind": "optional-leading-widget"
           }
         ],
         "tokens": [
           "space.s2",
-          "space.micro2",
+          "space.s4",
+          "space.micro10",
           "space.micro14",
           "radius.pill",
           "theme.light.color.surface",
           "theme.light.color.ink",
-          "theme.light.color.line2"
+          "theme.light.color.line2",
+          "theme.light.color.primary",
+          "theme.light.color.primaryInk",
+          "theme.light.color.primarySoft"
         ],
         "dartRoles": [
           "CatchTextStyles.labelL",
+          "CatchTextStyles.fieldRowTitle",
           "CatchIcon.sm",
+          "CatchLayout.activityChipIconSize",
+          "ActivityPalette.resolve",
+          "CatchElevation.segmentedSelected",
           "CatchOpacity.disabledControl",
           "CatchOpacity.controlOverlayPressed",
-          "CatchOpacity.controlOverlayHover",
-          "CatchSelectChip"
+          "CatchOpacity.controlOverlayHover"
         ],
         "goldens": [],
         "members": [
-          {
-            "id": "catch.chip.select_chip",
-            "symbol": "CatchSelectChip",
-            "summary": "Tactile selectable pill for questionnaire answers, mission choices, and choosy filters.",
-            "states": [
-              "inactive",
-              "active",
-              "pressed",
-              "disabled",
-              "accented"
-            ],
-            "file": "lib/core/widgets/catch_select_chip.dart"
-          },
           {
             "id": "catch.chip.field",
             "symbol": "CatchChipField",
@@ -628,24 +696,16 @@
               "disabled",
               "semantic-keys"
             ]
-          },
-          {
-            "id": "catch.chip.remove_button",
-            "symbol": "CatchChipRemoveButton",
-            "file": "lib/core/widgets/catch_chip.dart",
-            "summary": "Direct removable-chip close affordance renderer.",
-            "states": [
-              "enabled",
-              "disabled"
-            ]
           }
         ]
       },
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for compact labels and filters; use OptionCard when each choice needs explanatory copy.",
-          "CatchSelectChip is the tactile selection member of catch.chip, not a competing selection primitive."
+          "Choose tag, selectable, activity, or removable by semantic intent; do not add boolean/callback combinations to an unrestricted constructor.",
+          "Selected choices use a solid fill, inverse ink, subtle selected shadow, and press-only scale. Selection state is always parent-owned.",
+          "Use badges for compact status metadata, compact controls for floating actions, identity switchers for current-context menus, and progress cues for sequence state.",
+          "Use OptionCard when each choice needs explanatory copy."
         ]
       },
       "governance": {
@@ -3385,7 +3445,8 @@
         "file": "lib/core/widgets/catch_icon_button.dart",
         "constructors": [
           "CatchIconButton",
-          "CatchIconButton.icon"
+          "CatchIconButton.icon",
+          "CatchIconButton.counted"
         ]
       },
       "design": {
@@ -3450,6 +3511,13 @@
             "required": false,
             "default": "CatchIconButton.defaultSize",
             "dartType": "double"
+          },
+          {
+            "name": "count",
+            "type": "number",
+            "required": false,
+            "default": 0,
+            "dartType": "int"
           }
         ],
         "states": [
@@ -3458,7 +3526,8 @@
           "disabled",
           "bordered",
           "float",
-          "plain"
+          "plain",
+          "counted"
         ],
         "slots": [
           {
@@ -3478,14 +3547,16 @@
           "CatchLayout.iconButtonNavSize",
           "CatchLayout.iconButtonGlyphScale",
           "CatchOpacity.disabledControl",
-          "CatchElevation.iconButtonFloat"
+          "CatchElevation.iconButtonFloat",
+          "CatchCountBadge"
         ],
         "goldens": []
       },
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Design handoff must include tooltip/action label when used as an accessible command."
+          "Design handoff must include tooltip/action label when used as an accessible command.",
+          "Use CatchIconButton.counted for integer overlays; zero hides and values above 99 clamp through CatchCountBadge."
         ]
       },
       "governance": {
@@ -4798,7 +4869,7 @@
       "name": "CatchPrivacyBadge",
       "status": "active",
       "kind": "primitive",
-      "summary": "Compact privacy/visibility label for user-private, Catch-private, and host-visible metadata.",
+      "summary": "Localized privacy/visibility adapter that maps domain meaning into CatchBadge.privacy.",
       "dart": {
         "symbol": "CatchPrivacyBadge",
         "file": "lib/core/widgets/catch_privacy_badge.dart",
@@ -4828,12 +4899,12 @@
             "name": "kind",
             "type": "enum",
             "required": false,
-            "default": "you",
+            "default": "privateToYou",
             "dartType": "CatchPrivacyBadgeKind",
             "values": [
-              "you",
+              "privateToYou",
               "catchPrivate",
-              "host"
+              "hostCanSee"
             ]
           }
         ],
@@ -4852,9 +4923,9 @@
           "theme.light.color.ink3"
         ],
         "dartRoles": [
-          "CatchSurface",
-          "CatchTextStyles.badge",
-          "CatchIcon.xs"
+          "CatchBadge.privacy",
+          "CatchPrivacyBadgeKind",
+          "AppLocalizations"
         ],
         "goldens": []
       },
@@ -4862,7 +4933,7 @@
         "allowedChildren": [],
         "notes": [
           "Use only for privacy/visibility semantics; generic status belongs in CatchBadge.",
-          "The badge copy is owned by the enum kind so product privacy language stays centralized."
+          "The enum adapter owns localized copy and icon mapping while CatchBadge.privacy owns all chrome."
         ]
       },
       "governance": {
@@ -5758,125 +5829,6 @@
       "governance": {
         "role": "atom",
         "canonicalFamily": "catch.activity_art",
-        "publicApi": true,
-        "stateOwnership": "local-ui-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "internal-only",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
-      }
-    },
-    {
-      "id": "catch.activity_chip",
-      "name": "CatchActivityChip",
-      "status": "active",
-      "kind": "primitive",
-      "summary": "Activity-aware chip that binds ActivityKind labels, glyphs, and pigment to a compact selectable/tappable surface.",
-      "dart": {
-        "symbol": "CatchActivityChip",
-        "file": "lib/core/widgets/catch_activity_chip.dart",
-        "constructors": [
-          "CatchActivityChip"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/ActivityChip",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "ActivityChip",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "activityKind",
-            "type": "enum",
-            "required": true,
-            "dartType": "ActivityKind",
-            "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
-          },
-          {
-            "name": "primary",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "label",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "onTap",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
-          }
-        ],
-        "states": [
-          "soft",
-          "primary",
-          "tappable",
-          "custom-label",
-          "truncated"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s1",
-          "space.s2",
-          "space.s3",
-          "space.s4",
-          "radius.pill",
-          "theme.light.color.primary",
-          "theme.light.color.primaryInk",
-          "theme.light.color.line2",
-          "theme.light.color.surface"
-        ],
-        "dartRoles": [
-          "ActivityPalette.resolve",
-          "CatchTextStyles.fieldRowTitle",
-          "CatchLayout.activityChipIconSize"
-        ],
-        "goldens": []
-      },
-      "handoff": {
-        "allowedChildren": [],
-        "notes": [
-          "Use when a chip meaning is activity-scoped; use CatchChip for generic filters and tags."
-        ]
-      },
-      "governance": {
-        "role": "atom",
-        "canonicalFamily": "catch.activity_chip",
         "publicApi": true,
         "stateOwnership": "local-ui-only",
         "asyncOwnership": "none",
@@ -7658,12 +7610,12 @@
       "name": "CatchCountPill",
       "status": "active",
       "kind": "primitive",
-      "summary": "Floating pill affordance for map/list toggles and filters with optional icon, label, badge, and semantics.",
+      "summary": "Labelled floating action with a required callback, optional icon, and typed count overlay.",
       "dart": {
         "symbol": "CatchCountPill",
         "file": "lib/core/widgets/catch_count_pill.dart",
         "constructors": [
-          "CatchCountPill"
+          "CatchCountPill.label"
         ]
       },
       "design": {
@@ -7693,20 +7645,21 @@
           {
             "name": "label",
             "type": "string",
-            "required": false,
-            "dartType": "String?"
+            "required": true,
+            "dartType": "String"
           },
           {
-            "name": "badge",
-            "type": "string",
+            "name": "count",
+            "type": "number",
             "required": false,
-            "dartType": "String?"
+            "default": 0,
+            "dartType": "int"
           },
           {
             "name": "onPressed",
             "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
+            "required": true,
+            "dartType": "VoidCallback"
           },
           {
             "name": "semanticLabel",
@@ -7716,10 +7669,9 @@
           }
         ],
         "states": [
-          "icon-only",
           "label",
           "label-with-icon",
-          "with-badge",
+          "with-count",
           "semantic-label",
           "text-scale-truncation"
         ],
@@ -7737,15 +7689,17 @@
         ],
         "dartRoles": [
           "CatchTextStyles.monoLabel",
-          "CatchTextStyles.statusLabel",
-          "CatchLayout.countPillIconSize"
+          "CatchLayout.countPillIconSize",
+          "CatchIconButton.defaultSize",
+          "CatchCountBadge"
         ],
         "goldens": []
       },
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for compact floating controls; use CatchIconButton for square icon-only tool buttons."
+          "Use for labelled floating actions only; use CatchIconButton for icon-only commands.",
+          "Counts are integers rendered by CatchCountBadge; raw string badges are not accepted."
         ]
       },
       "governance": {
