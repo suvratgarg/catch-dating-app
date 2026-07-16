@@ -233,8 +233,8 @@ Future<void> _seedDiscoverableEvent(
     'discoveryMarketId': marketId,
     'discoveryActivityKind': event.activityKind.name,
     'discoveryGeoCell': eventDiscoveryGeoCellFor(
-      latitude: latitude,
-      longitude: longitude,
+      latitude: latitude!,
+      longitude: longitude!,
     ),
     'discoveryHasOpenSpots': hasOpenSpots,
     'discoveryAvailability': availability,

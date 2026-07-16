@@ -70,9 +70,9 @@ abstract class Event with _$Event {
     @TimestampConverter() required DateTime startTime,
     @TimestampConverter() required DateTime endTime,
     required String meetingPoint,
-    required EventMeetingLocation meetingLocation,
-    required double startingPointLat,
-    required double startingPointLng,
+    @JsonKey(includeIfNull: false) EventMeetingLocation? meetingLocation,
+    double? startingPointLat,
+    double? startingPointLng,
     String? locationDetails,
     @JsonKey(includeIfNull: false) String? photoUrl,
     @Default([]) List<UploadedPhoto> eventPhotos,
@@ -102,18 +102,7 @@ abstract class Event with _$Event {
     @Default({}) Map<String, int> waitlistedCohortCounts,
   }) = _Event;
 
-  factory Event.fromJson(Map<String, dynamic> json) =>
-      _$EventFromJson(_normalizedEventJson(json));
-
-  static Map<String, dynamic> _normalizedEventJson(Map<String, dynamic> json) {
-    final normalized = Map<String, dynamic>.from(json);
-    final location = _eventMeetingLocationFromJson(json);
-    normalized
-      ..['meetingLocation'] = location.toJson()
-      ..['startingPointLat'] = location.latitude
-      ..['startingPointLng'] = location.longitude;
-    return normalized;
-  }
+  factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
   double get distanceMiles => distanceKm * 0.621371;
   ActivityKind get activityKind => eventFormat.activityKind;
@@ -126,16 +115,28 @@ abstract class Event with _$Event {
   bool get isCancelled => status == EventLifecycleStatus.cancelled;
   bool isUpcomingAt(DateTime now) => !isCancelled && startTime.isAfter(now);
   bool get hasRequirements => constraints.hasRequirements;
+  bool get hasExactStartingPoint =>
+      effectiveStartingPointLat != null && effectiveStartingPointLng != null;
   String? get primaryPhotoUrl {
     if (eventPhotos.isNotEmpty) return eventPhotos.first.url;
     return photoUrl;
   }
 
-  EventMeetingLocation get effectiveMeetingLocation => meetingLocation;
-  String get locationName => meetingLocation.name;
-  String? get locationNotes => meetingLocation.notes ?? locationDetails;
-  double get effectiveStartingPointLat => meetingLocation.latitude;
-  double get effectiveStartingPointLng => meetingLocation.longitude;
+  EventMeetingLocation? get effectiveMeetingLocation =>
+      meetingLocation ??
+      EventMeetingLocation.legacy(
+        name: meetingPoint,
+        latitude: startingPointLat,
+        longitude: startingPointLng,
+        notes: locationDetails,
+      );
+  String get locationName => effectiveMeetingLocation?.name ?? meetingPoint;
+  String? get locationNotes =>
+      effectiveMeetingLocation?.notes ?? locationDetails;
+  double? get effectiveStartingPointLat =>
+      effectiveMeetingLocation?.latitude ?? startingPointLat;
+  double? get effectiveStartingPointLng =>
+      effectiveMeetingLocation?.longitude ?? startingPointLng;
   EventPolicyBundle get effectiveEventPolicy =>
       eventPolicy ??
       EventPolicyBundle.legacyEvent(
@@ -231,48 +232,4 @@ abstract class Event with _$Event {
     // copy:allow-inline(Composes governed period copy with dynamic event data)
     return '$weekday $period ${eventFormat.eventTitleLabel}';
   }
-}
-
-EventMeetingLocation _eventMeetingLocationFromJson(Map<String, dynamic> json) {
-  final structured = json['meetingLocation'];
-  if (structured is Map) {
-    final mapped = structured.map(
-      (key, value) => MapEntry(key.toString(), value),
-    );
-    try {
-      final location = EventMeetingLocation.fromJson(mapped).normalized();
-      if (_isValidExactEventLocation(location)) return location;
-    } on Object {
-      // Released documents may still carry only the legacy scalar mirrors.
-      // Fall through to the deterministic compatibility promotion below.
-    }
-  }
-
-  final legacy = EventMeetingLocation.legacy(
-    name: json['meetingPoint'] is String ? json['meetingPoint'] as String : '',
-    latitude: _eventCoordinate(json['startingPointLat']),
-    longitude: _eventCoordinate(json['startingPointLng']),
-    notes: json['locationDetails'] is String
-        ? json['locationDetails'] as String
-        : null,
-  );
-  if (legacy != null && _isValidExactEventLocation(legacy)) return legacy;
-  throw const FormatException(
-    'Published events require a named meeting location with exact coordinates.',
-  );
-}
-
-double? _eventCoordinate(Object? value) =>
-    value is num ? value.toDouble() : null;
-
-bool _isValidExactEventLocation(EventMeetingLocation location) {
-  final latitude = location.latitude;
-  final longitude = location.longitude;
-  return location.name.trim().isNotEmpty &&
-      latitude.isFinite &&
-      longitude.isFinite &&
-      latitude >= -90 &&
-      latitude <= 90 &&
-      longitude >= -180 &&
-      longitude <= 180;
 }

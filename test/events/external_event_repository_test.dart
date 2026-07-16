@@ -8,14 +8,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('decoder rejects an external event without a named location', () {
-    expect(
-      () => ExternalEvent.fromJson({
-        'startTime': Timestamp.fromDate(DateTime(2026, 6, 25, 10)),
-        'meetingLocation': {'latitude': 19.05, 'longitude': 72.82},
-      }),
-      throwsFormatException,
-    );
+  test('decoder keeps a coordinate-less legacy external event readable', () {
+    final event = ExternalEvent.fromJson({
+      'startTime': Timestamp.fromDate(DateTime(2026, 6, 25, 10)),
+      'meetingPoint': 'Legacy venue',
+    });
+
+    expect(event.meetingPoint, 'Legacy venue');
+    expect(event.latitude, isNull);
+    expect(event.longitude, isNull);
   });
 
   group('ExternalEventDiscoveryQuery', () {

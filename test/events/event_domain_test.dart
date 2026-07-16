@@ -181,29 +181,30 @@ void main() {
   });
 
   group('Event meeting location contract', () {
-    test(
-      'promotes a valid legacy coordinate pair into the required object',
-      () {
-        final source = buildEvent();
-        final json = <String, dynamic>{...source.toJson(), 'id': source.id}
-          ..remove('meetingLocation');
+    test('reads a valid legacy pair through the compatibility view', () {
+      final source = buildEvent();
+      final json = <String, dynamic>{...source.toJson(), 'id': source.id}
+        ..remove('meetingLocation');
 
-        final decoded = Event.fromJson(json);
+      final decoded = Event.fromJson(json);
 
-        expect(decoded.meetingLocation.name, source.meetingPoint);
-        expect(decoded.meetingLocation.latitude, source.startingPointLat);
-        expect(decoded.meetingLocation.longitude, source.startingPointLng);
-      },
-    );
+      expect(decoded.meetingLocation, isNull);
+      expect(decoded.effectiveMeetingLocation?.name, source.meetingPoint);
+      expect(decoded.effectiveStartingPointLat, source.startingPointLat);
+      expect(decoded.effectiveStartingPointLng, source.startingPointLng);
+    });
 
-    test('rejects an event without an exact meeting location', () {
+    test('keeps a coordinate-less legacy event readable until repair', () {
       final source = buildEvent();
       final json = <String, dynamic>{...source.toJson(), 'id': source.id}
         ..remove('meetingLocation')
         ..remove('startingPointLat')
         ..remove('startingPointLng');
 
-      expect(() => Event.fromJson(json), throwsFormatException);
+      final decoded = Event.fromJson(json);
+
+      expect(decoded.meetingLocation, isNull);
+      expect(decoded.hasExactStartingPoint, isFalse);
     });
   });
 }

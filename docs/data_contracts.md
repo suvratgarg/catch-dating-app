@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.18
-updated: 2026-07-14
+version: 1.1.19
+updated: 2026-07-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -79,9 +79,11 @@ them. They are not nullable escape hatches.
 - Update resolves the existing or supplied exact location and always rewrites
   the canonical object plus mirrors. It rejects a truly coordinate-less legacy
   document instead of preserving corruption.
-- Dart `Event` and `ExternalEvent` expose non-null exact coordinates. `Event`
-  may deterministically promote a complete legacy pair on read, but rejects a
-  document with no usable exact location.
+- Dart `Event` and `ExternalEvent` keep exact coordinates nullable on reads
+  until the production repair is complete. `Event.effectiveMeetingLocation`
+  deterministically promotes a complete legacy pair, while coordinate-less
+  records remain readable and fail closed anywhere an exact location is
+  required.
 - Discovery and proximity check-in fail closed when the invariant is broken;
   they never publish a null geo cell or skip the distance guard.
 - `node tool/data/backfill_event_meeting_locations.mjs --env <env>` is the

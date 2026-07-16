@@ -22,8 +22,8 @@ abstract class ExternalEvent with _$ExternalEvent {
     required String meetingPoint,
     String? locationDetails,
     String? photoUrl,
-    required double latitude,
-    required double longitude,
+    double? latitude,
+    double? longitude,
     required ActivityKind activityKind,
     required EventInteractionModel interactionModel,
     String? priceDisplayText,
@@ -53,25 +53,15 @@ abstract class ExternalEvent with _$ExternalEvent {
       startTime: _requiredTimestamp(json['startTime'], 'startTime'),
       endTime: _nullableTimestamp(json['endTime']),
       timezone: _string(json['timezone']),
-      meetingPoint: _requiredString(
-        _string(meetingLocation['name']) ?? json['meetingPoint'],
-        'meetingLocation.name',
-      ),
+      meetingPoint:
+          _string(meetingLocation['name']) ??
+          _string(json['meetingPoint']) ??
+          '',
       locationDetails:
           _string(meetingLocation['notes']) ?? _string(json['locationDetails']),
       photoUrl: _string(json['photoUrl']),
-      latitude: _requiredNumber(
-        meetingLocation['latitude'],
-        'meetingLocation.latitude',
-        minimum: -90,
-        maximum: 90,
-      ),
-      longitude: _requiredNumber(
-        meetingLocation['longitude'],
-        'meetingLocation.longitude',
-        minimum: -180,
-        maximum: 180,
-      ),
+      latitude: _number(meetingLocation['latitude']),
+      longitude: _number(meetingLocation['longitude']),
       activityKind: _enumByName(
         ActivityKind.values,
         _string(activity['activityKind']),
@@ -188,28 +178,9 @@ String? _string(Object? value) {
   return trimmed.isEmpty ? null : trimmed;
 }
 
-String _requiredString(Object? value, String field) {
-  final string = _string(value);
-  if (string == null) {
-    throw FormatException('$field must be a non-empty string.');
-  }
-  return string;
-}
-
-double _requiredNumber(
-  Object? value,
-  String field, {
-  required double minimum,
-  required double maximum,
-}) {
-  if (value is! num) {
-    throw FormatException('$field must be a number.');
-  }
-  final number = value.toDouble();
-  if (!number.isFinite || number < minimum || number > maximum) {
-    throw FormatException('$field is outside its valid range.');
-  }
-  return number;
+double? _number(Object? value) {
+  if (value is num) return value.toDouble();
+  return null;
 }
 
 int? _integer(Object? value) {
