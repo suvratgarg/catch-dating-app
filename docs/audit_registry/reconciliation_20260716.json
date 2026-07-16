@@ -320,7 +320,7 @@
       "widget-triage-a-20260712",
       "widget-triage-b-20260712"
     ],
-    "removedCount": 37,
+    "removedCount": 38,
     "removedGeneratedCacheDirectories": 3,
     "deletedLocalBranchesNonForce": 24,
     "retainedLocalBranchesAfterNonForceRefusal": [
@@ -338,8 +338,9 @@
       "codex/recovery-topbar-remoteops-20260716",
       "codex/recovery-web-doc-residuals-20260716"
     ],
-    "activeCloseoutWorktree": "/private/tmp/catch-reconciliation-closeout",
-    "policy": "All 37 audit-classified safe-delete worktrees were removed non-forcibly after remote preservation. Local branches were deleted only when git branch -d accepted them; 13 refusals remain as harmless remote-backed provenance refs.",
+    "removedFinalCloseoutWorktree": "/private/tmp/catch-reconciliation-closeout",
+    "evidenceAmendmentWorktreeDisposition": "The temporary /private/tmp/catch-reconciliation-finalize worktree used to record this post-push fact is removed immediately after this amendment is pushed and is not counted as an audit worktree.",
+    "policy": "All 38 audit-classified safe-delete and closeout worktrees were removed non-forcibly after remote preservation. Local branches were deleted only when git branch -d accepted them; 13 refusals remain as harmless remote-backed provenance refs.",
     "preservedWorktrees": [
       {
         "path": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
