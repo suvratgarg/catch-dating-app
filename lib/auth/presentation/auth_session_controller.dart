@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -31,5 +32,13 @@ class AuthSessionController extends _$AuthSessionController {
     OnboardingController.completeMutation.reset(ref);
     ref.invalidate(authControllerProvider);
     ref.invalidate(onboardingControllerProvider);
+    // Explore browse preferences are session-scoped even though they are kept
+    // alive across tab switches. Reset all four roots so a new account cannot
+    // inherit the previous account's city, manual-selection guard, query, or
+    // filters.
+    ref.invalidate(selectedExploreCityProvider);
+    ref.invalidate(selectedExploreCityWasUserSelectedProvider);
+    ref.invalidate(exploreSearchQueryProvider);
+    ref.invalidate(exploreFiltersProvider);
   }
 }

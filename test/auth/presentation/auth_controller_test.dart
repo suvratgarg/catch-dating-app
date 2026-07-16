@@ -5,6 +5,8 @@ import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -386,6 +388,41 @@ void main() {
         expect(container.read(authControllerProvider), const AuthScreenState());
       },
     );
+
+    test('signOut clears keepAlive Explore browse state', () async {
+      final repository = _SignOutAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      final defaultCity = container.read(selectedExploreCityProvider);
+      final defaultFilters = container.read(exploreFiltersProvider);
+      final delhi = cityOptionByName('delhi')!.toCityData();
+      container.read(selectedExploreCityProvider.notifier).setCity(delhi);
+      container.read(exploreSearchQueryProvider.notifier).setQuery('tempo');
+      container
+          .read(exploreFiltersProvider.notifier)
+          .setDistanceFilter(ExploreDistanceFilter.fiveKm);
+
+      expect(container.read(selectedExploreCityProvider), delhi);
+      expect(
+        container.read(selectedExploreCityWasUserSelectedProvider),
+        isTrue,
+      );
+      expect(container.read(exploreSearchQueryProvider), 'tempo');
+      expect(container.read(exploreFiltersProvider), isNot(defaultFilters));
+
+      await container.read(authSessionControllerProvider.notifier).signOut();
+
+      expect(repository.signOutCallCount, 1);
+      expect(container.read(selectedExploreCityProvider), defaultCity);
+      expect(
+        container.read(selectedExploreCityWasUserSelectedProvider),
+        isFalse,
+      );
+      expect(container.read(exploreSearchQueryProvider), isEmpty);
+      expect(container.read(exploreFiltersProvider), defaultFilters);
+    });
   });
 }
 
