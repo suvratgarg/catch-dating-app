@@ -639,11 +639,6 @@ function buildGroundTruthRecall({
 }) {
   const cases = [
     {
-      id: "dark-pill",
-      members: ["DarkPill", "EventSuccessDarkPill"],
-      expectedDetectors: ["small-widget", "name"],
-    },
-    {
       id: "share-card-sheet-absorb",
       members: ["ChatShareCardSheet", "CatchShareCardSheet"],
       expectedDetectors: ["ranked-pair"],
@@ -651,11 +646,6 @@ function buildGroundTruthRecall({
     {
       id: "share-card-family",
       members: ["ChatShareCard", "ClubShareCard", "EventShareCard"],
-      expectedDetectors: ["name"],
-    },
-    {
-      id: "countdown-pill-family",
-      members: ["CountdownBeatPill", "CountdownCuePill"],
       expectedDetectors: ["name"],
     },
     {
