@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "description": "Fixture baseline whose orphan debt has been removed.",
+  "allowedOrphanedKeys": [
+    "recoveredKey",
+    "removedCatalogKey"
+  ]
+}

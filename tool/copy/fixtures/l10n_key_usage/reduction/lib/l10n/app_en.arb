@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "recoveredKey": "Recovered key",
+  "@recoveredKey": {"description": "Fixture"},
+  "usedKey": "Used key",
+  "@usedKey": {"description": "Fixture"}
+}
