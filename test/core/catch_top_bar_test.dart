@@ -44,9 +44,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _wrap(
-        const CatchScreenTopBar(title: 'Activity', subtitle: 'Notifications'),
-      ),
+      _wrapScreenTopBar(title: 'Activity', subtitle: 'Notifications'),
     );
 
     final titleContext = tester.element(find.text('Activity'));
@@ -447,6 +445,22 @@ Widget _wrap(PreferredSizeWidget appBar) {
   return MaterialApp(
     theme: AppTheme.light,
     home: Scaffold(appBar: appBar, body: const SizedBox.shrink()),
+  );
+}
+
+Widget _wrapScreenTopBar({required String title, String? subtitle}) {
+  return MaterialApp(
+    theme: AppTheme.light,
+    home: Builder(
+      builder: (context) => Scaffold(
+        appBar: CatchScreenTopBar(
+          context: context,
+          title: title,
+          subtitle: subtitle,
+        ),
+        body: const SizedBox.shrink(),
+      ),
+    ),
   );
 }
 

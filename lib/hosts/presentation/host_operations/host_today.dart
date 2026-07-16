@@ -279,8 +279,42 @@ class HostTodayClubPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final initials = _initialsFor(club.name);
+    final rawLogoUrl = club.logoPhotoUrl?.trim();
+    final logoUrl = rawLogoUrl?.isNotEmpty == true ? rawLogoUrl : null;
+    final canSwitch = showClubPicker && clubs.length > 1;
+    final selectedClubIndex = clubs.indexWhere(
+      (candidate) => candidate.id == club.id,
+    );
+    final triggerContent = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchPersonAvatar(
+          key: const ValueKey('host-today-club-identity-art'),
+          size: CatchSpacing.s6,
+          name: club.name,
+          initials: initials,
+          imageUrl: logoUrl,
+          activityKind: club.hostDefaults.primaryActivityKind,
+        ),
+        gapW8,
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 104),
+          child: Text(
+            club.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+        ),
+        if (canSwitch) ...[
+          gapW4,
+          Icon(CatchIcons.expandMoreRounded, size: CatchIcon.sm, color: t.ink3),
+        ],
+      ],
+    );
 
-    return CatchSurface(
+    CatchSurface trigger({VoidCallback? onTap}) => CatchSurface(
+      key: const ValueKey('host-today-club-switcher'),
       borderColor: t.line2,
       backgroundColor: t.surface,
       borderRadius: BorderRadius.circular(CatchRadius.pill),
@@ -290,51 +324,82 @@ class HostTodayClubPill extends StatelessWidget {
         CatchSpacing.s3,
         CatchSpacing.micro6,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(
-            radius: CatchSpacing.s3,
-            backgroundColor: ActivityPalette.resolve(
-              context,
-              club.hostDefaults.primaryActivityKind,
-            ).deep,
-            child: Text(
-              initials,
-              style: CatchTextStyles.badge(context, color: t.darkPillInk),
-            ),
-          ),
-          gapW8,
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 104),
-            child: Text(
-              club.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ),
-          if (showClubPicker) ...[
-            gapW4,
-            CatchTopBarMenuAction<int>(
-              tooltip: context.l10n.hostsHostTodayTooltipSwitchClub,
-              icon: CatchIcons.expandMoreRounded,
-              items: [
-                for (var index = 0; index < clubs.length; index++)
-                  CatchActionMenuItem(
-                    value: index,
-                    label: context.l10n.hostsHostTodayLabelNameValue2(
-                      name: clubs[index].name,
-                      value2: clubs[index].isOwnedBy(currentUid)
+      onTap: onTap,
+      child: triggerContent,
+    );
+
+    if (!canSwitch) return trigger();
+
+    final tooltip = context.l10n.hostsHostTodayTooltipSwitchClub;
+    return MenuAnchor(
+      alignmentOffset: const Offset(0, CatchSpacing.s1),
+      style: const MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.zero)),
+      menuChildren: [
+        for (var index = 0; index < clubs.length; index++)
+          Semantics(
+            key: ValueKey('host-today-club-option-${clubs[index].id}'),
+            selected: index == selectedClubIndex,
+            child: MenuItemButton(
+              onPressed: () => onSwitchClubIndex(index),
+              style: const ButtonStyle(
+                padding: WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(
+                    horizontal: CatchSpacing.micro14,
+                    vertical: CatchLayout.menuRowVerticalPadding,
+                  ),
+                ),
+              ),
+              trailingIcon: index == selectedClubIndex
+                  ? Icon(
+                      CatchIcons.check,
+                      size: CatchLayout.menuRowCheckSize,
+                      color: t.ink,
+                    )
+                  : const SizedBox(width: CatchLayout.menuRowCheckSize),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minWidth: CatchLayout.actionMenuWidth - CatchSpacing.s16,
+                  maxWidth: CatchLayout.actionMenuWidth - CatchSpacing.s16,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      clubs[index].name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.labelL(context, color: t.ink),
+                    ),
+                    gapH2,
+                    Text(
+                      clubs[index].isOwnedBy(currentUid)
                           ? context.l10n.hostsHostTodayLabelOwner
                           : context.l10n.hostsHostTodayLabelHostTeam,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.monoLabel(
+                        context,
+                        color: t.ink3,
+                      ).copyWith(fontSize: CatchLayout.menuRowSublabelSize),
                     ),
-                  ),
-              ],
-              onSelected: onSwitchClubIndex,
+                  ],
+                ),
+              ),
             ),
-          ],
-        ],
+          ),
+      ],
+      builder: (context, controller, child) => Tooltip(
+        message: tooltip,
+        child: Semantics(
+          label: tooltip,
+          value: club.name,
+          button: true,
+          child: trigger(
+            onTap: () =>
+                controller.isOpen ? controller.close() : controller.open(),
+          ),
+        ),
       ),
     );
   }
@@ -388,7 +453,7 @@ class HostTodayEventHero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          HostTodayCountdownPill(event: event, now: now),
+          CatchBadge.onDark(label: _eventStartLeadLabel(event, now)),
           gapH16,
           Text(
             _todayEventHeroTitle(event),
@@ -482,39 +547,6 @@ class HostTodayEventHero extends StatelessWidget {
             onPressed: onPressed,
           ),
         ],
-      ),
-    );
-  }
-}
-
-class HostTodayCountdownPill extends StatelessWidget {
-  const HostTodayCountdownPill({
-    super.key,
-    required this.event,
-    required this.now,
-  });
-
-  final Event event;
-  final DateTime now;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialWhite.withValues(
-        alpha: CatchOpacity.darkHeroPillFill,
-      ),
-      borderWidth: 0,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.micro6,
-      ),
-      child: Text(
-        _eventStartLeadLabel(event, now),
-        style: CatchTextStyles.monoLabel(
-          context,
-          color: CatchTokens.editorialWhite,
-        ),
       ),
     );
   }

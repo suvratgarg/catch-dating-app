@@ -138,7 +138,6 @@ const _rawStrokeConstructors = <String>{
 const _assetPathConstructors = <String>{'AssetImage', 'ExactAssetImage'};
 
 const _roundedAffordanceConstructors = <String>{
-  'CatchActivityChip',
   'CatchBadge',
   'CatchButton',
   'CatchChip',

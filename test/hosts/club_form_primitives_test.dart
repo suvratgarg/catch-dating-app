@@ -4,7 +4,6 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_basics_step.dart';
@@ -68,7 +67,6 @@ void main() {
     expect(find.byType(CatchSectionList), findsOneWidget);
     expect(find.byType(CatchSection), findsWidgets);
     expect(find.byType(CatchFieldChoiceChip), findsWidgets);
-    expect(find.byType(CatchSelectChip), findsNothing);
     expect(find.byType(CatchSurface), findsNothing);
 
     final balanced = find.byWidgetPredicate(

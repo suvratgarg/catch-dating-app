@@ -137,11 +137,18 @@ class CatchPersonAvatar extends StatelessWidget {
     } else if (imageUrl != null && imageUrl!.isNotEmpty) {
       final image = CatchNetworkImage(
         imageUrl!,
-        errorBuilder: (context, _, _) => CatchInitialsAvatarPlaceholder(
-          name: name,
-          initials: initials,
-          size: innerSize,
-        ),
+        errorBuilder: (context, _, _) => activityKind == null
+            ? CatchInitialsAvatarPlaceholder(
+                name: name,
+                initials: initials,
+                size: innerSize,
+              )
+            : CatchActivityInitialsPlaceholder(
+                kind: activityKind!,
+                initials: initials ?? _initialsOf(name),
+                size: innerSize,
+                dim: activityDim,
+              ),
       );
       avatar = CatchPersonAvatarShell(
         size: innerSize,

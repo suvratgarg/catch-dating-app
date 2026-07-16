@@ -4,9 +4,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -165,9 +164,14 @@ class NotificationsAction extends ConsumerWidget {
             .length ??
         0;
 
-    return DashboardNotificationBellButton(
-      unreadCount: unreadCount,
-      onPressed: () {
+    return CatchIconButton.counted(
+      icon: unreadCount > 0
+          ? CatchIcons.notificationsRounded
+          : CatchIcons.notificationsNoneRounded,
+      count: unreadCount,
+      size: CatchIconButton.navSize,
+      tooltip: context.l10n.dashboardDashboardScreenTooltipNotifications,
+      onTap: () {
         ref
             .read(appAnalyticsProvider)
             .logEvent(
@@ -182,34 +186,6 @@ class NotificationsAction extends ConsumerWidget {
             );
         context.pushNamed(Routes.notificationsScreen.name);
       },
-    );
-  }
-}
-
-class DashboardNotificationBellButton extends StatelessWidget {
-  const DashboardNotificationBellButton({
-    super.key,
-    required this.unreadCount,
-    required this.onPressed,
-  });
-
-  final int unreadCount;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final badgeLabel = catchCountLabel(unreadCount);
-
-    return CatchIconBadge(
-      isLabelVisible: unreadCount > 0,
-      label: badgeLabel,
-      child: CatchIconAction(
-        icon: unreadCount > 0
-            ? CatchIcons.notificationsRounded
-            : CatchIcons.notificationsNoneRounded,
-        tooltip: context.l10n.dashboardDashboardScreenTooltipNotifications,
-        onPressed: onPressed,
-      ),
     );
   }
 }

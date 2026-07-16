@@ -193,9 +193,18 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Center(
-          child: CatchCountBadge(
-            count: 3,
-            child: Icon(CatchIcons.chatBubbleOutlineRounded),
+          child: SizedBox(
+            width: CatchLayout.appShellNavigationBadgeWidth,
+            height: CatchLayout.appShellNavigationBadgeHeight,
+            child: CatchCountBadge(
+              count: 3,
+              alignment: Alignment.topRight,
+              offset: const Offset(-1, 2),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Icon(CatchIcons.chatBubbleOutlineRounded),
+              ),
+            ),
           ),
         ),
       ),
@@ -203,7 +212,9 @@ void main() {
 
     final badgeBox = find.byWidgetPredicate(
       (widget) =>
-          widget is SizedBox && widget.width == 38 && widget.height == 30,
+          widget is SizedBox &&
+          widget.width == CatchLayout.appShellNavigationBadgeWidth &&
+          widget.height == CatchLayout.appShellNavigationBadgeHeight,
     );
     final boxRect = tester.getRect(badgeBox);
     final labelRect = tester.getRect(find.text('3'));

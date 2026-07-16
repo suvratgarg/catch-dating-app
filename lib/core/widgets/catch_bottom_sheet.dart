@@ -82,7 +82,7 @@ class CatchBottomSheetScaffold extends StatelessWidget {
           bottomInset + CatchLayout.sheetBottomPadding,
         );
     final right = _hasText(badge)
-        ? CatchBadge(label: badge!, tone: badgeTone, uppercase: true)
+        ? CatchBadge.functional(label: badge!, tone: badgeTone)
         : trailing;
     final hasHeader = _hasText(title) || glyph != null || right != null;
 

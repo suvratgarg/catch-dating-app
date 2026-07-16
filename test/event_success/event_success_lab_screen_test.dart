@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart';
@@ -18,8 +18,8 @@ void main() {
 
     expect(find.text('Event success lab'), findsOneWidget);
     expect(find.text('Event Success Layer'), findsOneWidget);
-    expect(find.text('Work in progress'), findsOneWidget);
-    expect(find.text('Preview only'), findsOneWidget);
+    expect(find.text('WORK IN PROGRESS'), findsOneWidget);
+    expect(find.text('PREVIEW ONLY'), findsOneWidget);
     expect(find.text('Dev/staging route'), findsOneWidget);
     expect(find.text('No Firestore writes'), findsOneWidget);
     expect(find.text('No booking changes'), findsOneWidget);
@@ -101,14 +101,14 @@ void main() {
     );
 
     expect(find.text('Social Event Lite'), findsOneWidget);
-    expect(_selectChip('Social run', active: true), findsOneWidget);
-    expect(_selectChip('Pickleball', active: false), findsOneWidget);
+    expect(_selectChip('Social run', selected: true), findsOneWidget);
+    expect(_selectChip('Pickleball', selected: false), findsOneWidget);
 
     await tester.tap(_selectChip('Pickleball'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Pickleball Partner Rotations'), findsOneWidget);
-    expect(_selectChip('Pickleball', active: true), findsOneWidget);
+    expect(_selectChip('Pickleball', selected: true), findsOneWidget);
 
     final checkInSwitch = find.bySemanticsLabel(
       'Attendance and live roster tool',
@@ -146,12 +146,14 @@ void main() {
   });
 }
 
-Finder _selectChip(String label, {bool? active}) {
-  return find.byWidgetPredicate(
-    (widget) =>
-        widget is CatchSelectChip &&
-        widget.label == label &&
-        (active == null || widget.active == active),
+Finder _selectChip(String label, {bool? selected}) {
+  final chip = find.widgetWithText(CatchChip, label);
+  if (selected == null) return chip;
+  return find.descendant(
+    of: chip,
+    matching: find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.selected == selected,
+    ),
   );
 }
 

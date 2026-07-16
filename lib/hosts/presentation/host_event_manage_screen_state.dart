@@ -553,7 +553,7 @@ class HostRosterDisplayState {
         filter: HostRosterFilter.all,
         label: l10n.hostsHostEventManageScreenStateLabelAll,
         value: allIds.length,
-        tone: CatchBadgeTone.solid,
+        tone: CatchBadgeTone.neutral,
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.booked,
@@ -653,7 +653,7 @@ class HostRosterDisplayState {
         filter: HostRosterFilter.all,
         label: l10n.hostsHostEventManageScreenStateLabelAll,
         value: allBaseIds.length,
-        tone: CatchBadgeTone.solid,
+        tone: CatchBadgeTone.neutral,
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.due,
@@ -731,7 +731,7 @@ class HostRosterDisplayState {
         filter: HostRosterFilter.all,
         label: l10n.hostsHostEventManageScreenStateLabelAll,
         value: allBaseIds.length,
-        tone: CatchBadgeTone.solid,
+        tone: CatchBadgeTone.neutral,
       ),
       HostRosterFilterSpec(
         filter: HostRosterFilter.attended,

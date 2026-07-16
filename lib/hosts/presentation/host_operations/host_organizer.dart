@@ -77,7 +77,7 @@ class HostClubOrganizerOverview extends StatelessWidget {
                   runSpacing: CatchSpacing.s2,
                   children: [
                     for (final format in formats)
-                      CatchBadge(label: format, uppercase: true),
+                      CatchBadge.functional(label: format),
                   ],
                 ),
                 gapH12,
@@ -362,10 +362,8 @@ class HostOrganizerTeamRow extends StatelessWidget {
                 ),
               ),
               if (profile.role == ClubHostRole.owner)
-                CatchBadge(
+                CatchBadge.solidStatus(
                   label: context.l10n.hostsHostOrganizerLabelOwner,
-                  tone: CatchBadgeTone.solid,
-                  uppercase: true,
                 )
               else
                 Icon(

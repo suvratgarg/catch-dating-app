@@ -491,7 +491,5 @@ void main() {
 }
 
 Finder _chip(String label) {
-  return find.byWidgetPredicate(
-    (widget) => widget is CatchChip && widget.label == label,
-  );
+  return find.widgetWithText(CatchChip, label);
 }

@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -41,7 +42,7 @@ class ExploreClubPolaroidCard extends StatelessWidget {
       mediaOverlay: Positioned(
         top: CatchSpacing.s3,
         right: CatchSpacing.s3,
-        child: ExploreDarkPill(state.memberCountLabel),
+        child: CatchBadge.solid(label: state.memberCountLabel),
       ),
       caption: state.caption,
       captionColor: t.ink3,
@@ -52,7 +53,7 @@ class ExploreClubPolaroidCard extends StatelessWidget {
         children: [
           Expanded(child: ExploreClubTags(state: state)),
           gapW10,
-          ExploreDarkPill(state.actionLabel, compact: true),
+          CatchBadge.solid(label: state.actionLabel, size: CatchBadgeSize.sm),
         ],
       ),
     );

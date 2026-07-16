@@ -246,12 +246,15 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                   top: CatchSpacing.s5,
                   bottom: CatchSpacing.s5,
                 ),
-                child: CatchCountPill(
+                child: CatchCountPill.label(
                   icon: CatchIcons.nearMeOutlined,
-                  label: distanceControlLabel,
-                  value: hasDeviceLocation ? distanceControlValue : null,
+                  label: hasDeviceLocation
+                      ? '$distanceControlLabel $distanceControlValue'
+                      : distanceControlLabel,
                   semanticLabel: distanceControlSemantics,
-                  onPressed: locationLoading ? null : _activateOrCycleDistance,
+                  onPressed: () {
+                    if (!locationLoading) _activateOrCycleDistance();
+                  },
                 ),
               ),
             ),
