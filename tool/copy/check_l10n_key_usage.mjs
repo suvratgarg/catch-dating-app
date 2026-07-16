@@ -18,6 +18,7 @@ const generatedSuffixPattern =
 const generatedHeaderPattern =
   /(?:GENERATED CODE\s*-\s*DO NOT (?:EDIT|MODIFY)|DO NOT MODIFY BY HAND)/iu;
 const dartIdentifierPattern = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
+const canonicalNonMessageL10nMembers = new Set(["localeName"]);
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -46,6 +47,11 @@ export function scanL10nKeyUsage({
   );
   const catalogKeySet = new Set(catalog.keys);
   const usagesByKey = new Map(catalog.keys.map((key) => [key, []]));
+  const l10nReferencesByKey = new Map(
+    catalog.keys.map((key) => [key, []]),
+  );
+  const nonMessageL10nReferences = [];
+  const missingCatalogReferences = [];
   const scannedFiles = [];
   const excludedFiles = [];
 
@@ -63,7 +69,9 @@ export function scanL10nKeyUsage({
 
     scannedFiles.push(relativePath);
     const lineStarts = lineStartOffsets(source);
-    for (const token of tokenizeDartIdentifiers(source)) {
+    const tokens = tokenizeDartSyntax(source);
+    for (const token of tokens) {
+      if (token.kind !== "identifier") continue;
       if (!catalogKeySet.has(token.identifier)) continue;
       const location = lineColumnForOffset(lineStarts, token.offset);
       usagesByKey.get(token.identifier).push({
@@ -72,15 +80,33 @@ export function scanL10nKeyUsage({
         column: location.column,
       });
     }
+    for (const reference of l10nMemberReferencesFromTokens(tokens)) {
+      const location = lineColumnForOffset(lineStarts, reference.offset);
+      const usage = {
+        path: relativePath,
+        line: location.line,
+        column: location.column,
+      };
+      if (catalogKeySet.has(reference.key)) {
+        l10nReferencesByKey.get(reference.key).push(usage);
+      } else if (canonicalNonMessageL10nMembers.has(reference.key)) {
+        nonMessageL10nReferences.push({key: reference.key, ...usage});
+      } else {
+        missingCatalogReferences.push({key: reference.key, ...usage});
+      }
+    }
   }
 
   const keys = catalog.keys.map((key) => {
     const usages = usagesByKey.get(key);
+    const l10nReferences = l10nReferencesByKey.get(key);
     return {
       key,
       status: usages.length === 0 ? "orphaned" : "used",
       usageCount: usages.length,
       usages,
+      l10nReferenceCount: l10nReferences.length,
+      l10nReferences,
     };
   });
   const orphanedKeys = keys
@@ -90,19 +116,28 @@ export function scanL10nKeyUsage({
     (total, entry) => total + entry.usageCount,
     0,
   );
+  const catalogL10nReferenceCount = keys.reduce(
+    (total, entry) => total + entry.l10nReferenceCount,
+    0,
+  );
+  const missingCatalogKeys = [...new Set(
+    missingCatalogReferences.map((reference) => reference.key),
+  )].sort(compareText);
   const inventory = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     generatedBy: "node tool/copy/check_l10n_key_usage.mjs",
     catalog: displayPath(resolvedArbPath, resolvedRepoRoot),
     sourceRoot: displayPath(resolvedSourceRoot, resolvedRepoRoot),
     scope: {
-      included: "exact ARB-key identifiers in handwritten production Dart",
+      included:
+        "exact ARB-key identifiers and statically recognized l10n.<key> member references in handwritten production Dart",
       excluded: [
         "Dart files under generated directories",
         "lib/l10n/generated/**",
         "*.g.dart, *.freezed.dart, *.gen.dart, *.gr.dart, and *.mocks.dart",
         "Dart files with a generated-code do-not-edit header",
         "comments and non-interpolated string contents",
+        "the ARB locale-metadata accessor AppLocalizations.localeName",
       ],
     },
     summary: {
@@ -110,16 +145,26 @@ export function scanL10nKeyUsage({
       usedKeys: keys.length - orphanedKeys.length,
       orphanedKeys: orphanedKeys.length,
       usageReferences: usageReferenceCount,
+      catalogL10nReferences: catalogL10nReferenceCount,
+      nonMessageL10nReferences: nonMessageL10nReferences.length,
+      missingCatalogKeys: missingCatalogKeys.length,
+      missingCatalogReferences: missingCatalogReferences.length,
       scannedDartFiles: scannedFiles.length,
       excludedGeneratedDartFiles: excludedFiles.length,
     },
     orphanedKeys,
+    nonMessageL10nReferences,
+    missingCatalogKeys,
+    missingCatalogReferences,
     keys,
   };
 
   return {
     inventory,
     orphanedKeys,
+    nonMessageL10nReferences,
+    missingCatalogKeys,
+    missingCatalogReferences,
     scannedFiles,
     excludedFiles,
   };
@@ -159,10 +204,28 @@ export function parseArbCatalog(source, label = "ARB catalog") {
 }
 
 export function tokenizeDartIdentifiers(source) {
+  return tokenizeDartSyntax(source)
+    .filter((token) => token.kind === "identifier")
+    .map(({identifier, offset}) => ({identifier, offset}));
+}
+
+export function findL10nMemberReferences(source) {
+  return l10nMemberReferencesFromTokens(tokenizeDartSyntax(source));
+}
+
+function tokenizeDartSyntax(source) {
   const tokens = [];
 
   function addToken(start, end) {
-    tokens.push({identifier: source.slice(start, end), offset: start});
+    tokens.push({
+      kind: "identifier",
+      identifier: source.slice(start, end),
+      offset: start,
+    });
+  }
+
+  function addMemberAccess(offset, operator) {
+    tokens.push({kind: "member-access", operator, offset});
   }
 
   function scanCode(start, stopAtInterpolationBrace = false) {
@@ -174,11 +237,13 @@ export function tokenizeDartIdentifiers(source) {
 
       if (stopAtInterpolationBrace && character === "}") {
         if (nestedBraceDepth === 0) return index + 1;
+        tokens.push({kind: "syntax", offset: index});
         nestedBraceDepth -= 1;
         index += 1;
         continue;
       }
       if (stopAtInterpolationBrace && character === "{") {
+        tokens.push({kind: "syntax", offset: index});
         nestedBraceDepth += 1;
         index += 1;
         continue;
@@ -212,7 +277,20 @@ export function tokenizeDartIdentifiers(source) {
         addToken(tokenStart, index);
         continue;
       }
+      if (character === ".") {
+        addMemberAccess(index, ".");
+        index += 1;
+        continue;
+      }
+      if (character === "?" && next === ".") {
+        addMemberAccess(index, "?.");
+        index += 2;
+        continue;
+      }
 
+      if (!/\s/u.test(character)) {
+        tokens.push({kind: "syntax", offset: index});
+      }
       index += 1;
     }
     return index;
@@ -255,6 +333,29 @@ export function tokenizeDartIdentifiers(source) {
 
   scanCode(0);
   return tokens;
+}
+
+function l10nMemberReferencesFromTokens(tokens) {
+  const references = [];
+  for (let index = 0; index + 2 < tokens.length; index += 1) {
+    const receiver = tokens[index];
+    const access = tokens[index + 1];
+    const member = tokens[index + 2];
+    if (
+      receiver.kind === "identifier" &&
+      receiver.identifier === "l10n" &&
+      access.kind === "member-access" &&
+      member.kind === "identifier"
+    ) {
+      references.push({
+        key: member.identifier,
+        offset: member.offset,
+        receiverOffset: receiver.offset,
+        operator: access.operator,
+      });
+    }
+  }
+  return references;
 }
 
 export function evaluateOrphanRatchet(orphanedKeys, baseline) {
@@ -528,6 +629,14 @@ function runCli() {
   const result = scanL10nKeyUsage({repoRoot, arbPath, sourceRoot});
 
   if (args.writeBaseline) {
+    if (result.missingCatalogReferences.length > 0) {
+      reportMissingCatalogReferences(result.missingCatalogReferences);
+      console.error(
+        "Refusing to refresh the orphan baseline while handwritten l10n getters are absent from the canonical ARB.",
+      );
+      process.exitCode = 1;
+      return;
+    }
     if (fs.existsSync(baselinePath)) {
       const currentBaseline = readOrphanBaseline(baselinePath);
       const refreshCheck = evaluateOrphanRatchet(
@@ -556,6 +665,10 @@ function runCli() {
     console.log(
       `Wrote l10n key-usage inventory: ${displayPath(inventoryPath, repoRoot)}`,
     );
+    if (result.missingCatalogReferences.length > 0) {
+      reportMissingCatalogReferences(result.missingCatalogReferences);
+      process.exitCode = 1;
+    }
     return;
   }
 
@@ -580,6 +693,8 @@ function runCli() {
     console.log(
       `Flutter l10n key usage: ${summary.catalogKeys} catalog key(s), ` +
         `${summary.usedKeys} used, ${summary.orphanedKeys} orphaned, ` +
+        `${summary.catalogL10nReferences} catalog getter reference(s), ` +
+        `${summary.missingCatalogReferences} missing catalog getter reference(s), ` +
         `${summary.scannedDartFiles} handwritten Dart file(s), ` +
         `${summary.excludedGeneratedDartFiles} generated Dart file(s) excluded.`,
     );
@@ -588,6 +703,11 @@ function runCli() {
         `${ratchet.baselineOrphanedKeys.length} baseline, ` +
         `${ratchet.resolvedBaselineKeys.length} resolved baseline key(s).`,
     );
+  }
+
+  if (result.missingCatalogReferences.length > 0) {
+    reportMissingCatalogReferences(result.missingCatalogReferences);
+    process.exitCode = 1;
   }
 
   if (args.check && !ratchet.passed) {
@@ -619,11 +739,26 @@ function runCli() {
   }
 }
 
+function reportMissingCatalogReferences(references) {
+  console.error(
+    "Flutter l10n getters missing from the canonical ARB catalog:",
+  );
+  for (const reference of references) {
+    console.error(
+      `- ${reference.path}:${reference.line}:${reference.column} l10n.${reference.key}`,
+    );
+  }
+  console.error(
+    "Restore each canonical ARB message or update the handwritten callsite; missing catalog getters cannot be baselined.",
+  );
+}
+
 function printHelp() {
   console.log(`Usage: node tool/copy/check_l10n_key_usage.mjs [options]
 
-Scans exact app_en.arb key identifiers in handwritten production Dart. Generated
-Dart, comments, and ordinary string contents cannot make an orphan appear used.
+Scans exact app_en.arb key identifiers and l10n.<key> member references in
+handwritten production Dart. Missing catalog getters always fail. Generated
+Dart, comments, and ordinary string contents cannot affect either result.
 
 Check options:
   --check                 Fail when an orphan is outside the baseline.
