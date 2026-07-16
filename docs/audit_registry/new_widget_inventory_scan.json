@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-15T17:11:14.921Z",
-  "baseRef": "HEAD",
+  "generatedAt": "2026-07-16T07:01:49.176Z",
+  "baseRef": "origin/main",
   "baseStatus": "git-ref",
   "baseWarning": null,
   "current": "working tree",
@@ -10,20 +10,35 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 0,
-    "addedPublicWidgetClasses": 0,
+    "addedWidgetClasses": 1,
+    "addedPublicWidgetClasses": 1,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
     "movedWidgetClasses": 0,
     "movedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 0,
+    "coveredNewWidgets": 1,
     "unresolved": 0,
-    "widgetsByStatus": {},
+    "widgetsByStatus": {
+      "covered": 1
+    },
     "helpersByStatus": {},
     "issues": {}
   },
   "movedWidgets": [],
   "movedWidgetHelpers": [],
-  "addedWidgets": [],
+  "addedWidgets": [
+    {
+      "name": "UserAnalyticsDataCoveragePanel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 409,
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    }
+  ],
   "addedWidgetHelpers": []
 }

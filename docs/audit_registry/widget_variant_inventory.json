@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-15T20:19:22.301Z",
+  "generatedAt": "2026-07-16T07:01:49.905Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
     "useCases": 874,
-    "components": 834,
+    "components": 833,
     "stateCards": 1793,
     "reviewCandidates": 42,
     "oversizedUseCases": 44,
@@ -846,9 +846,10 @@
     },
     {
       "component": "CatchSection",
-      "useCaseCount": 2,
-      "stateCardCount": 17,
+      "useCaseCount": 3,
+      "stateCardCount": 18,
       "paths": [
+        "[Core primitives]/Analytics kit",
         "[Core primitives]/Sections",
         "[P1 product surfaces]/Profiles/Sections"
       ],
@@ -864,6 +865,7 @@
         "field-list",
         "footer slot",
         "header-footer-metrics",
+        "labeled analytics group",
         "lead-accent",
         "long-copy",
         "mixed-modes",
@@ -883,6 +885,19 @@
         ]
       },
       "useCases": [
+        {
+          "name": "Analytics composition",
+          "functionName": "catchAnalyticsSectionComposition",
+          "file": "widgetbook/lib/primitives/analytics_kit_use_cases.dart",
+          "path": "[Core primitives]/Analytics kit",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "labeled analytics group",
+              "normalizedLabel": "labeled analytics group"
+            }
+          ]
+        },
         {
           "name": "Contract states",
           "functionName": "catchSectionContractStates",
@@ -4985,9 +5000,10 @@
     },
     {
       "component": "CatchSection",
-      "useCaseCount": 2,
-      "stateCardCount": 17,
+      "useCaseCount": 3,
+      "stateCardCount": 18,
       "paths": [
+        "[Core primitives]/Analytics kit",
         "[Core primitives]/Sections",
         "[P1 product surfaces]/Profiles/Sections"
       ],
@@ -5003,6 +5019,7 @@
         "field-list",
         "footer slot",
         "header-footer-metrics",
+        "labeled analytics group",
         "lead-accent",
         "long-copy",
         "mixed-modes",
@@ -5022,6 +5039,19 @@
         ]
       },
       "useCases": [
+        {
+          "name": "Analytics composition",
+          "functionName": "catchAnalyticsSectionComposition",
+          "file": "widgetbook/lib/primitives/analytics_kit_use_cases.dart",
+          "path": "[Core primitives]/Analytics kit",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "labeled analytics group",
+              "normalizedLabel": "labeled analytics group"
+            }
+          ]
+        },
         {
           "name": "Contract states",
           "functionName": "catchSectionContractStates",
@@ -23190,38 +23220,6 @@
       ]
     },
     {
-      "component": "CatchAnalyticsDataQualityList",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/User analytics"
-      ],
-      "labels": [
-        "quality rows"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Data quality panel states",
-          "functionName": "userAnalyticsDataQualityPanelStates",
-          "file": "widgetbook/lib/user_analytics/user_analytics_use_cases.dart",
-          "path": "[P1 product surfaces]/User analytics",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "quality rows",
-              "normalizedLabel": "quality rows"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchAnalyticsMetricGrid",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -23248,38 +23246,6 @@
             {
               "label": "two-column metrics",
               "normalizedLabel": "two column metrics"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchAnalyticsSection",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core primitives]/Analytics kit"
-      ],
-      "labels": [
-        "labeled analytics group"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Section states",
-          "functionName": "catchAnalyticsSectionStates",
-          "file": "widgetbook/lib/primitives/analytics_kit_use_cases.dart",
-          "path": "[Core primitives]/Analytics kit",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "labeled analytics group",
-              "normalizedLabel": "labeled analytics group"
             }
           ]
         }
@@ -28541,7 +28507,7 @@
         "[P3 utility surfaces]/Image uploads"
       ],
       "labels": [
-        "existing photo editor"
+        "interactive existing photo editor"
       ],
       "review": {
         "needsReview": false,
@@ -28558,8 +28524,8 @@
           "stateCardCount": 1,
           "stateCards": [
             {
-              "label": "existing photo editor",
-              "normalizedLabel": "existing photo editor"
+              "label": "interactive existing photo editor",
+              "normalizedLabel": "interactive existing photo editor"
             }
           ]
         }
@@ -29552,6 +29518,38 @@
             {
               "label": "store link configured",
               "normalizedLabel": "store link configured"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "UserAnalyticsDataCoveragePanel",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/User analytics"
+      ],
+      "labels": [
+        "known and fallback coverage sources"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Data coverage panel states",
+          "functionName": "userAnalyticsDataQualityPanelStates",
+          "file": "widgetbook/lib/user_analytics/user_analytics_use_cases.dart",
+          "path": "[P1 product surfaces]/User analytics",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "known and fallback coverage sources",
+              "normalizedLabel": "known and fallback coverage sources"
             }
           ]
         }

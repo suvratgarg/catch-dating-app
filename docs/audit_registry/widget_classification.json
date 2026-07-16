@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 1,
-  "updated": "2026-07-15",
+  "updated": "2026-07-16",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -25,10 +25,10 @@
     },
     "byDecision": {
       "keep-canonical-contract": 186,
-      "keep-public-cataloged": 746,
+      "keep-public-cataloged": 747,
       "keep-widget-state": 121,
       "review-catalog-coverage": 54,
-      "review-promote-or-consolidate": 16,
+      "review-promote-or-consolidate": 15,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
@@ -2443,33 +2443,6 @@
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.analytics_metric_tile",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
-      "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
-    },
-    {
-      "name": "CatchAnalyticsSection",
-      "file": "lib/core/widgets/catch_analytics_kit.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.analytics_section",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -25401,6 +25374,32 @@
         "routeThroughScreenState"
       ],
       "flags": []
+    },
+    {
+      "name": "UserAnalyticsDataCoveragePanel",
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.user_analytics_data_coverage_panel",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer"
+      ]
     },
     {
       "name": "UserAnalyticsEmptyState",
