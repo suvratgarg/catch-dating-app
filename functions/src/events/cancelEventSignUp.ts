@@ -423,7 +423,21 @@ export async function cancelEventSignUpHandler(
   });
 
   for (const promotionPush of promotionPushes) {
-    await deps.sendNotification(promotionPush);
+    try {
+      await deps.sendNotification(promotionPush);
+    } catch (notificationError) {
+      // The cancellation and waitlist promotion are already committed. Push
+      // delivery is best-effort and must not prevent the independent refund
+      // side effect below from running.
+      logger.error("Failed to send waitlist promotion notification", {
+        eventId,
+        clubId: promotionPush.clubId,
+        error: notificationError,
+        reasonMessage: notificationError instanceof Error ?
+          notificationError.message :
+          String(notificationError),
+      });
+    }
   }
 
   // Issue a refund outside the transaction when the selected policy allows it.
