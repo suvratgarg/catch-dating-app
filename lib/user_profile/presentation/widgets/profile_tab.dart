@@ -156,8 +156,11 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
       uploadState: uploadState,
     );
     const photoActions = SelfProfilePhotoIntentFactory();
+    final visiblePromptSlots = editState.promptSlots
+        .take(editState.completedPromptCount + 1)
+        .toList(growable: false);
     final prompts = [
-      for (final slot in editState.promptSlots)
+      for (final slot in visiblePromptSlots)
         ProfilePromptEntry(
           user: user,
           slot: slot,
@@ -230,7 +233,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                 Padding(
                   padding: index == 0
                       ? _firstPromptPadding
-                      : editState.promptSlots[index].isAddAffordance
+                      : visiblePromptSlots[index].isAddAffordance
                       ? _promptAddPadding
                       : _promptCardPadding,
                   child: prompts[index],

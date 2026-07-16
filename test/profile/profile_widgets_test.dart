@@ -1742,20 +1742,6 @@ void main() {
     },
   );
 
-  testWidgets('profile keeps all three prompt slots available when empty', (
-    tester,
-  ) async {
-    await _pumpProfileTab(
-      tester,
-      buildUser(name: 'Suvrat Garg', profilePrompts: const []),
-    );
-
-    expect(
-      find.byType(ProfileInlinePromptEntryEditor),
-      findsNWidgets(maxProfilePromptAnswers),
-    );
-  });
-
   testWidgets('inline prompt choices exclude questions used by other cards', (
     tester,
   ) async {
