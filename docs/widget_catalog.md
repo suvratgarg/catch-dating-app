@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.616
-updated: 2026-07-15
+version: 2.5.625
+updated: 2026-07-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,114 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.624
+
+- Retired the parallel `CatchAnalyticsSection` shell. Profile and Host analytics
+  reports now compose every summary, trend, list, review, and data-coverage
+  group through zero-gap `CatchSectionStack` and canonical `CatchSection`
+  variants, so loaded and loading states inherit the same divider, title,
+  spacing, and heading-semantics contract.
+- Restored the Profile Insights Suggestions and Data coverage rows to
+  `CatchSection.fieldRows` plus `CatchField.content`. Stable localized coverage
+  labels now remain separate from backend detail copy, and unknown future
+  source ids fall back to their localized availability state.
+- Extended `SECTION-HEADER-003` to reject thin label-plus-child `CatchKicker`
+  shells outside `CatchSection`, including duplicate shells under core widgets.
+
+### 2.5.623
+
+- Made the Edit Photo Widgetbook state safely interactive: the shared prompt
+  selector remains operable, while preview-only uid, profile, and image
+  providers keep repository, image-picker, save, and delete actions local to
+  the deterministic catalog. A non-popping preview boundary keeps mutations
+  from dismissing the Widgetbook host without adding preview switches to the
+  production screen API.
+- Strengthened `SCREEN-CHROME-001` after independent review. The gate now
+  follows all aligned root-chrome adopter paths, discovers state-delegated and
+  `HeaderContent` surfaces, enforces every discovered surface's canonical
+  owner, and prevents raw Material navigation bars from being registered as
+  workspace or hero exceptions.
+
+### 2.5.622
+
+- Added the exhaustive `SCREEN-CHROME-001` gate for every handwritten Flutter
+  `Scaffold.appBar`, raw Material/Cupertino navigation bar, shell-covering
+  editor launcher, and feature-owned `Header`/`TopBar` class. The exact
+  manifest distinguishes root screen voice, compact utility chrome, identity
+  chrome, media heroes, content/step/workspace headers, and visible legacy
+  migration debt.
+- Kept Edit Photo on the canonical compact `CatchTopBar`, but moved its route
+  presentation to the root navigator so the consumer tab bar cannot cover the
+  editor. Replaced its anchored prompt menu with the same
+  `CatchField.choices` selector contract used by Edit Profile, including
+  staged Cancel/Done behavior, duplicate filtering, and preservation of
+  unchanged captions and unknown legacy prompt IDs.
+
+### 2.5.621
+
+- Decoupled `CatchField` content insets from active-overlay geometry through
+  `CatchFieldInsetScope.activeOverlayBleed`. Divided sections retain their
+  10 px lifted-tile bleed, while `CatchSectionFocusSurface(fieldRows: true)`
+  now publishes exactly one hairline of horizontal overlap for both canonical
+  sections and direct public compositions.
+- Aligned active edge rows with the `CatchSection.containedFieldRows` outer
+  perimeter. The child field and section now paint the same left/right edge,
+  with the section foreground remaining the final border owner, instead of
+  placing two adjacent 1 px vertical strokes around focused prompt cards.
+- Added primitive, direct focus-surface, and production Profile prompt coverage
+  for both the first and last active field positions and for
+  question-to-answer focus handoff.
+
+### 2.5.620
+
+- Standardized every empty inactive editable `CatchField` row on the handoff's
+  one-line Add presentation. Direct and explicit-save text inputs now render
+  primary 14/600 `Add {field}` copy with an inline ink3/500 Optional suffix,
+  matching addable choice/control rows instead of retaining a second caption.
+- Kept the native `TextField` mounted through the transition. The initiating
+  tap restores the caption, focused input hint, and input-only units such as
+  `@` on that same element, preserving one-tap focus, cursor placement, field
+  semantics, and smooth height motion. Filled, focused, read-only, and error
+  states retain their existing geometry.
+- Centralized the empty Add row's icon and trailing alignment in `CatchField`;
+  Profile Job title, Company, Instagram, Workout, and future callers inherit
+  the behavior without feature-local copy or layout branches.
+
+### 2.5.619
+
+- Standardized `CatchField` async progress ownership to exactly one visible
+  indicator. An open field with a Cancel/Done commit bar keeps the disclosure
+  caret in its trailing lane and renders the sole 13 px spinner inside the
+  disabled `Saving…` Done button. Auto-save fields, disclosures without a save
+  bar, and closed saving disclosures retain one 16 px trailing spinner.
+- Kept the aggregate saving state for interaction locking, dismissal guards,
+  and backward-compatible callers that supply `isLoading`, `status=saving`, or
+  both. The primitive now resolves their visual ownership by capability rather
+  than requiring feature-specific status workarounds.
+
+### 2.5.618
+
+- Centralized non-centered `CatchField` trailing geometry into one shared lane:
+  one 18 px caption reserve followed by an 18.9 px value-line box that centers
+  chevrons, value text, saving/saved status, validation, and custom trailing
+  content. Expanding fields no longer apply the caption reserve twice or clip
+  their 16 px caret into the following divider.
+- The disclosure caret now keeps the same value-line center while opening and
+  only rotates. The separately overlaid clear target retains its existing
+  height-neutral placement.
+
+### 2.5.617
+
+- Centralized field-caption state color in `CatchField`: actual errors use
+  semantic danger, any active text focus, keyboard row focus, external focus,
+  or open disclosure uses semantic ink, and inactive captions retain their
+  configured tone or ink3. The Optional suffix remains ink3 and disabled
+  presentation remains owned by the field's root opacity.
+- Routed every caption renderer through that root resolution, including
+  control, choices, stepper, direct and explicit-save input, underline, and
+  select paths. Profile adapters and individual field call sites do not own
+  focus color overrides.
 
 ### 2.5.616
 
@@ -6005,15 +6113,16 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CatchField` | `lib/core/widgets/catch_field.dart:49` | Canonical flat field primitive for legacy value rows, natural-height title/supporting-copy rows, navigation, toggle, direct and explicit-save input, wrapping choices, bounded steppers, select, disclosure controls, validation, async status, and add states. Use the named constructors (`read`, `content`, `action`, `nav`, `toggle`, `input`, `inputActions`, `control`, `choices`, `stepper`, `select`, `add`) so capability and trailing affordance are structural. `content` owns 14/600 title plus 13/400 supporting-copy semantics with 2/3-line clamps; legacy value constructors keep 1/2-line defaults. Existing `actions`, deprecated `expanding`, and `showChevron` callers remain compatibility inputs to the same renderer. Header press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up; the full-row disclosure drawer is a sibling below that header, so descendant chips, steppers, and actions do not trigger header tint or lose focus paint to clipping. Direct inputs keep one mounted native editable, preserving first-gesture cursor placement, stable populated-row height, and the overlaid 24 px clear target. Choice controls and action bars span the content lane. Disclosure drives the nearest existing vertical scroll owner frame by frame, clears `CatchFieldVisibilityScope` obstruction, cancels on rapid close, yields to user scrolling, and jumps under reduced motion without owning another controller. Choice summaries remain primitive-derived in source order joined by ` · `; `isOptional` remains presentation copy while `allowEmptySelection` owns final-removal policy. Rounded group chrome remains owned by `CatchSection`. Registered as formal component contract `catch.field`; Widgetbook contract states are canonical. |
+| `CatchField` | `lib/core/widgets/catch_field.dart:49` | Canonical flat field primitive for legacy value rows, natural-height title/supporting-copy rows, navigation, toggle, direct and explicit-save input, wrapping choices, bounded steppers, select, disclosure controls, validation, async status, and add states. Use the named constructors (`read`, `content`, `action`, `nav`, `toggle`, `input`, `inputActions`, `control`, `choices`, `stepper`, `select`, `add`) so capability and trailing affordance are structural. One root resolver owns caption color across every field type: errors use danger, focus/open uses semantic ink, and inactive captions use their configured tone or ink3 while Optional copy stays ink3. One root trailing lane applies the 18 px caption reserve exactly once and centers non-centered affordances in the 18.9 px value line, so disclosure carets keep a stable Y-position while rotating and remain clear of row dividers. Saving progress also has one root owner: a visible explicit commit bar owns the sole 13 px spinner in Done while the header retains its caret; otherwise the trailing lane owns one 16 px spinner. `content` owns 14/600 title plus 13/400 supporting-copy semantics with 2/3-line clamps; legacy value constructors keep 1/2-line defaults. Existing `actions`, deprecated `expanding`, and `showChevron` callers remain compatibility inputs to the same renderer. Header press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up; the full-row disclosure drawer is a sibling below that header, so descendant chips, steppers, and actions do not trigger header tint or lose focus paint to clipping. Direct inputs keep one mounted native editable, preserving first-gesture cursor placement, stable populated-row height, and the overlaid 24 px clear target. Choice controls and action bars span the content lane. `CatchFieldInsetScope` independently publishes content-gutter ownership and active-overlay bleed, so contained edge fields overlap the section perimeter by one hairline while divided fields retain their wider lifted-tile bleed. Disclosure drives the nearest existing vertical scroll owner frame by frame, clears `CatchFieldVisibilityScope` obstruction, cancels on rapid close, yields to user scrolling, and jumps under reduced motion without owning another controller. Choice summaries remain primitive-derived in source order joined by ` · `; `isOptional` remains presentation copy while `allowEmptySelection` owns final-removal policy. Rounded group chrome remains owned by `CatchSection`. Registered as formal component contract `catch.field`; Widgetbook contract states are canonical. |
+| `CatchFieldInsetScope` | `lib/core/widgets/catch_field.dart` | Ambient field-row geometry contract. `flush` assigns horizontal content-gutter ownership; `activeOverlayBleed` independently assigns how far active row chrome overlaps its containing edge. Omitted bleed preserves the divided-section default for flush rows, while `CatchSectionFocusSurface(fieldRows: true)` publishes one hairline so its child field ring and section perimeter share one left/right paint edge even when the focus surface is composed directly. |
 | `CatchFieldVisibilityScope` | `lib/core/widgets/catch_field.dart` | Ambient disclosure-visibility contract. A scroll/shell boundary publishes its covered bottom extent and reveal padding; descendant fields reuse the nearest vertical scroll owner rather than creating a controller. Profile Edit supplies the floating-tab obstruction through this scope. |
 | `CatchField.content` | `lib/core/widgets/catch_field.dart` | Natural-height informational content-row constructor. It maps the React handoff's title/body semantics to exact 14/600/1.35 title and 13/400/1.45 supporting copy, separated by 3 px and clamped to 2/3 lines by default, without changing legacy Flutter rows where `body` is the primary value. An empty supporting body omits the gap. |
 | `CatchFieldContentRow` | `lib/core/widgets/catch_field.dart` | Public `catch.field` content-lane member used by `CatchField.content`. Owns the exact title/supporting-copy typography, 3 px gap, optional suffix, empty-body omission, and 2/3-line defaults. Default body emphasis keeps leading/trailing slots top-aligned like the React handoff; title emphasis may center a combined content/action block. |
 | `CatchFieldSupportRow` | `lib/core/widgets/catch_field.dart` | Public baseline-aligned helper/error/counter member. It owns the filled warning glyph, error gap, support typography, mono counter, and root-level placement after a disclosure drawer and commit bar. |
 | `CatchFieldExplicitSaveControl` | `lib/core/widgets/catch_field.dart` | Public compatibility stack for explicit-save text editors. It keeps supporting metadata, feedback, and a secondary action in reviewed order before the commit bar; validation remains a root-level `CatchFieldSupportRow`. |
-| `CatchFieldActionBar` | `lib/core/widgets/catch_field.dart` | Public full-width, non-wrapping Cancel/Done group with exact trailing alignment, saving state, and optional leading content. `CatchField` supplies its reveal target so obstruction-aware scrolling follows the real commit controls. |
+| `CatchFieldActionBar` | `lib/core/widgets/catch_field.dart` | Public full-width, non-wrapping Cancel/Done group with exact trailing alignment, saving state, and optional leading content. While visible during a save it owns the field's sole progress indicator inside Done. `CatchField` supplies its reveal target so obstruction-aware scrolling follows the real commit controls. |
 | `CatchFieldDisclosureDrawer` | `lib/core/widgets/catch_field.dart` | Public full-row disclosure sibling. It owns clipped height/opacity reveal, open-only focus/semantics/pointer participation, drawer padding, and a nested-interaction barrier while leaving header press ownership separate. |
-| `CatchFieldSpinner` | `lib/core/widgets/catch_field.dart` | Public fixed-cadence spinner used by both 16 px field status and 13 px commit-saving states. It owns the handoff Phosphor glyph and 800 ms rotation period. |
+| `CatchFieldSpinner` | `lib/core/widgets/catch_field.dart` | Public fixed-cadence spinner used by mutually exclusive 16 px trailing-status and 13 px visible commit-saving placements. It owns the handoff Phosphor glyph and 800 ms rotation period. |
 | `CatchFieldFocusOutline` | `lib/core/widgets/catch_field.dart` | Public field-family focus painter. It draws an immediate, layout-neutral 2 px outer ring with a 2 px transparent gap around chips, stepper targets, and commit buttons. |
 | `CatchField.inputActions` | `lib/core/widgets/catch_field.dart:705` | Controlled explicit-save text-entry constructor. Keeps the label and bare value editor in one stable lane while supporting metadata, feedback, a secondary action, and Cancel/Done disclose in that order; validation renders afterward as the handoff's root support sibling. Opening requests native text focus immediately, while the persistent control subtree reveals through `CatchFieldTokens.reveal` (300 ms, or immediately under reduced motion), so one tap both opens the field and places the cursor without remounting draft state. `onBlur` receives the latest controller text once when focus leaves. |
 | `CatchField.control` | `lib/core/widgets/catch_field.dart:413` | Canonical row-owned disclosure constructor for steppers, chip groups, option controls, and other non-text editors. Supports caller-owned `open` state or local `initiallyOpen` state, optional Cancel/Done actions, loading/disabled behavior, and a persistent clipped reveal whose child identity survives close/reopen. Save, validation, and domain state remain caller-owned. |
@@ -6021,7 +6130,7 @@ Generated 2026-05-06.
 | `CatchField.actions` | `lib/core/widgets/catch_field.dart:516` | Source-compatible adapter for existing explicit-save disclosure rows. It maps `initiallyExpanded`, control, loading, optional leading metadata, and Cancel/Done callbacks into the canonical disclosure and commit-bar implementation; it does not own a parallel renderer. Prefer `control` or `inputActions` for new code. |
 | `CatchFieldCommitButton` / `CatchFieldToggle` / `CatchFieldChoiceControl` / `CatchFieldChoiceChip` / `CatchFieldStepper` / `CatchFieldRepeatButton` | `lib/core/widgets/catch_field.dart` | Public members of the `catch.field` family that own the exact handoff action-bar, 44×26 toggle, 8 px wrapping choice grid, single-line chip, bounded stepper, and repeat-target mechanics. These are contract/test/Widgetbook seams, not feature-level alternatives to `CatchField`; product UI should prefer `CatchField.control`, `.choices`, `.stepper`, or `.toggle`. |
 | `CatchFieldRow` | `lib/core/widgets/catch_field.dart:3006` | Public `catch.field` member for the shared field-row anatomy: optional leading slot, content slot, optional trailing slot, add-row padding, configurable cross-axis alignment, and raw row tap handling. Product-facing `CatchField` modes wrap this anatomy in the field-specific press/focus stack; raw `CatchFieldRow(onTap:)` continues to use `CatchRowPressSurface`. Use through `CatchField` in product UI unless a primitive contract preview or a new field-family member needs the raw row shell. |
-| `CatchFieldTrailing` | `lib/core/widgets/catch_field.dart:3111` | Public `catch.field` trailing-slot member for bounded value text, fixed/rotating chevrons, toggles, clear actions, valid-state icons, and custom trailing content. Product call sites should prefer `CatchField` modes; this member exists so the field anatomy has exact contract coverage. |
+| `CatchFieldTrailing` | `lib/core/widgets/catch_field.dart:3111` | Public `catch.field` trailing-slot member for bounded value text, fixed/rotating chevrons, toggles, clear actions, valid-state icons, and custom trailing content. `CatchField` composes these members into one caption-offset, value-line-centered lane rather than adding per-glyph offsets. Product call sites should prefer `CatchField` modes; this member exists so the field anatomy has exact contract coverage. |
 | `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, `danger`, and `light` variants; activity-accent primary fills via `accentColor`; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; optional leading icons; and `isInteractive: false` for button-looking labels inside an already tappable parent. Button height is fixed to the selected token size so full-width footer buttons do not expand in unconstrained bottom bars. Use `light` for solid-white pill CTAs so foreground/background colors stay paired across light and dark themes. |
 | `CatchActionMenu<T>` | `lib/core/widgets/catch_action_menu.dart:24` | Anchored overflow trigger for action menus. Opens the shared handoff `CatchMenu` panel from an `IconBtn`, supports icons, sublabels, selected rows, disabled rows, destructive rows, and typed selected values. |
 | `CatchField.select<T>` | `lib/core/widgets/catch_field.dart` | Canonical select-mode factory on `CatchField`. Supports token-driven flat trigger/menu composition, compact/md heights, optional prefix icons, disabled/error states, controlled value syncing, and validation messaging without a separate dropdown/select primitive. |
@@ -6054,10 +6163,9 @@ Generated 2026-05-06.
 | `CatchMetricStripCell` | `lib/core/widgets/catch_metric_strip.dart:76` | Direct value-over-label metric cell renderer used by `CatchMetricStrip`. Keeps mono value/unit styling, label truncation, optional color overrides, and expanded-row behavior reviewable without private widget-returning helpers. |
 | `CatchMetricStripDivider` | `lib/core/widgets/catch_metric_strip.dart:141` | Direct metric-rail hairline divider renderer used between `CatchMetricStripCell` instances. Centralizes metric divider height, width, and optional color override. |
 | `CatchAnalyticsBar` | `lib/core/widgets/catch_analytics_bar.dart:8` | Bottom-anchored fractional fill bar for dense host and user analytics mini charts. Normalizes `value / maxValue`, keeps zero values visible with a faint stub, and owns the shared `CatchSurface` fill treatment so analytics trend panels do not duplicate chart bars. |
-| `CatchAnalyticsDataQualityList` | `lib/core/widgets/catch_analytics_kit.dart:41` | Shared analytics data-quality stack. Renders display-ready `CatchDataQualityRowData` rows as content-dense `CatchSurface` rows with ready/partial/missing status icons and warning fill for incomplete data, so host and profile analytics keep role-specific mappers without duplicating row chrome. |
+| `CatchAnalyticsDataQualityList` | `lib/core/widgets/catch_analytics_kit.dart:41` | Shared display-data analytics list. Renders display-ready `CatchDataQualityRowData` rows as content-dense `CatchSurface` rows with ready/partial/missing status icons and warning fill for incomplete data. Host analytics uses this compact operational presentation; Profile Insights uses canonical `CatchField.content` rows so profile section formatting stays aligned with Edit Profile. |
 | `CatchAnalyticsMetricTile` | `lib/core/widgets/catch_analytics_kit.dart:93` | Shared display-data analytics summary card. Renders caller-supplied icon, value, label, optional caption, and ready/partial/missing badge state without owning feature metric IDs, value formatting, or copy tables. |
 | `CatchAnalyticsMetricGrid` | `lib/core/widgets/catch_analytics_kit.dart:161` | Shared two-column analytics metric grid. Lays out `CatchMetricCardData` records with optional `maxItems` truncation so host and profile analytics can keep feature-specific mappers while sharing card geometry. |
-| `CatchAnalyticsSection` | `lib/core/widgets/catch_analytics_kit.dart:193` | Shared analytics section shell. Owns kicker label styling and child spacing for analytics trend, list, data-quality, and skeleton sections across host and profile surfaces. |
 | `CatchMiniBarChart` | `lib/core/widgets/catch_mini_bar_chart.dart:5` | Compact mini bar-chart primitive for trend summaries inside dense metric panels. Owns the surface, border, content padding, bar spacing, zero-value treatment, tokenized fill/empty colors, and semantic label wrapper so insights and dashboard panels do not hand-roll tiny chart chrome. Registered as formal component contract `catch.mini_bar_chart`; Widgetbook contract states cover default, empty, zero-value, color-override, and semantic-label states. |
 | `CatchTextButton` | `lib/core/widgets/catch_text_button.dart:6` | Canonical text-only action primitive for inline actions, dialog actions, retry links, and top-bar text actions. Uses Catch tokens and text styles while preserving Material `TextButton` semantics, and accepts an optional `FocusNode` so composite primitives can paint their canonical focus chrome around the actual action target. Use `CatchButton` for pill CTAs. |
 | `CatchCodeInput` | `lib/core/widgets/catch_otp_code_field.dart:11` | Handoff `CodeInput`: static controlled verification-code row with 6-cell default, mono digits, 64px surface cells, 10px gaps, interactive-tile radius, ink active rule, and optional caret. |
@@ -6163,9 +6271,9 @@ Generated 2026-05-06.
 | `CatchGradedImage` / `CatchGrade` | `lib/core/widgets/catch_graded_image.dart:21` | Non-destructive display-time photo grade. Applies the shared brightness-aware matte duotone through color filters at render time, leaving uploaded images untouched while keeping mixed UGC and generated activity art inside one editorial visual family. Split-tone colors are alpha-aware: multiply and screen tints are derived by lerping from each blend mode's no-op color so low-alpha token values do not wash light-mode photos to white in deterministic captures. |
 | `CatchNetworkImage` | `lib/core/widgets/catch_network_image.dart:19` | Canonical remote/bundled image primitive. Keeps the existing decode-size capped `Image.network` path for remote photos, renders `assets/` and `packages/` paths through `Image.asset` for deterministic fixture/capture use, and preserves caller-owned framing, fitting, semantics, loading, and branded fallback behavior. |
 | `CatchNetworkImageFallback` | `lib/core/widgets/catch_network_image.dart:92` | Direct branded image fallback renderer used by `CatchNetworkImage` when remote or bundled image loading fails and callers do not provide a custom error builder. |
-| `CatchPageBody` / `CatchScreenBody` / `CatchSectionStack` / `CatchSectionList` / `CatchSection` / `CatchDetailSliverSectionList` | `lib/core/widgets/catch_section_layout.dart:21` | Semantic body and section composition primitives. `CatchScreenBody` maps the handoff scrolling body with screen gutters and optional non-scroll mode; `CatchSectionStack` owns inter-section rhythm; and `CatchSection` is the canonical information grouping for divided field rows, contained field rows, generic contained content, and plain blocks. Divided and contained field headers accept title, count, and trailing content and use the exact 11 px field-section kicker. Contained field footers use 2 px top padding; divided field footers use 8 px. `fieldRows` paints inter-row rules beneath following rows, while `containedFieldRows` owns the rounded perimeter and leaves ordinary focus to the active child. `CatchDetailSliverSectionList` supplies the same contract to sliver pages. The formal contracts and Widgetbook states remain `catch.section`, `catch.screen_body`, and `catch.section_stack`. |
+| `CatchPageBody` / `CatchScreenBody` / `CatchSectionStack` / `CatchSectionList` / `CatchSection` / `CatchDetailSliverSectionList` | `lib/core/widgets/catch_section_layout.dart:21` | Semantic body and section composition primitives. `CatchScreenBody` maps the handoff scrolling body with screen gutters and optional non-scroll mode; `CatchSectionStack` owns inter-section rhythm; and `CatchSection` is the canonical information grouping for divided field rows, contained field rows, generic contained content, and plain blocks. Every non-empty section title exposes heading semantics at this root. Divided and contained field headers accept title, count, and trailing content and use the exact 11 px field-section kicker. Contained field footers use 2 px top padding; divided field footers use 8 px. `fieldRows` paints inter-row rules beneath following rows, while `containedFieldRows` owns the rounded perimeter, publishes a one-hairline active-row edge overlap, and leaves ordinary focus state to the child field. `CatchDetailSliverSectionList` supplies the same contract to sliver pages. The formal contracts and Widgetbook states remain `catch.section`, `catch.screen_body`, and `catch.section_stack`. |
 | `CatchDivider` | `lib/core/widgets/catch_divider.dart:6` | Semantic hairline divider primitive for section and field-row/list separators. Use `CatchDivider.section` for full-strength outer section chrome, `CatchDivider.fieldSection` for full `line` text-lane rules that an active FieldSection row can cover, and `CatchDivider.fieldRow` for the pre-existing muted separators used by unrelated rows and lists. `CatchSection.fieldRows` and `containedFieldRows` select the field-section role without changing the global default. |
-| `CatchSectionFocusSurface` | `lib/core/widgets/catch_section_layout.dart:855` | Public `catch.section` member for contained-section focus and error chrome. Generic contained sections may reflect descendant focus; contained field-row cards keep ordinary descendant focus on the active child and change the outer perimeter only for explicit section focus or error. |
+| `CatchSectionFocusSurface` | `lib/core/widgets/catch_section_layout.dart:855` | Public `catch.section` member for contained-section focus and error chrome. Generic contained sections may reflect descendant focus; field-row surfaces publish their own one-hairline active-overlay overlap, keep ordinary descendant focus on the active child, align child edge chrome to the same perimeter geometry, paint the section edge last, and change perimeter color only for explicit section focus or error. |
 | `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/core/widgets/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
 | `EventTicketPerforatedDivider` / `EventTicketShapeClipper` | `lib/core/widgets/event_ticket_surface.dart:10` | Shared event-ticket shape primitives. The divider and clipper own horizontal perforation, ticket notch constants, and ticket shape geometry used by ticket cards, spotlight cards, date-rail cards, and ticket-mode event detail headers; full-card Hero flights now call `catchHeroSurface` directly instead of routing through a widget alias. |
 | `EventCapacityPresenter` | `lib/events/presentation/widgets/event_tiles/event_capacity_presenter.dart:4` | Shared event-capacity display helper. Owns signed-up/spots/progress values plus "going · left/full", activity summary, attendee-confirmed, and join-CTA availability copy so cards and CTAs do not fork booking language. |
@@ -6291,6 +6399,10 @@ Generated 2026-05-06.
 | `HostInsightsHeader` | `lib/hosts/presentation/host_operations/host_insights_screen.dart:100` | Back button plus single-line `<organizer> · all events` kicker and Insights title for the dedicated Host analytics destination. |
 | `HostInsightsUnavailableScreen` | `lib/hosts/presentation/host_operations/host_insights_screen.dart:142` | Explicit no-access/not-found branch for an unknown `:clubId`; prevents the utility route from silently displaying the first available organizer. |
 | `HostAnalyticsRangeChip` | `lib/hosts/presentation/host_operations/host_analytics.dart:301` | Source-aligned calendar/range pill for the dedicated Insights route. Opens `HostAnalyticsRangeSheet` while `HostClubInsightsState` remains the query owner. |
+| `HostAnalyticsReportView` | `lib/hosts/presentation/host_operations/host_analytics.dart:450` | Provider-free loaded Host Insights report. Uses a zero-gap `CatchSectionStack`, a titleless first summary section, and canonical divided Trend, Events, Reviews and saves, and Data quality sections without feature-owned section spacing. |
+| `HostAnalyticsTrendPanel` | `lib/hosts/presentation/host_operations/host_analytics.dart:506` | Host Insights trend section. Keeps range-granularity controls and the dual-bar visualization inside canonical `CatchSection.divided` title and divider ownership. |
+| `HostAnalyticsEventList` | `lib/hosts/presentation/host_operations/host_analytics.dart:701` | Host Insights top/selected-event section. Routes its dynamic heading and event rows through `CatchSection.divided` while preserving event selection callbacks and empty state. |
+| `HostAnalyticsReviewDiscoveryPanel` | `lib/hosts/presentation/host_operations/host_analytics.dart:946` | Host Insights reviews-and-saves summary inside canonical `CatchSection.divided` chrome. |
 | `HostAnalyticsDualBar` | `lib/hosts/presentation/host_operations/host_analytics.dart:632` | Truthful paired trend mark that renders demand as the backdrop and bookings as the foreground against one shared maximum. Its horizontally scrollable parent renders every backend-provided bucket without silently changing the selected granularity. |
 | `HostMetaRow` | `lib/hosts/presentation/host_operations/host_events_list.dart:148` | Host club metadata row: uppercase area/location, role badge, and activity chip. Keeps host tab color usage tied to activity meaning and has Widgetbook states for owner, host-team, and missing-area variants. |
 | `HostClubOrganizerOverview` | `lib/hosts/presentation/host_operations/host_organizer.dart:50` | Provider-free Host Clubs default Organizer overview. Composes the compact selected-club logo/meta/formats header, owner payout callout with inline CTA, metric rows, public page row, host-team summary, trend strip, and manage rows from explicit club/event-count props while route callbacks and event-provider reads stay in `HostClubOrganizerOverviewController`. |
@@ -6304,7 +6416,7 @@ Generated 2026-05-06.
 | `HostRouteLoadingBody` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:8` | Host app route loading body. Mirrors the selected-club summary, optional tab rail, event rows, analytics card, and settings rows used across Host Events, Host Clubs, Host Manage, and Host Edit route gates. |
 | `HostSummarySkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:39` | Host summary-card skeleton for selected club/event identity, role badges, metadata, and a primary host action placeholder. |
 | `HostTabRailSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:79` | Token-sized segmented/tab rail skeleton used when Host Clubs or Host Manage preserve tab chrome while data resolves. |
-| `HostAnalyticsReportSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:102` | Host analytics loading body with metric-grid, chart, and shared divided `CatchSkeletonRows` placeholders for the Insights tab. |
+| `HostAnalyticsReportSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:102` | Host analytics loading body with metric-grid, chart, and shared divided `CatchSkeletonRows` placeholders. Its four groups use the same zero-gap `CatchSectionStack` and canonical divided-section rhythm as the loaded Insights report. |
 | `HostAnalyticsMetricGridSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:160` | Two-card metric-grid placeholder used by host analytics loading states. Keeps compact stat-card geometry reviewable independently from the full report skeleton. |
 | `HostChartSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:124` | Reusable host chart placeholder used inside analytics/report loading states. |
 | `HostInlineSkeletonIcon` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:149` | Compact square skeleton for tiny host inline pending states such as draft-picker delete and private-link metadata loading. |
@@ -6548,12 +6660,13 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `UserAnalyticsReportView` | `lib/user_analytics/shared/user_analytics_panel.dart:85` | Provider-free report renderer for loaded user analytics. Routes all-missing summaries to `UserAnalyticsEmptyState`; otherwise maps typed summary cards into `CatchAnalyticsMetricGrid`, then composes trend, optional coaching tips, and `CatchAnalyticsDataQualityList` in the profile Insights order. |
+| `UserAnalyticsReportView` | `lib/user_analytics/shared/user_analytics_panel.dart:85` | Provider-free report renderer for loaded user analytics. Routes all-missing summaries to `UserAnalyticsEmptyState`; otherwise maps typed summary cards into a titleless first `CatchSection`, then composes Trend, optional Suggestions, and Data coverage through a zero-gap `CatchSectionStack`. |
 | `UserAnalyticsEmptyState` | `lib/user_analytics/shared/user_analytics_panel.dart:129` | Profile Insights empty-state surface for reports with no measurable summary cards. Uses shared icon, supporting copy, and `CatchSurface` chrome instead of a feature-local empty card. |
-| `UserAnalyticsReportSkeleton` | `lib/user_analytics/shared/user_analytics_panel.dart:165` | Report-shaped loading skeleton for profile analytics. Reserves summary cards, trend bars, coaching tips, and data-quality rows while mirroring the shared `CatchAnalyticsDataQualityList` row shape. |
-| `UserAnalyticsTrendPanel` | `lib/user_analytics/shared/user_analytics_panel.dart:321` | Profile analytics trend section. Summarizes caught-you and mutual-catch totals, then renders the caught-you time series through `CatchAnalyticsBar` columns inside `CatchAnalyticsSection`. |
-| `UserAnalyticsTipsPanel` | `lib/user_analytics/shared/user_analytics_panel.dart:391` | Coaching-tip section for profile analytics. Wraps ordered tip refs in the shared analytics section/surface chrome and delegates row copy to `UserAnalyticsTipRow`. |
-| `UserAnalyticsTipRow` | `lib/user_analytics/shared/user_analytics_panel.dart:416` | Single coaching-tip row. Resolves copy from `UserAnalyticsCopy`, then renders the sparkle icon, title, and supporting body without provider access. |
+| `UserAnalyticsReportSkeleton` | `lib/user_analytics/shared/user_analytics_panel.dart:158` | Report-shaped loading skeleton for profile analytics. Reserves summary cards, trend bars, Suggestions fields, and Data coverage fields through the same four canonical section variants as the loaded report. |
+| `UserAnalyticsTrendPanel` | `lib/user_analytics/shared/user_analytics_panel.dart:312` | Profile analytics trend section. Summarizes caught-you and mutual-catch totals, then renders the caught-you time series through `CatchAnalyticsBar` columns inside `CatchSection.divided`. |
+| `UserAnalyticsTipsPanel` | `lib/user_analytics/shared/user_analytics_panel.dart:388` | Suggestions section for profile analytics. Routes ordered tip refs through `CatchSection.fieldRows` and delegates localized title/body mapping to canonical `CatchField.content` rows. |
+| `UserAnalyticsTipRow` | `lib/user_analytics/shared/user_analytics_panel.dart:402` | Thin suggestion-copy adapter over `CatchField.content`; resolves localized copy and supplies the shared sparkle leading treatment without owning row geometry or surface chrome. |
+| `UserAnalyticsDataCoveragePanel` | `lib/user_analytics/shared/user_analytics_panel.dart:423` | Profile Insights Data coverage section. Maps known source ids to stable localized labels, future ids to localized availability fallback labels, and backend detail to `CatchField.content` body copy inside `CatchSection.fieldRows`. |
 | `SelfProfileTabBody` | `lib/user_profile/presentation/profile_screen.dart:161` | Provider-free self-profile branch renderer for loading, error, unavailable, and ready states inside `ProfileScreen`'s `NestedScrollView.body`. Receives the route-owned `TabController`, preview scroll controller, preview bridge callbacks, and retry callback explicitly. Loading preserves the tab shell with Edit skeleton, Preview skeleton, and Insights body; unavailable renders the canonical profile `CatchEmptyState` inline; ready renders Edit, Preview, and Insights through sliver-aware tab scroll views. Widgetbook mounts it inside a `NestedScrollView` preview so the `SliverOverlapInjector` contract is exercised. |
 | `ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:270` | Shared tab scroll wrapper used by `SelfProfileTabBody`. Installs `CatchPagerFocusBoundary`, starts each tab with the `NestedScrollView` overlap injector, and appends the tab slivers. The ready Edit tab opts into `CatchFieldVisibilityScope` with the shell's exact bottom obstruction plus a semantic terminal sliver sized so the final expandable field can reveal its commit actions above the floating bar without a late correction snap. Preview keeps its existing `SliverFillRemaining` / inner-scroll contract and does not receive that terminal sliver. |
 | `ProfileInsightsTabSliverBody` | `lib/user_profile/presentation/widgets/profile_insights_tab.dart:7` | Sliver-native Profile Insights body. Applies `CatchInsets.formEditBodyRelaxed` and the max-width constraint before embedding `UserAnalyticsPanel`, leaving analytics provider loading/error/empty/report ownership inside the panel. |
@@ -6664,7 +6777,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfilePhotoEditorScreen` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:25` | Add/edit profile-photo flow opened by onboarding and Edit Profile. It picks or replaces the image, shows a crop preview, lets the user choose an optional catalog photo prompt that is not already used by another profile photo, supports guarded deletion, and saves through `PhotoUploadController.savePhoto` so grouped `profilePhotos` stay synchronized and duplicate prompts are cleared. The image-preview loading branch keeps the bounded crop frame and renders a `CatchSkeleton.custom` placeholder instead of an unshaped progress spinner. |
+| `ProfilePhotoEditorScreen` | `lib/image_uploads/shared/profile_photo_editor_screen.dart:25` | Add/edit profile-photo flow opened by onboarding and Edit Profile on the root navigator so persistent shell chrome cannot cover it. It uses the canonical compact `CatchTopBar`, picks or replaces the image, shows a crop preview, and reuses `CatchField.choices` for the optional photo-prompt selector with staged Cancel/Done behavior, used-prompt filtering, and safe preservation of unchanged captions and unknown legacy prompt IDs. The outer Save is disabled while the selector owns an uncommitted draft. The route supports guarded deletion and saves only through `PhotoUploadController.savePhoto` so grouped `profilePhotos` stay synchronized and duplicate prompts are cleared. Deterministic Widgetbook states use preview-only uid/profile/image providers plus a non-popping route boundary, keeping the full selector behavior reviewable without adding catalog switches to the production API or touching live repositories and pickers. The image-preview loading branch keeps the bounded crop frame and renders a `CatchSkeleton.custom` placeholder instead of an unshaped progress spinner. |
 
 ### StatefulWidget
 
@@ -6677,7 +6790,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfilePhotoEditorPreview` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:308` | Provider-free preview renderer for the profile-photo editor. Shows the loading skeleton, editable crop boundary, existing remote image, or empty add-photo state while the route owns pick/save/delete mutations and passes the repaint-boundary key explicitly for crop capture. |
+| `ProfilePhotoEditorPreview` | `lib/image_uploads/shared/profile_photo_editor_screen.dart:334` | Provider-free preview renderer for the profile-photo editor. Shows the loading skeleton, editable crop boundary, existing remote image, or empty add-photo state while the route owns pick/save/delete mutations and passes the repaint-boundary key explicitly for crop capture. |
 | `OrderedPhotoTile` | `lib/image_uploads/presentation/widgets/ordered_photo_picker.dart:155` | Single ordered media tile used by `OrderedPhotoPicker`. Renders local bytes or remote images with photo semantics, optional remove control, cover badge, and reorder handle while callers own reorder and persistence callbacks. |
 | `OrderedPhotoAddTile` | `lib/image_uploads/presentation/widgets/ordered_photo_picker.dart:282` | Add-photo affordance used by ordered media pickers. Preserves the stable add-action key, button semantics, tooltip copy, responsive label hiding in compact tiles, and shared `CatchSurface` chrome. |
 | `PhotoSlot` | `lib/image_uploads/shared/photo_slot.dart:14` | Single keyed profile-photo slot. Renders through `CatchSurface`, grades filled photos with `GradedImage`, shows DS striped material for pending uploads, dashed hairline targets for empty slots, semantic labels/tooltips for add/edit/delete/uploading/unavailable states, optional prompt and main-label overlays through `CatchBadge`, reorder target affordance, and blocked taps while inactive or loading. |
