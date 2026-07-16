@@ -6,6 +6,8 @@ import "package:catch_dating_app/activity/domain/activity_taxonomy.dart";
 import "package:catch_dating_app/core/theme/catch_spacing.dart";
 import "package:catch_dating_app/core/theme/catch_text_styles.dart";
 import "package:catch_dating_app/core/theme/catch_tokens.dart";
+import "package:catch_dating_app/core/widgets/catch_badge.dart";
+import "package:catch_dating_app/core/widgets/catch_progress_cue.dart";
 import "package:catch_dating_app/core/widgets/catch_surface.dart";
 import "package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart";
 import "package:catch_dating_app/event_success/domain/event_success_defaults.dart";
@@ -968,20 +970,6 @@ Widget eventSuccessStrictEventSuccessConversationCueCard(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventSuccessDarkPill",
-  type: EventSuccessDarkPill,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictEventSuccessDarkPill(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.featureBlocks,
-    componentName: "EventSuccessDarkPill",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventSuccessHeroSurface",
   type: EventSuccessHeroSurface,
   path:
@@ -1014,9 +1002,9 @@ Widget eventSuccessStrictEventSuccessHeroSurface(BuildContext context) {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              EventSuccessDarkPill(label: "Preview"),
-              EventSuccessDarkPill(label: "Lab"),
-              EventSuccessDarkPill(label: "Manual QA"),
+              CatchBadge.onDark(label: "Preview"),
+              CatchBadge.onDark(label: "Lab"),
+              CatchBadge.onDark(label: "Manual QA"),
             ],
           ),
         ],
@@ -1060,10 +1048,17 @@ Widget eventSuccessStrictEventSuccessLiveHostMode(BuildContext context) {
       "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
 )
 Widget eventSuccessStrictEventSuccessMetricPill(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.featureBlocks,
+  return const _StrictCoverageScaffold(
     componentName: "EventSuccessMetricPill",
+    child: Wrap(
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        EventSuccessMetricPill(label: "Pacing", value: 0.78),
+        EventSuccessMetricPill(label: "Responses", value: 1),
+        EventSuccessMetricPill(label: "Coverage", value: 0),
+      ],
+    ),
   );
 }
 
@@ -1130,10 +1125,23 @@ Widget eventSuccessStrictIssueList(BuildContext context) {
       "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
 )
 Widget eventSuccessStrictLiveStepRow(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.featureBlocks,
+  final steps = EventSuccessPlaybookLibrary.socialRun.runOfShow
+      .take(3)
+      .toList();
+  return _StrictCoverageScaffold(
     componentName: "LiveStepRow",
+    child: Column(
+      children: [
+        for (final entry in steps.indexed)
+          LiveStepRow(
+            step: entry.$2,
+            state: CatchProgressCueState.fromPosition(
+              index: entry.$1,
+              currentIndex: 1,
+            ),
+          ),
+      ],
+    ),
   );
 }
 
@@ -1548,20 +1556,6 @@ Widget eventSuccessStrictLiveNowConsole(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "LiveNowPill",
-  type: LiveNowPill,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictLiveNowPill(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "LiveNowPill",
-  );
-}
-
-@widgetbook.UseCase(
   name: "LiveStepNavigation",
   type: LiveStepNavigation,
   path:
@@ -1754,20 +1748,6 @@ Widget eventSuccessStrictTargetAttendeeControl(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.host,
     componentName: "TargetAttendeeControl",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "UnsavedChangesPill",
-  type: UnsavedChangesPill,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictUnsavedChangesPill(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "UnsavedChangesPill",
   );
 }
 
@@ -2010,30 +1990,29 @@ Widget eventSuccessStrictAttendeeCountdown(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "CountdownBeatPill",
-  type: CountdownBeatPill,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
-)
-Widget eventSuccessStrictCountdownBeatPill(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.liveReveal,
-    componentName: "CountdownBeatPill",
-  );
-}
-
-@widgetbook.UseCase(
   name: "CountdownBeatRail",
   type: CountdownBeatRail,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
 )
 Widget eventSuccessStrictCountdownBeatRail(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.liveReveal,
+  const items = [
+    (label: "Hold", icon: Icons.pan_tool_alt_outlined),
+    (label: "Watch", icon: Icons.visibility_outlined),
+    (label: "Move", icon: Icons.bolt_rounded),
+  ];
+  return _StrictCoverageScaffold(
     componentName: "CountdownBeatRail",
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CountdownBeatRail(items: items, currentIndex: 0),
+        gapH16,
+        CountdownBeatRail(items: items, currentIndex: 1),
+        gapH16,
+        CountdownBeatRail(items: items, currentIndex: 2),
+      ],
+    ),
   );
 }
 

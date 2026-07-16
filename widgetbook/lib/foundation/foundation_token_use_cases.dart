@@ -719,7 +719,7 @@ class _FoundationScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchBadge(label: contractId, uppercase: true),
+                CatchBadge.functional(label: contractId),
                 gapH12,
                 Text(title, style: CatchTextStyles.headlineS(context)),
                 gapH12,

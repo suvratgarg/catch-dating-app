@@ -6,9 +6,11 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
@@ -450,11 +452,14 @@ Widget dashboardFullReview(BuildContext context) {
                 user: _viewer,
               ),
               actions: [
-                DashboardNotificationBellButton(
-                  unreadCount: _notifications
+                CatchIconButton.counted(
+                  icon: CatchIcons.notificationsRounded,
+                  count: _notifications
                       .where((notification) => notification.isUnread)
                       .length,
-                  onPressed: _noopTap,
+                  size: CatchIconButton.navSize,
+                  tooltip: 'Notifications',
+                  onTap: _noopTap,
                 ),
               ],
             ),
@@ -521,9 +526,12 @@ Widget dashboardHeaderContentReview(BuildContext context) {
             title: 'Three plans ready',
             padding: CatchInsets.screenTitleBlockCompact,
             actions: [
-              DashboardNotificationBellButton(
-                unreadCount: 3,
-                onPressed: _noopTap,
+              CatchIconButton.counted(
+                icon: CatchIcons.notificationsRounded,
+                count: 3,
+                size: CatchIconButton.navSize,
+                tooltip: 'Notifications',
+                onTap: _noopTap,
               ),
             ],
           ),
@@ -534,39 +542,48 @@ Widget dashboardHeaderContentReview(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Bell states',
-  type: DashboardNotificationBellButton,
+  name: 'Counted notification action',
+  type: CatchIconButton,
   path: '[P1 product surfaces]/Dashboard primitives',
 )
-Widget dashboardNotificationBellButtonReviewStates(BuildContext context) {
+Widget dashboardCountedNotificationActionReviewStates(BuildContext context) {
   return _DashboardCatalog(
-    title: 'DashboardNotificationBellButton',
-    contractId: 'dashboard.primitives.notification_bell',
+    title: 'CatchIconButton.counted',
+    contractId: 'catch.icon_button',
     children: [
       _StateCard(
         label: 'no unread',
         child: _DashboardPrimitiveFrame(
-          child: DashboardNotificationBellButton(
-            unreadCount: 0,
-            onPressed: _noopTap,
+          child: CatchIconButton.counted(
+            icon: CatchIcons.notificationsNoneRounded,
+            count: 0,
+            size: CatchIconButton.navSize,
+            tooltip: 'Notifications',
+            onTap: _noopTap,
           ),
         ),
       ),
       _StateCard(
         label: 'unread count',
         child: _DashboardPrimitiveFrame(
-          child: DashboardNotificationBellButton(
-            unreadCount: 3,
-            onPressed: _noopTap,
+          child: CatchIconButton.counted(
+            icon: CatchIcons.notificationsRounded,
+            count: 3,
+            size: CatchIconButton.navSize,
+            tooltip: 'Notifications',
+            onTap: _noopTap,
           ),
         ),
       ),
       _StateCard(
         label: 'overflow badge',
         child: _DashboardPrimitiveFrame(
-          child: DashboardNotificationBellButton(
-            unreadCount: 124,
-            onPressed: _noopTap,
+          child: CatchIconButton.counted(
+            icon: CatchIcons.notificationsRounded,
+            count: 124,
+            size: CatchIconButton.navSize,
+            tooltip: 'Notifications',
+            onTap: _noopTap,
           ),
         ),
       ),
