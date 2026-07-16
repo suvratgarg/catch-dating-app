@@ -2,15 +2,16 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
-import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -141,7 +142,7 @@ void main() {
           watchReviewsByUserProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Review>>([])),
-          dashboardRecommendedEventsProvider(
+          exploreRecommendedEventsProvider(
             recommendationsQueryFor(user.uid, const []),
           ).overrideWithValue(noRecommendationCandidates),
         ],
@@ -182,7 +183,7 @@ void main() {
           watchReviewsByUserProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Review>>([])),
-          dashboardRecommendedEventsProvider(
+          exploreRecommendedEventsProvider(
             recommendationsQueryFor(user.uid, const ['club-a']),
           ).overrideWithValue(noRecommendationCandidates),
         ],
@@ -477,7 +478,7 @@ void main() {
         signedUpEvents: const [],
         attendedEventsAsync: const AsyncData<List<Event>>([]),
         recommendedEventsAsync:
-            const AsyncLoading<List<DashboardEventRecommendationCandidate>>(),
+            const AsyncLoading<List<ExploreEventRecommendationCandidate>>(),
       );
 
       expect(viewModel.recommendationsSection.isLoading, isTrue);
@@ -495,7 +496,7 @@ void main() {
         signedUpEvents: [booked],
         attendedEventsAsync: const AsyncData<List<Event>>([]),
         recommendedEventsAsync:
-            AsyncData<List<DashboardEventRecommendationCandidate>>([
+            AsyncData<List<ExploreEventRecommendationCandidate>>([
               recommendationCandidate(booked),
               recommendationCandidate(unbooked),
             ]),

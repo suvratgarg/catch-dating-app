@@ -1491,7 +1491,7 @@ void main() {
               selected: selected,
               multiSelect: false,
               isOptional: true,
-              allowEmptySingleSelection: true,
+              allowEmptySelection: true,
               onChanged: (next) => setState(() => selected = next),
             ),
           ),

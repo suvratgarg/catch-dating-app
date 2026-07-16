@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   DirectoryClaimPressureStrip,
@@ -25,11 +26,11 @@ export function OrganizerSearchPage() {
       <SiteHeader
         brandHref="/"
         nav={[
-          {href: "/host/", label: "For hosts"},
-          {href: "/", label: "Member site"},
+          {href: "/host/", label: websiteCopy["organizersearchpage_0349"]},
+          {href: "/", label: websiteCopy["organizersearchpage_0350"]},
         ]}
         ctaHref="/host/#founding-hosts"
-        ctaLabel="Apply as host"
+        ctaLabel={websiteCopy["organizersearchpage_0347"]}
       />
 
       <WebsitePageMain id="top">
@@ -51,12 +52,12 @@ export function OrganizerSearchPage() {
 
       <SiteFooter
         brandHref="/"
-        body="Searchable profiles for hosts, clubs, venues, and social organizers."
+        body={websiteCopy["organizersearchpage_0352"]}
         links={[
-          {href: "/host/", label: "For hosts"},
-          {href: "/", label: "Member site"},
-          {href: "/organizers/?q=run", label: "Run clubs"},
-          {href: "/organizers/?q=dinner", label: "Dinners"},
+          {href: "/host/", label: websiteCopy["organizersearchpage_0349"]},
+          {href: "/", label: websiteCopy["organizersearchpage_0350"]},
+          {href: "/organizers/?q=run", label: websiteCopy["organizersearchpage_0351"]},
+          {href: "/organizers/?q=dinner", label: websiteCopy["organizersearchpage_0348"]},
         ]}
       />
     </>

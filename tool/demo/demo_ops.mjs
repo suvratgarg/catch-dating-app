@@ -233,6 +233,9 @@ export async function main(argv = process.argv.slice(2)) {
         db,
         admin,
         phone: requireArg(args, "phone", "--phone"),
+        latitude: args.lat,
+        longitude: args.lng,
+        meetingPoint: args.meetingPoint,
         seedPrefix: args.seedPrefix,
       }),
       repair: true,
@@ -1421,8 +1424,8 @@ Command options:
   --action <actionId>            Suvbot action id from suvbot-actions.
   --target-phone <phone>         Tester phone for Suvbot matchTesterByPhone.
   --event-id <eventId>           Force match/shared event context.
-  --lat / --lng                  Manual coordinates for create-check-in-event.
-  --meeting-point <label>        Meeting label for create-check-in-event.
+  --lat / --lng                  Event coordinates for host/check-in creation.
+  --meeting-point <label>        Meeting label for host/check-in creation.
   --text <message>               Demo chat message text.
   --via-swipes                   Also write reciprocal profile-decision likes.
   --via-swipes-only              Write profile-decision likes only; rely on trigger.

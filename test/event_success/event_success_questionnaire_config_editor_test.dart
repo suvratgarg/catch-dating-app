@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('selects questionnaire template choices with CatchSelectChip', (
+  testWidgets('selects questionnaire templates with CatchField choices', (
     tester,
   ) async {
     var value = const EventSuccessQuestionnaireConfig.defaultTemplate();
@@ -30,30 +30,46 @@ void main() {
       ),
     );
 
-    expect(_selectChip('Balanced', active: true), findsOneWidget);
-    expect(_selectChip('Custom', active: false), findsOneWidget);
+    expect(_choice('Balanced', selected: true), findsOneWidget);
+    expect(_choice('Custom', selected: false), findsOneWidget);
 
-    await tester.tap(_selectChip('Custom'));
+    _invokeChoice(tester, 'Custom');
     await tester.pump();
 
     expect(value.usesCustom, isTrue);
-    expect(_selectChip('Custom', active: true), findsOneWidget);
+    await _openQuestionSetField(tester);
+    expect(_choice('Custom', selected: true), findsOneWidget);
     expect(find.text('Edit custom questions'), findsOneWidget);
 
-    await tester.tap(_selectChip('Flirty'));
+    _invokeChoice(tester, 'Flirty');
     await tester.pump();
 
     expect(value.templateId, EventSuccessQuestionnairePackLibrary.flirtyId);
-    expect(_selectChip('Flirty', active: true), findsOneWidget);
-    expect(_selectChip('Custom', active: false), findsOneWidget);
+    await _openQuestionSetField(tester);
+    expect(_choice('Flirty', selected: true), findsOneWidget);
+    expect(_choice('Custom', selected: false), findsOneWidget);
   });
 }
 
-Finder _selectChip(String label, {bool? active}) {
+void _invokeChoice(WidgetTester tester, String label) {
+  tester.widgetList<CatchFieldChoiceChip>(_choice(label)).last.onPressed();
+}
+
+Future<void> _openQuestionSetField(WidgetTester tester) async {
+  final field = find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == 'Question set',
+  );
+  await tester.ensureVisible(field);
+  await tester.tap(field);
+  await tester.pump(kThemeAnimationDuration);
+  await tester.pump();
+}
+
+Finder _choice(String label, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchSelectChip &&
+        widget is CatchFieldChoiceChip &&
         widget.label == label &&
-        (active == null || widget.active == active),
+        (selected == null || widget.selected == selected),
   );
 }

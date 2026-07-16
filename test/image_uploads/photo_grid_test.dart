@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -109,5 +110,39 @@ void main() {
 
     expect(find.byType(CatchGradedImage), findsOneWidget);
     expect(find.text('MAIN'), findsNothing);
+  });
+
+  testWidgets('embedded grid ignores ambient bottom safe-area padding', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: MediaQuery(
+          data: const MediaQueryData(
+            size: Size(390, 844),
+            padding: EdgeInsets.only(bottom: 34),
+          ),
+          child: Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: SizedBox(
+                width: 350,
+                child: PhotoGrid(profilePhotos: const [], onSlotTapped: (_) {}),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final gridBottom = tester.getBottomLeft(find.byType(PhotoGrid)).dy;
+    final finalSlotBottom = tester
+        .getBottomLeft(
+          find.byKey(PhotoGridKeys.slot(maximumProfilePhotoCount - 1)),
+        )
+        .dy;
+
+    expect(gridBottom, closeTo(finalSlotBottom, 0.01));
   });
 }

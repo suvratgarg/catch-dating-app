@@ -213,10 +213,7 @@
       "x-catch-ownership": "callable-owned"
     },
     "discoveryGeoCell": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": "string",
       "pattern": "^-?\\d+:-?\\d+$",
       "x-catch-ownership": "callable-owned"
     },

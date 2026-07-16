@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -145,6 +146,26 @@ class CatchSliverPageBody extends StatelessWidget {
   }
 }
 
+/// Box-native terminal clearance for root scroll views.
+class CatchScrollTerminalPadding extends StatelessWidget {
+  const CatchScrollTerminalPadding({
+    super.key,
+    this.extra = CatchSpacing.screenPb,
+    this.includeSafeArea = true,
+  });
+
+  final double extra;
+  final bool includeSafeArea;
+
+  @override
+  Widget build(BuildContext context) {
+    final height = includeSafeArea
+        ? AppShellActiveTab.scrollTerminalClearanceOf(context, extra: extra)
+        : extra;
+    return SizedBox(height: height);
+  }
+}
+
 /// Sliver-native terminal clearance for root scroll views.
 ///
 /// Use this as the final sliver when a screen owns a full-height
@@ -162,13 +183,12 @@ class CatchSliverTerminalPadding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final safeBottomInset = includeSafeArea
-        ? math.max(
-            MediaQuery.paddingOf(context).bottom,
-            MediaQuery.viewPaddingOf(context).bottom,
-          )
-        : 0.0;
-    return SliverToBoxAdapter(child: SizedBox(height: safeBottomInset + extra));
+    return SliverToBoxAdapter(
+      child: CatchScrollTerminalPadding(
+        extra: extra,
+        includeSafeArea: includeSafeArea,
+      ),
+    );
   }
 }
 

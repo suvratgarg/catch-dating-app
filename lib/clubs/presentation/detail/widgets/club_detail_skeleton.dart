@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:flutter/material.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/material.dart';
 
 /// Skeleton loading body for the club detail screen.
 class ClubDetailLoadingBody extends StatelessWidget {
@@ -18,39 +18,49 @@ class ClubDetailLoadingBody extends StatelessWidget {
 
     return ColoredBox(
       color: t.surface,
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: ClubHeroLoadingSkeleton()),
-          CatchDetailSliverSectionList(
-            gap: CatchSpacing.screenPt,
-            sections: [
-              ClubStatsLoadingSkeleton(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CatchSection.divided(
-                    title: context.l10n.clubsClubDetailSkeletonTitleAbout,
-                    first: true,
-                    child: ClubTextLoadingSkeleton(lines: 3),
-                  ),
-                  CatchSection.divided(
-                    title: context.l10n.clubsClubDetailSkeletonTitleWhatWeDo,
-                    child: CatchSkeletonChips(height: CatchSpacing.s8),
-                  ),
-                  CatchSection.divided(
-                    title: context.l10n.clubsClubDetailSkeletonTitleYourHosts,
-                    child: ClubHostLoadingSkeleton(),
-                  ),
-                  CatchSection.divided(
-                    title: context.l10n.clubsClubDetailSkeletonTitleSchedule,
-                    child: ClubScheduleLoadingSkeleton(),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
+      child: const CustomScrollView(slivers: [ClubDetailLoadingSliverBody()]),
+    );
+  }
+}
+
+/// Sliver-native form of the canonical Club Detail loading composition.
+class ClubDetailLoadingSliverBody extends StatelessWidget {
+  const ClubDetailLoadingSliverBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverMainAxisGroup(
+      slivers: [
+        const SliverToBoxAdapter(child: ClubHeroLoadingSkeleton()),
+        CatchDetailSliverSectionList(
+          gap: CatchSpacing.screenPt,
+          sections: [
+            const ClubStatsLoadingSkeleton(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchSection.divided(
+                  title: context.l10n.clubsClubDetailSkeletonTitleAbout,
+                  first: true,
+                  child: const ClubTextLoadingSkeleton(lines: 3),
+                ),
+                CatchSection.divided(
+                  title: context.l10n.clubsClubDetailSkeletonTitleWhatWeDo,
+                  child: const CatchSkeletonChips(height: CatchSpacing.s8),
+                ),
+                CatchSection.divided(
+                  title: context.l10n.clubsClubDetailSkeletonTitleYourHosts,
+                  child: const ClubHostLoadingSkeleton(),
+                ),
+                CatchSection.divided(
+                  title: context.l10n.clubsClubDetailSkeletonTitleSchedule,
+                  child: const ClubScheduleLoadingSkeleton(),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

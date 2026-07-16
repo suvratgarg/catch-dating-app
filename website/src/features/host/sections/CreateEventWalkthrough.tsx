@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SectionHeader} from "../../../shared/site";
 import {useState} from "react";
 import {
@@ -10,7 +11,7 @@ import {
   HostFeatureSection,
   ProductShell,
 } from "../../../shared/ui/primitives";
-import {hostCreateSteps} from "../../marketing/content";
+import {hostCreateSteps} from "@content/marketing";
 import {
   PhoneCaptureFrame,
   type HostCaptureMap,
@@ -24,10 +25,10 @@ export function CreateEventWalkthrough({captures}: {captures: HostCaptureMap}) {
   return (
     <HostFeatureSection variant="create-flow" aria-labelledby="host-create-flow-title">
       <SectionHeader
-        eyebrow="From the host app · Create flow"
+        eyebrow={websiteCopy["createeventwalkthrough_0279"]}
         id="host-create-flow-title"
-        title="An event goes live in five steps"
-        body="This is the actual flow, not a brochure: details, location, schedule, then the two steps no ticketing tool has — a full admission policy and a live run-of-show guide." />
+        title={websiteCopy["createeventwalkthrough_0276"]}
+        body={websiteCopy["createeventwalkthrough_0281"]} />
       <HostFeatureGrid variant="create-flow">
         <HostFeatureRail
           activeId={step.id}
@@ -36,18 +37,18 @@ export function CreateEventWalkthrough({captures}: {captures: HostCaptureMap}) {
             label: item.title,
             body: item.sub,
           }))}
-          label="Create event steps"
+          label={websiteCopy["createeventwalkthrough_0278"]}
           onSelect={(id) => setActiveStep(hostCreateSteps.findIndex((item) => item.id === id))}
           reveal
           variant="create-flow"
         />
         <ProductShell variant="host-create-mock" reveal>
           <HostCreateMockBar activeIndex={activeStep} items={hostCreateSteps}>
-            <span>Create event · step {activeStep + 1}/5 · {step.title}</span>
+            <span>{websiteCopy["createeventwalkthrough_0277"]}{activeStep + 1}/5 · {step.title}</span>
           </HostCreateMockBar>
           <HostCreateFieldGrid fields={step.fields} />
           <ActionGroup variant="host-create-flow">
-            <span>Save draft</span>
+            <span>{websiteCopy["createeventwalkthrough_0280"]}</span>
             <strong>{activeStep === hostCreateSteps.length - 1 ? "Publish event" : "Next"}</strong>
           </ActionGroup>
         </ProductShell>

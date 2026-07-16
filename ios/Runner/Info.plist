@@ -17,9 +17,9 @@
 		<key>NSMotionUsageDescription</key>
 		<string>Catch uses motion on Explore to let a quick wrist lift reveal the nearby event map.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Catch needs access to your photo library so you can upload profile and event photos.</string>
+		<string>Catch needs access to your photo library so you can add profile photos, event photos, and chat attachments.</string>
 		<key>NSPhotoLibraryAddUsageDescription</key>
-		<string>Catch needs permission to save and manage photos you add to your profile or events.</string>
+		<string>Catch needs permission to save and manage photos you add to your profile, events, or chats.</string>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
 		<key>CFBundleDevelopmentRegion</key>

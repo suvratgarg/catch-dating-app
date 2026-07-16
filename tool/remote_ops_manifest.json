@@ -8,18 +8,49 @@
       "category": "environment",
       "status": "active",
       "safety": "local-writes-config",
-      "environments": ["dev", "staging", "prod"],
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
       "purpose": "Select and verify the active Firebase/native app configuration before local builds, CI release builds, deploys, or console-driven checks, including consumer and host app roles.",
       "entrypoints": [
-        {"kind": "tool-id", "ref": "env:use-firebase"},
-        {"kind": "tool-id", "ref": "env:validate-firebase"},
-        {"kind": "tool-id", "ref": "env:flutter"},
-        {"kind": "tool-id", "ref": "env:firebase"},
-        {"kind": "tool-id", "ref": "platform:ios-maps-key"},
-        {"kind": "workflow", "ref": ".github/workflows/app-build-matrix.yml"},
-        {"kind": "workflow", "ref": ".github/workflows/release-readiness.yml"},
-        {"kind": "doc", "ref": "firebase/README.md"},
-        {"kind": "doc", "ref": "docs/release_operations.md"}
+        {
+          "kind": "tool-id",
+          "ref": "env:use-firebase"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "env:validate-firebase"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "env:flutter"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "env:firebase"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:ios-maps-key"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/app-build-matrix.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/release-readiness.yml"
+        },
+        {
+          "kind": "doc",
+          "ref": "firebase/README.md"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/release_operations.md"
+        }
       ],
       "requiredChecks": [
         "tool/validate_firebase_environment.sh <env> <consumer|host>",
@@ -36,16 +67,41 @@
       "category": "deploy",
       "status": "active",
       "safety": "remote-deploy",
-      "environments": ["dev", "staging", "prod"],
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
       "purpose": "Deploy Firebase targets in a safe, explicit order with logical target expansion for Functions.",
       "entrypoints": [
-        {"kind": "tool-id", "ref": "firebase:deploy-targets"},
-        {"kind": "tool-id", "ref": "firebase:function-targets"},
-        {"kind": "workflow", "ref": ".github/workflows/firebase-deploy.yml"},
-        {"kind": "workflow", "ref": ".github/workflows/firebase-dev-deploy.yml"},
-        {"kind": "config", "ref": "firebase.json"},
-        {"kind": "config", "ref": ".firebaserc"},
-        {"kind": "doc", "ref": "docs/release_operations.md"}
+        {
+          "kind": "tool-id",
+          "ref": "firebase:deploy-targets"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "firebase:function-targets"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/firebase-deploy.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/firebase-dev-deploy.yml"
+        },
+        {
+          "kind": "config",
+          "ref": "firebase.json"
+        },
+        {
+          "kind": "config",
+          "ref": ".firebaserc"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/release_operations.md"
+        }
       ],
       "requiredChecks": [
         "node tool/contracts/check_firestore_contract.mjs",
@@ -63,25 +119,77 @@
       "category": "data",
       "status": "active",
       "safety": "remote-read-write-apply-guarded",
-      "environments": ["dev", "staging", "prod"],
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
       "purpose": "Validate, repair, backfill, or intentionally delete Firestore data with dry-run defaults and apply guards.",
       "entrypoints": [
-        {"kind": "tool-id", "ref": "data:validate"},
-        {"kind": "tool-id", "ref": "data:delete-reviews"},
-        {"kind": "tool-id", "ref": "data:repair-public-profiles"},
-        {"kind": "tool-id", "ref": "data:repair-club-hosts"},
-        {"kind": "tool-id", "ref": "data:repair-review-authors"},
-        {"kind": "tool-id", "ref": "data:repair-club-member-counts"},
-        {"kind": "tool-id", "ref": "data:repair-event-aggregates"},
-        {"kind": "tool-id", "ref": "data:repair-future-attendance"},
-        {"kind": "tool-id", "ref": "data:backfill-profile-photos"},
-        {"kind": "tool-id", "ref": "data:backfill-event-discovery"},
-        {"kind": "tool-id", "ref": "data:backfill-algolia-explore-search"},
-        {"kind": "tool-id", "ref": "data:hygiene-media-paths"},
-        {"kind": "tool-id", "ref": "operations:import-admin-projection"},
-        {"kind": "workflow", "ref": ".github/workflows/data-validation.yml"},
-        {"kind": "doc", "ref": "docs/backend_operation_catalog.md"},
-        {"kind": "doc", "ref": "docs/demo_data_seeding.md"}
+        {
+          "kind": "tool-id",
+          "ref": "data:validate"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:delete-reviews"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:repair-public-profiles"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:repair-club-hosts"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:repair-review-authors"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:repair-club-member-counts"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:repair-event-aggregates"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:repair-future-attendance"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:backfill-profile-photos"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:backfill-event-discovery"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:backfill-algolia-explore-search"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "data:hygiene-media-paths"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "operations:import-admin-projection"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/data-validation.yml"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/backend_operation_catalog.md"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/demo_data_seeding.md"
+        }
       ],
       "requiredChecks": [
         "Prefer --json dry run before --apply.",
@@ -99,45 +207,157 @@
       "category": "data",
       "status": "active",
       "safety": "remote-read-local-write-guarded",
-      "environments": ["dev", "staging", "prod"],
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
       "purpose": "Export live admin organizer-intake curation and review decisions from Firestore into repo-backed projection batches before public website generation.",
       "entrypoints": [
-        {"kind": "tool-id", "ref": "organizer-intake:normalize-surface-url"},
-        {"kind": "tool-id", "ref": "organizer-intake:capture-search-results"},
-        {"kind": "tool-id", "ref": "organizer-intake:ingest-search-results"},
-        {"kind": "tool-id", "ref": "organizer-intake:capture-luma-events"},
-        {"kind": "tool-id", "ref": "organizer-intake:ingest-event-sources"},
-        {"kind": "tool-id", "ref": "organizer-intake:plan-event-location-resolution"},
-        {"kind": "tool-id", "ref": "organizer-intake:event-location-resolution"},
-        {"kind": "tool-id", "ref": "organizer-intake:plan-event-crawl-runs"},
-        {"kind": "tool-id", "ref": "organizer-intake:plan-raw-artifact-storage"},
-        {"kind": "tool-id", "ref": "organizer-intake:plan-external-event-imports"},
-        {"kind": "tool-id", "ref": "organizer-intake:preflight-external-event-imports"},
-        {"kind": "tool-id", "ref": "organizer-intake:publish-event-supply-readiness"},
-        {"kind": "tool-id", "ref": "marketing:event-guide-publish-event-intake-dashboard"},
-        {"kind": "tool-id", "ref": "organizer-intake:event-review-decision"},
-        {"kind": "tool-id", "ref": "organizer-intake:policy-gap-decision"},
-        {"kind": "tool-id", "ref": "organizer-intake:curation-decision"},
-        {"kind": "tool-id", "ref": "organizer-intake:pending-input-request"},
-        {"kind": "tool-id", "ref": "organizer-intake:pending-work-coverage"},
-        {"kind": "tool-id", "ref": "organizer-intake:pending-decision-answer-packet"},
-        {"kind": "tool-id", "ref": "organizer-intake:create-decision-answer-packet"},
-        {"kind": "tool-id", "ref": "organizer-intake:pending-decision-answer-plan"},
-        {"kind": "tool-id", "ref": "organizer-intake:reviewed-decision-answer-packets"},
-        {"kind": "tool-id", "ref": "organizer-intake:apply-pending-decision-answers"},
-        {"kind": "tool-id", "ref": "organizer-intake:export-curation-decisions"},
-        {"kind": "tool-id", "ref": "organizer-intake:export-review-decisions"},
-        {"kind": "tool-id", "ref": "organizer-intake:export-event-review-decisions"},
-        {"kind": "tool-id", "ref": "organizer-intake:export-event-location-resolutions"},
-        {"kind": "tool-id", "ref": "organizer-intake:export-policy-gap-decisions"},
-        {"kind": "tool-id", "ref": "organizer-intake:generate"},
-        {"kind": "tool-id", "ref": "marketing:generate-organizer-listings"},
-        {"kind": "tool-id", "ref": "organizer-intake:check-operational-health"},
-        {"kind": "tool-id", "ref": "organizer-intake:promotion-execution-packet"},
-        {"kind": "tool-id", "ref": "organizer-intake:check-admin-review-bridge"},
-        {"kind": "tool-id", "ref": "organizer-intake:check-promotion-bridge"},
-        {"kind": "tool-id", "ref": "organizer-intake:run-promotion-pipeline"},
-        {"kind": "tool-id", "ref": "organizer-intake:sync-claim-targets"}
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:normalize-surface-url"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:capture-search-results"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:ingest-search-results"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:capture-luma-events"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:ingest-event-sources"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:plan-event-location-resolution"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:event-location-resolution"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:plan-event-crawl-runs"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:plan-raw-artifact-storage"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:plan-external-event-imports"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:preflight-external-event-imports"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:publish-event-supply-readiness"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "marketing:event-guide-publish-event-intake-dashboard"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:event-review-decision"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:policy-gap-decision"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:curation-decision"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:pending-input-request"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:pending-work-coverage"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:pending-decision-answer-packet"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:create-decision-answer-packet"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:pending-decision-answer-plan"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:reviewed-decision-answer-packets"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:apply-pending-decision-answers"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:export-curation-decisions"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:export-review-decisions"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:export-event-review-decisions"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:export-event-location-resolutions"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:export-policy-gap-decisions"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:generate"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "marketing:generate-organizer-listings"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:check-operational-health"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:promotion-execution-packet"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:check-admin-review-bridge"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:check-promotion-bridge"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:run-promotion-pipeline"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "organizer-intake:sync-claim-targets"
+        }
       ],
       "requiredChecks": [
         "Normalize newly discovered external surface URLs before adding intake batch or curation data.",
@@ -222,17 +442,45 @@
       "category": "security",
       "status": "console-tracked",
       "safety": "remote-console-security",
-      "environments": ["dev", "staging", "prod"],
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
       "purpose": "Track App Check provider setup, callable enforcement, debug/release tokens, and abuse-control prerequisites that are partly managed in Firebase/GCP consoles.",
       "entrypoints": [
-        {"kind": "config", "ref": "functions/src/shared/callableOptions.ts"},
-        {"kind": "config", "ref": "tool/env/dart_defines/dev.json"},
-        {"kind": "config", "ref": "tool/env/dart_defines/staging.json"},
-        {"kind": "config", "ref": "tool/env/dart_defines/prod.json"},
-        {"kind": "tool-id", "ref": "firebase:register-app-check-debug-token"},
-        {"kind": "doc", "ref": "firebase/README.md"},
-        {"kind": "doc", "ref": "docs/config_cicd_platform_audit_2026-05-21.md"},
-        {"kind": "doc", "ref": "docs/release_operations.md"},
+        {
+          "kind": "config",
+          "ref": "functions/src/shared/callableOptions.ts"
+        },
+        {
+          "kind": "config",
+          "ref": "tool/env/dart_defines/dev.json"
+        },
+        {
+          "kind": "config",
+          "ref": "tool/env/dart_defines/staging.json"
+        },
+        {
+          "kind": "config",
+          "ref": "tool/env/dart_defines/prod.json"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "firebase:register-app-check-debug-token"
+        },
+        {
+          "kind": "doc",
+          "ref": "firebase/README.md"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/config_cicd_platform_audit_2026-05-21.md"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/release_operations.md"
+        },
         {
           "kind": "manual",
           "ref": "Firebase Console App Check provider registration and enforcement",
@@ -275,18 +523,49 @@
       "category": "ci",
       "status": "active",
       "safety": "local-ci-remote-optional",
-      "environments": ["dev", "staging", "prod"],
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
       "purpose": "Group the CI workflows that gate contracts, Functions, Firestore rules, app builds, tools, release readiness, and observability evidence.",
       "entrypoints": [
-        {"kind": "workflow", "ref": ".github/workflows/tools-ci.yml"},
-        {"kind": "workflow", "ref": ".github/workflows/contracts-ci.yml"},
-        {"kind": "workflow", "ref": ".github/workflows/functions-ci.yml"},
-        {"kind": "workflow", "ref": ".github/workflows/firestore-rules-ci.yml"},
-        {"kind": "workflow", "ref": ".github/workflows/flutter-ci.yml"},
-        {"kind": "workflow", "ref": ".github/workflows/app-build-matrix.yml"},
-        {"kind": "workflow", "ref": ".github/workflows/release-readiness.yml"},
-        {"kind": "workflow", "ref": ".github/workflows/observability-evidence.yml"},
-        {"kind": "doc", "ref": "docs/release_operations.md"}
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/tools-ci.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/contracts-ci.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/functions-ci.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/firestore-rules-ci.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/flutter-ci.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/app-build-matrix.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/release-readiness.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/observability-evidence.yml"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/release_operations.md"
+        }
       ],
       "requiredChecks": [
         "node tool/run.mjs check --manifest-only",
@@ -303,25 +582,75 @@
       "category": "mobile-store",
       "status": "transitional",
       "safety": "remote-release-protected-internal",
-      "environments": ["prod"],
+      "environments": [
+        "prod"
+      ],
       "purpose": "Track the manifest-owned Consumer/Host iOS TestFlight and Android Play-internal matrix, signed identity receipts, store authentication, legacy Xcode Cloud retirement, and guarded Play enablement.",
       "entrypoints": [
-        {"kind": "tool-id", "ref": "env:flutter"},
-        {"kind": "tool-id", "ref": "platform:app-targets"},
-        {"kind": "tool-id", "ref": "platform:verify-ios-release-identity"},
-        {"kind": "tool-id", "ref": "platform:verify-android-release-identity"},
-        {"kind": "tool-id", "ref": "platform:mobile-build-number"},
-        {"kind": "tool-id", "ref": "platform:verify-app-store-build"},
-        {"kind": "tool-id", "ref": "platform:verify-ios-processing-receipts"},
-        {"kind": "tool-id", "ref": "platform:probe-google-play-access"},
-        {"kind": "tool-id", "ref": "platform:upload-google-play-bundle"},
-        {"kind": "tool-id", "ref": "platform:xcode-cloud-workflow-state"},
-        {"kind": "tool-id", "ref": "platform:ios-maps-key"},
-        {"kind": "tool-id", "ref": "firebase:maps-config"},
-        {"kind": "workflow", "ref": ".github/workflows/mobile-internal-release.yml"},
-        {"kind": "config", "ref": "ios/ci_scripts/ci_post_clone.sh"},
-        {"kind": "config", "ref": "ios/ci_scripts/ci_post_xcodebuild.sh"},
-        {"kind": "doc", "ref": "docs/release_operations.md"},
+        {
+          "kind": "tool-id",
+          "ref": "env:flutter"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:app-targets"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:verify-ios-release-identity"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:verify-android-release-identity"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:mobile-build-number"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:verify-app-store-build"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:verify-ios-processing-receipts"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:probe-google-play-access"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:upload-google-play-bundle"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:xcode-cloud-workflow-state"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:ios-maps-key"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "firebase:maps-config"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/mobile-internal-release.yml"
+        },
+        {
+          "kind": "config",
+          "ref": "ios/ci_scripts/ci_post_clone.sh"
+        },
+        {
+          "kind": "config",
+          "ref": "ios/ci_scripts/ci_post_xcodebuild.sh"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/release_operations.md"
+        },
         {
           "kind": "manual",
           "ref": "App Store Connect TestFlight group assignment and install/launch proof",

@@ -351,7 +351,7 @@ function extractCommandPaths(command) {
     .map((token) => token.replace(/^\.\//, ""))
     .filter((token) => {
       if (!token || token.includes("*")) return false;
-      return /^(AGENTS\.md|docs\/|tool\/|lib\/|test\/|functions\/|contracts\/|widgetbook\/|website\/|packages\/web-config\/|design\/website\/|\.github\/|ios\/|android\/|firebase\.json|\.firebaserc|firestore\.rules|storage\.rules)/.test(token);
+      return /^(AGENTS\.md|docs\/|tool\/|operations\/|lib\/|test\/|functions\/|contracts\/|widgetbook\/|website\/|packages\/web-config\/|design\/website\/|\.github\/|ios\/|android\/|firebase\.json|\.firebaserc|firestore\.rules|storage\.rules)/.test(token);
     });
 }
 

@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {trackMarketingEvent} from "../../../analytics";
 import {SectionHeader} from "../../../shared/site";
 import {
@@ -39,10 +40,10 @@ export function ListingCatchEventsSection({listing}: {listing: HostListing}) {
       aria-labelledby="listing-catch-events-title"
     >
       <SectionHeader
-        eyebrow="Catch events"
+        eyebrow={websiteCopy["listingeventssections_0388"]}
         id="listing-catch-events-title"
-        title="Events created inside Catch."
-        body="App-created clubs should show the actual event pipeline: what is coming up, what filled, and what happened after people showed up." />
+        title={websiteCopy["listingeventssections_0394"]}
+        body={websiteCopy["listingeventssections_0385"]} />
       <ContentGrid variant="listing-event">
         {eventCards.map((event) => (
           <EventActionCard
@@ -53,9 +54,9 @@ export function ListingCatchEventsSection({listing}: {listing: HostListing}) {
         ))}
       </ContentGrid>
       <ListingEventDownloadPanel
-        kicker="Member app"
-        heading="Book, check in, and review from Catch."
-        body="Public pages expose the event record. The app handles booking, waitlist movement, attendance, catches, and verified reviews."
+        kicker={websiteCopy["listingeventssections_0396"]}
+        heading={websiteCopy["listingeventssections_0386"]}
+        body={websiteCopy["listingeventssections_0399"]}
       >
         <AppDownloadCtaGroup {...appDownloadCtas} variant="compact" />
       </ListingEventDownloadPanel>
@@ -85,10 +86,10 @@ export function ListingExternalEventsSection({
       aria-labelledby="listing-external-events-title"
     >
       <SectionHeader
-        eyebrow="External events"
+        eyebrow={websiteCopy["listingeventssections_0395"]}
         id="listing-external-events-title"
-        title="Source-attributed events from public listings."
-        body="These events come from approved intake sources and remain read-only: Catch does not run booking, payment, reservations, waitlists, or attendance for them." />
+        title={websiteCopy["listingeventssections_0401"]}
+        body={websiteCopy["listingeventssections_0404"]} />
       <ContentGrid variant="listing-event">
         {eventCards.map((event) => (
           <EventActionCard
@@ -189,9 +190,9 @@ export function ListingEventEvidenceSection({listing}: {listing: HostListing}) {
   return (
     <ListingSection variant="events" aria-labelledby="listing-events-title">
       <SectionHeader
-        eyebrow="Event evidence"
+        eyebrow={websiteCopy["listingeventssections_0392"]}
         id="listing-events-title"
-        title="Public events tied to this host." />
+        title={websiteCopy["listingeventssections_0398"]} />
       <ListingEventEvidenceList items={eventItems} />
     </ListingSection>
   );
@@ -203,12 +204,12 @@ export function ListingEventSuccessSection({
   summary: HostListingEventSuccessSummary;
 }) {
   const metrics = [
-    {label: "Booked", value: summary.bookedCount},
-    {label: "Checked in", value: summary.checkedInCount},
-    {label: "Catches sent", value: summary.catchSentCount},
-    {label: "Mutual matches", value: summary.mutualMatchCount},
-    {label: "Chats started", value: summary.chatStartedCount},
-    {label: "Safety reports", value: summary.safetyIncidentCount},
+    {label: websiteCopy["listingeventssections_0387"], value: summary.bookedCount},
+    {label: websiteCopy["listingeventssections_0391"], value: summary.checkedInCount},
+    {label: websiteCopy["listingeventssections_0389"], value: summary.catchSentCount},
+    {label: websiteCopy["listingeventssections_0397"], value: summary.mutualMatchCount},
+    {label: websiteCopy["listingeventssections_0390"], value: summary.chatStartedCount},
+    {label: websiteCopy["listingeventssections_0400"], value: summary.safetyIncidentCount},
   ];
   return (
     <ListingSection
@@ -217,10 +218,10 @@ export function ListingEventSuccessSection({
       aria-labelledby="event-success-title"
     >
       <SectionHeader
-        eyebrow="Event Success"
+        eyebrow={websiteCopy["listingeventssections_0393"]}
         id="event-success-title"
-        title="The claimed profile can show what Catch actually operated."
-        body="These are aggregate, host-safe outcomes from a completed Catch event. This is the kind of proof an app-created club can show that a scraped unclaimed listing cannot." />
+        title={websiteCopy["listingeventssections_0402"]}
+        body={websiteCopy["listingeventssections_0403"]} />
       <ListingSuccessMetricGrid items={metrics} />
     </ListingSection>
   );

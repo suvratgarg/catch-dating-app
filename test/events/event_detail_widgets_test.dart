@@ -6,11 +6,13 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
@@ -20,6 +22,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
@@ -32,6 +35,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_surfac
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -50,6 +54,7 @@ void main() {
     test('stores the route arguments', () {
       final event = buildEvent();
       final screen = EventDetailScreen(
+        enableMapNetworkTiles: false,
         clubId: 'club-1',
         eventId: 'event-1',
         initialEvent: event,
@@ -63,7 +68,11 @@ void main() {
     testWidgets('renders the loading state', (tester) async {
       await pumpEventsTestApp(
         tester,
-        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+        const EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: 'club-1',
+          eventId: 'event-1',
+        ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider(
@@ -84,6 +93,7 @@ void main() {
       await pumpEventsTestApp(
         tester,
         EventDetailScreen(
+          enableMapNetworkTiles: false,
           clubId: 'club-1',
           eventId: 'event-1',
           initialEvent: event,
@@ -112,7 +122,11 @@ void main() {
     testWidgets('renders the error state', (tester) async {
       await pumpEventsTestApp(
         tester,
-        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+        const EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: 'club-1',
+          eventId: 'event-1',
+        ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -130,7 +144,11 @@ void main() {
     testWidgets('renders the missing state', (tester) async {
       await pumpEventsTestApp(
         tester,
-        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+        const EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: 'club-1',
+          eventId: 'event-1',
+        ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider(
@@ -146,7 +164,11 @@ void main() {
     testWidgets('renders the loaded state', (tester) async {
       await pumpEventsTestApp(
         tester,
-        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+        const EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: 'club-1',
+          eventId: 'event-1',
+        ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -171,12 +193,13 @@ void main() {
 
       expect(find.text('Wednesday Evening Run'), findsWidgets);
       await tester.scrollUntilVisible(
-        find.text('What to expect'),
+        find.text('GOOD TO KNOW'),
         400,
         scrollable: findPrimaryScrollable(),
       );
-      expect(find.text('Attendance matters'), findsOneWidget);
-      expect(find.text('Booking policy'), findsOneWidget);
+      expect(find.textContaining('Attendance matters'), findsOneWidget);
+      expect(find.text('What to expect'), findsNothing);
+      expect(find.text('Booking policy'), findsNothing);
     });
   });
 
@@ -229,7 +252,7 @@ void main() {
       );
 
       expect(find.byType(EventDetailHostsSkeleton), findsOneWidget);
-      expect(find.text('YOUR HOSTS'), findsOneWidget);
+      expect(find.text('HOSTED BY'), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
@@ -945,6 +968,48 @@ void main() {
   });
 
   group('EventDetailHeroAppBar', () {
+    testWidgets('uses canonical outer gutters and action gaps', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                EventDetailHeroAppBar(
+                  event: buildEvent(),
+                  isSaved: false,
+                  savePending: false,
+                  onBack: () {},
+                  onShare: (_) {},
+                  showAddToCalendar: true,
+                  onAddToCalendar: (_) {},
+                  onToggleSaved: () {},
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 900)),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final back = tester.getRect(find.byTooltip('Back'));
+      final share = tester.getRect(find.byTooltip('Share event'));
+      final calendar = tester.getRect(find.byTooltip('Add to calendar'));
+      final save = tester.getRect(find.byTooltip('Save event'));
+
+      expect(back.left, CatchSpacing.screenPx);
+      expect(390 - save.right, CatchSpacing.screenPx);
+      expect(calendar.left - share.right, CatchSpacing.s2);
+      expect(save.left - calendar.right, CatchSpacing.s2);
+      expect(find.byType(CatchTopBarActionGroup), findsOneWidget);
+    });
+
     testWidgets('reveals the event title in the collapsed toolbar', (
       tester,
     ) async {
@@ -1191,7 +1256,8 @@ void main() {
       );
 
       expect(find.text(event.title), findsWidgets);
-      expect(find.text('Requirements'), findsOneWidget);
+      await _scrollEventDetailUntilVisible(tester, find.text('GOOD TO KNOW'));
+      expect(find.textContaining('Requirements'), findsOneWidget);
       expect(find.text('About this event'), findsOneWidget);
       expect(find.text(event.description), findsOneWidget);
       expect(find.text('Event companion'), findsOneWidget);
@@ -1231,6 +1297,10 @@ void main() {
     testWidgets('does not unlock reviews for stale future attendance data', (
       tester,
     ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 6000);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
       final now = DateTime(2026, 5, 13, 19);
       final futureStart = DateTime(2026, 5, 14, 3, 10);
       final event = buildEvent(
@@ -1262,9 +1332,9 @@ void main() {
         ],
       );
 
-      await _scrollEventDetailUntilVisible(tester, find.text('REVIEWS'));
-
-      expect(find.text('REVIEWS'), findsOneWidget);
+      final body = tester.widget<EventDetailBody>(find.byType(EventDetailBody));
+      expect(body.socialState.reviews.mode, EventDetailReviewsMode.hidden);
+      expect(find.text('REVIEWS'), findsNothing);
       expect(find.text('Write a review'), findsNothing);
       expect(find.text('Edit your review'), findsNothing);
     });
@@ -1276,7 +1346,11 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        EventDetailScreen(clubId: event.clubId, eventId: event.id),
+        EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: event.clubId,
+          eventId: event.id,
+        ),
         signedInUid: null,
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
@@ -1344,7 +1418,11 @@ void main() {
     ) async {
       await pumpEventsTestApp(
         tester,
-        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+        const EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: 'club-1',
+          eventId: 'event-1',
+        ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -1379,7 +1457,11 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+        const EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: 'club-1',
+          eventId: 'event-1',
+        ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
@@ -1583,7 +1665,11 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+        const EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: 'club-1',
+          eventId: 'event-1',
+        ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -1624,7 +1710,11 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+        const EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: 'club-1',
+          eventId: 'event-1',
+        ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -1768,6 +1858,7 @@ Widget _eventDetailBody({
       EventDetailPresentationMode.standard,
   Object? heroTag,
 }) {
+  final referenceNow = now ?? DateTime.now();
   return EventDetailBody(
     event: event,
     userProfile: userProfile,
@@ -1781,7 +1872,7 @@ Widget _eventDetailBody({
           participation: participation,
           isHostApp: false,
           isHost: isHost,
-          now: now ?? DateTime.now(),
+          now: referenceNow,
         ),
     isSaved: isSaved,
     participation: participation,
@@ -1793,10 +1884,15 @@ Widget _eventDetailBody({
     onToggleSaved: onToggleSaved ?? () {},
     companionState: companionState,
     hostState: hostState,
+    informationState: eventDetailInformationStateFrom(
+      event: event,
+      l10n: AppLocalizationsEn(),
+    ),
     socialState:
         socialState ??
         eventDetailSocialStateFrom(
           event: event,
+          hasReviews: reviews.isNotEmpty,
           userProfile: userProfile,
           isAuthenticated: isAuthenticated,
           renderAsHost:
@@ -1806,11 +1902,11 @@ Widget _eventDetailBody({
                         participation: participation,
                         isHostApp: false,
                         isHost: isHost,
-                        now: now ?? DateTime.now(),
+                        now: referenceNow,
                       ))
                   .renderSocialAsHost,
           participation: participation,
-          now: now ?? DateTime.now(),
+          now: referenceNow,
         ),
     onLocationTap: onLocationTap,
     onOpenCompanion: onOpenCompanion ?? () {},
@@ -1820,7 +1916,8 @@ Widget _eventDetailBody({
     onRetryHosts: onRetryHosts ?? () {},
     inviteCode: inviteCode,
     inviteLinkId: inviteLinkId,
-    now: now,
+    now: referenceNow,
+    enableMapNetworkTiles: false,
     presentationMode: presentationMode,
     heroTag: heroTag,
   );
@@ -1841,9 +1938,19 @@ Future<void> _scrollEventDetailUntilVisible(
   WidgetTester tester,
   Finder finder,
 ) async {
-  final scrollView = find.byType(CustomScrollView);
-  await tester.dragUntilVisible(finder, scrollView, const Offset(0, -80));
-  await tester.pump();
+  final scrollView = find.byKey(
+    const ValueKey<String>('event_detail.scroll_view'),
+  );
+  for (var attempt = 0; attempt < 40; attempt += 1) {
+    if (finder.evaluate().isNotEmpty) {
+      await tester.ensureVisible(finder.first);
+      await tester.pump();
+      return;
+    }
+    await tester.drag(scrollView, const Offset(0, -240));
+    await tester.pump();
+  }
+  throw TestFailure('Could not reveal ${finder.description}.');
 }
 
 EventParticipation _participation({

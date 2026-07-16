@@ -1,10 +1,11 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:flutter/material.dart';
@@ -152,56 +153,63 @@ class OnboardingNameDobStep extends StatelessWidget {
           size: CatchButtonSize.lg,
         ),
         children: [
-          CatchField.input(
-            title: context.l10n.onboardingNameDobPageTitleFirstName,
-            controller: controllers.firstName,
-            autofocus: state.shouldAutofocus,
-            textCapitalization: TextCapitalization.words,
-            textInputAction: TextInputAction.next,
-            autofillHints: const [AutofillHints.givenName],
-            helperText: context
-                .l10n
-                .onboardingNameDobPageHelpertextDisplayedOnYourProfile,
-            validator: state.validateFirstName,
-          ),
-          gapH16,
-          CatchField.input(
-            title: context.l10n.onboardingNameDobPageTitleLastName,
-            controller: controllers.lastName,
-            textCapitalization: TextCapitalization.words,
-            textInputAction: TextInputAction.next,
-            autofillHints: const [AutofillHints.familyName],
-            helperText:
-                context.l10n.onboardingNameDobPageHelpertextPrivateWeNeverShow,
-            validator: state.validateLastName,
-          ),
-          gapH16,
-          CatchField.input(
-            title: context.l10n.onboardingNameDobPageTitleDateOfBirth,
-            controller: controllers.date,
-            readOnly: true,
-            onTap: () => callbacks.onPickDate(state.datePickerRequest),
-            prefixIcon: Icon(CatchIcons.calendarTodayOutlined),
-            suffixText: state.ageSuffix,
-            helperText:
-                context.l10n.onboardingNameDobPageHelpertextWeNeverShowYour,
-            validator: (_) => state.validateDateOfBirth(),
-          ),
-          gapH16,
-          CatchField.input(
-            title: context.l10n.onboardingNameDobPageTitlePhone,
-            controller: controllers.phone,
-            readOnly: true,
-            keyboardType: TextInputType.phone,
-            textInputAction: TextInputAction.done,
-            autofillHints: const [AutofillHints.telephoneNumberNational],
-            prefixIcon: Icon(CatchIcons.phoneOutlined),
-            prefixText: state.phonePrefix,
-            suffixIcon: Icon(CatchIcons.verifiedRounded),
-            helperText:
-                context.l10n.onboardingNameDobPageHelpertextVerifiedViaOtp,
-            helperTone: CatchFieldSupportTone.success,
-            validator: state.validatePhoneNumber,
+          CatchSection.fieldRows(
+            first: true,
+            children: [
+              CatchField.input(
+                title: context.l10n.onboardingNameDobPageTitleFirstName,
+                controller: controllers.firstName,
+                autofocus: state.shouldAutofocus,
+                icon: CatchIcons.personOutlineRounded,
+                textCapitalization: TextCapitalization.words,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.givenName],
+                helperText: context
+                    .l10n
+                    .onboardingNameDobPageHelpertextDisplayedOnYourProfile,
+                validator: state.validateFirstName,
+              ),
+              CatchField.input(
+                title: context.l10n.onboardingNameDobPageTitleLastName,
+                controller: controllers.lastName,
+                icon: CatchIcons.personOutlineRounded,
+                textCapitalization: TextCapitalization.words,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.familyName],
+                helperText: context
+                    .l10n
+                    .onboardingNameDobPageHelpertextPrivateWeNeverShow,
+                validator: state.validateLastName,
+              ),
+              CatchField.input(
+                key: OnboardingFormKeys.dateOfBirth,
+                title: context.l10n.onboardingNameDobPageTitleDateOfBirth,
+                controller: controllers.date,
+                readOnly: true,
+                onTap: () => callbacks.onPickDate(state.datePickerRequest),
+                icon: CatchIcons.calendarTodayOutlined,
+                suffixText: state.ageSuffix,
+                helperText:
+                    context.l10n.onboardingNameDobPageHelpertextWeNeverShowYour,
+                validator: (_) => state.validateDateOfBirth(),
+              ),
+              CatchField.input(
+                key: OnboardingFormKeys.phone,
+                title: context.l10n.onboardingNameDobPageTitlePhone,
+                controller: controllers.phone,
+                readOnly: true,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.telephoneNumberNational],
+                icon: CatchIcons.phoneOutlined,
+                prefixText: state.phonePrefix,
+                suffixIcon: Icon(CatchIcons.verifiedRounded),
+                helperText:
+                    context.l10n.onboardingNameDobPageHelpertextVerifiedViaOtp,
+                helperTone: CatchFieldSupportTone.success,
+                validator: state.validatePhoneNumber,
+              ),
+            ],
           ),
         ],
       ),

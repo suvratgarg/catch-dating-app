@@ -10,13 +10,14 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--json [PATH]|--code CODE|--label LABEL|--all|--help]
+  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--json [PATH]|--code CODE|--label LABEL|--all|--self-test|--help]
 
 Modes:
   default    Print summary plus matching diagnostics. Exit 1 if drift remains.
   --summary  Print summary only. Exit 1 if drift remains.
   --count    Print only the numeric drift count. Always exit 0.
   --json     Print a JSON count artifact. Optionally also write it to PATH. Always exit 0.
+  --self-test  Verify machine diagnostic parsing and completion semantics.
   --code     Count one Catch UI lint code.
   --label    Human-readable label for summary output.
   --all      Count all Catch UI lint codes.
@@ -30,6 +31,7 @@ MODE="default"
 CODE_REGEX="catch_no_raw_color|catch_no_raw_text_style|catch_no_raw_font_drift"
 LABEL="color/text/font"
 JSON_PATH=""
+SELF_TEST="false"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -72,6 +74,10 @@ while [ $# -gt 0 ]; do
       LABEL="all Catch UI lints"
       shift
       ;;
+    --self-test)
+      SELF_TEST="true"
+      shift
+      ;;
     --help|-h)
       usage
       exit 0
@@ -85,19 +91,62 @@ done
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
+collect_diagnostics() {
+  local output="$1"
+  local code_regex="$2"
+  awk -F'|' -v code_regex="$code_regex" '
+    tolower($3) ~ ("^(" code_regex ")$") {
+      print
+    }
+  ' <<<"$output"
+}
+
+analysis_is_complete() {
+  local status="$1"
+  local output="$2"
+  if { [[ "$status" -eq 0 ]] || [[ "$status" -eq 2 ]]; } &&
+    ! grep -Eq '^ERROR\|' <<<"$output"; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
+if [[ "$SELF_TEST" == "true" ]]; then
+  fixture=$'WARNING|STATIC_WARNING|CATCH_NO_RAW_COLOR|/tmp/catch_dating_app/lib/catch_widget.dart|1|1|1|Use a named role.\nINFO|LINT|UNRELATED_RULE|/tmp/catch_no_raw_text_style.dart|2|1|1|Message mentions catch_no_raw_font_drift.\nWARNING|STATIC_WARNING|CATCH_NO_RAW_TEXT_STYLE|/tmp/plain.dart|3|1|1|Use CatchTextStyles.'
+  result="$(collect_diagnostics "$fixture" 'catch_[a-z0-9_]+')"
+  if [[ "$(printf '%s\n' "$result" | sed '/^$/d' | wc -l | tr -d ' ')" != "2" ]]; then
+    echo "Catch UI lint drift parser self-test failed." >&2
+    exit 1
+  fi
+  if grep -q 'UNRELATED_RULE' <<<"$result"; then
+    echo "Catch UI lint drift parser matched catch_* text outside the diagnostic code field." >&2
+    exit 1
+  fi
+  if [[ "$(analysis_is_complete 2 "$fixture")" != "true" ]]; then
+    echo "Catch UI lint drift parser marked a completed warning scan incomplete." >&2
+    exit 1
+  fi
+  error_fixture='ERROR|COMPILE_TIME_ERROR|UNDEFINED_IDENTIFIER|/tmp/plain.dart|1|1|1|Undefined name.'
+  if [[ "$(analysis_is_complete 2 "$error_fixture")" != "false" ]]; then
+    echo "Catch UI lint drift parser marked an analyzer error complete." >&2
+    exit 1
+  fi
+  echo "Catch UI lint drift parser self-test passed."
+  exit 0
+fi
+
 set +e
-analyze_output="$(dart analyze 2>&1)"
+analyze_output="$(dart analyze --format machine 2>&1)"
 analyze_status=$?
 set -e
+
+analyze_complete="$(analysis_is_complete "$analyze_status" "$analyze_output")"
 
 tmp="$(mktemp "${TMPDIR:-/tmp}/catch-ui-lint-drift.XXXXXX")"
 trap 'rm -f "$tmp"' EXIT
 
-awk -v code_regex="$CODE_REGEX" '
-  $0 ~ code_regex {
-    print
-  }
-' <<<"$analyze_output" >"$tmp"
+collect_diagnostics "$analyze_output" "$CODE_REGEX" >"$tmp"
 
 if [ -s "$tmp" ]; then
   total="$(wc -l <"$tmp" | tr -d ' ')"
@@ -121,20 +170,17 @@ if [ "$MODE" = "json" ]; then
     printf '  "label": "%s",\n' "$(json_escape "$LABEL")"
     printf '  "codeRegex": "%s",\n' "$(json_escape "$CODE_REGEX")"
     printf '  "analyzeStatus": %s,\n' "$analyze_status"
-    if [ "$analyze_status" -eq 0 ]; then
+    if [[ "$analyze_complete" == "true" ]]; then
       echo '  "complete": true,'
     else
       echo '  "complete": false,'
     fi
     printf '  "total": %s,\n' "$total"
     echo '  "counts": {'
-    awk '
+    awk -F'|' '
       {
-        while (match($0, /catch_[a-z0-9_]+/)) {
-          code = substr($0, RSTART, RLENGTH)
-          counts[code] += 1
-          $0 = substr($0, RSTART + RLENGTH)
-        }
+        code = tolower($3)
+        counts[code] += 1
       }
       END {
         for (code in counts) print code "\t" counts[code]
@@ -167,13 +213,10 @@ echo "Catch UI lint drift ($LABEL): $total"
 if [ "$total" -gt 0 ]; then
   echo ""
   echo "By code:"
-  awk '
+  awk -F'|' '
     {
-      while (match($0, /catch_[a-z0-9_]+/)) {
-        code = substr($0, RSTART, RLENGTH)
-        counts[code] += 1
-        $0 = substr($0, RSTART + RLENGTH)
-      }
+      code = tolower($3)
+      counts[code] += 1
     }
     END {
       for (code in counts) print counts[code] "\t" code
@@ -192,7 +235,7 @@ if [ "$total" -gt 0 ]; then
 fi
 
 if [ "$analyze_status" -ne 0 ] &&
-  grep -Eq '(^|[[:space:]])(error|fatal) - ' <<<"$analyze_output"; then
+  grep -Eq '^ERROR\|' <<<"$analyze_output"; then
   echo ""
   echo "dart analyze failed with errors outside $LABEL drift. Output:"
   echo "$analyze_output"

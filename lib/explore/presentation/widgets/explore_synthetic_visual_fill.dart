@@ -138,6 +138,13 @@ ExploreEventItem _syntheticExploreItem({
     startTime: start,
     endTime: start.add(Duration(minutes: spec.durationMinutes)),
     meetingPoint: spec.meetingPoint,
+    meetingLocation: EventMeetingLocation(
+      name: spec.meetingPoint,
+      latitude: 19.0608 + dayOffset * 0.002,
+      longitude: 72.8365 + variant * 0.002,
+    ),
+    startingPointLat: 19.0608 + dayOffset * 0.002,
+    startingPointLng: 72.8365 + variant * 0.002,
     eventFormat: spec.eventFormat,
     distanceKm: spec.distanceKm,
     pace: spec.pace,

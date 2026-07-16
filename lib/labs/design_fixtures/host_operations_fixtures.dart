@@ -527,12 +527,14 @@ final class HostOperationsFixtures {
       startTime: start,
       endTime: start.add(const Duration(hours: 1, minutes: 30)),
       meetingPoint: meetingPoint,
-      meetingLocation: EventMeetingLocation.legacy(
+      meetingLocation: EventMeetingLocation(
         name: meetingPoint,
         latitude: 19.0676,
         longitude: 72.8227,
         notes: club.area,
       ),
+      startingPointLat: 19.0676,
+      startingPointLng: 72.8227,
       eventFormat: EventFormatSnapshot.fromActivityKind(activityKind),
       distanceKm: activityKind == ActivityKind.dinner ? 0 : 5,
       pace: PaceLevel.easy,

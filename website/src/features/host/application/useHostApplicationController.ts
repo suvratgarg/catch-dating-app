@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {useMutation} from "@tanstack/react-query";
 import {type FormEvent, useState} from "react";
 import {
@@ -119,7 +120,7 @@ export function useHostApplicationController() {
     event.preventDefault();
     if (!hostApplicationIsComplete(draft)) {
       setStatus({
-        message: "Finish the required profile, event, and operating fields before submitting.",
+        message: websiteCopy["usehostapplicationcontroller_0266"],
         tone: "is-error",
       });
       return;

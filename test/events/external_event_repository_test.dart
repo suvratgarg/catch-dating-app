@@ -1,12 +1,23 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/events/data/external_event_repository.dart';
+import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('decoder rejects an external event without a named location', () {
+    expect(
+      () => ExternalEvent.fromJson({
+        'startTime': Timestamp.fromDate(DateTime(2026, 6, 25, 10)),
+        'meetingLocation': {'latitude': 19.05, 'longitude': 72.82},
+      }),
+      throwsFormatException,
+    );
+  });
+
   group('ExternalEventDiscoveryQuery', () {
     test('normalizes city slug and sorts activity filters', () {
       final now = DateTime(2026, 6, 25, 10);

@@ -14,7 +14,7 @@ import {
   useMarketingCaptures,
   useRevealAnimations,
 } from "./usePageLifecycle";
-import {isHostPreviewPath, isOrganizerSearchPath, marketingRoutePaths} from "./routeRegistry";
+import {isOrganizerSearchPath, marketingRoutePaths} from "./routeRegistry";
 import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBanner";
 import {claimRouteStateForLocation} from "../features/claims/claimRouting";
 import {
@@ -34,9 +34,6 @@ const HostListingPage = lazy(async () => ({
 }));
 const HostPage = lazy(async () => ({
   default: (await import("../features/host/HostPage")).HostPage,
-}));
-const HostPreviewPage = lazy(async () => ({
-  default: (await import("../features/host/HostPreviewPage")).HostPreviewPage,
 }));
 const NotFoundPage = lazy(async () => ({
   default: (await import("../features/notFound/NotFoundPage")).NotFoundPage,
@@ -59,7 +56,6 @@ function MarketingRouteShell() {
   const listing = listingRoute?.listing ?? null;
   const fallbackPage = pageKeyForCurrentRoute(location.pathname, Boolean(listing));
   const page: PageKey = listing ? "listing" : fallbackPage;
-  const isHostPreview = isHostPreviewPath(location.pathname);
   const captures = useMarketingCaptures();
   const routeKey = `${location.pathname}${location.search}${location.hash}`;
   const meta = listingRoute ?
@@ -67,15 +63,12 @@ function MarketingRouteShell() {
       noindexOverride: listingRoute.isLegacyPath,
     }) :
     pageMeta[fallbackPage];
-  const shellClassName = isHostPreview
-    ? `${pageClassFor(page)} host-preview-page`
-    : pageClassFor(page);
 
   useMarketingAnalytics(page, routeKey);
   useDocumentMeta(meta);
 
   return (
-    <PageShell pageClassName={shellClassName}>
+    <PageShell pageClassName={pageClassFor(page)}>
       <Suspense fallback={<RouteLoadingState />}>
         <RouteLifecycleEffects
           page={page}
@@ -86,10 +79,6 @@ function MarketingRouteShell() {
           <Route
             path={marketingRoutePaths.home}
             element={<HomePage captures={captures} />}
-          />
-          <Route
-            path={marketingRoutePaths.host_preview}
-            element={<HostPreviewPage captures={captures} />}
           />
           <Route
             path={marketingRoutePaths.host}

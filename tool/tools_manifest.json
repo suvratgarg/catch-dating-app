@@ -3922,6 +3922,215 @@
         "type": "self-test",
         "command": "dart test tool/widget_dedupe/test/fingerprint_extractor_test.dart"
       }
+    },
+    {
+      "id": "audit:provider-graph",
+      "category": "audit",
+      "path": "tool/architecture/provider_graph.dart",
+      "command": "dart run tool/architecture/provider_graph.dart --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Generates and drift-checks the complete static Riverpod provider, consumer, override, family, alias, and Mutation graph while requiring current architecture decisions for questionable relationships.",
+      "checks": [
+        "dart format --output=none --set-exit-if-changed tool/architecture/provider_graph.dart test/tool/provider_graph_test.dart",
+        "flutter test test/tool/provider_graph_test.dart",
+        "dart run tool/architecture/provider_graph.dart --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "DEPENDENCY-DIRECTION-001",
+        "PROVIDER-SEAM-001",
+        "PROVIDER-TOPOLOGY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "test/tool/provider_graph_test.dart",
+        "contains": [
+          "provider graph detects cycles and unresolved provider refs",
+          "provider graph artifacts are deterministic and drift checked",
+          "provider graph requires current architecture review decisions"
+        ]
+      }
+    },
+    {
+      "id": "data:backfill-event-meeting-locations",
+      "category": "data",
+      "path": "tool/data/backfill_event_meeting_locations.mjs",
+      "command": "node tool/data/backfill_event_meeting_locations.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Promotes exact legacy event coordinates into required structured meeting locations and synchronizes compatibility mirrors.",
+      "checks": [
+        "node --check tool/data/backfill_event_meeting_locations.mjs",
+        "node --test tool/data/backfill_event_meeting_locations.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "firebase:storage-rules-firestore-iam",
+      "category": "firebase",
+      "path": "tool/firebase/storage_rules_firestore_iam.mjs",
+      "command": "node tool/firebase/storage_rules_firestore_iam.mjs --all",
+      "safety": "remote-readonly-with-explicit-apply",
+      "status": "active",
+      "description": "Checks and idempotently provisions the Firebase Storage service-agent role required for Storage rules to read Firestore.",
+      "checks": [
+        "node --check tool/firebase/storage_rules_firestore_iam.mjs",
+        "node --test tool/firebase/storage_rules_firestore_iam.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "STORAGE-IAM-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/storage_rules_firestore_iam.test.mjs",
+        "contains": [
+          "known-bad missing binding is detected"
+        ]
+      }
+    },
+    {
+      "id": "firebase:probe-chat-storage-rules",
+      "category": "firebase",
+      "path": "tool/firebase/probe_chat_storage_rules.mjs",
+      "command": "node tool/firebase/probe_chat_storage_rules.mjs --help",
+      "safety": "remote-write-ephemeral-apply-guarded",
+      "status": "active",
+      "description": "Runs an authenticated chat-image upload/delete canary through deployed Storage rules and removes its bounded fixture.",
+      "checks": [
+        "node --check tool/firebase/probe_chat_storage_rules.mjs",
+        "node --test tool/firebase/probe_chat_storage_rules.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "STORAGE-IAM-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/probe_chat_storage_rules.test.mjs",
+        "contains": [
+          "unauthorized upload is reported at the upload stage"
+        ]
+      }
+    },
+    {
+      "id": "design:flutter-field-surface-inventory",
+      "category": "design",
+      "path": "tool/design/generate_flutter_field_surface_inventory.mjs",
+      "command": "node tool/design/generate_flutter_field_surface_inventory.mjs --check",
+      "safety": "local-writes-audit-json",
+      "status": "active",
+      "description": "Validates the ranked Flutter field-surface adoption ledger, proves every remaining legacy product callsite is classified, and checks its deterministic evidence snapshot.",
+      "checks": [
+        "node --check tool/design/generate_flutter_field_surface_inventory.mjs",
+        "node --test tool/design/generate_flutter_field_surface_inventory.test.mjs",
+        "node tool/design/generate_flutter_field_surface_inventory.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "DESIGN-PRIMITIVES-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/generate_flutter_field_surface_inventory.test.mjs",
+        "contains": [
+          "rejects an unclassified legacy callsite",
+          "rejects stale expected anchor counts",
+          "rejects duplicate callsite classifications"
+        ]
+      }
+    },
+    {
+      "id": "design:tab-root-scroll-contracts",
+      "category": "design",
+      "path": "tool/design/check_tab_root_scroll_contracts.mjs",
+      "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Requires every consumer and host StatefulShellBranch to declare semantic shell-aware terminal clearance at each real or shared tabbed-page scroll owner.",
+      "checks": [
+        "node --check tool/design/check_tab_root_scroll_contracts.mjs",
+        "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "node tool/design/check_tab_root_scroll_contracts.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "TAB-ROOT-SCROLL-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "contains": [
+          "flags the known-bad tab root fixture when terminal padding is missing",
+          "flags a new StatefulShellBranch until it is registered"
+        ]
+      }
+    },
+    {
+      "id": "meta:repository-root-hygiene",
+      "category": "meta",
+      "path": "tool/check_repository_root_hygiene.mjs",
+      "command": "node tool/check_repository_root_hygiene.mjs",
+      "safety": "local",
+      "status": "active",
+      "role": "gate",
+      "description": "Enforces manifest-backed repository-root ownership, Git expectations, protected cleanup boundaries, and portable Markdown links.",
+      "checks": [
+        "node --test tool/check_repository_root_hygiene.test.mjs",
+        "node tool/check_repository_root_hygiene.mjs"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/check_repository_root_hygiene.test.mjs"
+      },
+      "rules": [
+        "REPO-ROOT-HYGIENE-001"
+      ]
+    },
+    {
+      "id": "meta:repository-hygiene-cleaner",
+      "category": "meta",
+      "path": "tool/repository_hygiene.mjs",
+      "command": "node tool/repository_hygiene.mjs --json",
+      "safety": "local-write-explicit",
+      "status": "active",
+      "role": "operator",
+      "description": "Reports regenerable repository state and deletes only manifest-allowlisted paths after explicit apply and scope flags.",
+      "checks": [
+        "node --check tool/repository_hygiene.mjs"
+      ]
+    },
+    {
+      "id": "meta:test-inventory",
+      "category": "meta",
+      "path": "tool/test_inventory.mjs",
+      "command": "node tool/test_inventory.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "role": "generator",
+      "description": "Generates and drift-checks the Git-backed cross-surface test inventory.",
+      "checks": [
+        "node --test tool/test_inventory.test.mjs",
+        "node tool/test_inventory.mjs --check"
+      ]
+    },
+    {
+      "id": "firebase:functions-environment-wrapper",
+      "category": "firebase",
+      "path": "tool/firebase_functions.mjs",
+      "command": "node tool/firebase_functions.mjs deploy dev --print",
+      "safety": "remote-write-explicit",
+      "status": "active",
+      "role": "operator",
+      "description": "Requires an explicit Firebase environment for Functions deploy and log commands.",
+      "checks": [
+        "node --test tool/firebase_functions.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/firebase_functions.test.mjs"
+      }
     }
   ]
 }

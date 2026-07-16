@@ -589,7 +589,7 @@ function listingFromSalesDemo(config) {
       type: "catch_demo",
       label: "Catch host-demo scenario",
       detail:
-        "First-party synthetic club used for host workflow, roster, review, payment, and Event Success QA.",
+        "First-party synthetic club used for host workflow, roster, review, payment, and Playbook QA.",
       confidence: "high",
     }],
     claim: {

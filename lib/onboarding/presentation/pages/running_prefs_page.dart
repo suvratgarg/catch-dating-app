@@ -3,26 +3,20 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-const EdgeInsets _pacePreferenceCardPadding = EdgeInsets.fromLTRB(
-  CatchSpacing.s4,
-  CatchSpacing.s4,
-  CatchSpacing.s4,
-  CatchSpacing.s3,
-);
 
 class RunningPrefsPage extends ConsumerStatefulWidget {
   const RunningPrefsPage({
@@ -174,105 +168,155 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
         size: CatchButtonSize.lg,
       ),
       children: [
-        // ── Pace ──────────────────────────────────────────────────────────
-        Text(
-          context.l10n.onboardingRunningPrefsPageTextTypicalPacePerKm,
-          style: CatchTextStyles.monoLabel(context, color: t.ink2),
-        ),
-        gapH8,
-        CatchSurface(
-          radius: CatchRadius.md,
-          borderColor: t.line,
-          backgroundColor: t.surface,
-          padding: _pacePreferenceCardPadding,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Text(
-                      state.minPaceLabel,
-                      style: CatchTextStyles.statDisplay(context, color: t.ink),
-                    ),
+        CatchSectionList(
+          gap: CatchSpacing.s4,
+          children: [
+            CatchSection.fieldRows(
+              first: true,
+              children: [
+                CatchField.control(
+                  key: OnboardingFormKeys.runningPace,
+                  title: context
+                      .l10n
+                      .onboardingRunningPrefsPageTextTypicalPacePerKm,
+                  body: context.l10n.onboardingRunningPrefsPageBodyPaceRange(
+                    minPace: state.minPaceLabel,
+                    maxPace: state.maxPaceLabel,
                   ),
-                  Text(
-                    '-',
-                    style: CatchTextStyles.mono(context, color: t.ink3),
+                  icon: CatchIcons.directionsRunRounded,
+                  initiallyOpen: true,
+                  control: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              state.minPaceLabel,
+                              style: CatchTextStyles.statDisplay(
+                                context,
+                                color: t.ink,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '-',
+                            style: CatchTextStyles.mono(context, color: t.ink3),
+                          ),
+                          Flexible(
+                            child: Text(
+                              state.maxPaceLabel,
+                              style: CatchTextStyles.statDisplay(
+                                context,
+                                color: t.ink,
+                              ),
+                              textAlign: TextAlign.end,
+                            ),
+                          ),
+                        ],
+                      ),
+                      gapH12,
+                      CatchRangeSlider(
+                        values: state.paceRange,
+                        min: 240,
+                        max: 540,
+                        divisions: 20,
+                        onChanged: callbacks.onPaceChanged,
+                      ),
+                      gapH4,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            context.l10n.onboardingRunningPrefsPageText400Fast,
+                            style: CatchTextStyles.badge(
+                              context,
+                              color: t.ink3,
+                            ),
+                          ),
+                          Text(
+                            context.l10n.onboardingRunningPrefsPageText900Easy,
+                            style: CatchTextStyles.badge(
+                              context,
+                              color: t.ink3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  Flexible(
-                    child: Text(
-                      state.maxPaceLabel,
-                      style: CatchTextStyles.statDisplay(context, color: t.ink),
-                      textAlign: TextAlign.end,
-                    ),
+                ),
+                CatchField.choices<PreferredDistance>(
+                  key: OnboardingFormKeys.runningDistances,
+                  title: context
+                      .l10n
+                      .onboardingRunningPrefsPageLabelFavouriteDistances,
+                  body: _orderedSelectionLabels(
+                    PreferredDistance.values,
+                    state.distances,
+                    (value) => value.label,
                   ),
-                ],
+                  values: PreferredDistance.values,
+                  itemLabel: (value) => value.label,
+                  selected: state.distances,
+                  onSelectionChanged: callbacks.onDistancesChanged,
+                  multi: true,
+                  initiallyOpen: true,
+                  isOptional: true,
+                ),
+                CatchField.choices<RunReason>(
+                  key: OnboardingFormKeys.runningReasons,
+                  title: state.reasonLabel,
+                  body: _orderedSelectionLabels(
+                    RunReason.values,
+                    state.reasons,
+                    (value) => value.label,
+                  ),
+                  values: RunReason.values,
+                  itemLabel: (value) => value.label,
+                  selected: state.reasons,
+                  onSelectionChanged: callbacks.onReasonsChanged,
+                  multi: true,
+                  initiallyOpen: true,
+                  isOptional: true,
+                ),
+                CatchField.choices<PreferredRunTime>(
+                  key: OnboardingFormKeys.runningTimes,
+                  title: state.runTimesLabel,
+                  body: _orderedSelectionLabels(
+                    PreferredRunTime.values,
+                    state.runTimes,
+                    (value) => value.label,
+                  ),
+                  values: PreferredRunTime.values,
+                  itemLabel: (value) => value.label,
+                  selected: state.runTimes,
+                  onSelectionChanged: callbacks.onRunTimesChanged,
+                  multi: true,
+                  initiallyOpen: true,
+                  isOptional: true,
+                ),
+              ],
+            ),
+            if (state.hasCompleteError)
+              CatchSection.plain(
+                child: CatchErrorBanner(message: state.completeErrorMessage!),
               ),
-              gapH12,
-              CatchRangeSlider(
-                values: state.paceRange,
-                min: 240, // 4:00/km
-                max: 540, // 9:00/km
-                divisions: 20,
-                onChanged: callbacks.onPaceChanged,
-              ),
-              gapH4,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    context.l10n.onboardingRunningPrefsPageText400Fast,
-                    style: CatchTextStyles.badge(context, color: t.ink3),
-                  ),
-                  Text(
-                    context.l10n.onboardingRunningPrefsPageText900Easy,
-                    style: CatchTextStyles.badge(context, color: t.ink3),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          ],
         ),
-        gapH20,
-
-        // ── Distances ─────────────────────────────────────────────────────
-        CatchChipField<PreferredDistance>(
-          label: context.l10n.onboardingRunningPrefsPageLabelFavouriteDistances,
-          isOptional: true,
-          values: PreferredDistance.values,
-          selected: state.distances,
-          multiSelect: true,
-          onChanged: callbacks.onDistancesChanged,
-        ),
-        gapH20,
-
-        // ── Event reasons ───────────────────────────────────────────────────
-        CatchChipField<RunReason>(
-          label: state.reasonLabel,
-          isOptional: true,
-          values: RunReason.values,
-          selected: state.reasons,
-          multiSelect: true,
-          onChanged: callbacks.onReasonsChanged,
-        ),
-        gapH20,
-
-        // ── Time of day ───────────────────────────────────────────────────
-        CatchChipField<PreferredRunTime>(
-          label: state.runTimesLabel,
-          isOptional: true,
-          values: PreferredRunTime.values,
-          selected: state.runTimes,
-          multiSelect: true,
-          onChanged: callbacks.onRunTimesChanged,
-        ),
-
-        if (state.hasCompleteError) ...[
-          gapH16,
-          CatchErrorBanner(message: state.completeErrorMessage!),
-        ],
       ],
     );
   }
+}
+
+String? _orderedSelectionLabels<T>(
+  Iterable<T> values,
+  Set<T> selected,
+  String Function(T value) labelFor,
+) {
+  final labels = values
+      .where(selected.contains)
+      .map(labelFor)
+      .toList(growable: false);
+  return labels.isEmpty ? null : labels.join(', ');
 }

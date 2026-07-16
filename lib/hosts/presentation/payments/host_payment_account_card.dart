@@ -124,21 +124,19 @@ class HostPaymentAccountCard extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    CatchField.nav(
+                    CatchField.read(
                       title:
                           context.l10n.hostsHostPaymentAccountCardTitleCountry,
                       valueText: _countryLabel(country),
                       icon: CatchIcons.locationOnOutlined,
-                      showChevron: false,
                     ),
-                    CatchField.nav(
+                    CatchField.read(
                       title: context
                           .l10n
                           .hostsHostPaymentAccountCardTitleDefaultCurrency,
                       valueText: currency.toUpperCase(),
                       icon: CatchIcons.paymentsOutlined,
                       divider: true,
-                      showChevron: false,
                     ),
                   ],
                 ),

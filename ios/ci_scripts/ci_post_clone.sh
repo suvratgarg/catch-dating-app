@@ -29,6 +29,12 @@ run_with_retry() {
 
 ensure_cocoapods() {
   if command -v pod >/dev/null 2>&1; then
+    local installed_version
+    installed_version="$(pod --version)"
+    if [[ "$installed_version" != "${COCOAPODS_VERSION:?COCOAPODS_VERSION is missing from tool/ci/toolchain.env}" ]]; then
+      echo "CocoaPods $installed_version is installed; Catch pins $COCOAPODS_VERSION in tool/ci/toolchain.env."
+      exit 1
+    fi
     return 0
   fi
 
@@ -36,7 +42,7 @@ ensure_cocoapods() {
   if command -v brew >/dev/null 2>&1; then
     brew install cocoapods
   elif command -v gem >/dev/null 2>&1 && command -v ruby >/dev/null 2>&1; then
-    gem install --user-install cocoapods
+    gem install --user-install cocoapods --version "${COCOAPODS_VERSION:?COCOAPODS_VERSION is missing from tool/ci/toolchain.env}"
     export PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
   else
     echo "Neither CocoaPods, Homebrew, nor RubyGems is available on this runner."

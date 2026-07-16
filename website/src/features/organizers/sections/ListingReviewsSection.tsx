@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SectionHeader} from "../../../shared/site";
 import {
   Button,
@@ -56,61 +57,56 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
       aria-labelledby="listing-reviews-title"
     >
       <SectionHeader
-        eyebrow="Reviews"
+        eyebrow={websiteCopy["listingreviewssection_0437"]}
         id="listing-reviews-title"
-        title={<>Public reviews for {listing.name}.</>}
-        body="Verified reviews come from logged-in Catch guests after attended events. Reviews submitted on this public page are unverified and can be anonymous." />
+        title={<>{websiteCopy["listingreviewssection_0434"]}{listing.name}.</>}
+        body={websiteCopy["listingreviewssection_0445"]} />
       <ListingReviewSummary>
         <div>
-          <UiLabel>Rating</UiLabel>
+          <UiLabel>{websiteCopy["listingreviewssection_0435"]}</UiLabel>
           <strong>
             {displayReviewCount ? displayRating.toFixed(1) : "No reviews yet"}
           </strong>
         </div>
         <div>
-          <UiLabel>Count</UiLabel>
+          <UiLabel>{websiteCopy["listingreviewssection_0426"]}</UiLabel>
           <strong>{displayReviewCount}</strong>
         </div>
         <div>
-          <UiLabel>Verified</UiLabel>
+          <UiLabel>{websiteCopy["listingreviewssection_0442"]}</UiLabel>
           <strong>{verifiedCount}</strong>
         </div>
         <ButtonLink
           variant="ghost"
           href={`#${reviewFormId}`}
           onClick={() => trackCtaClick("listing_review_intent", `#${reviewFormId}`)}
-        >
-          Add review
-        </ButtonLink>
+        >{websiteCopy["listingreviewssection_0424"]}</ButtonLink>
       </ListingReviewSummary>
       <ListingReviewWorkspace>
         <div>
           {reviews.length ? (
             <ListingReviewLanes>
               <ReviewSignalLane
-                title="Verified Catch attendee reviews"
-                body="These reviews come from logged-in guests after attended Catch events and stay separate from public page feedback."
+                title={websiteCopy["listingreviewssection_0444"]}
+                body={websiteCopy["listingreviewssection_0440"]}
                 reviews={verifiedReviews}
-                emptyTitle="No verified attendee reviews are visible yet."
-                emptyBody="Verified attendee reviews appear after Catch has operated the event and confirmed attendance."
+                emptyTitle={websiteCopy["listingreviewssection_0431"]}
+                emptyBody={websiteCopy["listingreviewssection_0443"]}
               />
               <ReviewSignalLane
-                title="Unverified public reviews"
-                body="These reviews are submitted from the public web page. They are useful, but they are not treated as attended-event proof."
+                title={websiteCopy["listingreviewssection_0441"]}
+                body={websiteCopy["listingreviewssection_0439"]}
                 reviews={publicReviews}
-                emptyTitle="No public web reviews yet."
-                emptyBody="Public reviews can be added here; Catch keeps them clearly labeled until they can be tied to a verified event."
+                emptyTitle={websiteCopy["listingreviewssection_0430"]}
+                emptyBody={websiteCopy["listingreviewssection_0433"]}
               />
             </ListingReviewLanes>
           ) : (
             <ListingReviewEmptyState reveal>
               <div>
-                <UiLabel>First review</UiLabel>
-                <h3>No public reviews for {listing.name} yet.</h3>
-                <p>
-                  Add the first public review here. If the organizer claims this
-                  page, they can respond from the verified host account.
-                </p>
+                <UiLabel>{websiteCopy["listingreviewssection_0428"]}</UiLabel>
+                <h3>{websiteCopy["listingreviewssection_0429"]}{listing.name}{websiteCopy["listingreviewssection_0447"]}</h3>
+                <p>{websiteCopy["listingreviewssection_0425"]}</p>
               </div>
             </ListingReviewEmptyState>
           )}
@@ -132,24 +128,24 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
           reveal
         >
           <div>
-            <UiLabel>Add review</UiLabel>
-            <h3>Share feedback for {listing.name}.</h3>
+            <UiLabel>{websiteCopy["listingreviewssection_0424"]}</UiLabel>
+            <h3>{websiteCopy["listingreviewssection_0438"]}{listing.name}.</h3>
           </div>
           <SelectField
             id={`${reviewFormId}-rating`}
-            label="Rating"
+            label={websiteCopy["listingreviewssection_0435"]}
             value={rating}
             onChange={(event) => setRating(Number(event.target.value))}
           >
-            <option value={5}>5 stars</option>
-            <option value={4}>4 stars</option>
-            <option value={3}>3 stars</option>
-            <option value={2}>2 stars</option>
-            <option value={1}>1 star</option>
+            <option value={5}>{websiteCopy["listingreviewssection_0423"]}</option>
+            <option value={4}>{websiteCopy["listingreviewssection_0422"]}</option>
+            <option value={3}>{websiteCopy["listingreviewssection_0421"]}</option>
+            <option value={2}>{websiteCopy["listingreviewssection_0420"]}</option>
+            <option value={1}>{websiteCopy["listingreviewssection_0419"]}</option>
           </SelectField>
           <TextField
             id={`${reviewFormId}-reviewer`}
-            label="Display name"
+            label={websiteCopy["listingreviewssection_0427"]}
             value={reviewerName}
             disabled={isAnonymous}
             maxLength={120}
@@ -159,17 +155,15 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
           <ListingReviewCheckbox
             checked={isAnonymous}
             onChange={(event) => setIsAnonymous(event.target.checked)}
-          >
-            Post anonymously
-          </ListingReviewCheckbox>
+          >{websiteCopy["listingreviewssection_0432"]}</ListingReviewCheckbox>
           <TextAreaField
             id={`${reviewFormId}-comment`}
-            label="Review"
+            label={websiteCopy["listingreviewssection_0436"]}
             value={comment}
             maxLength={1000}
             rows={6}
             onChange={(event) => setComment(event.target.value)}
-            placeholder="What should people know about this organizer?"
+            placeholder={websiteCopy["listingreviewssection_0446"]}
           />
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Publishing..." : "Publish review"}

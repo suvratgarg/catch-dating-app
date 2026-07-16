@@ -3,12 +3,15 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
@@ -45,6 +48,7 @@ class EventDetailBody extends StatelessWidget {
     required this.companionState,
     required this.hostState,
     required this.socialState,
+    required this.informationState,
     required this.onLocationTap,
     required this.onOpenCompanion,
     required this.onRetryCompanion,
@@ -57,6 +61,7 @@ class EventDetailBody extends StatelessWidget {
     this.now,
     this.presentationMode = EventDetailPresentationMode.standard,
     this.heroTag,
+    this.enableMapNetworkTiles = true,
   });
 
   final Event event;
@@ -78,6 +83,7 @@ class EventDetailBody extends StatelessWidget {
   final EventDetailCompanionState companionState;
   final EventDetailHostState hostState;
   final EventDetailSocialState socialState;
+  final EventDetailInformationState informationState;
   final VoidCallback? onLocationTap;
   final VoidCallback onOpenCompanion;
   final VoidCallback onRetryCompanion;
@@ -89,6 +95,7 @@ class EventDetailBody extends StatelessWidget {
   final DateTime? now;
   final EventDetailPresentationMode presentationMode;
   final Object? heroTag;
+  final bool enableMapNetworkTiles;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +115,7 @@ class EventDetailBody extends StatelessWidget {
               ));
 
     return CustomScrollView(
+      key: const ValueKey('event_detail.scroll_view'),
       slivers: [
         EventDetailHeroAppBar(
           event: event,
@@ -134,8 +142,10 @@ class EventDetailBody extends StatelessWidget {
           sections: [
             EventDetailOverviewSection(
               event: event,
+              informationState: informationState,
               surfaceStyle: style,
               onLocationTap: onLocationTap,
+              enableMapNetworkTiles: enableMapNetworkTiles,
             ),
             EventCompanionEntry(
               state: companionState,
@@ -162,7 +172,6 @@ class EventDetailBody extends StatelessWidget {
                         alpha: CatchOpacity.eventDetailLightBorder,
                       ),
               ),
-            CatchDivider.section(color: style.dividerColor),
             EventDetailHostsSection(
               event: event,
               state: hostState,
@@ -177,6 +186,7 @@ class EventDetailBody extends StatelessWidget {
               reviews: reviews,
               userProfile: userProfile,
               state: socialState,
+              now: now ?? DateTime.now(),
               surfaceStyle: style,
             ),
           ],
@@ -310,29 +320,15 @@ class GuestBookCta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return SafeArea(
-      child: ColoredBox(
-        color: darkSurface ? t.ink : t.surface,
-        child: Padding(
-          padding: CatchInsets.contentBlock,
-          child: CatchButton(
-            label: context.l10n.eventsEventDetailBodyLabelSignInToBook,
-            onPressed: onPressed,
-            icon: Icon(
-              CatchIcons.lockOutlineRounded,
-              size: CatchIcon.md,
-              color: t.primary,
-            ),
-            fullWidth: true,
-          ),
-        ),
-      ),
+    return CatchBottomAction(
+      label: context.l10n.eventsEventDetailBodyLabelSignInToBook,
+      onPressed: onPressed,
+      backgroundColor: darkSurface ? t.ink : t.surface,
     );
   }
 }
 
-/// "Your hosts" section renders the design-system [EventDetailHostCard] from
-/// explicit route-provided host state.
+/// Compact host identity, with all affordances derived from available actions.
 class EventDetailHostsSection extends StatelessWidget {
   const EventDetailHostsSection({
     super.key,
@@ -371,25 +367,23 @@ class EventDetailHostsSection extends StatelessWidget {
         final canMessage = state.canMessage && hostUid != null;
 
         return CatchSection.divided(
-          title: context.l10n.eventsEventDetailBodyTitleYourHosts,
+          title: context.l10n.eventsEventDetailBodyTitleHostedBy,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
-          child: EventDetailHostCard(
+          child: CatchHostRow(
             activityKind: event.activityKind,
-            hostName: state.hostName!,
-            photoUrl: state.photoUrl,
+            name: state.hostName!,
+            imageUrl: state.photoUrl,
             meta: state.meta,
             verified: state.verified,
-            stats: state.stats,
-            surfaceColor: style?.surfaceBackground,
-            borderColor: style?.borderColor,
             nameColor: style?.headingColor,
             metaColor: style?.bodyColor,
-            statValueColor: style?.headingColor,
-            statLabelColor: style?.mutedColor,
-            dividerColor: style?.dividerColor,
-            onViewClub: () => onViewClub(clubId),
+            actionColor: style?.primaryColor,
+            onTap: () => onViewClub(clubId),
             onMessage: canMessage ? () => onMessageHost(clubId, hostUid) : null,
+            messageTooltip: canMessage
+                ? context.l10n.eventsEventDetailBodyTooltipMessageHost
+                : null,
           ),
         );
     }

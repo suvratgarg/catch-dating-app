@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/location_service.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -16,6 +15,7 @@ import 'package:catch_dating_app/force_update/presentation/force_update_diagnost
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/user_profile/data/profile_location_initializer.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +45,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(goRouterProvider);
     final forceUpdate = ref.watch(forceUpdateRequiredProvider);
-    ref.watch(locationInitializerProvider);
+    ref.watch(profileLocationInitializerProvider);
 
     return MaterialApp.router(
       onGenerateTitle: (context) {

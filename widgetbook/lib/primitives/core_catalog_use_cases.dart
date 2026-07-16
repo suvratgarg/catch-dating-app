@@ -3722,7 +3722,7 @@ class _ChipFieldDemoState extends State<_ChipFieldDemo> {
           selected: _single,
           multiSelect: false,
           isOptional: true,
-          allowEmptySingleSelection: true,
+          allowEmptySelection: true,
           onChanged: (next) => setState(() => _single = next),
         ),
       ],

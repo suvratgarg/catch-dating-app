@@ -1,11 +1,10 @@
-import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -28,307 +27,260 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final estimatedUnitCount = value.estimatedUnitCount(targetAttendeeCount);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final supportsUnitCount = value.unitKind.supportsUnitCount;
+    final autoUnitCountSummary = supportsUnitCount
+        ? context.l10n
+              .eventSuccessEventSuccessStructureConfigEditorTextAutoAboutEstimatedunitcountTolowercase(
+                estimatedUnitCount: estimatedUnitCount,
+                toLowerCase: value.unitKind.label.toLowerCase(),
+                targetAttendeeCount: targetAttendeeCount,
+              )
+        : context
+              .l10n
+              .eventSuccessEventSuccessStructureConfigEditorTextOneSharedGroupFor;
+
+    return CatchSectionList(
+      gap: CatchGaps.formField,
       children: [
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            CatchBadge(
-              label: context.l10n
-                  .eventSuccessEventSuccessStructureConfigEditorLabelUnitsizePerSingularlabel(
-                    unitSize: value.unitSize,
-                    singularLabel: value.unitKind.singularLabel,
+        CatchSection.plain(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  CatchBadge(
+                    label: context.l10n
+                        .eventSuccessEventSuccessStructureConfigEditorLabelUnitsizePerSingularlabel(
+                          unitSize: value.unitSize,
+                          singularLabel: value.unitKind.singularLabel,
+                        ),
+                    icon: CatchIcons.groups2Outlined,
                   ),
-              icon: CatchIcons.groups2Outlined,
-            ),
-            CatchBadge(
-              label: context.l10n
-                  .eventSuccessEventSuccessStructureConfigEditorLabelEstimatedunitcountTolowercase(
-                    estimatedUnitCount: estimatedUnitCount,
-                    toLowerCase: value.unitKind.label.toLowerCase(),
+                  CatchBadge(
+                    label: context.l10n
+                        .eventSuccessEventSuccessStructureConfigEditorLabelEstimatedunitcountTolowercase(
+                          estimatedUnitCount: estimatedUnitCount,
+                          toLowerCase: value.unitKind.label.toLowerCase(),
+                        ),
+                    icon: CatchIcons.gridViewRounded,
                   ),
-              icon: CatchIcons.gridViewRounded,
-            ),
-          ],
+                ],
+              ),
+              gapH8,
+              Text(
+                value.unitKind.setupHint,
+                style: CatchTextStyles.supporting(context),
+              ),
+            ],
+          ),
         ),
-        gapH8,
-        Text(
-          value.unitKind.setupHint,
-          style: CatchTextStyles.supporting(context),
-        ),
-        gapH12,
-        Text(
-          context
+        CatchField.choices<EventSuccessUnitKind>(
+          title: context
               .l10n
               .eventSuccessEventSuccessStructureConfigEditorTextFlowType,
-          style: CatchTextStyles.labelL(context),
+          body: value.unitKind.setupHint,
+          values: EventSuccessUnitKind.values,
+          itemLabel: (kind) => kind.label,
+          selected: {value.unitKind},
+          enabled: enabled,
+          initiallyOpen: true,
+          onSelectionChanged: enabled
+              ? (selection) => onChanged(_withUnitKind(selection.single))
+              : null,
         ),
-        gapH8,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (final kind in EventSuccessUnitKind.values)
-              CatchSelectChip(
-                label: kind.label,
-                active: value.unitKind == kind,
-                enabled: enabled,
-                onTap: enabled ? () => onChanged(_withUnitKind(kind)) : null,
+        CatchField.stepper(
+          title: value.unitKind.peoplePerLabel,
+          body: value.unitKind == EventSuccessUnitKind.wholeGroup
+              ? context
+                    .l10n
+                    .eventSuccessEventSuccessStructureConfigEditorDetailWholeGroupFormatsUse
+              : context.l10n
+                    .eventSuccessEventSuccessStructureConfigEditorDetailTargetSizeForEach(
+                      singularLabel: value.unitKind.singularLabel,
+                    ),
+          value: value.unitSize,
+          min: value.unitKind == EventSuccessUnitKind.wholeGroup
+              ? targetAttendeeCount
+              : 2,
+          max: value.unitKind == EventSuccessUnitKind.wholeGroup
+              ? targetAttendeeCount
+              : 12,
+          formatter: (number) => context.l10n
+              .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointPeople(
+                toInt: number.toInt(),
               ),
-          ],
+          decreaseSemanticLabel: context
+              .l10n
+              .eventSuccessEventSuccessStructureConfigEditorSemanticDecreasePeoplePerUnit,
+          increaseSemanticLabel: context
+              .l10n
+              .eventSuccessEventSuccessStructureConfigEditorSemanticIncreasePeoplePerUnit,
+          enabled: enabled && value.unitKind != EventSuccessUnitKind.wholeGroup,
+          initiallyOpen: true,
+          onChanged:
+              enabled && value.unitKind != EventSuccessUnitKind.wholeGroup
+              ? (number) => onChanged(value.copyWith(unitSize: number.toInt()))
+              : null,
         ),
-        gapH12,
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final twoColumn =
-                constraints.maxWidth >=
-                ComponentBreakpoints.eventSuccessConfigTwoColumnBreakpoint;
-            final itemWidth = twoColumn
-                ? (constraints.maxWidth - CatchSpacing.s3) / 2
-                : constraints.maxWidth;
-            return Wrap(
-              spacing: CatchSpacing.s3,
-              runSpacing: CatchSpacing.s3,
-              children: [
-                SizedBox(
-                  width: itemWidth,
-                  child: StructureNumberField(
-                    label: value.unitKind.peoplePerLabel,
-                    detail: value.unitKind == EventSuccessUnitKind.wholeGroup
-                        ? context
-                              .l10n
-                              .eventSuccessEventSuccessStructureConfigEditorDetailWholeGroupFormatsUse
-                        : context.l10n
-                              .eventSuccessEventSuccessStructureConfigEditorDetailTargetSizeForEach(
-                                singularLabel: value.unitKind.singularLabel,
-                              ),
-                    child: CatchNumberStepper(
-                      value: value.unitSize,
-                      min: value.unitKind == EventSuccessUnitKind.wholeGroup
-                          ? targetAttendeeCount
-                          : 2,
-                      max: value.unitKind == EventSuccessUnitKind.wholeGroup
-                          ? targetAttendeeCount
-                          : 12,
-                      formatValue: (number) => context.l10n
-                          .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointPeople(
-                            toInt: number.toInt(),
-                          ),
-                      enabled:
-                          enabled &&
-                          value.unitKind != EventSuccessUnitKind.wholeGroup,
-                      onChanged: (number) =>
-                          onChanged(value.copyWith(unitSize: number.toInt())),
-                    ),
+        CatchField.choices<bool>(
+          title: value.unitKind.countLabel,
+          body: value.unitCount == null
+              ? autoUnitCountSummary
+              : context
+                    .l10n
+                    .eventSuccessEventSuccessStructureConfigEditorDetailSetAHostOwned,
+          values: const [false, true],
+          itemLabel: (fixed) => fixed
+              ? context
+                    .l10n
+                    .eventSuccessEventSuccessStructureConfigEditorLabelFixed
+              : context
+                    .l10n
+                    .eventSuccessEventSuccessStructureConfigEditorLabelAuto,
+          selected: {value.unitCount != null},
+          enabled: enabled && supportsUnitCount,
+          initiallyOpen: true,
+          onSelectionChanged: enabled && supportsUnitCount
+              ? (selection) => onChanged(
+                  value.copyWith(
+                    unitCount: selection.single ? estimatedUnitCount : null,
                   ),
-                ),
-                SizedBox(
-                  width: itemWidth,
-                  child: StructureNumberField(
-                    label: value.unitKind.countLabel,
-                    detail: value.unitKind.supportsUnitCount
-                        ? context
-                              .l10n
-                              .eventSuccessEventSuccessStructureConfigEditorDetailSetAHostOwned
-                        : context
-                              .l10n
-                              .eventSuccessEventSuccessStructureConfigEditorDetailWholeGroupFormatsKeep,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Wrap(
-                          spacing: CatchSpacing.s2,
-                          runSpacing: CatchSpacing.s2,
-                          children: [
-                            CatchSelectChip(
-                              label: context
-                                  .l10n
-                                  .eventSuccessEventSuccessStructureConfigEditorLabelAuto,
-                              active: value.unitCount == null,
-                              enabled:
-                                  enabled && value.unitKind.supportsUnitCount,
-                              onTap: enabled && value.unitKind.supportsUnitCount
-                                  ? () => onChanged(
-                                      value.copyWith(unitCount: null),
-                                    )
-                                  : null,
-                            ),
-                            CatchSelectChip(
-                              label: context
-                                  .l10n
-                                  .eventSuccessEventSuccessStructureConfigEditorLabelFixed,
-                              active: value.unitCount != null,
-                              enabled:
-                                  enabled && value.unitKind.supportsUnitCount,
-                              onTap: enabled && value.unitKind.supportsUnitCount
-                                  ? () => onChanged(
-                                      value.copyWith(
-                                        unitCount: estimatedUnitCount,
-                                      ),
-                                    )
-                                  : null,
-                            ),
-                          ],
-                        ),
-                        gapH8,
-                        if (value.unitCount == null)
-                          Text(
-                            value.unitKind.supportsUnitCount
-                                ? context.l10n
-                                      .eventSuccessEventSuccessStructureConfigEditorTextAutoAboutEstimatedunitcountTolowercase(
-                                        estimatedUnitCount: estimatedUnitCount,
-                                        toLowerCase: value.unitKind.label
-                                            .toLowerCase(),
-                                        targetAttendeeCount:
-                                            targetAttendeeCount,
-                                      )
-                                : context
-                                      .l10n
-                                      .eventSuccessEventSuccessStructureConfigEditorTextOneSharedGroupFor,
-                            style: CatchTextStyles.supporting(
-                              context,
-                              color: t.ink2,
-                            ),
-                          )
-                        else
-                          CatchNumberStepper(
-                            value: value.unitCount ?? estimatedUnitCount,
-                            min: 1,
-                            max: 40,
-                            formatValue: (number) => context.l10n
-                                .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointTolowercase(
-                                  toInt: number.toInt(),
-                                  toLowerCase: value.unitKind.label
-                                      .toLowerCase(),
-                                ),
-                            enabled:
-                                enabled &&
-                                value.unitKind.supportsUnitCount &&
-                                value.unitCount != null,
-                            onChanged: (number) => onChanged(
-                              value.copyWith(unitCount: number.toInt()),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
+                )
+              : null,
         ),
-        if (value.unitKind != EventSuccessUnitKind.wholeGroup) ...[
-          gapH12,
-          Text(
-            context
+        if (value.unitCount != null)
+          CatchField.stepper(
+            title: value.unitKind.countLabel,
+            body: context
                 .l10n
-                .eventSuccessEventSuccessStructureConfigEditorTextAssignmentGoals,
-            style: CatchTextStyles.labelL(context),
+                .eventSuccessEventSuccessStructureConfigEditorDetailSetAHostOwned,
+            value: value.unitCount ?? estimatedUnitCount,
+            min: 1,
+            max: 40,
+            formatter: (number) => context.l10n
+                .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointTolowercase(
+                  toInt: number.toInt(),
+                  toLowerCase: value.unitKind.label.toLowerCase(),
+                ),
+            decreaseSemanticLabel: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorSemanticDecreaseUnitCount,
+            increaseSemanticLabel: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseUnitCount,
+            enabled: enabled && supportsUnitCount,
+            initiallyOpen: true,
+            onChanged: enabled && supportsUnitCount
+                ? (number) =>
+                      onChanged(value.copyWith(unitCount: number.toInt()))
+                : null,
           ),
-          gapH8,
-          ActivityAttributeGoalChips(
+        if (value.unitKind != EventSuccessUnitKind.wholeGroup) ...[
+          CatchField.choices<EventSuccessActivityAssignmentAttribute>(
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTitleBalanceAcrossUnits,
-            attributes: value.balanceActivityAttributes,
-            labelFor: (attribute) => attribute.balanceLabel,
+            body: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorTextAssignmentGoals,
+            values: EventSuccessActivityAssignmentAttribute.values,
+            itemLabel: (attribute) => attribute.balanceLabel,
+            selected: value.balanceActivityAttributes.toSet(),
+            multi: true,
             enabled: enabled,
-            onToggle: (attribute) => onChanged(
-              value.copyWith(
-                balanceActivityAttributes: _toggleAttribute(
-                  value.balanceActivityAttributes,
-                  attribute,
-                ),
-                clusterActivityAttributes: _removeAttribute(
-                  value.clusterActivityAttributes,
-                  attribute,
-                ),
-              ),
-            ),
+            initiallyOpen: true,
+            onSelectionChanged: enabled
+                ? (selection) => onChanged(
+                    value.copyWith(
+                      balanceActivityAttributes: _orderedAttributes(selection),
+                      clusterActivityAttributes: value.clusterActivityAttributes
+                          .where((attribute) => !selection.contains(attribute))
+                          .toList(growable: false),
+                    ),
+                  )
+                : null,
           ),
-          gapH8,
-          ActivityAttributeGoalChips(
+          CatchField.choices<EventSuccessActivityAssignmentAttribute>(
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTitleClusterSimilarPeople,
-            attributes: value.clusterActivityAttributes,
-            labelFor: (attribute) => attribute.clusterLabel,
+            body: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorTextAssignmentGoals,
+            values: EventSuccessActivityAssignmentAttribute.values,
+            itemLabel: (attribute) => attribute.clusterLabel,
+            selected: value.clusterActivityAttributes.toSet(),
+            multi: true,
             enabled: enabled,
-            onToggle: (attribute) => onChanged(
-              value.copyWith(
-                clusterActivityAttributes: _toggleAttribute(
-                  value.clusterActivityAttributes,
-                  attribute,
-                ),
-                balanceActivityAttributes: _removeAttribute(
-                  value.balanceActivityAttributes,
-                  attribute,
-                ),
-              ),
-            ),
+            initiallyOpen: true,
+            onSelectionChanged: enabled
+                ? (selection) => onChanged(
+                    value.copyWith(
+                      clusterActivityAttributes: _orderedAttributes(selection),
+                      balanceActivityAttributes: value.balanceActivityAttributes
+                          .where((attribute) => !selection.contains(attribute))
+                          .toList(growable: false),
+                    ),
+                  )
+                : null,
           ),
         ],
         if (value.rotates) ...[
-          gapH12,
-          Text(
-            context
+          CatchField.choices<EventSuccessRotationRepeatStrategy>(
+            title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextRepeatPolicy,
-            style: CatchTextStyles.labelL(context),
+            values: EventSuccessRotationRepeatStrategy.values,
+            itemLabel: (strategy) => strategy.label,
+            selected: {value.rotationRepeatStrategy},
+            enabled: enabled,
+            initiallyOpen: true,
+            onSelectionChanged: enabled
+                ? (selection) => onChanged(
+                    value.copyWith(rotationRepeatStrategy: selection.single),
+                  )
+                : null,
           ),
-          gapH8,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final strategy in EventSuccessRotationRepeatStrategy.values)
-                CatchSelectChip(
-                  label: strategy.label,
-                  active: value.rotationRepeatStrategy == strategy,
-                  enabled: enabled,
-                  onTap: enabled
-                      ? () => onChanged(
-                          value.copyWith(rotationRepeatStrategy: strategy),
-                        )
-                      : null,
-                ),
-            ],
-          ),
-          gapH8,
-          StructureNumberField(
-            label: context
+          CatchField.stepper(
+            title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorLabelMaxMeetingsPerPair,
-            detail: context
+            body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorDetailCapsRepeatPairingsWhen,
-            child: CatchNumberStepper(
-              value: value.maxPairMeetings,
-              min: 1,
-              max: 10,
-              formatValue: (number) => context.l10n
-                  .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointValue2(
-                    toInt: number.toInt(),
-                    value2: number.toInt() == 1 ? 'time' : 'times',
-                  ),
-              enabled: enabled,
-              onChanged: (number) =>
-                  onChanged(value.copyWith(maxPairMeetings: number.toInt())),
-            ),
+            value: value.maxPairMeetings,
+            min: 1,
+            max: 10,
+            formatter: (number) => context.l10n
+                .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointValue2(
+                  toInt: number.toInt(),
+                  value2: number.toInt() == 1 ? 'time' : 'times',
+                ),
+            decreaseSemanticLabel: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorSemanticDecreaseMeetingsPerPair,
+            increaseSemanticLabel: context
+                .l10n
+                .eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseMeetingsPerPair,
+            enabled: enabled,
+            initiallyOpen: true,
+            onChanged: enabled
+                ? (number) =>
+                      onChanged(value.copyWith(maxPairMeetings: number.toInt()))
+                : null,
           ),
         ],
-        if (!enabled) ...[
-          gapH8,
-          Text(
-            context
+        if (!enabled)
+          CatchField.read(
+            title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextStructureIsLockedOnce,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            icon: CatchIcons.lockOutlineRounded,
+            iconColor: t.ink2,
           ),
-        ],
       ],
     );
   }
@@ -371,86 +323,8 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
   }
 }
 
-class ActivityAttributeGoalChips extends StatelessWidget {
-  const ActivityAttributeGoalChips({
-    required this.title,
-    required this.attributes,
-    required this.labelFor,
-    required this.enabled,
-    required this.onToggle,
-  });
-
-  final String title;
-  final List<EventSuccessActivityAssignmentAttribute> attributes;
-  final String Function(EventSuccessActivityAssignmentAttribute attribute)
-  labelFor;
-  final bool enabled;
-  final ValueChanged<EventSuccessActivityAssignmentAttribute> onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: CatchTextStyles.supporting(context)),
-        gapH4,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (final attribute
-                in EventSuccessActivityAssignmentAttribute.values)
-              CatchSelectChip(
-                label: labelFor(attribute),
-                active: attributes.contains(attribute),
-                enabled: enabled,
-                onTap: enabled ? () => onToggle(attribute) : null,
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class StructureNumberField extends StatelessWidget {
-  const StructureNumberField({
-    required this.label,
-    required this.detail,
-    required this.child,
-  });
-
-  final String label;
-  final String detail;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: CatchTextStyles.labelL(context)),
-        gapH4,
-        Text(detail, style: CatchTextStyles.supporting(context, color: t.ink2)),
-        gapH8,
-        child,
-      ],
-    );
-  }
-}
-
-List<EventSuccessActivityAssignmentAttribute> _toggleAttribute(
-  List<EventSuccessActivityAssignmentAttribute> attributes,
-  EventSuccessActivityAssignmentAttribute attribute,
-) {
-  if (attributes.contains(attribute)) {
-    return _removeAttribute(attributes, attribute);
-  }
-  return List.unmodifiable([...attributes, attribute]);
-}
-
-List<EventSuccessActivityAssignmentAttribute> _removeAttribute(
-  List<EventSuccessActivityAssignmentAttribute> attributes,
-  EventSuccessActivityAssignmentAttribute attribute,
-) => List.unmodifiable(attributes.where((item) => item != attribute));
+List<EventSuccessActivityAssignmentAttribute> _orderedAttributes(
+  Set<EventSuccessActivityAssignmentAttribute> selected,
+) => EventSuccessActivityAssignmentAttribute.values
+    .where(selected.contains)
+    .toList(growable: false);

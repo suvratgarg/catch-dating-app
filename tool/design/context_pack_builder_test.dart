@@ -864,6 +864,7 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('hint', 'voice', CatchTextStyles.hint),
   _StyleEntry.single('name', 'function', CatchTextStyles.name),
   _StyleEntry.single('sectionTitle', 'function', CatchTextStyles.sectionTitle),
+  _StyleEntry.single('sectionCount', 'data', CatchTextStyles.sectionCount),
   _StyleEntry.single('titleS', 'function', CatchTextStyles.titleS),
   _StyleEntry.single(
     'fieldRowTitle',
@@ -953,14 +954,7 @@ final _styleRegistry = <_StyleEntry>[
     CatchTextStyles.kickerLg,
     casePolicy: 'uppercase',
   ),
-  _StyleEntry.single(
-    'fieldSectionKicker',
-    'data',
-    CatchTextStyles.fieldSectionKicker,
-    casePolicy: 'uppercase',
-  ),
   _StyleEntry.single('monoLabel', 'data', CatchTextStyles.monoLabel),
-  _StyleEntry.single('sectionCount', 'data', CatchTextStyles.sectionCount),
   _StyleEntry.single(
     'monoCapsLabel',
     'data',

@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import type {ClubClaimRole} from "../../firebase";
 import type {HostListing} from "../organizers/types";
 
@@ -12,58 +13,58 @@ export interface ClaimVerificationMethod {
 }
 
 export const claimRoleOptions: Array<{value: ClubClaimRole; label: string}> = [
-  {value: "owner", label: "Owner"},
-  {value: "founder", label: "Founder"},
-  {value: "manager", label: "Manager"},
-  {value: "marketer", label: "Marketing"},
-  {value: "venueManager", label: "Venue manager"},
-  {value: "other", label: "Other"},
+  {value: "owner", label: websiteCopy["claimmodel_0013"]},
+  {value: "founder", label: websiteCopy["claimmodel_0005"]},
+  {value: "manager", label: websiteCopy["claimmodel_0009"]},
+  {value: "marketer", label: websiteCopy["claimmodel_0010"]},
+  {value: "venueManager", label: websiteCopy["claimmodel_0019"]},
+  {value: "other", label: websiteCopy["claimmodel_0012"]},
 ];
 
 export const claimFlowSteps: Array<{id: ClaimFlowStep; label: string}> = [
-  {id: "listing", label: "Find listing"},
-  {id: "role", label: "Your role"},
-  {id: "verify", label: "Verify"},
-  {id: "submitted", label: "Review"},
+  {id: "listing", label: websiteCopy["claimmodel_0004"]},
+  {id: "role", label: websiteCopy["claimmodel_0023"]},
+  {id: "verify", label: websiteCopy["claimmodel_0021"]},
+  {id: "submitted", label: websiteCopy["claimmodel_0015"]},
 ];
 
 export const claimVerificationMethods: ClaimVerificationMethod[] = [
   {
     id: "publicProof",
-    title: "Public proof links",
-    body: "Submit official sites, event pages, Instagram bios, Linktree, Luma, or venue pages that connect you to this organizer.",
+    title: websiteCopy["claimmodel_0014"],
+    body: websiteCopy["claimmodel_0016"],
   },
   {
     id: "email",
-    title: "Official email",
-    body: "Use a domain or booking address that appears publicly for the organizer or venue.",
+    title: websiteCopy["claimmodel_0011"],
+    body: websiteCopy["claimmodel_0017"],
   },
   {
     id: "phone",
-    title: "Venue or business phone",
-    body: "Use the publicly listed business phone so Catch can confirm the claim before owner tools unlock.",
+    title: websiteCopy["claimmodel_0020"],
+    body: websiteCopy["claimmodel_0018"],
   },
 ];
 
 export function claimWhileYouWaitItems(listing: HostListing | null) {
   return [
     {
-      title: "Keep proof links stable",
-      body: "Leave the website, Instagram, event page, or Linktree proof available while Catch reviews ownership.",
+      title: websiteCopy["claimmodel_0007"],
+      body: websiteCopy["claimmodel_0008"],
     },
     {
-      title: "Draft the first Catch event",
+      title: websiteCopy["claimmodel_0003"],
       body: listing ?
         `Prepare the next ${listing.category.toLowerCase()} with capacity, price, admission rules, and waitlist plan.` :
         "Prepare the next event with capacity, price, admission rules, and waitlist plan.",
     },
     {
-      title: "Watch for follow-up",
-      body: "Catch may ask for a public-page edit, email confirmation, or additional owner-safe source before approval.",
+      title: websiteCopy["claimmodel_0022"],
+      body: websiteCopy["claimmodel_0001"],
     },
     {
-      title: "Do not promise automation yet",
-      body: "Instagram DM verification still needs backend support, so manual review remains the source of truth.",
+      title: websiteCopy["claimmodel_0002"],
+      body: websiteCopy["claimmodel_0006"],
     },
   ];
 }

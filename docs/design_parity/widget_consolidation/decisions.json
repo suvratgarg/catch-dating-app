@@ -1907,11 +1907,11 @@
           "action": "absorb"
         }
       ],
-      "rationale": "No exact K/R match: the bodies are near-identical host picker tiles, but they live in separate create/edit event surfaces and merging requires a shared host picker-tile contract, file ownership decision, and empty-string behavior standardization. REVIEW (claude, 2026-07-03): identical params AND bodies across two host screens; one shared hosts widget. Later form-controls pass may fold into CatchField.nav.",
+      "rationale": "No exact K/R match: the bodies are near-identical host picker tiles, but they live in separate create/edit event surfaces and merging requires a shared host picker-tile contract, file ownership decision, and empty-string behavior standardization. REVIEW (claude, 2026-07-03): identical params AND bodies across two host screens; one shared hosts widget. The 2026-07-16 field-system pass completed the planned fold into CatchField.nav for both Create Event and Edit Event, then removed the now-unreferenced feature primitive and its standalone preview.",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "implemented-WO-020",
-      "canonicalSymbol": "HostPickerTile (feature-level)"
+      "status": "superseded-2026-07-16",
+      "canonicalSymbol": "CatchField.nav"
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendPanel",

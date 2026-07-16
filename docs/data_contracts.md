@@ -66,6 +66,34 @@ come from JSON Schema; the boundary is the timestamp representation:
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
 
+### Required Event Meeting Location
+
+Every persisted `events/{eventId}` and published external event must have a
+named, finite, in-range exact location. The canonical object is
+`meetingLocation`; `meetingPoint`, `startingPointLat`, and `startingPointLng`
+remain synchronized compatibility mirrors while released clients still use
+them. They are not nullable escape hatches.
+
+- Create requires an exact scalar pair and canonicalizes it into
+  `meetingLocation`; newer clients may send the structured object directly.
+- Update resolves the existing or supplied exact location and always rewrites
+  the canonical object plus mirrors. It rejects a truly coordinate-less legacy
+  document instead of preserving corruption.
+- Dart `Event` and `ExternalEvent` expose non-null exact coordinates. `Event`
+  may deterministically promote a complete legacy pair on read, but rejects a
+  document with no usable exact location.
+- Discovery and proximity check-in fail closed when the invariant is broken;
+  they never publish a null geo cell or skip the distance guard.
+- `node tool/data/backfill_event_meeting_locations.mjs --env <env>` is the
+  dry-run-first repair path. It never invents coordinates or mixes latitude
+  and longitude from different sources.
+
+Dev was verified clean on 2026-07-13: 146/146 events have structured exact
+locations and the location-market and discovery repair tools report zero
+remaining work. The production dry run found 138 deterministic repairs and 9
+historical records without recoverable coordinates; production was not
+mutated, and strict production rollout remains blocked on resolving those nine.
+
 ## Normal Workflow
 
 ```bash
@@ -85,6 +113,18 @@ firebase emulators:exec --only firestore,storage "npm --prefix functions run tes
 A direct `npm --prefix functions run test:rules` expects Firestore on
 `127.0.0.1:8080` and Storage on `127.0.0.1:9199`. `ECONNREFUSED` is an emulator
 workflow failure first, not proof the rules are wrong.
+
+Storage rules that call Firestore have a second, live dependency which the
+emulators cannot prove. Every environment's Firebase Storage service agent must
+hold `roles/firebaserules.firestoreServiceAgent`; the checked preflight and
+idempotent provisioner are documented in `docs/release_operations.md`. Keep
+each Storage evaluation within Firebase's Firestore document-access limit.
+Match chat images therefore authorize from the canonical match document, whose
+`status: blocked` projection is owned by the block callable/trigger. Their
+contract also requires immutable `uploaderUid` custom object metadata: only
+that active-match participant may create or compensate-delete the object, and
+client updates are denied. Prove this boundary with both emulator rules tests
+and the authenticated live upload/delete canary.
 
 ## Contract Architecture
 

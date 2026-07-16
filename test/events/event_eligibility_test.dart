@@ -25,6 +25,13 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
       meetingPoint: 'Start line',
+      meetingLocation: const EventMeetingLocation(
+        name: 'Start line',
+        latitude: 19.0608,
+        longitude: 72.8365,
+      ),
+      startingPointLat: 19.0608,
+      startingPointLng: 72.8365,
       distanceKm: 5.0,
       pace: PaceLevel.easy,
       capacityLimit: capacityLimit,

@@ -8,13 +8,14 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_read_only_preview.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
@@ -38,6 +39,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -65,8 +67,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payou
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/user_profile/user_profile.dart'
-    show ProfileInlineTextValue;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,19 +82,18 @@ part 'host_operations/host_loading_screen.dart';
 part 'host_operations/host_profile_screen.dart';
 part 'host_operations/host_events_scaffold.dart';
 part 'host_operations/host_clubs_scaffold.dart';
-part 'host_operations/host_operations_top_bar.dart';
 part 'host_operations/host_today.dart';
 part 'host_operations/host_events_list.dart';
 part 'host_operations/host_organizer.dart';
 part 'host_operations/host_club_profile.dart';
+part 'host_operations/host_club_edit_helpers.dart';
 part 'host_operations/host_insights_screen.dart';
 part 'host_operations/host_analytics.dart';
 part 'host_operations/host_inline_editors.dart';
-part 'host_operations/host_club_preview.dart';
 part 'host_operations/host_route_providers.dart';
 
 enum HostSettingsMode { edit, preview }
 
-typedef HostClubPreviewCallback = void Function(Club club);
+typedef HostClubPreviewCallback = VoidCallback;
 
 const _hostClubTabRailKey = ValueKey('host-club-tab-rail');

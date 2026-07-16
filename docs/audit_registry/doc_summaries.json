@@ -326,6 +326,16 @@
         "Task is a trivial one-off command"
       ]
     },
+    "docs/audit_registry/admin_console_design_adoption.json": {
+      "purpose": "Production adoption tracker for the comprehensive admin-console design export, with explicit implementation, partial, blocked, and prototype-defect statuses.",
+      "read_when": [
+        "Planning or reviewing admin-console UX implementation",
+        "Changing admin route ownership, chrome, list-detail workflows, data ranges, or mutation affordances"
+      ],
+      "skip_when": [
+        "The task does not touch the admin console"
+      ]
+    },
     "docs/audit_registry/backlog.json": {
       "purpose": "Active backlog, next-up queue, stable debt ids, scanner counts, and React component-governance follow-up after native controls, the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, data tables, admin workbench tables, form shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, field-layout grids, admin summary metrics, admin workbench toolbars, admin utility shells, admin status displays, admin filter bars, admin empty-state variants including marketing empty states, admin app-shell status displays, admin app/auth shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, admin intake/status chips, admin quality rows, admin quality lists, admin roadmap lists, website organizer filter rails, website stat strips, website chip rails, website capture grids/cards, website card grids, website empty-state variants, website status displays, website badge/status rows, website identity display shells, website process status panels, website UI label spans, website section headings, website action groups, website control rows, website waitlist/application sections, website waitlist form shells, website configured success grids, website claim shells, website claim-flow route/root/auth-row shells, website content grids, website panel shells, website product shells including product-module grids, website row/list shells, Host Preview route shells including main/hero/hero-store/offer/section/apply/format-rail/chip-row wrappers, Host Page route shells, Host Application flow shells, Host feature section shells, marketing section shells, marketing info-card shells, marketing loop-list shells, marketing consent banner shells, featured organizer card shells, app-download CTA group/shells, organizer listing shells, organizer listing intro shells, organizer listing hero shells, organizer listing review shells including review-signal and owner-response shells, organizer listing claim shells, organizer listing card-grid shells, organizer listing event section shells including event-action cards, organizer listing source ledger shells, organizer search section shells, organizer search result shells, and website search-form shells including PublicSearchBar ownership, direct public-search slot composition, and public event-card shells.",
       "read_when": [
@@ -559,6 +569,20 @@
       ],
       "skip_when": [
         "Only fixing one lint violation without changing rule behavior"
+      ]
+    },
+    "docs/plans/repository_root_hygiene_spec.md": {
+      "purpose": "Fable/owner review spec for the full project-root inventory, reproducible disk cleanup, protected local state, legacy artifact retirement, root documentation consolidation, artifact retention, Firebase deploy safety, and manifest-backed root hygiene enforcement.",
+      "read_when": [
+        "Deleting, moving, reclassifying, or adding a project-root entry",
+        "Cleaning local caches, logs, artifacts, or worktrees",
+        "Consolidating CLAUDE.md, PROJECT_CONTEXT.md, README.md, or TESTS.md",
+        "Implementing root manifest, portability, test-inventory, retention, or protected-cleanup tooling",
+        "Reviewing the recorded Fable dispositions or the pending-owner root-hygiene decisions"
+      ],
+      "skip_when": [
+        "A narrow feature change does not affect root layout, local cleanup, documentation ownership, artifacts, or deploy safety",
+        "The accepted root-hygiene work is complete and permanent policy has moved into owner docs and enforcement"
       ]
     },
     "docs/marketing_website_architecture.md": {

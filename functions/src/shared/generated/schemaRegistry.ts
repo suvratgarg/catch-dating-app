@@ -6949,10 +6949,7 @@ export const eventDocumentSchema: Record<string, unknown> = {
       "x-catch-ownership": "callable-owned"
     },
     "discoveryGeoCell": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": "string",
       "pattern": "^-?\\d+:-?\\d+$",
       "x-catch-ownership": "callable-owned"
     },
@@ -7277,34 +7274,20 @@ export const externalEventDocumentSchema: Record<string, unknown> = {
           "maxLength": 256
         },
         "latitude": {
-          "anyOf": [
-            {
-              "type": [
-                "number",
-                "null"
-              ],
-              "minimum": -90,
-              "maximum": 90
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -90,
+          "maximum": 90
         },
         "longitude": {
-          "anyOf": [
-            {
-              "type": [
-                "number",
-                "null"
-              ],
-              "minimum": -180,
-              "maximum": 180
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -180,
+          "maximum": 180
         },
         "notes": {
           "type": [
@@ -21808,6 +21791,7 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
     "startTimeMillis",
     "endTimeMillis",
     "meetingPoint",
+    "meetingLocation",
     "startingPointLat",
     "startingPointLng",
     "distanceKm",
@@ -22830,34 +22814,14 @@ export const updateEventCallablePayloadSchema: Record<string, unknown> = {
           }
         },
         "startingPointLat": {
-          "anyOf": [
-            {
-              "type": [
-                "number",
-                "null"
-              ],
-              "minimum": -90,
-              "maximum": 90
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
         },
         "startingPointLng": {
-          "anyOf": [
-            {
-              "type": [
-                "number",
-                "null"
-              ],
-              "minimum": -180,
-              "maximum": 180
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
         },
         "locationDetails": {
           "type": [

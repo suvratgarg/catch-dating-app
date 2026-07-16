@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
@@ -129,27 +129,33 @@ class OnboardingPhotosStep extends StatelessWidget {
         ],
       ),
       children: [
-        PhotoGrid(
-          profilePhotos: state.profilePhotos,
-          loadingIndices: state.loadingIndices,
-          canDeletePhotos: state.canDeletePhotos,
-          onSlotTapped: (index) =>
-              callbacks.onSlotTapped(state.slotIntent(index)),
-          onDeletePhoto: callbacks.onDeletePhoto,
-          onReorderPhoto: callbacks.onReorderPhoto,
-        ),
-        gapH16,
-        const CatchDivider.section(),
-        gapH12,
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        CatchSectionList(
+          gap: CatchSpacing.s3,
           children: [
-            Icon(CatchIcons.bolt, size: CatchIcon.xs, color: t.accent),
-            gapW8,
-            Expanded(
-              child: Text(
-                state.supportingCopy(context.l10n),
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+            CatchSection.plain(
+              child: PhotoGrid(
+                profilePhotos: state.profilePhotos,
+                loadingIndices: state.loadingIndices,
+                canDeletePhotos: state.canDeletePhotos,
+                onSlotTapped: (index) =>
+                    callbacks.onSlotTapped(state.slotIntent(index)),
+                onDeletePhoto: callbacks.onDeletePhoto,
+                onReorderPhoto: callbacks.onReorderPhoto,
+              ),
+            ),
+            CatchSection.plain(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(CatchIcons.bolt, size: CatchIcon.xs, color: t.accent),
+                  gapW8,
+                  Expanded(
+                    child: Text(
+                      state.supportingCopy(context.l10n),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

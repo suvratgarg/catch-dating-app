@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SectionHeader} from "../../../shared/site";
 import {
   ActionGroup,
@@ -40,7 +41,7 @@ import {
   formatCards,
   memberLoop,
   trustItems,
-} from "../../marketing/content";
+} from "@content/marketing";
 import {trackCtaClick} from "../../marketing/tracking";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {hostListings} from "../../organizers/data";
@@ -72,44 +73,35 @@ export function HomeHeroSection() {
 
       <HomeHeroInner>
         <HomeHeroCopy>
-          <h1 data-reveal>Real events. Real hosts. The match comes after.</h1>
-          <HomeHeroBody reveal>
-            Find a hosted run, dinner, game night, or mixer near you. Show
-            up in person, then catch privately with people you actually met.
-          </HomeHeroBody>
+          <h1 data-reveal>{websiteCopy["homepagesections_0157"]}</h1>
+          <HomeHeroBody reveal>{websiteCopy["homepagesections_0138"]}</HomeHeroBody>
           <ActionGroup variant="hero" reveal>
             <ButtonLink
               href="/organizers/"
               onClick={() => trackCtaClick("home_hero_browse_events", "/organizers/")}
-            >
-              Browse organizers
-            </ButtonLink>
+            >{websiteCopy["homepagesections_0124"]}</ButtonLink>
             <ButtonLink
               variant="ghost"
               href="/host/"
               onClick={() => trackCtaClick("home_hero_apply_host", "/host/")}
-            >
-              Apply as host
-            </ButtonLink>
+            >{websiteCopy["homepagesections_0121"]}</ButtonLink>
           </ActionGroup>
           <AppDownloadCtaGroup {...appDownloadCtas} />
         </HomeHeroCopy>
 
-        <PanelShell variant="hero" as="aside" aria-label="Catch event panel" reveal>
+        <PanelShell variant="hero" as="aside" aria-label={websiteCopy["homepagesections_0127"]} reveal>
           <PanelShell variant="event-ticket">
             <div>
-              <UiLabel>This week</UiLabel>
-              <h2>Events with a reason to talk</h2>
+              <UiLabel>{websiteCopy["homepagesections_0167"]}</UiLabel>
+              <h2>{websiteCopy["homepagesections_0137"]}</h2>
             </div>
-            <EventTicketStatus>
-              Private catches open only after attendance
-            </EventTicketStatus>
+            <EventTicketStatus>{websiteCopy["homepagesections_0156"]}</EventTicketStatus>
           </PanelShell>
           <EventTicketMeta>
-            <span>Dinner</span>
-            <span>Social run</span>
-            <span>Host-led prompts</span>
-            <span>Verified reviews</span>
+            <span>{websiteCopy["homepagesections_0134"]}</span>
+            <span>{websiteCopy["homepagesections_0162"]}</span>
+            <span>{websiteCopy["homepagesections_0144"]}</span>
+            <span>{websiteCopy["homepagesections_0168"]}</span>
           </EventTicketMeta>
         </PanelShell>
       </HomeHeroInner>
@@ -126,10 +118,10 @@ export function HomeDiscoverySection({
   return (
     <MarketingSection variant="home-discovery" id="events" aria-labelledby="home-events-title">
       <SectionHeader
-        eyebrow="Find events"
+        eyebrow={websiteCopy["homepagesections_0139"]}
         id="home-events-title"
-        title="Start with what is happening, then choose who to meet."
-        body="The public website now treats events and organizer pages as one discovery loop: search the city, browse a real host page, then continue into the app when the event opens."
+        title={websiteCopy["homepagesections_0163"]}
+        body={websiteCopy["homepagesections_0166"]}
         wide
       />
       <PublicSearchBar
@@ -152,14 +144,9 @@ export function HomeDiscoverySection({
           ))
         ) : (
           <EmptyState variant="public-event" reveal>
-            <strong>No public Catch events are projected yet.</strong>
-            <p>
-              Browse organizer pages while event projections are added to the
-              public website feed.
-            </p>
-            <ButtonLink variant="ghost" href="/organizers/">
-              Open organizer directory
-            </ButtonLink>
+            <strong>{websiteCopy["homepagesections_0149"]}</strong>
+            <p>{websiteCopy["homepagesections_0123"]}</p>
+            <ButtonLink variant="ghost" href="/organizers/">{websiteCopy["homepagesections_0152"]}</ButtonLink>
           </EmptyState>
         )}
       </ContentGrid>
@@ -194,8 +181,8 @@ export function HomeFormatsSection() {
     <MarketingSection variant="format" id="formats" aria-labelledby="formats-title">
       <SectionHeader
         id="formats-title"
-        title="Not another swipe feed. A better way to meet."
-        body="Catch is format-aware: every event can carry the right amount of structure, from light social flow to guided rotations and reveal moments."
+        title={websiteCopy["homepagesections_0150"]}
+        body={websiteCopy["homepagesections_0130"]}
       />
 
       <ContentGrid variant="format">
@@ -222,23 +209,21 @@ export function HomeFeaturedOrganizersSection() {
   return (
     <MarketingSection variant="featured-organizers" aria-labelledby="featured-organizers-title">
       <SectionHeader
-        eyebrow="Organizer directory"
+        eyebrow={websiteCopy["homepagesections_0153"]}
         id="featured-organizers-title"
-        title="The public loop starts with real host pages."
-        body="Searchable organizer profiles create a concrete path from discovery to claim, reviews, host tools, events, and app usage."
+        title={websiteCopy["homepagesections_0165"]}
+        body={websiteCopy["homepagesections_0159"]}
       />
       <FeaturedOrganizerCardGrid items={featuredItems} />
       <FeaturedOrganizersCta
-        body="Run events? Your profile can show public sources today, then verified Catch activity after you claim and publish."
+        body={websiteCopy["homepagesections_0158"]}
         reveal
       >
         <ButtonLink
           variant="ghost-light"
           href="/organizers/"
           onClick={() => trackCtaClick("home_featured_organizers", "/organizers/")}
-        >
-          Open directory
-        </ButtonLink>
+        >{websiteCopy["homepagesections_0151"]}</ButtonLink>
       </FeaturedOrganizersCta>
     </MarketingSection>
   );
@@ -247,7 +232,7 @@ export function HomeFeaturedOrganizersSection() {
 export function HomeMemberLoopSection() {
   return (
     <MarketingSection variant="story" id="members" aria-labelledby="loop-title">
-      <SectionHeader id="loop-title" title="A dating loop built around showing up." wide />
+      <SectionHeader id="loop-title" title={websiteCopy["homepagesections_0119"]} wide />
       <MarketingLoopList items={memberLoop} />
     </MarketingSection>
   );
@@ -257,17 +242,15 @@ export function HomeHostProofSection() {
   return (
     <MarketingSection variant="proof" id="hosts">
       <MarketingSectionCopy
-        body="Catch gives hosts the controls that make singles events safer, more balanced, and more memorable: admission rules, waitlists, cohort shaping, check-in, live facilitation, and aggregate reports."
-        title="For hosts who care about the experience, not just the RSVP list."
+        body={websiteCopy["homepagesections_0128"]}
+        title={websiteCopy["homepagesections_0140"]}
         variant="proof"
       >
         <ButtonLink
           variant="ghost-light"
           href="/host/"
           onClick={() => trackCtaClick("host_tools_section", "/host/")}
-        >
-          See host tools
-        </ButtonLink>
+        >{websiteCopy["homepagesections_0160"]}</ButtonLink>
       </MarketingSectionCopy>
 
       <HostProductBoard />
@@ -280,14 +263,14 @@ export function HomeCapturesSection({captures}: {captures: Record<string, Captur
     <MarketingSection variant="captures" aria-labelledby="app-proof-title">
       <SectionHeader
         id="app-proof-title"
-        title="See the Catch loop in motion."
-        body="Browse the event, show up, catch privately, and let the shared experience carry the first conversation."
+        title={websiteCopy["homepagesections_0161"]}
+        body={websiteCopy["homepagesections_0125"]}
       />
 
       <CaptureGrid>
-        <CaptureCard id="member-event-discovery" fallbackStep="Discover" captures={captures} />
-        <CaptureCard id="post-run-catch-window" fallbackStep="Catch" captures={captures} />
-        <CaptureCard id="host-live-console" fallbackStep="Host" captures={captures} />
+        <CaptureCard id="member-event-discovery" fallbackStep={websiteCopy["homepagesections_0135"]} captures={captures} />
+        <CaptureCard id="post-run-catch-window" fallbackStep={websiteCopy["homepagesections_0126"]} captures={captures} />
+        <CaptureCard id="host-live-console" fallbackStep={websiteCopy["homepagesections_0142"]} captures={captures} />
       </CaptureGrid>
     </MarketingSection>
   );
@@ -299,9 +282,9 @@ export function HomeDownloadSection() {
   return (
     <MarketingSection variant="download" id="download-app" aria-labelledby="download-title">
       <MarketingSectionCopy
-        body="Store listings are not public yet. The buttons are in place now so launch traffic can move directly to the app once the listings are approved."
-        eyebrow="Member app"
-        title="Download Catch when your city opens."
+        body={websiteCopy["homepagesections_0164"]}
+        eyebrow={websiteCopy["homepagesections_0148"]}
+        title={websiteCopy["homepagesections_0136"]}
         titleId="download-title"
         variant="download"
       />
@@ -315,7 +298,7 @@ export function HomeTrustSection() {
     <MarketingSection variant="trust" id="trust" aria-labelledby="trust-title">
       <SectionHeader
         id="trust-title"
-        title="Designed for consent, context, and host control."
+        title={websiteCopy["homepagesections_0133"]}
       />
 
       <MarketingInfoCardGrid items={trustItems} variant="trust" />
@@ -328,8 +311,8 @@ export function HomeWaitlistSection() {
     <WaitlistSection
       id="waitlist"
       titleId="waitlist-title"
-      title="Be first in your city."
-      body="Join the member waitlist or apply as a founding host. We will reach out as city access opens."
+      title={websiteCopy["homepagesections_0122"]}
+      body={websiteCopy["homepagesections_0145"]}
     >
       <WaitlistForm variant="member" />
     </WaitlistSection>
@@ -338,7 +321,7 @@ export function HomeWaitlistSection() {
 
 function HostProductBoard() {
   return (
-    <ProductShell variant="product-board" aria-label="Catch host product board" reveal>
+    <ProductShell variant="product-board" aria-label={websiteCopy["homepagesections_0129"]} reveal>
       <ProductBoardNav
         items={["Format", "Admission", "Live", "Report"].map((item) => ({
           key: item,
@@ -347,17 +330,17 @@ function HostProductBoard() {
       />
       <ProductBoardMain>
         <ProductBoardCard>
-          <UiLabel>Create event</UiLabel>
-          <h3>Pickleball social</h3>
-          <p>Paired rotations, balanced admission, check-in required.</p>
-          <ControlRow label="Format" value="Racket sports" />
-          <ControlRow label="Access" value="Invite code + public waitlist" />
-          <ControlRow label="Live module" value="Partner switch" />
+          <UiLabel>{websiteCopy["homepagesections_0132"]}</UiLabel>
+          <h3>{websiteCopy["homepagesections_0155"]}</h3>
+          <p>{websiteCopy["homepagesections_0154"]}</p>
+          <ControlRow label={websiteCopy["homepagesections_0141"]} value="Racket sports" />
+          <ControlRow label={websiteCopy["homepagesections_0120"]} value="Invite code + public waitlist" />
+          <ControlRow label={websiteCopy["homepagesections_0147"]} value="Partner switch" />
         </ProductBoardCard>
         <ProductBoardCard tone="dark">
-          <UiLabel>Live event</UiLabel>
-          <h3>Host mode</h3>
-          <p>Check-in, prompts, rotations, and safety controls stay in one surface.</p>
+          <UiLabel>{websiteCopy["homepagesections_0146"]}</UiLabel>
+          <h3>{websiteCopy["homepagesections_0143"]}</h3>
+          <p>{websiteCopy["homepagesections_0131"]}</p>
           <LiveMeter items={["Arrival", "Prompt", "Reveal"]} />
         </ProductBoardCard>
       </ProductBoardMain>

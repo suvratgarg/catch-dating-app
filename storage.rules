@@ -24,44 +24,19 @@ service firebase.storage {
       return fileName.matches('[A-Za-z0-9_-]{1,180}_[0-9]+\\.(jpg|jpeg|png)');
     }
 
-    function blockDocId(blockerUid, blockedUid) {
-      return blockerUid + '__' + blockedUid;
+    function isOwnedChatImageUpload() {
+      return request.resource != null
+        && request.resource.metadata.keys().hasAll(['uploaderUid'])
+        && request.resource.metadata.uploaderUid is string
+        && request.resource.metadata.uploaderUid == request.auth.uid;
     }
 
-    function hasBlockBetween(uidA, uidB) {
-      return firestore.exists(
-          /databases/(default)/documents/blocks/$(blockDocId(uidA, uidB))
-        )
-        || firestore.exists(
-          /databases/(default)/documents/blocks/$(blockDocId(uidB, uidA))
-        );
-    }
-
-    function hasCanonicalMatchUsers(matchId) {
-      return firestore.get(
-          /databases/(default)/documents/matches/$(matchId)
-        ).data.keys().hasAny(['user1Id'])
-        && firestore.get(
-          /databases/(default)/documents/matches/$(matchId)
-        ).data.keys().hasAny(['user2Id'])
-        && firestore.get(
-          /databases/(default)/documents/matches/$(matchId)
-        ).data.user1Id is string
-        && firestore.get(
-          /databases/(default)/documents/matches/$(matchId)
-        ).data.user2Id is string;
-    }
-
-    function hasNoBlockBetweenMatchUsers(matchId) {
-      return !hasCanonicalMatchUsers(matchId)
-        || !hasBlockBetween(
-          firestore.get(
-            /databases/(default)/documents/matches/$(matchId)
-          ).data.user1Id,
-          firestore.get(
-            /databases/(default)/documents/matches/$(matchId)
-          ).data.user2Id
-        );
+    function isOwnedStoredChatImage() {
+      return resource != null
+        && resource.contentType.matches('image/.*')
+        && resource.metadata.keys().hasAll(['uploaderUid'])
+        && resource.metadata.uploaderUid is string
+        && resource.metadata.uploaderUid == request.auth.uid;
     }
 
     function canAccessMatch(matchId) {
@@ -70,7 +45,6 @@ service firebase.storage {
         && firestore.get(
           /databases/(default)/documents/matches/$(matchId)
         ).data.status != 'blocked'
-        && hasNoBlockBetweenMatchUsers(matchId)
         && (
           (
             firestore.get(
@@ -111,7 +85,6 @@ service firebase.storage {
         && firestore.get(
           /databases/(default)/documents/matches/$(matchId)
         ).data.status == 'active'
-        && hasNoBlockBetweenMatchUsers(matchId)
         && (
           (
             firestore.get(
@@ -242,10 +215,22 @@ service firebase.storage {
 
     match /matches/{matchId}/images/{fileName} {
       allow read: if canAccessMatch(matchId);
-      allow write: if isSignedIn()
-        && isImage()
-        && isChatImageFileName(fileName)
-        && canWriteMatchImage(matchId);
+      allow write: if (
+          resource == null
+          && request.resource != null
+          && isSignedIn()
+          && isImage()
+          && isChatImageFileName(fileName)
+          && isOwnedChatImageUpload()
+          && canWriteMatchImage(matchId)
+        ) || (
+          resource != null
+          && request.resource == null
+          && isSignedIn()
+          && isChatImageFileName(fileName)
+          && isOwnedStoredChatImage()
+          && canWriteMatchImage(matchId)
+        );
     }
 
     match /{allPaths=**} {

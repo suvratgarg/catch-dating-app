@@ -70,7 +70,7 @@ class _DashboardFullSliverBodyState
             maxWidth: CatchLayout.maxContentWidth,
           ),
           child: CatchSectionStack(
-            padding: CatchInsets.pageBodyUnderHeader,
+            padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
             gap: CatchSpacing.micro18,
             children: [
               if (focusEvents.isEmpty)

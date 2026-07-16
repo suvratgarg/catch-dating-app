@@ -161,13 +161,22 @@ class _HostInlineTextEntryEditorState
   Widget build(BuildContext context) {
     final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
     final saving = saveMutation.isPending;
-    return CatchField.actions(
+    final inputFormatters = <TextInputFormatter>[
+      if (widget.maxLines != 1) const _HostStackedBlankLinesFormatter(),
+      if (widget.maxLength != null)
+        LengthLimitingTextInputFormatter(widget.maxLength),
+    ];
+    return CatchField.inputActions(
       icon: widget.icon,
       title: widget.label,
-      body: widget.value,
-      initiallyExpanded: widget.isExpanded,
-      onTap: widget.onTap,
+      controller: _controller,
+      placeholder: widget.placeholder ?? widget.value,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (expanded != widget.isExpanded) widget.onTap();
+      },
       isLoading: saving,
+      enabled: !saving,
       error:
           _validationError ??
           mutationErrorMessage(
@@ -175,22 +184,15 @@ class _HostInlineTextEntryEditorState
             l10n: context.l10n,
             context: AppErrorContext.club,
           ),
-      control: ProfileInlineTextValue(
-        label: widget.label,
-        displayValue: widget.value,
-        placeholder: widget.placeholder,
-        controller: _controller,
-        isEditing: widget.isExpanded,
-        enabled: !saving,
-        keyboardType: widget.keyboardType,
-        textCapitalization: widget.textCapitalization,
-        maxLines: widget.maxLines,
-        minLines: widget.minLines,
-        maxLength: widget.maxLength,
-        collapseStackedBlankLines: widget.maxLines != 1,
-        onSubmitted: (_) => _submit(),
-      ),
-      actionLeading: widget.showCounter && widget.maxLength != null
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.maxLines == 1
+          ? TextInputAction.done
+          : TextInputAction.newline,
+      textCapitalization: widget.textCapitalization,
+      inputFormatters: inputFormatters.isEmpty ? null : inputFormatters,
+      maxLines: widget.maxLines,
+      minLines: widget.minLines,
+      supporting: widget.showCounter && widget.maxLength != null
           ? AnimatedBuilder(
               animation: _controller,
               builder: (context, _) => Text(
@@ -202,6 +204,7 @@ class _HostInlineTextEntryEditorState
               ),
             )
           : null,
+      onSubmitted: (_) => _submit(),
       onCancel: _cancel,
       onSubmit: _submit,
     );
@@ -298,12 +301,14 @@ class _HostInlineOptionEditorState<T>
     final displayValue = widget.isExpanded
         ? _labelFor(_selected)
         : widget.value;
-    return CatchField.actions(
+    return CatchField.control(
       icon: widget.icon,
       title: widget.label,
       body: displayValue,
-      initiallyExpanded: widget.isExpanded,
-      onTap: widget.onTap,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (expanded != widget.isExpanded) widget.onTap();
+      },
       isLoading: saving,
       error: mutationErrorMessage(
         saveMutation,
@@ -467,12 +472,14 @@ class _HostInlineAgeRangeEditorState
     final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
     final saving = saveMutation.isPending;
     final displayValue = widget.isExpanded ? _draftValue : widget.value;
-    return CatchField.actions(
+    return CatchField.control(
       icon: widget.icon,
       title: widget.label,
       body: displayValue,
-      initiallyExpanded: widget.isExpanded,
-      onTap: widget.onTap,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (expanded != widget.isExpanded) widget.onTap();
+      },
       isLoading: saving,
       error:
           _validationError ??
@@ -519,4 +526,36 @@ class _HostInlineAgeRangeEditorState
       maxAge: maxAge,
     );
   }
+}
+
+class _HostStackedBlankLinesFormatter extends TextInputFormatter {
+  const _HostStackedBlankLinesFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final collapsed = _collapseHostStackedBlankLines(newValue.text);
+    if (collapsed == newValue.text) return newValue;
+
+    final selectionEnd = newValue.selection.end;
+    final normalizedOffset = selectionEnd < 0
+        ? collapsed.length
+        : _collapseHostStackedBlankLines(
+            newValue.text.substring(0, selectionEnd),
+          ).length;
+    final offset = normalizedOffset.clamp(0, collapsed.length);
+    return TextEditingValue(
+      text: collapsed,
+      selection: TextSelection.collapsed(offset: offset),
+    );
+  }
+}
+
+String _collapseHostStackedBlankLines(String value) {
+  return value
+      .replaceAll('\r\n', '\n')
+      .replaceAll('\r', '\n')
+      .replaceAll(RegExp(r'\n[ \t]*\n(?:[ \t]*\n)+'), '\n\n');
 }

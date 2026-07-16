@@ -125,7 +125,7 @@ void main() {
         expect(createdEvent.startTime, DateTime(2025, 3, 1, 6));
         expect(createdEvent.endTime, DateTime(2025, 3, 1, 7, 15));
         expect(createdEvent.meetingPoint, 'Marine Drive');
-        expect(createdEvent.meetingLocation?.name, 'Marine Drive');
+        expect(createdEvent.meetingLocation.name, 'Marine Drive');
         expect(createdEvent.startingPointLat, 19.076);
         expect(createdEvent.startingPointLng, 72.8777);
         expect(createdEvent.locationDetails, isNull);

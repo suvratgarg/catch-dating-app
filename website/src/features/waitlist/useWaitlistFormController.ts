@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {useMutation} from "@tanstack/react-query";
 import {type FormEvent, useMemo, useState} from "react";
 import {
@@ -36,14 +37,14 @@ export function useWaitlistFormController(variant: FormVariant) {
     () =>
       variant === "host"
         ? [
-            {value: "host", label: "Host"},
-            {value: "both", label: "Host and member"},
+            {value: "host", label: websiteCopy["usewaitlistformcontroller_0508"]},
+            {value: "both", label: websiteCopy["usewaitlistformcontroller_0509"]},
           ]
         : [
-            {value: "", label: "Choose role"},
-            {value: "member", label: "Member"},
-            {value: "host", label: "Host"},
-            {value: "both", label: "Both"},
+            {value: "", label: websiteCopy["usewaitlistformcontroller_0507"]},
+            {value: "member", label: websiteCopy["usewaitlistformcontroller_0510"]},
+            {value: "host", label: websiteCopy["usewaitlistformcontroller_0508"]},
+            {value: "both", label: websiteCopy["usewaitlistformcontroller_0506"]},
           ],
     [variant]
   );
@@ -99,7 +100,7 @@ export function useWaitlistFormController(variant: FormVariant) {
 
     if (!body.fullName || !body.email || !body.city || !body.role) {
       setStatus({
-        message: "Please fill out your name, email, city, and role.",
+        message: websiteCopy["usewaitlistformcontroller_0511"],
         tone: "is-error",
       });
       return;

@@ -1279,6 +1279,14 @@ Widget chatEventContextHeaderPrimitiveStates(BuildContext context) {
                 startTime: DateTime(2026, 6, 25, 20),
                 endTime: DateTime(2026, 6, 25, 22),
                 meetingPoint: 'Long Table, Colaba',
+                meetingLocation: const EventMeetingLocation(
+                  name: 'Long Table, Colaba',
+                  address: 'Colaba, Mumbai',
+                  latitude: 18.9220,
+                  longitude: 72.8347,
+                ),
+                startingPointLat: 18.9220,
+                startingPointLng: 72.8347,
                 distanceKm: 0,
                 pace: PaceLevel.easy,
               ),
@@ -1393,53 +1401,6 @@ Widget messageBubblePrimitiveStates(BuildContext context) {
                 sentAt: now.subtract(const Duration(minutes: 12)),
               ),
             ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Primitive states',
-  type: ChatInputBar,
-  path: '[P1 product surfaces]/Matches and chat/Primitives',
-)
-Widget chatInputBarPrimitiveStates(BuildContext context) {
-  return _AppRoleBoundary(
-    role: AppRole.consumer,
-    child: _MatchesCatalog(
-      title: 'ChatInputBar',
-      contractId: 'primitive.messaging.chat_input_bar',
-      children: const [
-        _StateCard(
-          label: 'default ready',
-          child: _ChatInputBarPrimitiveFrame(
-            state: _ComposerPrimitiveState.ready,
-          ),
-        ),
-        _StateCard(
-          label: 'sending text',
-          child: _ChatInputBarPrimitiveFrame(
-            state: _ComposerPrimitiveState.sendingText,
-          ),
-        ),
-        _StateCard(
-          label: 'sending image',
-          child: _ChatInputBarPrimitiveFrame(
-            state: _ComposerPrimitiveState.sendingImage,
-          ),
-        ),
-        _StateCard(
-          label: 'disabled closed chat',
-          child: _ChatInputBarPrimitiveFrame(
-            state: _ComposerPrimitiveState.disabled,
-          ),
-        ),
-        _StateCard(
-          label: 'text only no image action',
-          child: _ChatInputBarPrimitiveFrame(
-            state: _ComposerPrimitiveState.textOnly,
           ),
         ),
       ],
@@ -2038,6 +1999,7 @@ class _HostUnreadOnlyInbox extends StatelessWidget {
             ...CatchSliverHeader(
               title: const SizedBox.shrink(),
               bottomHeight: chatsBrowseHeaderHeight(
+                context: context,
                 hasHostFilter: true,
                 hasHeaderSubtitle: true,
               ),
@@ -2307,94 +2269,6 @@ class _MessageBubblePrimitiveFrame extends StatelessWidget {
               child: ListView(
                 padding: CatchInsets.chatListGutter,
                 children: children,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-enum _ComposerPrimitiveState {
-  ready,
-  sendingText,
-  sendingImage,
-  disabled,
-  textOnly,
-}
-
-class _ChatInputBarPrimitiveFrame extends StatefulWidget {
-  const _ChatInputBarPrimitiveFrame({required this.state});
-
-  final _ComposerPrimitiveState state;
-
-  @override
-  State<_ChatInputBarPrimitiveFrame> createState() =>
-      _ChatInputBarPrimitiveFrameState();
-}
-
-class _ChatInputBarPrimitiveFrameState
-    extends State<_ChatInputBarPrimitiveFrame> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: _initialText);
-  }
-
-  @override
-  void didUpdateWidget(covariant _ChatInputBarPrimitiveFrame oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.state != widget.state) {
-      _controller.text = _initialText;
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  String get _initialText {
-    return switch (widget.state) {
-      _ComposerPrimitiveState.ready => 'That last loop was fun.',
-      _ComposerPrimitiveState.sendingText => 'Sending this now...',
-      _ComposerPrimitiveState.sendingImage => 'Uploading a photo...',
-      _ComposerPrimitiveState.disabled => '',
-      _ComposerPrimitiveState.textOnly => 'No image for this reply.',
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _DeviceFrame(
-      height: 132,
-      child: Builder(
-        builder: (context) {
-          final t = CatchTokens.of(context);
-          final disabled = widget.state == _ComposerPrimitiveState.disabled;
-          return Scaffold(
-            backgroundColor: t.bg,
-            body: SafeArea(
-              child: Column(
-                children: [
-                  const Spacer(),
-                  ChatInputBar(
-                    controller: _controller,
-                    sending:
-                        widget.state == _ComposerPrimitiveState.sendingText,
-                    sendingImage:
-                        widget.state == _ComposerPrimitiveState.sendingImage,
-                    disabledReason: disabled ? 'This chat is closed.' : null,
-                    showImageButton:
-                        widget.state != _ComposerPrimitiveState.textOnly,
-                    onSend: disabled ? null : () {},
-                    onSendImage: disabled ? null : () {},
-                  ),
-                ],
               ),
             ),
           );

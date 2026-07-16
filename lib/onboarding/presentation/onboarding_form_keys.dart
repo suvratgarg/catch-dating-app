@@ -1,10 +1,14 @@
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/widgets.dart';
 
 abstract final class OnboardingFormKeys {
-  static ValueKey<String> genderChip(Gender gender) =>
-      ValueKey('onboarding-gender-${gender.name}');
-
-  static ValueKey<String> interestedInChip(Gender gender) =>
-      ValueKey('onboarding-interested-in-${gender.name}');
+  static const gender = ValueKey<String>('onboarding-gender');
+  static const interestedIn = ValueKey<String>('onboarding-interested-in');
+  static const dateOfBirth = ValueKey<String>('onboarding-date-of-birth');
+  static const phone = ValueKey<String>('onboarding-phone');
+  static const runningPace = ValueKey<String>('onboarding-running-pace');
+  static const runningDistances = ValueKey<String>(
+    'onboarding-running-distances',
+  );
+  static const runningReasons = ValueKey<String>('onboarding-running-reasons');
+  static const runningTimes = ValueKey<String>('onboarding-running-times');
 }

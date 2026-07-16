@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,7 @@ class PreviewTab extends StatelessWidget {
     required this.profile,
     this.scrollController,
     this.scrollPhysics,
-    this.bottomPadding = CatchSpacing.s6,
+    this.bottomPadding = 0,
     this.onLeadingOverscroll,
   });
 
@@ -26,6 +25,7 @@ class PreviewTab extends StatelessWidget {
       scrollController: scrollController,
       scrollPhysics: scrollPhysics,
       bottomPadding: bottomPadding,
+      includeTerminalPadding: true,
       onLeadingOverscroll: onLeadingOverscroll,
     );
   }

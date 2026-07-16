@@ -11,10 +11,7 @@ CreateEventCallableRequest createEventCallableRequestFromEvent(
   String? inviteCode,
   EventSuccessDefaults? eventSuccessDefaults,
 }) {
-  final meetingLocation = event.effectiveMeetingLocation?.normalized();
-  if (meetingLocation == null) {
-    throw StateError('Event ${event.id} is missing a meeting location.');
-  }
+  final meetingLocation = event.effectiveMeetingLocation.normalized();
   return CreateEventCallableRequest(
     eventId: event.id,
     clubId: event.clubId,
@@ -45,10 +42,7 @@ UpdateEventCallableRequest updateEventCallableRequestFromEvent(
   bool includePolicy = false,
   String? inviteCode,
 }) {
-  final meetingLocation = event.effectiveMeetingLocation?.normalized();
-  if (meetingLocation == null) {
-    throw StateError('Event ${event.id} is missing a meeting location.');
-  }
+  final meetingLocation = event.effectiveMeetingLocation.normalized();
   final fields = <String, Object?>{
     'startTimeMillis': event.startTime.millisecondsSinceEpoch,
     'endTimeMillis': event.endTime.millisecondsSinceEpoch,

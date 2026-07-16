@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_read_only_preview.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_contact_section.dart';
@@ -1133,6 +1134,52 @@ Widget clubDetailBodyComposition(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Embedded read-only preview',
+  type: ClubDetailReadOnlyPreviewSliver,
+  path: '[Club Detail]/Sections',
+)
+Widget clubDetailReadOnlyPreviewComposition(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubDetailReadOnlyPreviewSliver',
+    catalogId: 'screen.club.detail.sections.read_only_preview',
+    children: [
+      _StateCard(
+        label: 'consumer composition / interactions disabled',
+        child: _DeviceFrame(child: _ClubReadOnlyPreview()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Shared sliver composition',
+  type: ClubDetailSliverBody,
+  path: '[Club Detail]/Sections',
+)
+Widget clubDetailSliverBodyComposition(BuildContext context) =>
+    clubDetailReadOnlyPreviewComposition(context);
+
+@widgetbook.UseCase(
+  name: 'Shared loading sliver composition',
+  type: ClubDetailLoadingSliverBody,
+  path: '[Club Detail]/Sections',
+)
+Widget clubDetailLoadingSliverBodyComposition(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubDetailLoadingSliverBody',
+    catalogId: 'screen.club.detail.sections.loading_sliver',
+    children: [
+      _StateCard(
+        label: 'consumer loading composition',
+        child: _DeviceFrame(
+          child: CustomScrollView(slivers: [ClubDetailLoadingSliverBody()]),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Next run banner states',
   type: ClubNextRunBanner,
   path: '[Club Detail]/Sections',
@@ -1258,7 +1305,7 @@ Widget clubHostRowStates(BuildContext context) {
           borderColor: CatchTokens.of(context).primarySoft,
           ownerSealColor: ownerSealColor,
           establishedLabel: establishedLabel,
-          showChevron: true,
+          onTap: _noop,
           onMessage: _noop,
         ),
       ),
@@ -1269,7 +1316,7 @@ Widget clubHostRowStates(BuildContext context) {
           borderColor: CatchTokens.of(context).primarySoft,
           ownerSealColor: ownerSealColor,
           establishedLabel: establishedLabel,
-          showChevron: false,
+          onTap: null,
           onMessage: null,
         ),
       ),
@@ -1724,6 +1771,42 @@ class _ClubComposedPreview extends StatelessWidget {
   }
 }
 
+class _ClubReadOnlyPreview extends StatelessWidget {
+  const _ClubReadOnlyPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    return ProviderScope(
+      overrides: [
+        clubDetailViewModelProvider(_club.id).overrideWithValue(
+          AsyncData<ClubDetailViewModel?>(
+            ClubDetailViewModel(
+              club: _club,
+              isHost: true,
+              isMember: true,
+              upcomingEvents: _events,
+              reviews: _reviews,
+              userProfile: _viewer,
+              uid: _viewerUid,
+              isAuthenticated: true,
+            ),
+          ),
+        ),
+      ],
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: [
+            ClubDetailReadOnlyPreviewSliver(
+              initialClub: _club,
+              currentUid: _viewer.uid,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _CatalogScreen extends StatelessWidget {
   const _CatalogScreen({
     required this.title,
@@ -2008,6 +2091,13 @@ Event _event({
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 1, minutes: 30)),
     meetingPoint: meetingPoint,
+    meetingLocation: EventMeetingLocation(
+      name: meetingPoint,
+      latitude: 19.0702,
+      longitude: 72.8228,
+    ),
+    startingPointLat: 19.0702,
+    startingPointLng: 72.8228,
     eventFormat: EventFormatSnapshot.fromActivityKind(activityKind),
     distanceKm: distanceKm,
     pace: PaceLevel.easy,

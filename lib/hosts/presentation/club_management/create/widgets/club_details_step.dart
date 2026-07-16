@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -27,25 +28,28 @@ class ClubDetailsStep extends StatelessWidget {
       key: formKey,
       child: SingleChildScrollView(
         padding: CatchInsets.formStepBody,
-        child: Column(
+        child: CatchSectionList(
+          gap: 0,
           children: [
-            CatchField.input(
-              title: context.l10n.hostsClubDetailsStepTitleDescription,
-              controller: descriptionController,
-              prefixIcon: Icon(CatchIcons.editNoteOutlined),
-              maxLines: 4,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.newline,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return context
-                      .l10n
-                      .hostsClubDetailsStepVisiblecopyPleaseAddADescription;
-                }
-                return null;
-              },
+            CatchSection.fieldRows(
+              first: true,
+              child: CatchField.input(
+                title: context.l10n.hostsClubDetailsStepTitleDescription,
+                controller: descriptionController,
+                icon: CatchIcons.editNoteOutlined,
+                maxLines: 4,
+                textCapitalization: TextCapitalization.sentences,
+                textInputAction: TextInputAction.newline,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return context
+                        .l10n
+                        .hostsClubDetailsStepVisiblecopyPleaseAddADescription;
+                  }
+                  return null;
+                },
+              ),
             ),
-            gapH24,
             CreateClubContactFields(
               instagramController: instagramController,
               phoneController: phoneController,

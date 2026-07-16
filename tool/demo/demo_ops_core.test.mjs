@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildCheckInEventPlan,
   buildDemoChecklist,
+  buildHostAccountPlan,
   buildLaunchCleanupPlan,
   buildMarkAttendedPlan,
   buildMatchPhonePlan,
@@ -591,10 +592,63 @@ test("buildCheckInEventPlan creates a signed-up event inside the check-in window
   const eventDoc = plan.docs.find((doc) => doc.path === `events/${plan.eventId}`);
   assert.equal(eventDoc.data.startingPointLat, 28.6129);
   assert.equal(eventDoc.data.startingPointLng, 77.2295);
+  assert.deepEqual(eventDoc.data.meetingLocation, {
+    name: "India Gate",
+    address: null,
+    placeId: null,
+    latitude: 28.6129,
+    longitude: 77.2295,
+    notes: "Demo check-in event. The check-in window is already open.",
+  });
   assert.equal(eventDoc.data.bookedCount, 1);
   assert.equal(
     plan.docs.some((doc) => doc.path === `eventParticipations/${plan.eventId}_uid_a`),
     true
+  );
+});
+
+test("buildHostAccountPlan requires and mirrors an exact event location", async () => {
+  const db = fakeFirestore({
+    users: {
+      uid_a: {
+        phoneNumber: "+910000000001",
+        city: "in-dl-delhi-ncr",
+        gender: "woman",
+      },
+    },
+    publicProfiles: {uid_a: {name: "Asha"}},
+  });
+
+  const plan = await buildHostAccountPlan({
+    db,
+    admin: fakeAdmin,
+    phone: "+910000000001",
+    latitude: 28.6129,
+    longitude: 77.2295,
+    meetingPoint: " India Gate ",
+    now: new Date("2026-05-12T12:00:00.000Z"),
+  });
+  const eventDoc = plan.docs.find((doc) => doc.path === `events/${plan.eventId}`);
+  assert.equal(eventDoc.data.meetingPoint, "India Gate");
+  assert.equal(eventDoc.data.startingPointLat, 28.6129);
+  assert.equal(eventDoc.data.startingPointLng, 77.2295);
+  assert.deepEqual(eventDoc.data.meetingLocation, {
+    name: "India Gate",
+    address: null,
+    placeId: null,
+    latitude: 28.6129,
+    longitude: 77.2295,
+    notes: "Demo host event created by demo ops.",
+  });
+
+  await assert.rejects(
+    buildHostAccountPlan({
+      db,
+      admin: fakeAdmin,
+      phone: "+910000000001",
+      now: new Date("2026-05-12T12:00:00.000Z"),
+    }),
+    /requires valid --lat\/--lng/
   );
 });
 

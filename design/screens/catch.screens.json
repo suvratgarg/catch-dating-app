@@ -13699,7 +13699,7 @@
           "source": "HostInboxScreenState maps unresolved uid plus loading view-model state to ChatsListLoading while retaining host header and filter shell.",
           "nextAction": "Decide whether null uid should remain skeleton loading or become an explicit host access state.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "tests": [
             "test/chats/chat_inbox_screen_test.dart"
@@ -13715,7 +13715,7 @@
           "source": "HostInboxScreenState and ChatsListDisplayState map loading matches to the attendee-query skeleton body.",
           "nextAction": "Use this capture for skeleton parity against host inbox references.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "tests": [
             "test/chats/chat_inbox_screen_test.dart"
@@ -13731,7 +13731,7 @@
           "source": "ChatsListDisplayState maps match stream failures to CatchSliverErrorState.fromError with AppErrorContext.chat and retry invalidation.",
           "nextAction": "Keep retry intent provider-backed until route callbacks are promoted into typed controller seams.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "tests": [
             "test/chats/chat_inbox_screen_test.dart"
@@ -13747,7 +13747,7 @@
           "source": "ChatsListDisplayState maps a successful empty host inbox to the host-specific No attendee queries yet empty state.",
           "nextAction": "Keep empty copy aligned with the host inbox reference variants.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_empty"
@@ -13760,7 +13760,7 @@
           "source": "ChatsListViewModel filters host app data to matches where match.isClubHostInquiry is true; mixed host-inquiry and consumer-dating matches are covered by a host-specific test.",
           "nextAction": "Event-scoped grouping and the compact selected-event plus surface-segmented Booked/Prospective presentation are implemented. Keep their Widgetbook and capture contracts current while the remaining pixel delta is closed.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "tests": [
             "test/chats/chat_inbox_screen_test.dart"
@@ -13776,7 +13776,7 @@
           ],
           "nextAction": "The fresh 2026-07-10 production full-shell Inbox comparison is 17.62% mismatch / 31.90 meanDelta. Mismatch is within its 18% ceiling, but meanDelta remains above 18; keep HOST-V2-INBOX-PARITY-001 open alongside live production delivery proof.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_queries",
@@ -13794,7 +13794,7 @@
           ],
           "nextAction": "Add more header-only captures only if no-search-action or long-copy behavior diverges visually from the route states.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_queries",
@@ -13882,7 +13882,7 @@
           ],
           "nextAction": "Add no-search-action capture only if empty header behavior changes from the current empty route capture.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_queries",
@@ -13899,7 +13899,7 @@
           ],
           "nextAction": "Keyboard-safe host search layout remains a future simulator/manual pass if needed.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_search_active"
@@ -13915,7 +13915,7 @@
           ],
           "nextAction": "Keep host-specific search-empty copy covered by HostInboxScreenState and route tests; add new reference variants only if design exports them.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_search_empty"
@@ -13928,7 +13928,7 @@
           "source": "Host inquiry previews with no lastMessagePreview use Ask the host copy and are folded into the same conversation section.",
           "nextAction": "Decide whether Host Inbox needs a distinct new-query treatment beyond the shared row new-state affordance.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_new_query"
@@ -13944,7 +13944,7 @@
           ],
           "nextAction": "Add row-count/divider-only captures only if the contiguous list diverges from populated and unread-filter states.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_queries",
@@ -13961,7 +13961,7 @@
           ],
           "nextAction": "Add 99+ unread capture only if product data can produce high host-inbox unread counts.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_queries",
@@ -13975,7 +13975,7 @@
           "source": "CatchPersonRow uses square CatchPersonAvatar shape for club host inquiries and circular avatars for dating matches.",
           "nextAction": "Add fallback-avatar capture only if missing profile/club data becomes a visual parity concern.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_queries",
@@ -13989,7 +13989,7 @@
           "source": "ChatsListViewModel reads public profile and club host profile AsyncValues opportunistically; while data loads, rows fall back to Host conversation or Unknown copy instead of blocking the inbox.",
           "nextAction": "Decide whether profile/club loading should remain fallback-only or expose row skeletons for host inbox parity.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ]
         },
         {
@@ -14002,7 +14002,7 @@
           ],
           "nextAction": "Grouping tests now cover same-event duplicate collapse plus different-event, General, sentinel-like, and delimiter-containing ids. Continue with the selected-event Inbox UI after the owner confirms audience and thread-ownership semantics.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ]
         },
         {
@@ -14015,7 +14015,7 @@
           ],
           "nextAction": "Keep this callback contract aligned with screen.host.chat as the chat adapter is expanded.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ]
         },
         {
@@ -14025,7 +14025,7 @@
           "source": "ChatsListDisplayState maps offline-like match stream failures through the shared chat error branch while retaining host inbox chrome.",
           "nextAction": "Define whether offline copy needs a host-specific variant or should stay on shared CatchErrorState mapping.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_offline"
@@ -14038,7 +14038,7 @@
           "source": "Host Inbox capture applies MediaQuery textScaler 2.0 across pinned header, filter row, search affordance, and attendee-query rows.",
           "nextAction": "Use this capture to fix any visual parity issues found during pixel comparison.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_text_scale_2"
@@ -14051,7 +14051,7 @@
           "source": "Host Inbox capture applies MediaQuery.disableAnimations for reduced-motion review.",
           "nextAction": "Use this capture to verify search/header behavior during future animation changes.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_reduced_motion"
@@ -14064,7 +14064,7 @@
           "source": "Host Inbox paired theme capture renders light and dark variants from the same populated fixture state.",
           "nextAction": "Use this capture for token parity once matching Claude references are exported.",
           "previewIds": [
-              "HostInboxScreen/Event-scoped states"
+            "HostInboxScreen/Event-scoped states"
           ],
           "captureIds": [
             "host_inbox_light_dark"

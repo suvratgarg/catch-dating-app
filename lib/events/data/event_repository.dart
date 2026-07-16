@@ -558,9 +558,9 @@ class EventRepository {
   /// Self-check-in for a signed-up participant via the
   /// [selfCheckInAttendance] Cloud Function.
   ///
-  /// Requires GPS coordinates so the server can verify the user is within
-  /// 200 m of the event's meeting point. Pass `null` for events without
-  /// coordinates (the server skips the proximity check).
+  /// Passes the viewer's GPS coordinates so the server can verify proximity
+  /// to the event's required exact meeting location. Null viewer coordinates
+  /// fail closed; they never bypass the proximity check.
   Future<void> selfCheckInAttendance({
     required String eventId,
     required double? latitude,

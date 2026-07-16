@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ExternalEvent {
 
- String get id; String get canonicalHostId; String get compatibilityClubId; String get title; String get description;@TimestampConverter() DateTime get startTime;@NullableTimestampConverter() DateTime? get endTime; String? get timezone; String get meetingPoint; String? get locationDetails; String? get photoUrl; double? get latitude; double? get longitude; ActivityKind get activityKind; EventInteractionModel get interactionModel; String? get priceDisplayText; int? get parsedPriceInPaise; String get currency; String get status; String get publicationStatus; String? get citySlug; List<ExternalEventLink> get externalLinks; String? get sourcePlatform;
+ String get id; String get canonicalHostId; String get compatibilityClubId; String get title; String get description;@TimestampConverter() DateTime get startTime;@NullableTimestampConverter() DateTime? get endTime; String? get timezone; String get meetingPoint; String? get locationDetails; String? get photoUrl; double get latitude; double get longitude; ActivityKind get activityKind; EventInteractionModel get interactionModel; String? get priceDisplayText; int? get parsedPriceInPaise; String get currency; String get status; String get publicationStatus; String? get citySlug; List<ExternalEventLink> get externalLinks; String? get sourcePlatform;
 /// Create a copy of ExternalEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $ExternalEventCopyWith<$Res>  {
   factory $ExternalEventCopyWith(ExternalEvent value, $Res Function(ExternalEvent) _then) = _$ExternalEventCopyWithImpl;
 @useResult
 $Res call({
- String id, String canonicalHostId, String compatibilityClubId, String title, String description,@TimestampConverter() DateTime startTime,@NullableTimestampConverter() DateTime? endTime, String? timezone, String meetingPoint, String? locationDetails, String? photoUrl, double? latitude, double? longitude, ActivityKind activityKind, EventInteractionModel interactionModel, String? priceDisplayText, int? parsedPriceInPaise, String currency, String status, String publicationStatus, String? citySlug, List<ExternalEventLink> externalLinks, String? sourcePlatform
+ String id, String canonicalHostId, String compatibilityClubId, String title, String description,@TimestampConverter() DateTime startTime,@NullableTimestampConverter() DateTime? endTime, String? timezone, String meetingPoint, String? locationDetails, String? photoUrl, double latitude, double longitude, ActivityKind activityKind, EventInteractionModel interactionModel, String? priceDisplayText, int? parsedPriceInPaise, String currency, String status, String publicationStatus, String? citySlug, List<ExternalEventLink> externalLinks, String? sourcePlatform
 });
 
 
@@ -62,7 +62,7 @@ class _$ExternalEventCopyWithImpl<$Res>
 
 /// Create a copy of ExternalEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? canonicalHostId = null,Object? compatibilityClubId = null,Object? title = null,Object? description = null,Object? startTime = null,Object? endTime = freezed,Object? timezone = freezed,Object? meetingPoint = null,Object? locationDetails = freezed,Object? photoUrl = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? activityKind = null,Object? interactionModel = null,Object? priceDisplayText = freezed,Object? parsedPriceInPaise = freezed,Object? currency = null,Object? status = null,Object? publicationStatus = null,Object? citySlug = freezed,Object? externalLinks = null,Object? sourcePlatform = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? canonicalHostId = null,Object? compatibilityClubId = null,Object? title = null,Object? description = null,Object? startTime = null,Object? endTime = freezed,Object? timezone = freezed,Object? meetingPoint = null,Object? locationDetails = freezed,Object? photoUrl = freezed,Object? latitude = null,Object? longitude = null,Object? activityKind = null,Object? interactionModel = null,Object? priceDisplayText = freezed,Object? parsedPriceInPaise = freezed,Object? currency = null,Object? status = null,Object? publicationStatus = null,Object? citySlug = freezed,Object? externalLinks = null,Object? sourcePlatform = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,canonicalHostId: null == canonicalHostId ? _self.canonicalHostId : canonicalHostId // ignore: cast_nullable_to_non_nullable
@@ -75,9 +75,9 @@ as DateTime?,timezone: freezed == timezone ? _self.timezone : timezone // ignore
 as String?,meetingPoint: null == meetingPoint ? _self.meetingPoint : meetingPoint // ignore: cast_nullable_to_non_nullable
 as String,locationDetails: freezed == locationDetails ? _self.locationDetails : locationDetails // ignore: cast_nullable_to_non_nullable
 as String?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
-as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double?,activityKind: null == activityKind ? _self.activityKind : activityKind // ignore: cast_nullable_to_non_nullable
+as String?,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double,activityKind: null == activityKind ? _self.activityKind : activityKind // ignore: cast_nullable_to_non_nullable
 as ActivityKind,interactionModel: null == interactionModel ? _self.interactionModel : interactionModel // ignore: cast_nullable_to_non_nullable
 as EventInteractionModel,priceDisplayText: freezed == priceDisplayText ? _self.priceDisplayText : priceDisplayText // ignore: cast_nullable_to_non_nullable
 as String?,parsedPriceInPaise: freezed == parsedPriceInPaise ? _self.parsedPriceInPaise : parsedPriceInPaise // ignore: cast_nullable_to_non_nullable
@@ -172,7 +172,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String canonicalHostId,  String compatibilityClubId,  String title,  String description, @TimestampConverter()  DateTime startTime, @NullableTimestampConverter()  DateTime? endTime,  String? timezone,  String meetingPoint,  String? locationDetails,  String? photoUrl,  double? latitude,  double? longitude,  ActivityKind activityKind,  EventInteractionModel interactionModel,  String? priceDisplayText,  int? parsedPriceInPaise,  String currency,  String status,  String publicationStatus,  String? citySlug,  List<ExternalEventLink> externalLinks,  String? sourcePlatform)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String canonicalHostId,  String compatibilityClubId,  String title,  String description, @TimestampConverter()  DateTime startTime, @NullableTimestampConverter()  DateTime? endTime,  String? timezone,  String meetingPoint,  String? locationDetails,  String? photoUrl,  double latitude,  double longitude,  ActivityKind activityKind,  EventInteractionModel interactionModel,  String? priceDisplayText,  int? parsedPriceInPaise,  String currency,  String status,  String publicationStatus,  String? citySlug,  List<ExternalEventLink> externalLinks,  String? sourcePlatform)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExternalEvent() when $default != null:
 return $default(_that.id,_that.canonicalHostId,_that.compatibilityClubId,_that.title,_that.description,_that.startTime,_that.endTime,_that.timezone,_that.meetingPoint,_that.locationDetails,_that.photoUrl,_that.latitude,_that.longitude,_that.activityKind,_that.interactionModel,_that.priceDisplayText,_that.parsedPriceInPaise,_that.currency,_that.status,_that.publicationStatus,_that.citySlug,_that.externalLinks,_that.sourcePlatform);case _:
@@ -193,7 +193,7 @@ return $default(_that.id,_that.canonicalHostId,_that.compatibilityClubId,_that.t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String canonicalHostId,  String compatibilityClubId,  String title,  String description, @TimestampConverter()  DateTime startTime, @NullableTimestampConverter()  DateTime? endTime,  String? timezone,  String meetingPoint,  String? locationDetails,  String? photoUrl,  double? latitude,  double? longitude,  ActivityKind activityKind,  EventInteractionModel interactionModel,  String? priceDisplayText,  int? parsedPriceInPaise,  String currency,  String status,  String publicationStatus,  String? citySlug,  List<ExternalEventLink> externalLinks,  String? sourcePlatform)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String canonicalHostId,  String compatibilityClubId,  String title,  String description, @TimestampConverter()  DateTime startTime, @NullableTimestampConverter()  DateTime? endTime,  String? timezone,  String meetingPoint,  String? locationDetails,  String? photoUrl,  double latitude,  double longitude,  ActivityKind activityKind,  EventInteractionModel interactionModel,  String? priceDisplayText,  int? parsedPriceInPaise,  String currency,  String status,  String publicationStatus,  String? citySlug,  List<ExternalEventLink> externalLinks,  String? sourcePlatform)  $default,) {final _that = this;
 switch (_that) {
 case _ExternalEvent():
 return $default(_that.id,_that.canonicalHostId,_that.compatibilityClubId,_that.title,_that.description,_that.startTime,_that.endTime,_that.timezone,_that.meetingPoint,_that.locationDetails,_that.photoUrl,_that.latitude,_that.longitude,_that.activityKind,_that.interactionModel,_that.priceDisplayText,_that.parsedPriceInPaise,_that.currency,_that.status,_that.publicationStatus,_that.citySlug,_that.externalLinks,_that.sourcePlatform);case _:
@@ -213,7 +213,7 @@ return $default(_that.id,_that.canonicalHostId,_that.compatibilityClubId,_that.t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String canonicalHostId,  String compatibilityClubId,  String title,  String description, @TimestampConverter()  DateTime startTime, @NullableTimestampConverter()  DateTime? endTime,  String? timezone,  String meetingPoint,  String? locationDetails,  String? photoUrl,  double? latitude,  double? longitude,  ActivityKind activityKind,  EventInteractionModel interactionModel,  String? priceDisplayText,  int? parsedPriceInPaise,  String currency,  String status,  String publicationStatus,  String? citySlug,  List<ExternalEventLink> externalLinks,  String? sourcePlatform)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String canonicalHostId,  String compatibilityClubId,  String title,  String description, @TimestampConverter()  DateTime startTime, @NullableTimestampConverter()  DateTime? endTime,  String? timezone,  String meetingPoint,  String? locationDetails,  String? photoUrl,  double latitude,  double longitude,  ActivityKind activityKind,  EventInteractionModel interactionModel,  String? priceDisplayText,  int? parsedPriceInPaise,  String currency,  String status,  String publicationStatus,  String? citySlug,  List<ExternalEventLink> externalLinks,  String? sourcePlatform)?  $default,) {final _that = this;
 switch (_that) {
 case _ExternalEvent() when $default != null:
 return $default(_that.id,_that.canonicalHostId,_that.compatibilityClubId,_that.title,_that.description,_that.startTime,_that.endTime,_that.timezone,_that.meetingPoint,_that.locationDetails,_that.photoUrl,_that.latitude,_that.longitude,_that.activityKind,_that.interactionModel,_that.priceDisplayText,_that.parsedPriceInPaise,_that.currency,_that.status,_that.publicationStatus,_that.citySlug,_that.externalLinks,_that.sourcePlatform);case _:
@@ -228,7 +228,7 @@ return $default(_that.id,_that.canonicalHostId,_that.compatibilityClubId,_that.t
 
 
 class _ExternalEvent extends ExternalEvent {
-  const _ExternalEvent({required this.id, required this.canonicalHostId, required this.compatibilityClubId, required this.title, required this.description, @TimestampConverter() required this.startTime, @NullableTimestampConverter() this.endTime, this.timezone, required this.meetingPoint, this.locationDetails, this.photoUrl, this.latitude, this.longitude, required this.activityKind, required this.interactionModel, this.priceDisplayText, this.parsedPriceInPaise, this.currency = defaultCurrencyCode, required this.status, required this.publicationStatus, this.citySlug, required final  List<ExternalEventLink> externalLinks, this.sourcePlatform}): _externalLinks = externalLinks,super._();
+  const _ExternalEvent({required this.id, required this.canonicalHostId, required this.compatibilityClubId, required this.title, required this.description, @TimestampConverter() required this.startTime, @NullableTimestampConverter() this.endTime, this.timezone, required this.meetingPoint, this.locationDetails, this.photoUrl, required this.latitude, required this.longitude, required this.activityKind, required this.interactionModel, this.priceDisplayText, this.parsedPriceInPaise, this.currency = defaultCurrencyCode, required this.status, required this.publicationStatus, this.citySlug, required final  List<ExternalEventLink> externalLinks, this.sourcePlatform}): _externalLinks = externalLinks,super._();
   
 
 @override final  String id;
@@ -242,8 +242,8 @@ class _ExternalEvent extends ExternalEvent {
 @override final  String meetingPoint;
 @override final  String? locationDetails;
 @override final  String? photoUrl;
-@override final  double? latitude;
-@override final  double? longitude;
+@override final  double latitude;
+@override final  double longitude;
 @override final  ActivityKind activityKind;
 @override final  EventInteractionModel interactionModel;
 @override final  String? priceDisplayText;
@@ -291,7 +291,7 @@ abstract mixin class _$ExternalEventCopyWith<$Res> implements $ExternalEventCopy
   factory _$ExternalEventCopyWith(_ExternalEvent value, $Res Function(_ExternalEvent) _then) = __$ExternalEventCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String canonicalHostId, String compatibilityClubId, String title, String description,@TimestampConverter() DateTime startTime,@NullableTimestampConverter() DateTime? endTime, String? timezone, String meetingPoint, String? locationDetails, String? photoUrl, double? latitude, double? longitude, ActivityKind activityKind, EventInteractionModel interactionModel, String? priceDisplayText, int? parsedPriceInPaise, String currency, String status, String publicationStatus, String? citySlug, List<ExternalEventLink> externalLinks, String? sourcePlatform
+ String id, String canonicalHostId, String compatibilityClubId, String title, String description,@TimestampConverter() DateTime startTime,@NullableTimestampConverter() DateTime? endTime, String? timezone, String meetingPoint, String? locationDetails, String? photoUrl, double latitude, double longitude, ActivityKind activityKind, EventInteractionModel interactionModel, String? priceDisplayText, int? parsedPriceInPaise, String currency, String status, String publicationStatus, String? citySlug, List<ExternalEventLink> externalLinks, String? sourcePlatform
 });
 
 
@@ -308,7 +308,7 @@ class __$ExternalEventCopyWithImpl<$Res>
 
 /// Create a copy of ExternalEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? canonicalHostId = null,Object? compatibilityClubId = null,Object? title = null,Object? description = null,Object? startTime = null,Object? endTime = freezed,Object? timezone = freezed,Object? meetingPoint = null,Object? locationDetails = freezed,Object? photoUrl = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? activityKind = null,Object? interactionModel = null,Object? priceDisplayText = freezed,Object? parsedPriceInPaise = freezed,Object? currency = null,Object? status = null,Object? publicationStatus = null,Object? citySlug = freezed,Object? externalLinks = null,Object? sourcePlatform = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? canonicalHostId = null,Object? compatibilityClubId = null,Object? title = null,Object? description = null,Object? startTime = null,Object? endTime = freezed,Object? timezone = freezed,Object? meetingPoint = null,Object? locationDetails = freezed,Object? photoUrl = freezed,Object? latitude = null,Object? longitude = null,Object? activityKind = null,Object? interactionModel = null,Object? priceDisplayText = freezed,Object? parsedPriceInPaise = freezed,Object? currency = null,Object? status = null,Object? publicationStatus = null,Object? citySlug = freezed,Object? externalLinks = null,Object? sourcePlatform = freezed,}) {
   return _then(_ExternalEvent(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,canonicalHostId: null == canonicalHostId ? _self.canonicalHostId : canonicalHostId // ignore: cast_nullable_to_non_nullable
@@ -321,9 +321,9 @@ as DateTime?,timezone: freezed == timezone ? _self.timezone : timezone // ignore
 as String?,meetingPoint: null == meetingPoint ? _self.meetingPoint : meetingPoint // ignore: cast_nullable_to_non_nullable
 as String,locationDetails: freezed == locationDetails ? _self.locationDetails : locationDetails // ignore: cast_nullable_to_non_nullable
 as String?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
-as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double?,activityKind: null == activityKind ? _self.activityKind : activityKind // ignore: cast_nullable_to_non_nullable
+as String?,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double,activityKind: null == activityKind ? _self.activityKind : activityKind // ignore: cast_nullable_to_non_nullable
 as ActivityKind,interactionModel: null == interactionModel ? _self.interactionModel : interactionModel // ignore: cast_nullable_to_non_nullable
 as EventInteractionModel,priceDisplayText: freezed == priceDisplayText ? _self.priceDisplayText : priceDisplayText // ignore: cast_nullable_to_non_nullable
 as String?,parsedPriceInPaise: freezed == parsedPriceInPaise ? _self.parsedPriceInPaise : parsedPriceInPaise // ignore: cast_nullable_to_non_nullable

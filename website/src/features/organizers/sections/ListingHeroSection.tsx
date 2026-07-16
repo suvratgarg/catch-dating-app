@@ -1,3 +1,5 @@
+import {websiteCopy} from "@content/generated";
+import {websiteTemplates} from "@content/templates";
 import type {CSSProperties} from "react";
 import {
   ActivityMark,
@@ -58,11 +60,11 @@ export function ListingHeroSection({
           <h1>{listing.headline}</h1>
           <p>{listing.description}</p>
           <BadgeRow
-            aria-label="Listing status"
+            aria-label={websiteCopy["listingherosection_0407"]}
             items={[
               {label: listing.status},
               {label: listing.sourceConfidence.replaceAll("_", " ")},
-              {label: `Updated ${listing.lastVerifiedAt}`},
+              {label: websiteTemplates.updatedLabel(listing.lastVerifiedAt)},
             ]}
           />
           <ActionGroup variant="hero">
@@ -89,9 +91,7 @@ export function ListingHeroSection({
               variant="ghost"
               type="button"
               onClick={onShareListing}
-            >
-              Share listing
-            </Button>
+            >{websiteCopy["listingherosection_0418"]}</Button>
             <Button
               variant="ghost"
               type="button"
@@ -109,7 +109,7 @@ export function ListingHeroSection({
         <PanelShell
           variant="listing"
           as="aside"
-          aria-label={`${listing.name} profile`}
+          aria-label={websiteTemplates.listingProfileLabel(listing.name)}
           reveal
           style={{"--activity": activity.token} as CSSProperties}
         >
@@ -125,11 +125,11 @@ export function ListingHeroSection({
           </div>
           {listing.metrics ? (
             <ListingHeroMetrics
-              aria-label="Organizer metrics"
+              aria-label={websiteCopy["listingherosection_0411"]}
               items={[
-                {label: " members", value: listing.metrics.memberCount ?? 0},
-                {label: " rating", value: listing.metrics.rating?.toFixed(1) ?? "0.0"},
-                {label: " reviews", value: listing.metrics.reviewCount ?? 0},
+                {label: websiteCopy["listingherosection_0408"], value: listing.metrics.memberCount ?? 0},
+                {label: websiteCopy["listingherosection_0415"], value: listing.metrics.rating?.toFixed(1) ?? "0.0"},
+                {label: websiteCopy["listingherosection_0417"], value: listing.metrics.reviewCount ?? 0},
               ]}
             />
           ) : null}
@@ -145,16 +145,16 @@ function ListingDiagnosticsPanel({listing}: {listing: HostListing}) {
   const verified = isVerifiedListing(listing);
   const diagnostics = verified
     ? [
-        {ok: true, label: "Ownership and source model verified"},
-        {ok: true, label: "Catch events attached to profile"},
-        {ok: (listing.metrics?.reviewCount ?? 0) > 0, label: "Review signal visible"},
-        {ok: Boolean(listing.eventSuccessSummary), label: "Aggregate host report available"},
+        {ok: true, label: websiteCopy["listingherosection_0412"]},
+        {ok: true, label: websiteCopy["listingherosection_0406"]},
+        {ok: (listing.metrics?.reviewCount ?? 0) > 0, label: websiteCopy["listingherosection_0416"]},
+        {ok: Boolean(listing.eventSuccessSummary), label: websiteCopy["listingherosection_0405"]},
       ]
     : [
-        {ok: true, label: "Public facts collected from sources"},
-        {ok: false, label: "Ownership not verified"},
-        {ok: false, label: "No Catch events published"},
-        {ok: false, label: "No verified attendee reviews"},
+        {ok: true, label: websiteCopy["listingherosection_0414"]},
+        {ok: false, label: websiteCopy["listingherosection_0413"]},
+        {ok: false, label: websiteCopy["listingherosection_0409"]},
+        {ok: false, label: websiteCopy["listingherosection_0410"]},
       ];
 
   return (

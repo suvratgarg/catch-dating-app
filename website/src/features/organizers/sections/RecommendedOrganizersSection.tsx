@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SectionHeader} from "../../../shared/site";
 import {
   FeaturedOrganizerCardGrid,
@@ -24,10 +25,10 @@ export function RecommendedOrganizersSection({
   return (
     <RecommendedOrganizersSectionShell aria-labelledby="recommended-organizers-title">
       <SectionHeader
-        eyebrow="While you are here"
+        eyebrow={websiteCopy["recommendedorganizerssection_0491"]}
         id="recommended-organizers-title"
-        title="Verified organizers nearby in the product loop."
-        body="Unclaimed pages keep the source ledger visible, but verified profiles can show owner-managed activity, reviews, and event outcomes." />
+        title={websiteCopy["recommendedorganizerssection_0490"]}
+        body={websiteCopy["recommendedorganizerssection_0489"]} />
       <FeaturedOrganizerCardGrid items={recommendedItems} />
     </RecommendedOrganizersSectionShell>
   );

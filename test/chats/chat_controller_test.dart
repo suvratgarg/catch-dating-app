@@ -51,6 +51,27 @@ void main() {
     expect(conversationRepo.sentImageUrls, isEmpty);
     expect(imageRepo.deletedPaths, isEmpty);
   });
+
+  test(
+    'sendImage propagates upload rejection without writing a message',
+    () async {
+      final uploadError = Exception('storage permission denied');
+      final imageRepo = _FakeImageUploadRepository(uploadError: uploadError);
+      final conversationRepo = _FakeConversationRepository(failSend: false);
+      final container = _container(imageRepo, conversationRepo);
+      addTearDown(container.dispose);
+
+      final controller = container.read(chatControllerProvider.notifier);
+
+      await expectLater(
+        controller.sendImage(matchId: 'match-1', senderId: 'sender-1'),
+        throwsA(same(uploadError)),
+      );
+
+      expect(conversationRepo.sentImageUrls, isEmpty);
+      expect(imageRepo.deletedPaths, isEmpty);
+    },
+  );
 }
 
 ProviderContainer _container(
@@ -64,9 +85,10 @@ ProviderContainer _container(
 );
 
 class _FakeImageUploadRepository extends Fake implements ImageUploadRepository {
-  _FakeImageUploadRepository({this.pickReturnsNull = false});
+  _FakeImageUploadRepository({this.pickReturnsNull = false, this.uploadError});
 
   final bool pickReturnsNull;
+  final Object? uploadError;
   final deletedPaths = <String>[];
   String lastStoragePath = '';
   String lastUrl = '';
@@ -81,8 +103,10 @@ class _FakeImageUploadRepository extends Fake implements ImageUploadRepository {
   Future<UploadedImage> uploadChatImageWithMetadata({
     required String matchId,
     required String messageId,
+    required String uploaderUid,
     required XFile image,
   }) async {
+    if (uploadError case final error?) throw error;
     lastStoragePath = 'matches/$matchId/images/${messageId}_1.jpg';
     lastUrl = 'https://example.com/$messageId.jpg';
     return UploadedImage(url: lastUrl, storagePath: lastStoragePath);

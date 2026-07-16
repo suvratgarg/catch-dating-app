@@ -1,7 +1,8 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -116,31 +117,68 @@ class OnboardingGenderInterestStep extends StatelessWidget {
           size: CatchButtonSize.lg,
         ),
         children: [
-          CatchChipField<Gender>(
-            label: context.l10n.onboardingGenderInterestPageLabelIAmA,
-            values: Gender.values,
-            selected: state.selectedGender,
-            multiSelect: false,
-            chipKeyBuilder: OnboardingFormKeys.genderChip,
-            validator: state.validateGender,
-            onChanged: callbacks.onGenderChanged,
+          CatchSectionList(
+            gap: CatchSpacing.s4,
+            children: [
+              CatchSection.fieldRows(
+                first: true,
+                children: [
+                  FormField<Set<Gender>>(
+                    initialValue: state.selectedGender,
+                    validator: state.validateGender,
+                    builder: (field) => CatchField.choices<Gender>(
+                      key: OnboardingFormKeys.gender,
+                      title: context.l10n.onboardingGenderInterestPageLabelIAmA,
+                      body: _orderedGenderLabels(state.selectedGender),
+                      values: Gender.values,
+                      itemLabel: (gender) => gender.label,
+                      selected: state.selectedGender,
+                      onSelectionChanged: (selection) {
+                        callbacks.onGenderChanged(selection);
+                        field.didChange(selection);
+                      },
+                      initiallyOpen: true,
+                      error: field.errorText,
+                    ),
+                  ),
+                  FormField<Set<Gender>>(
+                    initialValue: state.interestedIn,
+                    validator: state.validateInterestedIn,
+                    builder: (field) => CatchField.choices<Gender>(
+                      key: OnboardingFormKeys.interestedIn,
+                      title:
+                          context.l10n.onboardingGenderInterestPageLabelShowMe,
+                      body: _orderedGenderLabels(state.interestedIn),
+                      values: Gender.values,
+                      itemLabel: (gender) => gender.label,
+                      selected: state.interestedIn,
+                      onSelectionChanged: (selection) {
+                        callbacks.onInterestedInChanged(selection);
+                        field.didChange(selection);
+                      },
+                      multi: true,
+                      initiallyOpen: true,
+                      error: field.errorText,
+                    ),
+                  ),
+                ],
+              ),
+              if (state.hasSaveError)
+                CatchSection.plain(
+                  child: CatchErrorBanner(message: state.saveErrorMessage!),
+                ),
+            ],
           ),
-          gapH28,
-          CatchChipField<Gender>(
-            label: context.l10n.onboardingGenderInterestPageLabelShowMe,
-            values: Gender.values,
-            selected: state.interestedIn,
-            multiSelect: true,
-            chipKeyBuilder: OnboardingFormKeys.interestedInChip,
-            validator: state.validateInterestedIn,
-            onChanged: callbacks.onInterestedInChanged,
-          ),
-          if (state.hasSaveError) ...[
-            gapH16,
-            CatchErrorBanner(message: state.saveErrorMessage!),
-          ],
         ],
       ),
     );
   }
+}
+
+String? _orderedGenderLabels(Set<Gender> selected) {
+  final labels = Gender.values
+      .where(selected.contains)
+      .map((gender) => gender.label)
+      .toList(growable: false);
+  return labels.isEmpty ? null : labels.join(', ');
 }

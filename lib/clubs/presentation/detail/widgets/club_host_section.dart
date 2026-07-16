@@ -60,24 +60,20 @@ class ClubHostSection extends StatelessWidget {
                           displayName: host.displayName,
                         )
                   : null,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
+              child: ClubHostRow(
+                host: host,
+                borderColor: t.primarySoft,
+                ownerSealColor: activity.accent,
+                establishedLabel: establishedLabel,
                 onTap: canViewProfile
                     ? () => onViewProfile?.call(host.uid)
                     : null,
-                child: ClubHostRow(
-                  host: host,
-                  borderColor: t.primarySoft,
-                  ownerSealColor: activity.accent,
-                  establishedLabel: establishedLabel,
-                  showChevron: canViewProfile,
-                  onMessage:
-                      messageableHostUids.contains(host.uid) &&
-                          !isMessageHostPending &&
-                          onMessageHost != null
-                      ? () => unawaited(onMessageHost!(context, host))
-                      : null,
-                ),
+                onMessage:
+                    messageableHostUids.contains(host.uid) &&
+                        !isMessageHostPending &&
+                        onMessageHost != null
+                    ? () => unawaited(onMessageHost!(context, host))
+                    : null,
               ),
             ),
             if (host != hosts.last) gapH12,
@@ -95,7 +91,7 @@ class ClubHostRow extends StatelessWidget {
     required this.borderColor,
     required this.ownerSealColor,
     required this.establishedLabel,
-    required this.showChevron,
+    required this.onTap,
     required this.onMessage,
   });
 
@@ -103,7 +99,7 @@ class ClubHostRow extends StatelessWidget {
   final Color borderColor;
   final Color ownerSealColor;
   final String establishedLabel;
-  final bool showChevron;
+  final VoidCallback? onTap;
   final VoidCallback? onMessage;
 
   @override
@@ -113,7 +109,7 @@ class ClubHostRow extends StatelessWidget {
     final isOwner = host.role == ClubHostRole.owner;
     final meta = '${isOwner ? 'OWNER' : 'HOST'} · EST. $establishedLabel';
 
-    return Row(
+    final row = Row(
       children: [
         CatchPersonAvatar(
           name: host.displayName,
@@ -172,7 +168,7 @@ class ClubHostRow extends StatelessWidget {
             ),
           ),
         ],
-        if (showChevron) ...[
+        if (onTap != null) ...[
           gapW8,
           Icon(
             CatchIcons.chevronRightRounded,
@@ -181,6 +177,13 @@ class ClubHostRow extends StatelessWidget {
           ),
         ],
       ],
+    );
+
+    if (onTap == null) return row;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: row,
     );
   }
 }

@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 51,
-    "captures": 632,
+    "captures": 631,
     "statusCounts": {
       "excluded": 6,
       "captured": 39,
@@ -4182,23 +4182,6 @@
         "dark": "dark/event_location_map_not_found.png"
       },
       "whatItIs": "Event Location Map Not Found",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "event_location_map_no_coordinate",
-      "routes": [
-        "eventLocationMapScreen"
-      ],
-      "device": "review-phone",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/event_location_map_no_coordinate.png",
-        "dark": "dark/event_location_map_no_coordinate.png"
-      },
-      "whatItIs": "Event Location Map No Coordinate",
       "keepChangeNotes": ""
     },
     {

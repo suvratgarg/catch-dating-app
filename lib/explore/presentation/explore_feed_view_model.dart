@@ -40,8 +40,7 @@ class ExploreFeedViewModel {
 
   bool get isEmpty => items.isEmpty && externalItems.isEmpty;
   int get count => items.length + externalItems.length;
-  int get mappableEventCount =>
-      items.where((item) => item.event.hasExactStartingPoint).length;
+  int get mappableEventCount => items.length + externalItems.length;
   ExploreEventItem? get featuredItem => items.isEmpty ? null : items.first;
   List<ExploreEventItem> get railItems => items.skip(1).take(8).toList();
 

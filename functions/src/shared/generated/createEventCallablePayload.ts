@@ -16,7 +16,7 @@ export interface CreateEventCallablePayload {
   /**
    * Canonical meeting location selected from Google Places or a manually pinned map coordinate.
    */
-  meetingLocation?: {
+  meetingLocation: {
     name: string;
     address?: string | null;
     placeId?: string | null;

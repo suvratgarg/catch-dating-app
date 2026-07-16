@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-11",
+  "updated": "2026-07-16",
   "references": [
     {
       "id": "screen.dashboard.home.full_dashboard",
@@ -809,51 +809,6 @@
       "notes": "Canonical Claude Host Events-list reference. The 2026-07-10 routed full-shell implementation includes backend-backed New and exact-policy-gated non-persisted Repeat actions, minute-refreshed Upcoming/Live/Past lifecycle filtering, month groups, activity-spined rows, and truthful fill progress. It passes the canonical threshold without regressionThresholds at mismatch 15.24%, meanDelta 15.20, maxDelta 240, masked 17160."
     },
     {
-      "id": "screen.host.clubs.organizer_overview",
-      "screenId": "screen.host.clubs",
-      "stateId": "organizer_overview",
-      "captureId": "host_clubs_management",
-      "theme": "light",
-      "textScale": 1,
-      "device": {
-        "id": "claude-phone-390x812",
-        "width": 390,
-        "height": 812,
-        "pixelRatio": 1
-      },
-      "chromePolicy": "full-shell",
-      "referencePath": "design/reference_screens/screen.host.clubs/organizer.png",
-      "maskPath": "design/reference_screens/screen.host.clubs/masks.json",
-      "forceCompareMaskIds": [
-        "host_tab_bar"
-      ],
-      "source": {
-        "kind": "claude",
-        "id": "claude.host-clubs",
-        "path": "design/source_packs/host-v2/templates/hosts-organizer/Organizer.dc.html",
-        "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "0be99934278aa816beefe84f5e82809af4e26346e944294708f025e4718da0a8",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + sips crop",
-        "viewport": {
-          "width": 900,
-          "height": 920
-        },
-        "crop": {
-          "x": 255,
-          "y": 41,
-          "width": 390,
-          "height": 812
-        }
-      },
-      "thresholds": {
-        "perChannelDelta": 16,
-        "maxMismatchRatio": 0.18,
-        "maxMeanDelta": 18
-      },
-      "notes": "Canonical Claude Host Organizer reference. The 2026-07-10 full-shell capture renders the production HostAppShell and its four-tab navigation; advisory comparison is within threshold at mismatch 12.02%, meanDelta 7.79, maxDelta 240, masked 260416."
-    },
-    {
       "id": "screen.host.event.create.basics_default",
       "screenId": "screen.host.event.create",
       "stateId": "basics_default",
@@ -1391,7 +1346,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Host Edit Event prefilled event Claude template reference for advisory comparison against edit_hosted_event light captures rendered on the design-phone device. 2026-06-25 host reference batch: above advisory threshold; mismatch 19.30%, meanDelta 29.59, maxDelta 240, masked 160248. 2026-06-25 Host Edit Event refresh: fresh capture now compares within threshold at mismatch 9.25%, meanDelta 10.93, maxDelta 240, masked 160248; remaining work is state-specific references and adapter ownership, not first-pass owner-edit visual parity."
+      "notes": "Canonical Host Edit Event prefilled event Claude template reference for advisory comparison against edit_hosted_event light captures rendered on the design-phone device. After the 2026-07-16 CatchField/CatchSection migration, a fresh capture computes within thresholds at mismatch 8.84%, meanDelta 11.09, maxDelta 240, masked 160248 using the repository comparator algorithm. The canonical comparison command is currently blocked before diffing by unrelated host-v2 source-pack hash drift for host-coverage-manifest.json."
     },
     {
       "id": "screen.start.welcome.landed_direct",

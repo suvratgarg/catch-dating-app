@@ -538,6 +538,49 @@
         }
       ]
     },
+    "STORAGE-IAM-001": {
+      "title": "Storage rules cross-service dependencies stay provisioned and live-probed",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "release_operations",
+        "version": "1.10.1"
+      },
+      "applies_to": [
+        "storage.rules",
+        "tool/firebase/storage_rules_firestore_iam.mjs",
+        "tool/firebase/probe_chat_storage_rules.mjs",
+        "tool/deploy_firebase_targets.sh",
+        "docs/release_operations.md"
+      ],
+      "instruction": "Storage rules that call firestore.get or firestore.exists require roles/firebaserules.firestoreServiceAgent on every environment's Firebase Storage service agent. Storage deploys must fail their IAM preflight when it is absent, and authenticated upload/delete behavior must remain live-probeable without weakening participant rules.",
+      "sunset_when": [
+        "Firebase provisions and continuously verifies cross-service rules IAM automatically"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "firebase:storage-rules-firestore-iam"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-13",
+        "decision": "keep",
+        "note": "The check and canary enforce the dependency, but Firebase still does not provision or continuously verify it for this project."
+      },
+      "enforcement": [
+        {
+          "tool": "firebase:storage-rules-firestore-iam",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/release_operations.md#storage-rules-cross-service-readiness"
+        },
+        {
+          "tool": "firebase:probe-chat-storage-rules",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/release_operations.md#storage-rules-cross-service-readiness"
+        }
+      ]
+    },
     "FIRESTORE-RULES-TEST-001": {
       "title": "Run Firebase rules tests under the required emulators",
       "status": "active",
@@ -848,41 +891,6 @@
         }
       ]
     },
-    "SCREEN-CHROME-001": {
-      "title": "Every screen declares one reviewed navigation-chrome owner",
-      "status": "active",
-      "kind": "contract",
-      "introduced_in": {
-        "doc_id": "app_architecture",
-        "version": "1.4.26"
-      },
-      "applies_to": [
-        "lib/**/*.dart",
-        "tool/design/check_screen_top_bar_contracts.mjs",
-        "tool/design/screen_top_bar_contracts.json"
-      ],
-      "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchScreenTopBar, compact detail/edit/utility navigation uses CatchTopBar, and identity navigation uses CatchTopBar.identity. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract.",
-      "sunset_when": [
-        "Every remaining legacy manual-header entry has migrated to its canonical screen, step-flow, workspace, or content owner",
-        "The analyzer can enforce exact app-bar role and route-presentation ownership without a manifest"
-      ],
-      "sunset_signals": [
-        {
-          "type": "manual"
-        }
-      ],
-      "enforcement": [
-        {
-          "tool": "design:screen-top-bar-contracts",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/app_architecture.md#screen-chrome-contracts"
-        },
-        {
-          "stage": "manual",
-          "docAnchor": "docs/app_architecture.md#exhibit-arch-screen-chrome-001-root-screen-header-chrome"
-        }
-      ]
-    },
     "SCREEN-GUTTER-001": {
       "title": "Screen gutters use semantic body and section ownership",
       "status": "active",
@@ -921,6 +929,41 @@
         {
           "stage": "manual",
           "docAnchor": "docs/widget_catalog.md#rule-changelog"
+        }
+      ]
+    },
+    "SCREEN-CHROME-001": {
+      "title": "Every screen declares one reviewed navigation-chrome owner",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.26"
+      },
+      "applies_to": [
+        "lib/**/*.dart",
+        "tool/design/check_screen_top_bar_contracts.mjs",
+        "tool/design/screen_top_bar_contracts.json"
+      ],
+      "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchScreenTopBar, compact detail/edit/utility navigation uses CatchTopBar, and identity navigation uses CatchTopBar.identity. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract.",
+      "sunset_when": [
+        "Every remaining legacy manual-header entry has migrated to its canonical screen, step-flow, workspace, or content owner",
+        "The analyzer can enforce exact app-bar role and route-presentation ownership without a manifest"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:screen-top-bar-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#screen-chrome-contracts"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-screen-chrome-001-root-screen-header-chrome"
         }
       ]
     },
@@ -1091,6 +1134,43 @@
           "tool": "audit:dependency-direction",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#dependency-direction"
+        }
+      ]
+    },
+    "PROVIDER-TOPOLOGY-001": {
+      "title": "Keep the static Riverpod topology current and reviewed",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.26"
+      },
+      "applies_to": [
+        "lib/**/*.dart",
+        "tool/architecture/provider_graph.dart",
+        "tool/architecture/provider_graph_reviews.json",
+        "docs/generated/provider_graph/**"
+      ],
+      "instruction": "Generate the complete static Riverpod source graph from Dart ASTs. Keep providers, families, consumers, aliases, overrides, and Mutations resolvable; reject duplicate or dangling providers, provider-internal unresolved refs, reactive cycles, stale artifacts, unreviewed architecture candidates, and stale review decisions. Core-owned providers must not orchestrate feature data, and provider aliases should be removed when the canonical owner can be used directly.",
+      "sunset_when": [
+        "An equally deterministic compiler-owned graph export replaces the repo generator and preserves the same coverage and reviewed-candidate gate"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "audit:provider-graph"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-13",
+        "decision": "keep",
+        "note": "The repo generator now enforces the topology, but it remains the active source of truth until Riverpod exposes an equally complete and deterministic compiler-owned graph export."
+      },
+      "enforcement": [
+        {
+          "tool": "audit:provider-graph",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#provider-topology-graph"
         }
       ]
     },
@@ -1519,6 +1599,37 @@
         }
       ]
     },
+    "TAB-ROOT-SCROLL-001": {
+      "title": "Tab-root scroll owners clear adaptive shell chrome",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.24"
+      },
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "lib/**/presentation/**",
+        "lib/core/presentation/**",
+        "lib/core/widgets/catch_section_layout.dart"
+      ],
+      "instruction": "Every direct consumer and host StatefulShellBranch must declare its true root scroll owners in tool/design/tab_root_scroll_contracts.json. Root scrolls end in CatchSliverTerminalPadding or CatchScrollTerminalPadding, use SafeArea(bottom: false) when the terminal owns the device inset, consume raw floating iOS shell obstruction, and add no tab-bar inset for Android chrome already reserved by Scaffold.",
+      "sunset_when": [
+        "Every tab-root scroll surface is structurally created through one canonical root-scroll constructor that appends terminal clearance automatically"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:tab-root-scroll-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#app-shell-chrome-policy"
+        }
+      ]
+    },
     "ERROR-UI-002": {
       "title": "Data-load error branches must use a Catch error primitive with retry, never an empty-state or bespoke card",
       "status": "active",
@@ -1766,7 +1877,7 @@
     "APP-COPY-001": {
       "title": "Product copy is owned by typed, reviewable locale catalogs",
       "status": "active",
-    "kind": "contract",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "app_architecture",
         "version": "1.4.21"
@@ -1783,13 +1894,13 @@
       ],
       "sunset_signals": [
         {
-        "type": "manual"
+          "type": "manual"
         }
       ],
       "enforcement": [
         {
           "tool": "copy:mobile-catalog",
-        "stage": "scanner-gate",
+          "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
         },
         {
@@ -1800,12 +1911,12 @@
         },
         {
           "tool": "copy:native-sync",
-        "stage": "scanner-gate",
+          "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
         },
         {
           "tool": "copy:notification-sync",
-        "stage": "scanner-gate",
+          "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
         }
       ]
@@ -2300,6 +2411,79 @@
         }
       ]
     },
+    "REPO-ROOT-HYGIENE-001": {
+      "title": "Repository-root entries have explicit owners and safe cleanup contracts",
+      "status": "active",
+      "kind": "process",
+      "introduced_in": {
+        "doc_id": "repository_root_hygiene_spec",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "*",
+        "tool/repository_root_manifest.json",
+        "tool/repository_hygiene.mjs",
+        "docs/**/*.md"
+      ],
+      "instruction": "Every root entry must match exactly one manifest classification. Cleanup is dry-run first and mutates only an explicit allowlisted scope; tracked files, protected paths, worktrees, symlinks, path escapes, and machine-local Markdown links are rejected.",
+      "sunset_when": [
+        "Repository ownership and cleanup safety are enforced by a replacement platform"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "meta:repository-root-hygiene"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-13",
+        "decision": "keep",
+        "note": "The scanner now enforces the policy; tool availability is evidence of automation, not a reason to remove repository ownership rules."
+      },
+      "enforcement": [
+        {
+          "tool": "meta:repository-root-hygiene",
+          "stage": "scanner-gate",
+          "docAnchor": "tool/README.md#repository-hygiene"
+        }
+      ]
+    },
+    "ROUTE-STRING-001": {
+      "title": "Navigation outside routing config uses named routes or constants",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.9"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/**/application/**",
+        "tool/architecture/check_route_string_literals.mjs"
+      ],
+      "instruction": "Production navigation outside lib/routing must use named routes, route constants, or typed route helpers instead of raw path string literals. Raw paths stay owned by route definitions and URL contract files.",
+      "sunset_when": [
+        "Raw route literal scanner stays clean for three app architecture passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "audit:route-string-literals"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-02",
+        "decision": "keep",
+        "note": "route literal scanner is active; rule stays active until raw route literals remain clean for consecutive app architecture passes"
+      },
+      "enforcement": [
+        {
+          "tool": "audit:route-string-literals",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#routing-and-navigation"
+        }
+      ]
+    },
     "WEB-BUNDLE-001": {
       "title": "Admin route boundaries preserve production bundle budgets",
       "status": "active",
@@ -2527,44 +2711,8 @@
           "docAnchor": "docs/web_surface_architecture.md#current-stack"
         }
       ]
-    },
-    "ROUTE-STRING-001": {
-      "title": "Navigation outside routing config uses named routes or constants",
-      "status": "active",
-      "kind": "contract",
-      "introduced_in": {
-        "doc_id": "app_architecture",
-        "version": "1.4.9"
-      },
-      "applies_to": [
-        "lib/**/presentation/**",
-        "lib/**/application/**",
-        "tool/architecture/check_route_string_literals.mjs"
-      ],
-      "instruction": "Production navigation outside lib/routing must use named routes, route constants, or typed route helpers instead of raw path string literals. Raw paths stay owned by route definitions and URL contract files.",
-      "sunset_when": [
-        "Raw route literal scanner stays clean for three app architecture passes"
-      ],
-      "sunset_signals": [
-        {
-          "type": "tool-exists",
-          "tool": "audit:route-string-literals"
-        }
-      ],
-      "sunset_review": {
-        "date": "2026-07-02",
-        "decision": "keep",
-        "note": "route literal scanner is active; rule stays active until raw route literals remain clean for consecutive app architecture passes"
-      },
-      "enforcement": [
-        {
-          "tool": "audit:route-string-literals",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/app_architecture.md#routing-and-navigation"
-        }
-      ]
     }
   },
   "version": "2.7.15",
-    "updated": "2026-07-14"
+  "updated": "2026-07-14"
 }

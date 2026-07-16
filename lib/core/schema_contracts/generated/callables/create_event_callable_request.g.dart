@@ -7,7 +7,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_defaults.dar
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 
-
 // Typed callable request DTO emitted from callables/create_event_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
@@ -17,9 +16,7 @@ final class CreateEventPrivateAccess {
 
   final String? inviteCode;
 
-  Map<String, Object?> toJson() => {
-    'inviteCode': ?inviteCode,
-  };
+  Map<String, Object?> toJson() => {'inviteCode': ?inviteCode};
 }
 
 /// Callable payload accepted by createEvent.
@@ -30,7 +27,7 @@ final class CreateEventCallableRequest {
     required this.startTimeMillis,
     required this.endTimeMillis,
     required this.meetingPoint,
-    this.meetingLocation,
+    required this.meetingLocation,
     required this.startingPointLat,
     required this.startingPointLng,
     this.locationDetails,
@@ -54,7 +51,7 @@ final class CreateEventCallableRequest {
   final int startTimeMillis;
   final int endTimeMillis;
   final String meetingPoint;
-  final EventMeetingLocation? meetingLocation;
+  final EventMeetingLocation meetingLocation;
   final double startingPointLat;
   final double startingPointLng;
   final String? locationDetails;
@@ -78,7 +75,7 @@ final class CreateEventCallableRequest {
     'startTimeMillis': startTimeMillis,
     'endTimeMillis': endTimeMillis,
     'meetingPoint': meetingPoint,
-    'meetingLocation': ?meetingLocation?.toJson(),
+    'meetingLocation': meetingLocation.toJson(),
     'startingPointLat': startingPointLat,
     'startingPointLng': startingPointLng,
     'locationDetails': ?locationDetails,

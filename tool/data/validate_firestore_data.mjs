@@ -453,6 +453,7 @@ function validateRun(doc, clubs, currentReport) {
   requireInteger(data, "waitlistedCount", doc, currentReport);
   requireObject(data, "constraints", doc, currentReport);
   requireObject(data, "genderCounts", doc, currentReport);
+  validateEventMeetingLocation(data, doc, currentReport);
 
   if (data.clubId && !clubs.has(data.clubId)) {
     issue(currentReport, "error", doc.path, "missing-club",
@@ -482,11 +483,63 @@ function validateRun(doc, clubs, currentReport) {
         `${field} cannot be negative.`);
     }
   }
-  if ((data.startingPointLat == null) !== (data.startingPointLng == null)) {
-    issue(currentReport, "error", doc.path, "partial-coordinates",
-      "startingPointLat and startingPointLng must be set together.");
-  }
   validateNoRetiredStoragePath(data.photoUrl, "photoUrl", doc, currentReport);
+}
+
+function validateEventMeetingLocation(data, doc, currentReport) {
+  const location = data.meetingLocation;
+  const validObject = location != null &&
+    typeof location === "object" &&
+    !Array.isArray(location);
+  if (!validObject) {
+    issue(currentReport, "error", doc.path,
+      "invalid-event-meeting-location",
+      "meetingLocation must be a required structured object.");
+  }
+
+  const scalarLatitudeValid = validCoordinate(data.startingPointLat, -90, 90);
+  const scalarLongitudeValid = validCoordinate(
+    data.startingPointLng,
+    -180,
+    180
+  );
+  if (!scalarLatitudeValid || !scalarLongitudeValid) {
+    issue(currentReport, "error", doc.path, "invalid-event-coordinates",
+      "startingPointLat and startingPointLng are required finite coordinates.");
+  }
+  if (!validObject) return;
+
+  const nameValid = typeof location.name === "string" &&
+    location.name.trim().length > 0;
+  const latitudeValid = validCoordinate(location.latitude, -90, 90);
+  const longitudeValid = validCoordinate(location.longitude, -180, 180);
+  const optionalStringsValid = ["address", "placeId", "notes"].every(
+    (field) => location[field] == null || typeof location[field] === "string"
+  );
+  if (!nameValid || !latitudeValid || !longitudeValid ||
+      !optionalStringsValid) {
+    issue(currentReport, "error", doc.path,
+      "invalid-event-meeting-location",
+      "meetingLocation requires a name, finite coordinates, and nullable text metadata.");
+    return;
+  }
+
+  if (scalarLatitudeValid && scalarLongitudeValid &&
+      (location.name !== data.meetingPoint ||
+       location.latitude !== data.startingPointLat ||
+       location.longitude !== data.startingPointLng ||
+       (location.notes ?? null) !== (data.locationDetails ?? null))) {
+    issue(currentReport, "error", doc.path,
+      "event-location-mirror-mismatch",
+      "Structured meetingLocation and legacy event location mirrors must match.");
+  }
+}
+
+function validCoordinate(value, minimum, maximum) {
+  return typeof value === "number" &&
+    Number.isFinite(value) &&
+    value >= minimum &&
+    value <= maximum;
 }
 
 function validateNoRetiredStoragePath(value, field, doc, currentReport) {

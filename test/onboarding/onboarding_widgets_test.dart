@@ -10,9 +10,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid_keys.dart';
@@ -444,12 +442,7 @@ void main() {
       );
       await pumpOnboardingUi(tester);
 
-      await tester.tap(
-        find.descendant(
-          of: find.widgetWithText(CatchField, 'DATE OF BIRTH'),
-          matching: find.byType(EditableText),
-        ),
-      );
+      await tester.tap(find.byKey(OnboardingFormKeys.dateOfBirth));
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
       await pumpOnboardingUi(tester);
 
@@ -576,13 +569,13 @@ void main() {
       expect(ready.submitIntent()?.interestedInGenders, [Gender.man]);
     });
 
-    testWidgets('provider-free step forwards typed chip actions', (
+    testWidgets('provider-free step forwards typed choice actions', (
       tester,
     ) async {
       final formKey = GlobalKey<FormState>();
       final state = OnboardingGenderInterestState.fromDraft(
         gender: Gender.woman,
-        interestedIn: const [Gender.man],
+        interestedIn: const [Gender.woman, Gender.man],
         saveErrorMessage: 'Could not save profile.',
       );
       Set<Gender>? nextGender;
@@ -608,10 +601,21 @@ void main() {
       await pumpOnboardingUi(tester);
 
       expect(find.text('Could not save profile.'), findsOneWidget);
+      expect(
+        tester
+            .widget<CatchField>(find.byKey(OnboardingFormKeys.interestedIn))
+            .body,
+        'Man, Woman',
+      );
 
-      await tester.tap(find.byKey(OnboardingFormKeys.genderChip(Gender.man)));
       await tester.tap(
-        find.byKey(OnboardingFormKeys.interestedInChip(Gender.woman)),
+        _catchFieldChoiceIn(OnboardingFormKeys.gender, Gender.man.label),
+      );
+      await tester.tap(
+        _catchFieldChoiceIn(
+          OnboardingFormKeys.interestedIn,
+          Gender.nonBinary.label,
+        ),
       );
       await tester.tap(
         find.byWidgetPredicate(
@@ -621,7 +625,7 @@ void main() {
       await pumpOnboardingUi(tester);
 
       expect(nextGender, {Gender.man});
-      expect(nextInterestedIn, {Gender.man, Gender.woman});
+      expect(nextInterestedIn, {Gender.woman, Gender.man, Gender.nonBinary});
       expect(continueCount, 1);
     });
 
@@ -664,18 +668,24 @@ void main() {
 
       expect(
         tester
-            .widget<CatchChip>(
-              find.byKey(OnboardingFormKeys.genderChip(Gender.woman)),
+            .widget<CatchFieldChoiceChip>(
+              _catchFieldChoiceIn(
+                OnboardingFormKeys.gender,
+                Gender.woman.label,
+              ),
             )
-            .active,
+            .selected,
         isTrue,
       );
       expect(
         tester
-            .widget<CatchChip>(
-              find.byKey(OnboardingFormKeys.interestedInChip(Gender.man)),
+            .widget<CatchFieldChoiceChip>(
+              _catchFieldChoiceIn(
+                OnboardingFormKeys.interestedIn,
+                Gender.man.label,
+              ),
             )
-            .active,
+            .selected,
         isTrue,
       );
     });
@@ -1122,7 +1132,16 @@ void main() {
       // The mode-specific copy now lives in the flow header (see
       // onboarding_step_test `headerCopy`); the page renders its prompt
       // selectors and Continue affordance in completion mode.
-      expect(find.byType(MenuAnchor), findsNWidgets(maxProfilePromptAnswers));
+      for (var index = 0; index < maxProfilePromptAnswers; index += 1) {
+        expect(
+          find.byKey(ValueKey('onboarding-prompt-question-$index')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(ValueKey('onboarding-prompt-answer-$index')),
+          findsOneWidget,
+        );
+      }
       expect(find.text('Continue'), findsOneWidget);
     });
 
@@ -1142,35 +1161,44 @@ void main() {
         child: const ProfilePromptsPage(),
       );
 
-      final menus = find.byType(MenuAnchor);
-      expect(menus, findsNWidgets(maxProfilePromptAnswers));
-
-      await tester.tap(menus.at(1));
+      final secondPrompt = find.byKey(
+        const ValueKey('onboarding-prompt-question-1'),
+      );
+      await tester.tap(secondPrompt);
       await pumpOnboardingUi(tester);
 
-      final menuPanel = find.byWidgetPredicate((widget) => widget is CatchMenu);
       expect(
-        find.descendant(
-          of: menuPanel,
-          matching: find.text(
-            profilePromptDefinition(profilePromptPerfectEventId).title,
-          ),
+        _catchFieldChoiceIn(
+          const ValueKey('onboarding-prompt-question-1'),
+          profilePromptDefinition(profilePromptPerfectEventId).title,
         ),
         findsNothing,
       );
       final unusedPrompt = profilePromptCatalog.firstWhere(
         (definition) => !defaultProfilePromptIds.contains(definition.id),
       );
-      await tester.tap(
-        find.descendant(of: menuPanel, matching: find.text(unusedPrompt.title)),
+      final unusedSecondPromptChoice = _catchFieldChoiceIn(
+        const ValueKey('onboarding-prompt-question-1'),
+        unusedPrompt.title,
       );
+      await tester.ensureVisible(unusedSecondPromptChoice);
+      await pumpOnboardingUi(tester);
+      await tester.tap(unusedSecondPromptChoice);
       await pumpOnboardingUi(tester);
 
-      await tester.tap(menus.at(2));
+      final thirdPrompt = find.byKey(
+        const ValueKey('onboarding-prompt-question-2'),
+      );
+      await tester.ensureVisible(thirdPrompt);
+      await pumpOnboardingUi(tester);
+      await tester.tap(thirdPrompt);
       await pumpOnboardingUi(tester);
 
       expect(
-        find.descendant(of: menuPanel, matching: find.text(unusedPrompt.title)),
+        _catchFieldChoiceIn(
+          const ValueKey('onboarding-prompt-question-2'),
+          unusedPrompt.title,
+        ),
         findsNothing,
       );
     });
@@ -1216,6 +1244,9 @@ void main() {
       );
       var continueCount = 0;
       RangeValues? nextPace;
+      Set<PreferredDistance>? nextDistances;
+      Set<RunReason>? nextReasons;
+      Set<PreferredRunTime>? nextRunTimes;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -1225,9 +1256,9 @@ void main() {
               state: state,
               callbacks: OnboardingRunningPrefsCallbacks(
                 onPaceChanged: (next) => nextPace = next,
-                onDistancesChanged: (_) {},
-                onReasonsChanged: (_) {},
-                onRunTimesChanged: (_) {},
+                onDistancesChanged: (next) => nextDistances = next,
+                onReasonsChanged: (next) => nextReasons = next,
+                onRunTimesChanged: (next) => nextRunTimes = next,
                 onContinue: () => continueCount += 1,
               ),
             ),
@@ -1241,13 +1272,69 @@ void main() {
       expect(find.text('7:00/km'), findsOneWidget);
       expect(find.text('Could not save run preferences.'), findsOneWidget);
 
+      final slider = find.descendant(
+        of: find.byKey(OnboardingFormKeys.runningPace),
+        matching: find.byType(RangeSlider),
+      );
+      await tester.ensureVisible(slider);
+      await pumpOnboardingUi(tester);
+      tester.widget<RangeSlider>(slider).onChanged!(
+        const RangeValues(330, 450),
+      );
+      await pumpOnboardingUi(tester);
+
+      final distancesField = find.byKey(OnboardingFormKeys.runningDistances);
+      await tester.ensureVisible(distancesField);
+      await pumpOnboardingUi(tester);
+      final distancesWidget = tester.widget<CatchField>(distancesField);
+      expect(distancesWidget.open, isNull);
+      expect(distancesWidget.initiallyOpen, isTrue);
+      final tenK = _catchFieldChoiceIn(
+        OnboardingFormKeys.runningDistances,
+        PreferredDistance.tenK.label,
+      );
+      tester.widget<CatchFieldChoiceChip>(tenK).onPressed();
+      await pumpOnboardingUi(tester);
+
+      final reasonsField = find.byKey(OnboardingFormKeys.runningReasons);
+      await tester.ensureVisible(reasonsField);
+      await pumpOnboardingUi(tester);
+      final reasonsWidget = tester.widget<CatchField>(reasonsField);
+      expect(reasonsWidget.open, isNull);
+      expect(reasonsWidget.initiallyOpen, isTrue);
+      final mindfulness = _catchFieldChoiceIn(
+        OnboardingFormKeys.runningReasons,
+        RunReason.mindfulness.label,
+      );
+      tester.widget<CatchFieldChoiceChip>(mindfulness).onPressed();
+      await pumpOnboardingUi(tester);
+
+      final timesField = find.byKey(OnboardingFormKeys.runningTimes);
+      await tester.ensureVisible(timesField);
+      await pumpOnboardingUi(tester);
+      final timesWidget = tester.widget<CatchField>(timesField);
+      expect(timesWidget.open, isNull);
+      expect(timesWidget.initiallyOpen, isTrue);
+      final evening = _catchFieldChoiceIn(
+        OnboardingFormKeys.runningTimes,
+        PreferredRunTime.evening.label,
+      );
+      tester.widget<CatchFieldChoiceChip>(evening).onPressed();
+      await pumpOnboardingUi(tester);
+
       await tester.tap(
         find.widgetWithText(CatchButton, 'Save run preferences'),
       );
       await pumpOnboardingUi(tester);
 
       expect(continueCount, 1);
-      expect(nextPace, isNull);
+      expect(nextPace, isNotNull);
+      expect(nextDistances, {PreferredDistance.fiveK, PreferredDistance.tenK});
+      expect(nextReasons, {RunReason.community, RunReason.mindfulness});
+      expect(nextRunTimes, {
+        PreferredRunTime.morning,
+        PreferredRunTime.evening,
+      });
     });
 
     testWidgets('explains run preferences as event-specific booking data', (
@@ -1302,6 +1389,15 @@ void main() {
       expect(find.text('Evening'), findsOneWidget);
     });
   });
+}
+
+Finder _catchFieldChoiceIn(Key fieldKey, String label) {
+  return find.descendant(
+    of: find.byKey(fieldKey),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is CatchFieldChoiceChip && widget.label == label,
+    ),
+  );
 }
 
 File _welcomeStringsSource() {

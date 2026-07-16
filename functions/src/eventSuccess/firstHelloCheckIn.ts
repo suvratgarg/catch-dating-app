@@ -757,7 +757,12 @@ function requireVenueProximity(
 ) {
   const eventLat = event.meetingLocation?.latitude ?? event.startingPointLat;
   const eventLng = event.meetingLocation?.longitude ?? event.startingPointLng;
-  if (eventLat == null || eventLng == null) return;
+  if (eventLat == null || eventLng == null) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This event has no exact meeting location. Contact the host."
+    );
+  }
   if (latitude == null || longitude == null) {
     throw new HttpsError(
       "invalid-argument",

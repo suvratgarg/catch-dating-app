@@ -13,12 +13,12 @@ export function SiteFooter({
 }) {
   return (
     <footer className="site-footer">
-      <PlainLink className="brand" href={brandHref} aria-label="Catch home">
-        <span className="brand__mark" aria-hidden="true">C</span>
-        <span className="brand__word">Catch</span>
+      <PlainLink className="brand" href={brandHref} aria-label={"Catch home"}>
+        <span className="brand__mark" aria-hidden="true">{"C"}</span>
+        <span className="brand__word">{"Catch"}</span>
       </PlainLink>
       <p>{body}</p>
-      <nav aria-label="Footer">
+      <nav aria-label={"Footer"}>
         {links.map((link) => (
           <PlainLink
             href={link.href}

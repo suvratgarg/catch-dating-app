@@ -60,6 +60,7 @@ class ChatController extends _$ChatController {
     final uploaded = await imageUploadRepository.uploadChatImageWithMetadata(
       matchId: matchId,
       messageId: messageId,
+      uploaderUid: senderId,
       image: image,
     );
     try {

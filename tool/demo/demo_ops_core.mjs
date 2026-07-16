@@ -1142,6 +1142,9 @@ export async function buildHostAccountPlan({
   admin,
   phone,
   seedPrefix = DEFAULT_DEMO_OPS_PREFIX,
+  latitude,
+  longitude,
+  meetingPoint,
   now = new Date(),
 }) {
   const user = await resolveUserByPhone(db, phone);
@@ -1163,6 +1166,13 @@ export async function buildHostAccountPlan({
   const city = user.data.city ?? "mumbai";
   const hostName = publicName(profile.data, user.data);
   const hostAvatarUrl = firstPhoto(profile.data);
+  const eventLocation = requireExactEventLocation({
+    latitude: latitude ?? user.data.latitude,
+    longitude: longitude ?? user.data.longitude,
+    meetingPoint: meetingPoint ?? `${cityLabel(city)} main gate`,
+    notes: "Demo host event created by demo ops.",
+    command: "create-host-account",
+  });
   const docs = [
     {
       path: `clubHostClaims/${user.uid}`,
@@ -1231,10 +1241,11 @@ export async function buildHostAccountPlan({
         clubId: clubId,
         startTime: timestampFromDate(admin, offsetDate(now, {days: 2})),
         endTime: timestampFromDate(admin, offsetDate(now, {days: 2, hours: 1})),
-        meetingPoint: `${cityLabel(city)} main gate`,
-        startingPointLat: user.data.latitude ?? null,
-        startingPointLng: user.data.longitude ?? null,
-        locationDetails: "Demo host event created by demo ops.",
+        meetingPoint: eventLocation.name,
+        meetingLocation: eventLocation,
+        startingPointLat: eventLocation.latitude,
+        startingPointLng: eventLocation.longitude,
+        locationDetails: eventLocation.notes,
         distanceKm: 5,
         pace: "easy",
         capacityLimit: 12,
@@ -1283,13 +1294,15 @@ export async function buildCheckInEventPlan({
 }) {
   const user = await resolveUserByPhone(db, phone);
   const profile = await requirePublicProfile(db, user.uid);
-  const lat = finiteNumber(latitude ?? user.data.latitude);
-  const lng = finiteNumber(longitude ?? user.data.longitude);
-  if (lat == null || lng == null) {
-    throw new Error(
-      "create-check-in-event requires --lat/--lng or stored users latitude/longitude."
-    );
-  }
+  const eventLocation = requireExactEventLocation({
+    latitude: latitude ?? user.data.latitude,
+    longitude: longitude ?? user.data.longitude,
+    meetingPoint,
+    notes: "Demo check-in event. The check-in window is already open.",
+    command: "create-check-in-event",
+  });
+  const lat = eventLocation.latitude;
+  const lng = eventLocation.longitude;
 
   const operationId = demoOperationId({
     command: "check_in_run",
@@ -1318,10 +1331,11 @@ export async function buildCheckInEventPlan({
       clubId: clubId,
       startTime: timestampFromDate(admin, startTime),
       endTime: timestampFromDate(admin, endTime),
-      meetingPoint,
+      meetingPoint: eventLocation.name,
+      meetingLocation: eventLocation,
       startingPointLat: lat,
       startingPointLng: lng,
-      locationDetails: "Demo check-in event. The check-in window is already open.",
+      locationDetails: eventLocation.notes,
       distanceKm: 5,
       pace: "easy",
       capacityLimit: 12,
@@ -1439,6 +1453,33 @@ function finiteNumber(value) {
   if (value == null || value === "") return null;
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
+}
+
+function requireExactEventLocation({
+  latitude,
+  longitude,
+  meetingPoint,
+  notes,
+  command,
+}) {
+  const lat = finiteNumber(latitude);
+  const lng = finiteNumber(longitude);
+  const name = typeof meetingPoint === "string" ? meetingPoint.trim() : "";
+  if (lat == null || lat < -90 || lat > 90 ||
+      lng == null || lng < -180 || lng > 180) {
+    throw new Error(
+      `${command} requires valid --lat/--lng or stored user coordinates.`
+    );
+  }
+  if (!name) throw new Error(`${command} requires a meeting point.`);
+  return {
+    name,
+    address: null,
+    placeId: null,
+    latitude: lat,
+    longitude: lng,
+    notes,
+  };
 }
 
 export async function buildResetUserDemoStatePlan({db, phone, uid}) {

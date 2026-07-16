@@ -9919,6 +9919,789 @@
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
       }
+    },
+    {
+      "id": "catch.chat_composer",
+      "name": "ChatInputBar",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Canonical floating chat composer with a multiline field and matching 44px image/send actions; derives focus and sendability locally and keeps unrelated controls usable during pending operations.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/ChatComposer",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "ChatComposer",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "controller",
+            "type": "object",
+            "required": true,
+            "dartType": "TextEditingController"
+          },
+          {
+            "name": "onSend",
+            "type": "callback",
+            "required": true,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "sending",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "onSendImage",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "sendingImage",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "disabledReason",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "showImageButton",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "autofocus",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          }
+        ],
+        "states": [
+          "empty-unfocused",
+          "empty-focused",
+          "draft-unfocused",
+          "draft-focused",
+          "multiline",
+          "sending-text",
+          "uploading-image",
+          "disabled",
+          "text-only"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.s5",
+          "radius.pill",
+          "theme.light.color.surface",
+          "theme.light.color.ink",
+          "theme.light.color.ink2",
+          "theme.light.color.ink3",
+          "theme.light.color.line",
+          "theme.light.color.line2",
+          "theme.light.color.primary",
+          "theme.light.color.primaryInk"
+        ],
+        "dartRoles": [
+          "CatchField",
+          "CatchIconButton.defaultSize",
+          "CatchLoadingIndicator",
+          "CatchElevation.raised",
+          "CatchElevation.focusRing",
+          "CatchMotion.fast",
+          "CatchSpacing.screenPx",
+          "TextFieldTapRegion"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.field",
+          "catch.icon_button",
+          "catch.loading",
+          "catch.control_shell"
+        ],
+        "notes": [
+          "Both actions use CatchIconButton.defaultSize; composer call sites cannot supply independent image/send geometry.",
+          "Empty text disables Send automatically; callbacks describe capability, not draft validity.",
+          "Text-send and image-upload pending states disable only their relevant action and do not disable or defocus the editor.",
+          "Upload failures remain route-owned transient feedback through CatchMutationErrorListeners; do not add feature-local inline error chrome."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.chat_composer",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "ChatInputBar",
+        "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
+        "constructors": [
+          "ChatInputBar"
+        ]
+      },
+      "surfaces": {
+        "flutter": "ChatInputBar"
+      }
+    },
+    {
+      "id": "catch.tabbed_screen",
+      "name": "CatchTabbedScreenScaffold",
+      "status": "active",
+      "kind": "pattern",
+      "summary": "Canonical root-screen shell for a scroll-away identity title, pinned option rail, native horizontal pager, and independently restored vertical tab pages.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/TabbedScreen",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "TabbedScreen",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "tabRail",
+            "type": "widget",
+            "required": true,
+            "dartType": "PreferredSizeWidget"
+          },
+          {
+            "name": "body",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "eyebrow",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "subtitle",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "leading",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "actions",
+            "type": "list",
+            "required": false,
+            "dartType": "List<Widget>"
+          },
+          {
+            "name": "titleMaxLines",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "dartType": "int"
+          },
+          {
+            "name": "rowCrossAxisAlignment",
+            "type": "object",
+            "required": false,
+            "dartType": "CrossAxisAlignment"
+          },
+          {
+            "name": "outerScrollController",
+            "type": "object",
+            "required": false,
+            "dartType": "ScrollController?"
+          },
+          {
+            "name": "semanticsLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "semanticsHint",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "title-expanded",
+          "title-collapsed",
+          "tab-rail-pinned",
+          "tab-page-restored"
+        ],
+        "slots": [
+          {
+            "name": "tabRail",
+            "kind": "pinned-preferred-size",
+            "allowedComponents": [
+              "catch.tab_rail"
+            ]
+          },
+          {
+            "name": "body",
+            "kind": "horizontal-tab-pager",
+            "notes": "The route supplies a TabBarView bound to the same controller as the rail."
+          }
+        ],
+        "tokens": [
+          "theme.light.color.bg"
+        ],
+        "dartRoles": [
+          "CatchScreenHeaderTitle.block",
+          "CatchSliverHeader",
+          "NestedScrollView",
+          "SliverOverlapAbsorber",
+          "SliverOverlapInjector",
+          "CatchPagerFocusBoundary",
+          "CatchSliverTerminalPadding"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.tabbed_screen.page_scroll_view",
+            "symbol": "CatchTabbedPageScrollView",
+            "file": "lib/core/widgets/catch_tabbed_screen.dart",
+            "summary": "Per-page vertical owner for focus isolation, matching overlap injection, stable PageStorage restoration, and shell-aware terminal padding.",
+            "states": [
+              "top",
+              "scrolled",
+              "restored",
+              "terminal-clearance"
+            ]
+          }
+        ]
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.tab_rail"
+        ],
+        "notes": [
+          "The route owns the typed TabController and TabBarView; the shell owns title, pinned rail, overlap, and safe-area composition.",
+          "Every page uses CatchTabbedPageScrollView with a stable PageStorageKey. Never switch tab children inside one shared vertical ListView.",
+          "Feature code retains async state, data policy, route actions, and specialized inner-scroll bridges."
+        ]
+      },
+      "governance": {
+        "role": "pattern",
+        "canonicalFamily": "catch.tabbed_screen",
+        "publicApi": true,
+        "stateOwnership": "none",
+        "asyncOwnership": "none",
+        "layoutOwnership": "screen-layout",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchTabbedScreenScaffold",
+        "file": "lib/core/widgets/catch_tabbed_screen.dart",
+        "constructors": [
+          "CatchTabbedScreenScaffold"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchTabbedScreenScaffold"
+      }
+    },
+    {
+      "id": "catch.bottom_action",
+      "name": "CatchBottomAction",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Canonical platform-adaptive primary bottom action: inset floating chrome on Cupertino platforms and an anchored full-width action bar on Material platforms.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/BottomAction",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "BookingDock",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "onPressed",
+            "type": "callback",
+            "required": true,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "leadingContent",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "buttonKey",
+            "type": "object",
+            "required": false,
+            "dartType": "Key?"
+          },
+          {
+            "name": "isLoading",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "backgroundColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "dividerColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "buttonAccentColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "catchLine",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "catchLineAccent",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "footnote",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "ios-floating",
+          "android-anchored",
+          "leading-content",
+          "catch-line",
+          "footnote",
+          "loading",
+          "disabled"
+        ],
+        "slots": [
+          {
+            "name": "leadingContent",
+            "kind": "optional-action-leading",
+            "allowedComponents": [
+              "catch.badge",
+              "catch.metric_strip"
+            ]
+          }
+        ],
+        "tokens": [
+          "space.s2",
+          "space.s3",
+          "space.s4",
+          "radius.lg",
+          "theme.light.color.ink2",
+          "theme.light.color.ink3",
+          "theme.light.color.line",
+          "theme.light.color.surface"
+        ],
+        "dartRoles": [
+          "CatchButton",
+          "CatchElevation.raised",
+          "CatchIcons.sparkle",
+          "CatchSpacing.screenPx",
+          "CatchTextStyles.monoLabel"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.bottom_action.content",
+            "symbol": "CatchBottomActionContent",
+            "file": "lib/core/widgets/catch_bottom_action.dart",
+            "summary": "Provider-free action contents shared by the floating and anchored platform shells.",
+            "states": [
+              "default",
+              "leading-content",
+              "catch-line",
+              "footnote",
+              "loading",
+              "disabled"
+            ]
+          }
+        ]
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.button",
+          "catch.badge",
+          "catch.metric_strip"
+        ],
+        "notes": [
+          "Callers provide one CTA contract; CatchBottomAction selects floating Cupertino or anchored Material chrome from the active platform.",
+          "Do not place primary screen CTAs in CatchBottomDock or branch on platform at feature call sites."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.bottom_action",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchBottomAction",
+        "file": "lib/core/widgets/catch_bottom_action.dart",
+        "constructors": [
+          "CatchBottomAction"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchBottomAction"
+      }
+    },
+    {
+      "id": "catch.host_row",
+      "name": "CatchHostRow",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Compact provider-free host or organizer identity row whose message and navigation affordances are derived directly from the available callbacks.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/HostRow",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "HostRow",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "activityKind",
+            "type": "enum",
+            "required": true,
+            "dartType": "ActivityKind",
+            "values": [
+              "socialRun",
+              "running",
+              "walking",
+              "pickleball",
+              "padel",
+              "tennis",
+              "badminton",
+              "cycling",
+              "spinClass",
+              "yoga",
+              "strengthTraining",
+              "pubQuiz",
+              "barCrawl",
+              "dinner",
+              "singlesMixer",
+              "openActivity"
+            ]
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "imageUrl",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "meta",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "verified",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "divider",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "onMessage",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "messageTooltip",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "identity-only",
+          "navigable",
+          "message-enabled",
+          "verified",
+          "divider",
+          "long-copy"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s1",
+          "space.s2",
+          "space.s3",
+          "space.s10",
+          "theme.light.color.ink",
+          "theme.light.color.ink3",
+          "theme.light.color.line",
+          "theme.light.color.primary"
+        ],
+        "dartRoles": [
+          "CatchPersonAvatar",
+          "CatchRowPressSurface",
+          "CatchIconButton",
+          "ActivityPalette"
+        ],
+        "goldens": [],
+        "members": []
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.person_avatar",
+          "catch.icon_button",
+          "catch.row_press_surface"
+        ],
+        "notes": [
+          "Supplying onTap automatically renders the navigation chevron; omitting onTap makes navigation chrome impossible.",
+          "Supplying onMessage automatically renders the message action and requires messageTooltip, so affordance and capability cannot drift."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.host_row",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchHostRow",
+        "file": "lib/core/widgets/catch_host_row.dart",
+        "constructors": [
+          "CatchHostRow"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchHostRow"
+      }
+    },
+    {
+      "id": "catch.map_preview",
+      "name": "CatchMapPreview",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Read-only, attribution-safe Google Maps viewport for compact location previews with one exact marker and a deterministic no-network fallback.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/MapPreview",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "MapCard",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "coordinate",
+            "type": "object",
+            "required": true,
+            "dartType": "LocationCoordinate?"
+          },
+          {
+            "name": "fallbackLabel",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "markerHue",
+            "type": "enum",
+            "required": false,
+            "default": "orange",
+            "dartType": "CatchMapMarkerHue",
+            "values": [
+              "azure",
+              "green",
+              "orange",
+              "red",
+              "rose",
+              "yellow"
+            ]
+          },
+          {
+            "name": "enableNetworkTiles",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "zoom",
+            "type": "number",
+            "required": false,
+            "default": 15.5,
+            "dartType": "double"
+          }
+        ],
+        "states": [
+          "exact-location",
+          "missing-coordinate",
+          "network-disabled",
+          "android-lite-mode"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "theme.light.color.bg",
+          "theme.light.color.ink3"
+        ],
+        "dartRoles": [
+          "CatchGoogleMap",
+          "CatchMapMarker",
+          "CatchMapMarkerHue",
+          "LocationCoordinate"
+        ],
+        "goldens": [],
+        "members": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use CatchMapPreview inside compact cards; it disables gestures and controls, preserves Google attribution space, and enables Android lite mode automatically.",
+          "Use enableNetworkTiles=false only for deterministic tests, Widgetbook, captures, or offline review; production call sites default to real Google tiles."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.map_preview",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchMapPreview",
+        "file": "lib/locations/shared/catch_map_preview.dart",
+        "constructors": [
+          "CatchMapPreview"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchMapPreview"
+      }
     }
   ]
 }

@@ -18,6 +18,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
@@ -46,6 +47,7 @@ class EventDetailScreen extends ConsumerStatefulWidget {
     this.inviteLinkId,
     this.presentationMode = EventDetailPresentationMode.standard,
     this.heroTag,
+    this.enableMapNetworkTiles = true,
   });
 
   final String clubId;
@@ -55,6 +57,7 @@ class EventDetailScreen extends ConsumerStatefulWidget {
   final String? inviteLinkId;
   final EventDetailPresentationMode presentationMode;
   final Object? heroTag;
+  final bool enableMapNetworkTiles;
 
   @override
   ConsumerState<EventDetailScreen> createState() => _EventDetailScreenState();
@@ -152,11 +155,16 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       );
       final socialState = eventDetailSocialStateFrom(
         event: vm.event,
+        hasReviews: vm.reviews.isNotEmpty,
         userProfile: vm.userProfile,
         isAuthenticated: vm.isAuthenticated,
         renderAsHost: sectionVisibility.renderSocialAsHost,
         participation: vm.participation,
         now: now,
+      );
+      final informationState = eventDetailInformationStateFrom(
+        event: vm.event,
+        l10n: context.l10n,
       );
 
       if (vm.isAuthenticated) {
@@ -226,15 +234,13 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             companionState: companionState,
             hostState: hostState,
             socialState: socialState,
-            onLocationTap: vm.event.hasExactStartingPoint
-                ? () => context.pushNamed(
-                    Routes.eventLocationMapScreen.name,
-                    pathParameters: {
-                      context.l10n.eventsEventDetailScreenBodyEventid:
-                          vm.event.id,
-                    },
-                  )
-                : null,
+            informationState: informationState,
+            onLocationTap: () => context.pushNamed(
+              Routes.eventLocationMapScreen.name,
+              pathParameters: {
+                context.l10n.eventsEventDetailScreenBodyEventid: vm.event.id,
+              },
+            ),
             onOpenCompanion: () => context.pushNamed(
               Routes.eventSuccessCompanionScreen.name,
               pathParameters: {
@@ -266,6 +272,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             now: now,
             presentationMode: widget.presentationMode,
             heroTag: widget.heroTag,
+            enableMapNetworkTiles: widget.enableMapNetworkTiles,
           ),
           bottomNavigationBar: _eventDetailBottomNavigationBar(
             event: vm.event,
@@ -306,6 +313,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         context,
         presentationMode: widget.presentationMode,
       );
+      final informationState = eventDetailInformationStateFrom(
+        event: event,
+        l10n: context.l10n,
+      );
 
       return Scaffold(
         backgroundColor: style.pageBackground,
@@ -335,14 +346,13 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           companionState: const EventDetailCompanionState.hidden(),
           hostState: const EventDetailHostState.loading(),
           socialState: const EventDetailSocialState.loading(),
-          onLocationTap: event.hasExactStartingPoint
-              ? () => context.pushNamed(
-                  Routes.eventLocationMapScreen.name,
-                  pathParameters: {
-                    context.l10n.eventsEventDetailScreenBodyEventid: event.id,
-                  },
-                )
-              : null,
+          informationState: informationState,
+          onLocationTap: () => context.pushNamed(
+            Routes.eventLocationMapScreen.name,
+            pathParameters: {
+              context.l10n.eventsEventDetailScreenBodyEventid: event.id,
+            },
+          ),
           onOpenCompanion: () {},
           onRetryCompanion: () =>
               ref.invalidate(watchEventSuccessPlanProvider(event.id)),
@@ -366,6 +376,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           now: now,
           presentationMode: widget.presentationMode,
           heroTag: widget.heroTag,
+          enableMapNetworkTiles: widget.enableMapNetworkTiles,
         ),
         bottomNavigationBar: _eventDetailBottomNavigationBar(
           event: event,

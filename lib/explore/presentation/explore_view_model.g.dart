@@ -297,7 +297,7 @@ final class DebouncedExploreSearchQueryProvider
 }
 
 String _$debouncedExploreSearchQueryHash() =>
-    r'9643b08f8a74e46e7c3c9183933a16e3ecab37aa';
+    r'0be4e553c01c500a1440750e22e28e250d3b37d3';
 
 @ProviderFor(ExploreFilters)
 final exploreFiltersProvider = ExploreFiltersProvider._();
@@ -331,7 +331,7 @@ final class ExploreFiltersProvider
   }
 }
 
-String _$exploreFiltersHash() => r'e4a55030a36ae2e70090280c68b15e1bf1ffc724';
+String _$exploreFiltersHash() => r'92173da037faf1d8b96e27aa291fb7cf3979af19';
 
 abstract class _$ExploreFilters extends $Notifier<ExploreFilterSelection> {
   ExploreFilterSelection build();
@@ -531,4 +531,4 @@ final class ExploreClubsViewModelProvider
 }
 
 String _$exploreClubsViewModelHash() =>
-    r'1275ba8c1df2b92628c3f788d88c623ab997d974';
+    r'6ae37ef02a0a31fa393f2ac3d711bef2e99881ba';

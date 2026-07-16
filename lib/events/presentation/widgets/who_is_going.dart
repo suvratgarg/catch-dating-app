@@ -47,15 +47,20 @@ class WhoIsGoing extends ConsumerWidget {
     required this.userProfile,
     this.surfaceStyle,
     this.showHeader = true,
+    this.showCatchWindowStatus = true,
+    this.now,
   });
 
   final Event event;
   final UserProfile userProfile;
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;
+  final bool showCatchWindowStatus;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final referenceNow = now ?? DateTime.now();
     final rosterAsync = ref.watch(
       watchEventParticipationRosterProvider(event.id),
     );
@@ -69,6 +74,8 @@ class WhoIsGoing extends ConsumerWidget {
         fallbackTotal: event.signedUpCount,
         surfaceStyle: surfaceStyle,
         showHeader: showHeader,
+        showCatchWindowStatus: showCatchWindowStatus,
+        now: referenceNow,
       ),
       errorBuilder: (_, e, _) => CatchInlineErrorState.fromError(
         e,
@@ -79,7 +86,7 @@ class WhoIsGoing extends ConsumerWidget {
       ),
       builder: (context, roster) {
         final avatarItems =
-            event.isUpcomingAt(DateTime.now()) || roster.bookedCount <= 0
+            event.isUpcomingAt(referenceNow) || roster.bookedCount <= 0
             ? null
             : ref
                   .watch(
@@ -101,6 +108,8 @@ class WhoIsGoing extends ConsumerWidget {
           avatarItems: avatarItems,
           surfaceStyle: surfaceStyle,
           showHeader: showHeader,
+          showCatchWindowStatus: showCatchWindowStatus,
+          now: referenceNow,
         );
       },
     );
@@ -117,6 +126,8 @@ class WhoIsGoingContent extends StatelessWidget {
     this.fallbackTotal,
     this.surfaceStyle,
     this.showHeader = true,
+    this.showCatchWindowStatus = true,
+    this.now,
   });
 
   final Event event;
@@ -126,12 +137,14 @@ class WhoIsGoingContent extends StatelessWidget {
   final int? fallbackTotal;
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;
+  final bool showCatchWindowStatus;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final total = fallbackTotal ?? roster.bookedCount;
-    final referenceNow = DateTime.now();
+    final referenceNow = now ?? DateTime.now();
     final isUpcoming = event.isUpcomingAt(referenceNow);
     final hasActiveSwipeWindow = hasOpenSwipeWindow(event, now: referenceNow);
 
@@ -186,25 +199,27 @@ class WhoIsGoingContent extends StatelessWidget {
             obscured: isUpcoming,
             showOverflowCount: true,
           ),
-          gapH12,
-          if (isUpcoming)
-            SwipeWindowBanner(
-              icon: CatchIcons.lockOutlineRounded,
-              message: context.l10n.eventsWhoIsGoingMessageCatchesUnlockFor24,
-              surfaceStyle: surfaceStyle,
-            )
-          else if (hasActiveSwipeWindow)
-            SwipeWindowBanner(
-              icon: CatchIcons.favoriteRounded,
-              message: context.l10n.eventsWhoIsGoingMessageTheCatchWindowIs,
-              surfaceStyle: surfaceStyle,
-            )
-          else
-            SwipeWindowBanner(
-              icon: CatchIcons.scheduleRounded,
-              message: context.l10n.eventsWhoIsGoingMessageTheCatchWindowFor,
-              surfaceStyle: surfaceStyle,
-            ),
+          if (showCatchWindowStatus) ...[
+            gapH12,
+            if (isUpcoming)
+              SwipeWindowBanner(
+                icon: CatchIcons.lockOutlineRounded,
+                message: context.l10n.eventsWhoIsGoingMessageCatchesUnlockFor24,
+                surfaceStyle: surfaceStyle,
+              )
+            else if (hasActiveSwipeWindow)
+              SwipeWindowBanner(
+                icon: CatchIcons.favoriteRounded,
+                message: context.l10n.eventsWhoIsGoingMessageTheCatchWindowIs,
+                surfaceStyle: surfaceStyle,
+              )
+            else
+              SwipeWindowBanner(
+                icon: CatchIcons.scheduleRounded,
+                message: context.l10n.eventsWhoIsGoingMessageTheCatchWindowFor,
+                surfaceStyle: surfaceStyle,
+              ),
+          ],
         ],
       ],
     );

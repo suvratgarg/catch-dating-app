@@ -4,13 +4,11 @@ class HostClubInsightsPane extends ConsumerStatefulWidget {
   const HostClubInsightsPane({
     super.key,
     required this.club,
-    this.isOwner = true,
     this.dedicated = false,
     this.onOpenEventReport,
   });
 
   final Club club;
-  final bool isOwner;
   final bool dedicated;
   final ValueChanged<String>? onOpenEventReport;
 
@@ -42,14 +40,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!widget.dedicated) ...[
-          HostMetaRow(
-            club: widget.club,
-            roleLabel: context.l10n.hostsHostAnalyticsVisiblecopyInsights,
-            owner: widget.isOwner,
-          ),
-          gapH24,
-        ] else ...[
+        if (widget.dedicated) ...[
           HostAnalyticsRangeChip(
             label: _state.rangePreset.label,
             onTap: _showRangePicker,
@@ -467,32 +458,33 @@ class HostAnalyticsReportView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSectionStack(
-      padding: EdgeInsets.zero,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchSection.divided(
-          first: true,
-          child: CatchAnalyticsMetricGrid(
-            metrics: [
-              for (final metric in report.summaryCards)
-                _hostMetricCardData(metric),
-            ],
-          ),
+        CatchAnalyticsMetricGrid(
+          metrics: [
+            for (final metric in report.summaryCards)
+              _hostMetricCardData(metric),
+          ],
         ),
+        gapH24,
         HostAnalyticsTrendPanel(
           points: report.trend,
           granularity: granularity,
           onGranularityChanged: onGranularityChanged,
         ),
+        gapH24,
         HostAnalyticsEventList(
           events: report.topEvents,
           selectedEventId: selectedEventId,
           onEventSelected: onEventSelected,
           onClearEvent: onClearEvent,
         ),
+        gapH24,
         HostAnalyticsReviewDiscoveryPanel(report: report),
-        CatchSection.divided(
-          title: context.l10n.hostsHostAnalyticsLabelDataQuality,
+        gapH24,
+        CatchAnalyticsSection(
+          label: context.l10n.hostsHostAnalyticsLabelDataQuality,
           child: CatchAnalyticsDataQualityList(
             rows: [
               for (final row in report.dataQuality)
@@ -541,8 +533,8 @@ class HostAnalyticsTrendPanel extends StatelessWidget {
       return value > max ? value : max;
     });
 
-    return CatchSection.divided(
-      title: context.l10n.hostsHostAnalyticsLabelTrendBookingsVsDemand,
+    return CatchAnalyticsSection(
+      label: context.l10n.hostsHostAnalyticsLabelTrendBookingsVsDemand,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -716,8 +708,8 @@ class HostAnalyticsEventList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
-      title: selectedEventId == null
+    return CatchAnalyticsSection(
+      label: selectedEventId == null
           ? context.l10n.hostsHostAnalyticsLabelTopEvents
           : context.l10n.hostsHostAnalyticsLabelSelectedEvent,
       child: Column(
@@ -952,8 +944,8 @@ class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
-      title: context.l10n.hostsHostAnalyticsLabelReviewsAndSaves,
+    return CatchAnalyticsSection(
+      label: context.l10n.hostsHostAnalyticsLabelReviewsAndSaves,
       child: CatchSurface(
         padding: CatchInsets.content,
         borderColor: CatchTokens.of(context).line,

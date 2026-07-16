@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.11
-updated: 2026-07-10
+version: 0.1.13
+updated: 2026-07-15
 owner: product_design_parity
 status: active
 ---
@@ -28,6 +28,8 @@ checks in one durable matrix.
 | `tool/design/check_screen_contracts.mjs` | Validates screen contracts against route inventory, capture catalog entries, component dependencies, Flutter source paths, and Dart symbols. |
 | `tool/design/check_widgetbook_contract_refs.mjs` | Validates component contracts and contract preview ids against generated Widgetbook directories. |
 | `tool/design/check_screen_contract_hygiene.mjs` | Advisory scanner for raw Material controls and hand-rolled visual values in contracted screen implementation files. Masks comments/string literals, ignores `Colors.transparent`, and prints sample line refs so findings are reviewable before promotion to lints. |
+| `tool/design/screen_top_bar_contracts.json` | Exhaustive role classification for every Flutter `Scaffold.appBar`, every consumer/Host tab-root header surface, canonical zero-inset geometry, and reviewed raw media-hero exceptions. New app bars and shell branches are unregistered by default and fail the gate. |
+| `tool/design/check_screen_top_bar_contracts.mjs` | Blocking screen-chrome gate. Rejects unregistered/raw/wrong app-bar owners, incomplete tab-root coverage, root headers that bypass `CatchScreenHeaderTitle`/`CatchScreenTopBar`, local padding/height/text-scaling overrides, and a nonzero canonical post-safe-area inset. |
 | `tool/design/check_screen_gutters.mjs` | Advisory inventory for `EdgeInsets` constructors across `lib/**/presentation/**/*.dart` and contracted screen implementation files. Classifies likely screen-gutter candidates separately from lower-confidence local spacing so manual UI reviews have broad evidence instead of a narrow lint. |
 | `design/reference_screens/manifest.json` | Exported design-reference PNG manifest used for advisory pixel comparison. |
 | `tool/design/check_reference_screens.mjs` | Validates reference PNG metadata and can compare exported references against UI capture output. |

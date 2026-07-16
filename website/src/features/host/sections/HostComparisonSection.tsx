@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SectionHeader} from "../../../shared/site";
 import {useEffect, useRef, useState} from "react";
 import {
@@ -11,22 +12,22 @@ import {
 import {
   hostComparisonColumns,
   hostComparisonRows,
-} from "../../marketing/content";
+} from "@content/marketing";
 
 const hostComparisonSummaryCards = [
   {
     key: "tools",
-    label: "Luma · Eventbrite · District · BookMyShow · Instagram · WhatsApp · Forms",
-    title: "They help you publish, sell, or get discovered.",
+    label: websiteCopy["hostcomparisonsection_0289"],
+    title: websiteCopy["hostcomparisonsection_0291"],
     body:
-      "Useful reach, event pages, and payments. Then social hosts still assemble admissions, ratios, door proof, follow-up, and reputation signals across scattered tools.",
+      websiteCopy["hostcomparisonsection_0292"],
   },
   {
     key: "catch",
-    label: "Catch",
-    title: "Catch fills it, runs it, and proves it.",
+    label: websiteCopy["hostcomparisonsection_0285"],
+    title: websiteCopy["hostcomparisonsection_0286"],
     body:
-      "Admission rules, waitlists, check-in, live console, attendance proof, post-event matching, verified reviews, and host reports stay in one loop.",
+      websiteCopy["hostcomparisonsection_0282"],
   },
 ];
 
@@ -47,9 +48,9 @@ export function HostComparisonSection() {
   return (
     <HostFeatureSection variant="comparison" aria-labelledby="host-comparison-title">
       <SectionHeader
-        eyebrow="The honest comparison"
+        eyebrow={websiteCopy["hostcomparisonsection_0290"]}
         id="host-comparison-title"
-        title="Announcing an event is solved. Running one is not." />
+        title={websiteCopy["hostcomparisonsection_0283"]} />
       <HostComparisonSummaryCards items={hostComparisonSummaryCards} />
       <TextActionButton
         aria-expanded={open}
@@ -65,17 +66,13 @@ export function HostComparisonSection() {
             ref={comparisonTableRef}
             tabIndex={-1}
           >
-            <UiLabel>Full table</UiLabel>
-            <p>
-              District and BookMyShow are strong Indian discovery and ticketing
-              surfaces. Catch is positioned around the host operating loop after the
-              listing goes live.
-            </p>
+            <UiLabel>{websiteCopy["hostcomparisonsection_0288"]}</UiLabel>
+            <p>{websiteCopy["hostcomparisonsection_0287"]}</p>
           </HostComparisonTableHeading>
           <HostComparisonTable>
               <thead>
                 <tr>
-                  <th>Capability</th>
+                  <th>{websiteCopy["hostcomparisonsection_0284"]}</th>
                   {hostComparisonColumns.map((column) => (
                     <th key={column}>{column}</th>
                   ))}

@@ -1063,8 +1063,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool _isAllowedPrimitiveRawButtonControl(String typeName) {
-    return _isCatchFieldImplementationPath &&
-        (typeName == 'TextField' || typeName == 'TextFormField');
+    return (_isCatchFieldImplementationPath &&
+            (typeName == 'TextField' || typeName == 'TextFormField')) ||
+        (_isCatchTextButtonImplementationPath && typeName == 'TextButton');
   }
 
   bool _isContainedCatchSection(InstanceCreationExpression node) {
@@ -1471,6 +1472,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool get _isCatchSectionImplementationPath {
     return path.endsWith('/lib/core/widgets/catch_section_layout.dart');
+  }
+
+  bool get _isCatchTextButtonImplementationPath {
+    return path.endsWith('/lib/core/widgets/catch_text_button.dart');
   }
 
   int _lineForOffset(int offset) {

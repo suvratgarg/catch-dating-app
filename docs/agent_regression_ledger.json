@@ -1295,6 +1295,265 @@
         "docs/design_parity/widget_consolidation/decisions.json"
       ],
       "notes": "The 2026-07-16 user-reviewed correction supersedes only WO-018's CatchAnalyticsSection decision. CatchAnalyticsMetricGrid, CatchAnalyticsMetricTile, CatchAnalyticsDataQualityList, CatchAnalyticsBar, and CatchStatColumn remain valid display-data primitives. Profile Insights deliberately uses CatchSection.fieldRows and CatchField.content for Suggestions and Data coverage so those editorial groups inherit the same formatting contract as the rest of Profile."
+    },
+    {
+      "id": "REG-MAP-002",
+      "title": "Event map becomes empty or bypasses proximity when location data is missing",
+      "status": "active",
+      "applies_to": [
+        "contracts/firestore/events.schema.json",
+        "lib/events/domain/event.dart",
+        "lib/events/domain/external_event.dart",
+        "lib/events/presentation/event_map_view_model.dart",
+        "lib/explore/presentation/explore_map_screen.dart",
+        "functions/src/events/eventDiscoveryProjection.ts",
+        "functions/src/events/selfCheckInAttendance.ts",
+        "tool/data/backfill_event_meeting_locations.mjs",
+        "test/events/event_domain_test.dart",
+        "test/events/event_map_screen_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "symptom": "A nullable or partial event coordinate suppresses a pin, writes a null discovery geo cell, bypasses check-in distance, or causes a zero-radius result to replace the map and ring with a dead-end empty page.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/events/event_domain_test.dart test/events/event_map_screen_test.dart test/explore/explore_widgets_test.dart",
+        "guardEvidence": "rejects an event without an exact meeting location"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/location_stack_plan.md",
+        "contracts/migrations/event_meeting_location.json"
+      ],
+      "notes": "Exact named coordinates are an event-domain invariant. Legacy reads may promote only a complete in-range pair; repair tooling never fabricates coordinates. Explore keeps the canvas and distance ring mounted for progressive radius recovery, and check-in fails closed on corrupt data."
+    },
+    {
+      "id": "REG-LOCATION-001",
+      "title": "Canonical market ids leak into visible city copy or are replaced by labels at rest",
+      "status": "active",
+      "applies_to": [
+        "lib/core/city_catalog.dart",
+        "lib/swipes/shared/profile_surface/profile_surface.dart",
+        "lib/hosts/presentation/host_operations_screen.dart",
+        "lib/hosts/presentation/host_operations/host_club_profile.dart",
+        "lib/hosts/presentation/host_operations/host_events_list.dart",
+        "lib/hosts/presentation/host_operations/host_organizer.dart",
+        "functions/src/shared/profileProjection.ts",
+        "functions/src/shared/profileProjection.test.ts",
+        "contracts/firestore/users.schema.json",
+        "contracts/firestore/public_profiles.schema.json",
+        "test/core/city_catalog_test.dart",
+        "test/swipes/profile_card_widget_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "symptom": "A canonical value such as in-dl-delhi-ncr is uppercased or title-cased into visible copy, or a presentation fix stores Delhi NCR where queries and projections require the canonical market id.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/shared/profileProjection.test.js && flutter test --concurrency=1 test/core/city_catalog_test.dart test/swipes/profile_card_widget_test.dart test/hosts/host_operations_screen_test.dart",
+        "guardEvidence": "canonical market/city/alias resolution plus shared-profile and host-surface assertions that labels render while raw ids do not"
+      },
+      "owner_docs": [
+        "docs/location_stack_plan.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "Keep marketId at persistence, query, projection, and editor-submit boundaries. Resolve CityData.label or cityLabel only when building human-facing copy; Google Places is not the market-label resolver."
+    },
+    {
+      "id": "REG-EVENT-DETAIL-001",
+      "title": "Event Detail drifts back to nested policy cards and feature-owned chrome",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_bottom_action.dart",
+        "lib/core/widgets/catch_host_row.dart",
+        "lib/events/presentation/event_detail_information_state.dart",
+        "lib/events/presentation/widgets/event_detail_*.dart",
+        "lib/reviews/shared/reviews_section.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/events/event_detail_widgets_test.dart",
+        "test/events/events_widgets_test.dart",
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "symptom": "Event Detail repeats booking facts across sections, exposes settlement copy, restores nested policy/empty-review/host cards, duplicates catch-window messaging, or uses iOS floating action chrome on Android.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/events/event_detail_widgets_test.dart test/events/events_widgets_test.dart test/reviews/reviews_widgets_test.dart test/core/catch_primitives_test.dart"
+      },
+      "owner_docs": [
+        "design/components/catch.components.json",
+        "design/screens/catch.screens.json",
+        "docs/design_parity/event_detail_composition_tracker.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Keep sign-up and good-to-know facts inside EventDetailInformationState, review actions inside EventDetailReviewsState, host affordances callback-derived through CatchHostRow, and primary action platform selection inside CatchBottomAction."
+    },
+    {
+      "id": "REG-AGENT-009",
+      "title": "Stored cleanup snapshots claim zero while live scanners report debt",
+      "status": "active",
+      "applies_to": [
+        "tool/widget_cleanup_scan.sh",
+        "tool/check_catch_ui_lint_drift.sh",
+        "tool/tools_manifest.json",
+        "tool/audit/widget_cleanup_baseline.json",
+        "docs/audit_registry/backlog.json"
+      ],
+      "symptom": "A syntax-only or regex-overbroad scanner stays green, a stored snapshot says zero, and the live working tree contains cleanup findings.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check audit:widget-cleanup lint:catch-ui-drift",
+        "guardEvidence": "widget cleanup ratchet plus machine diagnostic-code parser self-test"
+      },
+      "owner_docs": [
+        "docs/audit_registry/README.md",
+        "tool/README.md"
+      ],
+      "notes": "Zero is scanner-specific. The widget inventory ratchets live category maxima, and analyzer aggregation reads only the machine diagnostic-code field."
+    },
+    {
+      "id": "REG-SHELL-001",
+      "title": "Floating tab chrome obscures terminal scroll content",
+      "status": "active",
+      "applies_to": [
+        "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
+        "lib/core/presentation/app_shell_active_tab.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/**/presentation/**",
+        "lib/routing/go_router.dart",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "symptom": "A tab-root screen reaches maximum scroll while its last field, action, or nested preview content remains behind the floating iOS tab bar, or Android receives duplicate tab-bar padding.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check && flutter test test/core/semantic_layout_contracts_test.dart test/core/app_shell_test.dart",
+        "guardEvidence": "known-bad missing-terminal and unregistered-branch fixtures plus iOS floating, Android anchored, no-bar, and safe-area geometry tests"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "notes": "Overlay-control and scroll-terminal clearance are separate contracts. Keyboard viewInsets are never added; Scaffold resize behavior owns keyboard space."
+    },
+    {
+      "id": "REG-CHAT-COMPOSER-001",
+      "title": "Chat composer focus, geometry, semantics, and pending states drift apart",
+      "status": "active",
+      "applies_to": [
+        "lib/chats/presentation/widgets/chat_input_bar.dart",
+        "lib/core/widgets/catch_field.dart",
+        "lib/core/widgets/catch_icon_button.dart",
+        "test/chats/chat_input_bar_test.dart",
+        "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+        "design/components/catch.components.json"
+      ],
+      "symptom": "The chat actions use unequal targets or edge insets, empty Send appears enabled, focus changes no shared chrome, pending attachment work disables the editor, or duplicate field/button semantics return.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/chats/chat_input_bar_test.dart && node tool/design/check_component_contracts.mjs",
+        "guardEvidence": "exact 60px/44px geometry, draft-derived sendability, retained native focus, independent busy actions, and one editable semantics node"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json"
+      ],
+      "notes": "ChatInputBar is the catch.chat_composer contract. Call sites provide capabilities and async state only; they do not configure action geometry or draft validity."
+    },
+    {
+      "id": "REG-STORAGE-RULES-001",
+      "title": "Deployed Storage rules lose Firestore IAM or client cleanup capability",
+      "status": "active",
+      "applies_to": [
+        "storage.rules",
+        "contracts/storage/match_chat_images.schema.json",
+        "lib/image_uploads/data/image_upload_repository.dart",
+        "tool/firebase/storage_rules_firestore_iam.mjs",
+        "tool/firebase/probe_chat_storage_rules.mjs",
+        "tool/deploy_firebase_targets.sh"
+      ],
+      "symptom": "Emulator tests pass while live chat uploads return unauthorized, a rule evaluation exceeds cross-service document limits, or a failed message write cannot delete its uploaded object.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/firebase/storage_rules_firestore_iam.test.mjs tool/firebase/probe_chat_storage_rules.test.mjs && node tool/firebase/storage_rules_firestore_iam.mjs --all",
+        "guardEvidence": "known-bad missing-role fixture, policy-preserving apply, uploader-owned create/delete contract, and authenticated live upload/delete probe"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "docs/data_contracts.md",
+        "firebase/README.md"
+      ],
+      "notes": "Do not weaken chat images to any signed-in writer. Provision roles/firebaserules.firestoreServiceAgent, keep match status as the one-document block projection, and retain immutable uploaderUid object metadata."
+    },
+    {
+      "id": "REG-REPO-ROOT-001",
+      "title": "Repository residue returns without an owner or safe recovery path",
+      "status": "active",
+      "applies_to": [
+        "*",
+        "tool/repository_root_manifest.json",
+        "artifacts/**",
+        "docs/**/*.md"
+      ],
+      "symptom": "A root entry is unexplained, tracked output has no consumer, local paths leak into Markdown, or cleanup guidance can remove tracked or protected state.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/check_repository_root_hygiene.mjs && node --test tool/check_repository_root_hygiene.test.mjs",
+        "guardEvidence": "seeded tests prove unknown and ambiguous classifications plus non-portable links are detected"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "artifacts/README.md",
+        "docs/plans/repository_root_hygiene_spec.md"
+      ],
+      "notes": "The cleaner is allowlist-only, dry-run by default, and never invokes git clean."
+    },
+    {
+      "id": "REG-HOST-UTILITY-ROUTE-001",
+      "title": "Legacy Host clubs redirect swallows nested event and club operations",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "test/routing/router_redirect_test.dart"
+      ],
+      "symptom": "Tapping New event, an event row, Edit, or another /host/clubs child route opens the Organizer tab because the legacy /host/clubs alias redirect evaluates a partial matchedLocation instead of the full requested URI.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/routing/router_redirect_test.dart",
+        "guardEvidence": "GoRouter keeps the create-event child route"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "Exact legacy-alias redirects must compare state.uri.path. A route-level matchedLocation may represent the parent match and must not decide whether a nested Host utility route is preserved. Payout readiness is not part of this navigation boundary."
+    },
+    {
+      "id": "REG-HOST-CLUB-TABBED-WORKSPACE-001",
+      "title": "Host Clubs tab pages lose shared chrome or leak scroll state",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_tab_rail.dart",
+        "lib/core/widgets/catch_tabbed_screen.dart",
+        "lib/user_profile/presentation/profile_screen.dart",
+        "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+        "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+        "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+        "test/profile/profile_widgets_test.dart",
+        "test/hosts/host_operations_screen_test.dart",
+        "test/clubs/clubs_controllers_test.dart",
+        "test/clubs/club_hero_app_bar_test.dart",
+        "test/clubs/club_detail_read_only_preview_test.dart"
+      ],
+      "symptom": "Organizer scroll position leaks into Edit, Insights, or Preview; shared identity chrome or the option rail disappears; horizontal paging disagrees with the selected option; Preview requires a second CTA/route, exposes Back, Share, membership, or host-only HOSTED affordances; or Preview keeps the prior club after switching clubs.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/clubs/clubs_controllers_test.dart test/clubs/club_hero_app_bar_test.dart test/clubs/club_detail_read_only_preview_test.dart",
+        "guardEvidence": "focused suites cover typed native paging, persistent shared chrome, independent/restored vertical offsets, Prefill-to-Edit top position, direct consumer Club Detail composition, read-only route-chrome suppression, consumer schedule visuals, and selected-club hydration"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json"
+      ],
+      "notes": "Profile is the reference adopter for the nested shell and retains its specialized two-way Preview bridge. Host Clubs uses the same shell with typed HostClubTab pages and the canonical consumer Club Detail slivers; route actions, membership docks, and interaction effects remain outside the embedded read-only preview."
     }
   ]
 }

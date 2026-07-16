@@ -28,10 +28,10 @@ class DashboardHomeScreen extends StatelessWidget {
                 title: CatchScreenHeaderTitle.block(
                   title: header.title(context.l10n),
                   actions: actions,
-                  padding: CatchInsets.screenTitleBlockCompact,
                 ),
               ).buildSlivers(context),
               dashboardSliver,
+              const CatchSliverTerminalPadding(),
             ],
           ),
         ),

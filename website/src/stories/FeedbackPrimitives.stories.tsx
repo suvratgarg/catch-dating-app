@@ -62,7 +62,7 @@ export const LiveStatusStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_live_status",
-      routeIds: ["home", "host", "host_preview", "organizer_listing_canonical", "organizer_listing_legacy"],
+      routeIds: ["home", "host", "organizer_listing_canonical", "organizer_listing_legacy"],
       states: ["polite-status"],
     },
   },
@@ -74,7 +74,7 @@ export const RouteLoadingStateStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_route_loading_state",
-      routeIds: ["home", "host", "host_preview", "claim", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
+      routeIds: ["home", "host", "claim", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
       states: ["route-fallback"],
     },
   },

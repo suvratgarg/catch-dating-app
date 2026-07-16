@@ -231,6 +231,28 @@
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "ARCH-PROVIDER-CODEGEN-001",
+      "title": "Migrate reviewed manual Riverpod families to code generation",
+      "status": "active",
+      "owner": "agent",
+      "area": "flutter,architecture,riverpod,tooling",
+      "priority": "low",
+      "summary": "The generated provider graph found four existing handwritten auto-dispose providers outside core that the older dependency scanner did not classify because their declarations use chained autoDispose/family constructors. They are reviewed, acyclic, and behaviorally valid; migrate them in owning-feature passes rather than combining override API churn across Clubs, Event Success, Explore, and Public Profile.",
+      "acceptance": [
+        "clubNameLookupProvider, eventSuccessCompanionClockProvider, exploreRecommendedEventsProvider, and publicProfilesByIdsProvider use Riverpod code generation with equivalent family and auto-dispose behavior",
+        "focused provider and override-heavy caller tests pass for each owning feature",
+        "the matching planned decisions disappear from provider_graph_reviews.json and provider graph --check remains clean"
+      ],
+      "paths": [
+        "lib/clubs/data/club_name_lookup.dart",
+        "lib/event_success/event_success_companion_clock.dart",
+        "lib/explore/data/explore_recommendations_repository.dart",
+        "lib/public_profile/data/public_profiles_lookup.dart",
+        "tool/architecture/provider_graph_reviews.json"
+      ],
+      "source": "2026-07-13-provider-graph-architecture"
     }
   ],
   "next_up": [],

@@ -66,11 +66,18 @@ async function seedStorageFile(objectPath) {
 function uploadImage(
   storage,
   objectPath,
-  {contentType = "image/jpeg", data = "image-bytes"} = {},
+  {contentType = "image/jpeg", data = "image-bytes", customMetadata} = {},
 ) {
   return storage
     .ref(objectPath)
-    .putString(data, "raw", {contentType});
+    .putString(data, "raw", {contentType, customMetadata});
+}
+
+function uploadChatImage(storage, objectPath, uploaderUid, options = {}) {
+  return uploadImage(storage, objectPath, {
+    ...options,
+    customMetadata: {uploaderUid},
+  });
 }
 
 describe("storage.rules", () => {
@@ -104,15 +111,17 @@ describe("storage.rules", () => {
       await seedFirestore(["matches", "match-1"], match());
 
       await assertSucceeds(
-        uploadImage(
+        uploadChatImage(
           authedStorage("runner-1"),
           "matches/match-1/images/message-1_123.jpg",
+          "runner-1",
         ),
       );
       await assertSucceeds(
-        uploadImage(
+        uploadChatImage(
           authedStorage("runner-2"),
           "matches/match-1/images/message-2_123.jpg",
+          "runner-2",
         ),
       );
     });
@@ -128,9 +137,10 @@ describe("storage.rules", () => {
       );
 
       await assertSucceeds(
-        uploadImage(
+        uploadChatImage(
           authedStorage("runner-1"),
           "matches/legacy-match/images/message-1_123.jpg",
+          "runner-1",
         ),
       );
     });
@@ -143,35 +153,92 @@ describe("storage.rules", () => {
       );
 
       await assertFails(
-        uploadImage(
+        uploadChatImage(
           authedStorage("runner-3"),
           "matches/match-1/images/message-1_123.jpg",
+          "runner-3",
         ),
       );
       await assertFails(
-        uploadImage(
+        uploadChatImage(
           authedStorage("runner-1"),
           "matches/blocked-match/images/message-1_123.jpg",
+          "runner-1",
         ),
       );
       await assertFails(
-        uploadImage(
+        uploadChatImage(
           unauthenticatedStorage(),
           "matches/match-1/images/message-1_123.jpg",
+          "runner-1",
         ),
       );
       await assertFails(
-        uploadImage(
+        uploadChatImage(
           authedStorage("runner-1"),
           "matches/match-1/images/message-1_123.txt",
+          "runner-1",
           {contentType: "text/plain"},
         ),
       );
       await assertFails(
-        uploadImage(
+        uploadChatImage(
           authedStorage("runner-1"),
           "matches/match-1/images/message-1.jpg",
+          "runner-1",
         ),
+      );
+    });
+
+    it("requires uploader-owned metadata and forbids object updates", async () => {
+      await seedFirestore(["matches", "match-1"], match());
+      const objectPath = "matches/match-1/images/immutable-owner_123.jpg";
+
+      await assertFails(
+        uploadImage(
+          authedStorage("runner-1"),
+          "matches/match-1/images/missing-metadata_123.jpg",
+        ),
+      );
+      await assertFails(
+        uploadChatImage(
+          authedStorage("runner-1"),
+          "matches/match-1/images/forged-owner_123.jpg",
+          "runner-2",
+        ),
+      );
+
+      await assertSucceeds(
+        uploadChatImage(
+          authedStorage("runner-1"),
+          objectPath,
+          "runner-1",
+        ),
+      );
+      await assertFails(
+        uploadChatImage(
+          authedStorage("runner-1"),
+          objectPath,
+          "runner-1",
+          {data: "replacement"},
+        ),
+      );
+    });
+
+    it("allows only the active-match uploader to delete a chat image", async () => {
+      await seedFirestore(["matches", "match-1"], match());
+      const objectPath = "matches/match-1/images/delete-owner_123.jpg";
+
+      await assertSucceeds(
+        uploadChatImage(
+          authedStorage("runner-1"),
+          objectPath,
+          "runner-1",
+        ),
+      );
+      await assertFails(authedStorage("runner-2").ref(objectPath).delete());
+      await assertSucceeds(
+        authedStorage("runner-1").ref(objectPath).delete(),
       );
     });
 
@@ -191,19 +258,12 @@ describe("storage.rules", () => {
       );
     });
 
-    it("denies participants from reading chat images for blocked matches", async () => {
+    it("denies participants from reading or writing when match status is blocked", async () => {
       await seedFirestore(
         ["matches", "blocked-match"],
         match({status: "blocked"}),
       );
-      await seedFirestore(["matches", "blocked-by-doc"], match());
-      await seedFirestore(["blocks", "runner-1__runner-2"], {
-        blockerUserId: "runner-1",
-        blockedUserId: "runner-2",
-        createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
-      });
       await seedStorageFile("matches/blocked-match/images/message-1_123.jpg");
-      await seedStorageFile("matches/blocked-by-doc/images/message-1_123.jpg");
 
       await assertFails(
         authedStorage("runner-1")
@@ -211,14 +271,10 @@ describe("storage.rules", () => {
           .getMetadata(),
       );
       await assertFails(
-        authedStorage("runner-2")
-          .ref("matches/blocked-by-doc/images/message-1_123.jpg")
-          .getMetadata(),
-      );
-      await assertFails(
-        uploadImage(
+        uploadChatImage(
           authedStorage("runner-1"),
-          "matches/blocked-by-doc/images/message-2_123.jpg",
+          "matches/blocked-match/images/message-2_123.jpg",
+          "runner-1",
         ),
       );
     });

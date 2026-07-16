@@ -140,6 +140,5 @@ List<Widget> buildExploreBodySlivers({
           onCategoryTap: onActivitySelected,
         ),
       ),
-    const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
   ];
 }
