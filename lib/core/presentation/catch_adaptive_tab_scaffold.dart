@@ -26,9 +26,13 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigationBar = this.navigationBar;
-    final tabBarFloats =
+    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final candidateTabBarFloats =
         navigationBar != null && CatchTabBar.floatsFor(context);
-    final anchoredBar = tabBarFloats ? null : navigationBar ?? anchoredFallback;
+    final tabBarFloats = candidateTabBarFloats && !keyboardVisible;
+    final anchoredBar = keyboardVisible || candidateTabBarFloats
+        ? null
+        : navigationBar ?? anchoredFallback;
     final placement = tabBarFloats
         ? AppShellBottomBarPlacement.floating
         : anchoredBar != null
@@ -47,11 +51,17 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
     return Scaffold(
       key: AppShellKeys.scaffold,
       extendBody: tabBarFloats,
-      body: tabBarFloats
+      body: candidateTabBarFloats
           ? Stack(
               children: [
                 Positioned.fill(child: scopedBody),
-                Positioned(left: 0, right: 0, bottom: 0, child: navigationBar),
+                if (tabBarFloats)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: navigationBar,
+                  ),
               ],
             )
           : scopedBody,

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
@@ -52,13 +53,8 @@ class AppShell extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
     final uid = uidAsync.asData?.value ?? '';
     final isAuthenticated = uid.isNotEmpty;
-    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
-    final showAuthenticatedNavigation = isAuthenticated && !keyboardVisible;
     final showGuestAuthCta =
-        !isAuthenticated &&
-        !keyboardVisible &&
-        !uidAsync.isLoading &&
-        !uidAsync.hasError;
+        !isAuthenticated && !uidAsync.isLoading && !uidAsync.hasError;
     final unreadCount = isAuthenticated
         ? ref.watch(totalUnreadCountProvider(uid))
         : 0;
@@ -129,51 +125,22 @@ class AppShell extends ConsumerWidget {
       }
     });
 
-    final usesFloatingTabLayout = CatchTabBar.floatsFor(context);
-    final authenticatedTabBarFloats =
-        showAuthenticatedNavigation && usesFloatingTabLayout;
-    final authenticatedBottomOverlayInset = authenticatedTabBarFloats
-        ? CatchTabBar.reservedBottomInset(context)
-        : 0.0;
-    final authenticatedNavigationBar = showAuthenticatedNavigation
+    final authenticatedNavigationBar = isAuthenticated
         ? appShellNavigationBar(
             navigationShell: navigationShell,
             unreadCount: unreadCount,
           )
         : null;
-    final body = CatchNoticeHost(
-      persistentNotices: [if (isOffline) CatchNoticeData.offline(context.l10n)],
-      child: AppShellActiveTab(
-        index: navigationShell.currentIndex,
-        bottomOverlayInset: authenticatedBottomOverlayInset,
+    return CatchAdaptiveTabScaffold(
+      activeIndex: navigationShell.currentIndex,
+      navigationBar: authenticatedNavigationBar,
+      anchoredFallback: showGuestAuthCta ? const GuestAuthCtaBar() : null,
+      body: CatchNoticeHost(
+        persistentNotices: [
+          if (isOffline) CatchNoticeData.offline(context.l10n),
+        ],
         child: navigationShell,
       ),
-    );
-
-    return Scaffold(
-      key: AppShellKeys.scaffold,
-      extendBody: authenticatedTabBarFloats,
-      body: usesFloatingTabLayout
-          ? Stack(
-              children: [
-                Positioned.fill(child: body),
-                if (authenticatedTabBarFloats)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: authenticatedNavigationBar!,
-                  ),
-              ],
-            )
-          : body,
-      bottomNavigationBar: authenticatedTabBarFloats
-          ? null
-          : showAuthenticatedNavigation
-          ? authenticatedNavigationBar
-          : showGuestAuthCta
-          ? const GuestAuthCtaBar()
-          : null,
     );
   }
 }

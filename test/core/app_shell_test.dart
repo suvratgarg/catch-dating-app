@@ -79,6 +79,83 @@ void main() {
       expect(activeTab.bottomOverlayInset, 102);
     });
 
+    testWidgets(
+      'suppresses floating navigation without reparenting a focused editor',
+      (tester) async {
+        const navigationKey = Key('adaptive-navigation');
+        const editorKey = Key('adaptive-editor');
+        final controller = TextEditingController(text: 'Draft reply');
+        final focusNode = FocusNode();
+        addTearDown(controller.dispose);
+        addTearDown(focusNode.dispose);
+        addTearDown(tester.view.resetViewInsets);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+            home: CatchAdaptiveTabScaffold(
+              activeIndex: appShellChatsTabIndex,
+              body: TextField(
+                key: editorKey,
+                controller: controller,
+                focusNode: focusNode,
+              ),
+              navigationBar: const SizedBox(key: navigationKey, height: 56),
+            ),
+          ),
+        );
+
+        await tester.tap(find.byKey(editorKey));
+        await tester.pump();
+        controller.selection = const TextSelection.collapsed(offset: 5);
+        final editorElement = tester.element(find.byKey(editorKey));
+
+        // Focus with zero viewInsets models a hardware keyboard. Chrome stays.
+        expect(tester.view.viewInsets.bottom, 0);
+        expect(focusNode.hasFocus, isTrue);
+        expect(find.byKey(navigationKey), findsOneWidget);
+        expect(
+          tester
+              .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+              .bottomBarPlacement,
+          AppShellBottomBarPlacement.floating,
+        );
+
+        tester.view.viewInsets = const FakeViewPadding(bottom: 318);
+        await tester.pump();
+
+        final keyboardScaffold = tester.widget<Scaffold>(
+          find.byKey(AppShellKeys.scaffold),
+        );
+        final keyboardActiveTab = tester.widget<AppShellActiveTab>(
+          find.byType(AppShellActiveTab),
+        );
+        expect(keyboardScaffold.extendBody, isFalse);
+        expect(keyboardScaffold.body, isA<Stack>());
+        expect(keyboardScaffold.bottomNavigationBar, isNull);
+        expect(find.byKey(navigationKey), findsNothing);
+        expect(
+          keyboardActiveTab.bottomBarPlacement,
+          AppShellBottomBarPlacement.none,
+        );
+        expect(keyboardActiveTab.bottomOverlayInset, 0);
+        expect(tester.element(find.byKey(editorKey)), same(editorElement));
+        expect(focusNode.hasFocus, isTrue);
+        expect(controller.text, 'Draft reply');
+        expect(controller.selection, const TextSelection.collapsed(offset: 5));
+
+        tester.view.resetViewInsets();
+        await tester.pump();
+        expect(find.byKey(navigationKey), findsOneWidget);
+        expect(
+          tester
+              .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+              .bottomBarPlacement,
+          AppShellBottomBarPlacement.floating,
+        );
+      },
+    );
+
     testWidgets('anchors navigation through Scaffold on Android', (
       tester,
     ) async {
@@ -119,6 +196,7 @@ void main() {
 
     testWidgets('anchors fallback chrome even on iOS', (tester) async {
       const fallbackKey = Key('adaptive-fallback');
+      addTearDown(tester.view.resetViewInsets);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -142,6 +220,24 @@ void main() {
       expect(scaffold.bottomNavigationBar, isNotNull);
       expect(find.byKey(fallbackKey), findsOneWidget);
       expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.anchored);
+
+      tester.view.viewInsets = const FakeViewPadding(bottom: 318);
+      await tester.pump();
+
+      final keyboardScaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final keyboardActiveTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+      expect(keyboardScaffold.extendBody, isFalse);
+      expect(keyboardScaffold.bottomNavigationBar, isNull);
+      expect(find.byKey(fallbackKey), findsNothing);
+      expect(
+        keyboardActiveTab.bottomBarPlacement,
+        AppShellBottomBarPlacement.none,
+      );
+      expect(keyboardActiveTab.bottomOverlayInset, 0);
     });
 
     testWidgets('preserves safe-area terminal clearance with no bottom bar', (

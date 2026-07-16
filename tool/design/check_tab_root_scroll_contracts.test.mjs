@@ -39,6 +39,23 @@ test("flags the known-bad tab root fixture when terminal padding is missing", ()
   );
 });
 
+test("flags a shell that bypasses the shared adaptive scaffold", () => {
+  const root = fixtureRoot({
+    ownerSource:
+      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
+    shellSource: "return Scaffold(body: navigationShell);",
+  });
+  const result = checkTabRootScrollContracts({root});
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding.code === "missing-required-text" &&
+        finding.path === "lib/core/presentation/app_shell.dart" &&
+        finding.message.includes("CatchAdaptiveTabScaffold"),
+    ),
+  );
+});
+
 test("flags a new StatefulShellBranch until it is registered", () => {
   const root = fixtureRoot({
     ownerSource:
@@ -62,6 +79,7 @@ test("flags a new StatefulShellBranch until it is registered", () => {
 
 function fixtureRoot({
   ownerSource,
+  shellSource = "return CatchAdaptiveTabScaffold(body: navigationShell);",
   extraRouterSource = "",
   requires = [
     {text: "bottom: false", minimumOccurrences: 1},
@@ -80,14 +98,21 @@ function fixtureRoot({
       ${extraRouterSource}
     `,
   );
+  write(root, "lib/core/presentation/app_shell.dart", shellSource);
   write(root, "lib/home/home_screen.dart", ownerSource);
   write(
     root,
     "tool/design/tab_root_scroll_contracts.json",
     JSON.stringify({
-      schemaVersion: 1,
+      schemaVersion: 2,
       logicalName: "fixture",
       routerPath: "lib/routing/go_router.dart",
+      shells: [
+        {
+          path: "lib/core/presentation/app_shell.dart",
+          requires: [{text: "CatchAdaptiveTabScaffold", minimumOccurrences: 1}],
+        },
+      ],
       branches: [
         {
           branchKey: "_homeShellKey",

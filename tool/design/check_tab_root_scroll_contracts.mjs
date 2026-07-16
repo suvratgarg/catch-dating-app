@@ -71,6 +71,12 @@ export function checkTabRootScrollContracts({
   }
 
   const checkedOwners = new Set();
+  for (const shell of manifest.shells ?? []) {
+    const shellKey = JSON.stringify(shell);
+    if (checkedOwners.has(shellKey)) continue;
+    checkedOwners.add(shellKey);
+    checkOwner({root, owner: shell, findings, ownerKind: "shell contract"});
+  }
   for (const branch of manifest.branches ?? []) {
     if (
       typeof branch.routeName === "string" &&
@@ -87,21 +93,21 @@ export function checkTabRootScrollContracts({
       const ownerKey = JSON.stringify(owner);
       if (checkedOwners.has(ownerKey)) continue;
       checkedOwners.add(ownerKey);
-      checkOwner({root, owner, findings});
+      checkOwner({root, owner, findings, ownerKind: "scroll owner"});
     }
   }
 
   return summarize(manifest, findings);
 }
 
-function checkOwner({root, owner, findings}) {
+function checkOwner({root, owner, findings, ownerKind}) {
   const relativePath = owner.path;
   const absolutePath = path.join(root, relativePath);
   if (!fs.existsSync(absolutePath)) {
     findings.push({
       code: "missing-owner",
       path: relativePath,
-      message: "Declared tab-root scroll owner does not exist.",
+      message: `Declared tab-root ${ownerKind} does not exist.`,
     });
     return;
   }
@@ -134,12 +140,36 @@ function checkOwner({root, owner, findings}) {
 }
 
 function validateManifest(manifest, findings, manifestPath) {
-  if (manifest.schemaVersion !== 1) {
+  if (manifest.schemaVersion !== 2) {
     findings.push({
       code: "invalid-schema-version",
       path: manifestPath,
-      message: "schemaVersion must be 1.",
+      message: "schemaVersion must be 2.",
     });
+  }
+  if (!Array.isArray(manifest.shells) || manifest.shells.length === 0) {
+    findings.push({
+      code: "missing-shells",
+      path: manifestPath,
+      message: "shells must register the adaptive consumer and Host owners.",
+    });
+  } else {
+    for (const shell of manifest.shells) {
+      if (typeof shell.path !== "string" || shell.path.length === 0) {
+        findings.push({
+          code: "invalid-shell-path",
+          path: manifestPath,
+          message: "Every shell contract requires a non-empty path.",
+        });
+      }
+      if (!Array.isArray(shell.requires) || shell.requires.length === 0) {
+        findings.push({
+          code: "missing-shell-requirements",
+          path: manifestPath,
+          message: `${shell.path ?? "unknown shell"} requires adoption markers.`,
+        });
+      }
+    }
   }
   if (!Array.isArray(manifest.branches) || manifest.branches.length === 0) {
     findings.push({
@@ -184,6 +214,7 @@ function countOccurrences(source, text) {
 function resultWith(findings, finding) {
   findings.push(finding);
   return {
+    shellCount: 0,
     branchCount: 0,
     ownerCount: 0,
     findings,
@@ -196,6 +227,7 @@ function summarize(manifest, findings) {
     for (const owner of branch.owners ?? []) ownerPaths.add(owner.path);
   }
   return {
+    shellCount: manifest.shells?.length ?? 0,
     branchCount: manifest.branches?.length ?? 0,
     ownerCount: ownerPaths.size,
     findings,
@@ -219,7 +251,8 @@ manifest and verifies that each owner retains semantic terminal clearance.`);
     console.log(JSON.stringify(result, null, 2));
   } else if (result.findings.length === 0) {
     console.log(
-      `Tab-root scroll contracts: ${result.branchCount} branches, ` +
+      `Tab-root scroll contracts: ${result.shellCount} shells, ` +
+        `${result.branchCount} branches, ` +
         `${result.ownerCount} owner files, 0 findings.`,
     );
   } else {
