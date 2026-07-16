@@ -899,9 +899,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final user = buildUser(
-      email: '',
-    ).copyWith(phoneNumber: '+919876543210', occupation: 'Engineer');
+    final user = buildUser(email: '').copyWith(phoneNumber: '+919876543210');
 
     await tester.pumpWidget(
       ProviderScope(
@@ -924,6 +922,8 @@ void main() {
     for (final (label, emptyValue) in [
       ('Email', 'Add email'),
       ('Instagram', 'Add instagram'),
+      ('Job title', 'Add job title'),
+      ('Company', 'Add company'),
     ]) {
       final tile = _profileInfoTile(label);
       await _dragProfileTabUntilVisible(tester, tile);
@@ -931,11 +931,12 @@ void main() {
         find.descendant(of: tile, matching: find.text(emptyValue)),
         findsOneWidget,
       );
+      expect(
+        find.descendant(of: tile, matching: find.text(label)),
+        findsNothing,
+      );
       expect(find.text('+ $label'), findsNothing);
     }
-
-    await _dragProfileTabUntilVisible(tester, find.text('Engineer'));
-    expect(find.text('Engineer'), findsOneWidget);
 
     final workoutTile = _profileInfoTile('Workout');
     await _dragProfileTabUntilVisible(tester, workoutTile);
@@ -1513,11 +1514,46 @@ void main() {
         )
         .length;
 
+    Rect highlightedPromptFieldRect() {
+      final overlays = find.descendant(
+        of: card,
+        matching: find.byKey(
+          const ValueKey<String>('catch-field-active-overlay'),
+        ),
+      );
+      final activeIndex =
+          List.generate(
+            overlays.evaluate().length,
+            (index) => index,
+          ).singleWhere((index) {
+            final overlay = tester.widget<AnimatedContainer>(
+              overlays.at(index),
+            );
+            return (overlay.decoration! as BoxDecoration).border != null;
+          });
+      return tester.getRect(overlays.at(activeIndex));
+    }
+
+    Rect promptSurfaceRect() => tester.getRect(
+      find.descendant(
+        of: card,
+        matching: find.byType(CatchSectionFocusSurface),
+      ),
+    );
+
+    void expectPromptEdgesShareGeometry() {
+      final surfaceRect = promptSurfaceRect();
+      final fieldRect = highlightedPromptFieldRect();
+      expect(fieldRect.left, closeTo(surfaceRect.left, 0.1));
+      expect(fieldRect.right, closeTo(surfaceRect.right, 0.1));
+    }
+
     expect(
       promptSurfaceDecoration().border,
       Border.all(color: CatchTokens.editorialLight.line2),
     );
     expect(highlightedPromptFields(), 1);
+    expectPromptEdgesShareGeometry();
 
     await tester.tap(_promptAnswerEditableText(0));
     await _pumpProfileSheet(tester);
@@ -1527,6 +1563,7 @@ void main() {
       Border.all(color: CatchTokens.editorialLight.line2),
     );
     expect(highlightedPromptFields(), 1);
+    expectPromptEdgesShareGeometry();
     expect(find.byKey(const ValueKey('catch-field-cancel')), findsNothing);
     expect(find.byKey(const ValueKey('catch-field-done')), findsNothing);
     expect(_promptAnswerEditableText(0), findsOneWidget);
@@ -1858,6 +1895,7 @@ void main() {
     expect(repository.updatedFields, {'height': 173});
     expect(find.byTooltip('Increase height'), findsOneWidget);
     expect(_loadingCatchButtonCount(tester), 1);
+    expect(find.byType(CatchFieldSpinner), findsOneWidget);
 
     repository.updateCompleter!.complete();
     await _pumpProfileSheet(tester);
@@ -2325,6 +2363,7 @@ void main() {
       'education': EducationLevel.values.first.name,
     });
     expect(_loadingCatchButtonCount(tester), 1);
+    expect(find.byType(CatchFieldSpinner), findsOneWidget);
     expect(
       tester
           .widget<CatchFieldChoiceChip>(

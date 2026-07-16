@@ -2022,19 +2022,28 @@ void main() {
   });
 
   testWidgets('CatchSection composes the shared kicker leaf', (tester) async {
-    await tester.pumpWidget(
-      _wrap(
-        const CatchSection.divided(
-          title: 'Why you might click',
-          first: true,
-          child: Text('Body copy'),
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(
+        _wrap(
+          const CatchSection.divided(
+            title: 'Why you might click',
+            first: true,
+            child: Text('Body copy'),
+          ),
         ),
-      ),
-    );
+      );
 
-    expect(find.byType(CatchKicker), findsOneWidget);
-    expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
-    expect(find.text('Body copy'), findsOneWidget);
+      expect(find.byType(CatchKicker), findsOneWidget);
+      expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
+      expect(find.text('Body copy'), findsOneWidget);
+      expect(
+        find.semantics.byLabel('WHY YOU MIGHT CLICK'),
+        matchesSemantics(label: 'WHY YOU MIGHT CLICK', isHeader: true),
+      );
+    } finally {
+      semantics.dispose();
+    }
   });
 
   testWidgets('CatchSectionStack lets Section own the handoff rhythm', (
@@ -2830,7 +2839,7 @@ void main() {
   });
 
   testWidgets(
-    'CatchSection contained perimeter paints above active edge fields',
+    'CatchSection contained perimeter and active edge fields share geometry',
     (tester) async {
       Future<void> pump({required bool firstOpen}) {
         return tester.pumpWidget(
@@ -2872,37 +2881,39 @@ void main() {
         );
         final background = surface.decoration! as BoxDecoration;
         final perimeter = surface.foregroundDecoration! as BoxDecoration;
-        final overlayFinder = find.byKey(
-          const ValueKey('catch-field-active-overlay'),
+        final activeOverlayFinder = find.byWidgetPredicate((widget) {
+          if (widget is! AnimatedContainer ||
+              widget.key != const ValueKey('catch-field-active-overlay')) {
+            return false;
+          }
+          final decoration = widget.decoration;
+          return decoration is BoxDecoration && decoration.border != null;
+        }, description: 'active CatchField overlay with a painted border');
+        final activeFieldFinder = find.ancestor(
+          of: activeOverlayFinder,
+          matching: find.byType(CatchField),
         );
-        final activeOverlayIndex =
-            List.generate(
-              overlayFinder.evaluate().length,
-              (index) => index,
-            ).singleWhere((index) {
-              final overlay = tester.widget<AnimatedContainer>(
-                overlayFinder.at(index),
-              );
-              return (overlay.decoration! as BoxDecoration).border != null;
-            });
-        final activeOverlayRect = tester.getRect(
-          overlayFinder.at(activeOverlayIndex),
-        );
+        expect(activeOverlayFinder, findsOneWidget);
+        expect(activeFieldFinder, findsOneWidget);
+        final activeOverlayRect = tester.getRect(activeOverlayFinder);
         final surfaceRect = tester.getRect(
           find.byType(CatchSectionFocusSurface),
         );
+        final activeFieldRect = tester.getRect(activeFieldFinder);
 
         expect(background.border, isNull);
         expect(
           perimeter.border,
           Border.all(color: CatchTokens.editorialLight.line2),
         );
+        expect(activeOverlayRect.left, closeTo(surfaceRect.left, 0.1));
+        expect(activeOverlayRect.right, closeTo(surfaceRect.right, 0.1));
         expect(
-          activeOverlayRect.left,
+          activeFieldRect.left,
           closeTo(surfaceRect.left + CatchStroke.hairline, 0.1),
         );
         expect(
-          activeOverlayRect.right,
+          activeFieldRect.right,
           closeTo(surfaceRect.right - CatchStroke.hairline, 0.1),
         );
         if (firstOpen) {
@@ -2914,6 +2925,47 @@ void main() {
           );
         }
       }
+    },
+  );
+
+  testWidgets(
+    'CatchSectionFocusSurface field rows own active edge geometry directly',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 360,
+            child: CatchSectionFocusSurface(
+              padding: EdgeInsets.zero,
+              focused: false,
+              hasError: false,
+              fieldRows: true,
+              child: CatchField.input(
+                title: 'Answer',
+                initialValue: 'The child owns this focus ring.',
+                focused: true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final surfaceRect = tester.getRect(find.byType(CatchSectionFocusSurface));
+      final fieldRect = tester.getRect(find.byType(CatchField));
+      final activeOverlayRect = tester.getRect(
+        find.byKey(const ValueKey('catch-field-active-overlay')),
+      );
+
+      expect(activeOverlayRect.left, closeTo(surfaceRect.left, 0.1));
+      expect(activeOverlayRect.right, closeTo(surfaceRect.right, 0.1));
+      expect(
+        fieldRect.left,
+        closeTo(surfaceRect.left + CatchStroke.hairline, 0.1),
+      );
+      expect(
+        fieldRect.right,
+        closeTo(surfaceRect.right - CatchStroke.hairline, 0.1),
+      );
     },
   );
 
@@ -2945,7 +2997,7 @@ void main() {
         labelLeft,
         closeTo(
           surfaceRect.left + CatchSpacing.s4 + CatchFieldRow.textLaneInset,
-          0.1,
+          0.2,
         ),
       );
       expect(valueRight, closeTo(surfaceRect.right - CatchSpacing.s4, 0.1));
@@ -3446,6 +3498,82 @@ void main() {
     expect(find.text('Capacity choices').hitTestable(), findsOneWidget);
     expect(tester.element(find.byKey(controlKey)), same(controlElement));
   });
+
+  testWidgets(
+    'CatchField keeps disclosure chevrons centered on the value line',
+    (tester) async {
+      final fieldKey = GlobalKey();
+      await tester.pumpWidget(
+        _wrap(
+          CatchField.control(
+            key: fieldKey,
+            title: 'Religion',
+            body: 'Christian',
+            control: const Text('Religion choices'),
+          ),
+        ),
+      );
+
+      Rect chevronRect() =>
+          tester.getRect(find.byIcon(CatchIcons.expandMoreRounded));
+      Rect valueRect() => tester.getRect(find.text('Christian'));
+
+      double chevronCenterFromFieldTop() =>
+          chevronRect().center.dy - tester.getRect(find.byKey(fieldKey)).top;
+      final collapsedChevronCenter = chevronRect().center.dy;
+      final collapsedChevronOffset = chevronCenterFromFieldTop();
+      expect(collapsedChevronCenter, closeTo(valueRect().center.dy, 0.1));
+      expect(
+        tester.getRect(find.byKey(fieldKey)).bottom - chevronRect().bottom,
+        closeTo(
+          CatchFieldTokens.rowVerticalPadding +
+              (CatchFieldTokens.valueLineExtent -
+                      CatchFieldTokens.disclosureGlyphExtent) /
+                  2,
+          0.2,
+        ),
+      );
+
+      await tester.tap(find.text('Religion'));
+      await _pumpCatchFieldMotion(tester);
+
+      expect(chevronCenterFromFieldTop(), closeTo(collapsedChevronOffset, 0.1));
+      expect(chevronRect().center.dy, closeTo(valueRect().center.dy, 0.1));
+    },
+  );
+
+  testWidgets(
+    'CatchField centers disclosure status affordances on the value line',
+    (tester) async {
+      Future<void> pumpStatus(CatchFieldStatus status) => tester.pumpWidget(
+        _wrap(
+          CatchField.control(
+            title: 'Religion',
+            body: 'Christian',
+            status: status,
+            control: const Text('Religion choices'),
+          ),
+        ),
+      );
+
+      await pumpStatus(CatchFieldStatus.saving);
+      expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('catch-field-action-bar')),
+        findsNothing,
+      );
+      expect(
+        tester.getCenter(find.byType(CatchFieldSpinner)).dy,
+        closeTo(tester.getCenter(find.text('Christian')).dy, 0.1),
+      );
+
+      await pumpStatus(CatchFieldStatus.saved);
+      expect(
+        tester.getCenter(find.byIcon(CatchIcons.checkCircleFilled)).dy,
+        closeTo(tester.getCenter(find.text('Christian')).dy, 0.1),
+      );
+    },
+  );
 
   testWidgets('CatchField preserves the last state when control is released', (
     tester,
@@ -4180,56 +4308,59 @@ void main() {
     await gesture.up();
   });
 
-  testWidgets('CatchField exposes saving and saved trailing status', (
+  testWidgets('CatchField gives the visible commit bar sole saving progress', (
     tester,
   ) async {
-    await tester.pumpWidget(
+    Future<void> pumpField({
+      bool open = true,
+      bool isLoading = false,
+      CatchFieldStatus status = CatchFieldStatus.idle,
+    }) => tester.pumpWidget(
       _wrap(
-        const CatchField.control(
+        CatchField.control(
           title: 'Height',
           body: '168 cm',
-          open: true,
-          status: CatchFieldStatus.saved,
-          control: Text('Height control'),
+          open: open,
+          isLoading: isLoading,
+          status: status,
+          control: const Text('Height control'),
           onCancel: _noop,
           onSubmit: _noop,
         ),
       ),
     );
 
+    await pumpField(status: CatchFieldStatus.saved);
     expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
     expect(
       tester.widget<Icon>(find.byKey(const ValueKey('catch-field-saved'))).icon,
       CatchIcons.checkCircleFilled,
     );
 
-    await tester.pumpWidget(
-      _wrap(
-        const CatchField.control(
-          title: 'Height',
-          body: '168 cm',
-          open: true,
-          status: CatchFieldStatus.saving,
-          control: Text('Height control'),
-          onCancel: _noop,
-          onSubmit: _noop,
-        ),
-      ),
-    );
-
-    expect(find.byKey(const ValueKey('catch-field-spinner')), findsNWidgets(2));
-    final spinnerIcons = tester
-        .widgetList<Icon>(find.byIcon(CatchIcons.fieldSpinner))
-        .toList();
+    await pumpField(isLoading: true);
+    expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
+    expect(find.byType(CatchFieldSpinner), findsOneWidget);
     expect(
-      spinnerIcons.map((icon) => icon.size),
-      unorderedEquals([
-        CatchFieldTokens.spinnerExtent,
-        CatchFieldTokens.actionSpinnerExtent,
-      ]),
+      find.descendant(
+        of: find.byKey(const ValueKey('catch-field-done')),
+        matching: find.byType(CatchFieldSpinner),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(CatchFieldTrailing),
+        matching: find.byType(CatchFieldSpinner),
+      ),
+      findsNothing,
+    );
+    expect(find.byIcon(CatchIcons.expandMoreRounded), findsOneWidget);
+    expect(
+      tester.widget<Icon>(find.byIcon(CatchIcons.fieldSpinner)).size,
+      CatchFieldTokens.actionSpinnerExtent,
     );
     final spinnerRotation = tester.widget<RotationTransition>(
-      find.byKey(const ValueKey('catch-field-spinner')).first,
+      find.byKey(const ValueKey('catch-field-spinner')),
     );
     expect(
       (spinnerRotation.turns as AnimationController).duration,
@@ -4259,6 +4390,38 @@ void main() {
       tester.getSize(find.byKey(const ValueKey('catch-field-done'))).height,
       34,
     );
+
+    // The legacy aggregate status input coalesces into the same visible owner.
+    await pumpField(status: CatchFieldStatus.saving);
+    expect(find.byType(CatchFieldSpinner), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('catch-field-done')),
+        matching: find.byType(CatchFieldSpinner),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(CatchFieldTrailing),
+        matching: find.byType(CatchFieldSpinner),
+      ),
+      findsNothing,
+    );
+
+    // If the commit bar is not visible, the trailing lane remains the only
+    // place where saving progress can be communicated.
+    await tester.pumpWidget(const SizedBox.shrink());
+    await pumpField(open: false, isLoading: true);
+    expect(find.byType(CatchFieldSpinner), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(CatchFieldTrailing),
+        matching: find.byType(CatchFieldSpinner),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('catch-field-action-bar')), findsNothing);
   });
 
   testWidgets(
@@ -4500,6 +4663,96 @@ void main() {
     expect(find.text(' · Optional'), findsOneWidget);
     expect(find.text('Hindu'), findsOneWidget);
   });
+
+  testWidgets(
+    'CatchField standardizes empty input and choice Add rows at rest',
+    (tester) async {
+      final inputKey = GlobalKey();
+      final multilineInputKey = GlobalKey();
+      final choiceKey = GlobalKey();
+
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 320,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CatchField.input(
+                  key: inputKey,
+                  title: 'Job title',
+                  icon: CatchIcons.workOutline,
+                  isOptional: true,
+                ),
+                CatchField.input(
+                  key: multilineInputKey,
+                  title: 'Review',
+                  minLines: 2,
+                  maxLines: 4,
+                  isOptional: true,
+                ),
+                CatchField.choices<String>(
+                  key: choiceKey,
+                  title: 'Workout',
+                  values: const ['Never', 'Often'],
+                  itemLabel: (value) => value,
+                  selected: const {},
+                  onSelectionChanged: (_) {},
+                  addable: true,
+                  isOptional: true,
+                  icon: CatchIcons.fitnessCenterOutlined,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Add job title · Optional'), findsOneWidget);
+      expect(find.text('Add review · Optional'), findsOneWidget);
+      expect(find.text('Add workout · Optional'), findsOneWidget);
+      expect(find.text('Job title'), findsNothing);
+      expect(find.text('Review'), findsNothing);
+      expect(find.text('Workout'), findsNothing);
+      expect(
+        tester.getSize(find.byKey(inputKey)).height,
+        closeTo(tester.getSize(find.byKey(choiceKey)).height, 0.1),
+      );
+      expect(
+        tester.getSize(find.byKey(multilineInputKey)).height,
+        closeTo(tester.getSize(find.byKey(choiceKey)).height, 0.1),
+      );
+      expect(
+        tester.getCenter(find.byIcon(CatchIcons.workOutline)).dy,
+        closeTo(tester.getCenter(find.text('Add job title · Optional')).dy, 1),
+      );
+
+      final addText = tester.widget<Text>(
+        find.text('Add job title · Optional'),
+      );
+      final spans = (addText.textSpan! as TextSpan).children!;
+      expect(spans.first.style?.color, CatchTokens.editorialLight.primary);
+      expect(spans.first.style?.fontSize, 14);
+      expect(spans.first.style?.fontWeight, FontWeight.w600);
+      expect(spans.last.style?.color, CatchTokens.editorialLight.ink3);
+      expect(spans.last.style?.fontWeight, FontWeight.w500);
+
+      final multilineTextField = find.descendant(
+        of: find.byKey(multilineInputKey),
+        matching: find.byType(TextField),
+      );
+      expect(tester.widget<TextField>(multilineTextField).minLines, isNull);
+      expect(tester.widget<TextField>(multilineTextField).maxLines, 1);
+
+      await tester.tap(multilineTextField);
+      await tester.pump();
+
+      expect(tester.widget<TextField>(multilineTextField).minLines, 2);
+      expect(tester.widget<TextField>(multilineTextField).maxLines, 4);
+      expect(find.text('Review'), findsOneWidget);
+      expect(find.text('Add review · Optional'), findsNothing);
+    },
+  );
 
   testWidgets('CatchField toggle stays visible and disabled while saving', (
     tester,
@@ -5448,13 +5701,15 @@ void main() {
       ),
     );
 
-    expect(find.text('Event title'), findsOneWidget);
+    expect(find.text('Event title'), findsNothing);
+    expect(find.text('Add event title'), findsOneWidget);
     expect(find.text('Short and memorable'), findsNothing);
     expect(find.text('Shows on event cards'), findsOneWidget);
 
-    await tester.tap(find.text('Event title'));
+    await tester.tap(find.byType(TextField));
     await tester.pump();
     await tester.pump(CatchMotion.fast);
+    expect(find.text('Event title'), findsOneWidget);
     expect(find.text('Short and memorable'), findsOneWidget);
     expect(find.text('Shows on event cards'), findsOneWidget);
 
@@ -5649,16 +5904,26 @@ void main() {
       ),
     );
 
-    expect(find.text('Bio'), findsOneWidget);
-    expect(find.text(' · Optional'), findsOneWidget);
+    expect(find.text('Bio'), findsNothing);
+    expect(find.text('Add bio · Optional'), findsOneWidget);
+    expect(find.text(' · Optional'), findsNothing);
     expect(find.text('Optional'), findsNothing);
     expect(
       find.byWidgetPredicate(
         (widget) =>
-            widget is Semantics && widget.properties.label == 'Bio, optional',
+            widget is Semantics &&
+            widget.properties.label == 'Add bio, optional',
       ),
       findsOneWidget,
     );
+
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+    await tester.pump(CatchMotion.fast);
+
+    expect(find.text('Bio'), findsOneWidget);
+    expect(find.text(' · Optional'), findsOneWidget);
+    expect(find.text('Share a little about yourself'), findsOneWidget);
   });
 
   testWidgets(
@@ -5680,18 +5945,19 @@ void main() {
         ),
       );
 
-      expect(find.text('Public name'), findsOneWidget);
+      expect(find.text('Public name'), findsNothing);
       expect(find.text('Add public name'), findsOneWidget);
       expect(find.text('e.g. Aanya'), findsNothing);
       expect(find.byType(TextField), findsOneWidget);
       final inputElement = tester.element(find.byType(TextField));
 
-      await tester.tap(find.text('Add public name'));
+      await tester.tap(find.byType(TextField));
       await tester.pump();
       await tester.pump(CatchMotion.fast);
 
       expect(find.byType(TextField), findsOneWidget);
       expect(tester.element(find.byType(TextField)), same(inputElement));
+      expect(find.text('Public name'), findsOneWidget);
       expect(find.text('e.g. Aanya'), findsOneWidget);
 
       var editableText = tester.widget<EditableText>(find.byType(EditableText));
@@ -5713,8 +5979,39 @@ void main() {
       expect(controller.text, isEmpty);
       expect(find.byType(TextField), findsOneWidget);
       expect(tester.element(find.byType(TextField)), same(inputElement));
-      expect(find.text('Public name'), findsOneWidget);
+      expect(find.text('Public name'), findsNothing);
       expect(find.text('Add public name'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'CatchField hides an input-only leading unit until empty Add receives focus',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 320,
+            child: CatchField.input(
+              title: 'Instagram',
+              leadingUnit: '@',
+              inputHint: 'handle',
+            ),
+          ),
+        ),
+      );
+
+      final inputElement = tester.element(find.byType(TextField));
+      expect(find.text('Add instagram'), findsOneWidget);
+      expect(find.text('@'), findsNothing);
+
+      await tester.tap(find.byType(TextField));
+      await tester.pump();
+      await tester.pump(CatchMotion.fast);
+
+      expect(tester.element(find.byType(TextField)), same(inputElement));
+      expect(find.text('Instagram'), findsOneWidget);
+      expect(find.text('@'), findsOneWidget);
+      expect(find.text('handle'), findsOneWidget);
     },
   );
 
@@ -5731,7 +6028,7 @@ void main() {
     );
 
     expect(find.text('Add instagram'), findsOneWidget);
-    await tester.tap(find.text('Add instagram'));
+    await tester.tap(find.byType(TextField));
     await tester.pump();
     await tester.pump(CatchMotion.fast);
 
@@ -5806,7 +6103,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Public name'));
+    await tester.tap(find.byType(TextField));
     await tester.pump();
     await tester.pump(CatchMotion.fast);
 
@@ -5839,7 +6136,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Public name'), findsOneWidget);
+      expect(find.text('Public name'), findsNothing);
+      expect(find.text('Add public name'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       final inputElement = tester.element(find.byType(TextField));
 
@@ -5849,6 +6147,7 @@ void main() {
 
       expect(find.byType(TextField), findsOneWidget);
       expect(tester.element(find.byType(TextField)), same(inputElement));
+      expect(find.text('Public name'), findsOneWidget);
       expect(find.text('e.g. Aanya'), findsOneWidget);
       expect(find.text('Public name is required'), findsOneWidget);
     },
@@ -5881,7 +6180,7 @@ void main() {
       await tester.pump(CatchMotion.fast);
 
       expect(find.byType(TextField), findsOneWidget);
-      expect(find.text('Public name'), findsOneWidget);
+      expect(find.text('Public name'), findsNothing);
       expect(find.text('Add public name'), findsOneWidget);
     },
   );
@@ -6381,9 +6680,13 @@ void main() {
     final iconRect = tester.getRect(find.byIcon(CatchIcons.locationOnOutlined));
     final titleRect = tester.getRect(find.text('City'));
     final valueRect = tester.getRect(find.text('Select city'));
+    final chevronRect = tester.getRect(
+      find.byIcon(CatchIcons.expandMoreRounded),
+    );
 
     expect(iconRect.right, lessThan(titleRect.left));
     expect((titleRect.left - valueRect.left).abs(), lessThanOrEqualTo(1));
+    expect(chevronRect.center.dy, closeTo(valueRect.center.dy, 0.1));
 
     expect(formKey.currentState!.validate(), isFalse);
     await tester.pump();

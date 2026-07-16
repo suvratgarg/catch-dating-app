@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-15",
+  "updated": "2026-07-16",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -4034,7 +4034,7 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "Each prompt renders as one CatchSection.containedFieldRows card with an inline CatchField.choices question editor and a separate multiline CatchField.input answer. Ordinary focus chrome is owned by exactly one child field while the outer perimeter stays neutral; section errors may still own the outer danger border. Question changes use staged Cancel/Done, answers save on blur, and production preserves the existing three-prompt and 300-character business limits. Widgetbook covers collapsed and question-expanded production compositions plus primitive focus ownership; deterministic route captures still need refreshing against the 2026-07-14 Field handoff.",
+              "notes": "Each prompt renders as one CatchSection.containedFieldRows card with an inline CatchField.choices question editor and a separate multiline CatchField.input answer. Ordinary focus state is owned by exactly one child field while CatchSectionFocusSurface publishes the CatchFieldInsetScope overlap that aligns the active field's left/right chrome with the neutral section perimeter; the section paints the shared edge last, and section errors may still own the outer danger border. Question changes use staged Cancel/Done, answers save on blur, and production preserves the existing three-prompt and 300-character business limits. Widgetbook covers collapsed and question-expanded production compositions plus primitive focus ownership; deterministic route captures still need refreshing against the 2026-07-14 Field handoff.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ]
@@ -4202,7 +4202,7 @@
             {
               "id": "DP-PROFILE-SELF-006",
               "status": "blocked",
-              "nextAction": "Owner/product/schema approval required. Preserve production behavior for empty direct-input label geometry; single-choice persistence, clearability, deselection, and save policy; DOB helper and mono formatting; pace visibility; lifestyle footer; enum-backed workout control; three prompts and 300-character answers rather than six/140; and profile icon/row ordering. Do not promote these differences as primitive parity without explicit approval."
+              "nextAction": "Owner/product/schema approval required. Preserve production behavior for single-choice persistence, clearability, deselection, and save policy; DOB helper and mono formatting; pace visibility; lifestyle footer; enum-backed workout control; three prompts and 300-character answers rather than six/140; and profile icon/row ordering. Empty direct-input geometry was explicitly approved on 2026-07-16 and now uses the root-owned single-line Add presentation. Do not promote the remaining differences as primitive parity without explicit approval."
             }
           ]
         },

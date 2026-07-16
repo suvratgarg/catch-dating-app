@@ -1436,18 +1436,12 @@ Future<void> _enterCreateEventText(
   final field = find.byKey(fieldKey);
   await tester.ensureVisible(field);
 
-  final catchField = tester.widget<CatchField>(field);
-  final fieldTitle = catchField.title;
-  final tapTarget = fieldTitle == null
-      ? field
-      : find.descendant(of: field, matching: find.text(fieldTitle)).first;
-  await tester.tap(tapTarget);
-  await tester.pump();
-
   final textField = find.descendant(
     of: field,
     matching: find.byType(TextField),
   );
+  await tester.tap(textField);
+  await tester.pump();
   await tester.enterText(textField, text);
   tester.testTextInput.hide();
   await tester.pump();

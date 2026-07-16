@@ -1390,9 +1390,11 @@ Widget catchFieldContractStates(BuildContext context) {
       'saved',
       'explicit-save-collapsed',
       'explicit-save-focused',
+      'explicit-save-saving',
       'explicit-save-error',
       'editable-empty-at-rest',
       'editable-empty-focused',
+      'empty-add-capability-matrix',
       'edit-empty',
       'edit-filled',
       'edit-focused',
@@ -1451,6 +1453,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'chevron',
+        description:
+            'The trailing affordance uses one caption reserve and stays centered on the value line.',
         child: CatchField.nav(
           title: 'Location',
           body: 'Fort Greene Park',
@@ -1463,10 +1467,17 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'toggle-off',
         child: const _ToggleFieldDemo(initialValue: false),
       ),
-      fieldState(label: 'control-collapsed', child: const _ChoiceFieldDemo()),
+      fieldState(
+        label: 'control-collapsed',
+        description:
+            'At rest, the caption uses semantic ink3 and the caret stays centered on the value line with canonical divider clearance.',
+        child: const _ChoiceFieldDemo(),
+      ),
       fieldState(
         label: 'control-open',
-        child: const _ChoiceFieldDemo(initiallyOpen: true),
+        description:
+            'Opening promotes the field-name caption to semantic ink while Optional copy stays ink3; the caret keeps the same value-line center and only rotates.',
+        child: const _ChoiceFieldDemo(initiallyOpen: true, isOptional: true),
       ),
       fieldState(
         label: 'disclosure-active-pressed',
@@ -1514,7 +1525,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'stepper-open',
         description:
-            'The 44px repeat targets flank one centered value without a nested tile.',
+            'The 44px repeat targets flank one centered value without a nested tile; the shared open state promotes its caption to semantic ink while its caret remains in the value-line trailing lane.',
         child: const _StepperFieldDemo(),
       ),
       fieldState(
@@ -1550,7 +1561,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'saving',
-        description: 'The trailing lane owns the in-flight save indicator.',
+        description:
+            'Auto-save fields without a visible commit bar use one 16px in-flight indicator in the value-line trailing lane.',
         child: CatchField.read(
           title: 'Display name',
           body: 'Suvrat',
@@ -1560,7 +1572,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'saved',
-        description: 'The trailing lane owns the transient saved tick.',
+        description:
+            'The value-line trailing lane owns and centers the transient saved tick.',
         child: CatchField.read(
           title: 'Display name',
           body: 'Suvrat',
@@ -1575,8 +1588,17 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'explicit-save-focused',
         description:
-            'Answer, counter, secondary action, and commit footer keep one order.',
+            'The root active label uses semantic ink while answer, counter, secondary action, and commit footer keep one order.',
         child: const _ExplicitSaveFieldDemo(initiallyExpanded: true),
+      ),
+      fieldState(
+        label: 'explicit-save-saving',
+        description:
+            'The visible commit bar owns the sole 13px saving indicator inside Done; the header keeps its disclosure caret.',
+        child: const _ExplicitSaveFieldDemo(
+          initiallyExpanded: true,
+          isLoading: true,
+        ),
       ),
       fieldState(
         label: 'explicit-save-error',
@@ -1588,7 +1610,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'editable-empty-at-rest',
         description:
-            'The stable label and localized add value render before focus.',
+            'One localized Add line replaces the inactive caption while the same native TextField stays mounted.',
         child: const CatchField.input(
           title: 'Public name',
           inputHint: 'e.g. Aanya',
@@ -1597,11 +1619,36 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'editable-empty-focused',
         description:
-            'The add value gives way to an input-only hint without moving the label.',
+            'The initiating tap expands the same input, restores its caption, and gives the Add line to the input-only hint.',
         child: const CatchField.input(
           title: 'Public name',
           inputHint: 'e.g. Aanya',
           focused: true,
+        ),
+      ),
+      fieldState(
+        label: 'empty-add-capability-matrix',
+        description:
+            'Empty direct inputs and addable disclosures share one-line Add typography, Optional composition, row height, and leading-slot centering.',
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CatchField.input(
+              title: 'Job title',
+              icon: CatchIcons.workOutline,
+              isOptional: true,
+            ),
+            CatchField.choices<String>(
+              title: 'Workout',
+              values: const ['Never', 'Often'],
+              itemLabel: (value) => value,
+              selected: const {},
+              onSelectionChanged: (_) {},
+              addable: true,
+              isOptional: true,
+              icon: CatchIcons.fitnessCenterOutlined,
+            ),
+          ],
         ),
       ),
       fieldState(
@@ -1621,6 +1668,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'edit-focused',
+        description:
+            'Native text focus uses the same root semantic-ink label state as an open disclosure.',
         child: CatchField.input(
           title: 'Search',
           initialValue: 'social run',
@@ -1713,6 +1762,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'select',
+        description:
+            'The menu trigger shares the same caption reserve and value-line-centered caret geometry.',
         child: CatchField.select<String>(
           title: 'Activity',
           values: const ['Run', 'Dinner', 'Pickleball'],
@@ -8323,12 +8374,14 @@ class _ChoiceFieldDemo extends StatefulWidget {
     this.allowEmptySelection = false,
     this.initialSelection = const {'English', 'Hindi', 'Marathi'},
     this.body,
+    this.isOptional = false,
   });
 
   final bool initiallyOpen;
   final bool allowEmptySelection;
   final Set<String> initialSelection;
   final String? body;
+  final bool isOptional;
 
   @override
   State<_ChoiceFieldDemo> createState() => _ChoiceFieldDemoState();
@@ -8363,6 +8416,7 @@ class _ChoiceFieldDemoState extends State<_ChoiceFieldDemo> {
       selected: _selected,
       multi: true,
       allowEmptySelection: widget.allowEmptySelection,
+      isOptional: widget.isOptional,
       initiallyOpen: widget.initiallyOpen,
       onSelectionChanged: (selection) {
         setState(() => _selected = selection);
@@ -8404,9 +8458,14 @@ class _StepperFieldDemoState extends State<_StepperFieldDemo> {
 }
 
 class _ExplicitSaveFieldDemo extends StatefulWidget {
-  const _ExplicitSaveFieldDemo({this.initiallyExpanded = false, this.error});
+  const _ExplicitSaveFieldDemo({
+    this.initiallyExpanded = false,
+    this.isLoading = false,
+    this.error,
+  });
 
   final bool initiallyExpanded;
+  final bool isLoading;
   final String? error;
 
   @override
@@ -8445,6 +8504,7 @@ class _ExplicitSaveFieldDemoState extends State<_ExplicitSaveFieldDemo> {
         padding: EdgeInsets.zero,
       ),
       error: widget.error,
+      isLoading: widget.isLoading,
       onCancel: () => setState(() => _expanded = false),
       onSubmit: _noop,
       maxLines: null,

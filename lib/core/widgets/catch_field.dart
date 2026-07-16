@@ -28,7 +28,8 @@ enum CatchFieldSize { floating, compact, md }
 
 enum CatchFieldSupportTone { neutral, brand, success }
 
-/// Save-state affordance rendered in the canonical field trailing lane.
+/// Save-state affordance rendered in the canonical trailing lane whenever a
+/// visible explicit commit bar does not already own saving progress.
 enum CatchFieldStatus { idle, saving, saved }
 
 class _CatchFieldDismissIntent extends Intent {
@@ -1536,7 +1537,7 @@ class _CatchFieldState extends State<CatchField>
                 : CatchFieldMode.read);
 
   bool get _hasValue => _body != null && _body!.isNotEmpty;
-  bool get _inlineAddAtRest => widget.addable && !_hasValue && !_isOpen;
+  bool get _inlineControlAddAtRest => widget.addable && !_hasValue && !_isOpen;
   bool get _hasControl => widget.control != null || widget._explicitSaveInput;
   Object get _textFieldTapRegionGroup =>
       widget._explicitSaveInput ? _tapRegionGroup : EditableText;
@@ -1549,6 +1550,10 @@ class _CatchFieldState extends State<CatchField>
   bool get _isOpen => widget.open ?? _open;
   bool get _isSaving =>
       widget._isLoading || widget.status == CatchFieldStatus.saving;
+  // Keep progress in the commit bar through its close animation. Once the
+  // drawer is actually offstage, the header becomes the only visible owner.
+  bool get _visibleCommitBarOwnsSavingIndicator =>
+      _isSaving && !_disclosureOffstage && widget._onSubmit != null;
   bool get _active => _focused || _rowFocused || widget.focused || _isOpen;
   bool get _isEdit => _mode == CatchFieldMode.edit;
   bool get _hasInputValue => !_inputWasEmpty;
@@ -1650,6 +1655,19 @@ class _CatchFieldState extends State<CatchField>
       _active ||
       hasError ||
       widget.autofocus;
+  bool _inlineTextAddAtRestWith({required bool hasError}) =>
+      _isEdit &&
+      !widget.readOnly &&
+      _textEntryCanCollapse &&
+      !_hasInputValue &&
+      !_active &&
+      !hasError &&
+      !widget.autofocus &&
+      _emptyEditableValueText != null;
+  bool get _inlineTextAddAtRest =>
+      _inlineTextAddAtRestWith(hasError: _hasError);
+  bool get _showsInlineAddAtRest =>
+      _inlineControlAddAtRest || _inlineTextAddAtRest;
   bool get _textEntryCollapsed => _textEntryCanCollapse && !_textEntryExpanded;
   bool get _compactTextEntry =>
       _isEdit && widget.size == CatchFieldSize.floating && !widget.showLabel;
@@ -1802,8 +1820,26 @@ class _CatchFieldState extends State<CatchField>
         : widget._contentRow
         ? CatchSpacing.micro2
         : _rowTrailingTopPadding;
-    final trailingSlot = _buildTrailingSlot(t);
+    final rawTrailingSlot = _buildTrailingSlot(t);
     final positionsTrailing = _hasControl || _usesPositionedClearTrailing;
+    final trailingTopPadding = _rowTrailingTopPadding;
+    final trailingSlot = rawTrailingSlot == null
+        ? null
+        : _usesPositionedClearTrailing || centerVertically
+        ? rawTrailingSlot
+        : Padding(
+            padding: EdgeInsets.only(top: trailingTopPadding),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: CatchFieldTokens.valueLineExtent,
+              ),
+              child: Align(
+                widthFactor: 1,
+                heightFactor: 1,
+                child: rawTrailingSlot,
+              ),
+            ),
+          );
     final rowContent = CatchFieldRow.standard(
       constraints: _rowConstraints,
       padding: _rowHeaderPadding,
@@ -1830,7 +1866,7 @@ class _CatchFieldState extends State<CatchField>
                           (CatchFieldTokens.valueLineExtent - CatchSpacing.s6) /
                               2 +
                           CatchSpacing.micro3
-                    : _rowHeaderPadding.top + _rowTrailingTopPadding,
+                    : _rowHeaderPadding.top,
                 end: _rowHeaderPadding.right,
                 child: trailingSlot,
               ),
@@ -1853,9 +1889,7 @@ class _CatchFieldState extends State<CatchField>
           ? CatchElevation.fieldActive(Theme.of(context).brightness)
           : CatchElevation.none,
     );
-    final overlayBleed = CatchFieldInsetScope.flushOf(context)
-        ? CatchFieldTokens.dividedRowBleed
-        : 0.0;
+    final overlayBleed = CatchFieldInsetScope.activeOverlayBleedOf(context);
     final mouseCursor = canInteract
         ? _isEdit
               ? SystemMouseCursors.text
@@ -2043,7 +2077,7 @@ class _CatchFieldState extends State<CatchField>
             widget.iconColor ??
             (_active
                 ? t.ink
-                : _inlineAddAtRest
+                : _showsInlineAddAtRest
                 ? t.primary
                 : _toneColor(t, muted: true)),
       );
@@ -2052,7 +2086,13 @@ class _CatchFieldState extends State<CatchField>
     if (_usesRowPrefixIcon) {
       return IconTheme(
         data: IconThemeData(
-          color: _hasError ? t.danger : t.ink2,
+          color: _hasError
+              ? t.danger
+              : _active
+              ? t.ink
+              : _showsInlineAddAtRest
+              ? t.primary
+              : t.ink2,
           size: CatchFieldRow.leadingSlotIconSize,
         ),
         child: widget.prefixIcon!,
@@ -2083,13 +2123,15 @@ class _CatchFieldState extends State<CatchField>
         topPadding: 0,
       );
     }
-    if (_isSaving) {
-      return CatchFieldTrailing.saving(topPadding: _rowTrailingTopPadding);
+    if (_isSaving && !_visibleCommitBarOwnsSavingIndicator) {
+      return CatchFieldTrailing.saving();
     }
-    if (widget.status == CatchFieldStatus.saved) {
-      return CatchFieldTrailing.saved(topPadding: _rowTrailingTopPadding);
+    if (!_isSaving && widget.status == CatchFieldStatus.saved) {
+      return CatchFieldTrailing.saved();
     }
-    if (widget.valid && !_hasError) return CatchFieldTrailing.valid();
+    if (!_isSaving && widget.valid && !_hasError) {
+      return CatchFieldTrailing.valid(topPadding: 0);
+    }
 
     if (_usesRowTextEntryTrailing) {
       return _buildTextEntryTrailingSlot(t);
@@ -2099,7 +2141,7 @@ class _CatchFieldState extends State<CatchField>
       return CatchFieldTrailing.rotatingChevron(
         open: _isOpen,
         color: _active ? t.ink : t.ink3,
-        topPadding: _rowTrailingTopPadding,
+        topPadding: 0,
       );
     }
 
@@ -2126,7 +2168,7 @@ class _CatchFieldState extends State<CatchField>
             _controller.clear();
             widget.onChanged?.call('');
           },
-          topPadding: _usesPositionedClearTrailing ? 0 : _rowTrailingTopPadding,
+          topPadding: 0,
         );
       },
     );
@@ -2142,7 +2184,7 @@ class _CatchFieldState extends State<CatchField>
         CatchFieldTrailing.valueText(
           text: valueText,
           maxLines: widget.valueMaxLines,
-          topPadding: _rowTrailingTopPadding,
+          topPadding: 0,
         ),
       );
     }
@@ -2152,10 +2194,7 @@ class _CatchFieldState extends State<CatchField>
 
     if (includeChevron) {
       children.add(
-        CatchFieldTrailing.fixedChevron(
-          color: t.ink3,
-          topPadding: _rowTrailingTopPadding,
-        ),
+        CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0),
       );
     }
 
@@ -2179,7 +2218,7 @@ class _CatchFieldState extends State<CatchField>
   Widget? _buildCustomTrailingSlot(CatchTokens t, Widget? child) {
     if (child == null) return null;
     return CatchFieldTrailing.custom(
-      topPadding: _rowTrailingTopPadding,
+      topPadding: 0,
       color: t.ink3,
       child: child,
     );
@@ -2190,12 +2229,13 @@ class _CatchFieldState extends State<CatchField>
     if (!_isEdit && widget.emphasis == CatchFieldEmphasis.title) {
       return 0;
     }
+    if (_showsInlineAddAtRest) return 0;
 
     final textEntryValueLine =
         _isEdit &&
         widget.showLabel &&
         (_title?.isNotEmpty ?? false) &&
-        (!_textEntryCollapsed || _emptyEditableValueText != null);
+        !_textEntryCollapsed;
     final canonicalValueLine =
         !_isEdit &&
         ((_body?.trim().isNotEmpty ?? false) ||
@@ -2203,41 +2243,46 @@ class _CatchFieldState extends State<CatchField>
     return textEntryValueLine || canonicalValueLine ? CatchSpacing.micro18 : 0;
   }
 
+  String _inlineAddSemanticLabel(String addText) => widget.isOptional
+      ? context.l10n.coreCatchFormFieldLabelLabelLabelOptional(label: addText)
+      : addText;
+
+  TextSpan _inlineAddTextSpan(CatchTokens t) {
+    final addText = _emptyEditableValueText ?? _title ?? '';
+    final optionalSuffix = widget.isOptional
+        ? context.l10n.coreCatchFieldTextOptionalSuffix
+        : null;
+    return TextSpan(
+      children: [
+        TextSpan(
+          text: addText,
+          style: _fieldValueTextStyle(
+            context,
+            color: t.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        if (optionalSuffix != null)
+          TextSpan(
+            text: optionalSuffix,
+            style: _fieldValueTextStyle(
+              context,
+              color: t.ink3,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget _buildBody(CatchTokens t) {
-    if (_inlineAddAtRest) {
+    if (_inlineControlAddAtRest) {
       final addText = _emptyEditableValueText ?? _title ?? '';
-      final optionalSuffix = widget.isOptional
-          ? context.l10n.coreCatchFieldTextOptionalSuffix
-          : null;
       return Semantics(
-        label: widget.isOptional
-            ? context.l10n.coreCatchFormFieldLabelLabelLabelOptional(
-                label: addText,
-              )
-            : addText,
+        label: _inlineAddSemanticLabel(addText),
         excludeSemantics: true,
         child: Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(
-                text: addText,
-                style: _fieldValueTextStyle(
-                  context,
-                  color: t.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              if (optionalSuffix != null)
-                TextSpan(
-                  text: optionalSuffix,
-                  style: _fieldValueTextStyle(
-                    context,
-                    color: t.ink3,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-            ],
-          ),
+          _inlineAddTextSpan(t),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -2245,6 +2290,8 @@ class _CatchFieldState extends State<CatchField>
     }
     if (widget._explicitSaveInput) {
       final error = _displayError?.trim();
+      final inlineAddAtRest = error?.isNotEmpty != true && _inlineTextAddAtRest;
+      final addText = _emptyEditableValueText;
       final input = IgnorePointer(
         ignoring: !_isOpen,
         child: _buildTextEntryField(
@@ -2255,12 +2302,26 @@ class _CatchFieldState extends State<CatchField>
           canInteractOverride: _isOpen && widget.enabled,
           readOnlyOverride: !_isOpen,
           includeSupport: false,
-          inputHintOverride: _isOpen ? _inputHintText : _emptyEditableValueText,
+          inputHintOverride: inlineAddAtRest
+              ? null
+              : _isOpen
+              ? _inputHintText
+              : _emptyEditableValueText,
+          inputHintWidgetOverride: inlineAddAtRest
+              ? Text.rich(
+                  _inlineAddTextSpan(t),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )
+              : null,
+          semanticLabelOverride: inlineAddAtRest && addText != null
+              ? _inlineAddSemanticLabel(addText)
+              : _title,
         ),
       );
       return _buildFieldContent(
         t,
-        label: _title,
+        label: inlineAddAtRest ? null : _title,
         valueWidget: input,
         hasError: error?.isNotEmpty == true,
         labelStyle: _fieldCaptionTextStyle(
@@ -2351,7 +2412,7 @@ class _CatchFieldState extends State<CatchField>
       return const SizedBox.shrink();
     }
 
-    final effectiveLabelStyle =
+    final baseLabelStyle =
         labelStyle ??
         (labelEmphasized
             ? _fieldValueTextStyle(
@@ -2364,6 +2425,13 @@ class _CatchFieldState extends State<CatchField>
                 context,
                 color: hasError ? t.danger : t.ink3,
               ));
+    final effectiveLabelStyle = baseLabelStyle.copyWith(
+      color: _fieldLabelColor(
+        t,
+        hasError: hasError,
+        inactiveColor: baseLabelStyle.color,
+      ),
+    );
     final effectiveValueStyle =
         valueStyle ??
         (labelEmphasized
@@ -2380,6 +2448,7 @@ class _CatchFieldState extends State<CatchField>
       children: [
         if (hasLabel)
           Padding(
+            key: const ValueKey<String>('catch-field-label-content'),
             padding: EdgeInsetsDirectional.only(end: headerTrailingReserve),
             child: SizedBox(
               height: labelEmphasized
@@ -2398,6 +2467,7 @@ class _CatchFieldState extends State<CatchField>
           ),
         if (hasValue) ...[
           Padding(
+            key: const ValueKey<String>('catch-field-value-content'),
             padding: EdgeInsetsDirectional.only(end: headerTrailingReserve),
             child: ConstrainedBox(
               constraints: const BoxConstraints(
@@ -2441,6 +2511,8 @@ class _CatchFieldState extends State<CatchField>
     bool? readOnlyOverride,
     bool includeSupport = true,
     String? inputHintOverride,
+    Widget? inputHintWidgetOverride,
+    String? semanticLabelOverride,
   }) {
     final effectiveVariant = variantOverride ?? widget.variant;
     final effectiveShowLabel = showLabelOverride ?? widget.showLabel;
@@ -2462,9 +2534,11 @@ class _CatchFieldState extends State<CatchField>
 
         if (rowBody) {
           final expanded = _textEntryExpandedWith(hasError: hasError);
+          final inlineAddAtRest = _inlineTextAddAtRestWith(hasError: hasError);
+          final addText = _emptyEditableValueText;
           final body = _buildFieldContent(
             t,
-            label: widget.showLabel ? _title : null,
+            label: widget.showLabel && !inlineAddAtRest ? _title : null,
             supportText: supportText,
             counterText:
                 widget.maxLength != null &&
@@ -2484,7 +2558,7 @@ class _CatchFieldState extends State<CatchField>
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
               children: [
-                if (widget.leadingUnit != null) ...[
+                if (!inlineAddAtRest && widget.leadingUnit != null) ...[
                   Text(
                     widget.leadingUnit!,
                     style: _fieldValueTextStyle(context, color: t.ink2),
@@ -2492,6 +2566,7 @@ class _CatchFieldState extends State<CatchField>
                   const SizedBox(width: CatchSpacing.s1),
                 ],
                 Expanded(
+                  key: const ValueKey<String>('catch-field-text-input'),
                   child: _buildTextEntryInput(
                     context,
                     state,
@@ -2501,9 +2576,21 @@ class _CatchFieldState extends State<CatchField>
                     hasError: hasError,
                     canInteractOverride: canInteractOverride,
                     readOnlyOverride: readOnlyOverride,
-                    inputHintOverride: expanded
+                    inputHintOverride: inlineAddAtRest
+                        ? null
+                        : expanded
                         ? inputHintOverride
                         : _emptyEditableValueText,
+                    inputHintWidgetOverride: inlineAddAtRest
+                        ? Text.rich(
+                            _inlineAddTextSpan(t),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : null,
+                    semanticLabelOverride: inlineAddAtRest && addText != null
+                        ? _inlineAddSemanticLabel(addText)
+                        : _title,
                   ),
                 ),
               ],
@@ -2523,6 +2610,8 @@ class _CatchFieldState extends State<CatchField>
           canInteractOverride: canInteractOverride,
           readOnlyOverride: readOnlyOverride,
           inputHintOverride: inputHintOverride,
+          inputHintWidgetOverride: inputHintWidgetOverride,
+          semanticLabelOverride: semanticLabelOverride,
         );
 
         final counterText =
@@ -2547,7 +2636,7 @@ class _CatchFieldState extends State<CatchField>
                 label: _title ?? '',
                 style: _fieldCaptionTextStyle(
                   context,
-                  color: hasError ? t.danger : t.ink3,
+                  color: _fieldLabelColor(t, hasError: hasError),
                 ),
                 isOptional: widget.isOptional && widget.showLabel,
               ),
@@ -2580,13 +2669,17 @@ class _CatchFieldState extends State<CatchField>
     bool? canInteractOverride,
     bool? readOnlyOverride,
     String? inputHintOverride,
+    Widget? inputHintWidgetOverride,
+    String? semanticLabelOverride,
   }) {
     final t = CatchTokens.of(context);
     final canInteract =
         canInteractOverride ?? (!widget.readOnly || widget.onTap != null);
     final readOnly = readOnlyOverride ?? widget.readOnly;
     final effectiveFocused = _focusNode.hasFocus || widget.focused;
+    final inlineAddHint = inputHintWidgetOverride != null;
     final multiline =
+        !inlineAddHint &&
         !widget.obscureText &&
         (widget.maxLines != 1 || (widget.minLines ?? 1) > 1);
     final multilineValueStyle = _fieldValueTextStyle(
@@ -2614,9 +2707,12 @@ class _CatchFieldState extends State<CatchField>
         : widget.size == CatchFieldSize.floating
         ? CatchTextStyles.bodyL(context, color: t.ink2)
         : _textStyle(context, color: t.ink2);
-    final resolvedHintText = inputHintOverride ?? _inputHintText;
+    final resolvedHintText = inputHintWidgetOverride == null
+        ? inputHintOverride ?? _inputHintText
+        : null;
     final visualOnlyHint = !showLabel && resolvedHintText != null;
     final textField = TextField(
+      key: const ValueKey<String>('catch-field-text-entry'),
       groupId: _textFieldTapRegionGroup,
       controller: _controller,
       focusNode: _focusNode,
@@ -2631,11 +2727,13 @@ class _CatchFieldState extends State<CatchField>
       inputFormatters: widget.inputFormatters,
       autofillHints: widget.autofillHints,
       obscureText: widget.obscureText,
-      maxLines: widget.obscureText ? 1 : widget.maxLines,
-      minLines: widget.minLines,
+      maxLines: widget.obscureText || inlineAddHint ? 1 : widget.maxLines,
+      minLines: inlineAddHint ? null : widget.minLines,
       maxLength: widget.maxLength,
       textAlign: widget.textAlign,
-      textAlignVertical: _textAlignVertical,
+      textAlignVertical: inlineAddHint
+          ? TextAlignVertical.center
+          : _textAlignVertical,
       onTap: widget.onTap,
       onTapOutside: widget._explicitSaveInput
           ? null
@@ -2664,26 +2762,26 @@ class _CatchFieldState extends State<CatchField>
         labelStyle: _useFloatingLabel(variant, showLabel)
             ? CatchTextStyles.bodyL(
                 context,
-                color: hasError ? t.danger : t.ink3,
+                color: _fieldLabelColor(t, hasError: hasError),
               )
             : null,
         floatingLabelStyle: _useFloatingLabel(variant, showLabel)
             ? _fieldCaptionTextStyle(
                 context,
-                color: hasError
-                    ? t.danger
-                    : effectiveFocused
-                    ? t.ink
-                    : t.ink3,
+                color: _fieldLabelColor(t, hasError: hasError),
               )
             : null,
         floatingLabelBehavior: _useFloatingLabel(variant, showLabel)
             ? FloatingLabelBehavior.auto
             : FloatingLabelBehavior.never,
-        hint: visualOnlyHint
+        hint: inputHintWidgetOverride != null
+            ? ExcludeSemantics(child: inputHintWidgetOverride)
+            : visualOnlyHint
             ? ExcludeSemantics(child: Text(resolvedHintText))
             : null,
-        hintText: visualOnlyHint ? null : resolvedHintText,
+        hintText: inputHintWidgetOverride != null || visualOnlyHint
+            ? null
+            : resolvedHintText,
         hintStyle: hintStyle,
         prefixText: widget.prefixText,
         prefixStyle: _textStyle(context, color: t.ink2),
@@ -2715,7 +2813,10 @@ class _CatchFieldState extends State<CatchField>
 
     if (showLabel) return sizedInputShell;
     return MergeSemantics(
-      child: Semantics(label: _title, child: sizedInputShell),
+      child: Semantics(
+        label: semanticLabelOverride ?? _title,
+        child: sizedInputShell,
+      ),
     );
   }
 
@@ -2863,13 +2964,30 @@ class _CatchFieldState extends State<CatchField>
                           : tokens.ink,
                     ),
                   ),
-                  trailing: CatchFieldTrailing.rotatingChevron(
-                    open: controller.isOpen,
-                    color: tokens.ink3,
-                    topPadding: selectHasLabel
-                        ? CatchSpacing.micro18
-                        : CatchSpacing.micro2,
-                  ),
+                  trailing: selectHasLabel
+                      ? Padding(
+                          padding: const EdgeInsets.only(
+                            top: CatchFieldTokens.captionExtent,
+                          ),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              minHeight: CatchFieldTokens.valueLineExtent,
+                            ),
+                            child: Align(
+                              widthFactor: 1,
+                              heightFactor: 1,
+                              child: CatchFieldTrailing.rotatingChevron(
+                                open: controller.isOpen,
+                                color: tokens.ink3,
+                                topPadding: 0,
+                              ),
+                            ),
+                          ),
+                        )
+                      : CatchFieldTrailing.rotatingChevron(
+                          open: controller.isOpen,
+                          color: tokens.ink3,
+                        ),
                 ),
               ),
             );
@@ -3036,6 +3154,15 @@ class _CatchFieldState extends State<CatchField>
       CatchFieldSupportTone.brand => t.primary,
       CatchFieldSupportTone.success => t.success,
     };
+  }
+
+  Color _fieldLabelColor(
+    CatchTokens t, {
+    required bool hasError,
+    Color? inactiveColor,
+  }) {
+    if (hasError) return t.danger;
+    return _active ? t.ink : inactiveColor ?? t.ink3;
   }
 
   BoxConstraints? get _iconConstraints {
@@ -3206,7 +3333,8 @@ class CatchFieldVisibilityScope extends InheritedWidget {
       revealPadding != oldWidget.revealPadding;
 }
 
-/// Ambient contract for who owns a field row's horizontal gutter.
+/// Ambient contract for who owns a field row's horizontal gutter and active
+/// edge geometry.
 ///
 /// By default a [CatchField] row insets itself horizontally so it can sit
 /// directly on a background or inside an unpadded surface. A container that
@@ -3214,24 +3342,38 @@ class CatchFieldVisibilityScope extends InheritedWidget {
 /// `flush: true`, and every field row below it drops its own horizontal
 /// inset so content, trailing affordances, and container-drawn dividers all
 /// share the container's edges.
+///
+/// [activeOverlayBleed] is independent from the content inset. It lets a
+/// containing section publish how far active row chrome must overlap its edge.
+/// Contained FieldSections use one hairline so the child ring and outer
+/// perimeter occupy the same geometry instead of painting adjacent vertical
+/// strokes. When omitted, flush rows retain their divided-section tile bleed.
 class CatchFieldInsetScope extends InheritedWidget {
   const CatchFieldInsetScope({
     super.key,
     required this.flush,
+    this.activeOverlayBleed,
     required super.child,
-  });
+  }) : assert(activeOverlayBleed == null || activeOverlayBleed >= 0);
 
   final bool flush;
+  final double? activeOverlayBleed;
 
-  static bool flushOf(BuildContext context) =>
-      context
-          .dependOnInheritedWidgetOfExactType<CatchFieldInsetScope>()
-          ?.flush ??
-      false;
+  static CatchFieldInsetScope? _of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<CatchFieldInsetScope>();
+
+  static bool flushOf(BuildContext context) => _of(context)?.flush ?? false;
+
+  static double activeOverlayBleedOf(BuildContext context) {
+    final scope = _of(context);
+    return scope?.activeOverlayBleed ??
+        (scope?.flush == true ? CatchFieldTokens.dividedRowBleed : 0.0);
+  }
 
   @override
   bool updateShouldNotify(CatchFieldInsetScope oldWidget) =>
-      flush != oldWidget.flush;
+      flush != oldWidget.flush ||
+      activeOverlayBleed != oldWidget.activeOverlayBleed;
 }
 
 /// Exact natural-height title and supporting-copy lane used by

@@ -154,7 +154,7 @@ void main() {
     expect(find.text('Target attendees'), findsOneWidget);
     expect(find.text('Group flow'), findsWidgets);
     expect(find.text('Host goal'), findsOneWidget);
-    expect(find.text('Attendee prompt'), findsOneWidget);
+    expect(find.text('Add attendee prompt · Optional'), findsOneWidget);
     expect(find.text('Recommended setup'), findsOneWidget);
     expect(find.text('When people arrive'), findsOneWidget);
     expect(find.text('During the event'), findsOneWidget);

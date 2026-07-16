@@ -666,17 +666,23 @@ class CatchSection extends StatelessWidget {
             ],
           )
         : _sectionContent(context, t, contained: true);
-    return CatchSectionFocusSurface(
-      padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
-      backgroundColor: backgroundColor,
-      borderColor: borderColor,
-      tone: tone,
-      elevation: elevation,
-      boxShadow: boxShadow,
-      focused: focused,
-      hasError: hasError,
-      fieldRows: _fieldRows,
-      child: CatchFieldInsetScope(flush: !_fieldRows, child: content),
+    return CatchFieldInsetScope(
+      // Generic contained sections own their content gutter. Field-row
+      // sections leave row gutters to CatchField, while the focus surface
+      // below owns the active edge geometry for every composition path.
+      flush: !_fieldRows,
+      child: CatchSectionFocusSurface(
+        padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
+        backgroundColor: backgroundColor,
+        borderColor: borderColor,
+        tone: tone,
+        elevation: elevation,
+        boxShadow: boxShadow,
+        focused: focused,
+        hasError: hasError,
+        fieldRows: _fieldRows,
+        child: content,
+      ),
     );
   }
 
@@ -885,6 +891,16 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
       final duration = MediaQuery.maybeOf(context)?.disableAnimations == true
           ? Duration.zero
           : CatchFieldTokens.standard;
+      final fieldContent = CatchFieldInsetScope(
+        flush: CatchFieldInsetScope.flushOf(context),
+        // The section perimeter consumes one hairline of layout on every
+        // edge. Active child chrome reclaims that exact horizontal inset so
+        // both primitives paint on one coordinate instead of producing two
+        // adjacent vertical strokes. Keep this contract here so direct users
+        // of CatchSectionFocusSurface cannot bypass it.
+        activeOverlayBleed: CatchStroke.hairline,
+        child: widget.child,
+      );
       return AnimatedContainer(
         duration: duration,
         curve: CatchFieldTokens.curve,
@@ -893,9 +909,9 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
           color: widget.backgroundColor ?? t.surface,
           borderRadius: BorderRadius.circular(CatchFieldTokens.sectionRadius),
         ),
-        // Paint the perimeter after the row tiles. Active first/last rows
-        // intentionally bleed over their internal hairlines, but must never
-        // obscure the section's neutral outer border.
+        // Paint the perimeter after the row tiles. Active edge rows overlap
+        // this same perimeter geometry and first/last rows overlap their
+        // internal hairlines, but neither may obscure the section-owned edge.
         foregroundDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(CatchFieldTokens.sectionRadius),
           border: Border.all(
@@ -911,7 +927,7 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
           // child layout; a foreground border does not. Preserve that exact
           // one-hairline content inset while moving only paint order forward.
           padding: const EdgeInsets.all(CatchStroke.hairline),
-          child: Padding(padding: widget.padding, child: widget.child),
+          child: Padding(padding: widget.padding, child: fieldContent),
         ),
       );
     }
@@ -961,9 +977,12 @@ Widget _buildCatchSectionKicker(
   final displayCount = count?.toString().trim();
   final hasCount = displayCount != null && displayCount.isNotEmpty;
   if (hasText && !hasCount && trailing == null) {
-    return CatchKicker(label: displayText, color: color, size: size);
+    return Semantics(
+      header: true,
+      child: CatchKicker(label: displayText, color: color, size: size),
+    );
   }
-  return Row(
+  final header = Row(
     crossAxisAlignment: CrossAxisAlignment.baseline,
     textBaseline: TextBaseline.alphabetic,
     children: [
@@ -993,6 +1012,7 @@ Widget _buildCatchSectionKicker(
       ],
     ],
   );
+  return hasText ? Semantics(header: true, child: header) : header;
 }
 
 /// Sliver-native detail body wrapper with Catch's detail-screen page insets.
