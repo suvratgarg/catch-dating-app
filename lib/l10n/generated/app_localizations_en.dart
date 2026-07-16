@@ -189,9 +189,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatsChatEventContextHeaderTitleTheSameEvent => 'the same event';
 
   @override
-  String get chatsChatInputBarLabelSendAnImage => 'Send an image';
-
-  @override
   String get chatsChatInputBarMessageSendAnImage => 'Send an image';
 
   @override
@@ -199,9 +196,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatsChatInputBarPlaceholderMessage => 'Message...';
-
-  @override
-  String get chatsChatInputBarLabelSendMessage => 'Send message';
 
   @override
   String get chatsChatInputBarMessageSendMessage => 'Send message';
@@ -906,11 +900,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Set a host-owned count or let Catch estimate it from attendance.';
 
   @override
-  String
-  get eventSuccessEventSuccessStructureConfigEditorDetailWholeGroupFormatsKeep =>
-      'Whole-group formats keep everyone in one shared flow.';
-
-  @override
   String get eventSuccessEventSuccessStructureConfigEditorLabelAuto => 'Auto';
 
   @override
@@ -1109,9 +1098,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign in to book this event';
 
   @override
-  String get eventsEventDetailBodyTitleYourHosts => 'Your hosts';
-
-  @override
   String get eventsEventDetailBodyTitleHostedBy => 'Hosted by';
 
   @override
@@ -1172,9 +1158,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsEventDetailLoadingSkeletonTitleWhoSGoing => 'Who\'s going';
 
   @override
-  String get eventsEventDetailLoadingSkeletonTitleYourHosts => 'Your hosts';
-
-  @override
   String get eventsEventDetailOverviewSectionTitleThePlan => 'The plan';
 
   @override
@@ -1204,14 +1187,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventsEventDetailOverviewSectionTextAboutThisEvent =>
       'About this event';
-
-  @override
-  String get eventsEventDetailOverviewSectionTitleWhatToExpect =>
-      'What to expect';
-
-  @override
-  String get eventsEventDetailOverviewSectionTitleBookingPolicy =>
-      'Booking policy';
 
   @override
   String get eventsEventDetailOverviewSectionTitleDemandPricing =>
@@ -1643,14 +1618,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsCreateClubPhotosPickerTextAddImage => 'Add image';
-
-  @override
-  String get hostsEditHostedEventScreenPlaceholderSelectADate =>
-      'Select a date';
-
-  @override
-  String get hostsEditHostedEventScreenPlaceholderSelectStartTime =>
-      'Select start time';
 
   @override
   String get hostsEditHostedEventScreenBodyDecreaseDuration =>
@@ -3091,13 +3058,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Write something specific...';
 
   @override
-  String get userAnalyticsUserAnalyticsPanelLabelCaughtyou => 'caughtYou';
-
-  @override
-  String get userAnalyticsUserAnalyticsPanelLabelMutualcatches =>
-      'mutualCatches';
-
-  @override
   String get userProfileProfileScreenLabelProfileTabs => 'Profile tabs';
 
   @override
@@ -3119,16 +3079,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get userProfileInlineEditorHeightTooltipIncreaseHeight =>
       'Increase height';
-
-  @override
-  String get userProfileInlineEditorPromptLabelChangePrompt => 'Change prompt';
-
-  @override
-  String get userProfileInlineEditorPromptTitlePrompt => 'Prompt';
-
-  @override
-  String get userProfileInlineEditorPromptSubtitlePickTheQuestionThis =>
-      'Pick the question this answer responds to.';
 
   @override
   String get userProfileProfileSliverHeaderTooltipSettings => 'Settings';
@@ -3341,9 +3291,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Admission format';
 
   @override
-  String get hostsClubHostDefaultsStepLabelAgeRange => 'Age range';
-
-  @override
   String get hostsClubHostDefaultsStepLabelCancellationPolicy =>
       'Cancellation policy';
 
@@ -3398,9 +3345,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Admission format';
 
   @override
-  String get hostsEditHostedEventScreenLabelAgeRange => 'Age range';
-
-  @override
   String get hostsEditHostedEventScreenLabelCancellationPolicy =>
       'Cancellation policy';
 
@@ -3449,9 +3393,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventPolicyStepLabelAdmissionFormat => 'Admission format';
-
-  @override
-  String get hostsEventPolicyStepLabelAgeRange => 'Age range';
 
   @override
   String get hostsEventPolicyStepLabelCancellationPolicy =>
@@ -4009,13 +3950,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String exploreExploreFilterRailLabelActivecount({
-    required Object activeCount,
-  }) {
-    return '$activeCount';
-  }
-
-  @override
   String exploreExploreListTitleNoClubsInCitylabel({
     required Object cityLabel,
   }) {
@@ -4025,13 +3959,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String hostsCreateClubPhotosPickerTextCount({required Object count}) {
     return '$count';
-  }
-
-  @override
-  String hostsEditHostedEventScreenBodySelectLabelPace({
-    required Object label,
-  }) {
-    return 'Select $label pace';
   }
 
   @override
@@ -4265,11 +4192,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String coreCatchSectionLayoutTextCount({required Object count}) {
-    return '· $count';
-  }
-
-  @override
   String get coreCatchStartupLoadingScreenBodyStartupLoadingIndicator =>
       'startup-loading-indicator';
 
@@ -4339,14 +4261,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String eventsEventDateMarkerLabelDay({required Object day}) {
     return '$day';
-  }
-
-  @override
-  String eventsEventDateRailCardTextTimeValue2({
-    required Object time,
-    required Object value2,
-  }) {
-    return '$time · $value2';
   }
 
   @override
@@ -4623,41 +4537,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userProfileProfileScreenTitleYourProfile => 'Your profile';
 
   @override
-  String userProfileInlineEditorChoiceBodyLabel({required Object label}) {
-    return '+ $label';
-  }
-
-  @override
-  String userProfileInlineEditorChoiceTextValue({required Object value}) {
-    return '+ $value';
-  }
-
-  @override
-  String userProfileInlineEditorPromptBodyValue({required Object value}) {
-    return '+ $value';
-  }
-
-  @override
-  String
-  userProfileInlineEditorPromptTextLengthMaximumprofilepromptanswerlength({
-    required Object length,
-    required Object maximumProfilePromptAnswerLength,
-  }) {
-    return '$length / $maximumProfilePromptAnswerLength';
-  }
-
-  @override
-  String get userProfileInlineEditorPromptTextProfileInlineCounter =>
-      'profile-inline-counter';
-
-  @override
-  String userProfileInlineEditorPromptLabelSelectPromptTitle({
-    required Object title,
-  }) {
-    return 'Select prompt: $title';
-  }
-
-  @override
   String userProfileInlineEditorPromptLabelPromptNumber({
     required Object number,
   }) {
@@ -4729,10 +4608,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardDashboardEmptyHomeScreenLabelHome => 'Home';
-
-  @override
-  String get dashboardDashboardErrorScreenTitleDashboardUnavailable =>
-      'Dashboard unavailable';
 
   @override
   String get dashboardDashboardHomeScreenLabelHome => 'Home';
@@ -6520,9 +6395,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventsScaffoldLabelCreateClub => 'Create club';
 
   @override
-  String get hostsHostEventsScaffoldTextEvents => 'Events';
-
-  @override
   String hostsHostInlineEditorsTextLengthMaxlength({
     required Object length,
     required Object maxLength,
@@ -6578,9 +6450,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostOperationsHomeScreenTitleHostEvents => 'Host events';
-
-  @override
-  String get hostsHostOrganizerTooltipSwitchClub => 'Switch club';
 
   @override
   String hostsHostOrganizerTitleTeamLength({required Object length}) {
@@ -6641,9 +6510,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostOrganizerLabelOwner => 'Owner';
-
-  @override
-  String get hostsHostOrganizerLabelActiveEvents => 'Active events';
 
   @override
   String get hostsHostProfileScreenTitleProfessionalProfile =>
@@ -6811,22 +6677,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get forceUpdateUpdateRequiredScreenTextANewVersionOf =>
       'A new version of Catch is available. Please update to continue.';
-
-  @override
-  String hostsHostOrganizerLabelNameValue2({
-    required Object name,
-    required Object value2,
-  }) {
-    return '$name · $value2';
-  }
-
-  @override
-  String hostsHostTodayLabelNameValue2({
-    required Object name,
-    required Object value2,
-  }) {
-    return '$name · $value2';
-  }
 
   @override
   String hostsHostEventToolsLabelSignedupcountCapacitylimitBookedWaitlistcount({
@@ -7004,10 +6854,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userProfileSelfProfileEditTabStateLabelLanguages => 'Languages';
 
   @override
-  String get userProfileSelfProfileEditTabStatePlaceholderLanguages =>
-      'Languages';
-
-  @override
   String get userProfileSelfProfileEditTabStateLabelLookingFor => 'Looking for';
 
   @override
@@ -7018,22 +6864,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Preferred distances';
 
   @override
-  String get userProfileSelfProfileEditTabStatePlaceholderPreferredDistances =>
-      'Preferred distances';
-
-  @override
   String get userProfileSelfProfileEditTabStateLabelWhyIEvent => 'Why I event';
 
   @override
-  String get userProfileSelfProfileEditTabStatePlaceholderWhyIEvent =>
-      'Why I event';
-
-  @override
   String get userProfileSelfProfileEditTabStateLabelFavoriteEventTimes =>
-      'Favorite event times';
-
-  @override
-  String get userProfileSelfProfileEditTabStatePlaceholderFavoriteEventTimes =>
       'Favorite event times';
 
   @override
@@ -7384,13 +7218,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenStateLabelMap => 'Map';
 
   @override
-  String exploreExploreScreenStateLabelMapMappableeventcount({
-    required Object mappableEventCount,
-  }) {
-    return 'Map · $mappableEventCount';
-  }
-
-  @override
   String exploreExploreScreenStateSemanticsMapEventCount({
     required int mappableEventCount,
   }) {
@@ -7420,10 +7247,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exploreExploreScreenStateCtalabelClaimASeat => 'Claim a seat';
-
-  @override
-  String get exploreExploreScreenStateKickerFromOneOfYour =>
-      'FROM ONE OF YOUR CLUBS';
 
   @override
   String get exploreExploreScreenStateActionlabelOpen => 'Open';
@@ -7581,10 +7404,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventManageScreenStateLabelNew => 'New';
 
   @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyPinReady =>
-      'PIN READY';
-
-  @override
   String get eventsEventDetailDesignPrimitivesActionViewMap => 'View map';
 
   @override
@@ -7615,10 +7434,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventsEventDetailInformationStateBodyReleaseYourSpotEarly =>
       'Release your spot early so the waitlist can move.';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyPinDropsMorningOf =>
-      'PIN DROPS MORNING-OF';
 
   @override
   String get eventsEventDetailDesignPrimitivesLabelWhen => 'When';
@@ -7671,13 +7486,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventsEventDetailDesignPrimitivesDetailSpotsFreeUpIn =>
       'Spots free up in order as capacity changes or people cancel.';
-
-  @override
-  String eventsEventDetailDesignPrimitivesTitleTitleCancellation({
-    required Object title,
-  }) {
-    return '$title cancellation';
-  }
 
   @override
   String get eventsEventDetailDesignPrimitivesVisiblecopyTheFormatKeepsThe =>
@@ -8309,29 +8117,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Check-in or host-marked attendance decides who can use post-event follow-up and feedback.';
 
   @override
-  String get eventsEventDetailOverviewSectionTitleHostReview => 'Host review';
-
-  @override
-  String get eventsEventDetailOverviewSectionBodyRequestASpotFirst =>
-      'Request a spot first. The host can review your public profile before confirming the roster.';
-
-  @override
-  String get eventsEventDetailOverviewSectionTitleBalancedBooking =>
-      'Balanced booking';
-
-  @override
-  String get eventsEventDetailOverviewSectionBodySomeBookingsMayMove =>
-      'Some bookings may move through the waitlist so the event does not become too skewed.';
-
-  @override
-  String get eventsEventDetailOverviewSectionTitleWaitlistAvailable =>
-      'Waitlist available';
-
-  @override
-  String get eventsEventDetailOverviewSectionBodyIfTheEventFills =>
-      'If the event fills up, the waitlist can reopen spots when capacity changes.';
-
-  @override
   String
   eventsEventDetailOverviewSectionVisiblecopyTostringasfixedKmTolowercaseTolowercase2({
     required Object toStringAsFixed,
@@ -8369,60 +8154,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventsEventDetailOverviewSectionVisiblecopyExpectTheHostTo =>
       'Expect the host to shape the format around the room and venue.';
-
-  @override
-  String get eventsEventDetailOverviewSectionVisiblecopyOpenCapacity =>
-      'Open capacity';
-
-  @override
-  String get eventsEventDetailOverviewSectionVisiblecopyInviteOnly =>
-      'Invite only';
-
-  @override
-  String get eventsEventDetailOverviewSectionVisiblecopyRequestToJoin =>
-      'Request to join';
-
-  @override
-  String get eventsEventDetailOverviewSectionVisiblecopyOpenWithCohortCaps =>
-      'Open with cohort caps';
-
-  @override
-  String get eventsEventDetailOverviewSectionVisiblecopyBalancedSingles =>
-      'Balanced singles';
-
-  @override
-  String get eventsEventDetailOverviewSectionVisiblecopyMembersOnly =>
-      'Members only';
-
-  @override
-  String
-  eventsEventDetailOverviewSectionVisiblecopyAttendeesBookUntilCapacitylimit({
-    required Object capacityLimit,
-  }) {
-    return 'Attendees book until $capacityLimit spots are filled.';
-  }
-
-  @override
-  String
-  get eventsEventDetailOverviewSectionVisiblecopyAttendeesBookWithinTotal =>
-      'Attendees book within total capacity, with optional straight men and straight women caps applied.';
-
-  @override
-  String get eventsEventDetailOverviewSectionVisiblecopyStraightMenAndWomen =>
-      'Straight men and women are balanced within a small tolerance; other cohorts book within total capacity.';
-
-  @override
-  String get eventsEventDetailOverviewSectionVisiblecopyOnlyAttendeesWithThe =>
-      'Only attendees with the host invite can book.';
-
-  @override
-  String
-  get eventsEventDetailOverviewSectionVisiblecopyTheHostReviewsRequests =>
-      'The host reviews requests before confirming spots.';
-
-  @override
-  String get eventsEventDetailOverviewSectionVisiblecopyOnlyActiveClubMembers =>
-      'Only active club members can book this event.';
 
   @override
   String get eventsEventDetailOverviewSectionVisiblecopyPriceCanChangeBased =>
@@ -9610,40 +9341,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsEventDetailDesignPrimitivesVisiblecopySpots => 'spots';
 
   @override
-  String eventsEventPinsMapVisiblecopyLengthEventsNearby({
-    required Object length,
-  }) {
-    return '$length events nearby';
-  }
-
-  @override
-  String get eventsEventPinsMapVisiblecopyTapToZoomIn => 'Tap to zoom in';
-
-  @override
-  String eventsEventPinsMapVisiblecopyTimelabelTitle({
-    required Object timeLabel,
-    required Object title,
-  }) {
-    return '$timeLabel · $title';
-  }
-
-  @override
-  String eventsEventPinsMapVisiblecopyFloorFloor2({
-    required Object floor,
-    required Object floor2,
-  }) {
-    return '$floor:$floor2';
-  }
-
-  @override
   String get eventsEventPinsMapVisiblecopyCatchEventMap => 'catch event map';
 
   @override
   String get eventsEventPinsMapVisiblecopyBuildingEventMapPin =>
       'building event map pin bitmap';
-
-  @override
-  String get exploreExploreMapScreenVisiblecopyMap => 'map';
 
   @override
   String get exploreExploreScreenVisiblecopyCoverHeader => 'cover_header';
@@ -9764,9 +9466,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exploreExploreScreenStateVisiblecopyPicked => 'Picked';
-
-  @override
   String exploreExploreScreenStateVisiblecopyNextNextevent({
     required Object nextEvent,
   }) {
@@ -9859,13 +9558,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please add a description';
 
   @override
-  String hostsClubHostDefaultsStepVisiblecopyUseLabelByDefault({
-    required Object label,
-  }) {
-    return 'Use $label by default';
-  }
-
-  @override
   String get hostsCreateClubPhotosPickerVisiblecopyAddPhotos => 'Add photos';
 
   @override
@@ -9913,11 +9605,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not delete draft.';
 
   @override
-  String hostsEventDetailsStepVisiblecopySelectLabel({required Object label}) {
-    return 'Select $label';
-  }
-
-  @override
   String get hostsEventDetailsStepVisiblecopyRequired => 'Required';
 
   @override
@@ -9937,13 +9624,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventDetailsStepVisiblecopySelectAPace => 'Select a pace';
-
-  @override
-  String hostsEventDetailsStepVisiblecopySelectLabelPace({
-    required Object label,
-  }) {
-    return 'Select $label pace';
-  }
 
   @override
   String get hostsEventPolicyStepVisiblecopyRequired => 'Required';
@@ -10276,9 +9956,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostClubProfileVisiblecopyLocation => 'location';
 
   @override
-  String get hostsHostClubProfileVisiblecopyCity => 'City';
-
-  @override
   String get hostsHostClubProfileVisiblecopyArea => 'area';
 
   @override
@@ -10334,9 +10011,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$minAge–$maxAge';
   }
-
-  @override
-  String get hostsHostOrganizerLabelHostTeam => 'Host team';
 
   @override
   String get hostsHostOrganizerVisiblecopyOwner => 'Owner';
@@ -10727,22 +10401,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'displayName';
 
   @override
-  String get userProfileSelfProfileEditTabStateVisiblecopyEmail => 'Email';
-
-  @override
   String get userProfileSelfProfileEditTabStateVisiblecopyEmaile69bb2 =>
       'email';
-
-  @override
-  String get userProfileSelfProfileEditTabStateVisiblecopyInstagram =>
-      'Instagram';
-
-  @override
-  String userProfileSelfProfileEditTabStateVisiblecopyInstagramhandle({
-    required Object instagramHandle,
-  }) {
-    return '@$instagramHandle';
-  }
 
   @override
   String
@@ -10763,15 +10423,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userProfileSelfProfileEditTabStateVisiblecopyCity => 'city';
 
   @override
-  String get userProfileSelfProfileEditTabStateVisiblecopyJobTitle =>
-      'Job title';
-
-  @override
   String get userProfileSelfProfileEditTabStateVisiblecopyOccupation =>
       'occupation';
-
-  @override
-  String get userProfileSelfProfileEditTabStateVisiblecopyCompany => 'Company';
 
   @override
   String get userProfileSelfProfileEditTabStateVisiblecopyCompanyfd8aec =>
@@ -10834,11 +10487,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object heightCm,
   }) {
     return '$heightCm cm';
-  }
-
-  @override
-  String userProfileInlineEditorHeightBodyValue({required Object value}) {
-    return '+ $value';
   }
 
   @override
@@ -11149,35 +10797,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsEventStatsGridVisiblecopyEnergy => 'Energy';
 
   @override
-  String eventsEventDetailScreenStateVisiblecopyMembercount({
-    required Object memberCount,
-  }) {
-    return '$memberCount';
-  }
-
-  @override
   String eventsEventDetailScreenStateVisiblecopyClubReviewSummary({
     required Object rating,
     required Object reviewCount,
   }) {
     return '$rating FROM $reviewCount CLUB REVIEWS';
   }
-
-  @override
-  String get eventsEventDetailScreenStateLabelMembers => 'Members';
-
-  @override
-  String get eventsEventDetailScreenStateLabelRating => 'Rating';
-
-  @override
-  String eventsEventDetailScreenStateVisiblecopyReviewcount({
-    required Object reviewCount,
-  }) {
-    return '$reviewCount';
-  }
-
-  @override
-  String get eventsEventDetailScreenStateLabelReviews => 'Reviews';
 
   @override
   String get dashboardDashboardFullViewModelTitleLetSFindYour =>
@@ -11736,62 +11361,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Change your filters to bring events back into view.';
 
   @override
-  String get eventsEventMapScreenTitleNoExactPinsYet => 'No exact pins yet';
-
-  @override
-  String get eventsEventMapScreenMessageTheseEventsAreVisible =>
-      'These events are visible, but none have pinned starting points.';
-
-  @override
-  String get eventsCalendarScreenTitleCalendar => 'Calendar';
-
-  @override
   String get eventsEventLocationMapBodyScreenTitleLocationUnavailable =>
       'Location unavailable';
 
   @override
   String get eventsEventLocationMapBodyScreenMessageThisEventDoesNot =>
       'This event does not have an exact pinned starting point yet.';
-
-  @override
-  String get eventsEventLocationMapScreenTitleLocationUnavailable =>
-      'Location unavailable';
-
-  @override
-  String get eventsEventLocationMapScreenMessageThisEventDoesNot =>
-      'This event does not have an exact pinned starting point yet.';
-
-  @override
-  String get hostsHostClubPreviewTitleOpenPublicPreview =>
-      'Open public preview';
-
-  @override
-  String get hostsHostClubsScaffoldLabelOrganizer => 'Organizer';
-
-  @override
-  String get hostsHostOrganizerTitleHowGuestsSeeYou => 'How guests see you';
-
-  @override
-  String get hostsHostOrganizerBodyPublicPage => 'Public page';
-
-  @override
-  String get hostsHostOrganizerTitleTrendsLast12Weeks =>
-      'Trends · last 12 weeks';
-
-  @override
-  String get hostsHostOrganizerLabelSeeInsights => 'See insights';
-
-  @override
-  String get hostsHostAnalyticsVisiblecopyInsights => 'Insights';
-
-  @override
-  String get hostsHostClubPreviewVisiblecopyPreview => 'Preview';
-
-  @override
-  String get hostsHostClubProfileVisiblecopyOwner => 'Owner';
-
-  @override
-  String get hostsHostClubProfileVisiblecopyHostTeam => 'Host team';
 
   @override
   String get userAnalyticsUserAnalyticsCopyVisiblecopyAvailable => 'Available';

@@ -415,12 +415,6 @@ abstract class AppLocalizations {
   /// **'the same event'**
   String get chatsChatEventContextHeaderTitleTheSameEvent;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_input_bar.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Send an image'**
-  String get chatsChatInputBarLabelSendAnImage;
-
   /// Product copy used by lib/chats/presentation/widgets/chat_input_bar.dart (message).
   ///
   /// In en, this message translates to:
@@ -438,12 +432,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Message...'**
   String get chatsChatInputBarPlaceholderMessage;
-
-  /// Product copy used by lib/chats/presentation/widgets/chat_input_bar.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Send message'**
-  String get chatsChatInputBarLabelSendMessage;
 
   /// Product copy used by lib/chats/presentation/widgets/chat_input_bar.dart (message).
   ///
@@ -1630,13 +1618,6 @@ abstract class AppLocalizations {
   /// **'Set a host-owned count or let Catch estimate it from attendance.'**
   String get eventSuccessEventSuccessStructureConfigEditorDetailSetAHostOwned;
 
-  /// Product copy used by lib/event_success/presentation/event_success_structure_config_editor.dart (detail).
-  ///
-  /// In en, this message translates to:
-  /// **'Whole-group formats keep everyone in one shared flow.'**
-  String
-  get eventSuccessEventSuccessStructureConfigEditorDetailWholeGroupFormatsKeep;
-
   /// Product copy used by lib/event_success/presentation/event_success_structure_config_editor.dart (label).
   ///
   /// In en, this message translates to:
@@ -1951,12 +1932,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Your hosts'**
-  String get eventsEventDetailBodyTitleYourHosts;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'Hosted by'**
   String get eventsEventDetailBodyTitleHostedBy;
 
@@ -2068,12 +2043,6 @@ abstract class AppLocalizations {
   /// **'Who\'\'s going'**
   String get eventsEventDetailLoadingSkeletonTitleWhoSGoing;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_loading_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Your hosts'**
-  String get eventsEventDetailLoadingSkeletonTitleYourHosts;
-
   /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
@@ -2127,18 +2096,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About this event'**
   String get eventsEventDetailOverviewSectionTextAboutThisEvent;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'What to expect'**
-  String get eventsEventDetailOverviewSectionTitleWhatToExpect;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Booking policy'**
-  String get eventsEventDetailOverviewSectionTitleBookingPolicy;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
   ///
@@ -2901,18 +2858,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add image'**
   String get hostsCreateClubPhotosPickerTextAddImage;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'Select a date'**
-  String get hostsEditHostedEventScreenPlaceholderSelectADate;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'Select start time'**
-  String get hostsEditHostedEventScreenPlaceholderSelectStartTime;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).
   ///
@@ -5435,18 +5380,6 @@ abstract class AppLocalizations {
   /// **'Write something specific...'**
   String get swipesProfileReactionControlsPlaceholderWriteSomethingSpecific;
 
-  /// Product copy used by lib/user_analytics/shared/user_analytics_panel.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'caughtYou'**
-  String get userAnalyticsUserAnalyticsPanelLabelCaughtyou;
-
-  /// Product copy used by lib/user_analytics/shared/user_analytics_panel.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'mutualCatches'**
-  String get userAnalyticsUserAnalyticsPanelLabelMutualcatches;
-
   /// Product copy used by lib/user_profile/presentation/profile_screen.dart (label).
   ///
   /// In en, this message translates to:
@@ -5482,24 +5415,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Increase height'**
   String get userProfileInlineEditorHeightTooltipIncreaseHeight;
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_prompt.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Change prompt'**
-  String get userProfileInlineEditorPromptLabelChangePrompt;
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_prompt.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Prompt'**
-  String get userProfileInlineEditorPromptTitlePrompt;
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_prompt.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'Pick the question this answer responds to.'**
-  String get userProfileInlineEditorPromptSubtitlePickTheQuestionThis;
 
   /// Product copy used by lib/user_profile/presentation/widgets/profile_sliver_header.dart (tooltip).
   ///
@@ -5860,12 +5775,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Age range'**
-  String get hostsClubHostDefaultsStepLabelAgeRange;
-
-  /// Product copy used by lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart (label).
-  ///
-  /// In en, this message translates to:
   /// **'Cancellation policy'**
   String get hostsClubHostDefaultsStepLabelCancellationPolicy;
 
@@ -5962,12 +5871,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Age range'**
-  String get hostsEditHostedEventScreenLabelAgeRange;
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
-  ///
-  /// In en, this message translates to:
   /// **'Cancellation policy'**
   String get hostsEditHostedEventScreenLabelCancellationPolicy;
 
@@ -6048,12 +5951,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Admission format'**
   String get hostsEventPolicyStepLabelAdmissionFormat;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Age range'**
-  String get hostsEventPolicyStepLabelAgeRange;
 
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (label).
   ///
@@ -6725,14 +6622,6 @@ abstract class AppLocalizations {
     required Object remainingCount,
   });
 
-  /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{activeCount}'**
-  String exploreExploreFilterRailLabelActivecount({
-    required Object activeCount,
-  });
-
   /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).
   ///
   /// In en, this message translates to:
@@ -6744,12 +6633,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}'**
   String hostsCreateClubPhotosPickerTextCount({required Object count});
-
-  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Select {label} pace'**
-  String hostsEditHostedEventScreenBodySelectLabelPace({required Object label});
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
   ///
@@ -7015,12 +6898,6 @@ abstract class AppLocalizations {
     required Object count,
   });
 
-  /// Product copy used by lib/core/widgets/catch_section_layout.dart (text).
-  ///
-  /// In en, this message translates to:
-  /// **'· {count}'**
-  String coreCatchSectionLayoutTextCount({required Object count});
-
   /// Product copy used by lib/core/widgets/catch_startup_loading_screen.dart (body).
   ///
   /// In en, this message translates to:
@@ -7106,15 +6983,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{day}'**
   String eventsEventDateMarkerLabelDay({required Object day});
-
-  /// Product copy used by lib/events/shared/event_tiles/event_date_rail_card.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{time} · {value2}'**
-  String eventsEventDateRailCardTextTimeValue2({
-    required Object time,
-    required Object value2,
-  });
 
   /// Product copy used by lib/events/shared/event_tiles/event_date_rail_card.dart (Text).
   ///
@@ -7464,48 +7332,6 @@ abstract class AppLocalizations {
   /// **'Your profile'**
   String get userProfileProfileScreenTitleYourProfile;
 
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_choice.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'+ {label}'**
-  String userProfileInlineEditorChoiceBodyLabel({required Object label});
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_choice.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'+ {value}'**
-  String userProfileInlineEditorChoiceTextValue({required Object value});
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_prompt.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'+ {value}'**
-  String userProfileInlineEditorPromptBodyValue({required Object value});
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_prompt.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{length} / {maximumProfilePromptAnswerLength}'**
-  String
-  userProfileInlineEditorPromptTextLengthMaximumprofilepromptanswerlength({
-    required Object length,
-    required Object maximumProfilePromptAnswerLength,
-  });
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_prompt.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'profile-inline-counter'**
-  String get userProfileInlineEditorPromptTextProfileInlineCounter;
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_prompt.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Select prompt: {title}'**
-  String userProfileInlineEditorPromptLabelSelectPromptTitle({
-    required Object title,
-  });
-
   /// Numbered prompt-question field label in the profile editor.
   ///
   /// In en, this message translates to:
@@ -7621,12 +7447,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Home'**
   String get dashboardDashboardEmptyHomeScreenLabelHome;
-
-  /// Product copy used by lib/dashboard/presentation/dashboard_error_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Dashboard unavailable'**
-  String get dashboardDashboardErrorScreenTitleDashboardUnavailable;
 
   /// Product copy used by lib/dashboard/presentation/dashboard_home_screen.dart (label).
   ///
@@ -10239,12 +10059,6 @@ abstract class AppLocalizations {
   /// **'Create club'**
   String get hostsHostEventsScaffoldLabelCreateClub;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Events'**
-  String get hostsHostEventsScaffoldTextEvents;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_inline_editors.dart (Text).
   ///
   /// In en, this message translates to:
@@ -10339,12 +10153,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Host events'**
   String get hostsHostOperationsHomeScreenTitleHostEvents;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Switch club'**
-  String get hostsHostOrganizerTooltipSwitchClub;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (title).
   ///
@@ -10449,12 +10257,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Owner'**
   String get hostsHostOrganizerLabelOwner;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Active events'**
-  String get hostsHostOrganizerLabelActiveEvents;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (title).
   ///
@@ -10718,24 +10520,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A new version of Catch is available. Please update to continue.'**
   String get forceUpdateUpdateRequiredScreenTextANewVersionOf;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{name} · {value2}'**
-  String hostsHostOrganizerLabelNameValue2({
-    required Object name,
-    required Object value2,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{name} · {value2}'**
-  String hostsHostTodayLabelNameValue2({
-    required Object name,
-    required Object value2,
-  });
 
   /// Product copy used by lib/hosts/presentation/widgets/host_event_tools.dart (label).
   ///
@@ -11004,12 +10788,6 @@ abstract class AppLocalizations {
   /// **'Languages'**
   String get userProfileSelfProfileEditTabStateLabelLanguages;
 
-  /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'Languages'**
-  String get userProfileSelfProfileEditTabStatePlaceholderLanguages;
-
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
   /// In en, this message translates to:
@@ -11028,35 +10806,17 @@ abstract class AppLocalizations {
   /// **'Preferred distances'**
   String get userProfileSelfProfileEditTabStateLabelPreferredDistances;
 
-  /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'Preferred distances'**
-  String get userProfileSelfProfileEditTabStatePlaceholderPreferredDistances;
-
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Why I event'**
   String get userProfileSelfProfileEditTabStateLabelWhyIEvent;
 
-  /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'Why I event'**
-  String get userProfileSelfProfileEditTabStatePlaceholderWhyIEvent;
-
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Favorite event times'**
   String get userProfileSelfProfileEditTabStateLabelFavoriteEventTimes;
-
-  /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (placeholder).
-  ///
-  /// In en, this message translates to:
-  /// **'Favorite event times'**
-  String get userProfileSelfProfileEditTabStatePlaceholderFavoriteEventTimes;
 
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
@@ -11617,14 +11377,6 @@ abstract class AppLocalizations {
   /// **'Map'**
   String get exploreExploreScreenStateLabelMap;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Map · {mappableEventCount}'**
-  String exploreExploreScreenStateLabelMapMappableeventcount({
-    required Object mappableEventCount,
-  });
-
   /// Accessible map-launcher label with the number of mapped events.
   ///
   /// In en, this message translates to:
@@ -11668,12 +11420,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Claim a seat'**
   String get exploreExploreScreenStateCtalabelClaimASeat;
-
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (kicker).
-  ///
-  /// In en, this message translates to:
-  /// **'FROM ONE OF YOUR CLUBS'**
-  String get exploreExploreScreenStateKickerFromOneOfYour;
 
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
   ///
@@ -11951,12 +11697,6 @@ abstract class AppLocalizations {
   /// **'New'**
   String get hostsHostEventManageScreenStateLabelNew;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'PIN READY'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyPinReady;
-
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (action).
   ///
   /// In en, this message translates to:
@@ -12004,12 +11744,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Release your spot early so the waitlist can move.'**
   String get eventsEventDetailInformationStateBodyReleaseYourSpotEarly;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'PIN DROPS MORNING-OF'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyPinDropsMorningOf;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (label).
   ///
@@ -12083,14 +11817,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Spots free up in order as capacity changes or people cancel.'**
   String get eventsEventDetailDesignPrimitivesDetailSpotsFreeUpIn;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'{title} cancellation'**
-  String eventsEventDetailDesignPrimitivesTitleTitleCancellation({
-    required Object title,
-  });
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
   ///
@@ -13027,42 +12753,6 @@ abstract class AppLocalizations {
   /// **'Check-in or host-marked attendance decides who can use post-event follow-up and feedback.'**
   String get eventsEventDetailOverviewSectionBodyCheckInOrHost;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Host review'**
-  String get eventsEventDetailOverviewSectionTitleHostReview;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Request a spot first. The host can review your public profile before confirming the roster.'**
-  String get eventsEventDetailOverviewSectionBodyRequestASpotFirst;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Balanced booking'**
-  String get eventsEventDetailOverviewSectionTitleBalancedBooking;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Some bookings may move through the waitlist so the event does not become too skewed.'**
-  String get eventsEventDetailOverviewSectionBodySomeBookingsMayMove;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Waitlist available'**
-  String get eventsEventDetailOverviewSectionTitleWaitlistAvailable;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'If the event fills up, the waitlist can reopen spots when capacity changes.'**
-  String get eventsEventDetailOverviewSectionBodyIfTheEventFills;
-
   /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
@@ -13115,82 +12805,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expect the host to shape the format around the room and venue.'**
   String get eventsEventDetailOverviewSectionVisiblecopyExpectTheHostTo;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Open capacity'**
-  String get eventsEventDetailOverviewSectionVisiblecopyOpenCapacity;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Invite only'**
-  String get eventsEventDetailOverviewSectionVisiblecopyInviteOnly;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Request to join'**
-  String get eventsEventDetailOverviewSectionVisiblecopyRequestToJoin;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Open with cohort caps'**
-  String get eventsEventDetailOverviewSectionVisiblecopyOpenWithCohortCaps;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Balanced singles'**
-  String get eventsEventDetailOverviewSectionVisiblecopyBalancedSingles;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Members only'**
-  String get eventsEventDetailOverviewSectionVisiblecopyMembersOnly;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendees book until {capacityLimit} spots are filled.'**
-  String
-  eventsEventDetailOverviewSectionVisiblecopyAttendeesBookUntilCapacitylimit({
-    required Object capacityLimit,
-  });
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendees book within total capacity, with optional straight men and straight women caps applied.'**
-  String
-  get eventsEventDetailOverviewSectionVisiblecopyAttendeesBookWithinTotal;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Straight men and women are balanced within a small tolerance; other cohorts book within total capacity.'**
-  String get eventsEventDetailOverviewSectionVisiblecopyStraightMenAndWomen;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Only attendees with the host invite can book.'**
-  String get eventsEventDetailOverviewSectionVisiblecopyOnlyAttendeesWithThe;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'The host reviews requests before confirming spots.'**
-  String get eventsEventDetailOverviewSectionVisiblecopyTheHostReviewsRequests;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Only active club members can book this event.'**
-  String get eventsEventDetailOverviewSectionVisiblecopyOnlyActiveClubMembers;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
@@ -14949,38 +14563,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/widgets/event_pins_map.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'{length} events nearby'**
-  String eventsEventPinsMapVisiblecopyLengthEventsNearby({
-    required Object length,
-  });
-
-  /// Product copy used by lib/events/presentation/widgets/event_pins_map.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Tap to zoom in'**
-  String get eventsEventPinsMapVisiblecopyTapToZoomIn;
-
-  /// Product copy used by lib/events/presentation/widgets/event_pins_map.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{timeLabel} · {title}'**
-  String eventsEventPinsMapVisiblecopyTimelabelTitle({
-    required Object timeLabel,
-    required Object title,
-  });
-
-  /// Product copy used by lib/events/presentation/widgets/event_pins_map.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{floor}:{floor2}'**
-  String eventsEventPinsMapVisiblecopyFloorFloor2({
-    required Object floor,
-    required Object floor2,
-  });
-
-  /// Product copy used by lib/events/presentation/widgets/event_pins_map.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'catch event map'**
   String get eventsEventPinsMapVisiblecopyCatchEventMap;
 
@@ -14989,12 +14571,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'building event map pin bitmap'**
   String get eventsEventPinsMapVisiblecopyBuildingEventMapPin;
-
-  /// Product copy used by lib/explore/presentation/explore_map_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'map'**
-  String get exploreExploreMapScreenVisiblecopyMap;
 
   /// Product copy used by lib/explore/presentation/explore_screen.dart (visibleCopy).
   ///
@@ -15161,12 +14737,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Picked'**
-  String get exploreExploreScreenStateVisiblecopyPicked;
-
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'Next: {nextEvent}'**
   String exploreExploreScreenStateVisiblecopyNextNextevent({
     required Object nextEvent,
@@ -15296,14 +14866,6 @@ abstract class AppLocalizations {
   /// **'Please add a description'**
   String get hostsClubDetailsStepVisiblecopyPleaseAddADescription;
 
-  /// Product copy used by lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Use {label} by default'**
-  String hostsClubHostDefaultsStepVisiblecopyUseLabelByDefault({
-    required Object label,
-  });
-
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (visibleCopy).
   ///
   /// In en, this message translates to:
@@ -15383,12 +14945,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Select {label}'**
-  String hostsEventDetailsStepVisiblecopySelectLabel({required Object label});
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'Required'**
   String get hostsEventDetailsStepVisiblecopyRequired;
 
@@ -15427,14 +14983,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select a pace'**
   String get hostsEventDetailsStepVisiblecopySelectAPace;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Select {label} pace'**
-  String hostsEventDetailsStepVisiblecopySelectLabelPace({
-    required Object label,
-  });
 
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (visibleCopy).
   ///
@@ -15946,12 +15494,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'City'**
-  String get hostsHostClubProfileVisiblecopyCity;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'area'**
   String get hostsHostClubProfileVisiblecopyArea;
 
@@ -16038,12 +15580,6 @@ abstract class AppLocalizations {
     required Object minAge,
     required Object maxAge,
   });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Host team'**
-  String get hostsHostOrganizerLabelHostTeam;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (visibleCopy).
   ///
@@ -16638,28 +16174,8 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Email'**
-  String get userProfileSelfProfileEditTabStateVisiblecopyEmail;
-
-  /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'email'**
   String get userProfileSelfProfileEditTabStateVisiblecopyEmaile69bb2;
-
-  /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Instagram'**
-  String get userProfileSelfProfileEditTabStateVisiblecopyInstagram;
-
-  /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'@{instagramHandle}'**
-  String userProfileSelfProfileEditTabStateVisiblecopyInstagramhandle({
-    required Object instagramHandle,
-  });
 
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (visibleCopy).
   ///
@@ -16690,20 +16206,8 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Job title'**
-  String get userProfileSelfProfileEditTabStateVisiblecopyJobTitle;
-
-  /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'occupation'**
   String get userProfileSelfProfileEditTabStateVisiblecopyOccupation;
-
-  /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Company'**
-  String get userProfileSelfProfileEditTabStateVisiblecopyCompany;
 
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (visibleCopy).
   ///
@@ -16798,12 +16302,6 @@ abstract class AppLocalizations {
   String userProfileInlineEditorHeightBodyHeightcmCm({
     required Object heightCm,
   });
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_height.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'+ {value}'**
-  String userProfileInlineEditorHeightBodyValue({required Object value});
 
   /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_range.dart (body).
   ///
@@ -17303,45 +16801,11 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'{memberCount}'**
-  String eventsEventDetailScreenStateVisiblecopyMembercount({
-    required Object memberCount,
-  });
-
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'{rating} FROM {reviewCount} CLUB REVIEWS'**
   String eventsEventDetailScreenStateVisiblecopyClubReviewSummary({
     required Object rating,
     required Object reviewCount,
   });
-
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Members'**
-  String get eventsEventDetailScreenStateLabelMembers;
-
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Rating'**
-  String get eventsEventDetailScreenStateLabelRating;
-
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{reviewCount}'**
-  String eventsEventDetailScreenStateVisiblecopyReviewcount({
-    required Object reviewCount,
-  });
-
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Reviews'**
-  String get eventsEventDetailScreenStateLabelReviews;
 
   /// Product copy used by lib/dashboard/presentation/dashboard_full_view_model.dart (title).
   ///
@@ -18187,24 +17651,6 @@ abstract class AppLocalizations {
   /// **'Change your filters to bring events back into view.'**
   String get exploreExploreMapScreenMessageChangeFiltersToBringEventsBack;
 
-  /// Product copy used by lib/events/presentation/event_map_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No exact pins yet'**
-  String get eventsEventMapScreenTitleNoExactPinsYet;
-
-  /// Product copy used by lib/events/presentation/event_map_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'These events are visible, but none have pinned starting points.'**
-  String get eventsEventMapScreenMessageTheseEventsAreVisible;
-
-  /// Product copy used by lib/events/presentation/calendar/calendar_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Calendar'**
-  String get eventsCalendarScreenTitleCalendar;
-
   /// Product copy used by lib/events/presentation/event_location_map_body_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -18216,78 +17662,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This event does not have an exact pinned starting point yet.'**
   String get eventsEventLocationMapBodyScreenMessageThisEventDoesNot;
-
-  /// Product copy used by lib/events/presentation/event_location_map_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Location unavailable'**
-  String get eventsEventLocationMapScreenTitleLocationUnavailable;
-
-  /// Product copy used by lib/events/presentation/event_location_map_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'This event does not have an exact pinned starting point yet.'**
-  String get eventsEventLocationMapScreenMessageThisEventDoesNot;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_preview.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Open public preview'**
-  String get hostsHostClubPreviewTitleOpenPublicPreview;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Organizer'**
-  String get hostsHostClubsScaffoldLabelOrganizer;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'How guests see you'**
-  String get hostsHostOrganizerTitleHowGuestsSeeYou;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Public page'**
-  String get hostsHostOrganizerBodyPublicPage;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Trends · last 12 weeks'**
-  String get hostsHostOrganizerTitleTrendsLast12Weeks;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'See insights'**
-  String get hostsHostOrganizerLabelSeeInsights;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Insights'**
-  String get hostsHostAnalyticsVisiblecopyInsights;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_preview.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Preview'**
-  String get hostsHostClubPreviewVisiblecopyPreview;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Owner'**
-  String get hostsHostClubProfileVisiblecopyOwner;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Host team'**
-  String get hostsHostClubProfileVisiblecopyHostTeam;
 
   /// Fallback label for a ready Profile Insights data-coverage source whose id is not recognized by the app.
   ///
