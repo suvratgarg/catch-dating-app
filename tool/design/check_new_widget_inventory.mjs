@@ -115,15 +115,16 @@ function scanSnapshot({files, readFile}) {
   for (const file of files) {
     if (shouldSkip(file)) continue;
     const source = readFile(file);
+    const library = dartLibraryFor(file, source);
     const lineStarts = buildLineStarts(source);
     const classRanges = collectClassRanges(source, lineStarts);
 
     for (const declaration of collectWidgetClasses(source, lineStarts)) {
-      widgetClasses.push({...declaration, file});
+      widgetClasses.push({...declaration, file, library});
     }
 
     for (const helper of collectWidgetHelpers(source, lineStarts, classRanges)) {
-      widgetHelpers.push({...helper, file});
+      widgetHelpers.push({...helper, file, library});
     }
   }
 
@@ -143,6 +144,12 @@ function scanSnapshot({files, readFile}) {
       widgetHelperKey,
     ),
   };
+}
+
+function dartLibraryFor(file, source) {
+  const partOf = source.match(/^\s*part\s+of\s+'([^']+)'\s*;/mu);
+  if (!partOf) return file;
+  return path.posix.normalize(path.posix.join(path.posix.dirname(file), partOf[1]));
 }
 
 function collectWidgetClasses(source, lineStarts) {
@@ -171,6 +178,14 @@ function collectWidgetHelpers(source, lineStarts, classRanges) {
     const name = match[2];
     if (name === "build") continue;
     const owner = classRanges.find((range) => offset > range.open && offset < range.close);
+    // Descriptor renderers are the typed mapper protocol, not free-standing
+    // composition helpers that can drift outside a cataloged widget owner.
+    if (
+      owner?.name === "CatchFormRowDescriptor" ||
+      owner?.baseClass.startsWith("CatchFormRowDescriptor")
+    ) {
+      continue;
+    }
     rows.push({
       name,
       owner: owner?.name ?? null,
@@ -187,7 +202,7 @@ function collectWidgetHelpers(source, lineStarts, classRanges) {
 function collectClassRanges(source, lineStarts) {
   const rows = [];
   const regex =
-    /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?\s+extends\s+([A-Za-z_][A-Za-z0-9_<>?, ]*)/gu;
+    /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?(?:\s+extends\s+([A-Za-z_][A-Za-z0-9_<>?, ]*))?/gu;
 
   for (const match of source.matchAll(regex)) {
     const open = source.indexOf("{", match.index);
@@ -196,7 +211,7 @@ function collectClassRanges(source, lineStarts) {
     if (close === -1) continue;
     rows.push({
       name: match[1],
-      baseClass: match[2].trim(),
+      baseClass: match[2]?.trim() ?? "",
       open,
       close,
       line: lineForOffset(lineStarts, match.index ?? 0),
@@ -445,7 +460,7 @@ function widgetHelperKey(entry) {
 }
 
 function widgetHelperIdentityKey(entry) {
-  return `${entry.owner ?? "<top-level>"}::${entry.name}::${entry.scope}`;
+  return `${entry.library}::${entry.name}`;
 }
 
 function isMovedWidgetClass(entry, baseSnapshot, currentSnapshot) {

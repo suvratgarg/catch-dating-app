@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.31
-updated: 2026-07-16
+version: 1.4.32
+updated: 2026-07-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -2305,6 +2305,41 @@ class CalendarEventSummary {
     );
   }
 }
+```
+
+### Exhibit ARCH-FORM-DESCRIPTOR-001: Typed Form Row Orchestration
+
+<!-- exhibit-freshness: ARCH-FORM-DESCRIPTOR-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/core/forms/catch_form_descriptors.dart`
+- `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
+- `lib/user_profile/presentation/widgets/profile_tab.dart`
+- `test/core/forms/catch_form_descriptors_test.dart`
+- `test/profile/self_profile_edit_tab_state_test.dart`
+
+Use this pattern when multiple form surfaces need the same row mapping,
+single-expanded-field behavior, and per-field patch save loop. Feature state
+owns labels, values, validation policy, and typed patch factories. The shared
+`CatchFormRowList<P>` owns canonical `CatchField` composition, accordion
+wiring, pending/error presentation, and one `Future<bool> Function(P)` save
+delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
+provided scope instead of adding feature policy to core.
+
+The consumer Profile About You section is the reference prototype. Do not
+migrate its Running/Lifestyle sections, Host Club editing, or onboarding until
+the prototype API receives owner review; those remain tracker candidates.
+
+```dart
+CatchFormRowList<UpdateUserProfilePatch>(
+  title: context.l10n.userProfileProfileTabTitleAboutYou,
+  dividerInset: CatchFieldRow.textLaneInset,
+  rows: editState.aboutSectionRows,
+  accordion: _fieldAccordion,
+  savePatch: _saveAboutPatch,
+  errorText: _profileSaveErrorText,
+)
 ```
 
 ## Migration Plan

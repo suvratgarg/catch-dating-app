@@ -36,8 +36,8 @@
   },
   "architecture_pattern_adoption": {
     "path": "docs/audit_registry/architecture_pattern_adoption.json",
-    "version": "1.5.36",
-    "updated": "2026-07-16",
+    "version": "1.5.37",
+    "updated": "2026-07-17",
     "status": "active",
     "read_policy": "Use for architecture reference implementation exhibits, prototype files, adopter status, variants, exceptions, screen-boundary candidates, provider-free state-adapter registration, and back-propagation obligations before repeated migration work."
   },
@@ -57,8 +57,8 @@
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.6.205",
-    "updated": "2026-07-16",
+    "version": "4.6.206",
+    "updated": "2026-07-17",
     "status": "active",
     "read_policy": "Use for durable doc version metadata, read policies, AI-first workflow guide routing, architecture pattern-tracker routing, exhibit-freshness routing, manifest role metadata, allowedFindings receipt checks, React class-name boundaries, React surface and component-family governance including the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, capture-card shells, empty-state variants, badge/status rows, website identity display shells, website process status panels, product-module grids, event-action cards, PublicSearchBar ownership, public event-card shells, UI label spans, claim-flow route/root/auth-row shells, Host Page route shells, Host Application flow shells, Host feature section shells, featured organizer card shells, and app-download CTA group/shells, agent delegation protocol doc freshness, composition-audit routing, and design parity/catalog version bumps including Host Manage Event Success, private-access, and invite-link edge coverage. Admin component registry scanner obligations. Admin Storybook preview coverage obligations."
   },
@@ -120,8 +120,8 @@
   },
   "app_architecture": {
     "path": "docs/app_architecture.md",
-    "version": "1.4.29",
-    "updated": "2026-07-16",
+    "version": "1.4.32",
+    "updated": "2026-07-17",
     "status": "active",
     "read_policy": "Read first for Flutter app code organization, dependency-direction seams including annotated feature-root barrel exports, provider-free *_state.dart naming, Firebase/domain boundaries, mutation-cardinality grain, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, realtime stream lifecycle keepAlive markers, routing/navigation constants, reference implementation exhibits, exhibit-freshness markers, and architecture enforcement policy.",
     "read_when": "Changing code organization under lib/; Starting or continuing an architecture migration rollout; Updating reference implementation exhibits; Classifying pattern adopters, variants, or exceptions; Defining or reviewing feature folder structure; Changing dependency-direction scanner policy or cross-feature controller seams; Changing domain/data Firebase boundaries; Changing host/consumer app-role boundaries or role-specific routing; Moving behavior between widgets, controllers, repositories, services, or domain classes; Deciding screen vs body/widget ownership; Changing async loading/error/mutation state boundaries; Changing mutation pending/error grain or action-cardinality behavior; Changing shared screen padding, tab body insets, sliver body gaps, scroll ownership, or sizing constraints; Changing exceptions, error mappers, operation context, logging, analytics, or user-facing error rendering; Changing keepAlive, autoDispose, or retained-tab stream ownership; Adding architecture lints, scanners, or overrides"
@@ -254,7 +254,7 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.641",
+    "version": "2.5.642",
     "updated": "2026-07-17",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, reusable design-system roles, action-effect/state adapters, or provider-free section boundaries materially change."
@@ -387,8 +387,8 @@
   },
   "design_language": {
     "path": "docs/design_language.md",
-    "version": "1.4.0",
-    "updated": "2026-07-05",
+    "version": "1.5.5",
+    "updated": "2026-07-17",
     "status": "active",
     "read_policy": "Read before changing Catch visual identity, palette, typography, photography treatment, metaphors, presentation tiers (§6), containment doctrine (§7.1), motion, or remaining map-pin palette policy."
   },

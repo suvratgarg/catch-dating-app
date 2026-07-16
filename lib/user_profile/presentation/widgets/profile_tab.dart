@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
@@ -17,6 +19,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_intent_factory.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
@@ -144,6 +147,23 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
     if (mounted) setState(() {});
   }
 
+  Future<bool> _saveAboutPatch(UpdateUserProfilePatch patch) async {
+    await ProfileEditController.saveFieldsMutation.run(
+      ref,
+      (tx) async =>
+          tx.get(profileEditControllerProvider.notifier).saveFields(patch),
+    );
+    return true;
+  }
+
+  String _profileSaveErrorText(BuildContext context, Object error) {
+    return appErrorMessage(
+      error,
+      l10n: context.l10n,
+      context: AppErrorContext.profile,
+    );
+  }
+
   @override
   void dispose() {
     _fieldAccordion
@@ -247,19 +267,13 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                 ),
             ],
           ),
-          CatchSection.fieldRows(
+          CatchFormRowList<UpdateUserProfilePatch>(
             title: context.l10n.userProfileProfileTabTitleAboutYou,
             dividerInset: CatchFieldRow.textLaneInset,
-            children: [
-              for (final row in editState.aboutSectionRows)
-                ProfileFieldRow(
-                  descriptor: row,
-                  isExpanded: _fieldAccordion.isExpanded,
-                  onToggle: _fieldAccordion.toggle,
-                  onSaved: _fieldAccordion.collapse,
-                  onCancel: _fieldAccordion.collapse,
-                ),
-            ],
+            rows: editState.aboutSectionRows,
+            accordion: _fieldAccordion,
+            savePatch: _saveAboutPatch,
+            errorText: _profileSaveErrorText,
           ),
           CatchSection.fieldRows(
             title: context.l10n.userProfileProfileTabTitleRunning,
@@ -315,42 +329,6 @@ class ProfileFieldRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return descriptor.map(
-      readOnly: (descriptor) => CatchField.read(
-        icon: descriptor.icon,
-        title: descriptor.label,
-        body: descriptor.body,
-        bodyMaxLines: descriptor.bodyMaxLines,
-      ),
-      text: (descriptor) => ProfileDirectTextEntry(
-        icon: descriptor.icon,
-        label: descriptor.label,
-        currentValue: descriptor.currentValue,
-        currentFieldValue: descriptor.currentFieldValue,
-        emptyValueText: descriptor.emptyValueText,
-        inputHint: descriptor.inputHint,
-        leadingUnit: descriptor.leadingUnit,
-        showClearButton: descriptor.showClearButton,
-        fieldName: descriptor.fieldName,
-        patchForValue: descriptor.patchForValue,
-        keyboardType: descriptor.keyboardType,
-        textCapitalization: descriptor.textCapitalization,
-        autofillHints: descriptor.autofillHints,
-        validator: descriptor.validator,
-        toFieldValue: descriptor.toFieldValue,
-      ),
-      height: (descriptor) => ProfileInlineHeightEditor(
-        key: ValueKey('inline-${descriptor.id}-editor'),
-        icon: descriptor.icon,
-        label: descriptor.label,
-        value: descriptor.value,
-        currentValue: descriptor.currentValue,
-        isExpanded: isExpanded(descriptor.id),
-        isAddAffordance: descriptor.isAddAffordance,
-        patchForValue: descriptor.patchForValue,
-        onTap: () => onToggle(descriptor.id),
-        onSaved: onSaved,
-        onCancel: onCancel,
-      ),
       singleChoice: <T extends Labelled>(descriptor) =>
           ProfileSingleEnumEntry<T>(
             icon: descriptor.icon,
@@ -404,65 +382,6 @@ class ProfileFieldRow extends StatelessWidget {
         onSaved: onSaved,
         onCancel: onCancel,
       ),
-    );
-  }
-}
-
-class ProfileDirectTextEntry extends StatelessWidget {
-  const ProfileDirectTextEntry({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.fieldName,
-    this.emptyValueText,
-    this.inputHint,
-    this.leadingUnit,
-    this.showClearButton = false,
-    this.currentValue,
-    this.currentFieldValue,
-    this.keyboardType,
-    this.textCapitalization = TextCapitalization.sentences,
-    this.autofillHints,
-    this.validator,
-    this.toFieldValue,
-    required this.patchForValue,
-  });
-
-  final IconData icon;
-  final String label;
-
-  final String? emptyValueText;
-  final String? inputHint;
-  final String? leadingUnit;
-  final bool showClearButton;
-  final String fieldName;
-  final String? currentValue;
-  final Object? currentFieldValue;
-  final TextInputType? keyboardType;
-  final TextCapitalization textCapitalization;
-  final Iterable<String>? autofillHints;
-  final FormFieldValidator<String>? validator;
-  final Object? Function(String value)? toFieldValue;
-  final UpdateUserProfilePatch Function(Object? value) patchForValue;
-
-  @override
-  Widget build(BuildContext context) {
-    return ProfileDirectTextEntryField(
-      icon: icon,
-      label: label,
-      emptyValueText: emptyValueText,
-      inputHint: inputHint,
-      leadingUnit: leadingUnit,
-      showClearButton: showClearButton,
-      currentValue: currentValue ?? '',
-      currentFieldValue: currentFieldValue ?? currentValue,
-      fieldName: fieldName,
-      keyboardType: keyboardType,
-      textCapitalization: textCapitalization,
-      autofillHints: autofillHints,
-      validator: validator,
-      toFieldValue: toFieldValue,
-      patchForValue: patchForValue,
     );
   }
 }

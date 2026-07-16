@@ -174,6 +174,8 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
             CatchSection.fieldRows(
               first: true,
               children: [
+                // Composite exception: paired pace labels, range slider, and
+                // boundary captions must remain one coordinated control.
                 CatchField.control(
                   key: OnboardingFormKeys.runningPace,
                   title: context

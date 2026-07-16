@@ -125,10 +125,27 @@ function validateDart(component, label) {
     failures.push(`${label}: dart.file does not exist: ${dart.file}`);
     return;
   }
-  const source = fs.readFileSync(file, "utf8");
+  const source = readDartLibrarySource(file);
   if (!new RegExp(`\\b${escapeRegExp(dart.symbol)}\\b`).test(source)) {
     failures.push(`${label}: dart.symbol '${dart.symbol}' not found in ${dart.file}`);
   }
+}
+
+function readDartLibrarySource(file, visited = new Set()) {
+  const resolved = path.resolve(file);
+  if (visited.has(resolved)) return "";
+  visited.add(resolved);
+
+  const source = fs.readFileSync(resolved, "utf8");
+  const parts = [...source.matchAll(/^\s*part\s+'([^']+)'\s*;/gmu)].map(
+    (match) => path.resolve(path.dirname(resolved), match[1]),
+  );
+  return [
+    source,
+    ...parts
+      .filter((part) => fs.existsSync(part))
+      .map((part) => readDartLibrarySource(part, visited)),
+  ].join("\n");
 }
 
 function validateContract(contract, component, label, {memberIds, memberSymbols}) {
@@ -165,7 +182,7 @@ function validateContractMembers(members, component, label, {memberIds, memberSy
     const sourcePath = member?.file ?? component.dart?.file;
     const sourceFile = sourcePath ? fromRepo(sourcePath) : null;
     const source = sourceFile && fs.existsSync(sourceFile)
-      ? fs.readFileSync(sourceFile, "utf8")
+      ? readDartLibrarySource(sourceFile)
       : "";
     if (!member?.id || !member.id.startsWith(`${label}.`)) {
       failures.push(`${memberLabel}: member id must be nested under ${label}`);

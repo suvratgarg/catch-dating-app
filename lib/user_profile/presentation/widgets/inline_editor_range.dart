@@ -137,6 +137,7 @@ class _ProfileInlineRangeEditorState
             labelText2: widget.labelText(_range.end),
           )
         : widget.value;
+    // Composite exception: a bounded two-handle slider commits one range.
     return CatchField.control(
       icon: widget.icon,
       title: widget.title,

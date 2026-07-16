@@ -1,6 +1,6 @@
 {
-  "version": "1.5.36",
-  "updated": "2026-07-16",
+  "version": "1.5.37",
+  "updated": "2026-07-17",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -1415,6 +1415,69 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "notes": "Generated function providers are auto-dispose by default. KeepAlive remains an explicit reviewed lifecycle decision with a rationale marker."
+    },
+    {
+      "id": "ARCH-FORM-DESCRIPTOR-001",
+      "name": "Typed form row orchestration",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-form-descriptor-001-typed-form-row-orchestration",
+      "prototypeFiles": [
+        "lib/core/forms/catch_form_descriptors.dart",
+        "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "test/core/forms/catch_form_descriptors_test.dart",
+        "test/profile/self_profile_edit_tab_state_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
+          "role": "reference About You section adopter with one typed UpdateUserProfilePatch save delegate and shared accordion wiring",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "role": "reference feature adapter for read, text, choice, multi-choice, and custom height descriptors without moving profile policy into core",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "path": "test/core/forms/catch_form_descriptors_test.dart",
+          "role": "typed descriptor, shared accordion, and single save-delegate contract coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-FORM-DESCRIPTOR-001-CONSUMER-REMAINDER",
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "reason": "Running and Lifestyle intentionally retain SelfProfile descriptors until the About You prototype receives owner API review.",
+          "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "id": "ARCH-FORM-DESCRIPTOR-001-HOST-EDIT",
+          "path": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
+          "reason": "Host Club migration is ordered after owner approval and the edit-spec Phase 3 immediate-save model.",
+          "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "id": "ARCH-FORM-DESCRIPTOR-001-ONBOARDING",
+          "path": "lib/onboarding/presentation",
+          "reason": "Onboarding adopts opportunistically only after the reference prototype is approved.",
+          "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When descriptor fields, save semantics, accordion ownership, or error mapping change, update the About You prototype, core descriptor tests, architecture exhibit, and every promoted adopter before broad rollout.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/core/forms/catch_form_descriptors_test.dart test/profile/self_profile_edit_tab_state_test.dart test/profile/profile_widgets_test.dart",
+        "flutter analyze --no-fatal-infos lib/core/forms/catch_form_descriptors.dart lib/user_profile/presentation/self_profile_edit_tab_state.dart lib/user_profile/presentation/widgets/profile_tab.dart test/core/forms/catch_form_descriptors_test.dart test/profile/self_profile_edit_tab_state_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "Only the consumer Profile About You section is promoted. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope."
     }
   ]
 }

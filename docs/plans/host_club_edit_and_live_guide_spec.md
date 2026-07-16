@@ -411,11 +411,10 @@ once — verify each surface after.
 
 On each module toggle row, surface `recommendation.level` for
 `recommended` and `discouraged` only (reuse the enum's `label`:
-"Recommended" / "Advanced"). `CatchField.toggle` has no helper/badge slot
-(verified: only `title`/`body`/`bodyMaxLines`), so render it as a body
-prefix: `body: '${level.label} — ${recommendation.reason}'` with
-`bodyMaxLines: 3`. Keep `defaultOn`/`optional` unlabelled (silence is the
-default state). Do NOT add a badge parameter to `CatchField` for this.
+"Recommended" / "Advanced"). Render the level through
+`CatchField.toggle(badgeLabel:)` and keep `recommendation.reason` as the
+body with `bodyMaxLines: 3`. Keep `defaultOn`/`optional` unlabelled (silence
+is the default state).
 
 ### 6.3 Questionnaire row
 

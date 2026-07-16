@@ -1454,6 +1454,7 @@ Widget catchFieldContractStates(BuildContext context) {
       'chevron',
       'toggle-on',
       'toggle-off',
+      'toggle-helper-badge',
       'control-collapsed',
       'control-open',
       'disclosure-active-pressed',
@@ -1462,6 +1463,7 @@ Widget catchFieldContractStates(BuildContext context) {
       'choices-retain-final-selection',
       'choices-derived-summary',
       'choices-explicit-summary',
+      'choices-helper-accent',
       'stepper-open',
       'direct-input-one-tap',
       'direct-input-focused-cursor',
@@ -1571,6 +1573,20 @@ Widget catchFieldContractStates(BuildContext context) {
         child: const _ToggleFieldDemo(initialValue: false),
       ),
       fieldState(
+        label: 'toggle-helper-badge',
+        description:
+            'Recommendation metadata stays in the title row while guidance uses the canonical support lane.',
+        child: CatchField.toggle(
+          title: 'Live guide',
+          body: 'Enable the run-of-show companion.',
+          helperText: 'You can change this before the event.',
+          badgeLabel: 'Recommended',
+          badgeTone: CatchBadgeTone.success,
+          value: true,
+          onChanged: (_) {},
+        ),
+      ),
+      fieldState(
         label: 'control-collapsed',
         description:
             'At rest, the caption uses semantic ink3 and the caret stays centered on the value line with canonical divider clearance.',
@@ -1624,6 +1640,22 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'An explicit body remains available when product copy should override the derived selection summary.',
         child: const _ChoiceFieldDemo(body: 'Three languages selected'),
+      ),
+      fieldState(
+        label: 'choices-helper-accent',
+        description:
+            'Choice guidance uses the support lane and product-owned option color is forwarded to the canonical selectable chip.',
+        child: CatchField.choices<String>(
+          title: 'Run format',
+          helperText: 'Pick the format guests will see.',
+          values: const ['Social', 'Competitive'],
+          itemLabel: (value) => value,
+          itemAccent: (value) =>
+              value == 'Social' ? CatchTokens.of(context).primary : null,
+          selected: const {'Social'},
+          initiallyOpen: true,
+          onSelectionChanged: (_) {},
+        ),
       ),
       fieldState(
         label: 'stepper-open',

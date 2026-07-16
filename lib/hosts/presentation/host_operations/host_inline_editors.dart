@@ -328,6 +328,8 @@ class _HostInlineOptionEditorState<T>
     final displayValue = widget.isExpanded
         ? _labelFor(_selected)
         : widget.value;
+    // TODO(edit-spec-p3): Migrate this staged editor to CatchField.choices
+    // once the Host option save model becomes immediate-commit.
     return CatchField.control(
       icon: widget.icon,
       title: widget.label,
@@ -512,6 +514,7 @@ class _HostInlineAgeRangeEditorState
     final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
     final saving = saveMutation.isPending;
     final displayValue = widget.isExpanded ? _draftValue : widget.value;
+    // Composite exception: two coordinated inputs commit one age-range patch.
     return CatchField.control(
       icon: widget.icon,
       title: widget.label,

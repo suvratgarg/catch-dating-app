@@ -377,6 +377,8 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                 ],
               ),
               gapH12,
+              // Composite exception: the disclosure reveals a complete
+              // secondary analytics grid, not a scalar field choice.
               CatchField.control(
                 key: const ValueKey('host-analytics-more-metrics'),
                 title: context.l10n.hostsHostAnalyticsLabelMoreMetrics,

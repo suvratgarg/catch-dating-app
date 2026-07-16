@@ -1,6 +1,6 @@
 # CatchField / CatchSection System Review & Hardening Spec (for Codex)
 
-Status: assessment ratified · hardening phases ready for implementation · 2026-07-17
+Status: phases A-E implemented · Phase D prototype awaiting owner API review · stretch goals not started · 2026-07-17
 Scope: `lib/core/widgets/catch_field.dart`, `lib/core/widgets/catch_section_layout.dart`, `lib/core/forms/` (new, Phase D), `test/core/`, `widgetbook/`, `docs/design_language.md`, `docs/widget_catalog.md`
 Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec") — coordination points in §11, including ONE superseded line in the edit spec (§8.2 here).
 Origin: 2026-07-17 owner + Claude system review. Every number below was
@@ -15,12 +15,13 @@ by this doc.
 ## 0. What the system is
 
 `CatchField` is the canonical row primitive: one widget, five internal modes
-(`edit, read, nav, toggle, select`), exposed through 14 named
+(`edit, read, nav, toggle, select`), exposed through 12 named
 constructors/factories (`read, content, nav, action, toggle, input, control,
-expanding, actions, inputActions, add, select, choices, stepper`), with
+inputActions, add, select, choices, stepper`), with
 row/underline/bare variants, three sizes, three tones, and an explicit-save
 status lane (`idle/saving/saved`). Supporting public classes live in the
-same file: `CatchFieldRow`, `CatchFieldContentRow`, `CatchFieldTrailing`,
+same Dart library, split across bounded `part` files: `CatchFieldRow`,
+`CatchFieldContentRow`, `CatchFieldTrailing`,
 `CatchFieldSupportRow`, `CatchFieldActionBar`, `CatchFieldExplicitSaveControl`,
 `CatchFieldDisclosureDrawer`, `CatchFieldToggle`, `CatchFieldChoiceControl`,
 `CatchFieldVisibilityScope`, `CatchFieldInsetScope`, plus
@@ -31,9 +32,10 @@ same file: `CatchFieldRow`, `CatchFieldContentRow`, `CatchFieldTrailing`,
 first/lead` slots and divider-role control, plus `CatchSectionList` /
 `CatchSectionStack` rhythm wrappers.
 
-Sizes (2026-07-17): `catch_field.dart` = **4,799 lines**, private constructor
-= **84 parameters**, `_CatchFieldState` ≈ **2,270 lines** serving all modes.
-`catch_section_layout.dart` = 1,074 lines.
+Implemented sizes (2026-07-17): the stable `catch_field.dart` entry point is
+**999 lines**; each extracted part is below 850 lines. The private constructor
+still centralizes the mode matrix, while rendering and state behavior are
+separated by responsibility. `catch_section_layout.dart` remains 1,074 lines.
 
 ## 1. Usage census (2026-07-17)
 

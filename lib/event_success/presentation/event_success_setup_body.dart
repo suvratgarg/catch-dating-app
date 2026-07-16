@@ -332,7 +332,8 @@ class EventSuccessModuleRows extends StatelessWidget {
           CatchField.toggle(
             key: ValueKey('eventSuccessModule-${module.id}'),
             title: module.title,
-            body: _recommendationBody(_recommendation),
+            body: _recommendation.reason,
+            badgeLabel: _recommendationBadgeLabel(_recommendation),
             bodyMaxLines: 3,
             value: _draft.isModuleSelected(module.id),
             onChanged: _editable ? _onModuleChanged : null,
@@ -445,13 +446,14 @@ String _bucketTitle(BuildContext context, _EventSuccessStageBucket bucket) =>
         context.l10n.eventSuccessEventSuccessSetupBodyTitleAfterTheEvent,
     };
 
-String _recommendationBody(EventSuccessModuleRecommendation recommendation) {
+String? _recommendationBadgeLabel(
+  EventSuccessModuleRecommendation recommendation,
+) {
   final level = recommendation.level;
   return switch (level) {
     EventSuccessRecommendationLevel.recommended ||
-    EventSuccessRecommendationLevel.discouraged =>
-      '${level.label} — ${recommendation.reason}',
-    _ => recommendation.reason,
+    EventSuccessRecommendationLevel.discouraged => level.label,
+    _ => null,
   };
 }
 

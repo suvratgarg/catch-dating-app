@@ -8961,6 +8961,56 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'CatchFormMultiChoiceRowEditor<dynamic, Labelled>',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Typed descriptor prototype',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .catchFormMultiChoiceRowEditorStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchFormRangeRowEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Typed descriptor prototype',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .catchFormRangeRowEditorStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchFormRowList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Typed descriptor prototype',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .catchFormRowListStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchFormSingleChoiceRowEditor<dynamic, Labelled>',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Typed descriptor prototype',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .catchFormSingleChoiceRowEditorStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchFormTextRowEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Typed descriptor prototype',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .catchFormTextRowEditorStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileDirectTextEntryField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9112,16 +9162,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Preview tab states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .previewTabStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileDirectTextEntry',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Direct text entry adapter states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileDirectTextEntryStates,
                   ),
                 ],
               ),

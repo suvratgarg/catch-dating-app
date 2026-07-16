@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.641
+version: 2.5.642
 updated: 2026-07-17
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,20 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.642
+
+- Hardened the canonical field system: split `CatchField` into one stable
+  public library plus mode/lane/state part files, deleted the unused
+  `expanding` and `actions` facades, added toggle helper/badge and choices
+  helper/accent slots, and moved behavior coverage into per-mode suites.
+- Added the typed `CatchFormRowDescriptor<P>` family and
+  `CatchFormRowList<P>` reference prototype for the consumer Profile About You
+  section. Running, Lifestyle, Host Club, and onboarding migration remains
+  deliberately owner-gated.
+- Codified the [CatchField doctrine](design_language.md#73-catchfield-doctrine):
+  fields manage data; browse, celebration, and insight/scorecard storytelling
+  use expressive components.
 
 ### 2.5.641
 
@@ -6248,9 +6262,21 @@ Generated 2026-05-06.
 
 ### StatefulWidget
 
+#### CatchField doctrine and facade inventory
+
+See [CatchField doctrine](design_language.md#73-catchfield-doctrine). The
+2026-07-17 post-hardening `lib/` census (excluding the defining part library)
+is: `input` 84, `read` 42, `choices` 34, `nav` 32, `toggle` 20,
+`inputActions` 9, `content` 7, `control` 6, `stepper` 6, `select` 5,
+`action` 3, and `add` 2. The public facade inventory is those 12 entry points;
+`expanding` and `actions` were deleted after both measured zero production and
+Widgetbook callers.
+
 | Widget | File | Purpose |
 |---|---|---|
-| `CatchField` | `lib/core/widgets/catch_field.dart:49` | Canonical flat field primitive for legacy value rows, natural-height title/supporting-copy rows, navigation, toggle, direct and explicit-save input, wrapping choices, bounded steppers, select, disclosure controls, validation, async status, and add states. Use the named constructors (`read`, `content`, `action`, `nav`, `toggle`, `input`, `inputActions`, `control`, `choices`, `stepper`, `select`, `add`) so capability and trailing affordance are structural. One root resolver owns caption color across every field type: errors use danger, focus/open uses semantic ink, and inactive captions use their configured tone or ink3 while Optional copy stays ink3. One root trailing lane applies the 18 px caption reserve exactly once and centers non-centered affordances in the 18.9 px value line, so disclosure carets keep a stable Y-position while rotating and remain clear of row dividers. Saving progress also has one root owner: a visible explicit commit bar owns the sole 13 px spinner in Done while the header retains its caret; otherwise the trailing lane owns one 16 px spinner. `content` owns 14/600 title plus 13/400 supporting-copy semantics with 2/3-line clamps; legacy value constructors keep 1/2-line defaults. Existing `actions`, deprecated `expanding`, and `showChevron` callers remain compatibility inputs to the same renderer. Header press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up; the full-row disclosure drawer is a sibling below that header, so descendant chips, steppers, and actions do not trigger header tint or lose focus paint to clipping. Direct inputs keep one mounted native editable, preserving first-gesture cursor placement, stable populated-row height, and the overlaid 24 px clear target. Choice controls and action bars span the content lane. `CatchFieldInsetScope` independently publishes content-gutter ownership and active-overlay bleed, so contained edge fields overlap the section perimeter by one hairline while divided fields retain their wider lifted-tile bleed. Disclosure drives the nearest existing vertical scroll owner frame by frame, clears `CatchFieldVisibilityScope` obstruction, cancels on rapid close, yields to user scrolling, and jumps under reduced motion without owning another controller. Choice summaries remain primitive-derived in source order joined by ` · `; `isOptional` remains presentation copy while `allowEmptySelection` owns final-removal policy. Rounded group chrome remains owned by `CatchSection`. Registered as formal component contract `catch.field`; Widgetbook contract states are canonical. |
+| `CatchField` | `lib/core/widgets/catch_field.dart:49` | Canonical flat field primitive for legacy value rows, natural-height title/supporting-copy rows, navigation, toggle, direct and explicit-save input, wrapping choices, bounded steppers, select, disclosure controls, validation, async status, and add states. Use the named constructors (`read`, `content`, `action`, `nav`, `toggle`, `input`, `inputActions`, `control`, `choices`, `stepper`, `select`, `add`) so capability and trailing affordance are structural. The stable public library delegates state, edit, row-mode, control, lane, and scope implementation to bounded `part` files. Toggle rows expose canonical helper and badge slots; choices expose canonical helper and per-item accent slots. One root resolver owns caption color across every field type: errors use danger, focus/open uses semantic ink, and inactive captions use their configured tone or ink3 while Optional copy stays ink3. One root trailing lane applies the 18 px caption reserve exactly once and centers non-centered affordances in the 18.9 px value line. Saving progress also has one root owner: a visible explicit commit bar owns the sole 13 px spinner in Done while the header retains its caret; otherwise the trailing lane owns one 16 px spinner. Header press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up; the full-row disclosure drawer is a sibling below that header. Direct inputs keep one mounted native editable, preserving first-gesture cursor placement, stable populated-row height, and the overlaid 24 px clear target. Choice summaries remain primitive-derived in source order joined by ` · `; `isOptional` remains presentation copy while `allowEmptySelection` owns final-removal policy. Rounded group chrome remains owned by `CatchSection`. Registered as formal component contract `catch.field`; Widgetbook contract states and per-mode behavior tests are canonical. |
+| `CatchFormRowList<P>` | `lib/core/forms/catch_form_descriptors.dart` | Typed form mapper and section owner for `CatchFormReadRow`, `CatchFormTextRow`, `CatchFormSingleChoiceRow`, `CatchFormMultiChoiceRow`, `CatchFormRangeRow`, and feature-owned `CatchFormCustomRow` descriptors. Owns shared `CatchFieldAccordion` wiring and one per-field patch save delegate. The consumer Profile About You section is the reference prototype; broader adoption is owner-gated in `ARCH-FORM-DESCRIPTOR-001`. |
+| `CatchFormTextRowEditor<P>` / `CatchFormSingleChoiceRowEditor<P, T>` / `CatchFormMultiChoiceRowEditor<P, T>` / `CatchFormRangeRowEditor<P>` | `lib/core/forms/catch_form_descriptors.dart` | Public renderer seams used by the typed descriptors and registered together in Widgetbook for exact-name inventory coverage. Product surfaces compose descriptors through `CatchFormRowList<P>` instead of instantiating these editors directly. |
 | `CatchFieldAccordion` | `lib/core/widgets/catch_field_accordion.dart` | Shared `ChangeNotifier` state owner for inline field lists that allow at most one expanded editor. It exposes stable-key lookup, toggle, and collapse operations while each adopting screen remains responsible for rendering and persistence. |
 | `CatchFieldInsetScope` | `lib/core/widgets/catch_field.dart` | Ambient field-row geometry contract. `flush` assigns horizontal content-gutter ownership; `activeOverlayBleed` independently assigns how far active row chrome overlaps its containing edge. Omitted bleed preserves the divided-section default for flush rows, while `CatchSectionFocusSurface(fieldRows: true)` publishes one hairline so its child field ring and section perimeter share one left/right paint edge even when the focus surface is composed directly. |
 | `CatchFieldVisibilityScope` | `lib/core/widgets/catch_field.dart` | Ambient disclosure-visibility contract. A scroll/shell boundary publishes its covered bottom extent and reveal padding; descendant fields reuse the nearest vertical scroll owner rather than creating a controller. Profile Edit supplies the floating-tab obstruction through this scope. |
@@ -6264,8 +6290,6 @@ Generated 2026-05-06.
 | `CatchFieldFocusOutline` | `lib/core/widgets/catch_field.dart` | Public field-family focus painter. It draws an immediate, layout-neutral 2 px outer ring with a 2 px transparent gap around chips, stepper targets, and commit buttons. |
 | `CatchField.inputActions` | `lib/core/widgets/catch_field.dart:705` | Controlled explicit-save text-entry constructor. Keeps the label and bare value editor in one stable lane while supporting metadata, feedback, a secondary action, and Cancel/Done disclose in that order; validation renders afterward as the handoff's root support sibling. Opening requests native text focus immediately, while the persistent control subtree reveals through `CatchFieldTokens.reveal` (300 ms, or immediately under reduced motion), so one tap both opens the field and places the cursor without remounting draft state. `onBlur` receives the latest controller text once when focus leaves. |
 | `CatchField.control` | `lib/core/widgets/catch_field.dart:413` | Canonical row-owned disclosure constructor for steppers, chip groups, option controls, and other non-text editors. Supports caller-owned `open` state or local `initiallyOpen` state, optional Cancel/Done actions, loading/disabled behavior, and a persistent clipped reveal whose child identity survives close/reopen. Save, validation, and domain state remain caller-owned. |
-| `CatchField.expanding` | `lib/core/widgets/catch_field.dart:475` | Deprecated source-compatible adapter for the pre-handoff disclosure API. It maps `initiallyExpanded` and the existing row metadata to the canonical `control` renderer; new code should use `CatchField.control`. |
-| `CatchField.actions` | `lib/core/widgets/catch_field.dart:516` | Source-compatible adapter for existing explicit-save disclosure rows. It maps `initiallyExpanded`, control, loading, optional leading metadata, and Cancel/Done callbacks into the canonical disclosure and commit-bar implementation; it does not own a parallel renderer. Prefer `control` or `inputActions` for new code. |
 | `CatchFieldCommitButton` / `CatchFieldToggle` / `CatchFieldChoiceControl` / `CatchFieldChoiceChip` / `CatchFieldStepper` / `CatchFieldRepeatButton` | `lib/core/widgets/catch_field.dart` | Public members of the `catch.field` family that own the exact handoff action-bar, 44×26 toggle, 8 px wrapping choice grid, single-line chip, bounded stepper, and repeat-target mechanics. These are contract/test/Widgetbook seams, not feature-level alternatives to `CatchField`; product UI should prefer `CatchField.control`, `.choices`, `.stepper`, or `.toggle`. |
 | `CatchFieldRow` | `lib/core/widgets/catch_field.dart:3006` | Public `catch.field` member for the shared field-row anatomy: optional leading slot, content slot, optional trailing slot, add-row padding, configurable cross-axis alignment, and raw row tap handling. Product-facing `CatchField` modes wrap this anatomy in the field-specific press/focus stack; raw `CatchFieldRow(onTap:)` continues to use `CatchRowPressSurface`. Use through `CatchField` in product UI unless a primitive contract preview or a new field-family member needs the raw row shell. |
 | `CatchFieldTrailing` | `lib/core/widgets/catch_field.dart:3111` | Public `catch.field` trailing-slot member for bounded value text, fixed/rotating chevrons, toggles, clear actions, valid-state icons, and custom trailing content. `CatchField` composes these members into one caption-offset, value-line-centered lane rather than adding per-glyph offsets. Product call sites should prefer `CatchField` modes; this member exists so the field anatomy has exact contract coverage. |

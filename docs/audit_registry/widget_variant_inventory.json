@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-16T21:05:38.772Z",
+  "generatedAt": "2026-07-16T22:55:53.529Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 860,
-    "components": 813,
-    "stateCards": 1779,
+    "useCases": 864,
+    "components": 817,
+    "stateCards": 1778,
     "reviewCandidates": 44,
     "oversizedUseCases": 44,
     "multiUseCaseComponents": 42
@@ -28157,38 +28157,6 @@
       ]
     },
     {
-      "component": "ProfileDirectTextEntry",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Sections"
-      ],
-      "labels": [
-        "display name row"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Direct text entry adapter states",
-          "functionName": "profileDirectTextEntryStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "display name row",
-              "normalizedLabel": "display name row"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ProfileDirectTextEntryField",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -30126,6 +30094,131 @@
           "functionName": "catchAdaptiveTabScaffoldState",
           "file": "widgetbook/lib/shell/app_shell_use_cases.dart",
           "path": "[App shell]",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "CatchFormMultiChoiceRowEditor",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Typed descriptor prototype",
+          "functionName": "catchFormMultiChoiceRowEditorStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "CatchFormRangeRowEditor",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Typed descriptor prototype",
+          "functionName": "catchFormRangeRowEditorStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "CatchFormRowList",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Typed descriptor prototype",
+          "functionName": "catchFormRowListStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "CatchFormSingleChoiceRowEditor",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Typed descriptor prototype",
+          "functionName": "catchFormSingleChoiceRowEditorStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "CatchFormTextRowEditor",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Typed descriptor prototype",
+          "functionName": "catchFormTextRowEditorStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
           "stateCardCount": 0,
           "stateCards": []
         }

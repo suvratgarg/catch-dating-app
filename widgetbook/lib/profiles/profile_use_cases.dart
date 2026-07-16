@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
+import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -538,9 +540,8 @@ Widget profileFieldRowStates(BuildContext context) {
     uploadState: (loadingIndices: <int>{}, uploadError: null),
   );
   final rows = [
-    ...editState.aboutSectionRows.take(3),
-    ...editState.runningRows.take(2),
-    ...editState.lifestyleRows.take(1),
+    ...editState.runningRows.take(3),
+    ...editState.lifestyleRows.take(3),
   ];
 
   return _ProfileCatalog(
@@ -658,35 +659,6 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 ],
               ),
             ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Direct text entry adapter states',
-  type: ProfileDirectTextEntry,
-  path: '[P1 product surfaces]/Profiles/Sections',
-)
-Widget profileDirectTextEntryStates(BuildContext context) {
-  return _ProfileCatalog(
-    title: 'ProfileDirectTextEntry',
-    contractId: 'screen.profile.edit_tab.direct_text_entry',
-    children: [
-      _StateCard(
-        label: 'display name row',
-        child: _SectionFrame(
-          height: CatchLayout.activityArtDefaultHeight,
-          child: ProfileDirectTextEntry(
-            icon: CatchIcons.personOutlined,
-            label: 'Display name',
-            currentValue: _viewer.displayName,
-            currentFieldValue: _viewer.displayName,
-            fieldName: 'displayName',
-            patchForValue: (value) =>
-                UpdateUserProfilePatch(displayName: value as String),
           ),
         ),
       ),
@@ -1490,6 +1462,123 @@ Widget profileInlineRangeEditorStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Typed descriptor prototype',
+  type: CatchFormRowList,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget catchFormRowListStates(BuildContext context) {
+  return _catchFormDescriptorPreview();
+}
+
+@widgetbook.UseCase(
+  name: 'Typed descriptor prototype',
+  type: CatchFormTextRowEditor,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget catchFormTextRowEditorStates(BuildContext context) {
+  return _catchFormDescriptorPreview();
+}
+
+@widgetbook.UseCase(
+  name: 'Typed descriptor prototype',
+  type: CatchFormSingleChoiceRowEditor,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget catchFormSingleChoiceRowEditorStates(BuildContext context) {
+  return _catchFormDescriptorPreview();
+}
+
+@widgetbook.UseCase(
+  name: 'Typed descriptor prototype',
+  type: CatchFormMultiChoiceRowEditor,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget catchFormMultiChoiceRowEditorStates(BuildContext context) {
+  return _catchFormDescriptorPreview();
+}
+
+@widgetbook.UseCase(
+  name: 'Typed descriptor prototype',
+  type: CatchFormRangeRowEditor,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget catchFormRangeRowEditorStates(BuildContext context) {
+  return _catchFormDescriptorPreview();
+}
+
+Widget _catchFormDescriptorPreview() {
+  return _ProfileCatalog(
+    title: 'CatchFormRowList',
+    contractId: 'catch.form.descriptors.prototype',
+    children: [
+      _StateCard(
+        label: 'read, text, choice, multi-choice, and range rows',
+        child: _SectionFrame(
+          height: 520,
+          child: CatchFormRowList<_WidgetbookFormPatch>(
+            title: 'About you',
+            rows: [
+              CatchFormReadRow<_WidgetbookFormPatch>(
+                id: 'identity',
+                icon: CatchIcons.personOutlined,
+                label: 'Identity',
+                body: 'Verified',
+              ),
+              CatchFormTextRow<_WidgetbookFormPatch>(
+                id: 'name',
+                icon: CatchIcons.personOutlined,
+                label: 'Name',
+                currentValue: 'Aarav',
+                patchForValue: (value) => _WidgetbookFormPatch('name', value),
+              ),
+              CatchFormSingleChoiceRow<
+                _WidgetbookFormPatch,
+                _WidgetbookFormOption
+              >(
+                id: 'city',
+                icon: CatchIcons.locationOnOutlined,
+                label: 'City',
+                values: _WidgetbookFormOption.values,
+                value: _WidgetbookFormOption.mumbai,
+                patchForValue: (value) => _WidgetbookFormPatch('city', value),
+              ),
+              CatchFormMultiChoiceRow<
+                _WidgetbookFormPatch,
+                _WidgetbookFormOption
+              >(
+                id: 'communities',
+                icon: CatchIcons.groupsOutlined,
+                label: 'Communities',
+                values: _WidgetbookFormOption.values,
+                selected: const [_WidgetbookFormOption.mumbai],
+                patchForValues: (values) =>
+                    _WidgetbookFormPatch('communities', values),
+              ),
+              CatchFormRangeRow<_WidgetbookFormPatch>(
+                id: 'pace',
+                icon: CatchIcons.directionsRunOutlined,
+                label: 'Pace',
+                value: '5:00 - 6:00 min/km',
+                currentMin: 300,
+                currentMax: 360,
+                sliderMin: 240,
+                sliderMax: 540,
+                divisions: 20,
+                labelText: (value) => '${value.round()} sec/km',
+                patchForRange: (min, max) =>
+                    _WidgetbookFormPatch('pace', (min, max)),
+              ),
+            ],
+            savePatch: (_) async => true,
+            errorText: (_, error) => error.toString(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Route states',
   type: PublicProfileScreen,
   path: '[P1 product surfaces]/Profiles',
@@ -1809,6 +1898,24 @@ Widget publicProfileReportReasonTileStates(BuildContext context) {
       ),
     ],
   );
+}
+
+final class _WidgetbookFormPatch {
+  const _WidgetbookFormPatch(this.field, this.value);
+
+  final String field;
+  final Object? value;
+}
+
+enum _WidgetbookFormOption implements Labelled {
+  mumbai('Mumbai'),
+  delhi('Delhi'),
+  bengaluru('Bengaluru');
+
+  const _WidgetbookFormOption(this.label);
+
+  @override
+  final String label;
 }
 
 class _ProfileFieldRowCatalog extends StatefulWidget {

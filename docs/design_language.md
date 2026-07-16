@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.5.4
-updated: 2026-07-16
+version: 1.5.5
+updated: 2026-07-17
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -253,6 +253,20 @@ The API boundary is the first enforcement layer: duplicate placement variants
 are deleted rather than kept as aliases. Component contracts, Widgetbook
 states, and the section/top-bar scanners provide the review and regression
 layers.
+
+### 7.3 CatchField doctrine
+
+`CatchField`/`CatchSection` are the canonical surface for *entering and
+managing data*: edit tabs, settings, configuration, onboarding forms, and
+admin-ish host tooling. They are forbidden as storytelling surfaces — browse,
+discovery, celebration, and insight/scorecard moments compose expressive
+components (polaroid, ticket, hero, stat/chart kit) instead. If a screen is
+something a user *reads for meaning* rather than *operates*, it should not be
+built from field rows.
+
+New `CatchField` modes or slots require a `docs/widget_catalog.md` entry, a
+Widgetbook contract story, and a behavior-contract test under
+`test/core/widgets/catch_field/` in the same PR.
 
 - **Sizing:** constraints over constant heights/widths; min/max constraints, intrinsics,
   `Flexible`/`Expanded`, `AspectRatio`, content max-width clamp. Resilient to **Dynamic

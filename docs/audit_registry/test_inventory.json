@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 507,
+  "total": 514,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 240,
+      "count": 247,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -100,6 +100,13 @@
         "test/core/time_formatters_test.dart",
         "test/core/update_club_patch_test.dart",
         "test/core/update_user_profile_patch_test.dart",
+        "test/core/widgets/catch_field/control_test.dart",
+        "test/core/widgets/catch_field/input_test.dart",
+        "test/core/widgets/catch_field/lanes_test.dart",
+        "test/core/widgets/catch_field/row_modes_test.dart",
+        "test/core/widgets/catch_field/save_status_test.dart",
+        "test/core/widgets/catch_field/toggle_test.dart",
+        "test/core/widgets/catch_section_test.dart",
         "test/dashboard/dashboard_full_view_model_test.dart",
         "test/dashboard/dashboard_screen_test.dart",
         "test/dashboard/empty_hero_card_test.dart",

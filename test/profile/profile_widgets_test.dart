@@ -1735,7 +1735,7 @@ void main() {
         );
       }
       expect(
-        find.byKey(const ValueKey('inline-profilePrompt:3-entry-editor')),
+        find.byKey(const ValueKey('inline-profilePrompt-3-entry-editor')),
         findsNothing,
       );
     },
@@ -1763,7 +1763,7 @@ void main() {
     await _pumpEditableProfileTab(tester, user, repository);
 
     final promptEditor = find.byKey(
-      const ValueKey('inline-profilePrompt:2-entry-editor'),
+      const ValueKey('inline-profilePrompt-2-entry-editor'),
     );
     await _dragProfileTabUntilVisible(tester, promptEditor);
     tester.widget<ProfileInlinePromptEntryEditor>(promptEditor).onTap();

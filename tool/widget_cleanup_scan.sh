@@ -243,6 +243,7 @@ scan_raw_text_inputs() {
     '(^|[^A-Za-z])(TextField|TextFormField)\(' \
     lib/core lib/*/presentation \
     --glob '!lib/core/widgets/catch_field.dart' \
+    --glob '!lib/core/widgets/catch_field_*.dart' \
     --glob '!lib/core/widgets/catch_search_field.dart' \
     --glob '!lib/core/widgets/catch_otp_code_field.dart' || true)"
 
