@@ -30,6 +30,27 @@ abstract final class UserAnalyticsCopy {
   static String missingBadge(AppLocalizations l10n) =>
       l10n.userAnalyticsUserAnalyticsCopyVisiblecopyMissing;
 
+  static String dataQualityLabel(
+    AppLocalizations l10n,
+    String id, {
+    required UserAnalyticsDataQualityState state,
+  }) => switch (id) {
+    'participant-signals' =>
+      l10n.userAnalyticsUserAnalyticsCopyDataqualityParticipantSignals,
+    'profile-exposure' =>
+      l10n.userAnalyticsUserAnalyticsCopyDataqualityProfileExposure,
+    'app-engagement' =>
+      l10n.userAnalyticsUserAnalyticsCopyDataqualityAppEngagement,
+    'user-analytics-mart' =>
+      l10n.userAnalyticsUserAnalyticsCopyDataqualityAnalyticsSource,
+    _ => switch (state) {
+      UserAnalyticsDataQualityState.ok =>
+        l10n.userAnalyticsUserAnalyticsCopyVisiblecopyAvailable,
+      UserAnalyticsDataQualityState.partial => partialBadge(l10n),
+      UserAnalyticsDataQualityState.missing => missingBadge(l10n),
+    },
+  };
+
   static String rangeLabel(
     AppLocalizations l10n,
     UserAnalyticsRangePreset preset,

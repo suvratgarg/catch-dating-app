@@ -16940,6 +16940,36 @@ abstract class AppLocalizations {
   /// **'Missing'**
   String get userAnalyticsUserAnalyticsCopyVisiblecopyMissing;
 
+  /// Fallback label for a ready Profile Insights data-coverage source whose id is not recognized by the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get userAnalyticsUserAnalyticsCopyVisiblecopyAvailable;
+
+  /// Stable Profile Insights label for participant-derived analytics coverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant signals'**
+  String get userAnalyticsUserAnalyticsCopyDataqualityParticipantSignals;
+
+  /// Stable Profile Insights label for profile-view and photo-performance coverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile exposure'**
+  String get userAnalyticsUserAnalyticsCopyDataqualityProfileExposure;
+
+  /// Stable Profile Insights label for app-activity analytics coverage.
+  ///
+  /// In en, this message translates to:
+  /// **'App engagement'**
+  String get userAnalyticsUserAnalyticsCopyDataqualityAppEngagement;
+
+  /// Stable Profile Insights label for the aggregate analytics data source.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics source'**
+  String get userAnalyticsUserAnalyticsCopyDataqualityAnalyticsSource;
+
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:

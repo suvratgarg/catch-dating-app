@@ -1691,13 +1691,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAnalyticsSection',
+            name: 'CatchSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Section states',
+                name: 'Analytics composition',
                 builder:
                     _widgetbook_workspace_primitives_analytics_kit_use_cases
-                        .catchAnalyticsSectionStates,
+                        .catchAnalyticsSectionComposition,
               ),
             ],
           ),
@@ -9434,17 +9434,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAnalyticsDataQualityList',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Data quality panel states',
-                builder:
-                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
-                        .userAnalyticsDataQualityPanelStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchStatColumn',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -9452,6 +9441,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_user_analytics_user_analytics_use_cases
                         .userAnalyticsInlineStatStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsDataCoveragePanel',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Data coverage panel states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsDataQualityPanelStates,
               ),
             ],
           ),

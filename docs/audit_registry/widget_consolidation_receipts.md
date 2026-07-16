@@ -1,7 +1,7 @@
 ---
 doc_id: widget_consolidation_receipts
-version: 0.2.0
-updated: 2026-07-02
+version: 0.2.1
+updated: 2026-07-16
 owner: widget_consolidation
 status: active
 ---
@@ -2583,10 +2583,71 @@ Known blockers / inherited debt:
 - `node tool/design/check_screen_contracts.mjs --check` still fails on inherited
   missing-symbol drift for Calendar, Saved Events, host create/edit footers,
   Host settings adapter ownership, Event edit footer, and Reviews History.
-- `node tool/design/check_component_contracts.mjs` and
-  `node tool/run.mjs check --category design` still fail on inherited
-  `catch.tab_rail` token drift:
-  `layout.tabRailHeight` is not a known DTCG token reference.
+
+## 2026-07-16 Analytics section drift correction
+
+Scope:
+
+- Superseding correction for WO-018's `CatchAnalyticsSection` decision.
+- Profile Insights loaded/loading section and content-row composition.
+- Host analytics loaded/loading section composition.
+- Canonical section heading semantics and section-shell enforcement.
+
+Outcome:
+
+- Deleted `CatchAnalyticsSection` and migrated every production and Widgetbook
+  call site to `CatchSection`.
+- Replaced caller-owned analytics gaps with zero-gap `CatchSectionStack`
+  composition; first summary sections are explicitly `first: true` and every
+  following group owns its canonical divider and rhythm.
+- Restored Profile Suggestions and Data coverage to
+  `CatchSection.fieldRows` plus `CatchField.content`, including stable localized
+  source labels and availability fallbacks for future source ids.
+- Kept `CatchAnalyticsMetricTile`, `CatchAnalyticsMetricGrid`,
+  `CatchAnalyticsDataQualityList`, `CatchAnalyticsBar`, and `CatchStatColumn` as
+  valid display-data primitives.
+- Added `SECTION-HEADER-003` so thin dynamic `CatchKicker` section shells are a
+  high-confidence failure even when introduced under `lib/core/widgets`.
+
+Commands:
+
+- `flutter gen-l10n`
+- `dart run build_runner build -d` in `widgetbook/`
+- `flutter test --concurrency=1 test/user_analytics/user_analytics_panel_test.dart`
+- `flutter test --concurrency=1 test/core/catch_primitives_test.dart test/hosts/host_operations_screen_test.dart`
+- `flutter test --concurrency=1 test/hosts/host_operations_screen_test.dart --plain-name 'Host analytics loading uses canonical section rhythm'`
+- focused root and Widgetbook `flutter analyze --no-fatal-infos`
+- `node tool/run.mjs check design:section-headers`
+- `node tool/run.mjs check design:component-contracts`
+- `node tool/run.mjs check design:component-lexicon`
+- `node tool/run.mjs check design:widgetbook-contract-refs`
+- `node tool/run.mjs check copy:mobile-catalog`
+- `node tool/run.mjs check copy:mobile-ownership`
+- `node tool/run.mjs check copy:native-sync`
+- Widgetbook classification, variant, coverage, and similarity regeneration and
+  checks
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `git diff --check`
+
+Verification:
+
+- No active Dart reference to `CatchAnalyticsSection` remains.
+- Profile report tests cover four canonical sections, `CatchField` Suggestions
+  and Data coverage rows, known and unknown data-source labels, and matching
+  loading structure.
+- Host trend and loading tests require canonical `CatchSection` ownership; the
+  loading stack has no manual gap.
+- Section headings retain `Semantics(header: true)` through the canonical
+  primitive.
+- Section-header enforcement reports zero high- or medium-confidence findings.
+
+Known inherited blockers:
+
+- The repository-wide Widgetbook coverage check still reports an inherited
+  decision queue of 122 widgets: 5 private and 117 public. This migration adds
+  no unresolved Widgetbook coverage entries, and the refreshed report is
+  preserved for the dedicated consolidation queue.
 - `EventDetailMapCard` still has map-specific alpha literals 0.52 and 0.24;
   exact existing opacity tokens are semantically unrelated. Proposed future
   token names: `eventDetailMapGridLine` and `eventDetailMapRouteWash`.

@@ -115,6 +115,28 @@ test("does not flag contained CatchSection card titles", () => {
   assert.equal(findings.length, 0);
 });
 
+test("flags thin dynamic kicker shells even inside core widgets", () => {
+  const findings = scanSourceForSectionHeaders({
+    relativePath: "lib/core/widgets/catch_analytics_kit.dart",
+    source: [
+      "class CatchAnalyticsSection extends StatelessWidget {",
+      "  const CatchAnalyticsSection({required this.label, required this.child});",
+      "  final String label;",
+      "  final Widget child;",
+      "  Widget build(context) => Column(children: [",
+      "    CatchKicker(label: label),",
+      "    child,",
+      "  ]);",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "high");
+  assert.equal(findings[0].rule, "SECTION-HEADER-003");
+  assert.match(findings[0].expression, /CatchAnalyticsSection/u);
+});
+
 test("scanSectionHeaders covers lib, test, and widgetbook sources", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-headers-"));
   writeFile(

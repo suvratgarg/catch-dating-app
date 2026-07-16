@@ -111,11 +111,27 @@ export function scanSourceForSectionHeaders({
   }
 
   for (const info of collectWidgetClasses({relativePath, source})) {
-    if (isPrimitiveImplementation(relativePath)) continue;
     if (!info.className.endsWith("Section")) continue;
     if (/\bCatchSection\.(?:divided|fieldRows|contained|plain)\s*\(/u.test(info.source)) {
       continue;
     }
+    const ownsParallelSectionShell =
+      /\bfinal\s+String\??\s+(?:label|title)\s*;/u.test(info.source) &&
+      /\bfinal\s+Widget\s+child\s*;/u.test(info.source) &&
+      /\bCatchKicker\s*\(/u.test(info.source);
+    if (ownsParallelSectionShell) {
+      findings.push({
+        path: relativePath,
+        line: info.line,
+        level: "high",
+        rule: "SECTION-HEADER-003",
+        reason:
+          "A thin label-plus-child section shell owns CatchKicker chrome outside CatchSection; absorb the shell into the canonical CatchSection contract.",
+        expression: `${info.className} duplicates CatchSection label and body ownership`,
+      });
+      continue;
+    }
+    if (isPrimitiveImplementation(relativePath)) continue;
     if (!/\bCatchSurface(?:\.card|\.message|\.tinted)?\s*\(/u.test(info.source)) {
       continue;
     }

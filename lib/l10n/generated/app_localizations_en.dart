@@ -10913,6 +10913,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userAnalyticsUserAnalyticsCopyVisiblecopyMissing => 'Missing';
 
   @override
+  String get userAnalyticsUserAnalyticsCopyVisiblecopyAvailable => 'Available';
+
+  @override
+  String get userAnalyticsUserAnalyticsCopyDataqualityParticipantSignals =>
+      'Participant signals';
+
+  @override
+  String get userAnalyticsUserAnalyticsCopyDataqualityProfileExposure =>
+      'Profile exposure';
+
+  @override
+  String get userAnalyticsUserAnalyticsCopyDataqualityAppEngagement =>
+      'App engagement';
+
+  @override
+  String get userAnalyticsUserAnalyticsCopyDataqualityAnalyticsSource =>
+      'Analytics source';
+
+  @override
   String get userAnalyticsUserAnalyticsCopyVisiblecopyLast7Days =>
       'Last 7 days';
 

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -93,20 +94,21 @@ Widget catchAnalyticsMetricGridStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Section states',
-  type: CatchAnalyticsSection,
+  name: 'Analytics composition',
+  type: CatchSection,
   path: '[Core primitives]/Analytics kit',
 )
-Widget catchAnalyticsSectionStates(BuildContext context) {
+Widget catchAnalyticsSectionComposition(BuildContext context) {
   return _AnalyticsKitCatalog(
-    title: 'CatchAnalyticsSection',
+    title: 'CatchSection analytics composition',
     children: [
       _StateCard(
         label: 'labeled analytics group',
         child: SizedBox(
           width: _gridPreviewWidth,
-          child: CatchAnalyticsSection(
-            label: 'Funnel',
+          child: CatchSection.divided(
+            title: 'Funnel',
+            first: true,
             child: CatchAnalyticsMetricGrid(metrics: _analyticsMetrics),
           ),
         ),

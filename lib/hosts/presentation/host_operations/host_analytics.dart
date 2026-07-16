@@ -467,33 +467,32 @@ class HostAnalyticsReportView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return CatchSectionStack(
+      padding: EdgeInsets.zero,
       children: [
-        CatchAnalyticsMetricGrid(
-          metrics: [
-            for (final metric in report.summaryCards)
-              _hostMetricCardData(metric),
-          ],
+        CatchSection.divided(
+          first: true,
+          child: CatchAnalyticsMetricGrid(
+            metrics: [
+              for (final metric in report.summaryCards)
+                _hostMetricCardData(metric),
+            ],
+          ),
         ),
-        gapH24,
         HostAnalyticsTrendPanel(
           points: report.trend,
           granularity: granularity,
           onGranularityChanged: onGranularityChanged,
         ),
-        gapH24,
         HostAnalyticsEventList(
           events: report.topEvents,
           selectedEventId: selectedEventId,
           onEventSelected: onEventSelected,
           onClearEvent: onClearEvent,
         ),
-        gapH24,
         HostAnalyticsReviewDiscoveryPanel(report: report),
-        gapH24,
-        CatchAnalyticsSection(
-          label: context.l10n.hostsHostAnalyticsLabelDataQuality,
+        CatchSection.divided(
+          title: context.l10n.hostsHostAnalyticsLabelDataQuality,
           child: CatchAnalyticsDataQualityList(
             rows: [
               for (final row in report.dataQuality)
@@ -542,8 +541,8 @@ class HostAnalyticsTrendPanel extends StatelessWidget {
       return value > max ? value : max;
     });
 
-    return CatchAnalyticsSection(
-      label: context.l10n.hostsHostAnalyticsLabelTrendBookingsVsDemand,
+    return CatchSection.divided(
+      title: context.l10n.hostsHostAnalyticsLabelTrendBookingsVsDemand,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -717,8 +716,8 @@ class HostAnalyticsEventList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchAnalyticsSection(
-      label: selectedEventId == null
+    return CatchSection.divided(
+      title: selectedEventId == null
           ? context.l10n.hostsHostAnalyticsLabelTopEvents
           : context.l10n.hostsHostAnalyticsLabelSelectedEvent,
       child: Column(
@@ -953,8 +952,8 @@ class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchAnalyticsSection(
-      label: context.l10n.hostsHostAnalyticsLabelReviewsAndSaves,
+    return CatchSection.divided(
+      title: context.l10n.hostsHostAnalyticsLabelReviewsAndSaves,
       child: CatchSurface(
         padding: CatchInsets.content,
         borderColor: CatchTokens.of(context).line,

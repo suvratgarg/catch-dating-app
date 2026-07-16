@@ -22,6 +22,7 @@ import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
@@ -1000,6 +1001,26 @@ void main() {
     );
 
     expect(find.byType(HostAnalyticsDualBar), findsNWidgets(30));
+    expect(find.byType(CatchSection), findsOneWidget);
+  });
+
+  testWidgets('Host analytics loading uses canonical section rhythm', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: SingleChildScrollView(child: HostAnalyticsReportSkeleton()),
+        ),
+      ),
+    );
+
+    final stack = tester.widget<CatchSectionStack>(
+      find.byType(CatchSectionStack),
+    );
+    expect(stack.gap, 0);
+    expect(find.byType(CatchSection), findsNWidgets(4));
   });
 
   testWidgets('Host Insights never falls back when the route club is unknown', (

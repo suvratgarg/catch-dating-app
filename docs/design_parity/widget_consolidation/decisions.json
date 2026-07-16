@@ -6001,6 +6001,25 @@
       "decidedBy": "claude-review -> codex",
       "date": "2026-07-06",
       "status": "executed-parity-handoff"
+    },
+    {
+      "clusterId": "drift: CatchAnalyticsSection/CatchSection",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSection",
+      "members": [
+        {
+          "name": "CatchAnalyticsSection",
+          "action": "delete"
+        },
+        {
+          "name": "CatchSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "The WO-018 label-plus-gap shell became a parallel section contract after CatchSection gained canonical divider, title, spacing, field-row, and focus-handoff behavior. User-reviewed correction absorbs every Profile and Host analytics group into CatchSection, preserves heading semantics at that root, and restores Profile Suggestions and Data coverage rows to CatchField.content.",
+      "decidedBy": "user-review -> codex",
+      "date": "2026-07-16",
+      "status": "executed-analytics-section-drift"
     }
   ]
 }

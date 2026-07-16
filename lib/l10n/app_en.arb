@@ -19861,6 +19861,41 @@
     "x-owner": "product",
     "x-surface": "user_analytics.shared.user_analytics_copy"
   },
+  "userAnalyticsUserAnalyticsCopyVisiblecopyAvailable": "Available",
+  "@userAnalyticsUserAnalyticsCopyVisiblecopyAvailable": {
+    "description": "Fallback label for a ready Profile Insights data-coverage source whose id is not recognized by the app.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_analytics.shared.user_analytics_copy"
+  },
+  "userAnalyticsUserAnalyticsCopyDataqualityParticipantSignals": "Participant signals",
+  "@userAnalyticsUserAnalyticsCopyDataqualityParticipantSignals": {
+    "description": "Stable Profile Insights label for participant-derived analytics coverage.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_analytics.shared.user_analytics_copy"
+  },
+  "userAnalyticsUserAnalyticsCopyDataqualityProfileExposure": "Profile exposure",
+  "@userAnalyticsUserAnalyticsCopyDataqualityProfileExposure": {
+    "description": "Stable Profile Insights label for profile-view and photo-performance coverage.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_analytics.shared.user_analytics_copy"
+  },
+  "userAnalyticsUserAnalyticsCopyDataqualityAppEngagement": "App engagement",
+  "@userAnalyticsUserAnalyticsCopyDataqualityAppEngagement": {
+    "description": "Stable Profile Insights label for app-activity analytics coverage.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_analytics.shared.user_analytics_copy"
+  },
+  "userAnalyticsUserAnalyticsCopyDataqualityAnalyticsSource": "Analytics source",
+  "@userAnalyticsUserAnalyticsCopyDataqualityAnalyticsSource": {
+    "description": "Stable Profile Insights label for the aggregate analytics data source.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_analytics.shared.user_analytics_copy"
+  },
   "userAnalyticsUserAnalyticsCopyVisiblecopyLast7Days": "Last 7 days",
   "@userAnalyticsUserAnalyticsCopyVisiblecopyLast7Days": {
     "description": "Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).",

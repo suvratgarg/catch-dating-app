@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
@@ -213,31 +212,35 @@ Widget userAnalyticsTipRowStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Data quality panel states',
-  type: CatchAnalyticsDataQualityList,
+  name: 'Data coverage panel states',
+  type: UserAnalyticsDataCoveragePanel,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsDataQualityPanelStates(BuildContext context) {
   return _UserAnalyticsCatalog(
-    title: 'CatchAnalyticsDataQualityList',
+    title: 'UserAnalyticsDataCoveragePanel',
     contractId: 'component.profile.user_analytics.data_quality_panel',
     children: [
       _StateCard(
-        label: 'quality rows',
-        child: CatchAnalyticsDataQualityList(
+        label: 'known and fallback coverage sources',
+        child: UserAnalyticsDataCoveragePanel(
           rows: [
-            for (final row
-                in ProfileSurfaceFixtures.analyticsReport.dataQuality)
-              CatchDataQualityRowData(
-                status: switch (row.state) {
-                  UserAnalyticsDataQualityState.ok => CatchMetricStatus.ready,
-                  UserAnalyticsDataQualityState.partial =>
-                    CatchMetricStatus.partial,
-                  UserAnalyticsDataQualityState.missing =>
-                    CatchMetricStatus.missing,
-                },
-                detail: row.detail,
-              ),
+            const UserAnalyticsDataQuality(
+              id: 'participant-signals',
+              state: UserAnalyticsDataQualityState.ok,
+              detail:
+                  'Likes, matches, chats, attendance, and feedback are available.',
+            ),
+            const UserAnalyticsDataQuality(
+              id: 'profile-exposure',
+              state: UserAnalyticsDataQualityState.partial,
+              detail: 'Profile views and photo performance are aggregate-only.',
+            ),
+            const UserAnalyticsDataQuality(
+              id: 'future-source',
+              state: UserAnalyticsDataQualityState.missing,
+              detail: 'This source is not connected yet.',
+            ),
           ],
         ),
       ),
