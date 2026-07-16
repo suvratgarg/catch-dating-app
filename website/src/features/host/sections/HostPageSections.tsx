@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SectionHeader} from "../../../shared/site";
 import {activeMarket} from "@content/markets";
 import {
@@ -29,15 +30,15 @@ import {
   hostModules,
   hostProofRows,
   hostSurfaceCards,
-} from "../../marketing/content";
+} from "@content/marketing";
 import {trackCtaClick} from "../../marketing/tracking";
 import {HostApplicationFlow} from "../application/HostApplicationFlow";
 import {CaptureCard, type HostCaptureMap} from "./CaptureFrames";
 
 const hostConsoleSummaryItems = [
-  {key: "admission", label: "Admission", value: "Requests + invite links"},
-  {key: "live", label: "Live moment", value: "Balanced rotations"},
-  {key: "after", label: "After event", value: "18 mutual matches"},
+  {key: "admission", label: websiteCopy["hostpagesections_0293"], value: "Requests + invite links"},
+  {key: "live", label: websiteCopy["hostpagesections_0310"], value: "Balanced rotations"},
+  {key: "after", label: websiteCopy["hostpagesections_0294"], value: "18 mutual matches"},
 ];
 
 export function HostHeroSection() {
@@ -45,31 +46,23 @@ export function HostHeroSection() {
     <HostHeroShell>
       <HostHeroInner>
         <HostHeroCopy>
-          <h1 data-reveal>Run singles events people actually follow through on.</h1>
-          <p data-reveal>
-            Catch handles the loop around your event: booking logic, admission,
-            waitlists, live facilitation, check-in, private catches, and the
-            post-event report that shows what actually happened.
-          </p>
+          <h1 data-reveal>{websiteCopy["hostpagesections_0314"]}</h1>
+          <p data-reveal>{websiteCopy["hostpagesections_0300"]}</p>
           <ActionGroup variant="hero" reveal>
             <ButtonLink
               href="#founding-hosts"
               onClick={() => trackCtaClick("host_hero_apply", "#founding-hosts")}
-            >
-              Apply as host
-            </ButtonLink>
+            >{websiteCopy["hostpagesections_0296"]}</ButtonLink>
             <ButtonLink
               variant="ghost"
               href="#workflow"
               onClick={() => trackCtaClick("host_hero_workflow", "#workflow")}
-            >
-              See workflow
-            </ButtonLink>
+            >{websiteCopy["hostpagesections_0317"]}</ButtonLink>
           </ActionGroup>
         </HostHeroCopy>
 
-        <ProductShell variant="host-console" aria-label="Host console" reveal>
-          <HostConsoleHeader label="Host console" title={activeMarket.exampleEvent.name} />
+        <ProductShell variant="host-console" aria-label={websiteCopy["hostpagesections_0306"]} reveal>
+          <HostConsoleHeader label={websiteCopy["hostpagesections_0306"]} title={activeMarket.exampleEvent.name} />
           <HostConsoleGrid items={hostConsoleSummaryItems} />
           <HostConsoleTimeline items={hostEvidenceMetrics} />
         </ProductShell>
@@ -82,10 +75,10 @@ export function HostEvidenceSection() {
   return (
     <HostPageSection variant="evidence" aria-labelledby="host-evidence-title">
       <SectionHeader
-        eyebrow="What a host can see"
+        eyebrow={websiteCopy["hostpagesections_0323"]}
         id="host-evidence-title"
-        title="Catch shows the path from interest to attendance to follow-up."
-        body={<>Catch answers more than "who RSVP'd?" It shows where demand came from, where people dropped off, and whether the event created real connection afterward.</>}
+        title={websiteCopy["hostpagesections_0301"]}
+        body={<>{websiteCopy["hostpagesections_0298"]}</>}
       />
       <EvidenceStrip items={hostEvidenceMetrics} reveal />
     </HostPageSection>
@@ -97,8 +90,8 @@ export function HostWorkflowSection() {
     <MarketingSection variant="story" id="workflow" aria-labelledby="workflow-title">
       <SectionHeader
         id="workflow-title"
-        title="One loop, from booking to connection."
-        body="Replace forms, payment links, spreadsheets, group chats, manual intros, and safety notes with one flow built around the event."
+        title={websiteCopy["hostpagesections_0311"]}
+        body={websiteCopy["hostpagesections_0312"]}
       />
       <MarketingLoopList items={hostLoop} variant="host" />
     </MarketingSection>
@@ -109,9 +102,9 @@ export function HostSurfaceSection() {
   return (
     <HostPageSection variant="surface" aria-labelledby="surface-title">
       <SectionHeader
-        eyebrow="What Catch handles"
+        eyebrow={websiteCopy["hostpagesections_0324"]}
         id="surface-title"
-        title="The platform is not just ticketing, and it is not just matching."
+        title={websiteCopy["hostpagesections_0322"]}
         wide
       />
       <MarketingInfoCardGrid items={hostSurfaceCards} variant="surface" />
@@ -123,10 +116,10 @@ export function HostFillRoomSection() {
   return (
     <HostPageSection variant="fill-room" id="fill-room" aria-labelledby="fill-room-title">
       <SectionHeader
-        eyebrow="Fill the room"
+        eyebrow={websiteCopy["hostpagesections_0304"]}
         id="fill-room-title"
-        title="Checkout, waitlist, and cohort controls belong in the same roster."
-        body="The mockup split these into concrete host promises. In production they should stay connected to the event record instead of becoming separate ticketing, spreadsheet, or DM workflows."
+        title={websiteCopy["hostpagesections_0302"]}
+        body={websiteCopy["hostpagesections_0321"]}
         wide
       />
       <ProductModuleGrid modules={hostFillRoomModules} />
@@ -138,9 +131,9 @@ export function HostLiveModulesSection() {
   return (
     <MarketingSection variant="proof-host" id="live">
       <MarketingSectionCopy
-        body="The live catalog is explicit: booking balance preview, attendance and roster, welcome scripts, prompts, assignments, rotations, private catches, feedback, and aggregate host reports."
-        eyebrow="Event Success"
-        title="Live facilitation is built into the event flow."
+        body={websiteCopy["hostpagesections_0320"]}
+        eyebrow={websiteCopy["hostpagesections_0303"]}
+        title={websiteCopy["hostpagesections_0309"]}
         variant="proof"
       />
 
@@ -153,10 +146,10 @@ export function HostProofLedgerSection() {
   return (
     <HostPageSection variant="proof-ledger" aria-labelledby="proof-ledger-title">
       <SectionHeader
-        eyebrow="Host confidence"
+        eyebrow={websiteCopy["hostpagesections_0305"]}
         id="proof-ledger-title"
-        title="Run the whole event loop from one place."
-        body="Catch gives hosts the controls to shape demand, guide the live experience, and understand what happened after people met."
+        title={websiteCopy["hostpagesections_0315"]}
+        body={websiteCopy["hostpagesections_0299"]}
       />
       <ProofLedgerRows items={hostProofRows} reveal />
     </HostPageSection>
@@ -167,16 +160,16 @@ export function HostCapturesSection({captures}: {captures: HostCaptureMap}) {
   return (
     <MarketingSection variant="captures" id="screens" aria-labelledby="screens-title">
       <SectionHeader
-        eyebrow="Host tools"
+        eyebrow={websiteCopy["hostpagesections_0307"]}
         id="screens-title"
-        title="See the host workflow end to end."
-        body="Set up the event, manage the live moment, and review the signals that help the next event get better."
+        title={websiteCopy["hostpagesections_0316"]}
+        body={websiteCopy["hostpagesections_0318"]}
       />
 
       <CaptureGrid variant="host">
-        <CaptureCard id="host-event-setup" fallbackStep="Setup" captures={captures} />
-        <CaptureCard id="host-live-console" fallbackStep="Live" captures={captures} />
-        <CaptureCard id="host-post-event-report" fallbackStep="Report" captures={captures} />
+        <CaptureCard id="host-event-setup" fallbackStep={websiteCopy["hostpagesections_0319"]} captures={captures} />
+        <CaptureCard id="host-live-console" fallbackStep={websiteCopy["hostpagesections_0308"]} captures={captures} />
+        <CaptureCard id="host-post-event-report" fallbackStep={websiteCopy["hostpagesections_0313"]} captures={captures} />
       </CaptureGrid>
     </MarketingSection>
   );
@@ -187,8 +180,8 @@ export function HostApplySection() {
     <WaitlistSection
       id="founding-hosts"
       titleId="host-apply-title"
-      title="Bring the format. Catch handles the loop around it."
-      body="Apply as a founding host if you run events, communities, venues, or formats where the right singles can meet with more context."
+      title={websiteCopy["hostpagesections_0297"]}
+      body={websiteCopy["hostpagesections_0295"]}
     >
       <HostApplicationFlow />
     </WaitlistSection>

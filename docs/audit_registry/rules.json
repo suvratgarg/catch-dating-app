@@ -218,6 +218,11 @@
           "countKey": "entries"
         }
       ],
+      "sunset_review": {
+        "date": "2026-07-16",
+        "decision": "keep",
+        "note": "The recovered baseline is empty, but this rule remains the regression guard that keeps marketing-authored strings in the content layer."
+      },
       "enforcement": [
         {
           "tool": "web:website-copy-ownership",

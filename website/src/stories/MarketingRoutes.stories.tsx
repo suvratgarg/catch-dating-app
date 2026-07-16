@@ -4,14 +4,12 @@ import {ClaimPage} from "../features/claims/ClaimPage";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
 import {HomePage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
-import {HostPreviewPage} from "../features/host/HostPreviewPage";
 import {NotFoundPage} from "../features/notFound/NotFoundPage";
 import {hostListings} from "./fixtures/hostListings";
 import {HostListingPage} from "../features/organizers/HostListingPage";
 import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
 import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
-import {PageShell} from "../shared/site";
 import {captures} from "./fixtures/marketingCaptures";
 
 const generatedOrganizerListing = requireListing("afterfly");
@@ -61,49 +59,29 @@ export const Host: Story = {
     catchRoute: {
       id: "host",
       path: "/host/",
-      reviewStates: ["default", "host-application", "capture-placeholders"],
+      reviewStates: [
+        "default",
+        "founding-host-offer",
+        "host-application",
+        "capture-placeholders",
+      ],
       stateCoverage: {
         storybook: ["default"],
-        manual: ["host-application", "capture-placeholders"],
+        manual: ["founding-host-offer", "host-application", "capture-placeholders"],
       },
     },
     catchComponent: {
       id: "route_host",
       routeIds: ["host"],
-      states: ["default", "host-application", "capture-placeholders"],
+      states: [
+        "default",
+        "founding-host-offer",
+        "host-application",
+        "capture-placeholders",
+      ],
     },
   },
-  render: () => (
-    <PageShell pageClassName="host-page">
-      <HostPage captures={captures} />
-    </PageShell>
-  ),
-};
-
-export const HostPreview: Story = {
-  name: "/host/preview/",
-  parameters: {
-    a11y: {test: "todo"},
-    catchRoute: {
-      id: "host_preview",
-      path: "/host/preview/",
-      reviewStates: ["default", "founding-host-offer", "create-flow"],
-      stateCoverage: {
-        storybook: ["default"],
-        manual: ["founding-host-offer", "create-flow"],
-      },
-    },
-    catchComponent: {
-      id: "route_host_preview",
-      routeIds: ["host_preview"],
-      states: ["default", "founding-host-offer", "create-flow"],
-    },
-  },
-  render: () => (
-    <PageShell pageClassName="host-page host-preview-page">
-      <HostPreviewPage captures={captures} />
-    </PageShell>
-  ),
+  render: () => <HostPage captures={captures} />,
 };
 
 export const Claim: Story = {
@@ -169,11 +147,7 @@ export const NotFound: Story = {
       states: ["unknown-route"],
     },
   },
-  render: () => (
-    <PageShell pageClassName="not-found-page">
-      <NotFoundPage />
-    </PageShell>
-  ),
+  render: () => <NotFoundPage />,
 };
 
 export const OrganizerSearch: Story = {

@@ -2,5 +2,151 @@
   "version": 1,
   "updated": "2026-07-12",
   "description": "Permanent, narrowly justified website copy ownership exceptions. Keep this near-empty.",
-  "entries": []
+  "entries": [
+    {
+      "file": "website/src/shared/site/SiteFooter.tsx",
+      "text": "Catch home",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/site/SiteFooter.tsx",
+      "text": "Footer",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/site/SiteHeader.tsx",
+      "text": "Catch home",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/site/SiteHeader.tsx",
+      "text": "Primary",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/actions.tsx",
+      "text": "${String(event.title)} event counts",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/actions.tsx",
+      "text": "app-download-ctas app-download-ctas--compact",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/actions.tsx",
+      "text": "app-download-ctas app-download-ctas--panel",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/forms.tsx",
+      "text": "${field.label}: ${field.value}",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/foundation.tsx",
+      "text": "listing-hero__eyebrow",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/foundation.tsx",
+      "text": "Search Catch",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "capture-grid capture-grid--host",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-after",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-faq",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-live",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-loop",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-payments",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-product-split",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "host-preview-section host-preview-trust",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-grid listing-grid--fit",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-section listing-section--events",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-section listing-section--reviews",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-section listing-section--split",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "listing-section listing-section--success",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "proof-section",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "proof-section proof-section--host",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/layout.tsx",
+      "text": "proof-section__copy",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/organizer2.tsx",
+      "text": "Location",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/organizer2.tsx",
+      "text": "Source",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    },
+    {
+      "file": "website/src/shared/ui/primitives/organizer3.tsx",
+      "text": "${review.rating} out of 5 stars",
+      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
+    }
+  ]
 }

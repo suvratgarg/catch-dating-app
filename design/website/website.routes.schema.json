@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Catch marketing website route contract",
   "type": "object",
-  "required": ["version", "updated", "owner", "sourceOfTruth", "routes"],
+  "required": ["version", "updated", "owner", "sourceOfTruth", "routes", "redirects"],
   "additionalProperties": false,
   "properties": {
     "$schema": {"type": "string"},
@@ -32,6 +32,21 @@
         "staticOutput": {"type": "string"},
         "hostingConfig": {"type": "string"}
       }
+    },
+    "redirects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "destination", "status", "preserveQuery"],
+        "properties": {
+          "source": {"type": "string", "pattern": "^/"},
+          "destination": {"type": "string", "pattern": "^/"},
+          "status": {"type": "integer", "enum": [301, 302]},
+          "preserveQuery": {"type": "boolean"}
+        }
+      },
+      "uniqueItems": true
     },
     "routes": {
       "type": "array",

@@ -26,13 +26,10 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.d
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const _profileTabCount = 3;
-
 class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({super.key, this.initialTabIndex = 0})
-    : assert(initialTabIndex >= 0 && initialTabIndex < _profileTabCount);
+  const ProfileScreen({super.key, this.initialTab = SelfProfileTab.edit});
 
-  final int initialTabIndex;
+  final SelfProfileTab initialTab;
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -48,8 +45,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: _profileTabCount,
-      initialIndex: widget.initialTabIndex,
+      length: SelfProfileTab.values.length,
+      initialIndex: widget.initialTab.index,
       vsync: this,
     );
     _outerScrollController = ScrollController();

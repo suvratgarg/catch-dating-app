@@ -8,20 +8,20 @@
       "twitterDescription": "Curated singles events become real dating context."
     },
     "host": {
-      "title": "Catch for Hosts | Host better singles events",
-      "description": "Catch helps hosts publish curated singles events, manage admission and waitlists, run live facilitation, and turn real attendance into post-event connections.",
+      "title": "Host singles events on Catch | 0% platform fee for founding hosts",
+      "description": "Publish your event, balance the guest list, take payments, run the night from one screen, and get proof people connected. Catch gives clubs, venues, and independent hosts everything after the Instagram post.",
       "canonicalPath": "/host/",
       "twitterDescription": "Event setup, admission, waitlists, live facilitation, check-in, and aggregate post-event reporting for hosts."
     },
     "organizers": {
-      "title": "Organizer Search | Catch",
-      "description": "Search Catch organizer profiles by name, city, format, and review signal.",
+      "title": "Organizer directory | Catch",
+      "description": "Find singles-event organizers across India — clubs, venues, and independent hosts — with verified guest reviews and upcoming events.",
       "canonicalPath": "/organizers/",
       "twitterDescription": "Search Catch organizer and club profiles.",
       "robots": "noindex, follow"
     },
     "claim": {
-      "title": "Claim your organizer listing | Catch",
+      "title": "Claim your organizer page | Catch",
       "description": "Find an unclaimed organizer profile, verify ownership, and request access to Catch host tools.",
       "canonicalPath": "/claim/",
       "twitterDescription": "Claim an organizer profile and unlock Catch host tools.",
@@ -36,7 +36,7 @@
     }
   },
   "listing": {
-    "titleTemplate": "{name} | {city} organizer profile | Catch",
+    "titleTemplate": "{name} | {city} events & reviews | Catch",
     "staticLabels": {
       "profileEyebrow": "Organizer profile",
       "formatsHeading": "Formats",
