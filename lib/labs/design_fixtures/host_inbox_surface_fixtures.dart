@@ -52,6 +52,14 @@ final class HostInboxSurfaceFixtures {
     startTime: DateTime(2026, 7, 14, 20),
     endTime: DateTime(2026, 7, 14, 22),
     meetingPoint: 'The Reading Room, Bandra',
+    meetingLocation: const EventMeetingLocation(
+      name: 'The Reading Room, Bandra',
+      latitude: 19.0596,
+      longitude: 72.8295,
+      notes: 'Upstairs, beside the blue team board.',
+    ),
+    startingPointLat: 19.0596,
+    startingPointLng: 72.8295,
     locationDetails: 'Upstairs, beside the blue team board.',
     eventFormat: const EventFormatSnapshot(
       activityKind: ActivityKind.pubQuiz,

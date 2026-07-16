@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "logicalName": "eventMeetingLocation",
-  "currentPhase": "dual_write_live",
+  "currentPhase": "required_in_code_dev_backfilled",
   "reason": "Events historically split attendee-facing venue text, coordinates, and directions across meetingPoint, startingPointLat, startingPointLng, and locationDetails. Google Places and mandatory map selection need one coherent location contract while old clients and projections still depend on the legacy fields.",
   "currentShape": {
     "legacyFields": [
@@ -42,12 +42,12 @@
     {
       "id": "backfill_existing_events",
       "status": "pending",
-      "description": "Dry-run existing events, derive meetingLocation from legacy fields where coordinates are present, report unpinned or blank-name events, then apply per environment."
+      "description": "Use tool/data/backfill_event_meeting_locations.mjs to derive meetingLocation from complete legacy pairs, synchronize mirrors, and block rather than fabricate unresolved coordinates. Dev is clean at 146/146. Staging is empty. Production has 138 deterministic repairs and 9 historical blockers, so the global phase remains pending."
     },
     {
       "id": "require_structured_location",
       "status": "pending",
-      "description": "After supported clients dual-write meetingLocation and backfill is clean, make meetingLocation required in event documents and callable payloads."
+      "description": "The Firestore schema, generated TypeScript interface, Dart Event/ExternalEvent domains, create/update writes, discovery projection, and dev Functions now require exact non-null coordinates. Create keeps legacy scalar compatibility for released clients. Production rollout remains pending until the 9 unresolved historical documents are handled."
     },
     {
       "id": "retire_legacy_fields",
@@ -64,8 +64,16 @@
     "functions/src/events/selfCheckInAttendance.ts",
     "functions/src/shared/notifications.ts",
     "functions/src/clubs/syncClubNextEvent.ts",
-    "tool/demo/seed_demo_data.mjs"
+    "tool/demo/seed_demo_data.mjs",
+    "tool/data/backfill_event_meeting_locations.mjs",
+    "tool/data/validate_firestore_data.mjs",
+    "lib/explore/presentation/explore_map_screen.dart"
   ],
+  "environmentEvidence": {
+    "dev": "2026-07-13: 146 events scanned; 146 valid structured locations; 0 repairs; 0 blockers after seed and projection repair.",
+    "staging": "2026-07-13: 0 events scanned; 0 blockers.",
+    "prod": "2026-07-13 read-only: 272 events scanned; 125 valid structured locations; 138 deterministic repairs; 9 unresolved historical coordinate blockers. No writes applied."
+  },
   "rulesAndIndexes": {
     "firestoreRules": "No direct event writes are allowed, so callable validation owns this migration.",
     "firestoreIndexes": "No new indexes are required until the app queries by nested meetingLocation fields."

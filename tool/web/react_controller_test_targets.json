@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "version": 4,
+  "updated": "2026-07-14",
+  "owner": "web_surface_architecture",
+  "statuses": {
+    "required": "A behavior test must exist and import the target hook.",
+    "planned": "The controller is classified in the active coverage queue but is not yet a gate.",
+    "exempt": "The source is a compatibility re-export with no independent behavior."
+  },
+  "targets": [
+    {
+      "source": "admin/src/features/access/controllers/useAccessReviewController.ts",
+      "test": "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+      "test": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/data-quality/controllers/useDataQualityController.ts",
+      "test": "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/events/controllers/useEventPublishingController.ts",
+      "test": "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/finance/controllers/useFinanceOpsController.ts",
+      "test": "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/growth/controllers/useGrowthKpiController.ts",
+      "test": "admin/src/features/growth/controllers/useGrowthKpiController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
+      "test": "admin/src/features/intake/events/controllers/useEventIntakeController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
+      "test": "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
+      "test": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
+      "test": "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
+      "test": "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
+      "test": "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/overview/controllers/useOverviewController.ts",
+      "test": "admin/src/features/overview/controllers/useOverviewController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/safety/controllers/useSafetyTriageController.ts",
+      "test": "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/users/controllers/useUserAnalyticsController.ts",
+      "test": "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/claims/useClaimFlowController.ts",
+      "test": "website/src/features/claims/useClaimFlowController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/claims/useClaimRequestMutation.ts",
+      "test": "website/src/features/claims/useClaimRequestMutation.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/claims/useListingClaimController.ts",
+      "test": "website/src/features/claims/useClaimRequestMutation.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/host/application/useHostApplicationController.ts",
+      "test": "website/src/features/host/application/useHostApplicationController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/host/useHostApplicationController.ts",
+      "status": "exempt",
+      "reason": "Compatibility re-export of the application controller."
+    },
+    {
+      "source": "website/src/features/organizers/useHostListingPageController.ts",
+      "test": "website/src/features/organizers/useHostListingPageController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/organizers/useOrganizerDirectoryController.ts",
+      "test": "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/reviews/useListingReviewsController.ts",
+      "test": "website/src/features/reviews/useListingReviewsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/waitlist/useWaitlistFormController.ts",
+      "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
+      "status": "required"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
@@ -124,49 +125,22 @@ class AppShell extends ConsumerWidget {
       }
     });
 
-    final authenticatedTabBarFloats =
-        isAuthenticated && CatchTabBar.floatsFor(context);
-    final authenticatedBottomOverlayInset = authenticatedTabBarFloats
-        ? CatchTabBar.reservedBottomInset(context)
-        : 0.0;
     final authenticatedNavigationBar = isAuthenticated
         ? appShellNavigationBar(
             navigationShell: navigationShell,
             unreadCount: unreadCount,
           )
         : null;
-    final body = CatchNoticeHost(
-      persistentNotices: [if (isOffline) CatchNoticeData.offline(context.l10n)],
-      child: AppShellActiveTab(
-        index: navigationShell.currentIndex,
-        bottomOverlayInset: authenticatedBottomOverlayInset,
+    return CatchAdaptiveTabScaffold(
+      activeIndex: navigationShell.currentIndex,
+      navigationBar: authenticatedNavigationBar,
+      anchoredFallback: showGuestAuthCta ? const GuestAuthCtaBar() : null,
+      body: CatchNoticeHost(
+        persistentNotices: [
+          if (isOffline) CatchNoticeData.offline(context.l10n),
+        ],
         child: navigationShell,
       ),
-    );
-
-    return Scaffold(
-      key: AppShellKeys.scaffold,
-      extendBody: authenticatedTabBarFloats,
-      body: authenticatedTabBarFloats
-          ? Stack(
-              children: [
-                Positioned.fill(child: body),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: authenticatedNavigationBar!,
-                ),
-              ],
-            )
-          : body,
-      bottomNavigationBar: authenticatedTabBarFloats
-          ? null
-          : isAuthenticated
-          ? authenticatedNavigationBar
-          : showGuestAuthCta
-          ? const GuestAuthCtaBar()
-          : null,
     );
   }
 }
@@ -248,6 +222,9 @@ class AppShellNavigationBar extends StatelessWidget {
     final selectedIndex = currentIndex;
     final destinations = items ?? _consumerNavigationItems();
     final l10n = context.l10n;
+    final useCupertinoIcons = prefersCupertinoControls(
+      platform: Theme.of(context).platform,
+    );
 
     return CatchTabBar<int>(
       key: AppShellKeys.navigationBar,
@@ -257,10 +234,8 @@ class AppShellNavigationBar extends StatelessWidget {
         for (final (fallbackIndex, item) in destinations.indexed)
           CatchTabBarItem(
             id: item.branchIndex ?? fallbackIndex,
-            icon: prefersCupertinoControls()
-                ? item.cupertinoIcon
-                : item.materialIcon,
-            activeIcon: prefersCupertinoControls()
+            icon: useCupertinoIcons ? item.cupertinoIcon : item.materialIcon,
+            activeIcon: useCupertinoIcons
                 ? item.cupertinoSelectedIcon
                 : item.materialSelectedIcon,
             label: item.destination.localizedLabel(l10n),

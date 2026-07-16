@@ -61,19 +61,6 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
           enableNetworkTiles: enableNetworkTiles,
         );
 
-        if (!state.hasExactStartingPoint) {
-          return ChromelessMapScaffold(
-            child: CatchErrorState(
-              title: context
-                  .l10n
-                  .eventsEventLocationMapScreenTitleLocationUnavailable,
-              message: context
-                  .l10n
-                  .eventsEventLocationMapScreenMessageThisEventDoesNot,
-            ),
-          );
-        }
-
         return ChromelessMapScaffold(
           safeArea: false,
           child: EventLocationMapScreen(

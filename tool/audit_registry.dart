@@ -13,6 +13,7 @@ const rulesPath = '$registryDir/rules.json';
 const screenContractsPath = 'design/screens/catch.screens.json';
 
 const trackedPaths = [
+  'AGENTS.md',
   '.github/workflows',
   'android',
   'analysis_options.yaml',
@@ -27,6 +28,7 @@ const trackedPaths = [
   'ios',
   'lib',
   'macos',
+  'operations',
   'package.json',
   'packages',
   'pubspec.lock',
@@ -35,6 +37,7 @@ const trackedPaths = [
   'test',
   'functions/package-lock.json',
   'functions/package.json',
+  'functions/scripts',
   'functions/src',
   'functions/test',
   'tool',

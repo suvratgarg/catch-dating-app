@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SiteFooter, SiteHeader} from "../../shared/site";
 import {ClaimFlowMain} from "../../shared/ui/primitives";
 import {
@@ -17,12 +18,12 @@ export function ClaimPage({routeState}: {routeState: ClaimRouteState}) {
       <SiteHeader
         brandHref="/"
         nav={[
-          {href: "/organizers/", label: "Find listing"},
-          {href: "/host/", label: "Host tools"},
-          {href: "/#trust", label: "Trust"},
+          {href: "/organizers/", label: websiteCopy["claimpage_0025"]},
+          {href: "/host/", label: websiteCopy["claimpage_0027"]},
+          {href: "/#trust", label: websiteCopy["claimpage_0031"]},
         ]}
         ctaHref="/host/#founding-hosts"
-        ctaLabel="Start fresh"
+        ctaLabel={websiteCopy["claimpage_0030"]}
       />
 
       <ClaimFlowMain>
@@ -42,11 +43,11 @@ export function ClaimPage({routeState}: {routeState: ClaimRouteState}) {
 
       <SiteFooter
         brandHref="/"
-        body="Claimable organizer profiles with verified owner review before host tools unlock."
+        body={websiteCopy["claimpage_0024"]}
         links={[
-          {href: "/organizers/", label: "Organizer search"},
-          {href: "/host/", label: "For hosts"},
-          {href: "/", label: "Member site"},
+          {href: "/organizers/", label: websiteCopy["claimpage_0029"]},
+          {href: "/host/", label: websiteCopy["claimpage_0026"]},
+          {href: "/", label: websiteCopy["claimpage_0028"]},
         ]}
       />
     </>

@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.5.4
-updated: 2026-07-05
+version: 4.6.0
+updated: 2026-07-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -38,13 +38,14 @@ section unless the task requires a full historical audit.
 |---|---|---|
 | Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `agent_regression_ledger.json`, `agent_skills/` | Canonical AI-agent entrypoint, execution modes, parent-led Git/worktree delegation protocol, regression guards, project-local skills, readiness workflow, and metrics recording for deterministic Catch cleanup/refactor/design work. |
 | AI-first workflow implementation guide | `ai_first_workflow_guide.md` | Shareable companion guide explaining how the agent entrypoint, context packs, docs registry, rules, scanners, lints, generated registries, audit receipts, CI gates, and readiness metrics combine into the Catch AI-first workflow. Descriptive only; canonical rules remain in owner docs. |
-| Flutter app architecture | `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
+| Flutter app architecture | `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `generated/provider_graph/README.md` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the generated Riverpod provider topology and reviewed relationship candidates; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Catalog of Flutter widgets, primitive APIs, feature ownership notes, and catalog-update rules for material widget architecture changes. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
 | Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
 | UI migration prompts | `sizing_migration_prompt.md`, `design_token_migration_prompt.md` | Reusable agent prompts for the mechanical sizing and design-token sweeps; each pairs with its `tool/check_*.sh` scanner as the deterministic definition of done. |
 | Action cardinality | `action_cardinality_policy.md` | Product and engineering rule for whether each action is disallowed, singleton, unbounded, or domain-bounded, plus initial action-surface audit. |
 | Release operations | `release_operations.md` | CI/release gates, Firebase deploy ordering, environment prerequisites, smoke tests, and human release evidence. |
+| Durable business operations | `operations_platform.md` | Canonical boundary for resumable human/worker/agent workflows, persisted runs and work items, authority lanes, Supply Intake stages, source learning, publication plans, and future admin-workflow adoption. |
 | Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, marketing CI/CD, public website route contracts, and future host-portal placement. |
 | Marketing website architecture | `marketing_website_architecture.md` | Code organization, route-first/page-controller-component boundaries, target feature structure, and refactor order for `website/**`. |
 | Admin and analytics dashboard | `admin_analytics_dashboard_spec.md` | Internal admin console and analytics product spec: safety/access ops, cohort retention, host/event analytics, user value, finance, BigQuery marts, and admin API boundaries. |
@@ -94,6 +95,7 @@ durable owners above or closed in code.
 | `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
+| `plans/repository_root_hygiene_spec.md` | Proposed Fable/owner review spec for classifying all project-root entries, reclaiming reproducible local output safely, retiring legacy artifacts, consolidating root docs, and adding manifest-backed root hygiene/cleanup enforcement. Delete or mark implemented after accepted policy moves into owner docs, tooling, and the audit registry. |
 
 Completed temporary trackers removed or folded into owner docs after code
 verification include `dashboard_run_focus_tracker.md`,

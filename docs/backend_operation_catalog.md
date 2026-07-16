@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.2.7
-updated: 2026-07-10
+version: 1.2.14
+updated: 2026-07-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -58,6 +58,54 @@ should be repairable from edge/source documents.
 | HTTP Function | External web/client POST endpoint. | CORS, validation, rate limiting, server writes. |
 | Server/Admin Only | No client write surface. | Firestore rules deny client writes. |
 
+## Durable Operations Platform
+
+Long-running, resumable admin workflows use the canonical contracts under
+`contracts/operations/` and the server-only collections below. Direct client
+reads and writes are denied; a separately authorized worker owns mutations.
+The current admin callable is a role-gated, rate-limited read projection only.
+
+| Collection | Record | Owner |
+|---|---|---|
+| `operationRuns/{runId}` | Frozen scope, budgets, counters, checkpoint, and terminal state | Trusted operations worker |
+| `operationWorkItems/{workItemId}` | One exclusive primary stage plus orthogonal task/blocker flags | Trusted operations worker |
+| `operationActionReceipts/{actionId}` | Immutable idempotency and action evidence | Trusted operations worker |
+| `operationDecisions/{decisionId}` | Revision-bound proposed or accepted decision | Trusted worker or reviewed admin path |
+| `operationLeases/{leaseId}` | Fenced worker ownership and heartbeat | Trusted operations worker |
+| `operationPublicationPlans/{publicationPlanId}` | Hash-bound preflight plan; not publication authority by itself | Trusted publisher boundary |
+| `operationRuleProposals/{ruleProposalId}` | Evidence-derived extractor/rule proposal | Trusted learning worker |
+| `operationRuleEvaluations/{ruleEvaluationId}` | Replay, holdout, shadow, and canary metrics | Trusted evaluation worker |
+
+`adminListIntakeOperations` reads runs and work items for workflow
+`supply-intake`. It grants no run-request, network, model, rule-deployment, or
+public-write capability. The four persisted primary stages are exactly
+`incoming`, `verify`, `resolve`, and `ready`; publication and terminal outcomes
+remain lifecycle state rather than additional tabs.
+
+`functions/scripts/operations/import-shadow-projection.cjs` is the only shipped
+local-to-Firestore bridge. It is dry-run by default and requires explicit apply,
+an environment whose configured alias exactly matches the project id,
+project-aware production confirmation, and matching run confirmation. It
+revalidates contracts, shadow authority, joins, totals, hashes, and the frozen
+work-item budget; creates `operationWorkItems` before `operationRuns`; repairs
+missing items on exact replay; rejects changed records; and never writes a
+public product collection. Imported run ids are immutable snapshots. Whole-run
+stage and human-review aggregates are stored in run metadata and are required
+for reads. The callable supports a canonical `humanReviewRequired` server
+filter backed by the `taskFlags` array index; that filter cannot be combined
+with unindexed stage/entity/lifecycle filters. The admin controller eagerly
+hydrates only that exception lane and lazily pages ordinary inventory, while
+`loadedRunCount`, `nextRunCursor`, and `nextWorkItemCursor` describe loaded
+inventory honestly. The 10,000-item run cap, 200-item pages, and 120/minute read
+limit are cross-contract tested.
+
+The portable work-item schema remains workflow-neutral; the Supply Intake
+callable rejects any work item outside its four-stage vocabulary. Local
+reconciliation creates a new immutable child run bound to the source plan and
+inventory hashes, so imported snapshots are never updated in place. The shipped
+promotion command creates only a blocked review receipt; it does not create an
+`operationPublicationPlans` record or execute a public write.
+
 ## Current Audit Findings
 
 | Priority | Finding | Status |
@@ -68,6 +116,7 @@ should be repairable from edge/source documents.
 | P2 | The machine-readable contract records operations by collection, but not the Dart initiator method for every operation. | This doc fills the human map; a later tooling pass can validate Dart initiators automatically. |
 | P2 | Notification fan-out now has a durable backend-owned in-app timeline for match, message, new club event, event signup, waitlist-promotion, upcoming event reminder, event schedule/location updates, and event cancellation events. | Implemented; keep adding new categories through the same Functions-owned interface. |
 | P1 | Edge documents were the source of truth, but event-club parent projections relied only on callable updates or batch repair tools. | Fixed. `syncClubMemberStats` recomputes `memberCount` from active membership edges, and `syncClubNextEvent` recomputes `nextEventAt` / `nextEventLabel` from active future event documents. Event callables also refresh the next-event projection before returning. |
+| P0 | Event location was nullable in app/generated types and check-in paths could skip proximity when a record had no coordinates. | Fixed in code and dev. Event create/update canonicalize an exact location, discovery and check-in fail closed, and the dev corpus is 146/146 structured. Production remains read-only with 9 historical coordinate blockers recorded in `contracts/migrations/event_meeting_location.json`. |
 
 ## Cloud Functions Inventory
 
@@ -90,8 +139,8 @@ should be repairable from edge/source documents.
 | `syncClubMemberStats` | Firestore trigger on `clubMemberships/{membershipId}` write | Backend | `clubs/{clubId}.memberCount` | Recomputes active membership count from edge documents. This makes duplicate trigger delivery safe and repairs stale callable-era or manually drifted parent projections. |
 | `archiveClub` | Callable | Backend-ready; host UI queued | `clubs/{clubId}.status/archived/archivedAt/archiveReason` | Host-only archive seam for clubs with history. Prevent browse/search usage once client filters are added; hard delete is reserved for unused clubs. |
 | `deleteClub` | Callable | Backend-ready; host/admin UI queued | `clubs/{clubId}` delete, host `clubMemberships/{clubId_uid}` delete, `clubHostClaims/{uid}` delete | Host-only hard delete for never-used clubs. Rejects clubs with events, payments, reviews, or non-host members; releases the one-club host claim only after the hard delete is allowed. |
-| `createEvent` | Callable | `EventRepository.createEvent` | `events/{eventId}`, optional `events/{eventId}.photoUrl`, `clubs/{clubId}.nextEventAt/nextEventLabel`, `notifications/{uid}/items/{notificationId}`, FCM to active club members with event-reminder pushes enabled | Host authority is verified server-side from the club; initializes event lifecycle as `active` plus participation count projections to zero; refreshes the club next-event projection before returning; new-event notification fan-out is best-effort after the event document commits. |
-| `updateEvent` | Callable | `EventRepository.updateEventDetails` | `events/{eventId}`, optional `events/{eventId}.photoUrl`, `clubs/{clubId}.nextEventAt/nextEventLabel`, `notifications/{uid}/items/{notificationId}`, FCM to signed-up/waitlisted participants for schedule/location changes | Host-editable schedule/descriptive fields and photo URL only. Descriptive/photo-only edits do not notify participants; schedule/location changes produce deterministic `eventUpdated_${eventId}` items. Cancelled events cannot be edited. |
+| `createEvent` | Callable | `EventRepository.createEvent` | `events/{eventId}`, optional `events/{eventId}.photoUrl`, `clubs/{clubId}.nextEventAt/nextEventLabel`, `notifications/{uid}/items/{notificationId}`, FCM to active club members with event-reminder pushes enabled | Host authority is verified server-side from the club. Requires a named finite in-range exact location, writes canonical `meetingLocation` plus non-null compatibility mirrors, initializes lifecycle/count projections, refreshes the club next-event projection, and then performs best-effort notification fan-out. It does not consult a payout account: free event creation must remain available regardless of payout state, and any future setup-time payout gate must apply only when the normalized event price is positive. |
+| `updateEvent` | Callable | `EventRepository.updateEventDetails` | `events/{eventId}`, optional `events/{eventId}.photoUrl`, `clubs/{clubId}.nextEventAt/nextEventLabel`, `notifications/{uid}/items/{notificationId}`, FCM to signed-up/waitlisted participants for schedule/location changes | Host-editable schedule/descriptive fields and photo URL only. Every update resolves and rewrites the canonical exact location plus mirrors; a coordinate-less legacy record fails with a precondition error. Descriptive/photo-only edits do not notify participants; schedule/location changes produce deterministic `eventUpdated_${eventId}` items. Cancelled events cannot be edited. |
 | `sendEventBroadcast` | Callable | Host Inbox broadcast composer through `EventRepository.sendEventBroadcast` | `eventBroadcasts/{broadcastId}`, `notifications/{uid}/items/{notificationId}`, preference-gated Consumer FCM | Current event hosts can send bounded, moderated event updates to a server-resolved Booked (`signedUp` plus `attended`) or Prospective (`waitlisted`) roster. Inquiry/chat membership never determines recipients. A deterministic Activity item is the durable retry boundary; per-recipient receipt evidence prevents duplicate push attempts and is retained for 90 days through Firestore TTL. The callable is rate-limited to three logical requests per host per hour. |
 | `cancelEvent` | Callable | `HostEventManageScreen` | `events/{eventId}.status/cancelledAt/cancellationReason`, `clubs/{clubId}.nextEventAt/nextEventLabel`, schedule-lock release, attendee payment refund attempts, `notifications/{uid}/items/{notificationId}`, FCM to signed-up/waitlisted participants | Host-only cancellation seam. Marks the canonical event as cancelled, refreshes the club next-event projection, releases schedule locks, attempts completed attendee refunds, and fans out deterministic `eventCancelled_${eventId}` activity. The host UI is exposed from Manage event with destructive confirmation and history-retention copy. |
 | `deleteEvent` | Callable | `HostEventManageScreen` | `events/{eventId}` delete, `clubs/{clubId}.nextEventAt/nextEventLabel` refresh | Host-only hard delete for unused events. The host UI exposes Delete only when visible aggregate/edge activity is absent; the callable still rejects events with participations, payments, or reviews. Use `cancelEvent` for events with history. |
@@ -103,7 +152,7 @@ should be repairable from edge/source documents.
 | `joinEventWaitlist` | Callable | `EventRepository.joinWaitlistViaFunction` | `eventParticipations/{eventId_uid}`, `events/{eventId}.waitlistedCount` | Rate-limited before transaction work; server checks block boundary without exposing block state in rules. |
 | `leaveEventWaitlist` | Callable | `EventRepository.leaveWaitlist` | `eventParticipations/{eventId_uid}`, `events/{eventId}.waitlistedCount` | Rate-limited before transaction work; marks the caller's waitlist edge cancelled. |
 | `markEventAttendance` | Callable | `EventRepository.markAttendance` | `eventParticipations/{eventId_uid}`, `events/{eventId}.checkedInCount` | Host-only attendance toggle. |
-| `selfCheckInAttendance` | Callable | `EventRepository.selfCheckInAttendance` | `eventParticipations/{eventId_uid}`, `events/{eventId}.checkedInCount` | Participant self-check only; verifies sign-up, time window, and location where available. |
+| `selfCheckInAttendance` | Callable | `EventRepository.selfCheckInAttendance` | `eventParticipations/{eventId_uid}`, `events/{eventId}.checkedInCount` | Participant self-check only; verifies sign-up, time window, and the mandatory exact event location. A corrupt coordinate-less event fails closed and never bypasses the 200 m proximity guard. |
 | `onSwipeCreated` | Firestore trigger on `profileDecisions/{uid}/outgoing/{targetId}` create | Backend | `matches/{matchId}` | Deterministic match ID; creates a match only for reciprocal likes. Writes `eventIds` so a match can track every shared event over time. If a legacy pair-only id is occupied by a `clubHostInquiry`, the dating match uses a separate deterministic opaque id so organizer-support messages can never be converted into dating chat history. |
 | `onMatchCreated` | Firestore trigger on `matches/{matchId}` create | Backend | `notifications/{uid}/items/{notificationId}`, FCM | Writes deterministic match activity notifications for both participants and sends push notifications when tokens exist. |
 | `onMessageCreated` | Firestore trigger on `matches/{matchId}/messages/{messageId}` create | Backend | `matches/{matchId}`, `functionEventReceipts/{receiptId}`, `notifications/{uid}/items/{notificationId}`, FCM | Idempotency receipt prevents duplicate metadata writes; writes unread as a 0/1 conversation flag for the recipient and clears the sender's unread flag. Deterministic notification ID prevents duplicate activity rows. Only dating matches refresh Event Success scorecards or emit participant chat-signal facts; event-scoped Host inquiries retain notification behavior without contaminating mutual-match, chat-started, or invite-link connection metrics. |

@@ -38,22 +38,35 @@ enum ExploreScreenRetryTarget { explore, eventFeed }
 const int minimumExploreThisWeekRecommendationCount = 2;
 
 class ExploreMapLauncherState {
-  const ExploreMapLauncherState({required this.label});
+  const ExploreMapLauncherState({
+    required this.isVisible,
+    required this.actionLabel,
+    required this.semanticLabel,
+    this.countLabel,
+  });
 
   factory ExploreMapLauncherState.from({
     required int? mappableEventCount,
     required AppLocalizations l10n,
   }) {
+    final hasCount = mappableEventCount != null && mappableEventCount > 0;
+    final actionLabel = l10n.exploreExploreScreenStateLabelMap;
     return ExploreMapLauncherState(
-      label: mappableEventCount == null || mappableEventCount == 0
-          ? l10n.exploreExploreScreenStateLabelMap
-          : l10n.exploreExploreScreenStateLabelMapMappableeventcount(
+      isVisible: hasCount,
+      actionLabel: actionLabel,
+      countLabel: hasCount ? '$mappableEventCount' : null,
+      semanticLabel: hasCount
+          ? l10n.exploreExploreScreenStateSemanticsMapEventCount(
               mappableEventCount: mappableEventCount,
-            ),
+            )
+          : actionLabel,
     );
   }
 
-  final String label;
+  final bool isVisible;
+  final String actionLabel;
+  final String? countLabel;
+  final String semanticLabel;
 }
 
 class ExploreCityTriggerState {
@@ -412,6 +425,7 @@ class ExploreFeedCardGroup {
 class ExploreEventRowState {
   const ExploreEventRowState({
     required this.kicker,
+    required this.title,
     required this.supportingLabel,
     required this.priceLabel,
     required this.capacityLabel,
@@ -423,17 +437,19 @@ class ExploreEventRowState {
     required AppLocalizations l10n,
   }) {
     return ExploreEventRowState(
-      kicker: item.isFollowedClubSignal
-          ? l10n.exploreExploreScreenStateKickerFromOneOfYour
-          : item.club.name,
+      kicker: item.club.name,
+      title: item.event.eventFormat.customActivityLabel == null
+          ? item.event.eventFormat.label
+          : item.event.eventFormat.eventTitleLabel,
       supportingLabel: _rowSupportingLabel(item),
       priceLabel: item.priceLabel,
       capacityLabel: _capacityLabel(item),
-      statusLabel: _cardStatusLabel(item, l10n),
+      statusLabel: _cardStatusLabel(item),
     );
   }
 
   final String kicker;
+  final String title;
   final String supportingLabel;
   final String priceLabel;
   final String capacityLabel;
@@ -441,7 +457,7 @@ class ExploreEventRowState {
 }
 
 String exploreEventMapKicker(ExploreEventItem item) {
-  return _joinExploreLabels([item.club.name, item.distanceFromUserLabel]);
+  return item.club.name;
 }
 
 class ExploreExternalEventRowState {
@@ -750,11 +766,12 @@ String _exploreResultCountLine(
       ? l10n.exploreExploreScreenStateVisiblecopyPlan
       : l10n.exploreExploreScreenStateVisiblecopyPlans;
   final dateSpan = _exploreDateSpanLabel(viewModel);
-  if (dateSpan == null)
+  if (dateSpan == null) {
     return l10n.exploreExploreScreenStateVisiblecopyCountNoun(
       count: count,
       noun: noun,
     );
+  }
   return l10n.exploreExploreScreenStateVisiblecopyCountNounDatespan(
     count: count,
     noun: noun,
@@ -789,9 +806,10 @@ String _monthDayLabel(DateTime value) {
 String _rowSupportingLabel(ExploreEventItem item) {
   final event = item.event;
   return [
-    event.activitySummaryLabel,
+    if (event.eventFormat.isDistanceBased) event.activitySummaryLabel,
     event.locationName,
-  ].where((label) => label.trim().isNotEmpty).join(' · ');
+    item.distanceFromUserLabel,
+  ].whereType<String>().where((label) => label.trim().isNotEmpty).join(' · ');
 }
 
 String _capacityLabel(ExploreEventItem item) {
@@ -800,20 +818,19 @@ String _capacityLabel(ExploreEventItem item) {
   ).goingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
 }
 
-String? _cardStatusLabel(ExploreEventItem item, AppLocalizations l10n) {
+String? _cardStatusLabel(ExploreEventItem item) {
   return switch (item.status) {
     EventTileStatus.open => _availabilityStatusLabel(item),
-    EventTileStatus.recommended =>
-      l10n.exploreExploreScreenStateVisiblecopyPicked,
+    EventTileStatus.recommended => _availabilityStatusLabel(item),
     EventTileStatus.joined ||
     EventTileStatus.saved ||
     EventTileStatus.hosted ||
     EventTileStatus.waitlisted ||
     EventTileStatus.attended ||
     EventTileStatus.past ||
-    EventTileStatus.full ||
     EventTileStatus.ineligible ||
     EventTileStatus.cancelled => eventTileStatusLabel(item.status),
+    EventTileStatus.full => _availabilityStatusLabel(item),
   };
 }
 
@@ -822,6 +839,10 @@ String? _availabilityStatusLabel(ExploreEventItem item) {
   if (label == null || label.isEmpty || label.toLowerCase() == 'open') {
     return null;
   }
+  if (RegExp(r'^\d+ spots? left$', caseSensitive: false).hasMatch(label)) {
+    return null;
+  }
+  if (label.toLowerCase() == 'full') return null;
   return label;
 }
 
@@ -842,11 +863,12 @@ String _clubSupportingLabel(Club club, AppLocalizations l10n) {
     );
   }
   final area = club.area.trim();
-  if (area.isNotEmpty)
+  if (area.isNotEmpty) {
     return l10n.exploreExploreScreenStateVisiblecopyClubmembercountlabelArea(
       clubMemberCountLabel: clubMemberCountLabel(club),
       area: area,
     );
+  }
   return clubMemberCountLabel(club);
 }
 

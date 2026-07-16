@@ -56,6 +56,13 @@ Current state:
   into the app bundle at build time.
 - App Check is registered for Android, iOS/macOS, and web in all three Firebase
   projects. Firestore, Storage, Auth, and callable Functions enforce App Check.
+- Storage rules read canonical Firestore match/ownership documents. Every
+  environment's Firebase Storage service agent must therefore hold
+  `roles/firebaserules.firestoreServiceAgent`; verify all three with
+  `node tool/firebase/storage_rules_firestore_iam.mjs --all`. Storage deploys
+  run this readiness check automatically, while IAM repair remains an explicit
+  owner operation. Use `probe_chat_storage_rules.mjs` for the authenticated
+  upload/delete proof after IAM or chat-image rule changes.
 - Local web debug App Check follows Firebase's documented debug-provider flow:
   `web/index.html` sets `self.FIREBASE_APPCHECK_DEBUG_TOKEN = true` only on
   localhost/loopback origins, and the generated local browser token is

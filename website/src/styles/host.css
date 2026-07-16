@@ -4,6 +4,7 @@
   --host-dark-ink: var(--catch-color-dark-ink);
   --host-dark-muted: var(--catch-color-dark-ink2);
   --host-dark-line: var(--catch-color-dark-line);
+  --catch-focus-ring-color: var(--catch-color-dark-primary);
 }
 
 .host-page .site-header {

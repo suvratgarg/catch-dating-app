@@ -1235,7 +1235,6 @@ function buildCandidates() {
       tags: ["header", "chrome"],
       names: [
         "CatchTopBar",
-        "HostOperationsTopBar",
         "ChatEventContextHeader",
         "CatchStatusBar",
       ],

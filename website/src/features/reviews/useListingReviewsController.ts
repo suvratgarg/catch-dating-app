@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {type FormEvent, useEffect, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
@@ -94,12 +95,12 @@ export function useListingReviewsController(listing: HostListing) {
     const trimmedComment = comment.trim();
     const trimmedName = reviewerName.trim();
     if (!trimmedComment) {
-      setStatus({message: "Review text is required.", tone: "is-error"});
+      setStatus({message: websiteCopy["uselistingreviewscontroller_0505"], tone: "is-error"});
       return;
     }
     if (!isAnonymous && !trimmedName) {
       setStatus({
-        message: "Add your name, or choose anonymous.",
+        message: websiteCopy["uselistingreviewscontroller_0502"],
         tone: "is-error",
       });
       return;
@@ -127,6 +128,10 @@ export function useListingReviewsController(listing: HostListing) {
       });
 
       if (result.mode === "remote") {
+        // Keep the callable's accepted review visible while the eventually
+        // consistent list query catches up. mergeReviews deduplicates it once
+        // the backend read returns the same id.
+        setLocalReviews((current) => mergeReviews([result.review], current));
         queryClient.setQueryData<ListPublicClubReviewsResponse>(
           reviewQueryKey,
           (current) => {
@@ -141,14 +146,14 @@ export function useListingReviewsController(listing: HostListing) {
         );
         await queryClient.invalidateQueries({queryKey: reviewQueryKey});
         setStatus({
-          message: "Review published as an unverified public review.",
+          message: websiteCopy["uselistingreviewscontroller_0504"],
           tone: "is-success",
         });
       } else {
         setLocalReviews((current) => mergeReviews([result.review], current));
         setStatus({
           message:
-            "Preview review added locally. Configure website App Check to write it to Firestore.",
+            websiteCopy["uselistingreviewscontroller_0503"],
           tone: "is-success",
         });
       }

@@ -436,7 +436,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/chats/presentation/widgets/chat_input_bar.dart (placeholder).
   ///
   /// In en, this message translates to:
-  /// **'Message...'**
+  /// **'Message…'**
   String get chatsChatInputBarPlaceholderMessage;
 
   /// Product copy used by lib/chats/presentation/widgets/chat_input_bar.dart (label).
@@ -450,6 +450,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send message'**
   String get chatsChatInputBarMessageSendMessage;
+
+  /// Accessible busy-state label for the chat image action.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading image'**
+  String get chatsChatInputBarLabelUploadingImage;
+
+  /// Accessible busy-state label for the chat send action.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending message'**
+  String get chatsChatInputBarLabelSendingMessage;
 
   /// Product copy used by lib/chats/presentation/widgets/chat_message_list.dart (title).
   ///
@@ -726,6 +738,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get coreCatchFieldLabelDone;
+
+  /// Product copy used by lib/core/widgets/catch_field.dart (saving label).
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get coreCatchFieldLabelSaving;
+
+  /// Muted suffix appended to an empty optional field add affordance.
+  ///
+  /// In en, this message translates to:
+  /// **' · Optional'**
+  String get coreCatchFieldTextOptionalSuffix;
+
+  /// Live accessibility status for a CatchField save in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving'**
+  String get coreCatchFieldSemanticSaving;
+
+  /// Live accessibility status for a successfully saved CatchField.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get coreCatchFieldSemanticSaved;
 
   /// Product copy used by lib/core/widgets/catch_form_field_label.dart (Text).
   ///
@@ -1659,6 +1695,48 @@ abstract class AppLocalizations {
   String
   get eventSuccessEventSuccessStructureConfigEditorDetailCapsRepeatPairingsWhen;
 
+  /// Accessible stepper label used by lib/event_success/presentation/event_success_structure_config_editor.dart.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease people per unit'**
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticDecreasePeoplePerUnit;
+
+  /// Accessible stepper label used by lib/event_success/presentation/event_success_structure_config_editor.dart.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase people per unit'**
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticIncreasePeoplePerUnit;
+
+  /// Accessible stepper label used by lib/event_success/presentation/event_success_structure_config_editor.dart.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease unit count'**
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticDecreaseUnitCount;
+
+  /// Accessible stepper label used by lib/event_success/presentation/event_success_structure_config_editor.dart.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase unit count'**
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseUnitCount;
+
+  /// Accessible stepper label used by lib/event_success/presentation/event_success_structure_config_editor.dart.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease meetings per pair'**
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticDecreaseMeetingsPerPair;
+
+  /// Accessible stepper label used by lib/event_success/presentation/event_success_structure_config_editor.dart.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase meetings per pair'**
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseMeetingsPerPair;
+
   /// Product copy used by lib/event_success/presentation/event_success_structure_config_editor.dart (Text).
   ///
   /// In en, this message translates to:
@@ -1731,18 +1809,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join clubs, book events, or save future events to see starting points here.'**
   String get eventsEventMapScreenMessageJoinClubsBookEvents;
-
-  /// Product copy used by lib/events/presentation/event_map_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No exact pins yet'**
-  String get eventsEventMapScreenTitleNoExactPinsYet;
-
-  /// Product copy used by lib/events/presentation/event_map_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'These events are visible, but none have pinned starting points.'**
-  String get eventsEventMapScreenMessageTheseEventsAreVisible;
 
   /// Product copy used by lib/events/presentation/location_picker_screen.dart (title).
   ///
@@ -1887,6 +1953,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your hosts'**
   String get eventsEventDetailBodyTitleYourHosts;
+
+  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (title).
+  ///
+  /// In en, this message translates to:
+  /// **'Hosted by'**
+  String get eventsEventDetailBodyTitleHostedBy;
+
+  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (tooltip).
+  ///
+  /// In en, this message translates to:
+  /// **'Message host'**
+  String get eventsEventDetailBodyTooltipMessageHost;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_cta.dart (label).
   ///
@@ -4436,11 +4514,26 @@ abstract class AppLocalizations {
   /// **'Profile prompt'**
   String get onboardingProfilePromptsPageTitleProfilePrompt;
 
+  /// Product copy used by lib/onboarding/presentation/pages/profile_prompts_page.dart (title).
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get onboardingProfilePromptsPageTitleAnswer;
+
   /// Product copy used by lib/onboarding/presentation/pages/running_prefs_page.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'TYPICAL PACE · PER KM'**
   String get onboardingRunningPrefsPageTextTypicalPacePerKm;
+
+  /// Selected running pace range shown by the onboarding pace field.
+  ///
+  /// In en, this message translates to:
+  /// **'{minPace} - {maxPace}'**
+  String onboardingRunningPrefsPageBodyPaceRange({
+    required String minPace,
+    required String maxPace,
+  });
 
   /// Product copy used by lib/onboarding/presentation/pages/running_prefs_page.dart (Text).
   ///
@@ -4663,6 +4756,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Write a review'**
   String get reviewsReviewsSectionLabelWriteAReview;
+
+  /// Product copy used by lib/reviews/shared/reviews_section.dart (message).
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to review this event.'**
+  String get reviewsReviewsSectionMessageBeTheFirstToReviewThisEvent;
 
   /// Product copy used by lib/reviews/shared/reviews_section.dart (Text).
   ///
@@ -5704,12 +5803,6 @@ abstract class AppLocalizations {
   /// **'A short post-event recap, not a wall of metrics.'**
   String get eventSuccessEventSuccessSetupBodySubtitleAShortPostEvent;
 
-  /// Product copy used by lib/events/presentation/calendar/calendar_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Calendar'**
-  String get eventsCalendarScreenTitleCalendar;
-
   /// Product copy used by lib/events/presentation/event_detail_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -5722,18 +5815,6 @@ abstract class AppLocalizations {
   /// **'This event is no longer available.'**
   String get eventsEventDetailScreenMessageThisEventIsNo;
 
-  /// Product copy used by lib/events/presentation/event_location_map_body_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Location unavailable'**
-  String get eventsEventLocationMapBodyScreenTitleLocationUnavailable;
-
-  /// Product copy used by lib/events/presentation/event_location_map_body_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'This event does not have an exact pinned starting point yet.'**
-  String get eventsEventLocationMapBodyScreenMessageThisEventDoesNot;
-
   /// Product copy used by lib/events/presentation/event_location_map_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -5745,18 +5826,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This event is no longer available.'**
   String get eventsEventLocationMapScreenMessageThisEventIsNo;
-
-  /// Product copy used by lib/events/presentation/event_location_map_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Location unavailable'**
-  String get eventsEventLocationMapScreenTitleLocationUnavailable;
-
-  /// Product copy used by lib/events/presentation/event_location_map_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'This event does not have an exact pinned starting point yet.'**
-  String get eventsEventLocationMapScreenMessageThisEventDoesNot;
 
   /// Product copy used by lib/events/presentation/saved_events_screen.dart (title).
   ///
@@ -7059,6 +7128,12 @@ abstract class AppLocalizations {
   /// **'{day}'**
   String eventsEventDateRailCardTextDay({required Object day});
 
+  /// Accessible hint for tappable condensed event tickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens event details'**
+  String get eventsEventDateRailCardSemanticsOpensEventDetails;
+
   /// Product copy used by lib/image_uploads/shared/photo_slot.dart (label).
   ///
   /// In en, this message translates to:
@@ -7436,6 +7511,26 @@ abstract class AppLocalizations {
   String userProfileInlineEditorPromptLabelSelectPromptTitle({
     required Object title,
   });
+
+  /// Numbered prompt-question field label in the profile editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt {number}'**
+  String userProfileInlineEditorPromptLabelPromptNumber({
+    required Object number,
+  });
+
+  /// Prompt-answer field label in the profile editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get userProfileInlineEditorPromptLabelAnswer;
+
+  /// Action that opens the next empty profile prompt card.
+  ///
+  /// In en, this message translates to:
+  /// **'Add another prompt'**
+  String get userProfileInlineEditorPromptLabelAddAnotherPrompt;
 
   /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_text.dart (Text).
   ///
@@ -9910,12 +10005,6 @@ abstract class AppLocalizations {
   /// **'Sign in to manage host operations.'**
   String get hostsHostAuthRequiredScreenMessageSignInToManage;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_preview.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Open public preview'**
-  String get hostsHostClubPreviewTitleOpenPublicPreview;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (title).
   ///
   /// In en, this message translates to:
@@ -10054,11 +10143,17 @@ abstract class AppLocalizations {
   /// **'HOST CLUBS'**
   String get hostsHostClubsScaffoldKickerHostClubs;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).
+  /// Accessibility label for the Host Clubs tabbed workspace.
   ///
   /// In en, this message translates to:
-  /// **'Organizer'**
-  String get hostsHostClubsScaffoldLabelOrganizer;
+  /// **'Club workspace tabs'**
+  String get hostsHostClubsScaffoldLabelClubWorkspaceTabs;
+
+  /// Accessibility hint for switching Host Clubs workspace pages.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag left or right to switch between Edit, Insights, and Preview.'**
+  String get hostsHostClubsScaffoldBodyDragLeftOrRight;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).
   ///
@@ -10251,32 +10346,11 @@ abstract class AppLocalizations {
   /// **'Host events'**
   String get hostsHostOperationsHomeScreenTitleHostEvents;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_operations_top_bar.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{kicker}. {title}'**
-  String hostsHostOperationsTopBarTextKickerTitle({
-    required Object kicker,
-    required Object title,
-  });
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Switch club'**
   String get hostsHostOrganizerTooltipSwitchClub;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'How guests see you'**
-  String get hostsHostOrganizerTitleHowGuestsSeeYou;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Public page'**
-  String get hostsHostOrganizerBodyPublicPage;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (title).
   ///
@@ -10289,18 +10363,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage'**
   String get hostsHostOrganizerLabelManage;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Trends · last 12 weeks'**
-  String get hostsHostOrganizerTitleTrendsLast12Weeks;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'See insights'**
-  String get hostsHostOrganizerLabelSeeInsights;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (title).
   ///
@@ -11569,6 +11631,14 @@ abstract class AppLocalizations {
     required Object mappableEventCount,
   });
 
+  /// Accessible map-launcher label with the number of mapped events.
+  ///
+  /// In en, this message translates to:
+  /// **'Map, {mappableEventCount, plural, =1 {1 event} other {{mappableEventCount} events}}'**
+  String exploreExploreScreenStateSemanticsMapEventCount({
+    required int mappableEventCount,
+  });
+
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (label).
   ///
   /// In en, this message translates to:
@@ -11892,6 +11962,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PIN READY'**
   String get eventsEventDetailDesignPrimitivesVisiblecopyPinReady;
+
+  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (action).
+  ///
+  /// In en, this message translates to:
+  /// **'View map'**
+  String get eventsEventDetailDesignPrimitivesActionViewMap;
+
+  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (title).
+  ///
+  /// In en, this message translates to:
+  /// **'If it fills, spots reopen'**
+  String get eventsEventDetailInformationStateTitleIfItFillsSpotsReopen;
+
+  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (body).
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible people are notified together; the first completed booking gets the spot.'**
+  String get eventsEventDetailInformationStateBodyEligiblePeopleAreNotified;
+
+  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (title).
+  ///
+  /// In en, this message translates to:
+  /// **'Host-managed waitlist'**
+  String get eventsEventDetailInformationStateTitleHostManagedWaitlist;
+
+  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (body).
+  ///
+  /// In en, this message translates to:
+  /// **'The host reviews waiting requests when capacity opens.'**
+  String get eventsEventDetailInformationStateBodyTheHostReviewsWaitingRequests;
+
+  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (title).
+  ///
+  /// In en, this message translates to:
+  /// **'Variable pricing'**
+  String get eventsEventDetailInformationStateTitleVariablePricing;
+
+  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (title).
+  ///
+  /// In en, this message translates to:
+  /// **'Plans change?'**
+  String get eventsEventDetailInformationStateTitlePlansChange;
+
+  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (body).
+  ///
+  /// In en, this message translates to:
+  /// **'Release your spot early so the waitlist can move.'**
+  String get eventsEventDetailInformationStateBodyReleaseYourSpotEarly;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
   ///
@@ -15778,12 +15896,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Insights'**
-  String get hostsHostAnalyticsVisiblecopyInsights;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'bookings'**
   String get hostsHostAnalyticsVisiblecopyBookings;
 
@@ -15818,24 +15930,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in'**
   String get hostsHostAuthRequiredScreenVisiblecopySignIn;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_preview.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Preview'**
-  String get hostsHostClubPreviewVisiblecopyPreview;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Owner'**
-  String get hostsHostClubProfileVisiblecopyOwner;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Host team'**
-  String get hostsHostClubProfileVisiblecopyHostTeam;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
   ///
@@ -17220,6 +17314,15 @@ abstract class AppLocalizations {
     required Object memberCount,
   });
 
+  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} FROM {reviewCount} CLUB REVIEWS'**
+  String eventsEventDetailScreenStateVisiblecopyClubReviewSummary({
+    required Object rating,
+    required Object reviewCount,
+  });
+
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
@@ -17937,6 +18040,158 @@ abstract class AppLocalizations {
   String coreCatchFieldVisiblecopySelectTolowercase({
     required Object toLowerCase,
   });
+
+  /// Canonical empty editable-row copy used by lib/core/widgets/catch_field.dart (visibleCopy).
+  ///
+  /// In en, this message translates to:
+  /// **'Add {fieldLabel}'**
+  String coreCatchFieldVisiblecopyAddFieldLabel({required Object fieldLabel});
+
+  /// Fallback price copy used by the shared event DateTicket.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get eventsEventDateRailCardVisiblecopyFree;
+
+  /// Compact visible label attached to the Explore map distance ring.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {distanceKm} km'**
+  String exploreExploreMapScreenLabelWithinDistance({required int distanceKm});
+
+  /// Function label for the persistent Explore map distance control.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get exploreExploreMapScreenLabelDistance;
+
+  /// Distance-control value when no radius filter is active.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get exploreExploreMapScreenValueAnyDistance;
+
+  /// Distance-control value for an active radius.
+  ///
+  /// In en, this message translates to:
+  /// **'{distanceKm} km'**
+  String exploreExploreMapScreenValueDistanceKm({required int distanceKm});
+
+  /// Explicit action that may request location permission before activating a map radius.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get exploreExploreMapScreenActionUseMyLocation;
+
+  /// Temporary map distance-control label while location resolves.
+  ///
+  /// In en, this message translates to:
+  /// **'Locating'**
+  String get exploreExploreMapScreenActionLocating;
+
+  /// Accessible state while the explicit map location request is running.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location'**
+  String get exploreExploreMapScreenSemanticsLocating;
+
+  /// Accessible label for the persistent map distance control.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance, {distance}. Tap to change'**
+  String exploreExploreMapScreenSemanticsDistanceValue({
+    required Object distance,
+  });
+
+  /// Accessible label for explicit location activation on the map.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location to set a distance'**
+  String get exploreExploreMapScreenSemanticsUseMyLocation;
+
+  /// Accessible hint for tapping the geographic distance-ring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes the distance filter'**
+  String get exploreExploreMapScreenHintChangeDistance;
+
+  /// Non-blocking feedback when explicit map location activation cannot resolve a coordinate.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is unavailable. You can still browse the map.'**
+  String get exploreExploreMapScreenMessageLocationUnavailable;
+
+  /// Recovery feedback when the device-wide location service is disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Services are off. Turn them on in Settings to use a distance ring.'**
+  String get exploreExploreMapScreenMessageLocationServicesDisabled;
+
+  /// Recovery feedback when Catch location permission is permanently denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is off for Catch. You can enable it in Settings.'**
+  String get exploreExploreMapScreenMessageLocationPermissionDeniedForever;
+
+  /// Action that opens the relevant system settings after a location failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get exploreExploreMapScreenActionOpenSettings;
+
+  /// Accessible title for a clustered native map marker.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 event} other{{count} events}}'**
+  String eventsEventPinsMapSemanticsEventCluster({required int count});
+
+  /// Tooltip for restoring the Explore map overview after panning or selecting an event.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all events and distance'**
+  String get eventsEventPinsMapTooltipShowAllEventsAndDistance;
+
+  /// Map recovery title when an active distance radius has no results.
+  ///
+  /// In en, this message translates to:
+  /// **'No events within {distanceKm} km'**
+  String exploreExploreMapScreenTitleNoEventsWithinDistance({
+    required int distanceKm,
+  });
+
+  /// Map recovery guidance for an empty distance radius.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a wider distance, or show every event in {cityLabel}.'**
+  String exploreExploreMapScreenMessageTryWiderOrShowCity({
+    required String cityLabel,
+  });
+
+  /// Map recovery action that widens the active distance radius.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand to {distanceKm} km'**
+  String exploreExploreMapScreenActionExpandToDistance({
+    required int distanceKm,
+  });
+
+  /// Map recovery action that removes the distance radius.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get exploreExploreMapScreenActionShowAll;
+
+  /// Generic map recovery title when non-distance filters have no results.
+  ///
+  /// In en, this message translates to:
+  /// **'No events match this map'**
+  String get exploreExploreMapScreenTitleNoEventsMatchMap;
+
+  /// Generic map recovery guidance for an empty filtered result.
+  ///
+  /// In en, this message translates to:
+  /// **'Change your filters to bring events back into view.'**
+  String get exploreExploreMapScreenMessageChangeFiltersToBringEventsBack;
 }
 
 class _AppLocalizationsDelegate

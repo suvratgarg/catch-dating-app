@@ -96,35 +96,43 @@ class HostTodayDashboardSection extends StatelessWidget {
           onSwitchClubIndex: onSwitchClubIndex,
           now: now,
         ),
-        gapH18,
-        switch (state.status) {
-          HostHomeTodayStatus.loading => const HostTodayLoadingBody(),
-          HostHomeTodayStatus.error => CatchInlineErrorState.fromError(
-            state.error!,
-            context: AppErrorContext.event,
-            onRetry: onRetryEvents,
-          ),
-          HostHomeTodayStatus.empty => HostEmptyActionCard(
-            title: context.l10n.hostsHostTodayTitleNoActiveEventsYet,
-            body: context.l10n.hostsHostTodayBodyCreateAnEventFor(
-              name: club.name,
-            ),
-            actions: [
-              CatchButton(
-                label: context.l10n.hostsHostTodayLabelNewEvent,
-                icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-                onPressed: () => onCreateEvent(club),
-              ),
-              CatchButton(
-                label: context.l10n.hostsHostTodayLabelEvents,
-                variant: CatchButtonVariant.secondary,
-                size: CatchButtonSize.sm,
-                onPressed: onViewEvents,
-              ),
+        Padding(
+          padding: CatchInsets.pageHorizontal,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              gapH6,
+              switch (state.status) {
+                HostHomeTodayStatus.loading => const HostTodayLoadingBody(),
+                HostHomeTodayStatus.error => CatchInlineErrorState.fromError(
+                  state.error!,
+                  context: AppErrorContext.event,
+                  onRetry: onRetryEvents,
+                ),
+                HostHomeTodayStatus.empty => HostEmptyActionCard(
+                  title: context.l10n.hostsHostTodayTitleNoActiveEventsYet,
+                  body: context.l10n.hostsHostTodayBodyCreateAnEventFor(
+                    name: club.name,
+                  ),
+                  actions: [
+                    CatchButton(
+                      label: context.l10n.hostsHostTodayLabelNewEvent,
+                      icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                      onPressed: () => onCreateEvent(club),
+                    ),
+                    CatchButton(
+                      label: context.l10n.hostsHostTodayLabelEvents,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.sm,
+                      onPressed: onViewEvents,
+                    ),
+                  ],
+                ),
+                HostHomeTodayStatus.content => _buildContent(context),
+              },
             ],
           ),
-          HostHomeTodayStatus.content => _buildContent(context),
-        },
+        ),
       ],
     );
   }
@@ -218,7 +226,6 @@ class HostTodayHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final hostName = _hostFirstName(club, currentUid);
     final daypart = switch (now.hour) {
       < 12 => context.l10n.hostsHostTodayVisiblecopyMorning,
@@ -226,34 +233,20 @@ class HostTodayHeader extends StatelessWidget {
       _ => context.l10n.hostsHostTodayVisiblecopyEvening,
     };
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.l10n
-                    .hostsHostTodayTextLongweekdayDaypart(
-                      longWeekday: EventFormatters.longWeekday(now),
-                      daypart: daypart,
-                    )
-                    .toUpperCase(),
-                style: CatchTextStyles.kicker(context, color: t.ink3),
-              ),
-              gapH8,
-              Text(
-                context.l10n.hostsHostTodayTextGoodDaypartHostname(
-                  daypart: daypart,
-                  hostName: hostName,
-                ),
-                style: CatchTextStyles.headlineS(context, color: t.ink),
-              ),
-            ],
-          ),
-        ),
-        gapW12,
+    return CatchScreenHeaderTitle.block(
+      eyebrow: context.l10n
+          .hostsHostTodayTextLongweekdayDaypart(
+            longWeekday: EventFormatters.longWeekday(now),
+            daypart: daypart,
+          )
+          .toUpperCase(),
+      title: context.l10n.hostsHostTodayTextGoodDaypartHostname(
+        daypart: daypart,
+        hostName: hostName,
+      ),
+      titleMaxLines: 2,
+      rowCrossAxisAlignment: CrossAxisAlignment.end,
+      actions: [
         HostTodayClubPill(
           club: club,
           currentUid: currentUid,

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -179,16 +180,57 @@ void main() {
     expect(find.textContaining('Message '), findsNothing);
     expect(find.textContaining('Booked ·'), findsNothing);
   });
+
+  testWidgets(
+    'singleton general scope centers the canonical empty state without a header',
+    (tester) async {
+      await tester.pumpWidget(
+        _app(
+          event: null,
+          previews: const [],
+          participations: const [],
+          now: now,
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      expect(find.byType(HostInboxScopeSelector), findsNothing);
+      expect(find.text('GENERAL INQUIRIES'), findsNothing);
+      expect(find.text('No general inquiries'), findsOneWidget);
+
+      final emptyState = find.byType(CatchEmptyState);
+      final content = find.byType(CatchEmptyStateContent);
+      expect(
+        find.ancestor(of: emptyState, matching: find.byType(Center)),
+        findsNothing,
+      );
+      final fill = tester.widget<SliverFillRemaining>(
+        find.ancestor(
+          of: emptyState,
+          matching: find.byType(SliverFillRemaining),
+        ),
+      );
+      expect(fill.hasScrollBody, isTrue);
+      expect(
+        tester.getCenter(content).dx,
+        closeTo(tester.getCenter(emptyState).dx, 0.5),
+      );
+      expect(
+        tester.getCenter(content).dy,
+        closeTo(tester.getCenter(emptyState).dy, 0.5),
+      );
+    },
+  );
 }
 
 Widget _app({
-  required Event event,
+  required Event? event,
   required List<ChatThreadPreview> previews,
   required List<EventParticipation> participations,
   required DateTime now,
   HostInboxScope? initialScope,
 }) {
-  final club = club_test.buildClub(id: event.clubId);
+  final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
     newMatches: const [],
     conversations: previews,
@@ -201,11 +243,12 @@ Widget _app({
       hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
       watchEventsForClubsProvider(
         eventsQuery,
-      ).overrideWith((ref) => Stream.value([event])),
+      ).overrideWith((ref) => Stream.value([?event])),
       chatsListViewModelProvider.overrideWithValue(AsyncData(inbox)),
-      watchEventParticipationsForEventProvider(
-        event.id,
-      ).overrideWith((ref) => Stream.value(participations)),
+      if (event != null)
+        watchEventParticipationsForEventProvider(
+          event.id,
+        ).overrideWith((ref) => Stream.value(participations)),
     ],
     child: MaterialApp(
       theme: AppTheme.light,

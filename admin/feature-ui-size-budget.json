@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-07-13",
+  "maxRouteOrWorkspaceLines": 900,
+  "maxPrivateModuleLines": 1200,
+  "notes": "Feature screens/workspaces remain thin composition entries. Private panel modules may be denser but must stay below the reviewed ceiling or be split by cohesive workflow."
+}

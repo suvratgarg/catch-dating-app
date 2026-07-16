@@ -66,7 +66,7 @@ export const CaptureShellStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_capture_card_shell",
-      routeIds: ["home", "host", "host_preview"],
+      routeIds: ["home", "host"],
       states: ["shared-capture", "fallback", "phone-shell"],
     },
   },
@@ -101,7 +101,7 @@ export const HostCaptureCardAdapterStory: Story = {
   parameters: {
     catchComponent: {
       id: "host_capture_card_adapter",
-      routeIds: ["home", "host", "host_preview"],
+      routeIds: ["home", "host"],
       states: ["shared-capture-adapter"],
     },
   },
@@ -126,7 +126,7 @@ export const HostPhoneCaptureFrameAdapterStory: Story = {
   parameters: {
     catchComponent: {
       id: "host_phone_capture_frame_adapter",
-      routeIds: ["host", "host_preview"],
+      routeIds: ["host"],
       states: ["shared-phone-capture-adapter"],
     },
   },
@@ -151,7 +151,7 @@ export const MarketingConsentBannerAdapterStory: Story = {
   parameters: {
     catchComponent: {
       id: "marketing_consent_banner_adapter",
-      routeIds: ["home", "host", "host_preview", "claim", "claim_lookup", "not_found", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
+      routeIds: ["home", "host", "claim", "claim_lookup", "not_found", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
       states: ["app-shell-consent-state"],
     },
   },

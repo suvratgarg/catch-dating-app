@@ -189,27 +189,31 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
   const eventLat = event.meetingLocation?.latitude ?? event.startingPointLat;
   const eventLng = event.meetingLocation?.longitude ?? event.startingPointLng;
 
-  if (eventLat != null && eventLng != null) {
-    if (latitude == null || longitude == null) {
-      throw new HttpsError(
-        "invalid-argument",
-        "Location is required to check in. Please enable GPS and try again."
-      );
-    }
-
-    const distance = haversineDistanceM(
-      latitude, longitude,
-      eventLat, eventLng
+  if (eventLat == null || eventLng == null) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This event has no exact meeting location. Contact the host."
     );
+  }
+  if (latitude == null || longitude == null) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Location is required to check in. Please enable GPS and try again."
+    );
+  }
 
-    if (distance > EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS) {
-      throw new HttpsError(
-        "failed-precondition",
-        `You must be within ${EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS} m ` +
-        "of the meeting point to check in. You appear to be " +
-        `${Math.round(distance)} m away.`
-      );
-    }
+  const distance = haversineDistanceM(
+    latitude, longitude,
+    eventLat, eventLng
+  );
+
+  if (distance > EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS) {
+    throw new HttpsError(
+      "failed-precondition",
+      `You must be within ${EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS} m ` +
+      "of the meeting point to check in. You appear to be " +
+      `${Math.round(distance)} m away.`
+    );
   }
   // If the event has no coordinates, skip GPS check — graceful degradation
   // for events created before this feature was added.

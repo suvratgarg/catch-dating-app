@@ -26,6 +26,7 @@ migrate_working_dir/
 # Environment variables (secrets)
 .env
 .env.*
+!.env.example
 *.local
 ios/Flutter/GoogleMapsKeys.xcconfig
 .runtimeconfig.json

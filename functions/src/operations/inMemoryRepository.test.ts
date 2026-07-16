@@ -45,6 +45,47 @@ test("run and work-item lists are filtered and cursor paginated", async () => {
     ["work:event:2"]
   );
   assert.equal(second.nextCursor, null);
+
+  await repository.createWorkItem(operationWorkItem({
+    workItemId: "work:event:human",
+    taskFlags: ["human_review_required"],
+    normalizedPayload: {owner: "human"},
+  }));
+  const humanReview = await repository.listWorkItems({
+    workflowId: "supply-intake",
+    humanReviewRequired: true,
+    limit: 200,
+  });
+  assert.deepEqual(humanReview.items.map((item) => item.workItemId), [
+    "work:event:human",
+  ]);
+});
+
+test("run pagination is newest-first instead of lexical-id order", async () => {
+  const repository = new InMemoryOperationsRepository();
+  await repository.createRun(operationRun({
+    runId: "run:z-old",
+    updatedAt: "2026-07-01T08:00:00.000Z",
+  }));
+  await repository.createRun(operationRun({
+    runId: "run:a-new",
+    updatedAt: "2026-07-14T08:00:00.000Z",
+  }));
+  await repository.createRun(operationRun({
+    runId: "run:m-middle",
+    updatedAt: "2026-07-07T08:00:00.000Z",
+  }));
+  const first = await repository.listRuns({limit: 2});
+  assert.deepEqual(first.items.map((run) => run.runId), [
+    "run:a-new",
+    "run:m-middle",
+  ]);
+  assert.ok(first.nextCursor);
+  const second = await repository.listRuns({
+    limit: 2,
+    cursor: first.nextCursor,
+  });
+  assert.deepEqual(second.items.map((run) => run.runId), ["run:z-old"]);
 });
 
 test("versioned writes reject stale or skipped revisions", async () => {

@@ -5,11 +5,9 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -71,11 +69,6 @@ class HostAppShell extends ConsumerWidget {
       }
     });
 
-    final authenticatedTabBarFloats =
-        isAuthenticated && CatchTabBar.floatsFor(context);
-    final authenticatedBottomOverlayInset = authenticatedTabBarFloats
-        ? CatchTabBar.reservedBottomInset(context)
-        : 0.0;
     final authenticatedNavigationBar = isAuthenticated
         ? AppShellNavigationBar(
             currentIndex: navigationShell.currentIndex,
@@ -87,36 +80,15 @@ class HostAppShell extends ConsumerWidget {
             ),
           )
         : null;
-    final body = CatchNoticeHost(
-      persistentNotices: [if (isOffline) CatchNoticeData.offline(context.l10n)],
-      child: AppShellActiveTab(
-        index: navigationShell.currentIndex,
-        bottomOverlayInset: authenticatedBottomOverlayInset,
+    return CatchAdaptiveTabScaffold(
+      activeIndex: navigationShell.currentIndex,
+      navigationBar: authenticatedNavigationBar,
+      body: CatchNoticeHost(
+        persistentNotices: [
+          if (isOffline) CatchNoticeData.offline(context.l10n),
+        ],
         child: navigationShell,
       ),
-    );
-
-    return Scaffold(
-      key: AppShellKeys.scaffold,
-      extendBody: authenticatedTabBarFloats,
-      body: authenticatedTabBarFloats
-          ? Stack(
-              children: [
-                Positioned.fill(child: body),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: authenticatedNavigationBar!,
-                ),
-              ],
-            )
-          : body,
-      bottomNavigationBar: authenticatedTabBarFloats
-          ? null
-          : isAuthenticated
-          ? authenticatedNavigationBar
-          : null,
     );
   }
 }

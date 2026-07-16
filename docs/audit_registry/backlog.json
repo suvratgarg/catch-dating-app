@@ -1,20 +1,20 @@
 {
-  "version": "2.7.158",
-  "updated": "2026-07-12",
+  "version": "2.7.161",
+  "updated": "2026-07-13",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
-    "updated": "2026-07-03",
+    "updated": "2026-07-12",
     "command": "bash tool/widget_cleanup_scan.sh --summary",
     "counts": {
-      "centralized_widget_timing": 0,
+      "centralized_widget_timing": 10,
       "async_unit_flush": 0,
-      "positional_widget_finders": 0,
+      "positional_widget_finders": 1,
       "presentation_repository_reaches": 0,
       "catch_tokens_prop_drilling": 0,
       "raw_material_button_candidates": 0,
       "raw_text_input_candidates": 0,
-      "profile_bottom_sheet_editor_candidates": 0,
+      "profile_bottom_sheet_editor_candidates": 1,
       "profile_inline_chip_label_candidates": 0,
       "profile_inline_chip_clear_action_candidates": 0,
       "profile_stacked_text_tile_editor_candidates": 0,
@@ -24,17 +24,18 @@
       "raw_number_stepper_candidates": 0,
       "feature_tappable_candidates": 0,
       "literal_sized_box_spacing_candidates": 0,
-      "raw_decorated_surface_candidates": 0,
-      "unstyled_text_candidates": 0,
-      "low_level_typography_role_candidates": 0,
+      "raw_decorated_surface_candidates": 2,
+      "unstyled_text_candidates": 32,
+      "low_level_typography_role_candidates": 2,
       "nonzero_letter_spacing_candidates": 0,
-      "raw_text_style_candidates": 0,
+      "raw_text_style_candidates": 1,
       "legacy_spacing_canonical_candidates": 0,
       "fine_grained_spacing_compatibility": 0,
       "presentation_plugin_imports": 0,
       "raw_error_surface_candidates": 0
     },
     "notes": [
+      "2026-07-12 live scanner reports 49 candidates across seven categories. The previous zero snapshot was stale; tool/audit/widget_cleanup_baseline.json now ratchets these live counts and rejects increases or unbaselined categories.",
       "2026-07-03 live widget cleanup scanner reports zero matches across all categories; stored snapshot refreshed so future agents do not chase stale 2026-07-01 candidates.",
       "2026-07-01 bash tool/widget_cleanup_scan.sh --summary now emits live machine-readable counts; dart tool/audit_registry.dart backlog runs that live summary by default and keeps --stored-scanner for historical comparison.",
       "2026-06-15 stored scanner snapshot reported zero matches across the then-tracked widget cleanup categories; do not treat that historical note as current without rerunning the live scanner.",
@@ -44,6 +45,28 @@
     ]
   },
   "pending": [
+    {
+      "id": "ARCH-PROVIDER-CODEGEN-001",
+      "title": "Migrate reviewed manual Riverpod families to code generation",
+      "status": "active",
+      "owner": "agent",
+      "area": "flutter,architecture,riverpod,tooling",
+      "priority": "low",
+      "summary": "The generated provider graph found four existing handwritten auto-dispose providers outside core that the older dependency scanner did not classify because their declarations use chained autoDispose/family constructors. They are reviewed, acyclic, and behaviorally valid; migrate them in owning-feature passes rather than combining override API churn across Clubs, Event Success, Explore, and Public Profile.",
+      "acceptance": [
+        "clubNameLookupProvider, eventSuccessCompanionClockProvider, exploreRecommendedEventsProvider, and publicProfilesByIdsProvider use Riverpod code generation with equivalent family and auto-dispose behavior",
+        "focused provider and override-heavy caller tests pass for each owning feature",
+        "the matching planned decisions disappear from provider_graph_reviews.json and provider graph --check remains clean"
+      ],
+      "paths": [
+        "lib/clubs/data/club_name_lookup.dart",
+        "lib/event_success/event_success_companion_clock.dart",
+        "lib/explore/data/explore_recommendations_repository.dart",
+        "lib/public_profile/data/public_profiles_lookup.dart",
+        "tool/architecture/provider_graph_reviews.json"
+      ],
+      "source": "2026-07-13-provider-graph-architecture"
+    },
     {
       "id": "EVENT-INTAKE-LIVE-SOURCE-001",
       "title": "Replace the stale sample Event Intake bridge before live publish",
@@ -165,6 +188,8 @@
       "priority": "high",
       "summary": "The React scanners block raw native interactive controls and direct feature/app/story className usage outside shared primitive owner files, and website-legacy-site-barrel/import boundary, website-page-shell, data-table, admin-workbench-table, form-shell, admin-editor-section-form, admin-layout-span, field-layout, admin-summary-metrics, admin-workbench-toolbar including compact modifier props, admin-workbench-layout, admin-loading-icon/spin class wiring, admin-command-list, admin-intake-tag-list, admin-intake-section-shell, admin-intake-state-grid, admin-row-tag-shell, admin-roadmap-list, admin-status-display, admin-filter-bar, admin-empty-state including class-pass-through variants, admin-app-shell-status, admin-app-auth-shell, admin-intake-status-chip, admin-quality-row, admin-quality-list, admin-intake-decision-shell including DecisionFooter/marketing-decision-footer, website-organizer-filter-rail, website-stat-strip, website-chip-rail, website-capture-grid including capture-card shells, website-card-grid, website-empty-state variants, website-status-display, website-app-download-shell including legacy AppDownloadCtas imports/local components, website-badge-status, website-identity-display-shell, website-process-status-panel, website-ui-label-shell, website-section-heading, website-action-group, website-control-row, website-waitlist-section, website-waitlist-form-shell, website-success-grid including direct SuccessGrid composition, website-claim-shell, website-claim-flow-shell including the route root, website-content-grid, website-panel-shell, website-product-shell including product-module-grid/card shells, website-row-shell, website-host-preview-shell including main/hero/hero-store/offer/section/apply/format-rail/chip-row wrappers, website-host-page-shell, website-host-application-shell, website-host-feature-section-shell, website-marketing-section-shell, website-marketing-info-card-shell, website-marketing-loop-list-shell, website-marketing-consent-banner-shell, website-featured-organizer-card-shell, website-listing-shell, website-listing-hero-shell, website-listing-review-shell including review-signal and owner-response shells, website-listing-claim-shell, website-listing-card-grid-shell, website-listing-event-section-shell including event-action cards, website-listing-source-ledger-shell, website-organizer-result-shell, website-organizer-search-section-shell, plus website-search-form families including PublicSearchBar ownership, direct public-search slot composition, and public event-card shells are now enforced by the React component-governance scanner; class-name boundary drift is blocked by web:react-classname-boundaries, website route review states are validated against Storybook parameters.catchRoute declarations through marketing:website-routes, and exported website feature components must be present in design/website/components.json through marketing:website-components. Admin feature UI exports are limited to route/workspace entry components through web:admin-feature-exports, and admin route/workspace, shared primitive, and feedback provider exports are registry-backed through web:admin-components, with first admin Storybook primitive, Overview route, and Access, Admin Roles, Data Quality, Events, Event Intake, Growth, Finance, Intake, Marketing Ops, Organizer Intake, Organizer Publishing, Safety, and Users route/workspace previews enforced through web:admin-storybook. The next pass should extend the same registry-backed enforcement pattern to remaining marketing filters, additional website filters, remaining structural layout rails/shells, remaining route-specific shells, remaining non-shell status blocks, remaining admin structural lists, or other reusable UI structures so website/admin screens do not hand-roll them per screen. Start from one reference component family, add or reuse shared primitives, migrate offenders, then add focused scanner checks and Storybook/component-registry coverage where applicable.",
       "paths": [
+        "docs/audit_registry/web_shared_primitive_adoption.json",
+        "tool/web/check_shared_web_ui_adoption.mjs",
         "tool/web/check_react_ui_primitives.mjs",
         "tool/web/check_react_component_governance.mjs",
         "website/src/shared/ui/**",

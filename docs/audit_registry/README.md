@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.6.3
-updated: 2026-07-10
+version: 2.6.7
+updated: 2026-07-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -31,7 +31,9 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `agent_metrics.jsonl` | Append-only measurements for agent-readiness score, check counts, delegation outcomes, and workflow-quality trend events. |
 | `architecture_pattern_adoption.json` | Machine-readable tracker for architecture reference exhibits, prototype files, adopters, variants, exceptions, and back-propagation obligations. |
 | `react_component_governance_families.json` | Generated reader snapshot of React component families governed by `tool/web/check_react_component_governance.mjs --families-json`. |
+| `web_shared_primitive_adoption.json` | Active cross-React primitive compatibility decisions plus the running usability, performance, organization, test, and tooling improvement queue. |
 | `react_staff_review_remediation.json` | Staff review item tracker for the 2026-07-02 organizer publication, public listing, and claim CTA remediation pass. |
+| `admin_console_design_adoption.json` | Production adoption tracker for the comprehensive admin-console design export, including implemented, partial, blocked, and prototype-only behavior. |
 | `widget_classification.json` | Generated registry of every Dart widget class, its role, ownership boundaries, catalog status, and allowed public remediation path. |
 | `widget_classification.schema.json` | JSON schema for the generated widget classification registry. |
 | `widget_similarity.json` | Generated structural-similarity registry for widget consolidation review packets. |
@@ -39,9 +41,10 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `new_widget_inventory_scan.json` | Generated report comparing the working tree to a base ref for newly added widgets, private widget classes, widget-returning helpers, and Widgetbook/catalog coverage gaps. |
 | `archive/` | Historical detail that should be searched only when a debt id or rule requires it. |
 
-The inventory includes native Android, iOS, macOS, and Flutter web files in
-addition to Dart, tests, tooling, design, and documentation, so release identity
-changes receive the same pass history as application code.
+The inventory includes native Android, iOS, macOS, Flutter web, and Functions
+operator scripts in addition to Dart, tests, tooling, design, and documentation,
+so release identity and trusted operations changes receive the same pass history
+as application code.
 
 ## Enforcement Metadata
 
@@ -99,12 +102,23 @@ node tool/run.mjs check --category meta
    npm run design:widgets:classify
    npm run design:widgets:check
    npm run design:widgets:new
+   npm run design:fields:inventory:check
    ```
 
    Private helper widgets are not an allowed destination. A widget that is too
    local or too redundant must still resolve through a public catalog action:
    merge into a canonical public widget, promote to the catalog, or inline/delete
    the duplicate.
+
+   Flutter field migrations are ranked in
+   `flutter_field_surface_adoption.json`; the inventory check validates its
+   route/screen bindings, exact callsite anchors, and zero unclassified legacy
+   product callsites before handoff.
+
+   The broad widget cleanup inventory is a live ratchet, not a stored-zero
+   assertion. `bash tool/widget_cleanup_scan.sh --check` compares every current
+   category with `tool/audit/widget_cleanup_baseline.json`; reductions pass,
+   while increases, missing categories, and newly unbaselined categories fail.
 
    For Riverpod, Freezed, json_serializable, envied, or other build_runner-backed
    source edits, keep generated files synchronized. During iterative cleanup

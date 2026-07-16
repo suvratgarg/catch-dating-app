@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-11",
+  "updated": "2026-07-14",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -41,6 +41,8 @@
       "entrypoints": [
         {"kind": "tool-id", "ref": "firebase:deploy-targets"},
         {"kind": "tool-id", "ref": "firebase:function-targets"},
+        {"kind": "tool-id", "ref": "firebase:storage-rules-firestore-iam"},
+        {"kind": "tool-id", "ref": "firebase:probe-chat-storage-rules"},
         {"kind": "workflow", "ref": ".github/workflows/firebase-deploy.yml"},
         {"kind": "workflow", "ref": ".github/workflows/firebase-dev-deploy.yml"},
         {"kind": "config", "ref": "firebase.json"},
@@ -51,10 +53,13 @@
         "node tool/contracts/check_firestore_contract.mjs",
         "npm --prefix functions run lint",
         "npm --prefix functions test",
-        "firebase emulators:exec --project demo-catch-rules --only firestore,storage \"npm --prefix functions run test:rules\""
+        "firebase emulators:exec --project demo-catch-rules --only firestore,storage \"npm --prefix functions run test:rules\"",
+        "node tool/firebase/storage_rules_firestore_iam.mjs --all",
+        "Run firebase:probe-chat-storage-rules after Storage IAM or chat-image rules change"
       ],
       "notes": [
         "Known targets deploy in this order: functions, firestore:indexes, firestore:rules, storage, hosting, remoteconfig.",
+        "The Storage phase fails before deploy when its Firestore Rules service-agent IAM binding is missing.",
         "Extensions remain an explicit separate deploy path documented in docs/release_operations.md."
       ]
     },
@@ -75,20 +80,24 @@
         {"kind": "tool-id", "ref": "data:repair-event-aggregates"},
         {"kind": "tool-id", "ref": "data:repair-future-attendance"},
         {"kind": "tool-id", "ref": "data:backfill-profile-photos"},
+        {"kind": "tool-id", "ref": "data:backfill-event-meeting-locations"},
         {"kind": "tool-id", "ref": "data:backfill-event-discovery"},
         {"kind": "tool-id", "ref": "data:backfill-algolia-explore-search"},
         {"kind": "tool-id", "ref": "data:hygiene-media-paths"},
+        {"kind": "tool-id", "ref": "operations:import-admin-projection"},
         {"kind": "workflow", "ref": ".github/workflows/data-validation.yml"},
         {"kind": "doc", "ref": "docs/backend_operation_catalog.md"},
         {"kind": "doc", "ref": "docs/demo_data_seeding.md"}
       ],
       "requiredChecks": [
         "Prefer --json dry run before --apply.",
-        "Use --allow-prod only after reviewing prod dry-run output."
+        "Use --allow-prod only after reviewing prod dry-run output.",
+        "Validate a Supply Intake export without --apply, then repeat with explicit --environment, --project, and --confirm-run only to import the immutable internal shadow projection."
       ],
       "notes": [
         "Destructive tools require an explicit confirmation flag in addition to --apply.",
-        "Fraud/safety-related data changes should be tied back to backend_operation_catalog ownership before apply."
+        "Fraud/safety-related data changes should be tied back to backend_operation_catalog ownership before apply.",
+        "The Supply Intake projection importer writes only operationRuns and operationWorkItems; it cannot publish events or organizers, and a changed artifact requires a new run id."
       ]
     },
     {

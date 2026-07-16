@@ -438,6 +438,16 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.screenPx,
   );
 
+  /// Leading route action aligned to the canonical screen gutter.
+  static const EdgeInsets topBarLeadingAction = EdgeInsets.only(
+    left: CatchSpacing.screenPx,
+  );
+
+  /// Trailing route actions aligned to the canonical screen gutter.
+  static const EdgeInsets topBarTrailingActions = EdgeInsets.only(
+    right: CatchSpacing.screenPx,
+  );
+
   /// Dense Host Inbox title row: preserves the page gutter while leaving a
   /// full 40px lane for the headline and expanding-search action.
   static const EdgeInsets hostInboxHeader = EdgeInsets.symmetric(
@@ -493,14 +503,21 @@ abstract final class CatchInsets {
   // centralise that rhythm so screens stop tuning their own raw EdgeInsets.
   // The horizontal page gutter stays [CatchSpacing.screenPx] (s5) everywhere.
 
-  /// (1) Title block padding for tab screens whose header pairs a title with a
-  /// subtitle (Chats, Clubs browse headers). Canonical = [pageHeaderBody].
-  static const EdgeInsets screenTitleBlock = pageHeaderBody;
+  /// (1) Canonical root-screen title padding.
+  ///
+  /// The title begins at the top safe-area boundary. The screen-header
+  /// primitive owns this zero top inset so routes cannot add their own 8px or
+  /// 16px offset and silently drift from sibling screens.
+  static const EdgeInsets screenTitleBlock = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s0,
+    CatchSpacing.s5,
+    CatchSpacing.s3,
+  );
 
-  /// (1) Title block padding for tab screens whose header is a compact
-  /// eyebrow/title or title-only row (Home dashboard, Profile-style headers).
-  /// Canonical = [pageHeaderCompact].
-  static const EdgeInsets screenTitleBlockCompact = pageHeaderCompact;
+  /// Compatibility name for callers that have not yet dropped the old
+  /// compact/full distinction. Root-screen geometry is intentionally uniform.
+  static const EdgeInsets screenTitleBlockCompact = screenTitleBlock;
 
   /// (3) Horizontal gutters for a pinned search/filter/tab control row when its
   /// vertical rhythm is owned by the control's own height slot (Profile tab
@@ -720,6 +737,17 @@ abstract final class CatchInsets {
     vertical: CatchSpacing.s3,
   );
 
+  /// Compact DateTicket body from the canonical handoff.
+  ///
+  /// The stronger leading inset separates the decision content from the
+  /// perforated rail; the other edges stay deliberately tight for fast scans.
+  static const EdgeInsets eventTicketBody = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.micro14,
+    CatchSpacing.s4,
+    CatchSpacing.micro14,
+  );
+
   /// Content block padding with slightly stronger bottom separation.
   static const EdgeInsets contentBlock = EdgeInsets.fromLTRB(
     CatchSpacing.s4,
@@ -894,6 +922,19 @@ abstract final class CatchElevation {
     BoxShadow(color: t.primarySoft, spreadRadius: CatchSpacing.micro3),
   ];
 
+  /// Exact active-field lift from the Field handoff. Field rows deliberately
+  /// use one shadow layer so the pressed-to-focused handoff reads as one tile
+  /// instead of two competing elevations.
+  static List<BoxShadow> fieldActive(Brightness brightness) => <BoxShadow>[
+    BoxShadow(
+      color: brightness == Brightness.dark
+          ? const Color.fromRGBO(0, 0, 0, 0.55)
+          : const Color.fromRGBO(22, 20, 15, 0.08),
+      blurRadius: brightness == Brightness.dark ? 22 : 18,
+      offset: Offset(0, brightness == Brightness.dark ? 8 : 6),
+    ),
+  ];
+
   static List<BoxShadow> segmentedSelected(CatchTokens t) => <BoxShadow>[
     BoxShadow(
       color: t.ink.withValues(alpha: CatchOpacity.controlOverlayPressed),
@@ -919,6 +960,12 @@ abstract final class CatchOpacity {
   static const double none = 0.0;
   static const double onFillMuted = 0.76;
   static const double ticketPerforationLine = 0.22;
+
+  /// Decorative activity glyph behind DateTicket rail data.
+  ///
+  /// The glyph is deliberately present but subordinate: it helps users scan
+  /// activity types without becoming another foreground badge.
+  static const double eventDateRailGlyph = 0.14;
 
   /// Filled-surface scrim for text/icons that need contrast on colored
   /// backgrounds — activity stamps, active date-marker text.
@@ -1089,8 +1136,9 @@ abstract final class CatchOpacity {
   static const double photoDragGhost = 0.35;
   static const double profileInfoDivider = 0.62;
 
-  /// Inset hairline divider between on-surface rows (FieldRow / settings / chat
-  /// inbox) — design-system color-mix(line 38%, transparent).
+  /// Legacy low-contrast inset divider treatment used outside the canonical
+  /// FieldSection contract. CatchDividerRole.fieldRow now uses the full `line`
+  /// token so raised Field rows can cover the boundary with an opaque tile.
   static const double fieldRowDivider = 0.38;
   static const double profileProgressTrack = 0.70;
   static const double profileShadowDark = 0.34;
@@ -1502,6 +1550,106 @@ abstract final class CatchMotion {
 // ── Layout ───────────────────────────────────────────────────────────────────
 
 /// Layout constants for constraint-based sizing.
+/// Exact component tokens for the canonical Field + FieldSection system.
+///
+/// These values mirror revision `field-sys-20260714-195933-640b9906`. Keep
+/// field-specific geometry here rather than spreading raw values through the
+/// renderer or feature adapters.
+abstract final class CatchFieldTokens {
+  static const double rowHorizontalPadding = CatchSpacing.s4;
+  static const double dividedRowBleed = CatchSpacing.micro10;
+  static const double rowVerticalPadding = CatchSpacing.s3;
+  static const double leadingIconExtent = CatchIcon.md;
+  static const double leadingGap = CatchSpacing.micro14;
+  static const double textLaneInset = leadingIconExtent + leadingGap;
+  static const double captionExtent = CatchSpacing.micro18;
+  static const double valueLineExtent = 18.9;
+
+  static const double trailingGap = CatchSpacing.s2;
+  static const double disclosureGlyphExtent = CatchSpacing.s4;
+  static const double largeGlyphExtent = CatchSpacing.micro18;
+  static const double trailingValueMaxWidth = 160;
+  static const double controlTopGap = CatchSpacing.micro10;
+  static const double actionBarTopGap = CatchSpacing.s4;
+
+  static const double chipHorizontalGap = CatchSpacing.s2;
+  static const double chipVerticalGap = CatchSpacing.s2;
+  static const double chipVisualMinHeight = 30;
+  static const double chipRunSpacing = chipVerticalGap;
+  static const double chipHorizontalPadding = CatchSpacing.micro14;
+  static const double chipVerticalPadding = CatchSpacing.s2;
+  static const double chipSelectedGlyphExtent = CatchSpacing.s3;
+  static const double chipSelectedGlyphGap = CatchSpacing.micro6;
+
+  static const double actionButtonHorizontalPadding = CatchSpacing.micro18;
+  static const double actionButtonVerticalPadding = CatchSpacing.micro10;
+  static const double actionButtonGap = CatchSpacing.s2;
+
+  static const double stepperHitExtent = CatchSpacing.s11;
+  static const double stepperVisualExtent = CatchSpacing.s8;
+  static const double stepperVisualEdgeInset =
+      (stepperHitExtent - stepperVisualExtent) / 2;
+  static const double stepperGap = CatchSpacing.s4;
+  static const double stepperLayoutGap = stepperGap - stepperVisualEdgeInset;
+  static const double stepperValueMinWidth = 30;
+  static const double stepperValueFontSize = 15;
+
+  static const double toggleTrackWidth = CatchSpacing.s11;
+  static const double toggleTrackHeight = 26;
+  static const double toggleTrackInset = CatchSpacing.micro3;
+  static const double toggleKnobExtent = 20;
+  static const double toggleKnobOnOffset = 21;
+
+  static const double tileRadius = CatchRadius.interactiveTile;
+  static const double sectionRadius = CatchRadius.md;
+  static const double sectionHeaderTopPadding = CatchSpacing.micro14;
+  static const double sectionHeaderBottomPadding = CatchSpacing.micro2;
+  static const double sectionHeaderGap = CatchSpacing.s3;
+  static const double sectionRuleGap = CatchSpacing.s2;
+  static const double sectionFooterTopPadding = CatchSpacing.s2;
+  static const double sectionCountFontSize = 9.5;
+  static const double sectionCountLetterSpacing = 0.76;
+
+  static const double valueFontSize = 14;
+  static const double captionFontSize = 11.5;
+  static const double counterFontSize = 10.5;
+  static const double chipFontSize = 14;
+  static const double actionButtonFontSize = 14;
+  static const double valueLineHeight = 1.35;
+  static const double supportLineHeight = 1.45;
+
+  static const double activeTintAlpha = 0.04;
+  static const double pressedTintAlpha = 0.06;
+  static const double disabledOpacity = 0.40;
+  static const double boundedStepperOpacity = 0.32;
+  static const double savingCancelOpacity = 0.45;
+  static const double savingToggleOpacity = 0.55;
+  static const double chipPressedScale = 0.97;
+  static const double stepperPressedScale = 0.92;
+  static const Duration fast = Duration(milliseconds: 150);
+  static const Duration standard = Duration(milliseconds: 200);
+  static const Duration reveal = Duration(milliseconds: 300);
+  static const Duration pressIn = Duration(milliseconds: 80);
+  static const Duration pressOut = Duration(milliseconds: 180);
+  static const Duration singleChoiceCloseDelay = Duration(milliseconds: 180);
+  static const Duration savedStatusHold = Duration(milliseconds: 900);
+  static const Duration repeatDelay = Duration(milliseconds: 400);
+  static const Duration repeatNormal = Duration(milliseconds: 110);
+  static const Duration repeatAccelerated = Duration(milliseconds: 55);
+  static const int repeatAccelerationTicks = 10;
+  static const Curve curve = Cubic(0.2, 0.7, 0.2, 1);
+
+  static Color activeSurface(CatchTokens tokens) => Color.alphaBlend(
+    tokens.ink.withValues(alpha: activeTintAlpha),
+    tokens.surface,
+  );
+
+  static Color pressedSurface(CatchTokens tokens) => Color.alphaBlend(
+    tokens.ink.withValues(alpha: pressedTintAlpha),
+    tokens.surface,
+  );
+}
+
 abstract final class CatchLayout {
   /// Content max-width clamp for large phones / foldables.
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
@@ -1661,11 +1809,13 @@ abstract final class CatchLayout {
   static const double activityArtGlyphScale = 0.95;
   static const double statStripVerticalPadding = 13.0;
   static const double statStripLabelFontSize = 9.0;
-  static const double fieldRowVerticalPadding = 13.0;
+  static const double fieldRowVerticalPadding =
+      CatchFieldTokens.rowVerticalPadding;
   static const double fieldActionBarWrapBreakpoint = 220.0;
-  static const double fieldRowTextLaneInset = CatchIcon.md + CatchSpacing.s3;
+  static const double fieldRowTextLaneInset = CatchFieldTokens.textLaneInset;
   static const double fieldRowDividerIconInset = fieldRowTextLaneInset;
-  static const double fieldTrailingValueMaxWidth = 160.0;
+  static const double fieldTrailingValueMaxWidth =
+      CatchFieldTokens.trailingValueMaxWidth;
   static const double searchFieldIconSize = 15.0;
   static const double searchFieldIconGap = 10.0;
   static const double searchFieldClearSize = 32.0;
@@ -1689,6 +1839,7 @@ abstract final class CatchLayout {
   static const double personUnreadBadgeHorizontalPadding =
       CatchSpacing.micro6 + CatchStroke.hairline;
   static const double countPillIconSize = CatchIcon.sm + CatchSpacing.micro2;
+  static const double countPillMinExtent = CatchSpacing.s11;
   static const double countPillLabelVerticalPadding =
       CatchSpacing.micro10 + CatchStroke.hairline;
   static const double settingsRowVerticalPadding =
@@ -1941,6 +2092,8 @@ abstract final class CatchLayout {
   static const double eventCompactDatePillWidth = 52.0;
   static const double eventCompactDatePillHeight = 58.0;
   static const double eventDateRailWidth = 66.0;
+  static const double eventDateRailGlyphSize = 50.0;
+  static const double eventTicketDecisionInlineMinWidth = 220.0;
   static const double clubAvatarRailColumnWidth = 76.0;
   static const double clubDirectorySkeletonTitleWidth = 180.0;
   static const double clubDirectorySkeletonSubtitleWidth = 132.0;
@@ -1954,9 +2107,6 @@ abstract final class CatchLayout {
   static const double heroSignalChipVerticalPadding = 7.0;
   static const double compactDarkPillHorizontalPadding = 11.0;
   static const double compactDarkPillVerticalPadding = 7.0;
-  static const double calendarHeaderTitleFontSize = 26.0;
-  static const double calendarHeaderTitleLineHeight = 1.12;
-  static const double calendarHeaderTitleMinHeight = 36.0;
   static const double calendarWeekdayFontSize = 13.0;
   static const double calendarWeekdayLineHeight = 1.45;
   static const double calendarDateFontSize = 13.0;
@@ -1967,7 +2117,6 @@ abstract final class CatchLayout {
   static const double calendarMonthWeekdayLineHeight = 1.30;
   static const double calendarMonthGridHeight = 240.0;
   static const double calendarMonthGridGapTotal = 30.0;
-  static const double calendarHeaderSkeletonToggleWidth = 80.0;
   static const double welcomeBrandMarkExtent = 52.0;
   static const double welcomeMaxWidth = 430.0;
   static const double welcomeReelRowHeight = 90.0;
@@ -2025,7 +2174,6 @@ abstract final class CatchLayout {
   static const double hostPayoutSetupButtonWidth = 120.0;
   static const double hostOrganizerMetricRowHeight = 78.0;
   static const double hostOrganizerTeamDividerInset = 54.0;
-  static const double hostOrganizerTrendChartHeight = 76.0;
   static const double hostPaymentActionSkeletonHeight = 44.0;
   static const double hostChartSkeletonHeight = 132.0;
   static const double hostCreateEventRouteFormSkeletonHeight = 192.0;

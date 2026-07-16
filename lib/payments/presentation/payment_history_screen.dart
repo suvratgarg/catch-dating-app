@@ -33,7 +33,8 @@ class PaymentHistoryScreen extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
 
     return Scaffold(
-      appBar: CatchTopBar(
+      appBar: CatchScreenTopBar(
+        context: context,
         title: context.l10n.paymentsPaymentHistoryScreenTitlePaymentHistory,
       ),
       body: CatchAsyncValueView<String?>(

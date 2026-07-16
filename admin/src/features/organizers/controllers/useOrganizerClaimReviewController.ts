@@ -15,42 +15,64 @@ import {
 export interface OrganizerClaimReviewController {
   approvalIssue: string | null;
   decisionInFlight: ClubClaimDecision | null;
+  detailError: string | null;
   details: AdminClubClaimRequestDetails | null;
   filteredRows: AdminClubClaimListRow[];
   isDetailLoading: boolean;
   isLoading: boolean;
+  generatedAt: string | null;
   note: string;
   query: string;
   rejectionIssue: string | null;
   rows: AdminClubClaimListRow[];
   selected: AdminClubClaimListRow | null;
+  selectedRequestId: string | null;
+  selectedUnavailable: boolean;
   validationIssue: string | null;
   decide: (decision: ClubClaimDecision) => Promise<boolean>;
   refresh: () => Promise<void>;
+  refreshDetail: () => Promise<void>;
   select: (row: AdminClubClaimListRow) => void;
   setNote: (note: string) => void;
   setQuery: (query: string) => void;
 }
 
 export function useOrganizerClaimReviewController({
+  enabled = true,
   onError,
   onNotice,
+  onSelectedRequestIdChange,
+  selectedRequestId: controlledSelectedRequestId,
 }: {
+  enabled?: boolean;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
+  onSelectedRequestIdChange?: (requestId: string | null) => void;
+  selectedRequestId?: string | null;
 }): OrganizerClaimReviewController {
   const queryClient = useQueryClient();
-  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [localSelectedRequestId, setLocalSelectedRequestId] =
+    useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [note, setNote] = useState("");
+  const selectedRequestId = controlledSelectedRequestId === undefined ?
+    localSelectedRequestId :
+    controlledSelectedRequestId;
+  const setSelectedRequestId = useCallback((requestId: string | null) => {
+    if (controlledSelectedRequestId === undefined) {
+      setLocalSelectedRequestId(requestId);
+    }
+    onSelectedRequestIdChange?.(requestId);
+  }, [controlledSelectedRequestId, onSelectedRequestIdChange]);
   const listQuery = useQuery({
+    enabled,
     queryKey: adminQueryKeys.organizers.claims(),
     queryFn: listOrganizerClaimRequests,
   });
   const rows = listQuery.data?.rows ?? [];
-  const selected = rows.find((row) => row.requestId === selectedRequestId) ?? null;
+  const selectedRow = rows.find((row) => row.requestId === selectedRequestId) ?? null;
   const detailQuery = useQuery({
-    enabled: Boolean(selectedRequestId),
+    enabled: enabled && Boolean(selectedRequestId),
     queryKey: adminQueryKeys.organizers.claimDetail(selectedRequestId ?? "none"),
     queryFn: () => loadOrganizerClaimRequest({
       requestId: selectedRequestId ?? "",
@@ -64,6 +86,7 @@ export function useOrganizerClaimReviewController({
     [query, rows]
   );
   const details = detailQuery.data?.request ?? null;
+  const selected = selectedRow ?? details;
   const validationIssue = validateClaimDecision(selected, details, note);
   const approvalIssue = validateClaimDecision(selected, details, note, "approve");
   const rejectionIssue = validateClaimDecision(selected, details, note, "reject");
@@ -76,28 +99,25 @@ export function useOrganizerClaimReviewController({
       ));
       return;
     }
-    if (listQuery.isSuccess) onError(null);
-  }, [listQuery.error, listQuery.isError, listQuery.isSuccess, onError]);
+    if (listQuery.isSuccess && !detailQuery.isError) onError(null);
+  }, [detailQuery.isError, listQuery.error, listQuery.isError, listQuery.isSuccess, onError]);
 
   useEffect(() => {
-    if (!detailQuery.isError) return;
-    onError(messageFromError(
-      detailQuery.error,
-      "Unable to load organizer claim evidence."
-    ));
-  }, [detailQuery.error, detailQuery.isError, onError]);
-
-  useEffect(() => {
-    setSelectedRequestId((current) =>
-      current && rows.some((row) => row.requestId === current) ? current : null
-    );
-  }, [rows]);
+    if (detailQuery.isError) {
+      onError(messageFromError(
+        detailQuery.error,
+        "Unable to load organizer claim evidence."
+      ));
+      return;
+    }
+    if (detailQuery.isSuccess && !listQuery.isError) onError(null);
+  }, [detailQuery.error, detailQuery.isError, detailQuery.isSuccess, listQuery.isError, onError]);
 
   const select = useCallback((row: AdminClubClaimListRow) => {
     setSelectedRequestId(row.requestId);
     setNote("");
     onError(null);
-  }, [onError]);
+  }, [onError, setSelectedRequestId]);
 
   const decide = useCallback(async (decision: ClubClaimDecision) => {
     if (!selected) {
@@ -147,20 +167,31 @@ export function useOrganizerClaimReviewController({
       onError(messageFromError(error, "Unable to decide organizer claim."));
       return false;
     }
-  }, [decisionMutation, details, note, onError, onNotice, queryClient, selected]);
+  }, [decisionMutation, details, note, onError, onNotice, queryClient, selected, setSelectedRequestId]);
 
   const refresh = useCallback(async () => {
     await listQuery.refetch();
   }, [listQuery]);
+
+  const refreshDetail = useCallback(async () => {
+    await detailQuery.refetch();
+  }, [detailQuery]);
+
+  const detailError = detailQuery.isError ? messageFromError(
+    detailQuery.error,
+    "Unable to load organizer claim evidence."
+  ) : null;
 
   return {
     approvalIssue,
     decisionInFlight: decisionMutation.isPending ?
       decisionMutation.variables?.decision ?? null :
       null,
+    detailError,
     details,
     filteredRows,
-    isDetailLoading: Boolean(selected) &&
+    generatedAt: listQuery.data?.generatedAt ?? null,
+    isDetailLoading: Boolean(selectedRequestId) &&
       (detailQuery.isPending || detailQuery.isFetching),
     isLoading: listQuery.isPending || listQuery.isFetching,
     note,
@@ -168,9 +199,16 @@ export function useOrganizerClaimReviewController({
     rejectionIssue,
     rows,
     selected,
+    selectedRequestId,
+    selectedUnavailable: Boolean(
+      selectedRequestId &&
+      !detailQuery.isPending &&
+      (detailQuery.isError || !details)
+    ),
     validationIssue,
     decide,
     refresh,
+    refreshDetail,
     select,
     setNote,
     setQuery,

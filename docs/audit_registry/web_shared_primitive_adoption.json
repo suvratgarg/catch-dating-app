@@ -1,0 +1,444 @@
+{
+  "schemaVersion": 1,
+  "version": 15,
+  "updated": "2026-07-13",
+  "owner": "web_platform",
+  "goal": "Classify every reusable primitive family shared by the marketing and admin React surfaces, extract only compatible semantic cores into @catch/web-ui, and keep usability, performance, organization, and coverage follow-ups explicit until they are completed or owner-blocked.",
+  "sourceDocs": [
+    "docs/web_surface_architecture.md",
+    "docs/marketing_website_architecture.md",
+    "docs/design_language.md",
+    "docs/plans/web_platform_hardening_spec.md"
+  ],
+  "referenceImplementation": {
+    "id": "WEB-SHARED-TOGGLE-001",
+    "status": "adopted",
+    "pattern": "The package owns native semantics and accessibility state; website/admin adapters own density, visual class names, content, and domain mapping.",
+    "acceptance": [
+      "Website ChoiceChip and ChoiceCard expose aria-pressed through the package control.",
+      "Admin SegmentedControl exposes a labelled group and pressed state through the same package control.",
+      "Both surface APIs and visual class contracts remain stable.",
+      "Package unit tests, Storybook state coverage, lexicon links, and visual baselines cover the shared behavior."
+    ]
+  },
+  "candidates": [
+    {
+      "id": "WEB-SHARED-CLASSNAMES-001",
+      "family": "class-name-composition",
+      "priority": "p0",
+      "status": "adopted",
+      "packageSymbols": ["classNames"],
+      "website": {
+        "source": "website/src/shared/ui/primitives/foundation.tsx",
+        "symbols": ["classNames"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/shared.ts",
+        "symbols": ["classNames"]
+      },
+      "rationale": "Pure behavior with identical semantics and no surface styling."
+    },
+    {
+      "id": "WEB-SHARED-UI-LABEL-001",
+      "family": "structural-ui-label",
+      "priority": "p0",
+      "status": "adopted",
+      "packageSymbols": ["UiLabel"],
+      "website": {
+        "source": "website/src/shared/ui/primitives/layout.tsx",
+        "symbols": ["UiLabel"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+        "symbols": ["AdminEyebrow"]
+      },
+      "rationale": "The package owns span/div element selection while each surface owns its label styling."
+    },
+    {
+      "id": "WEB-SHARED-CHECKBOX-001",
+      "family": "checkbox-control",
+      "priority": "p0",
+      "status": "adopted",
+      "packageSymbols": ["CheckboxControl"],
+      "website": {
+        "source": "website/src/shared/ui/primitives/forms.tsx",
+        "symbols": ["CheckboxField"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
+        "symbols": ["CheckboxField"]
+      },
+      "rationale": "Native checkbox type ownership is compatible; label layout and controlled-value adapters remain surface-owned."
+    },
+    {
+      "id": "WEB-SHARED-TOGGLE-001",
+      "family": "toggle-and-segmented-controls",
+      "priority": "p0",
+      "status": "adopted",
+      "packageSymbols": ["ToggleButtonControl", "ToggleGroupControl"],
+      "website": {
+        "source": "website/src/shared/ui/primitives/layout2.tsx",
+        "symbols": ["ChoiceChip", "ChoiceCard", "ChoiceChipGrid"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+        "symbols": ["SegmentedControl"]
+      },
+      "rationale": "Both surfaces represent one-of-many choices but currently omit consistent pressed/group semantics."
+    },
+    {
+      "id": "WEB-SHARED-BUTTON-001",
+      "family": "button-and-button-link",
+      "priority": "p1",
+      "status": "adopted",
+      "packageSymbols": ["ButtonControl"],
+      "website": {
+        "source": "website/src/shared/ui/primitives/actions.tsx",
+        "symbols": ["Button", "ButtonLink"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
+        "symbols": ["AdminButton"]
+      },
+      "rationale": "The lexicon already defines compatible variant, size, loading, icon, disabled, and full-width states; surface density can remain adapter-owned."
+    },
+    {
+      "id": "WEB-SHARED-FIELD-001",
+      "family": "field-controls",
+      "priority": "p1",
+      "status": "adopted",
+      "packageSymbols": ["TextInputControl", "SelectControl", "TextareaControl"],
+      "website": {
+        "source": "website/src/shared/ui/primitives/forms.tsx",
+        "symbols": ["TextField", "SelectField", "TextAreaField", "CheckboxField"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
+        "symbols": ["TextField", "SelectField", "TextareaField", "CheckboxField"]
+      },
+      "rationale": "Native control semantics are reusable, but website uncontrolled/id-based fields and admin controlled/data-option fields need stable surface adapters."
+    },
+    {
+      "id": "WEB-SHARED-EMPTY-STATE-001",
+      "family": "empty-state-composition",
+      "priority": "p1",
+      "status": "adopted",
+      "packageSymbols": ["EmptyStateControl"],
+      "website": {
+        "source": "website/src/shared/ui/primitives/feedback.tsx",
+        "symbols": ["EmptyState"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+        "symbols": ["EmptyState"]
+      },
+      "rationale": "The Flutter contract supplies the missing shared title, message, icon, action, surface, and stacked/inline anatomy; surface-specific variants should map into that core."
+    },
+    {
+      "id": "WEB-SHARED-DATA-TABLE-001",
+      "family": "data-table-frame",
+      "priority": "p1",
+      "status": "adopted",
+      "packageSymbols": ["DataTableControl"],
+      "website": {
+        "source": "website/src/shared/ui/primitives/actions2.tsx",
+        "symbols": ["DataTable"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+        "symbols": ["DataTable"]
+      },
+      "rationale": "Both own the same wrapper/table anatomy; extraction should add a consistent accessible-name contract without erasing compact/workbench styling."
+    },
+    {
+      "id": "WEB-SHARED-BADGE-001",
+      "family": "badge-and-status-chip",
+      "priority": "p2",
+      "status": "adopted",
+      "packageSymbols": ["BadgeControl"],
+      "website": {
+        "source": "website/src/shared/ui/primitives/feedback.tsx",
+        "symbols": ["StatusBadge", "ReviewSignalBadge"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+        "symbols": ["StatusChip", "AdminTag"]
+      },
+      "rationale": "The common neutral/success/warning/danger tone model is reusable after domain-specific tones are mapped by adapters."
+    },
+    {
+      "id": "WEB-SHARED-PANEL-001",
+      "family": "panel-and-card-containment",
+      "priority": "p2",
+      "status": "keep_surface_specific",
+      "packageSymbols": [],
+      "website": {
+        "source": "website/src/shared/ui/primitives/layout.tsx",
+        "symbols": ["PanelShell", "ProductShell"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+        "symbols": ["Panel", "AdminPanel"]
+      },
+      "rationale": "Marketing product/claim panels and admin operational panels have different containment semantics; sharing the current wrappers would create variant sprawl."
+    },
+    {
+      "id": "WEB-SHARED-METRIC-001",
+      "family": "metric-cards",
+      "priority": "p2",
+      "status": "keep_surface_specific",
+      "packageSymbols": [],
+      "website": {
+        "source": "website/src/shared/ui/primitives/layout2.tsx",
+        "symbols": ["MetricCard"]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+        "symbols": ["AdminMetricCard"]
+      },
+      "rationale": "Marketing metrics are sparse proof points while admin metrics carry operational tone and dense supporting evidence."
+    }
+  ],
+  "improvements": [
+    {
+      "id": "WEB-A11Y-TOGGLE-001",
+      "priority": "p0",
+      "status": "completed",
+      "area": "usability",
+      "summary": "Add group and aria-pressed semantics to website choice controls and admin segmented controls.",
+      "evidence": [
+        "website ChoiceChip and ChoiceCard render selection only through class names.",
+        "admin SegmentedControl renders a labelled div but no group role or aria-pressed state."
+      ]
+    },
+    {
+      "id": "WEB-TEST-WEBUI-001",
+      "priority": "p0",
+      "status": "completed",
+      "area": "test_coverage",
+      "summary": "Give @catch/web-ui its own unit/typecheck loop and make Storybook states truthful.",
+      "evidence": [
+        "The package currently has no scripts or unit tests.",
+        "Its registry claims span/div/surface-class and unchecked/checked/disabled states, while each current story renders only one state."
+      ]
+    },
+    {
+      "id": "WEB-USABILITY-FOCUS-001",
+      "priority": "p0",
+      "status": "completed",
+      "area": "usability",
+      "summary": "Establish a token-backed keyboard focus contract across both React surfaces and restore focus-within styling for admin search/title controls.",
+      "evidence": [
+        "Shared web CSS has no explicit focus-visible contract.",
+        "Admin search and marketing title inputs set outline: 0 without an equivalent visible wrapper focus state."
+      ]
+    },
+    {
+      "id": "WEB-A11Y-DATA-TABLE-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "usability",
+      "summary": "Give every shared data table a stable accessible name and preserve responsive scroll framing.",
+      "evidence": [
+        "Website DataTable requires ariaLabel.",
+        "Admin DataTable currently renders an unnamed table."
+      ]
+    },
+    {
+      "id": "WEB-ORG-ADMIN-INTAKE-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "code_organization",
+      "externalDebtId": "A2-FOLLOW-UP",
+      "summary": "Split the 4,129-line OrganizerIntakeScreen into feature-owned panels without changing the route/workspace boundary.",
+      "evidence": [
+        "The route/workspace entry is now 629 lines; readiness, evidence, discovery, and event workflows live in four private modules no larger than 1,139 lines.",
+        "Lower-case module APIs preserve the admin feature-export contract and full typecheck/scanner loop."
+      ]
+    },
+    {
+      "id": "WEB-ORG-MARKETING-OPS-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "code_organization",
+      "summary": "Split the 3,066-line MarketingOpsScreen into workflow panels and keep controller/render/export boundaries explicit.",
+      "evidence": [
+        "MarketingOpsScreen is now a 340-line route/workspace entry with four feature-private composer, library, workflow, and preview modules.",
+        "The controller API and rendered composition remain unchanged."
+      ]
+    },
+    {
+      "id": "WEB-ORG-EVENT-PUBLISHING-001",
+      "priority": "p2",
+      "status": "completed",
+      "area": "code_organization",
+      "summary": "Split the 1,868-line EventPublishingScreen after the two larger admin reference extractions establish the panel pattern.",
+      "evidence": [
+        "EventPublishingScreen is now a 197-line route/workspace entry with four private directory, supply, readiness, and editor modules.",
+        "The same lower-case private-module pattern passes feature-export and component-governance gates."
+      ]
+    },
+    {
+      "id": "WEB-ORG-ORGANIZER-PUBLISHING-001",
+      "priority": "p2",
+      "status": "completed",
+      "area": "code_organization",
+      "summary": "Split the remaining 1,343-line OrganizerPublishingScreen outlier and ratchet admin feature UI module size.",
+      "evidence": [
+        "OrganizerPublishingScreen is now 163 lines with 421-line directory and 980-line detail private modules.",
+        "The enforced budget caps route/workspace files at 900 lines and private feature modules at 1,200 lines."
+      ]
+    },
+    {
+      "id": "WEB-COVERAGE-ADMIN-CONTROLLERS-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "test_coverage",
+      "summary": "Add behavior tests for remaining admin query/mutation controllers, prioritizing safety, organizer publishing, event publishing, and access decisions.",
+      "evidence": [
+        "The hardening tranche raised admin to 8 test files, but most feature controllers still had no colocated behavior suite.",
+        "All 14 admin feature controllers now have named behavior suites; the admin unit loop passes 22 files and 49 tests with aggregate line coverage at 48.68%.",
+        "The controller target manifest promotes every admin controller to required and rejects any missing or unclassified suite."
+      ]
+    },
+    {
+      "id": "WEB-COVERAGE-ADMIN-HELPERS-001",
+      "priority": "p2",
+      "status": "completed",
+      "area": "test_coverage",
+      "summary": "Add targeted tables for low-coverage organizer/event publishing validation and filtering helpers without using aggregate percentage gates.",
+      "evidence": [
+        "Event helper coverage exercises time, capacity, launch-market, search-index, and external-review filters.",
+        "Organizer helper coverage exercises route/search debt filters and explicit blocker/diff counters."
+      ]
+    },
+    {
+      "id": "WEB-COVERAGE-WEBSITE-CONTROLLERS-001",
+      "priority": "p2",
+      "status": "completed",
+      "area": "test_coverage",
+      "summary": "Extend website controller tests to claim and listing-review mutations plus route-state failure cases.",
+      "evidence": [
+        "Claim mutation tests cover the typed packet, claim-query invalidation, and disabled listing state.",
+        "Listing-review tests cover disabled routes, validation, local preview, remote publish, query failure, and eventual-consistency rendering."
+      ]
+    },
+    {
+      "id": "WEB-COVERAGE-WEBSITE-ROUTE-CONTROLLERS-001",
+      "priority": "p2",
+      "status": "completed",
+      "area": "test_coverage",
+      "summary": "Add behavior tests for the remaining claim-flow, host-listing, and organizer-directory route controllers.",
+      "evidence": [
+        "The website unit loop passes 12 files and 27 tests across every real feature controller and mutation hook, with aggregate line coverage at 68.96%.",
+        "The target manifest now requires all 22 behavior-owning React hooks; only one compatibility re-export remains exempt."
+      ]
+    },
+    {
+      "id": "WEB-USABILITY-REVIEW-WRITE-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "usability",
+      "summary": "Keep an accepted public review visible while the eventually consistent listing query catches up.",
+      "evidence": [
+        "The create callable response is retained in the local deduplicating merge layer before query invalidation.",
+        "A behavior test proves an empty immediate refetch does not make the accepted review disappear."
+      ]
+    },
+    {
+      "id": "WEB-PERF-STORYBOOK-CHUNKS-001",
+      "priority": "p2",
+      "status": "completed",
+      "area": "performance",
+      "summary": "Reduce oversized admin Storybook route chunks without weakening route-level review coverage.",
+      "evidence": [
+        "The current admin Storybook build warns that AdminRoutes.stories is approximately 1.23 MB minified and the preview runtime is approximately 1.08 MB.",
+        "The current marketing Storybook preview runtime is approximately 1.11 MB minified.",
+        "Named admin feature/data chunks reduced AdminRoutes.stories from approximately 1.14 MB to 37 KB without removing any registry-ready story.",
+        "The checked budget caps AdminRoutes at 50 KB and every Catch-authored feature/story chunk at 510 KB."
+      ]
+    },
+    {
+      "id": "WEB-PERF-ADMIN-BUNDLE-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "performance",
+      "summary": "Reduce the admin production entry chunk and verify route-level lazy boundaries without hiding size warnings.",
+      "evidence": [
+        "The production admin entry fell from approximately 696 KB to 436 KB after the Overview controller moved behind its lazy route boundary.",
+        "The checked budget caps the entry at 460 KB and the largest async chunk at 505 KB."
+      ]
+    },
+    {
+      "id": "WEB-USABILITY-ADMIN-GLOBAL-FILTER-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "usability",
+      "summary": "Remove the Overview-only time range and refresh controls from every admin topbar and colocate refresh with the Overview analytics filters."
+    },
+    {
+      "id": "WEB-LEXICON-UI-LABEL-001",
+      "priority": "p2",
+      "status": "completed",
+      "area": "code_organization",
+      "summary": "Give structural eyebrow labels their own catch.ui_label lexicon family instead of mapping them to catch.badge.",
+      "evidence": [
+        "CatchSectionLabel, website UiLabel, AdminEyebrow, and web-ui UiLabel now share catch.ui_label.",
+        "StatusBadge, StatusChip, and BadgeControl remain mapped to catch.badge, preserving status versus hierarchy semantics."
+      ]
+    },
+    {
+      "id": "WEB-LEXICON-CHOICE-CONTROLS-001",
+      "priority": "p2",
+      "status": "completed",
+      "area": "code_organization",
+      "summary": "Split the combined website choice-controls registry/story entry so terse chips map to catch.chip and explanatory cards map to catch.option_card independently."
+    },
+    {
+      "id": "WEB-CI-WEBUI-001",
+      "priority": "p0",
+      "status": "completed",
+      "area": "tooling",
+      "summary": "Make both React workflows trigger on shared web UI source/registry changes and run the package unit/typecheck loop."
+    },
+    {
+      "id": "WEB-A11Y-BUTTON-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "usability",
+      "summary": "Default reusable buttons to type=button and expose one disabled, aria-busy loading contract through both surface adapters."
+    },
+    {
+      "id": "WEB-A11Y-FIELD-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "usability",
+      "summary": "Normalize invalid/described-by semantics for text, select, and textarea controls and require website label ids at compile time."
+    },
+    {
+      "id": "WEB-TEST-METADATA-FIXTURE-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "test_coverage",
+      "summary": "Realign the canonical organizer title-template assertion with the current events-and-reviews metadata source."
+    },
+    {
+      "id": "WEB-TOOLING-ENFORCEMENT-INTEGRITY-001",
+      "priority": "p0",
+      "status": "completed",
+      "area": "tooling",
+      "summary": "Repair stale sunset, reverse-rule, role, stage, doc-anchor, and executable-check metadata reported by the enforcement-integrity meta-gate."
+    },
+    {
+      "id": "WEB-UI-COMPONENT-GOVERNANCE-001",
+      "priority": "p1",
+      "status": "completed",
+      "area": "tooling",
+      "summary": "Continue classifying novel repeated shell families and add scanner coverage as each tracker item is implemented.",
+      "evidence": [
+        "The generated governed-family registry matches the checked-in snapshot exactly.",
+        "Primitive, class-name boundary, component-governance, and cross-surface adoption scanners all pass their non-vacuous self-tests and repository checks."
+      ]
+    }
+  ]
+}

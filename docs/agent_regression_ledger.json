@@ -1,8 +1,294 @@
 {
-  "version": 6,
-  "updated": "2026-07-12",
+  "version": 33,
+  "updated": "2026-07-16",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-OPERATIONS-BOUNDARY-001",
+      "title": "Durable workflow orchestration grows back under tool",
+      "status": "active",
+      "applies_to": [
+        "operations/**",
+        "tool/**"
+      ],
+      "symptom": "A future admin workflow adds queues, leases, retries, receipts, or agent execution to an unrelated tool subtree and recreates the current tooling sprawl.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check operations:boundaries",
+        "guardEvidence": "boundary checker rejects legacy growth, operations imports in any new tool root, per-file orchestration markers, and split-file markers aggregated by tool subtree"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "tool/README.md"
+      ],
+      "notes": "Tools may produce bounded artifacts; operations owns durable orchestration. The v2 scanner covers all tool code while retaining file-count ratchets for known legacy producers."
+    },
+    {
+      "id": "REG-OPERATIONS-PROJECTION-001",
+      "title": "CLI shadow inventory and admin Firestore inventory diverge",
+      "status": "active",
+      "applies_to": [
+        "operations/src/platform/read-models.mjs",
+        "functions/src/operations/projectionImporter.ts",
+        "functions/scripts/operations/import-shadow-projection.cjs",
+        "functions/src/admin/intakeOperations.ts",
+        "admin/src/features/intake/operations/**"
+      ],
+      "symptom": "The local agent completes a run and exports valid stages, but no trusted path imports that exact inventory into the Firestore projection read by the admin UI, or page-sized counts are presented as full-run totals.",
+      "guard": {
+        "type": "command",
+        "command": "node --test functions/lib/operations/projectionImporter.test.js",
+        "guardEvidence": "applies items before the run and replays the same artifact"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/backend_operation_catalog.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "The bridge is dry-run first, imports only immutable shadow run/work-item projections, and carries full-run aggregates independently of callable pagination."
+    },
+    {
+      "id": "REG-OPERATIONS-RUNTIME-RECOVERY-001",
+      "title": "A process crash leaves an operations run unrecoverable or understates consumed budget",
+      "status": "active",
+      "applies_to": [
+        "operations/src/cli/main.mjs",
+        "operations/src/platform/engine.mjs",
+        "operations/src/platform/storage/file-store.mjs",
+        "operations/test/cli.test.mjs",
+        "operations/test/platform.test.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "A deterministic workflow clock freezes lease heartbeats, mixed or replaced guard owners break mutual exclusion, a live owner appears during stale inspection and is quarantined, a requested run-id collision poisons idempotency, an idempotency crash leaves a planned orphan, a completed checkpoint resumes with zero work-item consumption, or completion, promotion, and reconciliation lose their deterministic companion actions.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix operations test",
+        "guardEvidence": "separate live lease clock, recovery-marker owner recheck, inode-bound mixed-owner guard recovery, run-collision cleanup, mapping-first run repair, checkpoint budget reconstruction, and completion/promotion/reconciliation action repair tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md"
+      ],
+      "notes": "Lease safety never uses --now; stale recovery installs a unique marker and rechecks directory identity plus every owner before quarantine; idempotency changes are serialized, and durable side effects are reconstructed from persisted state before replay returns success."
+    },
+    {
+      "id": "REG-OPERATIONS-PROMOTION-POLICY-SNAPSHOT-001",
+      "title": "Promotion eligibility changes when a live source profile changes after the run",
+      "status": "active",
+      "applies_to": [
+        "operations/src/platform/engine.mjs",
+        "operations/src/workflows/supply-intake/workflow.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "Replaying promotion for an incomplete or old run reloads mutable source policy, trusts mutated run capability/budget copies or a tampered frozen plan, accepts candidates outside durable workflow-owned selection, accepts forged companion-action provenance, changes the eligible set, or allows a blocked receipt's safety fields to be overwritten without changing its id or hash.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "promotion requires a completed inventory-hash-bound run, validates workflow-owned candidate membership, revalidates frozen authority and companion-action provenance, and detects overwrite or replay tampering"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md"
+      ],
+      "notes": "The plan freezes publication policy per source; all run entrypoints bind persisted authority copies back to it, and every immutable receipt plus companion action binds canonical identity, actor, time, payload, policy hash, blocked outcome, blockers, and guardrails."
+    },
+    {
+      "id": "REG-OPERATIONS-LEARNING-LATEST-EVAL-001",
+      "title": "A source rule advances from an older pass after its latest evaluation failed",
+      "status": "active",
+      "applies_to": [
+        "operations/src/workflows/supply-intake/learning.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "Canary creation searches for any historical pass, compares ISO timestamp strings instead of instants, chooses arbitrarily between equal-time evidence, or trusts a stale latestEvaluationId after a crash persisted a newer failed immutable evaluation but did not update the proposal pointer.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "shadow canary derives the newest immutable evaluation by parsed instant, rejects ambiguous equal-time evidence, repairs a stale pointer, blocks on failure, and binds a later pass"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md"
+      ],
+      "notes": "Evaluation and canary operations are serialized per proposal; offset timestamps are ordered by epoch and conflicting evidence at one latest instant fails closed. The newest immutable failure repairs stale proposal state and blocks canary creation even when an older evaluation passed."
+    },
+    {
+      "id": "REG-OPERATIONS-PROJECTION-IMPORT-002",
+      "title": "Projection apply trusts a partial replay or a mislabeled Firebase target",
+      "status": "active",
+      "applies_to": [
+        "functions/src/operations/projectionImporter.ts",
+        "functions/src/operations/projectionImporter.test.ts",
+        "functions/scripts/operations/import-shadow-projection.cjs",
+        "functions/test/operations-import-shadow-projection.test.cjs",
+        "tool/tools_manifest.json"
+      ],
+      "symptom": "An existing run is reported idempotent while work items are missing or changed, the export exceeds maxWorkItems, or a production project id is passed with a non-production environment label to bypass confirmation.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/operations/projectionImporter.test.js functions/test/operations-import-shadow-projection.test.cjs",
+        "guardEvidence": "missing-item repair, immutable-item conflict, work-budget rejection, environment-alias binding, and project-aware production confirmation tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/backend_operation_catalog.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "Apply is a repairable immutable import, and environment plus project must identify the same configured Firebase target."
+    },
+    {
+      "id": "REG-OPERATIONS-ADMIN-EXCEPTION-PAGINATION-001",
+      "title": "A counted human exception cannot be opened because it is beyond the first admin page",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
+        "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
+        "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
+        "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx"
+      ],
+      "symptom": "The run summary reports a human-review count, but the read-only workspace loads only the first 200 work items and cannot retrieve or open a later active exception; run page counts may also be labeled as persisted totals.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx",
+        "guardEvidence": "controller drains the run-pinned server-filtered exception cursor, rejects summary/cardinality drift, and UI labels run and ordinary-item pages as loaded"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/admin_dashboard_user_stories_and_component_catalogue.md"
+      ],
+      "notes": "The controller eagerly validates only the active exception lane, preserves a lazy ordinary cursor, prevents stale load-more writes after refresh, and keeps terminal history out of active stage queues."
+    },
+    {
+      "id": "REG-OPERATIONS-ADMIN-PAGINATION-CAPACITY-001",
+      "title": "A maximum Supply Intake run exhausts the admin read window or is downloaded eagerly",
+      "status": "active",
+      "applies_to": [
+        "contracts/callables/admin_list_intake_operations_payload.schema.json",
+        "contracts/operations/run.schema.json",
+        "firestore.indexes.json",
+        "functions/src/admin/intakeOperations.ts",
+        "functions/src/shared/rateLimit.ts",
+        "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts"
+      ],
+      "symptom": "A run exceeds the bounded shard size, a small caller page causes thousands of exception reads, an unindexed filter combination reaches Firestore, or refresh eagerly drains ordinary inventory and breaches the callable rate window.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/operations/contractSchemas.test.js && npm --workspace catch-admin test -- --run src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
+        "guardEvidence": "1-to-10000 run capacity, committed human-review index, 200-item exception lane, two-load rate proof, maximum exception hydration, and lazy maximum ordinary-run tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/backend_operation_catalog.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "The callable requires authoritative run aggregates, accepts only the indexed whole-run human filter, allows 120 reads per minute, and disables automatic client retries; ordinary pages are explicit."
+    },
+    {
+      "id": "REG-OPERATIONS-WORKFLOW-MANIFEST-001",
+      "title": "A durable workflow manifest drifts from its executable surface",
+      "status": "active",
+      "applies_to": [
+        "contracts/operations/workflow_manifest.schema.json",
+        "operations/src/cli/main.mjs",
+        "operations/src/workflows/supply-intake/manifest.json",
+        "operations/scripts/check-workflow-manifest.mjs",
+        "operations/test/workflow-manifest.test.mjs"
+      ],
+      "symptom": "A workflow folder, factory, command subset, stage transition, lifecycle semantic mapping, source loader, capability, or capacity changes without updating its executable inventory, or a second workflow passes metadata checks while generic runtime behavior still assumes Supply Intake vocabulary.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check operations:workflow-manifest",
+        "guardEvidence": "schema-backed discovery binds registry, manifest, factory methods, command subsets, stage-closed transitions, lifecycle semantics, optional source loaders, profiles, capabilities, and capacity; custom lifecycle projection tests prove runtime behavior"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md"
+      ],
+      "notes": "The registry and checked manifest are the extension seam for future admin workflows. Ordered stages and explicit active/published/expired semantic groups drive generic queue, export, counter, and reconciliation behavior."
+    },
+    {
+      "id": "REG-OPERATIONS-SCHEMA-PARITY-001",
+      "title": "Operations runtime accepts records rejected by the canonical schemas",
+      "status": "active",
+      "applies_to": [
+        "contracts/operations/work_item.schema.json",
+        "operations/src/platform/read-models.mjs",
+        "functions/src/operations/validation.ts",
+        "tool/contracts/generate_schema_contracts.mjs"
+      ],
+      "symptom": "A lightweight or hand-written validator ignores draft-07 conditionals, hardcodes Supply Intake vocabulary into the generic base contract, or allows incompatible terminal outcomes or unqueryable human-review signals into export, import, or Firestore.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix operations test && npm --prefix functions run build && node --test functions/lib/operations/validation.test.js",
+        "guardEvidence": "generic validators accept valid future workflow tokens while Supply Intake response validators reject foreign stages; Ajv also rejects missing human flags, incompatible terminal outcomes, and terminal human-review ownership"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/data_contracts.md",
+        "contracts/README.md"
+      ],
+      "notes": "Canonical base schemas allow workflow-owned tokens; consumer-specific Supply Intake schemas and runtime policy narrow them at trust boundaries. The lightweight model-output validator remains limited to its declared subset."
+    },
+    {
+      "id": "REG-OPERATIONS-RECONCILIATION-SNAPSHOT-001",
+      "title": "Reconciliation mutates or under-budgets an imported completed run",
+      "status": "active",
+      "applies_to": [
+        "operations/src/platform/engine.mjs",
+        "operations/src/workflows/supply-intake/workflow.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "Reconciliation edits the source snapshot in place, drops the source work-item capacity after through-date filtering, creates a different child for a same-day replay, accepts direct start outside the reconciliation entrypoint, or leaves terminal human-review ownership behind.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "immutable lineage-bound child runs, source preservation, same-window replay, source-budget retention, entrypoint rejection, terminal cleanup, blocker repair, and interrupted receipt repair tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md"
+      ],
+      "notes": "A reconciliation child binds source run, plan hash, inventory hash, and UTC window and receives new work-item ids."
+    },
+    {
+      "id": "REG-OPERATIONS-LEARNING-CANDIDATE-EVAL-001",
+      "title": "Rule evaluation passes by running shipped code instead of the frozen candidate",
+      "status": "active",
+      "applies_to": [
+        "operations/src/workflows/supply-intake/learning.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "A deliberately wrong source mapping passes because evaluation ignores candidate content, duplicate outputs inflate precision or recall, unsupported code executes, or proposal identity, fixture, extractor, or candidate evidence is mutated between proposal, evaluation, and canary.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "wrong mappings fail, allowlisted CN Traveller and Luma candidates execute, multiset metrics preserve duplicates, unknown candidates fail closed, and proposal mutations are rejected"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md"
+      ],
+      "notes": "Candidate families remain code-owned and non-deploying; the guard proves evaluation fidelity without claiming automatic discovery or activation."
+    },
+    {
+      "id": "REG-OPERATIONS-INVENTORY-IMMUTABILITY-001",
+      "title": "A completed run keeps its ids and counts while durable content drifts",
+      "status": "active",
+      "applies_to": [
+        "operations/src/platform/engine.mjs",
+        "operations/src/platform/read-models.mjs",
+        "operations/src/platform/storage/file-store.mjs",
+        "operations/test/workflow.test.mjs"
+      ],
+      "symptom": "A deterministic work-item id is reused with changed content, a completed inventory changes without changing cardinality, a forged completion action is accepted, promotion evidence changes a previously exportable snapshot, or the same export path is overwritten with changed content.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs",
+        "guardEvidence": "content-bound if-absent writes, completed inventory hashes, deterministic completion action validation, stable post-promotion export, and immutable admin export conflict tests"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md"
+      ],
+      "notes": "Completed run counters and inventory hashes freeze the canonical export; post-run audit receipts are stored without changing that snapshot."
+    },
     {
       "id": "REG-AGENT-001",
       "title": "Broad cleanup skips the deterministic audit registry loop",
@@ -209,7 +495,7 @@
         "docs/widget_catalog.md",
         "docs/design_parity/comprehensive_todo.md"
       ],
-      "notes": "Cover presentation is explicit shared state; result count uses the original full feed; mappableEventCount includes exact-coordinate internal events only."
+      "notes": "Cover presentation is explicit shared state; result count uses the original full feed; mappableEventCount includes required-location internal and reviewed external event supply."
     },
     {
       "id": "REG-EXPLORE-002",
@@ -250,24 +536,117 @@
     },
     {
       "id": "REG-MAP-001",
-      "title": "Explore map blanks when native Google Maps key validation fails",
+      "title": "Native Google map surfaces silently fall back to fake geography or blank tiles",
       "status": "active",
       "applies_to": [
         "lib/explore/presentation/explore_map_screen.dart",
         "lib/events/presentation/widgets/event_pins_map.dart",
+        "lib/locations/shared/catch_google_map.dart",
+        "lib/locations/shared/catch_map_preview.dart",
+        "lib/events/presentation/widgets/event_detail_design_primitives.dart",
         "test/explore/explore_widgets_test.dart",
+        "test/events/events_widgets_test.dart",
         "tool/firebase/validate_google_maps_config.mjs"
       ],
-      "symptom": "The Explore map route opens but renders a blank native Google map canvas when the iOS SDK rejects the configured API key at runtime, even though static local config validation passes.",
+      "symptom": "Explore paints substitute geography or a native map surface renders blank when the SDK rejects the configured key at runtime, masking the real integration failure.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/explore/explore_widgets_test.dart --plain-name 'ExploreMapScreen default uses resilient Catch pin map'"
+        "command": "flutter test test/explore/explore_widgets_test.dart --plain-name 'ExploreMapScreen defaults to the native Google map' && node tool/firebase/validate_google_maps_config.mjs --env prod --platform ios"
       },
       "owner_docs": [
         "docs/widget_catalog.md",
         "docs/location_stack_plan.md"
       ],
-      "notes": "Keep Explore's primary event-pin selection path on the resilient Catch placeholder map unless native Maps key acceptance is verified in a runtime device loop."
+      "notes": "Production Explore and compact previews use real Google tiles. Runtime proof on 2026-07-13 used an iPhone 17 simulator on iOS 26.5 and confirmed muted native tiles, custom activity pins and selection, the geographic distance circle with its projected Catch label, and accessible event marker descriptions. Deterministic tests, Widgetbook, and captures may explicitly select neutral network-disabled fixtures, but those fixtures must never paint substitute map geography."
+    },
+    {
+      "id": "REG-MAP-002",
+      "title": "Event map becomes empty or bypasses proximity when location data is missing",
+      "status": "active",
+      "applies_to": [
+        "contracts/firestore/events.schema.json",
+        "lib/events/domain/event.dart",
+        "lib/events/domain/external_event.dart",
+        "lib/events/presentation/event_map_view_model.dart",
+        "lib/explore/presentation/explore_map_screen.dart",
+        "functions/src/events/eventDiscoveryProjection.ts",
+        "functions/src/events/selfCheckInAttendance.ts",
+        "tool/data/backfill_event_meeting_locations.mjs",
+        "test/events/event_domain_test.dart",
+        "test/events/event_map_screen_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "symptom": "A nullable or partial event coordinate suppresses a pin, writes a null discovery geo cell, bypasses check-in distance, or causes a zero-radius result to replace the map and ring with a dead-end empty page.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/events/event_domain_test.dart test/events/event_map_screen_test.dart test/explore/explore_widgets_test.dart",
+        "guardEvidence": "rejects an event without an exact meeting location"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/location_stack_plan.md",
+        "contracts/migrations/event_meeting_location.json"
+      ],
+      "notes": "Exact named coordinates are an event-domain invariant. Legacy reads may promote only a complete in-range pair; repair tooling never fabricates coordinates. Explore keeps the canvas and distance ring mounted for progressive radius recovery, and check-in fails closed on corrupt data."
+    },
+    {
+      "id": "REG-LOCATION-001",
+      "title": "Canonical market ids leak into visible city copy or are replaced by labels at rest",
+      "status": "active",
+      "applies_to": [
+        "lib/core/city_catalog.dart",
+        "lib/swipes/shared/profile_surface/profile_surface.dart",
+        "lib/hosts/presentation/host_operations_screen.dart",
+        "lib/hosts/presentation/host_operations/host_club_profile.dart",
+        "lib/hosts/presentation/host_operations/host_events_list.dart",
+        "lib/hosts/presentation/host_operations/host_organizer.dart",
+        "functions/src/shared/profileProjection.ts",
+        "functions/src/shared/profileProjection.test.ts",
+        "contracts/firestore/users.schema.json",
+        "contracts/firestore/public_profiles.schema.json",
+        "test/core/city_catalog_test.dart",
+        "test/swipes/profile_card_widget_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "symptom": "A canonical value such as in-dl-delhi-ncr is uppercased or title-cased into visible copy, or a presentation fix stores Delhi NCR where queries and projections require the canonical market id.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/shared/profileProjection.test.js && flutter test --concurrency=1 test/core/city_catalog_test.dart test/swipes/profile_card_widget_test.dart test/hosts/host_operations_screen_test.dart",
+        "guardEvidence": "canonical market/city/alias resolution plus shared-profile and host-surface assertions that labels render while raw ids do not"
+      },
+      "owner_docs": [
+        "docs/location_stack_plan.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "Keep marketId at persistence, query, projection, and editor-submit boundaries. Resolve CityData.label or cityLabel only when building human-facing copy; Google Places is not the market-label resolver."
+    },
+    {
+      "id": "REG-EVENT-DETAIL-001",
+      "title": "Event Detail drifts back to nested policy cards and feature-owned chrome",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_bottom_action.dart",
+        "lib/core/widgets/catch_host_row.dart",
+        "lib/events/presentation/event_detail_information_state.dart",
+        "lib/events/presentation/widgets/event_detail_*.dart",
+        "lib/reviews/shared/reviews_section.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/events/event_detail_widgets_test.dart",
+        "test/events/events_widgets_test.dart",
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "symptom": "Event Detail repeats booking facts across sections, exposes settlement copy, restores nested policy/empty-review/host cards, duplicates catch-window messaging, or uses iOS floating action chrome on Android.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/events/event_detail_widgets_test.dart test/events/events_widgets_test.dart test/reviews/reviews_widgets_test.dart test/core/catch_primitives_test.dart"
+      },
+      "owner_docs": [
+        "design/components/catch.components.json",
+        "design/screens/catch.screens.json",
+        "docs/design_parity/event_detail_composition_tracker.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Keep sign-up and good-to-know facts inside EventDetailInformationState, review actions inside EventDetailReviewsState, host affordances callback-derived through CatchHostRow, and primary action platform selection inside CatchBottomAction."
     },
     {
       "id": "REG-APP-TARGET-001",
@@ -433,6 +812,29 @@
       "notes": "The club claim state owns the single active request id. Admin decisions must match it, and stale rejection may update only the old request plus its requester notification."
     },
     {
+      "id": "REG-AGENT-009",
+      "title": "Stored cleanup snapshots claim zero while live scanners report debt",
+      "status": "active",
+      "applies_to": [
+        "tool/widget_cleanup_scan.sh",
+        "tool/check_catch_ui_lint_drift.sh",
+        "tool/tools_manifest.json",
+        "tool/audit/widget_cleanup_baseline.json",
+        "docs/audit_registry/backlog.json"
+      ],
+      "symptom": "A syntax-only or regex-overbroad scanner stays green, a stored snapshot says zero, and the live working tree contains cleanup findings.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check audit:widget-cleanup lint:catch-ui-drift",
+        "guardEvidence": "widget cleanup ratchet plus machine diagnostic-code parser self-test"
+      },
+      "owner_docs": [
+        "docs/audit_registry/README.md",
+        "tool/README.md"
+      ],
+      "notes": "Zero is scanner-specific. The widget inventory ratchets live category maxima, and analyzer aggregation reads only the machine diagnostic-code field."
+    },
+    {
       "id": "REG-COPY-001",
       "title": "Flutter, native, or notification product prose bypasses its reviewable catalog",
       "status": "active",
@@ -453,6 +855,29 @@
         "docs/data_contracts.md"
       ],
       "notes": "The Flutter ownership baseline is explicit migration debt and may only shrink. The ARB and copy JSON catalogs are sources; generated Dart, InfoPlist.strings, and TypeScript are outputs."
+    },
+    {
+      "id": "REG-WEB-CALLABLE-001",
+      "title": "Admin callable contract validation silently becomes partial or stale",
+      "status": "active",
+      "applies_to": [
+        "admin/src/shared/api/adminApi.ts",
+        "admin/src/generated/validators/**",
+        "admin/scripts/generateCallableValidators.mjs",
+        "contracts/callables/**",
+        "contracts/callable_responses/**"
+      ],
+      "symptom": "A new admin callable bypasses request validation, a schema change is not regenerated, or a development response violates its callable response contract without naming the callable and JSON path.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-callable-validators && npm --workspace catch-admin run test",
+        "guardEvidence": "generator discovers every adminApi callable and validator tests cover strict request families plus invalid response paths"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/plans/web_platform_hardening_spec.md"
+      ],
+      "notes": "Schema-backed contracts are strict. Callables without a dedicated JSON contract still receive a generated top-level object validator and remain visible in validation coverage until their strict contract lands."
     },
     {
       "id": "REG-TYPOGRAPHY-001",
@@ -479,6 +904,402 @@
         "design_context_pack/design_system/typography.json"
       ],
       "notes": "Native Flutter bundles Archivo-Roman-VF.ttf and its OFL; web surfaces may retain WOFF2. Tracking is zero by default, with named uppercase roles and the welcome reel exception owned by CatchTextStyles."
+    },
+    {
+      "id": "REG-SHELL-001",
+      "title": "Floating tab chrome obscures terminal scroll content",
+      "status": "active",
+      "applies_to": [
+        "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
+        "lib/core/presentation/app_shell_active_tab.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/**/presentation/**",
+        "lib/routing/go_router.dart",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "symptom": "A tab-root screen reaches maximum scroll while its last field, action, or nested preview content remains behind the floating iOS tab bar, or Android receives duplicate tab-bar padding.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check && flutter test test/core/semantic_layout_contracts_test.dart test/core/app_shell_test.dart",
+        "guardEvidence": "known-bad missing-terminal and unregistered-branch fixtures plus iOS floating, Android anchored, no-bar, and safe-area geometry tests"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "notes": "Overlay-control and scroll-terminal clearance are separate contracts. Keyboard viewInsets are never added; Scaffold resize behavior owns keyboard space."
+    },
+    {
+      "id": "REG-SCREEN-CHROME-001",
+      "title": "Screen titles bypass the canonical top-bar role",
+      "status": "active",
+      "applies_to": [
+        "lib/**/*.dart",
+        "lib/core/widgets/catch_top_bar.dart",
+        "tool/design/screen_top_bar_contracts.json",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "symptom": "A route or tab root ships hand-rolled header chrome, a screen-title route uses compact system-font chrome instead of Archivo, a root adds local padding/height/text-scale behavior, the post-safe-area inset drifts above zero, or a new appBar/shell branch appears without a reviewed role and canonical owner.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/design/check_screen_top_bar_contracts.test.mjs && node tool/design/check_screen_top_bar_contracts.mjs --check",
+        "guardEvidence": "known-bad compact screen title, raw Material AppBar/SliverAppBar, compact-role raw chrome, private-helper indirection, unregistered app-bar and tab-branch fixtures, incomplete root-surface ownership, local geometry/text-scale overrides, and aliased/nonzero canonical inset fixtures"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_language.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "The manifest is exhaustive for Scaffold.appBar declarations and cross-checks all consumer/Host StatefulShellBranch roots against the tab-root manifest. Screen, compact, and identity roles map to direct canonical constructors; registered root-header classes must delegate to CatchScreenHeaderTitle/CatchScreenTopBar without local padding, fixed height, or MediaQuery text scaling. The canonical screenTitleBlock top inset is exactly CatchSpacing.s0. Workspace roles and collapsing media-hero exceptions remain explicit rather than inferred from copy."
+    },
+    {
+      "id": "REG-FIELD-001",
+      "title": "CatchField editability and explicit-editor states drift by call site",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_field.dart",
+        "lib/**/presentation/**inline_editor**",
+        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "test/core/catch_field_focus_semantics_test.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/profile/profile_widgets_test.dart",
+        "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
+      ],
+      "symptom": "Static fields display edit affordances, editable fields lose them, pointer-down and focus require separate taps, tap-away cancels before pointer-up or during a scroll, saving fields still cancel, disclosure height snaps or remounts draft state, focus changes label typography/supporting-content order, toggle anatomy falls off-axis, or empty editable rows mix bare labels, plus-prefixed values, and input instructions.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart",
+        "guardEvidence": "single-gesture press-to-focus/open behavior, field-to-field handoff, pointer-up tap-away timing, drag and loading cancellation guards, native cursor placement, onBlur delivery, persistent disclosure identity, centered toggle anatomy, affordance matrix, localized empty-value fallback, midpoint expansion/collapse height, stable label metrics, and explicit-save content ordering"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json"
+      ],
+      "notes": "Chevron overrides are not public API. Non-text disclosure editors use CatchField.control; explicit-save text editors use CatchField.inputActions instead of nesting a second field primitive. Press chrome begins on pointer-down and the same gesture transfers focus or opens on pointer-up. Explicit-save tap-away waits for pointer-up, ignores drag/scroll, and cannot cancel while saving. Disclosure children remain mounted while closed. Editable empty display copy is primitive-derived and must not be recreated with feature-local plus strings."
+    },
+    {
+      "id": "REG-CHAT-COMPOSER-001",
+      "title": "Chat composer focus, geometry, semantics, and pending states drift apart",
+      "status": "active",
+      "applies_to": [
+        "lib/chats/presentation/widgets/chat_input_bar.dart",
+        "lib/core/widgets/catch_field.dart",
+        "lib/core/widgets/catch_icon_button.dart",
+        "test/chats/chat_input_bar_test.dart",
+        "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+        "design/components/catch.components.json"
+      ],
+      "symptom": "The chat actions use unequal targets or edge insets, empty Send appears enabled, focus changes no shared chrome, pending attachment work disables the editor, or duplicate field/button semantics return.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/chats/chat_input_bar_test.dart && node tool/design/check_component_contracts.mjs",
+        "guardEvidence": "exact 60px/44px geometry, draft-derived sendability, retained native focus, independent busy actions, and one editable semantics node"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json"
+      ],
+      "notes": "ChatInputBar is the catch.chat_composer contract. Call sites provide capabilities and async state only; they do not configure action geometry or draft validity."
+    },
+    {
+      "id": "REG-STORAGE-RULES-001",
+      "title": "Deployed Storage rules lose Firestore IAM or client cleanup capability",
+      "status": "active",
+      "applies_to": [
+        "storage.rules",
+        "contracts/storage/match_chat_images.schema.json",
+        "lib/image_uploads/data/image_upload_repository.dart",
+        "tool/firebase/storage_rules_firestore_iam.mjs",
+        "tool/firebase/probe_chat_storage_rules.mjs",
+        "tool/deploy_firebase_targets.sh"
+      ],
+      "symptom": "Emulator tests pass while live chat uploads return unauthorized, a rule evaluation exceeds cross-service document limits, or a failed message write cannot delete its uploaded object.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/firebase/storage_rules_firestore_iam.test.mjs tool/firebase/probe_chat_storage_rules.test.mjs && node tool/firebase/storage_rules_firestore_iam.mjs --all",
+        "guardEvidence": "known-bad missing-role fixture, policy-preserving apply, uploader-owned create/delete contract, and authenticated live upload/delete probe"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "docs/data_contracts.md",
+        "firebase/README.md"
+      ],
+      "notes": "Do not weaken chat images to any signed-in writer. Provision roles/firebaserules.firestoreServiceAgent, keep match status as the one-document block projection, and retain immutable uploaderUid object metadata."
+    },
+    {
+      "id": "REG-REPO-ROOT-001",
+      "title": "Repository residue returns without an owner or safe recovery path",
+      "status": "active",
+      "applies_to": ["*", "tool/repository_root_manifest.json", "artifacts/**", "docs/**/*.md"],
+      "symptom": "A root entry is unexplained, tracked output has no consumer, local paths leak into Markdown, or cleanup guidance can remove tracked or protected state.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/check_repository_root_hygiene.mjs && node --test tool/check_repository_root_hygiene.test.mjs",
+        "guardEvidence": "seeded tests prove unknown and ambiguous classifications plus non-portable links are detected"
+      },
+      "owner_docs": ["tool/README.md", "artifacts/README.md", "docs/plans/repository_root_hygiene_spec.md"],
+      "notes": "The cleaner is allowlist-only, dry-run by default, and never invokes git clean."
+    },
+    {
+      "id": "REG-WEB-UI-001",
+      "title": "Shared web primitives drift out of adapters, CI, or accessibility contracts",
+      "status": "active",
+      "applies_to": [
+        "packages/web-ui/**",
+        "packages/web-config/styles/catch-web.css",
+        "website/src/shared/ui/**",
+        "admin/src/shared/ui/**",
+        "design/web-ui/**",
+        "docs/audit_registry/web_shared_primitive_adoption.json",
+        ".github/workflows/marketing-website.yml",
+        ".github/workflows/admin-website.yml"
+      ],
+      "symptom": "A shared package export is unclassified, an adopted surface adapter stops using it, a table loses its accessible name or keyboard scroll frame, a field loses validation semantics, focus becomes invisible, or package-only changes skip both React CI workflows.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:shared-ui-adoption && npm run web:ui:test && npm run web:ui:typecheck",
+        "guardEvidence": "known-bad unclassified overlap/export and missing-adapter-import probes plus shared button, field, toggle, feedback, and table behavior tests"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/marketing_website_architecture.md",
+        "docs/audit_registry/web_shared_primitive_adoption.json"
+      ],
+      "notes": "The package owns compatible native behavior and accessibility state. Website/admin adapters continue to own visual density, class names, domain tone mapping, and feature composition."
+    },
+    {
+      "id": "REG-WEB-BUNDLE-001",
+      "title": "Lazy admin screens still ship their controllers in the entry chunk",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/features/**/controllers/**",
+        "admin/src/shared/api/**",
+        "admin/vite.config.ts",
+        "admin/bundle-budget.json",
+        "admin/scripts/checkBundleBudget.mjs"
+      ],
+      "symptom": "A screen is rendered through React.lazy, but App.tsx statically imports its controller or adminApi, pulling Firebase Functions, sample data, and generated bridges into the production entry and exposing screen-only controls on unrelated routes.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build",
+        "guardEvidence": "Vite manifest budget plus a known-bad feature-controller import probe"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/bundle-budget.json"
+      ],
+      "notes": "Live route wrappers own query controllers behind the lazy boundary. Prop-driven workspaces remain independently renderable for Storybook and tests."
+    },
+    {
+      "id": "REG-WEB-STORYBOOK-BUNDLE-001",
+      "title": "Admin route stories collapse every feature and generated intake packet into one oversized chunk",
+      "status": "active",
+      "applies_to": [
+        "admin/.storybook/main.ts",
+        "admin/src/stories/**",
+        "admin/src/features/**",
+        "admin/storybook-bundle-budget.json",
+        "admin/scripts/checkStorybookBundleBudget.mjs"
+      ],
+      "symptom": "AdminRoutes.stories grows back toward a megabyte because all feature modules and the generated organizer-intake bridge are bundled into the story entry, slowing visual and accessibility review.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build:storybook",
+        "guardEvidence": "named feature/data chunks plus known-bad route-story and app-chunk budget probes"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/storybook-bundle-budget.json"
+      ],
+      "notes": "The budget covers Catch-authored chunks only. Storybook framework, axe, and other vendor runtime chunks are measured separately from application composition."
+    },
+    {
+      "id": "REG-WEB-FEATURE-SIZE-001",
+      "title": "Admin feature screens regrow into multi-thousand-line route modules",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/**/*.tsx",
+        "admin/feature-ui-size-budget.json",
+        "tool/web/check_admin_feature_ui_size.mjs"
+      ],
+      "symptom": "A route/workspace entry accumulates private workflow panels until review, testing, and ownership become impractical, or feature-private panels are exported as an accidental shared API.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-feature-ui-size && node tool/run.mjs check web:admin-feature-exports",
+        "guardEvidence": "known-bad route and private-module size fixtures plus the uppercase feature-export scanner"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/feature-ui-size-budget.json"
+      ],
+      "notes": "Split cohesive workflows behind lower-case feature-private module APIs. Route and workspace components remain the only public feature UI exports."
+    },
+    {
+      "id": "REG-WEB-UI-LABEL-001",
+      "title": "Structural eyebrow labels collapse back into the status badge family",
+      "status": "active",
+      "applies_to": [
+        "design/components/catch.components.json",
+        "design/website/components.json",
+        "design/admin/components.json",
+        "design/web-ui/components.json",
+        "tool/design/check_component_lexicon.mjs"
+      ],
+      "symptom": "UiLabel or AdminEyebrow is classified as catch.badge, making hierarchy metadata indistinguishable from status, count, or alert semantics.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:component-lexicon",
+        "guardEvidence": "exact four-stack catch.ui_label and catch.badge mappings plus a known-bad missing-symbol probe"
+      },
+      "owner_docs": [
+        "docs/design_language.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "catch.ui_label owns structural hierarchy context; catch.badge owns status, state, counts, and alerts. Shared typography does not make them one concept."
+    },
+    {
+      "id": "REG-WEB-INTAKE-TASK-FIRST-001",
+      "title": "Intake daily review regresses into a generated diagnostic wall",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/**",
+        "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+        "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "design/admin/components.json"
+      ],
+      "symptom": "Event or organizer Intake opens with pipeline diagnostics, metric walls, or raw generated cards before the operator can see the staged queue, selected evidence, readiness gates, downstream impact, notes, and backed decision actions.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/intake/ui/intakeWorkbenchDefaults.test.tsx src/shared/ui/AdminPrimitives/intake.test.tsx",
+        "guardEvidence": "feature tests assert both workspaces default to the staged review queue, keep diagnostics secondary, and return cleanly; primitive tests cover stage and queue selection semantics"
+      },
+      "owner_docs": [
+        "docs/admin_dashboard_user_stories_and_component_catalogue.md",
+        "docs/audit_registry/admin_console_design_adoption.json"
+      ],
+      "notes": "New Intake stages must represent durable backend states. Discovery jobs and canonical promotion stay out of the primary stage rail until their state, authority, failure, retry, and receipt contracts exist."
+    },
+    {
+      "id": "REG-WEB-ADMIN-CHROME-001",
+      "title": "Admin route chrome regrows prototype labels and repeated title copy",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+        "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+        "tool/web/check_admin_components.mjs",
+        "design/admin/components.json"
+      ],
+      "symptom": "The admin shell shows Catch Ops, sample console, dev plus sample, or a route kicker and subtitle alongside the global route title, making prototype context look like product identity and repeating information before the task begins.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-components",
+        "guardEvidence": "the component checker requires Catch Admin, a single route-owned h1 in AdminTopbar, no top-bar kicker or subtitle, and rejects known prototype labels"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/admin_console_design_adoption.json"
+      ],
+      "notes": "Production omits the environment badge. Development, Local, or Staging remains visible only when non-production context changes operator risk; roles and local-data context stay inside the account disclosure."
+    },
+    {
+      "id": "REG-FIELD-HANDOFF-001",
+      "title": "Production profile fields drift back to the legacy disclosure and prompt composition",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_field.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/core/theme/catch_tokens.dart",
+        "lib/user_profile/presentation/widgets/inline_editor_*.dart",
+        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "test/core/catch_field_focus_semantics_test.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "symptom": "A field requires one tap for an outline and another for focus or text editing, disclosure content flickers instead of animating one tile, Cancel/Done drifts away from the trailing lane, complex controls use feature-local chip/stepper/toggle geometry, Photos loses its section-header rule, or Profile Edit prompt cards draw competing outer/child focus rings or collapse back into one divided explicit-save row with a modal question picker.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/profile/profile_widgets_test.dart && node tool/run.mjs check design:component-contracts",
+        "guardEvidence": "focused primitive tests cover pointer-down to pointer-up focus transfer, native cursor ownership, pressed/active chrome, reveal motion, wrapping choices, stepper/toggle geometry, status states, contained field-section focus ownership, Cancel/Done edge geometry, the Photos header rule, and production prompt question/answer composition"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json",
+        "docs/design_parity/state_matrix.json"
+      ],
+      "notes": "The Flutter canonical primitives implement the approved portion of handoff revision field-sys-20260714-195933-640b9906. Ordinary focus in contained field rows is child-owned; explicit section focus/error alone may change the outer perimeter. Profile keeps the existing three-prompt and 300-character business contracts. Unmapped domain/API decisions and unapproved typography/motion deltas remain review-gated rather than silently promoted."
+    },
+    {
+      "id": "REG-WEB-ADMIN-AUTH-DEEP-LINK-001",
+      "title": "Admin deep links are overwritten while authentication or claims resolve",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/app/App.test.tsx"
+      ],
+      "symptom": "A production URL for a safety case, access application, organizer, event, or another role-owned record is replaced with /overview before Firebase authentication and custom claims finish resolving.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/app/App.test.tsx",
+        "guardEvidence": "App-level live-mode tests preserve requested record URLs while Firebase authentication is unresolved and while a signed-in user's admin claims are pending or absent."
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/audit_registry/admin_console_design_adoption.json"
+      ],
+      "notes": "The shell may redirect an inaccessible route only after a live user has a resolved, non-empty role set. Sign-in, claim-check, and no-claim states retain the requested URL."
+    },
+    {
+      "id": "REG-HOST-UTILITY-ROUTE-001",
+      "title": "Legacy Host clubs redirect swallows nested event and club operations",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "test/routing/router_redirect_test.dart"
+      ],
+      "symptom": "Tapping New event, an event row, Edit, or another /host/clubs child route opens the Organizer tab because the legacy /host/clubs alias redirect evaluates a partial matchedLocation instead of the full requested URI.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/routing/router_redirect_test.dart",
+        "guardEvidence": "GoRouter keeps the create-event child route"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "Exact legacy-alias redirects must compare state.uri.path. A route-level matchedLocation may represent the parent match and must not decide whether a nested Host utility route is preserved. Payout readiness is not part of this navigation boundary."
+    },
+    {
+      "id": "REG-HOST-CLUB-TABBED-WORKSPACE-001",
+      "title": "Host Clubs tab pages lose shared chrome or leak scroll state",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_tab_rail.dart",
+        "lib/core/widgets/catch_tabbed_screen.dart",
+        "lib/user_profile/presentation/profile_screen.dart",
+        "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+        "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+        "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+        "test/profile/profile_widgets_test.dart",
+        "test/hosts/host_operations_screen_test.dart",
+        "test/clubs/clubs_controllers_test.dart",
+        "test/clubs/club_hero_app_bar_test.dart",
+        "test/clubs/club_detail_read_only_preview_test.dart"
+      ],
+      "symptom": "Organizer scroll position leaks into Edit, Insights, or Preview; shared identity chrome or the option rail disappears; horizontal paging disagrees with the selected option; Preview requires a second CTA/route, exposes Back, Share, membership, or host-only HOSTED affordances; or Preview keeps the prior club after switching clubs.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/clubs/clubs_controllers_test.dart test/clubs/club_hero_app_bar_test.dart test/clubs/club_detail_read_only_preview_test.dart",
+        "guardEvidence": "focused suites cover typed native paging, persistent shared chrome, independent/restored vertical offsets, Prefill-to-Edit top position, direct consumer Club Detail composition, read-only route-chrome suppression, consumer schedule visuals, and selected-club hydration"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json"
+      ],
+      "notes": "Profile is the reference adopter for the nested shell and retains its specialized two-way Preview bridge. Host Clubs uses the same shell with typed HostClubTab pages and the canonical consumer Club Detail slivers; route actions, membership docks, and interaction effects remain outside the embedded read-only preview."
     }
   ]
 }

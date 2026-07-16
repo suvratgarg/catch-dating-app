@@ -1,7 +1,7 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.2.18
-updated: 2026-07-03
+version: 0.2.25
+updated: 2026-07-14
 owner: admin_console
 status: active
 ---
@@ -39,7 +39,7 @@ Files inspected:
 - `admin/src/shared/api/sampleData.ts`
 - `admin/src/shared/types/adminTypes.ts`
 - `admin/src/shared/contracts/intakeApprovalContracts.ts`
-- `admin/src/shared/ui/AdminPrimitives.tsx`
+- `admin/src/shared/ui/AdminPrimitives/`
 - `admin/src/features/marketing/api/marketingRepository.ts`
 - `admin/src/features/marketing/controllers/useMarketingOpsController.ts`
 - `admin/src/generated/marketingOpsBridge.json`
@@ -49,6 +49,9 @@ Files inspected:
 - `admin/src/features/intake/events/api/eventIntakeRepository.ts`
 - `admin/src/features/intake/events/controllers/useEventIntakeController.ts`
 - `admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx`
+- `admin/src/features/intake/operations/api/intakeOperationsRepository.ts`
+- `admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts`
+- `admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx`
 - `admin/src/features/intake/organizer/api/organizerIntakeRepository.ts`
 - `admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.ts`
 - `admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts`
@@ -91,11 +94,11 @@ The folder direction is correct: `app`, `features`, and `shared` now exist, and
 Overview, Marketing, Event Intake, and Organizer Intake have feature-owned
 controllers. The implementation is still transitional.
 
-The sidebar exposes 11 top-level tabs:
+The sidebar exposes 12 role-gated top-level tabs:
 
 - Overview
 - Safety
-- Access
+- Launch access
 - Growth
 - Marketing
 - Intake
@@ -108,8 +111,10 @@ The sidebar exposes 11 top-level tabs:
 
 Overview, Safety, Access, Growth, Marketing, Intake, Organizers, Events, Users,
 Finance, Data quality, and Admin roles now branch to dedicated surfaces. The
-remaining roadmap material now lives in this audit document and in concise
-topbar copy instead of taking over whole tabs.
+remaining contract and source material now lives in this audit document or a
+secondary disclosure instead of taking over whole tabs. The global chrome uses
+one `Catch Admin` brand and one plain route title; it does not repeat prototype
+kickers, subtitles, or sample-console labels.
 
 The strongest current workflows are Marketing, Organizer Intake, Event Intake,
 and the new canonical Organizers publishing workspace. Event Intake now owns its
@@ -132,26 +137,27 @@ now also exposes external import-plan and execution-preflight snapshots from
 see read-only draft counts, blockers, guardrails, and regeneration commands
 before any importer exists. Its
 Indore + Mumbai default uses the same bounded launch-city pattern.
-Safety, Access, Growth, Users, Finance, and Data quality are
-partial because some underlying signals/actions exist, but the full dedicated
-operator workflows are not built.
+Safety, Launch access, Growth, Users, Finance, Data quality, and Admin roles now
+use task-first, URL-owned directory/detail or exact-lookup workflows. Their
+remaining gaps are the explicitly deferred backend contracts listed below, not
+placeholder screen structure.
 
 ## Top-Level Tab Inventory
 
 | Tab | Current owner | Current data | Current actions | Fit |
 |---|---|---|---|---|
-| Overview | `features/overview` repository, controller, and UI | `loadOverview`, `loadHostAnalytics`, sample fallbacks, queue decision callables | refresh, date/geo scope, focus event, select/inspect queue rows, queue decisions | Good first dashboard; metric drilldown, saved filters, and cross-tab routing remain |
-| Safety | `features/safety` | overview safety queues plus `adminGetSafetyTriageDetails` detail reads | filter/select triage rows, inspect normalized detail, assignment/SLA/evidence, assign owner, mark an explicitly selected row reviewed/dismissed with required notes | Partial triage workflow; assignment and status-only decisions are wired, while escalation, restrictions, and resolution actions still need audited callables |
-| Access | `features/access` plus Overview quick actions | `adminGetOverview` access queue; `adminGetAccessApplicationDetails`; `adminDecideAccessApplication` | filter/select applications, inspect launch-access source fields and deterministic overlap signals, enter review note/cohort, explicitly approve/deny, track local recent decisions | Real launch-gate review workflow; broad user search, account, safety, payment, and referral-graph actions still need contracts |
-| Growth | `features/growth` | overview metrics and host analytics | range-select launch KPIs, filter/select funnel-stage signals, inspect KPI source/detail/status, inspect booking trend and load metadata | Partial read-only KPI workspace; channel, cohort, referral, and campaign actions still need analytics contracts |
-| Marketing | `features/marketing` | marketing ops bridge | draft creation, edit, review, export-ready decisions | Strongest product fit; review decisions now require notes and remain marketing-only, with no canonical event creation or auto-posting |
-| Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake reads generated organizer bridge artifacts | review event and organizer intake | Strong but dense |
-| Organizers | `features/organizers` | canonical `clubs/{id}` list/detail via admin callables | filter/search canonical organizers, load details, edit, diff, validate, save, publish | First real canonical publishing workflow; route reservations, token search, and app preview are backed by canonical organizer fields |
-| Events | `features/events` | canonical `events/{id}` list/detail, read-only `externalEvents/{id}` supply via admin callables, `eventSupplyReadiness/current` import-plan/preflight snapshots | filter/search canonical events from callable snapshot timestamps, select/inspect external supply attribution and duplicate signals, inspect import readiness, load details, edit safe app-facing fields, diff, validate, save | Real canonical cleanup workflow plus external supply visibility; lifecycle, pricing, schedule, cancellation, and import writes remain intentionally separate |
-| Users | `features/users` | `adminGetUserAnalytics` aggregate response | jump exact `users/{uid}`/`uid:{uid}` from topbar or tab input, load one user id, inspect user-safe metrics, trend, summaries, data quality | Partial read-only analytics lookup; broad identity search, account, safety, payment, and support actions are not built |
-| Finance | `features/finance` | overview payment issue rows, finance metrics, host analytics payment signals | filter/select finance issues, inspect explicitly selected event/payment/payout context, refresh read-only snapshot | Partial read-only issue workspace; provider ledger, reconciliation, refund, and payout actions still need contracts |
-| Data quality | `features/data-quality` | overview quality rows, host analytics quality rows, marketing bridge freshness, Event Intake dashboard freshness, event supply readiness freshness/preflight blockers, source crawl run-plan health, event import execution-policy health | filter/search/select quality signals, inspect source/state/owner/runbook/action guidance, refresh read-only snapshot | Partial real operations workspace; stale generated artifacts are now separated from disabled/not-configured run plans, while scheduler last-run telemetry, backfill status, and remediation actions still need backend/source contracts |
-| Admin roles | `features/admin-roles` | exact Firebase Auth uid lookups through `adminGetAdminUserRoles`; audited custom-claim writes through `adminSetAdminUserRoles`; `adminRoleAssignments/{uid}` register | load exact uid, inspect current roles, select allowed admin claims, require review note, save role changes | Real owner-only claim assignment workflow; broad admin-user directory/search and App Check diagnostics remain separate |
+| Overview | `features/overview` repository, controller, and UI | `loadOverview`, `loadHostAnalytics`, local-preview fallbacks | refresh scoped analytics and route each queue row to its owning workflow | Good read-only command center; metric drilldown, saved filters, and pagination remain |
+| Safety | `features/safety` | aggregate overview safety counts, capped queue previews, plus `adminGetSafetyTriageDetails` detail reads | inspect aggregate queue health and explicitly scoped preview analytics, filter/select triage rows, inspect normalized detail, assignment/SLA/evidence, assign owner, mark an explicitly selected row reviewed/dismissed with required notes | Partial triage workflow; honest queue-health analytics, assignment, and status-only decisions are wired, while full-backlog aging, escalation, restrictions, and resolution actions still need backend contracts |
+| Launch access | `features/access`; Overview provides route-only queue previews | `adminGetOverview` capped access queue; direct `adminGetAccessApplicationDetails`; `adminDecideAccessApplication` | URL-owned list/detail review, inspect source evidence, enter a required note/cohort, choose exact backed outcomes, receive completion feedback | Real launch-gate review workflow; full directory, cohort catalogue, invitation, notification, and durable history still need contracts |
+| Growth | `features/growth` | independently loaded overview metrics and host analytics | inspect four backed outcomes, apply endpoint-owned range, filter URL-owned signals, inspect accessible trend/table and source basis | Complete approved read-only KPI workflow; cohort conversion, attribution, referral, paid ROI, and retention claims remain absent |
+| Marketing | `features/marketing` | immutable marketing ops bridge snapshot plus session working copies | URL-owned board/composer/libraries/activity/diagnostics, draft creation, edit, rights confirmation, review, manual export-ready decisions | Complete approved content-studio workflow; arbitrary edits remain session-only and direct social publishing/autosave remain absent |
+| Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake reads generated organizer bridge artifacts; Automation reads canonical operations records through `adminListIntakeOperations` | review event and organizer intake, inspect persisted shadow runs and human exceptions | Strong but dense; Automation is deliberately read-only until a trusted worker and publication authority are enabled |
+| Organizers | `features/organizers` | canonical `clubs/{id}` list/detail and bounded claims queue via admin callables | URL-owned Directory/Claims, inspect one record, edit task-ordered fields, diff, validate, save, publish/index through dedicated callable, review one claim | Complete approved canonical publishing workflow; Intake handoff waits for a validated canonical target |
+| Events | `features/events` | canonical `events/{id}` list/detail, bounded `externalEvents/{id}` supply, and `eventSupplyReadiness/current` snapshots | URL-owned canonical/readiness/external workspaces, URL filters, safe listing edits, backed performance, preflight evidence, publication checklist | Complete approved event workflow; external point read, organizer-owned lifecycle mutations, and Intake handoff remain contract-first |
+| Users | `features/users` | one exact-UID `adminGetUserAnalytics` aggregate response | validate exact UID, mask prior UID while loading, inspect four outcomes and accessible activity summary with explicit missing/forbidden/stale/partial states | Complete approved read-only analytics lookup; broad identity search and account, safety, payment, or support actions remain absent |
+| Finance | `features/finance` | independent overview and fixed 30-day host-analytics responses | inspect scoped issue counts, partial-source state, prioritized read-only issue evidence, inferred/unknown fields, malformed-row count, and manual provider handoff | Complete approved read-only reconciliation workflow; typed issue model, point reads, finance-role repair, and all money movement remain contract-first |
+| Data quality | `features/data-quality` | five independently loaded overview, analytics, marketing, intake, and supply-readiness sources | inspect source-health dimensions, retry one failed source, filter severity/owner, open URL-owned signal detail or validated owning workflow | Complete approved data-trust register; scheduler receipts, acknowledgement, backfill, and remediation remain absent |
+| Admin roles | `features/admin-roles` | bounded 50-row assignment register plus exact Firebase Auth UID read and audited role mutation | local search, URL-owned UID detail, six governed role policies, before/after diff, self-owner lock, high-risk confirmation, save receipt and token-refresh guidance | Complete approved owner-only role workflow; broad Auth search, pagination, account state, session revocation, and non-admin claims remain absent |
 
 ## Auth And Admin Roles
 
@@ -160,8 +166,10 @@ Current implementation:
 - `admin/src/shared/api/firebase.ts` initializes Firebase Auth and signs in with
   Google popup.
 - `admin/src/app/App.tsx` subscribes to `onAuthStateChanged` only in live mode.
-- `VITE_ADMIN_DATA_MODE=sample` bypasses Auth entirely and now shows a visible
-  "Sample mode · auth bypassed" status in the top bar.
+- `VITE_ADMIN_DATA_MODE=sample` bypasses Auth for local review. The top bar does
+  not expose a `sample` product label; local-data context is explained inside
+  the account disclosure, and the environment chip says `Local` or
+  `Development` only when that non-production context matters.
 - `VITE_ADMIN_DATA_MODE=live` shows the sign-in screen when no Firebase user is
   present. After sign-in, the shell reads custom admin roles from the ID token
   before any dashboard data loads.
@@ -178,10 +186,11 @@ Current implementation:
   shell. `functions/src/admin/adminAuth.ts` accepts these custom claims:
   `admin`, `adminOwner`, `safetyReviewer`, `support`, `finance`,
   `analyticsViewer`.
-- `adminOwner` users can open Admin roles to load an exact Firebase Auth uid,
-  inspect current Catch admin claims, set/remove allowed claims with a required
-  audit note, and write the `adminRoleAssignments/{uid}` register. The backend
-  blocks admin owners from removing their own `adminOwner` claim.
+- `adminOwner` users can open Admin roles to review the bounded assignment
+  register, use exact Firebase Auth uid as a fallback, inspect current Catch
+  admin claims, set/remove allowed claims with a required audit note, and write
+  `adminRoleAssignments/{uid}`. The backend blocks admin owners from removing
+  their own `adminOwner` claim.
 
 Role intent:
 
@@ -198,9 +207,11 @@ Open auth gaps:
 
 - The client role map is a convenience layer only; per-action enforcement still
   happens when callables are invoked.
-- Admin roles is exact-uid based; it does not provide broad auth-user search,
-  email/name lookup, or a complete historical directory for roles assigned
-  manually before the register existed.
+- Admin roles exposes the 50 most recently updated assignment records with
+  local search/status filtering, plus exact-uid fallback for users absent from
+  that register. It does not provide unbounded Firebase Auth search,
+  email/name/phone lookup, pagination, or a complete history of claims assigned
+  before the register existed.
 - There is no visible App Check/auth environment diagnostic beyond the current
   data-mode/auth-status display.
 
@@ -215,24 +226,29 @@ Acceptance criteria:
 
 - Shows fresh key metrics with source timestamp and loading/error state.
 - Shows safety, access, claim, index, moderation, and payment queues.
-- Lets me scope by date, organizer, or event.
+- Lets me scope analytics by date, organizer, or event without implying that
+  the controls affect headline stock metrics or live queues.
 - Lets me drill from a queue row or metric into the owning workflow.
 - Separates data quality warnings from product risk warnings.
 
 Current adherence:
 
-- Good: metrics, live queues, host analytics, event table, data quality rows,
-  refresh, sample/live mode, and feature-owned Overview repository,
-  controller, and UI are present.
-- Good: queue rows are selectable, all rows in each queue group are visible,
-  and the selected row exposes target path, status, created time, detail, and
-  owning workflow guidance.
-- Weak: no metric drilldown, pagination, saved filters, or cross-tab row
-  routing exists yet.
+- Good: the streamlined command center keeps cross-vertical metrics, live
+  owned queues, scoped host analytics, refresh, independent partial-source
+  states, and the feature-owned Overview repository, controller, and UI.
+- Good: event-directory work and source-quality diagnostics have moved to
+  Events and Data quality instead of competing with the daily queue router.
+- Good: six cross-vertical headline metrics identify their owning workflow;
+  live queues appear before scoped analytics and route each row directly to
+  its role-checked owning vertical.
+- Good: date, organizer, and event controls are explicitly labelled as
+  analytics-only rather than appearing to filter live stock or open queues.
+- Weak: no metric drilldown, pagination, or saved filters exist yet.
 
 Recommended next work:
 
-- Route queue rows to the owning feature tab.
+- Add URL-owned metric drilldown only after each metric has an explicit detail
+  contract and destination.
 
 ### Safety
 
@@ -263,17 +279,28 @@ Current adherence:
 - Good: `SafetyTriageScreen` now delegates rendering to a prop-driven
   `SafetyTriageWorkspace`, giving Storybook deterministic route/workspace
   coverage for queue detail, assignment, and status-only decision states.
+- Good: queue cards and composition bars use complete aggregate count metrics,
+  while derived priority and age charts are explicitly labelled as the capped
+  returned preview rather than the full backlog or an SLA breach.
+- Good: chart labels and values remain readable without color, zero values are
+  represented honestly, and machine queue codes are adapted into human-facing
+  operational labels.
 - Partial: `adminDecideSafetyTriageItem` supports reviewed/dismissed
   status-only decisions with explicit row selection and required notes.
 - Weak: escalation, restrictions, account/content changes, and richer
   resolution actions are still intentionally absent because the current
   `reports`, `moderationFlags`, and `eventSafetyReports` schemas only support
   queue status/assignment fields.
+- Weak: the queue response is capped and unordered, so full-backlog aging and
+  SLA charts remain unavailable until the backend exposes a bounded ordered
+  analytics contract.
 
 Recommended next work:
 
 - Add audited escalation, restriction, and resolution callables with separate
   role gates.
+- Add an uncapped aggregate age distribution or bounded ordered analytics
+  endpoint before describing age as full-backlog health.
 - Add the corresponding account/content/event safety document contracts before
   enabling destructive safety actions from the admin console.
 
@@ -295,17 +322,18 @@ Current adherence:
   `overview.queues.accessApplications`, supports search/select, requires an
   explicitly selected application and review note, collects optional
   `cohortId`, calls `adminDecideAccessApplication`, removes reviewed rows
-  locally, and shows recent session decisions.
+  locally, and reports the audited decision result through shared feedback.
 - Good: selected rows now load `adminGetAccessApplicationDetails`, exposing
   city, role, event types, availability windows, host interest, invite code,
   Instagram, referral source, Why Catch, submission count, timestamps, and
   bounded deterministic overlap signals before an operator decides.
 - Good: the route wrapper now delegates its rendered body to registered
   `AccessReviewWorkspace`, giving Storybook deterministic route/workspace
-  coverage for filtered applications, selected application detail, duplicate
-  signals, decision inputs, and recent decision state without live reads or
-  writes in previews.
-- Good: Overview still keeps compact approve/deny shortcuts for queue triage.
+  coverage for the capped application directory without live reads or writes
+  in previews. Direct `/access/{uid}` routes load their own detail and show an
+  explicit retryable unavailable state instead of substituting another row.
+- Good: Overview routes an application to Launch access; approve/deny remains
+  owned by the detail workflow rather than duplicated in the command center.
 - Weak: broad identity search, account state, safety history, payment history,
   and referral graph actions are still intentionally outside Access.
 
@@ -374,18 +402,25 @@ Current adherence:
 - Good: event inputs are labeled as reviewed marketing leads and candidate
   pools, not canonical `events/{id}` records. Canonical imports and app-event
   cleanup remain in Intake, Events, and Organizers.
-- Good: the tab now shows a top-level action-boundary panel clarifying that
-  Marketing writes review decisions and content drafts only, while canonical
-  supply writes, booking, payments, waitlists, and direct Instagram posting stay
-  outside this workspace. The composer event-pick step also labels event
-  selection as read-only source visibility for the current draft.
+- Good: the primary surface now has one `Marketing` route title, one `New post`
+  action, and URL-owned Posts, New post, draft-step, Events, Media, Activity,
+  and Diagnostics views. Command material and action boundaries live in
+  Diagnostics instead of embellishing every task screen.
+- Good: fetched data remains an immutable saved dashboard snapshot; working
+  edits are labelled as session-only, review receipts are not described as
+  saved edits, and unload warnings appear while a working copy is dirty.
+- Good: image rights are explicit operator state and the frontend enforces the
+  same 50,000-character serialized-edit limit as the backend before decision
+  submission. Event review remains read-only source visibility, and PNG export
+  is blocked when rights or size validation fails.
 - Good: the route wrapper now delegates to the prop-driven
   `MarketingOpsWorkspace`, giving Storybook deterministic route/workspace
-  coverage for the generated marketing bridge, post board, and action-boundary
-  panel without live dashboard reads or marketing writes in previews.
-- Weak: event selection is still partly display-only, some draft mutations are
-  local until review, and direct Instagram publishing is intentionally not
-  implemented.
+  coverage for the saved post board without live dashboard reads or marketing
+  writes in previews.
+- Weak: arbitrary draft edits have no persistence contract and remain
+  session-only. The browser unload guard cannot intercept in-app sidebar
+  navigation, so leaving Marketing can still discard a dirty working copy.
+- Weak: direct Instagram publishing is intentionally not implemented.
 
 Recommended next work:
 
@@ -393,7 +428,8 @@ Recommended next work:
 - Keep review-decision controls in shared admin UI because Marketing and Event
   Intake share the same button/card interaction pattern, even though their
   decision writes now use separate callables and collections.
-- Split visual regions out of the large screen file.
+- Add a route-transition dirty-state guard only after the shell has a shared,
+  tested navigation-blocking contract.
 
 ### Intake
 
@@ -402,7 +438,7 @@ before they become canonical, public, or available to Marketing.
 
 Acceptance criteria:
 
-- Separate but adjacent event and organizer intake workspaces.
+- Separate but adjacent event, organizer, and automation workspaces.
 - Explicit status gates for source evidence, duplication, location, policy,
   publication, and claim handoff.
 - Review decisions with notes and audit trail.
@@ -411,7 +447,37 @@ Acceptance criteria:
 
 Current adherence:
 
-- Good: Intake now covers Event Intake and Organizer Intake.
+- Good: Intake now covers Event Intake, Organizer Intake, and the durable
+  Automation projection.
+- Good: Automation displays canonical run/work-item inventory using the same
+  four persisted primary stages as the CLI, rather than inferring run progress
+  from the overlapping Event and Organizer review tabs.
+- Good: the Automation workspace is explicitly read-only. It exposes evidence,
+  blockers, run receipts, and human exceptions without browser controls for
+  source fetches, models, rule deployment, or publication.
+- Good: stage and exception totals come from the complete imported run rather
+  than the current 200-item page. The controller drains the run-pinned,
+  server-filtered human-exception lane before rendering, validates it against
+  authoritative aggregates, and pages ordinary items only through **Load 200
+  more**. Active stage queues exclude published/terminal history; run and item
+  pages remain explicitly labelled as loaded when another cursor exists.
+- Good: expiry and stale-evidence reconciliation produces a new lineage-bound
+  run instead of mutating an immutable imported snapshot.
+- Good: the default experience is now a task-first review workbench rather than
+  the generated diagnostic wall. Both workspaces expose backed search and
+  filters, Incoming/Verify/Resolve/Ready stages, a selectable queue, source
+  evidence, readiness gates, downstream impact, notes, and the existing real
+  decision actions.
+- Good: the stage spine deliberately maps only durable operator states. It does
+  not cosmetically present Crawl or Promote as live jobs when the backend has
+  no persisted job state or canonical promotion contract.
+- Good: generated pipeline, policy, crawl, curation, and import diagnostics are
+  preserved behind a deliberate Diagnostics handoff with a clear return to the
+  review queue.
+- Good: event and organizer decisions retain their existing controller and
+  callable boundaries. Event approval remains decision-only; organizer approval
+  remains a publication handoff; neither implies ownership, app visibility,
+  recurring crawl, or a canonical event write.
 - Good: Organizer Intake exposes the deterministic discovery search plan,
   launch-city search terms, source config files, and operator commands, so
   search-term iteration is visible even though edits still happen in repo-owned
@@ -437,15 +503,29 @@ Current adherence:
   `OrganizerIntakeWorkspace`, giving Storybook deterministic route/workspace
   coverage for workflow readiness, publication review packets, generated bridge
   guardrails, and mutation callback boundaries without live writes in previews.
-- Weak: organizer intake is operationally dense and mostly driven by generated
-  bridge JSON.
+- Weak: organizer source freshness and discovery execution are still driven by
+  generated bridge artifacts; Discovery plan therefore opens the backed plan
+  and does not pretend to run a job.
 - Weak: Event Intake approvals remain decision records only; canonical import
   and external event promotion still need a dedicated reviewed write path.
+- Weak: Automation does not join those backed decisions directly. A later run
+  sees them only after the owning Event or Organizer compatibility artifact is
+  regenerated.
+- Weak: no production worker currently persists Supply Intake runs; live mode
+  remains empty until worker IAM, source policy, model budget, and publication
+  authority are approved and deployed.
 
 Recommended next work:
 
 - Add a safe admin edit/publish path for discovery search config only after
   the repo-file workflow is stable enough to replace with audited mutations.
+- Define a discovery-job contract with durable progress, failure, retry,
+  generated-at, and output receipts before adding a Run discovery action.
+- Activate the `operations/` worker in shadow mode first, measure correction and
+  escalation rates, and keep the browser read-only while calibration is below
+  the documented promotion thresholds.
+- Define canonical event import and promotion side effects before adding a
+  Promote action to the stage spine.
 - Keep organizer publication, app visibility, and public website listing output
   aligned with shared contracts to avoid schema drift.
 
@@ -471,10 +551,11 @@ Current adherence:
   `adminUpdateClubDetails`; the UI shows before/after diff, validation,
   publish checklist, and public preview link; publish state goes through
   `adminSetClubIndexStatus`.
-- Good: save checks and publishing checks are separated in the side panel. The
-  UI only asks for a review note when there are pending save changes or a
-  publishing decision, and both organizer edit/index callables now enforce
-  review notes server-side before writing audit-logged mutations.
+- Good: save validation, route/search readiness, and publish blockers are
+  consolidated into one `Readiness and blockers` summary. The UI asks for a
+  review note only when there are pending save changes or a publishing
+  decision, and both organizer edit/index callables enforce review notes
+  server-side before writing audit-logged mutations.
 - Good: the organizer directory exposes the callable `generatedAt` snapshot
   timestamp in the publishing contract panel, matching the canonical Events
   tab's operator snapshot pattern.
@@ -501,9 +582,9 @@ Current adherence:
   category, image/logo state, tags/formats, and listing copy.
 - Good: the route wrapper now delegates to the prop-driven
   `OrganizerPublishingWorkspace`, giving Storybook deterministic
-  route/workspace coverage for the canonical organizer directory, route/search
-  readiness, and publishing contract panel without live reads or writes in
-  previews.
+  route/workspace coverage for the canonical organizer directory without live
+  reads or writes in previews. Directory and Claims are URL-owned, and direct
+  claim links show a retryable unavailable state rather than a false selection.
 - Weak: the search token strategy is deterministic and cheap, but it is not
   typo-tolerant or ranked like a dedicated search service.
 
@@ -648,8 +729,8 @@ Current adherence:
 - Good: sample mode includes a deterministic `user-1` response, so the tab can
   be reviewed without BigQuery or live admin credentials.
 - Good: `adminGetUserAnalytics` now has an explicit rate-limit entry.
-- Partial: topbar search and the Users tab input normalize exact `users/{uid}`,
-  `uid:{uid}`, or raw uid values into the selected user scope.
+- Good: the Users tab input normalizes exact `users/{uid}`, `uid:{uid}`, or raw
+  uid values into the selected user scope; the duplicate shell lookup is gone.
 - Partial: the Users tab now renders the exact lookup contract, normalized
   target path, allowed aggregate sources, unavailable domains, and blocked
   actions so operators do not confuse UID analytics lookup with identity search
@@ -756,7 +837,8 @@ the console so live admin access is not dependent on an invisible manual script.
 
 Acceptance criteria:
 
-- Exact Firebase Auth uid lookup with current admin roles.
+- A bounded Firestore assignment register first, with local search and clear
+  50-row scope, plus exact Firebase Auth uid lookup as a fallback.
 - Role assignment is limited to the documented Catch admin claim allowlist.
 - Every role change requires a note and writes an audit trail.
 - Admin owners cannot remove their own last owner-capable claim.
@@ -770,22 +852,26 @@ Current adherence:
 - Good: role changes preserve unrelated custom claims, require notes, write
   `adminRoleAssignments/{uid}`, write `adminAuditLogs/{id}`, and block
   self-removal of `adminOwner`.
-- Good: the tab now exposes the exact-uid scope contract, normalized assignment
-  path, source-of-truth documents, unsupported lookup inputs/actions, and
-  blocks no-op saves so an unchanged role set cannot create audit noise.
+- Good: the register is the primary surface. It exposes the 50 most recently
+  updated assignments, generated time, status filtering, and local-only search;
+  exact uid lookup stays below it as the fallback and never becomes broad Auth
+  directory search.
+- Good: `/admin-roles/{uid}` owns selection and supports a target absent from
+  the bounded register. The editor shows before/after roles, capability and risk
+  policy, high-risk confirmation, a visibly locked self-owner control, and a
+  server-confirmed save receipt with token-refresh guidance.
 - Good: the route wrapper now delegates its rendered body to registered
   `AdminRoleManagementWorkspace`, giving Storybook deterministic
-  route/workspace coverage for exact-uid scope, assignment register, role
-  editor, and self-target guardrails without running live query fetches or
-  writes in previews.
-- Weak: the tab is exact-uid based. It does not yet list all Firebase Auth
-  users, search by email/name, or backfill the assignment register for claims
-  that were set manually before this tab existed.
+  route/workspace coverage for one role-assignment detail without running live
+  query fetches or writes in previews.
+- Weak: the bounded register is not a complete Firebase Auth directory. It does
+  not search by arbitrary email/name/phone or backfill assignments for claims
+  set manually before the register existed.
 
 Recommended next work:
 
-- Add a bounded admin-role directory only after deciding whether Auth listing
-  or a Firestore-owned assignment register should be the source of truth.
+- Define a separately authorized Auth-directory and backfill contract before
+  expanding beyond the Firestore assignment register.
 - Add an App Check/auth environment diagnostic panel if live-mode setup becomes
   confusing during operations.
 
@@ -877,8 +963,9 @@ As an organizer intake operator, I need to curate discovered organizers into
 canonical listings with evidence, publication, claim handoff, and app visibility
 gates.
 
-Current fit: broad and powerful but dense. Needs component extraction, live
-bridge refresh strategy, and clearer operator priority.
+Current fit: broad and powerful. The task-first queue and secondary Diagnostics
+split provide operator priority, while feature-private panels keep the route
+entry small; live bridge refresh remains generated-artifact driven.
 
 ## Architecture Assessment
 
@@ -887,147 +974,68 @@ What is correct:
 - Admin is a separate React/Vite surface, which matches the repo architecture.
 - Backend authority remains in Functions/shared contracts, not direct client
   Firestore writes.
-- Overview, Marketing, event lead intake, and Organizer Intake now have
-  feature-owned controllers.
-- Organizers now has a feature-owned repository, controller, helpers, and
-  screen for canonical publishing.
-- Shared DTO/type reuse is started through `shared/types` and
-  `shared/contracts/intakeApprovalContracts.ts`.
+- Every top-level admin vertical has a feature-owned controller and
+  repository/API adapter; remote reads and mutations use TanStack Query.
+- Route/workspace entry components are lazy-loaded, while Functions and shared
+  contracts remain the mutation authority.
+- Marketing, Organizer Intake, Events, Organizers, and other dense routes are
+  split into feature-private panel modules governed by feature-export and
+  feature-UI-size scanners.
+- Shared types, callable validation, the component registry, Storybook
+  registry, and shared UI primitives provide enforceable boundaries.
 
 What is weak:
 
-- `App.tsx` still owns auth shell, navigation, topbar search, role gating, and
-  feature composition. Overview data reads, analytics filters, and queue
-  decision orchestration now live under `features/overview`.
-- Feature repositories mostly re-export shared API functions instead of owning
-  a typed data boundary.
-- Event Intake review writes now use `adminRecordEventIntakeReviewDecision` and
-  `eventIntakeReviewDecisions/{decisionId}`. The target direction is
-  `app -> features -> shared`, never feature-to-feature for domain control flow.
-- `MarketingOpsScreen.tsx` and `OrganizerIntakeScreen.tsx` are still very large.
-- Event lead intake now has local Event Intake review helpers plus event-owned
-  read, callable, Firestore decision contracts, and a guarded
-  `eventIntakeDashboards/current` publish tool.
-- Generated JSON bridges are useful for sample/admin review workflows, but
-  approved event and organizer records must converge into shared contracts
-  consumable by the app and public website.
-- Organizer route allocation now checks `clubs.publicPage.canonicalPath`
-  collisions and writes `publicRouteReservations/{routeKey}` from the admin
-  save/index-publish callables before a canonical page becomes indexable.
+- `App.tsx` remains a large auth, role-gating, navigation, lazy-composition,
+  and hand-maintained path-parsing owner. Feature data and mutation
+  orchestration no longer belong there, but route parsing would benefit from a
+  declarative route registry.
+- Several feature repositories remain thin adapters over the shared callable
+  API. That is acceptable while they preserve feature ownership; add
+  feature-specific normalization only when a real boundary requires it.
+- Feature-private panel modules remain under the 1,200-line scanner ceiling,
+  although several are close enough to require continued size-budget
+  discipline.
+- Generated intake and marketing bridges remain review inputs, not canonical
+  publication authority.
 
 State management decision:
 
-- Do not introduce Redux/Zustand or another external state library yet.
-- The correct next step is feature-owned React hook controllers plus typed
-  repositories.
-- Add an external client-state dependency only after the admin has cross-feature
-  cache invalidation, optimistic concurrency, or server-state deduplication
-  problems that hooks cannot handle cleanly.
+- Continue feature-owned hook controllers plus the adopted TanStack Query
+  remote-state boundary.
+- Do not introduce Redux/Zustand unless a demonstrated cross-feature client
+  state problem cannot be handled by route state, query cache, or explicit
+  composition.
 
 ## Base Component Catalogue
 
-Implemented or started in `admin/src/shared/ui/AdminPrimitives.tsx`:
+Shared primitive ownership now covers shell/account/navigation, buttons and
+links, search and segmented controls, directory/detail stacks, filters and
+toolbars, metrics and trends, cards/tags/status, tables and alerts, fields and
+editor sections, sticky decision footers, secondary disclosure, and specialized
+Intake/Marketing composition. `admin/src/shared/ui/AdminPrimitives/index.ts` is
+the canonical export inventory.
 
-- `AdminButton`
-- `AdminIconButton`
-- `AdminLinkButton`
-- `AdminNavButton`
-- `SearchField`
-- `SegmentedControl`
-- `StatusBanner`
-- `EmptyState`
-- `PageHeader`
-- `AdminCard`
-- `SelectableCardButton`
-- `CardHeader`
-- `StatusChip`
-- `AdminTag`
-- `TagList`
-- `AlertRow`
-- `DataTable`
-- `TableActionButton`
-- `RiskBadge`
-- `FilePickerButton`
-- `AdminPanel`
-- `Panel`
-- `AdminIntakePublicationBoundaryPanel`
-- `AdminStateRow`
-- `StateRow`
-- `AdminTextField`
-- `TextField`
-- `AdminTextareaField`
-- `TextareaField`
-- `SelectField`
+- The global top bar owns the only route title. `PageHeader` is reserved for
+  nested record/detail context and must not repeat a top-level route title.
+- Overview owner digests and route-only queue actions compose shared panel,
+  state-row, queue-row, and button primitives.
+- Former raw families such as `table-wrap`, `marketing-ops-header`,
+  `intake-workspace-header`, marketing/intake cards, badges, search-candidate
+  cards, and quality rows are now implemented inside shared primitive owners.
+  Their CSS class names are implementation details, not feature-level migration
+  debt.
 
-Migration already started:
-
-- App shell nav, search, topbar range control, refresh/sign-out buttons, and
-  banners now compose shared primitives. Feature workspaces own empty states,
-  panels, and state rows through shared primitives.
-- Marketing screen-level refresh/new-post buttons and marketing tabs now compose
-  shared primitives.
-- Event lead intake refresh button and event tabs now compose shared primitives.
-- Organizer Intake workspace tabs now compose shared primitives.
-- Intake publication boundary panel now lives in shared admin UI instead of
-  being exported from the Organizer Intake feature.
-- Shared Marketing/Event review footer actions now compose `AdminButton`.
-- Deep Marketing composer back/next/export buttons, icon remove button, source
-  links, and download links now compose `AdminButton`, `AdminIconButton`, or
-  `AdminLinkButton`.
-- Event lead intake external source icon links now compose `AdminLinkButton`.
-- Marketing image upload now composes `FilePickerButton`.
-- Marketing and event lead intake screen headers now compose `PageHeader`.
-- Marketing composer review state now starts using `StatusChip`.
-- `AdminPanel` and `Panel` now share the same header composition instead of
-  divergent `panel-icon` markup.
-- Event lead intake source profiles, source inbox cards, candidate cards, source
-  policy tags, candidate status notices, and external links now compose shared
-  card/header/tag/chip/alert/link primitives.
-- Organizers canonical directory, editor, checklist, validation, diff, and
-  preview panels compose shared admin table, button, field, tag, state-row, and
-  panel primitives.
-- Overview event performance table now composes `DataTable`,
-  `TableActionButton`, and `RiskBadge`.
-- Overview queue decision actions now compose `AdminButton`.
-- Marketing post cards, compliance checklist rows, next-action warning, and
-  recommendation set cards now compose shared selectable-card, card, chip, and
-  alert primitives.
-
-Required next primitives:
-
-| Primitive | Why it exists | First migration targets |
-|---|---|---|
-| `AdminCard` | Extends card primitive usage across remaining repeated article shells | remaining Marketing cards, Organizer Intake cards |
-| `CardHeader` | Extends repeated card header/title/badge layouts | remaining marketing and organizer intake cards |
-| `StatusChip` | Replaces remaining badges and risk pills | remaining `.intake-badge`, `.risk` |
-| `AdminTag` / `TagList` | Replaces remaining tag rows | remaining `.intake-tag`, `.marketing-tag-row` |
-| `AlertRow` | Replaces remaining quality/warning/success rows | remaining `.quality-row` |
-| `DecisionActionGroup` | Generalizes approve/hold/reject/export-ready sets | Marketing footer, queue rows, organizer decisions |
-| `DataTable` | Extends table wrap, empty state, actions | future users/events/finance tables |
-| `Stepper` | Standardizes progressive disclosure flow | Marketing composer steps |
-| `FormSection` | Standardizes fieldsets and dense edit sections | Organizer editor, curation forms, location resolution |
-| `PageHeader` | Extends the implemented header primitive to Organizer Intake | `.intake-workspace-header` |
-
-Remaining raw component baseline from `rg` after the first migration:
-
-- `table-wrap`: `admin/src/app/App.tsx`
-- `marketing-ops-header`: Marketing and Event Intake
-- `intake-workspace-header`: Organizer Intake
-- Basic button/link/tab classes: no remaining direct `className` usage for
-  `ghost-button`, `primary-button`, `icon-button`, or `segmented` in
-  `admin/src/app`, `admin/src/features`, or `admin/src/shared`
-- `marketing-card`, `marketing-card-list`, `marketing-card-header`: Marketing
-  and Event Intake
-- `search-candidate-card`: Organizer Intake
-- `intake-card`: Organizer Intake
-- `intake-badge`: Marketing, Event Intake, Organizer Intake
-- `quality-row`: Marketing, Event Intake, Organizer Intake
+No named primitive migration remains from the previous list. Add a new
+primitive only when repeated code demonstrates a missing shared contract, then
+update component governance, registry coverage, and scanner enforcement in the
+same change.
 
 Component rule:
 
 New admin UI should not add raw `button`, `article`, `header`, badge, table, or
 field markup when an admin primitive exists. If the needed primitive does not
-exist, add the visual shell to `AdminPrimitives.tsx` first, then build the
+exist, add the visual shell to the appropriate `AdminPrimitives/` family first, then build the
 feature screen through composition. Use a focused shared admin component file
 only for non-primitive behavior, and document why the shell does not belong in
 the central primitive owner.
@@ -1050,6 +1058,12 @@ Growth, Intake, Marketing Ops, Organizer Intake, Organizer Publishing, Safety,
 plus Users route/workspace previews.
 Route stories should use explicit fixture props or controller seams instead of
 app-level live data.
+A registry state list describes the deterministic fixture rendered by that
+story; it is not proof of independently rendered alternate states. Distinct
+loading, empty, error, unavailable, mutation, and receipt variants need
+separate deterministic story exports before being claimed as visual-state
+coverage. The current registry checker validates metadata alignment, not
+state-specific rendering.
 Admin import direction is enforced by
 `node tool/admin/check_import_boundaries.mjs`: app shell may compose features
 and shared modules; features may depend on their own top-level feature and
@@ -1057,18 +1071,22 @@ shared modules; shared modules must not import app or feature modules.
 
 ## Prioritized Improvements
 
-1. Add an organizer search-index backfill action if imported production data
-   predates `clubs/{id}.adminSearch`.
+1. Add dedicated external-event point reads and typed Finance issue/detail
+   contracts before claiming complete deep-link support.
 2. Build the next high-risk Safety mutation set: audited escalation,
    restriction, and resolution actions. The current tab is intentionally
    limited to explicit assignment plus status-only review/dismiss decisions
    over read-only assignment/SLA/evidence metadata.
 3. Add source-owned scheduler last-run/last-error and backfill metadata so Data
    quality can distinguish stale generated artifacts from failed live jobs.
-4. Keep event lifecycle mutations out of the safe display-field editor until
-   side effects are shared with host flows.
-5. Continue primitive migration with `PageHeader`, `AdminCard`, `StatusChip`,
-   `AlertRow`, and `Stepper`.
-6. Add controller/helper tests for review decisions and draft creation.
-7. Keep approved event and organizer output aligned with shared contracts so
-   app and public website consumers do not drift.
+4. Add a route-transition dirty-state guard or persisted-edit contract for
+   Marketing; the current warning protects browser unload, not every SPA
+   navigation.
+5. Add distinct deterministic Storybook fixtures for loading, empty, error,
+   unavailable, mutation, and receipt states.
+6. Verify and apply the organizer admin-search backfill where production rows
+   predate the projection.
+7. Keep event lifecycle mutations and intake promotion out of display editors
+   until their side effects have shared contracts.
+8. Keep canonical organizer/event output aligned across admin, app, and public
+   website consumers.

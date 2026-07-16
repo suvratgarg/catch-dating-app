@@ -16,6 +16,16 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "OperationRun",
+    source: "operations/run.schema.json",
+    typeOutput: "functions/src/shared/generated/operationRunContract.ts",
+  },
+  {
+    name: "OperationWorkItem",
+    source: "operations/work_item.schema.json",
+    typeOutput: "functions/src/shared/generated/operationWorkItemContract.ts",
+  },
+  {
     name: "ProfilePromptAnswer",
     source: "embedded/profile_prompt_answer.schema.json",
     typeOutput: "functions/src/shared/generated/profilePromptAnswer.ts",
@@ -457,6 +467,12 @@ const schemaSpecs = [
       "callables/admin_record_event_intake_review_decision_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/adminRecordEventIntakeReviewDecisionCallablePayload.ts",
+  },
+  {
+    name: "AdminListIntakeOperationsCallablePayload",
+    source: "callables/admin_list_intake_operations_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListIntakeOperationsCallablePayload.ts",
   },
   {
     name: "AdminDecideOrganizerEventCandidateCallablePayload",
@@ -1049,7 +1065,7 @@ const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
 const FIRESTORE_ADMIN_FIELD_OVERRIDES = new Map([
   ["ClubDocument.hostProfiles", "ClubHostProfile[]"],
   ["ClubDocument.hostDefaults", "ClubHostDefaults"],
-  ["EventDocument.meetingLocation", "EventMeetingLocation | null"],
+  ["EventDocument.meetingLocation", "EventMeetingLocation"],
   ["EventDocument.eventFormat", "EventFormatSnapshot"],
   ["EventDocument.constraints", "EventConstraints"],
   ["EventDocument.eventPolicy", "EventPolicyBundleDocument | null"],
@@ -1089,8 +1105,6 @@ const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
   [
     "EventDocument",
     [
-      "startingPointLat",
-      "startingPointLng",
       "locationDetails",
       "bookedCount",
       "checkedInCount",

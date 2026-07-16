@@ -8,7 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -143,14 +143,15 @@ void main() {
         );
         await _openCreateEventFlow(tester);
 
-        expect(find.byType(CatchSelectChip), findsWidgets);
+        expect(find.byType(CatchSection), findsWidgets);
+        expect(find.byType(CatchFieldChoiceChip), findsWidgets);
         await _fillBasicsStep(tester);
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchSelectChip &&
-                widget.label == 'Moderate' &&
-                widget.active,
+                widget is CatchField &&
+                widget.title == 'Pace level' &&
+                widget.body == 'Moderate',
           ),
           findsOneWidget,
         );
@@ -178,6 +179,7 @@ void main() {
 
         await _pickFutureDate(tester);
         await _acceptInitialTime(tester);
+        await _openCatchField(tester, 'Duration');
         await tester.tap(find.byTooltip('Increase duration'));
         await tester.tap(find.byTooltip('Decrease duration'));
         await tester.pump();
@@ -189,9 +191,9 @@ void main() {
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchSelectChip &&
+                widget is CatchFieldChoiceChip &&
                 widget.label == 'OPEN' &&
-                widget.active,
+                widget.selected,
           ),
           findsOneWidget,
         );
@@ -341,9 +343,10 @@ void main() {
         ),
         findsOneWidget,
       );
+      expect(find.text('Match clue questions'), findsNothing);
       expect(
         find.text('Match clue questions', skipOffstage: false),
-        findsNothing,
+        findsOneWidget,
       );
       expect(
         find.text('"Help me say hi" requests', skipOffstage: false),
@@ -389,13 +392,18 @@ void main() {
         CreateEventFormKeys.customActivityLabel,
         'Salsa night',
       );
-      final pairedRotationsChip = find.byKey(
-        CreateEventFormKeys.interactionModel(
-          EventInteractionModel.pairedRotations.name,
-        ),
+      final pairedRotationsChip = find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchFieldChoiceChip &&
+            widget.label == EventInteractionModel.pairedRotations.label,
+        description: 'paired-rotations CatchField choice',
         skipOffstage: false,
       );
-      await tester.ensureVisible(pairedRotationsChip);
+      await Scrollable.ensureVisible(
+        tester.element(pairedRotationsChip),
+        alignment: 0.25,
+      );
+      await tester.pump();
       await tester.tap(pairedRotationsChip);
       await _enterCreateEventText(
         tester,
@@ -545,7 +553,11 @@ void main() {
         await tester.tap(find.byTooltip('Increase duration'));
         await tester.pump();
 
-        expect(find.text('1h 30m'), findsOneWidget);
+        final durationValue = find.byKey(
+          const ValueKey('catch-field-stepper-value'),
+        );
+        expect(durationValue, findsOneWidget);
+        expect(tester.widget<Text>(durationValue).data, '1h 30m');
 
         await _pickTodayDate(tester, today: now);
         await _pickTimeInInputMode(tester, hour: '1', minute: '59');
@@ -1434,14 +1446,7 @@ Future<void> _enterCreateEventText(
   await tester.pump();
 
   final field = find.byKey(fieldKey);
-  await tester.ensureVisible(field);
-
-  final catchField = tester.widget<CatchField>(field);
-  final fieldTitle = catchField.title;
-  final tapTarget = fieldTitle == null
-      ? field
-      : find.descendant(of: field, matching: find.text(fieldTitle)).first;
-  await tester.tap(tapTarget);
+  await Scrollable.ensureVisible(tester.element(field), alignment: 0.25);
   await tester.pump();
 
   final textField = find.descendant(
@@ -1457,15 +1462,25 @@ Future<void> _tapActivityKind(WidgetTester tester, String label) async {
   await _tapCreateEventChip(tester, label);
 }
 
+Future<void> _openCatchField(WidgetTester tester, String title) async {
+  final field = find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == title,
+  );
+  await Scrollable.ensureVisible(tester.element(field), alignment: 0.25);
+  await tester.pump();
+  await tester.tap(field);
+  await _pumpTestAnimation(tester);
+}
+
 Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
   final finder = find.byWidgetPredicate(
     (widget) =>
-        (widget is CatchSelectChip && widget.label == label) ||
+        (widget is CatchFieldChoiceChip && widget.label == label) ||
         (widget is CatchChip && widget.label == label),
     description: 'selectable chip labeled $label',
-    skipOffstage: false,
   );
-  await tester.ensureVisible(finder);
+  await Scrollable.ensureVisible(tester.element(finder), alignment: 0.25);
+  await tester.pump();
   await tester.tap(finder);
   await _pumpTestAnimation(tester);
 }

@@ -22,6 +22,7 @@ class EventDetailSocialSection extends StatelessWidget {
     required this.reviews,
     required this.userProfile,
     required this.state,
+    required this.now,
     this.surfaceStyle,
   });
 
@@ -30,6 +31,7 @@ class EventDetailSocialSection extends StatelessWidget {
   final List<Review> reviews;
   final UserProfile? userProfile;
   final EventDetailSocialState state;
+  final DateTime now;
   final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
@@ -55,10 +57,12 @@ class EventDetailSocialSection extends StatelessWidget {
                   userProfile: profile,
                   surfaceStyle: surfaceStyle,
                   showHeader: false,
+                  showCatchWindowStatus: false,
+                  now: now,
                 )
               : GuestWhoIsGoing(surfaceStyle: surfaceStyle, showHeader: false),
         ),
-        if (canShowMemberContext) ...[
+        if (canShowMemberContext && state.reviews.visible) ...[
           CatchSection.divided(
             title: context.l10n.eventsEventDetailSocialSectionTitleReviews,
             dividerColor: surfaceStyle?.dividerColor,
@@ -69,8 +73,8 @@ class EventDetailSocialSection extends StatelessWidget {
               reviews: reviews,
               currentUid: profile.uid,
               userProfile: profile,
-              isHost: state.renderAsHost,
-              hasAttended: state.hasReviewAccess,
+              canWrite: state.reviews.canWrite,
+              canRespond: state.reviews.canRespond,
             ),
           ),
         ],

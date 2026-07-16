@@ -510,7 +510,7 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       clubId: "afterfly",
       name: "AFTER FLY",
       description:
-        "Source-backed Indore run club sample used for canonical organizer editing.",
+        "Source-backed Indore run club used for local canonical-organizer review.",
       citySlug: "indore",
       cityName: "Indore",
       tags: ["Run club", "Social run", "Community"],
@@ -533,7 +533,7 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       clubId: "bhag",
       name: "Bhag Run Club",
       description:
-        "Mumbai running community sample with indexed public organizer profile.",
+        "Mumbai running community with an indexed public organizer profile.",
       citySlug: "mumbai",
       cityName: "Mumbai",
       tags: ["Run club", "Training", "Community"],
@@ -556,7 +556,7 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       clubId: "bandra-runners",
       name: "Bandra Runners",
       description:
-        "Mumbai organizer sample that still needs deterministic search backfill.",
+        "Mumbai organizer that still needs deterministic search backfill.",
       citySlug: "mumbai",
       cityName: "Mumbai",
       tags: ["Run club", "Sunset run", "Bandra"],
@@ -579,7 +579,7 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       clubId: "mumbai-padel-social",
       name: "Mumbai Padel Social",
       description:
-        "Mumbai racket-sport organizer sample for non-running event coverage.",
+        "Mumbai racket-sport organizer used for non-running event coverage.",
       citySlug: "mumbai",
       cityName: "Mumbai",
       tags: ["Padel", "Mixer", "Racket sport"],
@@ -611,7 +611,7 @@ export const sampleEventDetails: Record<string, AdminEventDetails> =
       meetingPoint: "Nehru Park gate",
       locationDetails: "Host meets attendees by the main park gate.",
       description:
-        "A source-backed Indore social run sample for canonical event editing.",
+        "A source-backed Indore social run for local canonical-event review.",
       citySlug: "indore",
       activityKind: "socialRun",
       interactionModel: "pacePods",
@@ -632,7 +632,7 @@ export const sampleEventDetails: Record<string, AdminEventDetails> =
       meetingPoint: "Bandra Bandstand",
       locationDetails: "Meet near the promenade entrance.",
       description:
-        "A Mumbai community run sample that needs deterministic search backfill.",
+        "A Mumbai community run that needs deterministic search backfill.",
       citySlug: "mumbai",
       activityKind: "running",
       interactionModel: "pacePods",
@@ -653,7 +653,7 @@ export const sampleEventDetails: Record<string, AdminEventDetails> =
       meetingPoint: "BKC indoor courts",
       locationDetails: "Court allocation is confirmed at check-in.",
       description:
-        "A full Mumbai padel mixer sample for capacity and waitlist review.",
+        "A full Mumbai padel mixer for capacity and waitlist review.",
       citySlug: "mumbai",
       activityKind: "padel",
       interactionModel: "pairedRotations",
@@ -974,9 +974,9 @@ function sampleOrganizer(config: {
       headline: `${config.name} organizer profile`,
       summary:
         `${config.name} is an unclaimed organizer profile used for admin ` +
-        `sample-mode review in ${config.cityName}.`,
+        `local preview review in ${config.cityName}.`,
       sourceSummary:
-        `${config.sourceConfidence ?? "unknown"} confidence sample profile ` +
+        `${config.sourceConfidence ?? "unknown"} confidence local profile ` +
         `with ${config.verificationStatus ?? "unverified"} provenance.`,
       formats: config.formats,
       fitNotes: config.fitNotes,

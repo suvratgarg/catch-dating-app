@@ -28,8 +28,10 @@ import {
   AdminMetricGrid,
   AdminRoadmapList,
   AdminRoadmapListItem,
+  AdminSecondaryDisclosure,
   AdminTag,
   AdminToolbar,
+  AdminTrendSeries,
   AdminWorkbenchNote,
   AdminWorkbenchStack,
   AlertRow,
@@ -40,6 +42,7 @@ import {
   SegmentedControl,
   SelectField,
   StateRow,
+  StatusBanner,
   TextField,
   AdminTagList,
   AdminIntakeSection,
@@ -78,40 +81,19 @@ export function UserAnalyticsWorkspace({
 }: {
   controller: UserAnalyticsController;
 }) {
-  const missingCount = controller.report?.summaryCards.filter((metric) =>
-    metric.status === "missing"
-  ).length ?? 0;
-  const partialCount = controller.report?.dataQuality.filter((row) =>
-    row.state !== "ok"
-  ).length ?? 0;
-
+  const customRangeIssue = controller.rangePreset !== "custom" ? null :
+    !controller.startDate || !controller.endDate ?
+      "Choose both start and end dates." :
+    Date.parse(controller.startDate) > Date.parse(controller.endDate) ?
+      "Start date must be on or before end date." :
+      null;
   return (
     <AdminWorkbenchStack>
-      <AdminMetricGrid ariaLabel="User analytics state">
-        {controller.report ? (
-          controller.report.summaryCards.map((metric) => (
-            <AdminMetricCard
-              caption={metric.caption}
-              key={metric.id}
-              label={metric.label}
-              tone={metric.status === "ready" ? "normal" : "attention"}
-              value={formatMetricValue(metric)}
-            />
-          ))
-        ) : (
-          <>
-            <AdminMetricCard label="Selected user" value={controller.userId || "none"} />
-            <AdminMetricCard label="Range" value={controller.rangePreset} />
-            <AdminMetricCard label="Missing metrics" value={String(missingCount)} />
-            <AdminMetricCard label="Data warnings" value={String(partialCount)} />
-          </>
-        )}
-      </AdminMetricGrid>
-
       <Panel
         icon={<Search size={18} strokeWidth={1.9} />}
-        title="User analytics lookup"
-        action={controller.isLoading ? "Loading" : "read-only"}
+        title="Exact UID lookup"
+        action={controller.isLoading ? "Loading new user" : "read-only"}
+        span={2}
       >
         <AdminToolbar>
           <TextField
@@ -144,7 +126,9 @@ export function UserAnalyticsWorkspace({
             value={controller.granularity}
           />
           <AdminButton
-            disabled={controller.isLoading}
+            disabled={controller.isLoading ||
+              !controller.lookupContract.canLoad ||
+              Boolean(customRangeIssue)}
             icon={<RefreshCw size={15} strokeWidth={1.9} />}
             onClick={() => void controller.load()}
             variant="primary"
@@ -168,27 +152,102 @@ export function UserAnalyticsWorkspace({
             />
           </AdminFieldGrid>
         )}
-        <AdminWorkbenchNote>
-          This tab reads the aggregate-only adminGetUserAnalytics response for
-          one selected user. Enter an exact users/{"{uid}"}, uid:{"{uid}"}, or
-          raw uid value; this tab does not expose identity search, account
-          actions, moderation actions, payment records, or raw scoring columns.
-        </AdminWorkbenchNote>
+        {customRangeIssue ? (
+          <AlertRow
+            icon={<FileWarning size={16} strokeWidth={1.9} />}
+            title="Invalid custom range"
+            tone="warning"
+          >
+            {customRangeIssue}
+          </AlertRow>
+        ) : null}
+        {!controller.lookupContract.canLoad ? (
+          <AlertRow
+            icon={<FileWarning size={16} strokeWidth={1.9} />}
+            title={controller.lookupContract.statusLabel}
+            tone="warning"
+          >
+            {controller.lookupContract.statusDetail}
+          </AlertRow>
+        ) : null}
       </Panel>
 
       <UserLookupContractPanel contract={controller.lookupContract} />
 
-      {controller.report ? (
-        <UserAnalyticsReportView report={controller.report} />
+      {controller.viewState === "loading" ? (
+        <EmptyState variant="workbench" icon={<Clock3 size={16} strokeWidth={1.9} />}>
+          Loading aggregate analytics for {controller.lookupContract.normalizedUserId}.
+        </EmptyState>
+      ) : controller.viewState === "forbidden" ||
+        controller.viewState === "missing" ||
+        controller.viewState === "error" ? (
+        <Panel
+          icon={<FileWarning size={18} strokeWidth={1.9} />}
+          title={controller.viewState === "forbidden" ?
+            "Analytics access denied" :
+            controller.viewState === "missing" ?
+              "No analytics rows" :
+              "Analytics unavailable"}
+          action="retry available"
+          span={2}
+        >
+          <AdminWorkbenchNote>
+            {controller.errorMessage ??
+              "No aggregate analytics are available for this exact UID and range."}
+          </AdminWorkbenchNote>
+          <AdminButton
+            icon={<RefreshCw size={15} strokeWidth={1.9} />}
+            onClick={() => void controller.load()}
+          >
+            Retry data load
+          </AdminButton>
+        </Panel>
+      ) : controller.report ? (
+        <>
+          <StatusBanner
+            icon={<ShieldCheck size={17} strokeWidth={1.9} />}
+            tone="success"
+          >
+            Loaded report for {controller.report.scope.userId}.
+          </StatusBanner>
+          <UserHeadlineMetrics report={controller.report} />
+          <UserAnalyticsReportView report={controller.report} />
+        </>
       ) : (
         <EmptyState
           variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
-          Enter a user id to load user-safe aggregate analytics.
+          Enter an exact Firebase Auth UID and choose a range to load aggregate analytics.
         </EmptyState>
       )}
     </AdminWorkbenchStack>
+  );
+}
+
+const userHeadlineMetricIds = [
+  "profileViews",
+  "mutualCatches",
+  "chatsStarted",
+  "eventsAttended",
+] as const;
+
+function UserHeadlineMetrics({report}: {report: UserAnalyticsResponse}) {
+  return (
+    <AdminMetricGrid ariaLabel="User outcome metrics">
+      {userHeadlineMetricIds.map((metricId) => {
+        const metric = report.summaryCards.find((item) => item.id === metricId);
+        return (
+          <AdminMetricCard
+            caption={metric?.caption}
+            key={metricId}
+            label={metric?.label ?? metricId}
+            tone={metric?.status === "ready" ? "normal" : "attention"}
+            value={metric ? formatMetricValue(metric) : "—"}
+          />
+        );
+      })}
+    </AdminMetricGrid>
   );
 }
 
@@ -201,25 +260,22 @@ function UserLookupContractPanel({
     <Panel
       span={2}
       icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-      title="Lookup contract"
-      action={contract.canLoad ? contract.mode.replaceAll("_", " ") : "blocked"}
+      title="Privacy and action boundary"
+      action="aggregate-only"
     >
-      <AdminEditorGrid as="div">
+      <AdminWorkbenchNote>
+        Reads aggregate analytics for one exact UID. It does not search identity,
+        expose raw scoring data, or provide account, safety, support, or payment actions.
+      </AdminWorkbenchNote>
+      <AdminSecondaryDisclosure summary="View exact scope and unavailable capabilities">
         <QualityList>
-          <AlertRow
-            icon={<ShieldCheck size={16} strokeWidth={1.9} />}
-            title={contract.statusLabel}
-            tone={contract.canLoad ? "neutral" : "warning"}
-          >
-            {contract.statusDetail}
-          </AlertRow>
           <StateRow label="Normalized uid" value={contract.normalizedUserId} />
           <StateRow label="Target path" value={contract.targetPath} />
           <StateRow label="Allowed source" value={contract.allowedSources.join(", ")} />
         </QualityList>
         <AdminWorkbenchStack compact>
           <AdminIntakeSection>
-            <AdminIntakeSectionTitle>Unavailable Here</AdminIntakeSectionTitle>
+            <AdminIntakeSectionTitle>Unavailable here</AdminIntakeSectionTitle>
             <AdminTagList>
               {contract.unavailableDomains.map((domain) => (
                 <AdminTag key={domain}>{domain}</AdminTag>
@@ -227,7 +283,7 @@ function UserLookupContractPanel({
             </AdminTagList>
           </AdminIntakeSection>
           <AdminIntakeSection>
-            <AdminIntakeSectionTitle>Blocked Actions</AdminIntakeSectionTitle>
+            <AdminIntakeSectionTitle>Blocked actions</AdminIntakeSectionTitle>
             <AdminTagList>
               {contract.blockedActions.map((action) => (
                 <AdminTag key={action}>{action}</AdminTag>
@@ -235,44 +291,46 @@ function UserLookupContractPanel({
             </AdminTagList>
           </AdminIntakeSection>
         </AdminWorkbenchStack>
-      </AdminEditorGrid>
+      </AdminSecondaryDisclosure>
     </Panel>
   );
 }
 
 function UserAnalyticsReportView({report}: {report: UserAnalyticsResponse}) {
   return (
-    <AdminEditorGrid>
-      <AdminEditorPanel
+    <AdminWorkbenchStack>
+      <Panel
+        span={2}
         icon={<BarChart3 size={18} strokeWidth={1.9} />}
-        title="Trend"
+        title="Activity summary"
         action={`${report.trend.length} buckets`}
       >
-        <TrendTable points={report.trend} />
-      </AdminEditorPanel>
-      <AdminWorkbenchStack>
-        <Panel
-          icon={<UserRound size={18} strokeWidth={1.9} />}
-          title="Scope"
-          action={report.scope.userId}
-        >
-          <QualityList>
-            <StateRow label="User" value={`users/${report.scope.userId}`} />
-            <StateRow label="Generated" value={formatDateTime(report.generatedAt)} />
-            <StateRow label="Range start" value={formatDateTime(report.range.startDate)} />
-            <StateRow label="Range end" value={formatDateTime(report.range.endDate)} />
-            <StateRow label="Group by" value={report.range.granularity} />
-          </QualityList>
-        </Panel>
-
+        <ActivityTrend points={report.trend} />
+      </Panel>
+      <AdminEditorGrid>
         <SummaryPanel
           connection={report.connectionSummary}
           profile={report.profileSummary}
         />
-
+        <Panel
+          icon={<UserRound size={18} strokeWidth={1.9} />}
+          title="Report scope"
+          action={report.range.granularity}
+        >
+          <QualityList>
+            <StateRow label="User" value={`users/${report.scope.userId}`} />
+            <StateRow label="Report generated at" value={formatDateTime(report.generatedAt)} />
+            <StateRow label="Range start" value={formatDateTime(report.range.startDate)} />
+            <StateRow label="Range end" value={formatDateTime(report.range.endDate)} />
+            <StateRow label="Group by" value={report.range.granularity} />
+            <StateRow label="Timezone" value={report.timezone} />
+          </QualityList>
+        </Panel>
+      </AdminEditorGrid>
+      <AdminEditorGrid>
         <Panel
           icon={<Sparkles size={18} strokeWidth={1.9} />}
-          title="Coaching refs"
+          title="Coaching references"
           action={`${report.coachingTipRefs.length} refs`}
         >
           <AdminRoadmapList>
@@ -289,66 +347,27 @@ function UserAnalyticsReportView({report}: {report: UserAnalyticsResponse}) {
         </Panel>
 
         <DataQualityPanel rows={report.dataQuality} />
-
-        <Panel
-          icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-          title="Mutation boundary"
-          action="read-only"
-        >
-          <QualityList>
-            <StateRow label="Callable" value="adminGetUserAnalytics" />
-            <StateRow label="Source" value="BigQuery user analytics mart" />
-            <StateRow label="Audit log" value="adminAuditLogs/{id}" />
-            <StateRow label="PII" value="No identity lookup in this tab" />
-            <StateRow label="Actions" value="No account/safety/payment mutations" />
-          </QualityList>
-        </Panel>
-      </AdminWorkbenchStack>
-    </AdminEditorGrid>
+      </AdminEditorGrid>
+    </AdminWorkbenchStack>
   );
 }
 
-function TrendTable({points}: {points: UserAnalyticsTrendPoint[]}) {
-  if (points.length === 0) {
-    return (
-      <EmptyState
-        variant="workbench"
-        icon={<Clock3 size={16} strokeWidth={1.9} />}
-      >
-        No trend buckets are available for this range.
-      </EmptyState>
-    );
-  }
+function ActivityTrend({points}: {points: UserAnalyticsTrendPoint[]}) {
   return (
-    <DataTable variant="workbench">
-      <thead>
-        <tr>
-          <th>Period</th>
-          <th>Profile views</th>
-          <th>Caught you</th>
-          <th>Mutual catches</th>
-          <th>Chats</th>
-          <th>Events</th>
-        </tr>
-      </thead>
-      <tbody>
-        {points.map((point) => (
-          <tr key={point.periodStart}>
-            <td>
-              <AdminRowTitle compact>
-                <strong>{formatDate(point.periodStart)}</strong>
-                <span>{formatDate(point.periodEnd)}</span>
-              </AdminRowTitle>
-            </td>
-            <td>{numberValue(point.metrics.profileViews)}</td>
-            <td>{numberValue(point.metrics.caughtYou)}</td>
-            <td>{numberValue(point.metrics.mutualCatches)}</td>
-            <td>{numberValue(point.metrics.chatsStarted)}</td>
-            <td>{numberValue(point.metrics.eventsAttended)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </DataTable>
+    <AdminTrendSeries
+      ariaLabel="User activity summary"
+      emptyLabel="No activity buckets are available for this range."
+      points={points.map((point) => ({
+        label: `${formatDate(point.periodStart)} – ${formatDate(point.periodEnd)}`,
+        values: point.metrics,
+      }))}
+      series={[
+        {id: "profileViews", label: "Profile views"},
+        {id: "mutualCatches", label: "Mutual catches"},
+        {id: "chatsStarted", label: "Chats started"},
+        {id: "eventsAttended", label: "Events attended"},
+      ]}
+    />
   );
 }
 

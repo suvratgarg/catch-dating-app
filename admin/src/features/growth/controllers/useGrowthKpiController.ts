@@ -1,11 +1,16 @@
 import {useQuery} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import type {
+  AdminOverviewResponse,
   HostAnalyticsMetricCard,
+  HostAnalyticsResponse,
   HostAnalyticsTrendPoint,
 } from "../../../shared/types/adminTypes";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
-import {loadGrowthKpiSnapshot} from "../api/growthKpiRepository";
+import {
+  loadGrowthHostAnalytics,
+  loadGrowthOverview,
+} from "../api/growthKpiRepository";
 
 export type GrowthStage =
   | "all"
@@ -24,28 +29,41 @@ export interface GrowthSignalRow {
   unit: "count" | "percent" | "money_minor" | "rating";
   status: GrowthSignalStatus;
   source: string;
+  sourceGeneratedAt: string | null;
+  metricBasis: string;
+  range: string;
+  timezone: string;
   detail: string;
 }
 
 export interface GrowthMetrics {
-  signals: number;
-  watch: number;
   signupsThisWeek: number;
+  completedProfiles: number;
   bookings: number;
+  attendanceRate: number;
 }
 
 export interface GrowthKpiController {
   filteredRows: GrowthSignalRow[];
+  hostAnalyticsError: string | null;
+  hostAnalyticsGeneratedAt: string | null;
+  isHostAnalyticsLoading: boolean;
   isLoading: boolean;
+  isOverviewLoading: boolean;
   loadedAt: string | null;
   metrics: GrowthMetrics;
+  overviewError: string | null;
+  overviewGeneratedAt: string | null;
   query: string;
   rangePreset: GrowthRangePreset;
   rows: GrowthSignalRow[];
   selected: GrowthSignalRow | null;
+  selectedSignalId: string | null;
   stageFilter: GrowthStage;
   trend: HostAnalyticsTrendPoint[];
   refresh: () => Promise<boolean>;
+  refreshHostAnalytics: () => Promise<boolean>;
+  refreshOverview: () => Promise<boolean>;
   select: (row: GrowthSignalRow) => void;
   setQuery: (value: string) => void;
   setRangePreset: (value: GrowthRangePreset) => void;
@@ -54,64 +72,83 @@ export interface GrowthKpiController {
 
 export function useGrowthKpiController({
   onError,
+  onSelectSignalId,
+  selectedSignalId: controlledSelectedSignalId,
 }: {
   onError: (message: string | null) => void;
+  onSelectSignalId?: (signalId: string) => void;
+  selectedSignalId?: string | null;
 }): GrowthKpiController {
-  const [rangePreset, setRangePreset] =
-    useState<GrowthRangePreset>("30d");
+  const [rangePreset, setRangePreset] = useState<GrowthRangePreset>("30d");
   const [stageFilter, setStageFilter] = useState<GrowthStage>("all");
   const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [localSelectedSignalId, setLocalSelectedSignalId] =
+    useState<string | null>(null);
+  const selectedSignalId = controlledSelectedSignalId === undefined ?
+    localSelectedSignalId :
+    controlledSelectedSignalId;
   const granularity = rangePreset === "7d" ? "day" : "week";
-  const snapshotQuery = useQuery({
-    queryKey: adminQueryKeys.growth.kpis(rangePreset, granularity),
-    queryFn: () => loadGrowthKpiSnapshot({
-      rangePreset,
-      granularity,
-    }),
-    placeholderData: (previousData) => previousData,
-  });
-  const rows = useMemo(
-    () => snapshotQuery.data ? buildGrowthRows(snapshotQuery.data) : [],
-    [snapshotQuery.data]
-  );
-  const trend = snapshotQuery.data?.hostAnalytics.trend ?? [];
-  const loadedAt = snapshotQuery.data?.loadedAt ?? null;
 
-  const refresh = useCallback(async () => {
-    const result = await snapshotQuery.refetch();
+  const overviewQuery = useQuery({
+    queryKey: adminQueryKeys.growth.overview(),
+    queryFn: loadGrowthOverview,
+  });
+  const hostAnalyticsQuery = useQuery({
+    queryKey: adminQueryKeys.growth.hostAnalytics(rangePreset, granularity),
+    queryFn: () => loadGrowthHostAnalytics({rangePreset, granularity}),
+  });
+  const overview = overviewQuery.data ?? null;
+  const hostAnalytics = hostAnalyticsQuery.data ?? null;
+  const rows = useMemo(
+    () => buildGrowthRows(overview, hostAnalytics),
+    [hostAnalytics, overview]
+  );
+  const trend = hostAnalytics?.trend ?? [];
+  const loadedAtMs = Math.max(
+    overviewQuery.dataUpdatedAt,
+    hostAnalyticsQuery.dataUpdatedAt
+  );
+  const loadedAt = loadedAtMs > 0 ? new Date(loadedAtMs).toISOString() : null;
+
+  const refreshOverview = useCallback(async () => {
+    const result = await overviewQuery.refetch();
     if (result.error) {
-      onError(messageFromError(result.error, "Unable to load growth KPIs."));
+      onError(messageFromError(result.error, "Unable to load current growth overview."));
       return false;
     }
     onError(null);
     return true;
-  }, [onError, snapshotQuery]);
+  }, [onError, overviewQuery]);
+
+  const refreshHostAnalytics = useCallback(async () => {
+    const result = await hostAnalyticsQuery.refetch();
+    if (result.error) {
+      onError(messageFromError(result.error, "Unable to load ranged host analytics."));
+      return false;
+    }
+    onError(null);
+    return true;
+  }, [hostAnalyticsQuery, onError]);
+
+  const refresh = useCallback(async () => {
+    const results = await Promise.all([refreshOverview(), refreshHostAnalytics()]);
+    return results.every(Boolean);
+  }, [refreshHostAnalytics, refreshOverview]);
 
   useEffect(() => {
-    if (snapshotQuery.isError) {
-      onError(messageFromError(
-        snapshotQuery.error,
-        "Unable to load growth KPIs."
-      ));
+    const error = overviewQuery.error ?? hostAnalyticsQuery.error;
+    if (error) {
+      onError(messageFromError(error, "Unable to load growth signals."));
       return;
     }
-    if (snapshotQuery.isSuccess) onError(null);
+    if (overviewQuery.isSuccess && hostAnalyticsQuery.isSuccess) onError(null);
   }, [
+    hostAnalyticsQuery.error,
+    hostAnalyticsQuery.isSuccess,
     onError,
-    snapshotQuery.error,
-    snapshotQuery.isError,
-    snapshotQuery.isSuccess,
+    overviewQuery.error,
+    overviewQuery.isSuccess,
   ]);
-
-  useEffect(() => {
-    setSelectedId((current) => {
-      if (current && rows.some((row) => row.id === current)) return current;
-      return rows.find((row) => row.status !== "ready")?.id ??
-        rows[0]?.id ??
-        null;
-    });
-  }, [rows]);
 
   const filteredRows = useMemo(
     () => filterRows(rows, stageFilter, query),
@@ -119,27 +156,41 @@ export function useGrowthKpiController({
   );
   const metrics = useMemo(() => growthMetrics(rows), [rows]);
   const selected = useMemo(
-    () => rows.find((row) => row.id === selectedId) ?? null,
-    [rows, selectedId]
+    () => rows.find((row) => row.id === selectedSignalId) ?? null,
+    [rows, selectedSignalId]
   );
-
   const select = useCallback((row: GrowthSignalRow) => {
-    setSelectedId(row.id);
+    if (controlledSelectedSignalId === undefined) setLocalSelectedSignalId(row.id);
+    onSelectSignalId?.(row.id);
     onError(null);
-  }, [onError]);
+  }, [controlledSelectedSignalId, onError, onSelectSignalId]);
 
   return {
     filteredRows,
-    isLoading: snapshotQuery.isPending || snapshotQuery.isFetching,
+    hostAnalyticsError: hostAnalyticsQuery.error ?
+      messageFromError(hostAnalyticsQuery.error, "Unable to load ranged host analytics.") :
+      null,
+    hostAnalyticsGeneratedAt: hostAnalytics?.generatedAt ?? null,
+    isHostAnalyticsLoading: hostAnalyticsQuery.isPending || hostAnalyticsQuery.isFetching,
+    isLoading: overviewQuery.isPending || overviewQuery.isFetching ||
+      hostAnalyticsQuery.isPending || hostAnalyticsQuery.isFetching,
+    isOverviewLoading: overviewQuery.isPending || overviewQuery.isFetching,
     loadedAt,
     metrics,
+    overviewError: overviewQuery.error ?
+      messageFromError(overviewQuery.error, "Unable to load current growth overview.") :
+      null,
+    overviewGeneratedAt: overview?.generatedAt ?? null,
     query,
     rangePreset,
     rows,
     selected,
+    selectedSignalId,
     stageFilter,
     trend,
     refresh,
+    refreshHostAnalytics,
+    refreshOverview,
     select,
     setQuery,
     setRangePreset,
@@ -147,47 +198,55 @@ export function useGrowthKpiController({
   };
 }
 
-function buildGrowthRows(snapshot: Awaited<
-  ReturnType<typeof loadGrowthKpiSnapshot>
->): GrowthSignalRow[] {
+function buildGrowthRows(
+  overview: AdminOverviewResponse | null,
+  hostAnalytics: HostAnalyticsResponse | null
+): GrowthSignalRow[] {
   const overviewMetric = (id: string) =>
-    snapshot.overview.metrics.find((item) => item.id === id);
+    overview?.metrics.find((item) => item.id === id);
   const hostMetric = (id: string) =>
-    snapshot.hostAnalytics.summaryCards.find((item) => item.id === id);
-  const discovery = snapshot.hostAnalytics.discoverySummary;
-  return [
+    hostAnalytics?.summaryCards.find((item) => item.id === id);
+  const rows: Array<GrowthSignalRow | null> = [
     overviewSignal("signupsToday", "acquisition", overviewMetric,
-      "New waitlist/account demand today."),
+      "Accounts created today.", overview),
     overviewSignal("signupsThisWeek", "acquisition", overviewMetric,
-      "Launch demand created this week."),
+      "Accounts created in the current calendar week.", overview),
     overviewSignal("completedProfiles", "acquisition", overviewMetric,
-      "Users far enough through onboarding to be useful supply/demand."),
+      "Profiles currently counted as complete.", overview),
     overviewSignal("pendingClubClaims", "supply", overviewMetric,
-      "Organizer claim demand waiting for review."),
+      "Current organizer claims waiting for review.", overview),
     overviewSignal("activeHosts", "supply", overviewMetric,
-      "Organizer accounts currently active."),
+      "Current active organizer claims.", overview),
     overviewSignal("activeEvents", "supply", overviewMetric,
-      "Canonical app events currently active."),
-    hostSignal("bookings", "conversion", hostMetric),
-    hostSignal("attendanceRate", "conversion", hostMetric),
-    hostSignal("checkoutConversionRate", "conversion", hostMetric),
-    hostSignal("checkoutDropoff", "conversion", hostMetric),
-    hostSignal("connections", "marketplace", hostMetric),
-    discoverySignal("eventSaves", "marketplace", discovery.eventSaves,
-      "Event saves captured in discovery summary."),
-    discoverySignal("claimClicks", "marketplace", discovery.claimClicks,
-      "Organizer claim intent captured from public pages."),
-  ].filter((row): row is GrowthSignalRow => row !== null);
+      "Current canonical events marked active.", overview),
+    hostSignal("bookings", "conversion", hostMetric, hostAnalytics),
+    hostSignal("attendanceRate", "conversion", hostMetric, hostAnalytics),
+    hostSignal("checkoutConversionRate", "conversion", hostMetric, hostAnalytics),
+    hostSignal("checkoutDropoff", "conversion", hostMetric, hostAnalytics),
+    hostSignal("connections", "marketplace", hostMetric, hostAnalytics),
+  ];
+  if (hostAnalytics) {
+    rows.push(
+      discoverySignal("eventSaves", "marketplace",
+        hostAnalytics.discoverySummary.eventSaves,
+        "Event saves in the selected host-analytics range.", hostAnalytics),
+      discoverySignal("claimClicks", "marketplace",
+        hostAnalytics.discoverySummary.claimClicks,
+        "Organizer claim clicks in the selected host-analytics range.", hostAnalytics)
+    );
+  }
+  return rows.filter((row): row is GrowthSignalRow => row !== null);
 }
 
 function overviewSignal(
   id: string,
   stage: Exclude<GrowthStage, "all">,
   metric: (id: string) => {label: string; value: number} | undefined,
-  detail: string
+  detail: string,
+  overview: AdminOverviewResponse | null
 ): GrowthSignalRow | null {
   const item = metric(id);
-  if (!item) return null;
+  if (!item || !overview) return null;
   return {
     id,
     stage,
@@ -196,6 +255,10 @@ function overviewSignal(
     unit: "count",
     status: "ready",
     source: "adminGetOverview",
+    sourceGeneratedAt: overview.generatedAt,
+    metricBasis: "Current operational overview snapshot; not affected by the range control.",
+    range: "Current / overview-defined",
+    timezone: overview.timezone,
     detail,
   };
 }
@@ -203,10 +266,11 @@ function overviewSignal(
 function hostSignal(
   id: string,
   stage: Exclude<GrowthStage, "all">,
-  metric: (id: string) => HostAnalyticsMetricCard | undefined
+  metric: (id: string) => HostAnalyticsMetricCard | undefined,
+  hostAnalytics: HostAnalyticsResponse | null
 ): GrowthSignalRow | null {
   const item = metric(id);
-  if (!item) return null;
+  if (!item || !hostAnalytics) return null;
   return {
     id,
     stage,
@@ -215,6 +279,10 @@ function hostSignal(
     unit: item.unit,
     status: item.status,
     source: "adminGetHostAnalytics",
+    sourceGeneratedAt: hostAnalytics.generatedAt,
+    metricBasis: item.caption ?? "Selected-range host analytics summary card.",
+    range: rangeLabel(hostAnalytics),
+    timezone: hostAnalytics.timezone,
     detail: item.caption ?? "Host analytics summary card.",
   };
 }
@@ -223,7 +291,8 @@ function discoverySignal(
   id: string,
   stage: Exclude<GrowthStage, "all">,
   value: number,
-  detail: string
+  detail: string,
+  hostAnalytics: HostAnalyticsResponse
 ): GrowthSignalRow {
   return {
     id,
@@ -233,6 +302,10 @@ function discoverySignal(
     unit: "count",
     status: value > 0 ? "ready" : "partial",
     source: "adminGetHostAnalytics.discoverySummary",
+    sourceGeneratedAt: hostAnalytics.generatedAt,
+    metricBasis: "Selected-range discovery summary aggregate.",
+    range: rangeLabel(hostAnalytics),
+    timezone: hostAnalytics.timezone,
     detail,
   };
 }
@@ -252,6 +325,8 @@ function filterRows(
       row.label,
       row.status,
       row.source,
+      row.metricBasis,
+      row.range,
       row.detail,
     ].join(" ").toLowerCase();
     return tokens.every((token) => haystack.includes(token));
@@ -261,11 +336,15 @@ function filterRows(
 function growthMetrics(rows: GrowthSignalRow[]): GrowthMetrics {
   const value = (id: string) => rows.find((row) => row.id === id)?.value ?? 0;
   return {
-    signals: rows.length,
-    watch: rows.filter((row) => row.status !== "ready").length,
     signupsThisWeek: value("signupsThisWeek"),
+    completedProfiles: value("completedProfiles"),
     bookings: value("bookings"),
+    attendanceRate: value("attendanceRate"),
   };
+}
+
+function rangeLabel(analytics: HostAnalyticsResponse): string {
+  return `${analytics.range.startDate} to ${analytics.range.endDate} (${analytics.range.granularity})`;
 }
 
 function readableId(value: string): string {

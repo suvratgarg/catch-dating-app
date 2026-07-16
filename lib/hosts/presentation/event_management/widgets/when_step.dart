@@ -1,11 +1,9 @@
+import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_picker_tile.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -45,86 +43,64 @@ class WhenStep extends StatelessWidget {
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [
-          CatchFormFieldLabel(
-            label: context.l10n.hostsWhenStepLabelDate,
-            large: true,
-          ),
-          gapH8,
-          HostPickerTile(
-            key: CreateEventFormKeys.datePicker,
-            icon: CatchIcons.calendarTodayOutlined,
-            value: dateController.text.isEmpty ? null : dateController.text,
-            placeholder: context.l10n.hostsWhenStepPlaceholderSelectADate,
-            onTap: onPickDate,
-          ),
-          FormField<String>(
-            validator: (_) => dateController.text.isEmpty
-                ? context.l10n.hostsWhenStepVisiblecopyPleaseSelectADate
-                : null,
-            builder: (field) => field.hasError
-                ? WhenStepFieldError(text: field.errorText!)
-                : const SizedBox.shrink(),
-          ),
-          gapH20,
-          CatchFormFieldLabel(
-            label: context.l10n.hostsWhenStepLabelStartTime,
-            large: true,
-          ),
-          gapH8,
-          HostPickerTile(
-            key: CreateEventFormKeys.timePicker,
-            icon: CatchIcons.scheduleOutlined,
-            value: startTimeController.text.isEmpty
-                ? null
-                : startTimeController.text,
-            placeholder: context.l10n.hostsWhenStepPlaceholderSelectStartTime,
-            onTap: onPickTime,
-          ),
-          FormField<String>(
-            validator: (_) => startTimeController.text.isEmpty
-                ? context.l10n.hostsWhenStepVisiblecopyRequired
-                : null,
-            builder: (field) => field.hasError
-                ? WhenStepFieldError(text: field.errorText!)
-                : const SizedBox.shrink(),
-          ),
-          if (scheduleErrorText != null)
-            WhenStepFieldError(text: scheduleErrorText!),
-          gapH20,
-          CatchFormFieldLabel(
-            label: context.l10n.hostsWhenStepLabelDuration,
-            large: true,
-          ),
-          gapH8,
-          CatchNumberStepper(
-            value: durationMinutes,
-            onDecrease: onDecreaseDuration,
-            onIncrease: onIncreaseDuration,
-            decreaseTooltip:
-                context.l10n.hostsWhenStepVisiblecopyDecreaseDuration,
-            increaseTooltip:
-                context.l10n.hostsWhenStepVisiblecopyIncreaseDuration,
-            formatValue: (value) => formatDuration(value.round()),
+          CatchSection.fieldRows(
+            first: true,
+            children: [
+              FormField<String>(
+                validator: (_) => dateController.text.isEmpty
+                    ? context.l10n.hostsWhenStepVisiblecopyPleaseSelectADate
+                    : null,
+                builder: (field) => CatchField.nav(
+                  key: CreateEventFormKeys.datePicker,
+                  title: context.l10n.hostsWhenStepLabelDate,
+                  body: dateController.text.isEmpty
+                      ? context.l10n.hostsWhenStepPlaceholderSelectADate
+                      : dateController.text,
+                  icon: CatchIcons.calendarTodayOutlined,
+                  error: field.errorText,
+                  onTap: onPickDate,
+                ),
+              ),
+              FormField<String>(
+                validator: (_) => startTimeController.text.isEmpty
+                    ? context.l10n.hostsWhenStepVisiblecopyRequired
+                    : null,
+                builder: (field) => CatchField.nav(
+                  key: CreateEventFormKeys.timePicker,
+                  title: context.l10n.hostsWhenStepLabelStartTime,
+                  body: startTimeController.text.isEmpty
+                      ? context.l10n.hostsWhenStepPlaceholderSelectStartTime
+                      : startTimeController.text,
+                  icon: CatchIcons.scheduleOutlined,
+                  error: field.errorText ?? scheduleErrorText,
+                  onTap: onPickTime,
+                ),
+              ),
+              CatchField.stepper(
+                title: context.l10n.hostsWhenStepLabelDuration,
+                body: formatDuration(durationMinutes),
+                value: durationMinutes,
+                min: CatchBusinessRules.eventMinDurationMinutes,
+                max: CatchBusinessRules.eventMaxDurationMinutes,
+                step: CatchBusinessRules.eventDurationStepMinutes,
+                formatter: (value) => formatDuration(value.round()),
+                decreaseSemanticLabel:
+                    context.l10n.hostsWhenStepVisiblecopyDecreaseDuration,
+                increaseSemanticLabel:
+                    context.l10n.hostsWhenStepVisiblecopyIncreaseDuration,
+                onChanged: (value) {
+                  if (value < durationMinutes) {
+                    onDecreaseDuration?.call();
+                  } else if (value > durationMinutes) {
+                    onIncreaseDuration?.call();
+                  }
+                },
+                initiallyOpen: true,
+                icon: CatchIcons.timerOutlined,
+              ),
+            ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class WhenStepFieldError extends StatelessWidget {
-  const WhenStepFieldError({super.key, required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: CatchInsets.formFieldError,
-      child: Text(
-        text,
-        style: CatchTextStyles.supporting(context, color: t.primary),
       ),
     );
   }

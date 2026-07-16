@@ -1,7 +1,10 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_content.dart';
@@ -9,7 +12,6 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapper.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 enum ProfileSurfaceMode { catches, preview, publicProfile }
 
@@ -25,6 +27,7 @@ class ProfileSurface extends StatelessWidget {
     this.scrollPhysics,
     this.onLeadingOverscroll,
     this.bottomPadding = CatchSpacing.s6,
+    this.includeTerminalPadding = false,
     this.onReact,
     this.viewerProfile,
     this.sharedRunTitle,
@@ -38,6 +41,7 @@ class ProfileSurface extends StatelessWidget {
   final ScrollPhysics? scrollPhysics;
   final ValueChanged<double>? onLeadingOverscroll;
   final double bottomPadding;
+  final bool includeTerminalPadding;
   final ProfileReactionCallback? onReact;
   final UserProfile? viewerProfile;
   final String? sharedRunTitle;
@@ -80,6 +84,7 @@ class ProfileSurface extends StatelessWidget {
         scrollPhysics: scrollPhysics,
         onLeadingOverscroll: onLeadingOverscroll,
         bottomPadding: bottomPadding,
+        includeTerminalPadding: includeTerminalPadding,
         reactionsEnabled: reactionsEnabled,
         reactionsPending: reactionsPending,
       ),
@@ -95,6 +100,7 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
     this.scrollPhysics,
     this.onLeadingOverscroll,
     this.bottomPadding = CatchSpacing.s6,
+    this.includeTerminalPadding = false,
   });
 
   static const scrollViewKey = ValueKey<String>('profile.surface.skeleton');
@@ -103,6 +109,7 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
   final ScrollPhysics? scrollPhysics;
   final ValueChanged<double>? onLeadingOverscroll;
   final double bottomPadding;
+  final bool includeTerminalPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +150,7 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
                 ],
               ),
             ),
+            if (includeTerminalPadding) const CatchSliverTerminalPadding(),
           ],
         ),
       ),
@@ -340,7 +348,7 @@ String? _kicker(String? sharedRunTitle) {
 String? _metaLine(PublicProfile profile) {
   final parts = <String>[
     ?_trimToNull(profile.occupation),
-    ?_trimToNull(profile.city),
+    ?_trimToNull(cityLabel(profile.city)),
   ];
   return parts.isEmpty ? null : parts.join(' · ');
 }

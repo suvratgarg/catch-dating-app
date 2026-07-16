@@ -373,6 +373,13 @@ function event(overrides: FakeData = {}): FakeData {
       Date.parse("2026-05-02T02:30:00.000Z")
     ),
     meetingPoint: "Carter Road",
+    meetingLocation: {
+      name: "Carter Road",
+      latitude: 19.0608,
+      longitude: 72.8365,
+    },
+    startingPointLat: 19.0608,
+    startingPointLng: 72.8365,
     distanceKm: 5,
     pace: "easy",
     capacityLimit: 20,

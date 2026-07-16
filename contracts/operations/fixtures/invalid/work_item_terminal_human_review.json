@@ -1,0 +1,30 @@
+{
+  "expectedIssueCode": "terminal_human_review_forbidden",
+  "document": {
+    "schemaVersion": 1,
+    "workItemId": "work:event:terminal-human",
+    "workflowId": "supply-intake",
+    "runId": "run:mumbai:2026-07-14",
+    "entityKind": "event",
+    "externalKey": "source:event:terminal-human",
+    "revision": 1,
+    "candidateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "primaryStage": "resolve",
+    "lifecycleStatus": "terminal",
+    "outcome": "expired",
+    "taskFlags": ["human_review_required"],
+    "blockerCodes": ["human_review_required"],
+    "warningCodes": [],
+    "priority": 0,
+    "attemptCount": 1,
+    "evidenceRefs": [],
+    "fieldProvenance": [],
+    "normalizedPayload": {"owner": "human"},
+    "decisionId": null,
+    "publicationPlanId": null,
+    "createdAt": "2026-07-14T08:00:00.000Z",
+    "updatedAt": "2026-07-14T08:01:00.000Z",
+    "staleAt": null,
+    "expiresAt": null
+  }
+}

@@ -12,7 +12,9 @@ export const BUDGET_DIMENSIONS = Object.freeze([
 
 export class BudgetLedger {
   constructor({limits = {}, consumed = {}} = {}) {
-    this.limits = normalizeBudget(limits, Number.MAX_SAFE_INTEGER);
+    // Missing capability limits fail closed. Callers must grant every budget
+    // dimension explicitly rather than inheriting an unbounded allowance.
+    this.limits = normalizeBudget(limits, 0);
     this.consumed = normalizeBudget(consumed, 0);
     for (const key of BUDGET_DIMENSIONS) {
       invariant(this.consumed[key] <= this.limits[key], "BUDGET_CORRUPT", `${key} consumption exceeds its limit.`);
@@ -34,6 +36,30 @@ export class BudgetLedger {
       });
     }
     for (const key of BUDGET_DIMENSIONS) this.consumed[key] += normalized[key];
+    return this.snapshot();
+  }
+
+  reserve(request, options = {}) {
+    const reservation = normalizeBudget(request, 0);
+    this.consume(reservation, options);
+    return reservation;
+  }
+
+  reconcileReservation(reservation, actual, {reason = "unspecified"} = {}) {
+    const reserved = normalizeBudget(reservation, 0);
+    const consumed = normalizeBudget(actual, 0);
+    const overReservation = BUDGET_DIMENSIONS.filter((key) => consumed[key] > reserved[key]);
+    if (overReservation.length > 0) {
+      throw new OperationsError(
+        "BUDGET_RESERVATION_EXCEEDED",
+        `Actual usage exceeded its reservation for ${overReservation.join(", ")}.`,
+        {details: {reason, overReservation, reserved, actual: consumed, snapshot: this.snapshot()}, exitCode: 4}
+      );
+    }
+    for (const key of BUDGET_DIMENSIONS) {
+      invariant(this.consumed[key] >= reserved[key], "BUDGET_RESERVATION_CORRUPT", `${key} reservation was not consumed.`);
+      this.consumed[key] = this.consumed[key] - reserved[key] + consumed[key];
+    }
     return this.snapshot();
   }
 

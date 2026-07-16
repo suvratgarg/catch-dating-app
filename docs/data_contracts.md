@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.10
-updated: 2026-07-12
+version: 1.1.18
+updated: 2026-07-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -66,6 +66,34 @@ come from JSON Schema; the boundary is the timestamp representation:
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
 
+### Required Event Meeting Location
+
+Every persisted `events/{eventId}` and published external event must have a
+named, finite, in-range exact location. The canonical object is
+`meetingLocation`; `meetingPoint`, `startingPointLat`, and `startingPointLng`
+remain synchronized compatibility mirrors while released clients still use
+them. They are not nullable escape hatches.
+
+- Create requires an exact scalar pair and canonicalizes it into
+  `meetingLocation`; newer clients may send the structured object directly.
+- Update resolves the existing or supplied exact location and always rewrites
+  the canonical object plus mirrors. It rejects a truly coordinate-less legacy
+  document instead of preserving corruption.
+- Dart `Event` and `ExternalEvent` expose non-null exact coordinates. `Event`
+  may deterministically promote a complete legacy pair on read, but rejects a
+  document with no usable exact location.
+- Discovery and proximity check-in fail closed when the invariant is broken;
+  they never publish a null geo cell or skip the distance guard.
+- `node tool/data/backfill_event_meeting_locations.mjs --env <env>` is the
+  dry-run-first repair path. It never invents coordinates or mixes latitude
+  and longitude from different sources.
+
+Dev was verified clean on 2026-07-13: 146/146 events have structured exact
+locations and the location-market and discovery repair tools report zero
+remaining work. The production dry run found 138 deterministic repairs and 9
+historical records without recoverable coordinates; production was not
+mutated, and strict production rollout remains blocked on resolving those nine.
+
 ## Normal Workflow
 
 ```bash
@@ -85,6 +113,18 @@ firebase emulators:exec --only firestore,storage "npm --prefix functions run tes
 A direct `npm --prefix functions run test:rules` expects Firestore on
 `127.0.0.1:8080` and Storage on `127.0.0.1:9199`. `ECONNREFUSED` is an emulator
 workflow failure first, not proof the rules are wrong.
+
+Storage rules that call Firestore have a second, live dependency which the
+emulators cannot prove. Every environment's Firebase Storage service agent must
+hold `roles/firebaserules.firestoreServiceAgent`; the checked preflight and
+idempotent provisioner are documented in `docs/release_operations.md`. Keep
+each Storage evaluation within Firebase's Firestore document-access limit.
+Match chat images therefore authorize from the canonical match document, whose
+`status: blocked` projection is owned by the block callable/trigger. Their
+contract also requires immutable `uploaderUid` custom object metadata: only
+that active-match participant may create or compensate-delete the object, and
+client updates are denied. Prove this boundary with both emulator rules tests
+and the authenticated live upload/delete canary.
 
 ## Contract Architecture
 
@@ -245,6 +285,61 @@ instead of sending a duplicate. The receipt stores hashed per-recipient
 evidence for repair and aggregate delivery counts, remains server-only, and
 requires the `eventBroadcasts.expiresAt` Firestore TTL policy for 90-day
 retention.
+
+## Durable Operations Records
+
+`contracts/operations/` owns the portable JSON schemas for resumable business
+workflows. These contracts are deliberately separate from public product
+documents: an operations work item is review state and evidence, not an event,
+organizer, or authorization to publish one.
+
+The canonical record family is run, work item, action receipt, decision, lease,
+publication plan, rule proposal, and rule evaluation. `functions/src/operations/`
+owns semantic validation, optimistic revisions, reducers, and Firestore
+repositories. All corresponding Firestore collections are server-only.
+
+The reusable work-item contract accepts workflow-owned stage, entity, and
+outcome tokens. Supply Intake's workflow manifest, runtime validator, backend
+policy, and callable response then narrow that vocabulary to one exclusive
+`primaryStage` from `incoming`, `verify`, `resolve`, or `ready`. Dedupe, source
+verification, policy review, and human review are overlapping flags or
+blockers. `published`, `rejected`, `expired`, `cancelled`, and `taken_down` are
+lifecycle outcomes and must never be encoded as extra Supply Intake stages.
+Workflow manifests also bind lifecycle semantics: non-empty active statuses
+plus disjoint published and expired status groups. The generic local runtime
+uses those frozen groups for queues, canonical lifecycle projection, counters,
+and reconciliation cleanup; it does not require another workflow to reuse
+Supply Intake's literal status names.
+
+The local `operations/` runner validates its admin projection against the same
+run and work-item schemas with full draft-07/Ajv conditional semantics before
+exporting it. Functions repositories and the importer use generated validators
+from those same bundled schemas, so a record rejected by the contract cannot be
+accepted by a hand-written semantic subset. Human owner/blocker signals require
+the canonical queryable task flag, and published or terminal records cannot
+remain in the active human-review lane. The live admin surface reads
+those durable records through `adminListIntakeOperations`; it cannot enqueue a
+run or mutate workflow state.
+
+The trusted shadow-projection importer validates the export again, resets only
+the Firestore persistence revision to zero, and retains each local source
+revision plus the whole-export hash under reserved projection metadata. It
+creates work items before exposing the run, verifies every expected item on
+replay, repairs missing items, rejects changed records, and refuses inventory
+above the run's frozen `maxWorkItems` budget. Apply also binds the environment
+label to its configured Firebase project id and requires project-aware
+production confirmation. This bridge writes no `events`, `externalEvents`,
+`clubs`, public website projection, or publication-plan record.
+
+Local completed runs hash-bind their full work-item inventory. Reconciliation
+creates a new lineage-bound run and new work-item ids rather than mutating the
+source snapshot, preserving immutable importer semantics across expiry and
+staleness sweeps.
+
+Runs must budget between 1 and 10,000 work items. Imported run metadata carries
+authoritative total, active, terminal, stage, and human-review aggregates; the
+admin read fails closed unless those totals reconcile. The canonical human
+review filter is backed by the committed `operationWorkItems` composite index.
 
 ## Organizer Claim Documents
 

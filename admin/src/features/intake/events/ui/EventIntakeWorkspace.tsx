@@ -7,6 +7,7 @@ import {
   RefreshCw,
   Search,
 } from "lucide-react";
+import {useState} from "react";
 import {
   AdminButton,
   AdminCard,
@@ -59,6 +60,7 @@ import type {
   EventIntakeSourceResult,
 } from "../../../../shared/types/adminTypes";
 import {useAdminFeedback} from "../../../../shared/feedback/AdminFeedbackContext";
+import {eventIntakeWorkbench} from "./eventIntakeWorkbench";
 
 const eventIntakeTabs: Array<{id: EventIntakeTab; label: string}> = [
   {id: "setup", label: "Crawl setup"},
@@ -77,6 +79,7 @@ export function EventIntakePreviewWorkspace({
 }: {
   controller: EventIntakeController;
 }) {
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
   const {
     activeTab,
     bridge,
@@ -105,26 +108,34 @@ export function EventIntakePreviewWorkspace({
     );
   }
 
+  if (!showDiagnostics) {
+    return (
+      <eventIntakeWorkbench.EventTaskWorkbench
+        controller={controller}
+        onShowDiagnostics={() => setShowDiagnostics(true)}
+      />
+    );
+  }
+
   return (
     <AdminIntakeEventWorkspaceShell>
       <PageHeader
         actions={(
-          <AdminButton
-            disabled={isLoading}
-            icon={<RefreshCw size={15} strokeWidth={1.9} />}
-            onClick={() => void loadBridge()}
-          >
-            {isLoading ? "Refreshing" : "Refresh"}
-          </AdminButton>
+          <>
+            <AdminButton onClick={() => setShowDiagnostics(false)}>
+              Back to review queue
+            </AdminButton>
+            <AdminButton
+              disabled={isLoading}
+              icon={<RefreshCw size={15} strokeWidth={1.9} />}
+              onClick={() => void loadBridge()}
+            >
+              {isLoading ? "Refreshing" : "Refresh"}
+            </AdminButton>
+          </>
         )}
-        eyebrow={`Event Intake / ${bridge.city.label}`}
-        title={`${bridge.city.label} event intake review`}
-      >
-        Configure source coverage, review raw event leads, and verify deduped
-        candidate records before Marketing or external import readiness consumes
-        them. These records are decision-only intake artifacts until a separate
-        Events import flow publishes read-only external supply.
-      </PageHeader>
+        title="Event intake diagnostics"
+      />
 
       <AdminMarketingTabs<EventIntakeTab>
         ariaLabel="Event intake views"

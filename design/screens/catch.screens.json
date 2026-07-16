@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-10",
+  "updated": "2026-07-16",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -73,7 +73,7 @@
             "symbol": "EventCalendarController"
           }
         ],
-        "notes": "The route screen already reads the aggregate view model, but EventDetailBody still derives visibility, navigation intents, mutation listeners, host lookup, and private section widgets."
+        "notes": "The route screen reads the aggregate view model, derives typed section information/capability state, owns mutations and navigation effects, and passes explicit display state and callbacks into EventDetailBody."
       },
       "designRefs": [
         {
@@ -89,6 +89,13 @@
           "status": "available",
           "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/components/events",
           "notes": "Event primitive and compound TypeScript contracts used for section mapping."
+        },
+        {
+          "id": "repo.event-detail-approved-redesign-board",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/reference_screens/screen.event.detail/approved-redesign-board-2026-07-12.png",
+          "notes": "Owner-approved 2026-07-12 visual direction for standard top-bar geometry, Google map preview, flat information rows, compact host/social presentation, and floating iOS bottom action chrome."
         },
         {
           "id": "repo.event-detail-captures",
@@ -287,7 +294,7 @@
           "id": "member_default",
           "kind": "populated",
           "status": "captured",
-          "source": "Authenticated member with profile, reviews, deterministic host card, bookable CTA, and default presentation mode.",
+          "source": "Authenticated member with profile, compact capability-derived host row, capability-derived reviews, platform-adaptive bookable CTA, and default presentation mode.",
           "captureIds": [
             "event_detail_member"
           ],
@@ -298,7 +305,7 @@
           "tests": [
             "test/events/event_detail_widgets_test.dart"
           ],
-          "nextAction": "Move EventDetailBody visibility decisions into section view-state adapters before visual parity edits."
+          "nextAction": "Keep live-device comparison aligned with the owner-approved 2026-07-12 redesign board and the deterministic Widgetbook states."
         },
         {
           "id": "member_ticket",
@@ -489,8 +496,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "EventDetailScreen reads eventDetailViewModelProvider, owns the loaded Scaffold, mutation listeners, route callbacks, host/companion display-state derivation, and bottom navigation CTA; EventDetailBody owns the CustomScrollView, hero app bar, ticket band, local sections, host/companion/invite cards, and social section.",
-        "targetLayout": "EventDetailScreen maps provider state into EventDetailScreenState-style adapters and composes registered sections: hero, ticket facts, plan, click hints, itinerary, photo proof, host card, who-is-going, reviews, map, mechanics, good-to-know, companion/invite prompts, and booking dock.",
+        "currentLayout": "EventDetailScreen maps provider output into explicit section visibility, typed information, host, social/review, companion, and booking state; EventDetailBody composes the CustomScrollView, canonical action-group hero, Google map preview, flat information rows, compact host/social sections, and CatchBottomAction.",
+        "targetLayout": "Keep EventDetailScreen as the provider/effect boundary and EventDetailBody as explicit-input composition: hero, ticket facts, plan, click hints, itinerary, photo proof, Google map preview, non-overlapping sign-up/good-to-know facts, compact host row, who-is-going, capability-derived reviews, companion/invite prompts, and platform-adaptive booking action.",
         "sections": [
           {
             "id": "section.event.hero",
@@ -508,7 +515,8 @@
             "targetOwner": "registered Event Detail hero section with view data and user intents",
             "dependencies": [
               "catch.icon_button",
-              "catch.surface"
+              "catch.surface",
+              "catch.top_bar"
             ],
             "states": [
               "default",
@@ -521,7 +529,7 @@
             "previewIds": [
               "EventDetailHeroAppBar/Catalog states"
             ],
-            "migration": "Register the hero section/component contract, move save/calendar visibility into an adapter view model, keep saved/calendar fallback feedback on the shared Catch snackbar helper, and add Widgetbook states for saved, pending, ticket, and dark variants."
+            "migration": "Save/calendar visibility stays adapter-owned; all sibling trailing actions now flow through CatchTopBarActionGroup so route headers share one peer-gap contract."
           },
           {
             "id": "section.event.ticket_stub",
@@ -538,6 +546,7 @@
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered ticket-stub compound",
             "dependencies": [
+              "catch.map_preview",
               "catch.surface"
             ],
             "states": [
@@ -678,15 +687,15 @@
               "catch.surface"
             ],
             "states": [
-              "pin_ready",
-              "pin_drops_morning_of",
+              "google_tile_pin_ready",
+              "network_disabled_fallback",
               "tap_enabled",
               "tap_disabled"
             ],
             "previewIds": [
               "EventDetailMapCard/Catalog states"
             ],
-            "migration": "Split visual map card props from event location derivation and declare masking rules for pixel comparison."
+            "migration": "EventDetailMapCard renders CatchMapPreview with exact coordinates and real Google tiles in production; Widgetbook/tests/captures use enableNetworkTiles=false for deterministic fallback rendering."
           },
           {
             "id": "section.event.mechanics",
@@ -714,7 +723,7 @@
             "previewIds": [
               "EventDetailMechanismList/Catalog states"
             ],
-            "migration": "Move mechanism row construction out of the visual list and use explicit row data plus activity tone."
+            "migration": "Completed: EventDetailInformationState derives validated admission, waitlist, and pricing facts; EventDetailMechanismList only renders the explicit rows."
           },
           {
             "id": "section.event.good_to_know",
@@ -725,45 +734,48 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-              "symbol": "EventDetailPolicySummary"
+              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "symbol": "EventDetailGoodToKnowList"
             },
             "currentOwner": "EventDetailOverviewSection",
-            "targetOwner": "registered event policy summary section",
+            "targetOwner": "typed EventDetailInformationState plus flat good-to-know list",
             "dependencies": [
               "catch.surface"
             ],
             "states": [
               "requirements",
-              "expectations",
-              "booking_policy",
+              "experience",
+              "attendance",
+              "cancellation",
+              "free_event_plans_change",
               "no_requirements"
             ],
             "previewIds": [
               "EventDetailOverviewSection/Overview states"
             ],
-            "migration": "Promote policy and expectation rows into explicit view-data sections and keep requirements as a lower-level compound."
+            "migration": "Completed: EventDetailInformationState owns non-overlapping requirements, experience, attendance, and cancellation facts; the flat list cannot accept booking mechanics or settlement copy."
           },
           {
             "id": "section.event.hosts",
-            "name": "Your hosts",
+            "name": "Hosted by",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostCard"
+              "HostRow"
             ],
             "flutter": {
               "file": "lib/events/presentation/widgets/event_detail_body.dart",
               "symbol": "EventDetailHostsSection"
             },
             "currentOwner": "EventDetailBody",
-            "targetOwner": "registered host section plus host-card compound",
+            "targetOwner": "registered host section plus shared CatchHostRow",
             "dependencies": [
-              "catch.button",
+              "catch.host_row",
               "catch.surface"
             ],
             "states": [
-              "loaded",
+              "passive",
+              "navigable",
               "missing_club",
               "message_enabled",
               "message_disabled",
@@ -771,9 +783,9 @@
               "unverified"
             ],
             "previewIds": [
-              "EventDetailHostCard/Catalog states"
+              "CatchHostRow/Catalog states"
             ],
-            "migration": "Club lookup is route-owned and mapped through EventDetailHostState; remaining work is formal host-card component registration and broader section-state hardening."
+            "migration": "Completed: route-owned club lookup maps into EventDetailHostState and EventDetailHostsSection renders a compact CatchHostRow; navigation and message affordances are derived from callbacks."
           },
           {
             "id": "section.event.who_is_going",
@@ -823,13 +835,16 @@
             "states": [
               "hidden_guest",
               "member_before_event",
+              "empty_hidden",
+              "empty_inline_write",
+              "content",
               "attended_can_review",
-              "host"
+              "host_can_respond"
             ],
             "previewIds": [
               "EventReviewsSection/Review states"
             ],
-            "migration": "Make review access an explicit adapter field and avoid having the section recompute attendance rules."
+            "migration": "Completed: EventDetailReviewsState derives hidden/content/empty-write modes and write/respond capabilities; non-actionable empty reviews render nothing and eligible empty reviews use a small inline prompt."
           },
           {
             "id": "section.event.companion_invite",
@@ -846,6 +861,7 @@
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered post-booking prompt section",
             "dependencies": [
+              "catch.bottom_action",
               "catch.button",
               "catch.surface"
             ],
@@ -891,7 +907,7 @@
             "previewIds": [
               "EventBookingDock/BookingDock states"
             ],
-            "migration": "EventDetailCta now maps provider and mutation output through provider-free EventDetailBookingDockState, then renders the result through EventBookingDock while keeping mutation execution at the route/widget edge."
+            "migration": "EventDetailCta maps provider and mutation output through EventDetailBookingDockState, then renders CatchBottomAction: inset floating chrome on iOS and anchored full-width Material chrome on Android."
           }
         ]
       },
@@ -904,12 +920,12 @@
         {
           "id": "DS-EVENT-DETAIL-002",
           "status": "closed",
-          "nextAction": "Widgetbook entries now cover EventDetailHeroAppBar, TicketStub, Overview, HintList, Itinerary, PhotoStrip, MapCard, MechanismList, HostCard, WhoIsGoing/social proof, Reviews, companion/invite prompts, and provider-free EventBookingDock states."
+          "nextAction": "Widgetbook entries cover EventDetailHeroAppBar, TicketStub, Overview, HintList, Itinerary, PhotoStrip, deterministic MapCard, typed information lists, CatchHostRow, WhoIsGoing/social proof, capability-derived Reviews, companion/invite prompts, and platform-specific CatchBottomAction states."
         },
         {
           "id": "DS-EVENT-DETAIL-003",
           "status": "closed",
-          "nextAction": "Host lookup, companion plan lookup, booking dock mode, body section visibility, invite-loop visibility, host-app bottom-nav visibility, and social/review access now map through provider-free EventDetailHostState, EventDetailCompanionState, EventDetailBookingDockState, EventDetailSectionVisibilityState, and EventDetailSocialState."
+          "nextAction": "Host lookup, companion plan lookup, booking action mode, body section visibility, invite-loop visibility, host-app bottom-action visibility, information facts, and social/review capabilities map through provider-free EventDetailHostState, EventDetailCompanionState, EventDetailBookingDockState, EventDetailSectionVisibilityState, EventDetailInformationState, and EventDetailSocialState."
         },
         {
           "id": "DS-EVENT-DETAIL-004",
@@ -1983,7 +1999,7 @@
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
-          "nextAction": "Selected-card route behavior is covered by widget tests for preselect, pin tap, card navigation, background dismissal, dropped feed items, lost exact pins, and DS MapPin parity."
+          "nextAction": "Selected-card route behavior is covered by widget tests for preselect, pin tap, card navigation, background dismissal, feed updates, and DS MapPin parity."
         },
         {
           "id": "large_pan_scope",
@@ -1999,14 +2015,17 @@
           "nextAction": "Distance-ring capture is registered; add large-pan camera-region masks before strict map visual comparison."
         },
         {
-          "id": "no_exact_pins",
+          "id": "zero_radius_results",
           "kind": "empty",
           "status": "implemented",
-          "source": "ExploreMapScreen delegates no-exact-pin feed data to EventMapView's shared no-pins empty branch while keeping the route chrome and deterministic Widgetbook fixture.",
+          "source": "ExploreMapScreen preserves the geographic canvas and active distance ring when a radius returns zero events, then offers the next wider radius or Show all.",
           "previewIds": [
             "ExploreMapScreen/Map route states"
           ],
-          "nextAction": "Keep no-exact-pin route coverage aligned with EventMapView; add a screenshot capture only if map empty-state parity needs pixel review."
+          "tests": [
+            "test/explore/explore_widgets_test.dart"
+          ],
+          "nextAction": "Keep 1 to 3 to 5 to 10 km and Show all recovery aligned with the shared Explore distance filter."
         },
         {
           "id": "map_loading",
@@ -6741,12 +6760,17 @@
         {
           "id": "profile_self_edit_tab",
           "status": "captured",
-          "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+          "notes": "Deterministic ProfileScreen Edit route capture registered in screen_capture_catalog.dart and refreshed on 2026-07-16 under artifacts/ui-captures/host-profile-tabbed-shell-20260716."
         },
         {
           "id": "profile_self_preview_tab",
           "status": "captured",
-          "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+          "notes": "Deterministic ProfileScreen Preview route capture registered in screen_capture_catalog.dart and refreshed on 2026-07-16 under artifacts/ui-captures/host-profile-tabbed-shell-20260716."
+        },
+        {
+          "id": "profile_self_insights_tab",
+          "status": "captured",
+          "notes": "Deterministic ProfileScreen route capture opens Insights through the typed initial-tab seam, retains the shared profile header and tab rail, and was refreshed on 2026-07-16 under artifacts/ui-captures/host-profile-tabbed-shell-20260716."
         },
         {
           "id": "profile_self_photo_upload_pending",
@@ -6844,7 +6868,7 @@
           "id": "photo_grid",
           "kind": "populated",
           "status": "tested",
-          "source": "_ProfilePhotosSection composes PhotoGrid with upload loading indices, delete, reorder, and slot-edit callbacks.",
+          "source": "ProfilePhotosSection composes PhotoGrid inside CatchSection.fieldRows so the Photos title/count use the canonical full-width header rule and 12 px rule-to-grid gap; upload loading indices, delete, reorder, and slot-edit callbacks remain parent-owned.",
           "tests": [
             "test/profile/profile_widgets_test.dart",
             "test/image_uploads/photo_grid_test.dart"
@@ -6875,11 +6899,24 @@
           "id": "inline_text_edit",
           "kind": "mutation",
           "status": "tested",
-          "source": "ProfileInlineTextEntryEditor validates and saves text fields through ProfileEditController.saveFieldsMutation.",
+          "source": "ProfileDirectTextEntryField keeps a native CatchField.input mounted, validates direct text edits, and saves them through ProfileEditController.saveFieldsMutation.",
           "tests": [
             "test/profile/profile_widgets_test.dart"
           ],
           "nextAction": "Promote inline editor previews for default, open, validation error, save pending, and save failure states.",
+          "previewIds": [
+            "ProfileScreen/Self section states"
+          ]
+        },
+        {
+          "id": "inline_prompt_edit",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "ProfileInlinePromptEntryEditor renders each prompt as a CatchSection.containedFieldRows question/answer pair. CatchField.choices stages the question behind Cancel/Done, while a separate multiline CatchField.input saves the answer on blur through serialized profile patches. The focused child field is the sole ordinary focus-chrome owner; the outer card remains neutral unless section focus or error is explicit.",
+          "tests": [
+            "test/profile/profile_widgets_test.dart"
+          ],
+          "nextAction": "Refresh deterministic profile prompt captures against the 2026-07-14 Field handoff; preserve the existing three-prompt and 300-character business limits.",
           "previewIds": [
             "ProfileScreen/Self section states"
           ]
@@ -6946,13 +6983,29 @@
           "previewIds": [
             "ProfileScreen/Self section states"
           ],
-          "nextAction": "Preview tab route is captured through initialTabIndex; next compare against exported preview references and mask dynamic profile imagery."
+          "nextAction": "Preview tab route is captured through the typed initialTab seam; next compare against exported preview references and mask dynamic profile imagery."
+        },
+        {
+          "id": "insights_tab_default",
+          "kind": "populated",
+          "status": "captured",
+          "source": "ProfileInsightsTabSliverBody renders analytics inside ProfileScreen's shared CatchTabbedScreenScaffold and typed SelfProfileTab rail.",
+          "captureIds": [
+            "profile_self_insights_tab"
+          ],
+          "tests": [
+            "test/profile/profile_widgets_test.dart"
+          ],
+          "previewIds": [
+            "ProfileScreen/Self route states"
+          ],
+          "nextAction": "Keep the full-route Insights capture aligned with the same shared shell used by Edit and Preview."
         },
         {
           "id": "settings_action",
           "kind": "populated",
           "status": "captured",
-          "source": "ProfileSliverHeader exposes a Settings action that routes to settingsScreen.",
+          "source": "ProfileScreen passes ProfileSettingsButton into the shared CatchTabbedScreenScaffold header; the action routes to settingsScreen.",
           "previewIds": [
             "ProfileScreen/Self section states"
           ],
@@ -7028,7 +7081,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "ProfileScreen owns tab/scroll controllers and preview bridge physics, then renders typed SelfProfileScreenState branches for loading/error/unavailable/ready. SelfProfileEditTabState owns photo-grid and prompt-slot view data. SelfProfilePhotoActionController owns photo editor/delete/reorder intents. SelfProfileInlineEditPatchFactory owns inline edit patch creation, while ProfileTabContent still derives basics/about/running/lifestyle row widget descriptors inline.",
+        "currentLayout": "ProfileScreen owns its typed TabController and preview-only scroll bridge, then composes CatchTabbedScreenScaffold with ProfileTabBar/CatchTabControllerRail and a TabBarView whose loading and ready pages use CatchTabbedPageScrollView. SelfProfileScreenState owns route/provider branch selection. The preview bridge remains Profile-specific because ProfileSurface owns an inner scroll view; Host Clubs avoids that exception by embedding a sliver-native public Club Detail body.",
         "targetLayout": "ProfileScreen should resolve current-profile, upload, save, and preview projection into SelfProfileScreenState and compose provider-free header, photo grid, info sections, inline editors, and preview sections from immutable view data plus typed callbacks.",
         "sections": [
           {
@@ -7047,7 +7100,7 @@
             "targetOwner": "SelfProfileScreenState provider/controller adapter",
             "dependencies": [
               "catch.top_bar",
-              "catch.segmented_control"
+              "catch.tab_rail"
             ],
             "states": [
               "loading",
@@ -7079,7 +7132,7 @@
             "targetOwner": "provider-free self-profile header section",
             "dependencies": [
               "catch.icon_button",
-              "catch.segmented_control",
+              "catch.tab_rail",
               "catch.top_bar"
             ],
             "states": [
@@ -7089,7 +7142,7 @@
               "text_scale_2",
               "light_dark"
             ],
-            "migration": "Keep sliver ownership in the route but move tab labels/actions into a stable provider-free section contract with captures for text scale and theme variants.",
+            "migration": "Completed for shell chrome: ProfileScreen and HostClubsScaffold share CatchTabbedScreenScaffold, CatchTabControllerRail, and CatchTabbedPageScrollView. ProfileTabBar supplies only typed labels, while the settings action and preview-specific scroll bridge remain route-owned.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]
@@ -8332,67 +8385,34 @@
           },
           {
             "id": "section.host.home_top_bar",
-            "name": "Host operations top bar",
+            "name": "Host home page headers",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostOperationsTopBar",
-              "ClubSwitcher"
+              "CatchScreenHeaderTitle",
+              "HostTodayHeader",
+              "HostTodayClubPill"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
-              "symbol": "HostOperationsTopBar"
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "symbol": "CatchScreenHeaderTitle"
             },
-            "currentOwner": "_HostEventsScaffold",
-            "targetOwner": "provider-free host operations top bar section",
+            "currentOwner": "HostTodayHeader + HostEventsClubSection",
+            "targetOwner": "route-specific headers through shared CatchScreenHeaderTitle",
             "dependencies": [
               "catch.top_bar",
               "catch.icon_button"
             ],
             "states": [
+              "today",
+              "events",
               "single_club",
               "multiple_clubs",
-              "long_club_name",
-              "owner",
-              "host_team"
+              "long_club_name"
             ],
-            "migration": "Selected club title, kicker, switcher actions, and host role menu labels render through public HostOperationsTopBar with section-level Widgetbook states. Route-state selection policy now lives in HostHomeRouteState.",
+            "migration": "Host Today and Host Events compose their distinct page identity through CatchScreenHeaderTitle; club switching remains in HostTodayClubPill. The deleted HostOperationsTopBar is no longer a shared owner.",
             "previewIds": [
-              "hostHomeRouteStates",
-              "HostOperationsTopBar/Top bar states"
-            ]
-          },
-          {
-            "id": "section.host.home_club_meta",
-            "name": "Host selected club metadata row",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostClubMetaRow",
-              "HostRoleBadge",
-              "ActivityChip"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
-              "symbol": "HostMetaRow"
-            },
-            "currentOwner": "HostEventsClubCard",
-            "targetOwner": "provider-free host club metadata section",
-            "dependencies": [
-              "catch.badge",
-              "catch.chip"
-            ],
-            "states": [
-              "owner",
-              "host_team",
-              "with_area",
-              "without_area",
-              "activity_variants"
-            ],
-            "migration": "HostMetaRow is public and has section-level Widgetbook states for owner, host-team, and missing-area metadata. Keep activity/role display data in the adapter and reuse with Host Clubs and Host Club Detail if the same header language persists.",
-            "previewIds": [
-              "hostHomeRouteStates",
-              "HostMetaRow/Meta row states"
+              "hostHomeRouteStates"
             ]
           },
           {
@@ -8638,7 +8658,7 @@
             "symbol": "HostPaymentAccountController"
           }
         ],
-        "notes": "HostClubsScreen resolves auth and hosted/owned club streams for the Organizer branch, while HostInsightsScreen owns the dedicated analytics utility route and requires an exact operated-club id instead of falling back. HostClubsScreenState owns Organizer/Edit/Preview selected-club state; profile edits run through HostClubEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostClubInsightsState owns analytics query state. The dedicated Insights route supplies real owner/co-host capability, back/title/range chrome, and the reusable analytics pane without the legacy tab rail."
+        "notes": "HostClubsScreen resolves auth and hosted/owned club streams, while HostClubsScreenState owns selected club plus Edit/Insights/Preview selection. HostClubsScaffold composes the same CatchTabbedScreenScaffold, CatchTabControllerRail, TabBarView, and CatchTabbedPageScrollView contracts used by ProfileScreen, so every ordinary tab retains one title-only header and option-group rail. Edit stacks the remaining organizer summary with profile/default-management sections. Profile edits run through HostClubEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostClubInsightsState owns analytics query state. HostInsightsScreen remains an exact-id utility/deep-link route."
       },
       "designRefs": [
         {
@@ -8658,8 +8678,8 @@
         {
           "id": "claude.host-clubs",
           "kind": "claude",
-          "status": "available",
-          "notes": "Host Organizer reference is repo-pinned and registered. The 2026-07-10 full-shell capture renders the production HostAppShell and stays within the advisory threshold at mismatch 12.02%, meanDelta 7.79, maxDelta 240, masked 260416; analytics, payout, and editor variants remain blocked until exported references exist.",
+          "status": "blocked",
+          "notes": "The repo-pinned Host Organizer source is retained as historical evidence, but its four-tab layout predates the consolidated Edit/Insights/Preview workspace and is no longer registered as an active comparison. A current canonical Host Clubs export is required before pixel parity can close again.",
           "path": "design/source_packs/host-v2/templates/hosts-organizer/Organizer.dc.html"
         },
         {
@@ -8674,7 +8694,7 @@
         {
           "id": "host_clubs_management",
           "status": "captured",
-          "notes": "Deterministic Host Clubs baseline capture renders the default Organizer overview with shared Host Operations fixtures."
+          "notes": "Deterministic Host Clubs baseline capture renders the consolidated Edit workspace with shared Host Operations fixtures. The page stacks the remaining organizer summary and profile/default-management sections under the title-only shared header; public preview and provider-backed analytics remain exclusive to the Preview and Insights tabs."
         },
         {
           "id": "host_clubs_loading",
@@ -8699,37 +8719,37 @@
         {
           "id": "host_clubs_cohost_edit",
           "status": "captured",
-          "notes": "Deterministic Host Clubs capture renders a co-host selection with owner-only controls suppressed."
+          "notes": "Deterministic Host Clubs capture renders a co-host Edit tab beginning directly with Identity and with owner-only controls suppressed; refreshed on 2026-07-16 under artifacts/ui-captures/host-clubs-meta-row-removal-20260716."
         },
         {
           "id": "host_clubs_insights_reference",
           "status": "captured",
-          "notes": "Routed 390x812 Host Insights capture renders exact organizer back/title/range chrome, backend metric cards, adjacent granularity control, a real demand/bookings trend, top events, and data-quality content without the legacy Clubs tab rail."
+          "notes": "Routed 390x812 Host Insights capture preserves exact-id direct-link coverage with Host Clubs back/title/range chrome, backend metric cards, adjacent granularity control, a real demand/bookings trend, top events, and data-quality content. Ordinary tab navigation renders the same report inside the shared Host Clubs workspace rail."
         },
         {
           "id": "host_clubs_insights_report",
           "status": "captured",
-          "notes": "Deterministic tall capture renders the dedicated populated Host Insights route from host analytics fixtures for below-fold review."
+          "notes": "Deterministic tall capture renders the provider-backed analytics report beginning directly with range and granularity controls inside HostClubsScreen; refreshed on 2026-07-16 under artifacts/ui-captures/host-clubs-meta-row-removal-20260716."
         },
         {
           "id": "host_clubs_preview_tab",
           "status": "captured",
-          "notes": "Deterministic Host Clubs capture renders the Preview tab and public-preview route action."
+          "notes": "Deterministic Host Clubs capture opens Preview directly on the embedded read-only consumer Club Detail composition; no second public-preview action or interactive semantics are rendered. Refreshed on 2026-07-16 under artifacts/ui-captures/host-profile-tabbed-shell-20260716."
         },
         {
           "id": "host_clubs_text_scale_2",
           "status": "captured",
-          "notes": "Deterministic Host Clubs capture renders the default Organizer overview at text scale 2.0."
+          "notes": "Deterministic Host Clubs capture renders the consolidated Edit workspace at text scale 2.0."
         },
         {
           "id": "host_clubs_reduced_motion",
           "status": "captured",
-          "notes": "Deterministic Host Clubs capture renders the default Organizer overview with reduced motion requested."
+          "notes": "Deterministic Host Clubs capture renders the consolidated Edit workspace with reduced motion requested."
         },
         {
           "id": "host_clubs_light_dark",
           "status": "captured",
-          "notes": "Deterministic Host Clubs capture records the default Organizer overview in the paired light/dark capture output."
+          "notes": "Deterministic Host Clubs capture records the consolidated Edit workspace in the paired light/dark capture output."
         },
         {
           "id": "host_clubs_signed_out",
@@ -8892,14 +8912,14 @@
           ]
         },
         {
-          "id": "organizer_overview",
+          "id": "consolidated_edit",
           "kind": "populated",
           "status": "captured",
-          "source": "Owned clubs now default to the Organizer overview with selected-club header, payout callout, metrics, public page row, team summary, trend strip, and manage rows.",
+          "source": "Owned clubs now default to one consolidated Edit workspace. The title-only shared header identifies the club, while the page stacks payout readiness, current metrics, team and manage rows, profile fields, event defaults, and owner-only management controls. Provider-backed analytics and public preview are owned by their top-level tabs.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Keep the Organizer overview baseline synced with the Claude host organizer reference; Edit, Insights, and Preview remain covered by their dedicated tab states.",
+          "nextAction": "Refine the ordering and section anatomy within the consolidated Edit page after the high-level information architecture pass; keep Preview and Insights singular top-level destinations.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -8911,7 +8931,7 @@
           "id": "cohost_club_edit_limited",
           "kind": "permission",
           "status": "captured",
-          "source": "Co-hosted clubs show Host team role language and suppress owner-only payout/team editing controls.",
+          "source": "Co-hosted clubs begin directly with Identity and suppress owner-only payout/team editing controls; the redundant role/activity metadata row is absent.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -9097,7 +9117,7 @@
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Keep exact-id and back-to-Organizer behavior covered as Host authorization evolves.",
+          "nextAction": "Keep exact-id and back-to-Host-Clubs behavior covered as Host authorization evolves.",
           "previewIds": [
             "HostInsightsScreen/Dedicated route states"
           ]
@@ -9106,9 +9126,10 @@
           "id": "insights_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "The dedicated Insights route watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
-          "nextAction": "Keep the dedicated-route loading capture synced without restoring the legacy Clubs tab rail.",
+          "source": "HostClubInsightsPane watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton inside HostClubsScaffold while analytics load.",
+          "nextAction": "Keep the ordinary shared-shell loading capture synced; the dedicated Insights route remains covered separately for deep-link behavior.",
           "previewIds": [
+            "HostClubsScreen/Route states",
             "HostInsightsScreen/Dedicated route states"
           ],
           "captureIds": [
@@ -9119,9 +9140,10 @@
           "id": "insights_report",
           "kind": "populated",
           "status": "captured",
-          "source": "HostInsightsScreen renders exact organizer utility chrome; HostAnalyticsReportView renders backend metrics, a demand/bookings dual-series trend, top events, reviews/saves, and data-quality panels.",
+          "source": "HostClubInsightsPane begins directly with range and granularity controls inside HostClubsScaffold; HostInsightsScreen retains exact-id deep-link utility chrome. HostAnalyticsReportView renders backend metrics, a demand/bookings dual-series trend, top events, reviews/saves, and data-quality panels.",
           "nextAction": "HostClubInsightsState owns range, granularity, custom bounds, event scope, and provider query derivation. Export/register/compare the pinned reference under HOST-V2-INSIGHTS-REFERENCE-001, then add sparse and long-label variants only if they diverge.",
           "previewIds": [
+            "HostClubsScreen/Route states",
             "HostInsightsScreen/Dedicated route states"
           ],
           "captureIds": [
@@ -9136,6 +9158,7 @@
           "source": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query.",
           "nextAction": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
           "previewIds": [
+            "HostClubsScreen/Route states",
             "HostInsightsScreen/Dedicated route states"
           ],
           "captureIds": [
@@ -9147,11 +9170,13 @@
           "id": "preview_tab",
           "kind": "populated",
           "status": "captured",
-          "source": "_HostClubPreviewPane renders club description and receives a typed public-preview route callback from _HostClubsScaffold.",
+          "source": "ClubDetailReadOnlyPreviewSliver watches the canonical clubDetailViewModelProvider and renders ClubDetailSliverBody directly inside the Preview tab with consumer display policy, embedded hero chrome, cleared interaction semantics, defensive disabled pointer interaction, and no membership dock.",
           "tests": [
-            "test/hosts/host_operations_screen_test.dart"
+            "test/hosts/host_operations_screen_test.dart",
+            "test/clubs/clubs_controllers_test.dart",
+            "test/clubs/club_detail_read_only_preview_test.dart"
           ],
-          "nextAction": "Coordinate with screen.host.club.detail so public-preview display state shares fixtures.",
+          "nextAction": "Keep the direct Preview capture and read-only semantics tests aligned with the canonical consumer Club Detail composition.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -9182,7 +9207,7 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "Host Clubs default Organizer overview has a deterministic text-scale 2.0 capture.",
+          "source": "Host Clubs consolidated Edit workspace has a deterministic text-scale 2.0 capture.",
           "nextAction": "Add text-scale captures for expanded inline editors, analytics metrics, and preview text if those layouts diverge.",
           "previewIds": [
             "HostClubsScreen/Route states"
@@ -9195,7 +9220,7 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "Host Clubs default Organizer overview has a deterministic reduced-motion capture.",
+          "source": "Host Clubs consolidated Edit workspace has a deterministic reduced-motion capture.",
           "nextAction": "Review tab switching, inline editor expansion, menus, sheets, and future analytics motion under reduced-motion settings.",
           "previewIds": [
             "HostClubsScreen/Route states"
@@ -9208,7 +9233,7 @@
           "id": "light_dark",
           "kind": "theme",
           "status": "captured",
-          "source": "Host Clubs default Organizer overview has paired light/dark deterministic capture output.",
+          "source": "Host Clubs consolidated Edit workspace has paired light/dark deterministic capture output.",
           "nextAction": "Add paired theme captures for insights, preview, and mutation/error overlays if those layouts diverge.",
           "previewIds": [
             "HostClubsScreen/Route states"
@@ -9219,8 +9244,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostClubsScreen reads auth and host club streams directly, _HostClubsScaffold owns selected-club index, selected tab, Organizer overview callbacks, and public-preview route callbacks, _HostClubProfileCard owns expanded inline-editor state, payment/team children read their own providers, and _HostClubInsightsPane composes controls from HostClubInsightsState before rendering local analytics sections.",
-        "targetLayout": "HostClubsScreen should select a HostClubsScreenState from a provider/controller adapter and compose provider-free organizer overview, top bar, tab rail, profile editor, payouts, host team, analytics, preview, access/loading/error, and typed route callbacks. Mutation orchestration should move into controllers/adapters so route widgets compose sections instead of writing repositories directly.",
+        "currentLayout": "HostClubsScreen reads auth and host club streams, while HostClubsScaffold owns HostClubsScreenState plus the route TabController. CatchTabbedScreenScaffold owns the title-only scroll-away club-name header and pinned CatchTabControllerRail; three CatchTabbedPageScrollView pages render consolidated Edit content, HostClubInsightsPane, and the sliver-native ClubDetailReadOnlyPreviewSliver. Edit stacks the remaining organizer summary before HostClubProfileCard, and its preview action selects the top-level Preview tab instead of pushing another route.",
+        "targetLayout": "Keep Host Clubs and Profile on the shared tabbed-screen contracts. Refine the ordering and composition of the consolidated Edit page while continuing to move editor, payout, team, and analytics provider waves into provider-free adapters and preserving Club Detail as the canonical consumer preview renderer.",
         "sections": [
           {
             "id": "section.host.clubs_screen_adapter",
@@ -9249,36 +9274,33 @@
               "owner_role",
               "cohost_role"
             ],
-            "migration": "HostClubsScreenState now owns selected-club, tab, and owner/co-host role capability display state; HostClubInsightsState owns analytics query state; _HostClubsScaffold owns public-preview route callbacks. Continue extracting retry intents, inline edit patches, and mutation state into testable adapters.",
+            "migration": "HostClubsScreenState owns selected club, selected tab, and owner/co-host capability display state; HostClubInsightsState owns analytics query state; HostClubsScaffold binds that state to the native TabController and shared shell. Continue extracting retry intents, inline edit patches, and mutation state into testable adapters.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
           },
           {
-            "id": "section.host.clubs_organizer_overview",
-            "name": "Host clubs organizer overview",
+            "id": "section.host.clubs_edit_summary",
+            "name": "Host clubs edit summary",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "OrganizerHeader",
               "Callout",
               "MetricGrid",
               "FieldRow",
               "HostTeamSummary",
-              "TrendStrip",
               "FieldGroup"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
               "symbol": "HostClubOrganizerOverview"
             },
-            "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "provider-free host organizer overview section",
+            "currentOwner": "HostClubsScaffold",
+            "targetOwner": "provider-free host Edit summary section",
             "dependencies": [
               "catch.badge",
               "catch.button",
-              "catch.surface",
-              "catch.top_bar"
+              "catch.surface"
             ],
             "states": [
               "owner",
@@ -9288,42 +9310,42 @@
               "payout_status_error",
               "metrics_loading",
               "team_summary",
-              "trends",
               "manage_rows"
             ],
-            "migration": "The default Host Clubs surface now matches the Claude organizer-summary structure and routes public preview, payouts/edit, insights, settings, and club switching through _HostClubsScaffold callbacks. Next extraction is a provider-free overview state model so payout/event async waves do not live inside the private section.",
+            "migration": "The former organizer summary now leads the consolidated Edit page without duplicate public-page or trend sections. Edit-oriented rows scroll to the profile/default-management sections below, Preview and Insights remain top-level tabs, and settings plus club switching remain typed HostClubsScaffold callbacks. The next extraction is a provider-free Edit summary state model.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
           },
           {
             "id": "section.host.clubs_top_bar",
-            "name": "Host clubs top bar",
+            "name": "Host clubs shared tabbed header",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostOperationsTopBar",
+              "CatchTabbedScreenScaffold",
+              "CatchScreenHeaderTitle",
               "ClubSwitcher"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
-              "symbol": "HostOperationsTopBar"
+              "file": "lib/core/widgets/catch_tabbed_screen.dart",
+              "symbol": "CatchTabbedScreenScaffold"
             },
-            "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "provider-free host operations top bar section",
+            "currentOwner": "HostClubsScaffold",
+            "targetOwner": "shared CatchTabbedScreenScaffold header contract",
             "dependencies": [
               "catch.top_bar",
-              "catch.icon_button"
+              "catch.icon_button",
+              "catch.tab_rail"
             ],
             "states": [
               "single_club",
               "multiple_clubs",
               "long_club_name",
-              "owner",
-              "host_team",
-              "hidden_in_organizer_mode"
+              "club_identity",
+              "all_tabs"
             ],
-            "migration": "Move selected club title, kicker, switcher labels, and role labels into HostClubsScreenState and share top-bar behavior with Host Home where appropriate. Organizer mode now hides the app bar and exposes club switching from the overview header.",
+            "migration": "Loaded Host Clubs now uses the same scroll-away title and pinned option-group chrome as ProfileScreen. The club name is the only header identity, the club switch action remains available when needed, and Edit, Insights, and Preview stay visible regardless of the selected page.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -9334,26 +9356,25 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CatchTabRail"
+              "CatchTabControllerRail"
             ],
             "flutter": {
               "file": "lib/core/widgets/catch_tab_rail.dart",
-              "symbol": "CatchTabRail"
+              "symbol": "CatchTabControllerRail"
             },
-            "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "shared CatchTabRail",
+            "currentOwner": "HostClubsScaffold",
+            "targetOwner": "shared CatchTabControllerRail",
             "dependencies": [
               "catch.tab_rail"
             ],
             "states": [
-              "organizer",
               "edit",
               "insights",
               "preview",
               "long_labels",
               "text_scale"
             ],
-            "migration": "Keep tab selection as screen state and route visual review through HostClubsScreen states plus the shared CatchTabRail primitive. The Organizer tab is the default route state and does not render the AppBar tab rail until the host switches into another tab.",
+            "migration": "HostClubsScaffold binds its route-owned TabController to CatchTabControllerRail and TabBarView. Edit, Insights, and Preview remain present and interpolate during horizontal paging.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -9371,7 +9392,7 @@
               "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
               "symbol": "HostClubProfileCard"
             },
-            "currentOwner": "_HostClubsScaffold",
+            "currentOwner": "HostClubsScaffold",
             "targetOwner": "provider-free host club profile editor section",
             "dependencies": [
               "catch.badge",
@@ -9404,7 +9425,7 @@
               "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
               "symbol": "HostInlineTextEntryEditor"
             },
-            "currentOwner": "_HostClubProfileCard",
+            "currentOwner": "HostClubProfileCard",
             "targetOwner": "shared inline editor compound after profile/host use cases converge",
             "dependencies": [
               "catch.field",
@@ -9436,7 +9457,7 @@
               "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
               "symbol": "HostInlineOptionEditor"
             },
-            "currentOwner": "_HostClubProfileCard",
+            "currentOwner": "HostClubProfileCard",
             "targetOwner": "provider-free host event defaults section",
             "dependencies": [
               "catch.chip",
@@ -9467,7 +9488,7 @@
               "file": "lib/hosts/presentation/payments/host_payment_account_card.dart",
               "symbol": "HostPaymentAccountCard"
             },
-            "currentOwner": "_HostClubProfileCard",
+            "currentOwner": "HostClubProfileCard",
             "targetOwner": "provider-free payout section plus payment controller adapter",
             "dependencies": [
               "catch.badge",
@@ -9502,7 +9523,7 @@
               "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
               "symbol": "HostTeamManagementSection"
             },
-            "currentOwner": "_HostClubProfileCard",
+            "currentOwner": "HostClubProfileCard",
             "targetOwner": "provider-free host team section plus HostTeamManagementController adapter",
             "dependencies": [
               "catch.badge",
@@ -9543,7 +9564,7 @@
               "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
               "symbol": "HostClubInsightsPane"
             },
-            "currentOwner": "_HostClubsScaffold",
+            "currentOwner": "HostClubsScaffold",
             "targetOwner": "provider-free analytics section plus HostAnalytics controller adapter",
             "dependencies": [
               "catch.badge",
@@ -9572,27 +9593,30 @@
           },
           {
             "id": "section.host.clubs_preview",
-            "name": "Host club preview pane",
+            "name": "Host club direct read-only preview",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostClubPreviewPane"
+              "ClubDetailReadOnlyPreviewSliver",
+              "ClubDetailSliverBody"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_club_preview.dart",
-              "symbol": "HostClubPreviewPane"
+              "file": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+              "symbol": "ClubDetailReadOnlyPreviewSliver"
             },
-            "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "provider-free host club preview section",
+            "currentOwner": "HostClubsScaffold",
+            "targetOwner": "canonical consumer Club Detail composition in embedded read-only mode",
             "dependencies": [
               "catch.surface"
             ],
             "states": [
-              "description",
-              "empty_description",
-              "open_public_preview"
+              "initial_club",
+              "live_content",
+              "embedded_hero",
+              "consumer_schedule_visuals",
+              "read_only"
             ],
-            "migration": "_HostClubsScaffold owns the public-preview route callback for this pane. Coordinate preview display data with screen.host.club.detail so this route composes the same public preview model.",
+            "migration": "Completed: Preview directly renders the canonical Club Detail view model and sliver body. Embedded mode removes route back/share chrome, suppresses membership and host-only visuals, and blocks interaction without introducing a second preview route.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -9609,7 +9633,7 @@
               "file": "lib/hosts/presentation/widgets/host_empty_action_card.dart",
               "symbol": "HostEmptyActionCard"
             },
-            "currentOwner": "_HostClubsScaffold + HostEmptyActionCard",
+            "currentOwner": "HostClubsScaffold + HostEmptyActionCard",
             "targetOwner": "shared host empty action card",
             "dependencies": [
               "catch.button",
@@ -9661,22 +9685,22 @@
         {
           "id": "DS-HOST-CLUBS-001",
           "status": "closed",
-          "nextAction": "Signed-out, default organizer overview, co-host, empty, loading, generic/offline load errors, analytics loading/error/offline/report, payout provider loading/ready/restricted/error/offline, inline editor pending/error/offline, payout action pending/error/offline, host-team mutation pending/error/offline, text-scale, reduced-motion, light/dark, insights report, and preview tab variants are captured. Additional pixel variants depend on future Claude exports because the local bundle exposes only the organizer baseline for this screen."
+          "nextAction": "Signed-out, consolidated Edit, co-host, empty, loading, generic/offline load errors, analytics loading/error/offline/report, payout provider loading/ready/restricted/error/offline, inline editor pending/error/offline, payout action pending/error/offline, host-team mutation pending/error/offline, text-scale, reduced-motion, light/dark, insights report, and preview tab variants are captured. A current canonical Host Clubs export is still required for renewed pixel comparison."
         },
         {
           "id": "DS-HOST-CLUBS-002",
           "status": "closed",
-          "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostClubsScreenState. _HostClubsScaffold defaults to the Organizer overview and routes its public preview, payout/edit, insights, settings, and club-switch actions through typed callbacks. Inline edit and payout actions now have controller mutations; Host Team sheet/dialog states are public; HostClubInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
+          "nextAction": "Selected club, selected tab, and owner/co-host capability live in HostClubsScreenState. HostClubsScaffold defaults to Edit, shares the canonical tabbed-screen shell with ProfileScreen, stacks the remaining organizer and profile/default-management sections in that page, switches its preview action directly to the embedded Preview page, and routes payout/edit, settings, and club switching through typed callbacks. Inline edit and payout actions have controller mutations; Host Team sheet/dialog states are public; HostClubInsightsState owns analytics query and retry identity. Broader provider-free section extraction remains part of GOAL-DS-002."
         },
         {
           "id": "DS-HOST-CLUBS-003",
           "status": "closed",
-          "nextAction": "Widgetbook now covers Host Clubs route states, organizer overview, tab rail, profile editor, inline editors, payout card, host team, analytics, preview, and access/loading/error sections. Continue adding reference-specific variants only when exported designs require them."
+          "nextAction": "Widgetbook now covers Host Clubs route states, the consolidated Edit workspace, tab rail, profile editor, inline editors, payout card, host team, analytics, preview, and access/loading/error sections. Continue adding reference-specific variants only when exported designs require them."
         },
         {
           "id": "DS-HOST-CLUBS-004",
-          "status": "closed",
-          "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
+          "status": "blocked",
+          "nextAction": "The old four-tab Host Organizer export is retained only as historical evidence and was retired from the active reference manifest after Organizer merged into Edit. Resume pixel comparison when a canonical consolidated Edit/Insights/Preview Host Clubs export exists."
         }
       ]
     },
@@ -9930,14 +9954,15 @@
           ]
         },
         {
-          "id": "host_schedule_hosted",
+          "id": "public_preview_schedule",
           "kind": "populated",
           "status": "captured",
-          "source": "ClubDetailBody passes isHost into ClubScheduleSection so host route events use HOSTED badge and host event tile status while empty schedules keep public profile copy.",
+          "source": "ClubDetailBodyState.publicPreview keeps isHost false, so host public-preview routes and the embedded Host Clubs Preview use consumer schedule visuals with no HOSTED badge or host event status.",
           "tests": [
-            "test/explore/explore_widgets_test.dart"
+            "test/clubs/clubs_controllers_test.dart",
+            "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Add additional schedule-row captures only if long titles, live/past states, or event tap routing become visually distinct.",
+          "nextAction": "Refresh host_club_detail_public after the consumer-display-policy correction; add more schedule captures only if long titles or live/past states diverge.",
           "previewIds": [
             "ClubDetailScreen/Public preview states"
           ],
@@ -9949,7 +9974,7 @@
           "id": "host_schedule_empty",
           "kind": "empty",
           "status": "captured",
-          "source": "ClubScheduleSection keeps public empty-schedule copy on the host public-profile route while host-owned rows still use hosted schedule treatment.",
+          "source": "ClubScheduleSection keeps consumer empty-schedule copy on host public-preview surfaces; operational Add event actions remain in Host Home and Host Clubs.",
           "nextAction": "Keep operational Add event actions in Host Home/Host Clubs unless the Host Club Detail design contract intentionally moves them here.",
           "previewIds": [
             "ClubDetailScreen/Public preview states"
@@ -10332,12 +10357,12 @@
               "catch.surface"
             ],
             "states": [
-              "hosted_rows",
-              "empty_host_schedule",
+              "public_preview_rows",
+              "empty_public_schedule",
               "long_title",
               "route_to_host_event_detail"
             ],
-            "migration": "Keep host/member mode explicit; HostClubDetailScreenState carries the public-preview branch and ClubDetailScreen now supplies the host/consumer schedule route callback.",
+            "migration": "HostClubDetailScreenState keeps public-preview display policy distinct from route ownership: rows use consumer visuals, while the full host route may still use its typed host-event navigation callback. Embedded Preview blocks interaction at its sliver boundary.",
             "previewIds": [
               "ClubDetailScreen/Public preview states"
             ]
@@ -11326,7 +11351,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostCreateEventRouteState resolves route club loading/error/not-found/ready branches before HostCreateEventRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key spec construction, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns step header/footer/mutation/success display state plus typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing draft dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule text, location restore state, policy restore state, and restored Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. CreateEventScreen keeps form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects inline.",
+        "currentLayout": "HostCreateEventRouteState resolves route club loading/error/not-found/ready branches before HostCreateEventRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key spec construction, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns step header/footer/mutation/success display state plus typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing draft dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule text, location restore state, policy restore state, and restored Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. CreateEventScreen keeps form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects inline. Every editable wizard step, the shared Event Success setup subtree, and draft recovery now compose through CatchField rows grouped by CatchSection, matching the Edit Profile field/section contract while retaining the existing Form validation bridges and domain callbacks.",
         "targetLayout": "Host Create Event should keep expanding route-level and wizard/controller state boundaries until validation, draft persistence, submit state, picker callbacks, Event Success defaults, and navigation intents are outside visual step sections.",
         "sections": [
           {
@@ -11435,9 +11460,8 @@
             "currentOwner": "CreateEventScreen",
             "targetOwner": "provider-free basics step plus form adapter",
             "dependencies": [
-              "catch.chip",
               "catch.field",
-              "catch.field"
+              "catch.section"
             ],
             "states": [
               "default_activity",
@@ -11448,7 +11472,7 @@
               "photos_many",
               "validation_error"
             ],
-            "migration": "CreateEventPhotoDraftState now owns picked event-photo id assignment, preview projection, picked-photo list, remaining slots, remove, and reorder state transitions without importing the image picker plugin. Continue by moving activity defaults, platform photo-pick side effect, pace selection, and validation display state into a step adapter.",
+            "migration": "CreateEventPhotoDraftState now owns picked event-photo id assignment, preview projection, picked-photo list, remaining slots, remove, and reorder state transitions without importing the image picker plugin. Event photos, activity, interaction model, pace, distance, and description now use canonical CatchSection and CatchField composition. Continue by moving activity defaults, platform photo-pick side effect, pace selection, and validation display state into a step adapter.",
             "previewIds": [
               "HostCreateEventRouteScreen/Route and wizard states"
             ]
@@ -11469,8 +11493,8 @@
             "currentOwner": "CreateEventScreen",
             "targetOwner": "provider-free location step plus picker adapter",
             "dependencies": [
-              "catch.button",
-              "catch.field"
+              "catch.field",
+              "catch.section"
             ],
             "states": [
               "blank",
@@ -11480,7 +11504,7 @@
               "validation_error",
               "map_picker"
             ],
-            "migration": "Move map picker side effect, selected coordinate/address/place id, and validation copy into an adapter; mask map tiles in captures.",
+            "migration": "The map handoff is a CatchField navigation row and meeting-point details are canonical inputs inside CatchSection field rows. Move the map picker side effect, selected coordinate/address/place id, and validation copy into an adapter; mask map tiles in captures.",
             "previewIds": [
               "HostCreateEventRouteScreen/Route and wizard states"
             ]
@@ -11501,8 +11525,8 @@
             "currentOwner": "CreateEventScreen",
             "targetOwner": "provider-free schedule step plus time adapter",
             "dependencies": [
-              "catch.button",
-              "catch.field"
+              "catch.field",
+              "catch.section"
             ],
             "states": [
               "blank",
@@ -11512,7 +11536,7 @@
               "duration_max",
               "future_time_error"
             ],
-            "migration": "CreateEventScheduleState now owns selected start datetime, initial picker time, future-start validation, and duration bounds/transitions. Continue by moving date/time picker callbacks into schedule adapter state.",
+            "migration": "CreateEventScheduleState now owns selected start datetime, initial picker time, future-start validation, and duration bounds/transitions. Date and time use CatchField navigation rows and duration uses the canonical stepper inside CatchSection field rows. Continue by moving date/time picker callbacks into schedule adapter state.",
             "previewIds": [
               "HostCreateEventRouteScreen/Route and wizard states"
             ]
@@ -11532,9 +11556,8 @@
             "currentOwner": "CreateEventScreen",
             "targetOwner": "provider-free policy step plus policy adapter",
             "dependencies": [
-              "catch.chip",
               "catch.field",
-              "catch.field"
+              "catch.section"
             ],
             "states": [
               "open_capacity",
@@ -11546,7 +11569,7 @@
               "age_validation",
               "price_validation"
             ],
-            "migration": "CreateEventPolicyState now owns admission preset copy, policy defaults, derived EventPolicyBundle, draft admission names, invite-code hints, policy currency parsing, and incompatible toggle resets. Continue by moving numeric validation display state and any policy picker/action callbacks into adapter state.",
+            "migration": "CreateEventPolicyState now owns admission preset copy, policy defaults, derived EventPolicyBundle, draft admission names, invite-code hints, policy currency parsing, and incompatible toggle resets. Capacity, price, admission, cancellation, eligibility, cohort caps, and dynamic pricing now use canonical CatchField rows with dependent controls grouped by CatchSection. Continue by moving numeric validation display state and any policy picker/action callbacks into adapter state.",
             "previewIds": [
               "HostCreateEventRouteScreen/Route and wizard states"
             ]
@@ -11566,7 +11589,8 @@
             "currentOwner": "CreateEventScreen",
             "targetOwner": "provider-free Event Success guide step",
             "dependencies": [
-              "catch.chip",
+              "catch.field",
+              "catch.section",
               "catch.surface"
             ],
             "states": [
@@ -11576,7 +11600,7 @@
               "capacity_aware",
               "activity_variants"
             ],
-            "migration": "Keep Event Success defaults typed and move derived target attendee count/recommendations into the wizard adapter.",
+            "migration": "Event Success enablement, guide stages, structure, questionnaire, recommendations, rotation, reveal, and match-clue controls now delegate to CatchField and CatchSection; CatchSurface remains only for the domain-specific preset review summary. Keep Event Success defaults typed and move derived target attendee count/recommendations into the wizard adapter.",
             "previewIds": [
               "HostCreateEventRouteScreen/Route and wizard states"
             ]
@@ -11598,7 +11622,8 @@
             "targetOwner": "CreateEventDraftController plus provider-free draft picker section",
             "dependencies": [
               "catch.button",
-              "catch.surface"
+              "catch.field",
+              "catch.section"
             ],
             "states": [
               "no_drafts",
@@ -11610,7 +11635,7 @@
               "delete_error",
               "unsaved_changes"
             ],
-            "migration": "CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule/date/time text, location restore state, policy restore state, and Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. Save/update success feedback uses the shared Catch snackbar primitive; actual persistence remains in CreateEventDraftController.",
+            "migration": "CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule/date/time text, location restore state, policy restore state, and Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. Draft recovery rows now use CatchField navigation controls inside a contained CatchSection while preserving stable delete actions and keys. Save/update success feedback uses the shared Catch snackbar primitive; actual persistence remains in CreateEventDraftController.",
             "evidence": "Draft serialization, dirty/save policy, restore mapping, and load/delete intent policy are all provider-free and covered by host_create_event_state_test.dart. CreateEventScreen only executes the controller/Navigator side effects.",
             "previewIds": [
               "HostCreateEventRouteScreen/Route and wizard states"
@@ -16317,7 +16342,7 @@
           "id": "gender_interest_step",
           "kind": "populated",
           "status": "captured",
-          "source": "GenderInterestPage owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks.",
+          "source": "GenderInterestPage owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own canonical choice-field display, validation copy, save pending/error display, typed submit intent, and typed selection callbacks.",
           "captureIds": [
             "onboarding_gender_interest",
             "onboarding_gender_interest_validation_error",
@@ -16326,7 +16351,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Provider-free step adapter coverage validates selected-chip display, required-selection validation, save error display, save pending flag, typed chip callbacks, and submit intent. Deterministic route captures cover default, required-selection validation, and reduced-motion samples; the main Claude gender/interest reference is exported and masked. Add validation, long-option, and accessibility references only if strict comparison needs them."
+          "nextAction": "Provider-free step adapter coverage validates canonical choice-field display, required-selection validation, save error display, save pending flag, typed selection callbacks, and submit intent. Deterministic route captures cover default, required-selection validation, and reduced-motion samples; the main Claude gender/interest reference is exported and masked. Add validation, long-option, and accessibility references only if strict comparison needs them."
         },
         {
           "id": "instagram_step",
@@ -16374,7 +16399,7 @@
           "id": "running_prefs_step",
           "kind": "populated",
           "status": "captured",
-          "source": "RunningPrefsPage owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
+          "source": "RunningPrefsPage owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, canonical run-preference choice fields, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
           "captureIds": [
             "onboarding_running_prefs"
           ],
@@ -16558,9 +16583,8 @@
             "currentOwner": "NameDobPage adapter over OnboardingNameDobState + OnboardingNameDobStep; GenderInterestPage adapter over OnboardingGenderInterestState + OnboardingGenderInterestStep; InstagramPage adapter over OnboardingInstagramState + OnboardingInstagramStep",
             "targetOwner": "provider-free identity step sections",
             "dependencies": [
+              "catch.section",
               "catch.field",
-              "catch.field",
-              "catch.chip",
               "catch.button"
             ],
             "states": [
@@ -16570,7 +16594,7 @@
               "required_field_errors",
               "save_profile_mutation"
             ],
-            "migration": "Identity-step field display data, date policy, selected-chip display, validation, optional-handle normalization, save display state, and typed continue/skip/submit callbacks now live in provider-free adapter state."
+            "migration": "Identity steps now compose CatchSection.fieldRows with canonical input and initially expanded choice fields while preserving date, verified-phone, validation, optional-handle, save-state, and typed callback ownership in the provider-free adapters."
           },
           {
             "id": "section.onboarding.photos_step",
@@ -16587,15 +16611,15 @@
             "currentOwner": "PhotosPage adapter over OnboardingPhotosState + OnboardingPhotosStep",
             "targetOwner": "provider-free photos step section plus upload controller seam",
             "dependencies": [
-              "catch.button",
-              "catch.surface"
+              "catch.section",
+              "catch.button"
             ],
             "states": [
               "photos_photo_gate",
               "save_profile_mutation",
               "text_scale_2"
             ],
-            "migration": "OnboardingPhotosState owns uploaded photo count, upload pending/error display state, continue availability/hints, supporting copy, and typed slot intents. OnboardingPhotosStep is provider-free and receives typed callbacks while PhotosPage retains provider watches, upload/editor side effects, and controller navigation."
+            "migration": "OnboardingPhotosStep keeps the shared PhotoGrid specialized but section-owned through CatchSection.plain. OnboardingPhotosState owns uploaded photo count, upload pending/error display state, continue availability/hints, supporting copy, and typed slot intents while PhotosPage retains provider watches, upload/editor side effects, and controller navigation."
           },
           {
             "id": "section.onboarding.prompts_step",
@@ -16612,6 +16636,7 @@
             "currentOwner": "ProfilePromptsPage adapter over OnboardingProfilePromptsState + OnboardingProfilePromptsStep",
             "targetOwner": "provider-free prompts step section",
             "dependencies": [
+              "catch.section",
               "catch.field",
               "catch.button"
             ],
@@ -16620,7 +16645,7 @@
               "required_field_errors",
               "save_profile_mutation"
             ],
-            "migration": "OnboardingProfilePromptsState owns prompt selection normalization, available prompt filtering, answer projection, footer progress, completion gating, pending/error display, and typed submit intent while ProfilePromptsPage retains provider reads, controller listeners, and completion mutation execution."
+            "migration": "Each prompt now mirrors Edit Profile through CatchSection.containedFieldRows with CatchField.choices plus CatchField.input. OnboardingProfilePromptsState retains selection normalization, available-prompt filtering, answer projection, footer progress, completion gating, pending/error display, and typed submit intent."
           },
           {
             "id": "section.onboarding.running_prefs_step",
@@ -16637,8 +16662,9 @@
             "currentOwner": "RunningPrefsPage adapter over OnboardingRunningPrefsState + OnboardingRunningPrefsStep",
             "targetOwner": "provider-free running preferences step section",
             "dependencies": [
-              "catch.chip",
+              "catch.section",
               "catch.field",
+              "catch.range_slider",
               "catch.button"
             ],
             "states": [
@@ -16646,7 +16672,7 @@
               "complete_mutation",
               "text_scale_2"
             ],
-            "migration": "OnboardingRunningPrefsState owns pace label display, selected run-preference chips, run-preferences-only copy variants, completion pending/error display, and typed complete-run-preferences submit intent while RunningPrefsPage retains profile seeding, provider watches, controller mutation execution, and route side effects."
+            "migration": "Running preferences now use CatchSection.fieldRows, an initially expanded CatchField.control around the specialized CatchRangeSlider, and initially expanded multi-choice fields with functional local disclosure. OnboardingRunningPrefsState retains selected values, mode-specific copy, completion state, and typed submit intent."
           }
         ]
       },
@@ -16832,7 +16858,7 @@
           "id": "planned_events",
           "kind": "populated",
           "status": "captured",
-          "source": "calendar_planned_events renders booked and saved event rows with JOINED/SAVED treatment and stats.",
+          "source": "calendar_planned_events renders booked and saved event rows with JOINED/SAVED treatment and stats; events on the same day form one connected ticket strip.",
           "captureIds": [
             "calendar_planned_events",
             "calendar_light_dark"
@@ -16912,7 +16938,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "CalendarScreen owns provider orchestration, route Scaffold, selected date/header input state, club-name lookup, retry invalidation, scroll behavior, and navigation callbacks, then resolves CalendarHomeState and CalendarAgendaSectionState for event summary, selected date, header mode, club-id lookup input, agenda row display, and empty/loading/error section state.",
+        "currentLayout": "CalendarScreen owns provider orchestration, route Scaffold, selected date/header input state, club-name lookup, retry invalidation, scroll behavior, and navigation callbacks. The selected month and Today action render through CatchScreenTopBar, the pinned CalendarDateHeader owns only week/month date selection, and CalendarHomeState plus CalendarAgendaSectionState provide event summary, header mode, club-id lookup input, connected same-day agenda rows, and empty/loading/error section state.",
         "targetLayout": "Calendar Home should keep CalendarHomeState and CalendarAgendaSectionState as the provider-free adapters for event summary, selected date, header mode, club-id lookup input, agenda rows, empty/loading/error section state, and deterministic captures.",
         "sections": [
           {
@@ -16942,7 +16968,7 @@
           },
           {
             "id": "section.calendar.date_header",
-            "name": "Calendar date header",
+            "name": "Calendar screen chrome and date header",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
@@ -16952,9 +16978,10 @@
               "file": "lib/events/presentation/calendar/calendar_screen.dart",
               "symbol": "CalendarDateHeader"
             },
-            "currentOwner": "CalendarScreen private header state",
-            "targetOwner": "provider-free calendar date header section",
+            "currentOwner": "CalendarScreen + CatchScreenTopBar + CalendarDateHeader",
+            "targetOwner": "CatchScreenTopBar + provider-free calendar date header section",
             "dependencies": [
+              "catch.top_bar",
               "catch.button"
             ],
             "states": [
@@ -16962,7 +16989,7 @@
               "planned_events",
               "text_scale_2"
             ],
-            "migration": "Keep week/month visual header local until Calendar/other date surfaces prove reusable date picker semantics."
+            "migration": "Month title and Today action are canonical screen chrome through CatchScreenTopBar; keep only the draggable week/month picker local until Calendar/other date surfaces prove reusable date-picker semantics."
           },
           {
             "id": "section.calendar.stats_header",
@@ -17010,7 +17037,7 @@
               "club_names_loading_error",
               "event_detail_navigation"
             ],
-            "migration": "CalendarAgendaSectionState supplies agenda rows, badge labels, tile statuses, club labels, today, and lookup phases while CalendarScreen supplies route callbacks."
+            "migration": "CalendarAgendaSectionState supplies agenda rows, badge labels, tile statuses, club labels, today, and lookup phases while CalendarScreen supplies route callbacks. EventAgendaSliverList automatically assigns first/middle/last ticket positions within every date group so Calendar and Saved Events cannot drift from Explore's connected same-day treatment."
           },
           {
             "id": "section.calendar.empty_error",
@@ -18718,7 +18745,7 @@
             "currentOwner": "CreateClubScreen",
             "targetOwner": "provider-free club basics section",
             "dependencies": [
-              "catch.field",
+              "catch.section",
               "catch.field",
               "catch.button"
             ],
@@ -18727,7 +18754,7 @@
               "basics_validation",
               "club_photos"
             ],
-            "migration": "Media callback availability, selected media display values, selected-city display, currency display, details-enabled state, and edit validation display now come from HostClubCreateState."
+            "migration": "Media remains specialized inside CatchSection.plain while club identity uses CatchSection.fieldRows, canonical inputs, and a validation-bridged CatchField.choices city field. Display and enabled state continue to come from HostClubCreateState."
           },
           {
             "id": "section.host.club_create.details_step",
@@ -18744,13 +18771,14 @@
             "currentOwner": "CreateClubScreen",
             "targetOwner": "provider-free club details section",
             "dependencies": [
+              "catch.section",
               "catch.field"
             ],
             "states": [
               "details_step",
               "text_scale_2"
             ],
-            "migration": "Keep optional contact fields in shared CreateClubContactFields and add filled/empty previews."
+            "migration": "Description and shared optional contact inputs now compose through CatchSectionList plus CatchSection.fieldRows. Keep filled/empty contact previews current."
           },
           {
             "id": "section.host.club_create.defaults_steps",
@@ -18768,14 +18796,14 @@
             "currentOwner": "CreateClubScreen",
             "targetOwner": "provider-free host defaults sections",
             "dependencies": [
-              "catch.chip",
+              "catch.section",
               "catch.field"
             ],
             "states": [
               "host_defaults_step",
               "event_success_defaults_step"
             ],
-            "migration": "Share defaults display data with create/edit event policy surfaces before consolidating controls."
+            "migration": "Host policy and default activity now mirror the canonical event-policy composition with CatchField.choices, toggles, sequential numeric inputs, and conditional CatchSection.containedFieldRows. Event Success defaults remain on their existing canonical panel."
           },
           {
             "id": "section.host.club_create.footer",
@@ -18894,7 +18922,7 @@
             "symbol": "ImageUploadRepository"
           }
         ],
-        "notes": "HostEditClubRouteScreen resolves the club by route id unless an initial Club extra is supplied and handles loading/error/not-found states. HostClubEditorStateView renders loaded club branches by resolving uid/access mode through HostClubEditState, then composes CreateClubScreen(initialClub) for owner full edit or co-host media-only editing. CreateClubScreen delegates owner long-form edit composition to HostClubEditScaffold, HostClubEditSection, HostClubEditCityField, and HostClubEditFooter using compact logo/photo-strip media variants and grouped CatchField identity/contact rows. CreateClubController enforces owner-only full edits and allows non-owner hosts to update media only. HostClubSubmitOutcomeState owns submit-success close-route policy shared with create; remaining work is field/media display data, validation, mutation request data, and typed callbacks."
+        "notes": "HostEditClubRouteScreen resolves the club by route id unless an initial Club extra is supplied and handles loading/error/not-found states. HostClubEditorStateView renders loaded club branches by resolving uid/access mode through HostClubEditState, then composes CreateClubScreen(initialClub) for owner full edit or co-host media-only editing. CreateClubScreen delegates owner long-form edit composition to HostClubEditScaffold and HostClubEditCityField; the scaffold uses CatchSectionList, CatchSection.plain, and CatchSection.containedFieldRows around compact logo/photo-strip media variants and grouped CatchField identity/contact rows. CreateClubController enforces owner-only full edits and allows non-owner hosts to update media only. HostClubSubmitOutcomeState owns submit-success close-route policy shared with create; remaining work is field/media display data, validation, mutation request data, and typed callbacks."
       },
       "designRefs": [
         {
@@ -19279,11 +19307,12 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-              "symbol": "HostClubEditSection"
+              "symbol": "HostClubEditScaffold"
             },
-            "currentOwner": "HostClubEditScaffold + HostClubEditSection + HostClubEditCityField",
+            "currentOwner": "HostClubEditScaffold + HostClubEditCityField",
             "targetOwner": "provider-free identity/contact sections",
             "dependencies": [
+              "catch.section",
               "catch.field"
             ],
             "states": [
@@ -19291,7 +19320,7 @@
               "optional_contact_clearing",
               "validation_error"
             ],
-            "migration": "Owner edit uses named grouped CatchField identity/contact sections with deterministic reference fixture coverage. Keep moving field display data, validation flags, and callbacks into adapter-owned inputs."
+            "migration": "Owner edit now uses CatchSectionList plus canonical contained field-row sections directly; the obsolete HostClubEditSection wrapper was removed. Keep moving field display data, validation flags, and callbacks into adapter-owned inputs."
           },
           {
             "id": "section.host.club_edit.defaults",
@@ -19433,7 +19462,7 @@
             "symbol": "EventRepository"
           }
         ],
-        "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. HostEventEditScreenState now owns loaded editability, schedule/policy lock derivation, field display state, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction. HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values. EditHostedEventScreen still owns local form controllers, location picker navigation, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
+        "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. HostEventEditScreenState owns loaded editability, schedule/policy lock derivation, field display state, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction. HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values. EditHostedEventScreen composes all editable and locked values through CatchSection and CatchField while retaining local form controllers, location picker navigation, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
       },
       "designRefs": [
         {
@@ -19447,7 +19476,7 @@
           "id": "claude.host-event-edit",
           "kind": "claude",
           "status": "available",
-          "notes": "Canonical Host Edit Event prefilled reference exported, masked, manifest-registered, and wired to the edit_hosted_event capture for advisory comparison. The 2026-06-25 refresh compares within threshold at 9.25% mismatch / 10.93 meanDelta. Accessibility and state-specific references still need exports.",
+          "notes": "Canonical Host Edit Event prefilled reference exported, masked, manifest-registered, and wired to edit_hosted_event for advisory comparison. A fresh 2026-07-16 design-phone capture after the CatchField/CatchSection migration computes 8.84% mismatch / 11.09 meanDelta with the registered masks, but the canonical validator is blocked before comparison by unrelated host-v2 source-pack hash drift.",
           "path": "design/source_packs/host-v2/templates/hosts-edit-event/HostEditEvent.dc.html"
         },
         {
@@ -19462,14 +19491,14 @@
           "kind": "generated",
           "status": "available",
           "path": "design/reference_screens/manifest.json",
-          "notes": "Reference-screen manifest wiring Host Edit Event prefilled_event to edit_hosted_event for advisory pixel comparison; 2026-06-25 refresh compares within threshold at 9.25% mismatch / 10.93 meanDelta."
+          "notes": "Reference-screen manifest wiring Host Edit Event prefilled_event to edit_hosted_event for advisory pixel comparison. The refreshed 2026-07-16 capture is within the registered pixel thresholds by the comparator algorithm, while the canonical command remains blocked on unrelated host-v2 source-pack hash integrity."
         }
       ],
       "captures": [
         {
           "id": "edit_hosted_event",
           "status": "captured",
-          "notes": "Deterministic capture renders the prefilled hosted-event edit form and now compares within threshold against the registered Claude reference at 9.25% mismatch / 10.93 meanDelta."
+          "notes": "Deterministic prefilled hosted-event edit capture refreshed on 2026-07-16 after the field/section rewrite; the design-phone light image computes 8.84% masked mismatch / 11.09 meanDelta against the registered reference."
         },
         {
           "id": "edit_hosted_event_route_loading",
@@ -19544,7 +19573,7 @@
         {
           "id": "edit_hosted_event_location_selected",
           "status": "captured",
-          "notes": "Deterministic capture renders a normalized selected meeting location in the edit form and MapPinTile."
+          "notes": "Deterministic capture renders a normalized selected meeting location in the edit form and its CatchField.nav map handoff."
         }
       ],
       "states": [
@@ -19553,7 +19582,7 @@
           "kind": "loading",
           "status": "captured",
           "source": "Route loading is true while uidProvider is loading.",
-          "nextAction": "Add route capture for uid loading and signed-out host-shell behavior.",
+          "nextAction": "The route-loading capture is registered; add signed-out host-shell behavior only if it diverges from the shared host route contract.",
           "captureIds": [
             "edit_hosted_event_route_loading"
           ]
@@ -19563,7 +19592,7 @@
           "kind": "loading",
           "status": "captured",
           "source": "Club/event provider loading renders a tokenized Scaffold with HostRouteLoadingBody(showTabRail: true).",
-          "nextAction": "Add deterministic route loading capture.",
+          "nextAction": "Deterministic route loading is covered by edit_hosted_event_route_loading.",
           "captureIds": [
             "edit_hosted_event_route_loading"
           ]
@@ -19573,7 +19602,7 @@
           "kind": "error",
           "status": "captured",
           "source": "uid, club, or event provider errors render CatchErrorScaffold.fromError with event context and retry invalidation.",
-          "nextAction": "Add error/offline capture for failed club/event provider waves.",
+          "nextAction": "Route error and offline provider waves are covered by deterministic captures; add reference variants only if their shared error treatment changes.",
           "captureIds": [
             "edit_hosted_event_route_error"
           ]
@@ -19583,7 +19612,7 @@
           "kind": "empty",
           "status": "captured",
           "source": "Missing club or event renders Event not found copy.",
-          "nextAction": "Add missing/deleted event capture and recovery decision.",
+          "nextAction": "Missing/deleted event rendering is captured; keep its recovery behavior aligned with the shared Host route contract.",
           "captureIds": [
             "edit_hosted_event_not_found"
           ]
@@ -19593,7 +19622,7 @@
           "kind": "permission",
           "status": "captured",
           "source": "A uid that is not hosted by the club receives Action unavailable copy.",
-          "nextAction": "Add unauthorized route capture and test for non-host viewer.",
+          "nextAction": "Unauthorized host access is captured and route-state mapping is covered; add a full route widget test only if authorization rendering becomes a regression area.",
           "captureIds": [
             "edit_hosted_event_unauthorized"
           ]
@@ -19609,14 +19638,14 @@
           "tests": [
             "test/hosts/edit_hosted_event_screen_test.dart"
           ],
-          "nextAction": "Host Edit Event prefilled state now has a manifest-registered design reference and deterministic capture that compares within threshold at 9.25% mismatch / 10.93 meanDelta. Private access, submit mutation, validation, selected-location, and offline states are captured; add state-specific pixel-reference variants before promoting beyond captured."
+          "nextAction": "The 2026-07-16 field/section capture is within the registered advisory thresholds by direct execution of the repository comparator algorithm. Repair the unrelated host-v2 source-pack hash drift so the canonical comparison command can record the same result."
         },
         {
           "id": "schedule_editable",
           "kind": "populated",
           "status": "captured",
           "source": "Future events without booking/waitlist/attendance activity expose date, time, and duration controls.",
-          "nextAction": "Add Widgetbook state for editable schedule controls.",
+          "nextAction": "The editable form Widgetbook state and 2026-07-16 deterministic capture cover the canonical date, time, and duration fields.",
           "captureIds": [
             "edit_hosted_event"
           ]
@@ -19629,7 +19658,7 @@
           "tests": [
             "test/hosts/edit_hosted_event_screen_test.dart"
           ],
-          "nextAction": "Add locked schedule capture and compare copy against design.",
+          "nextAction": "The locked schedule/policy capture was refreshed on 2026-07-16 and the read-only CatchField rows were reviewed.",
           "captureIds": [
             "edit_hosted_event_schedule_locked"
           ]
@@ -19639,7 +19668,7 @@
           "kind": "populated",
           "status": "captured",
           "source": "Unlocked events expose capacity, price, admission format, cohort caps, demand pricing, age, invite, and cancellation policy controls.",
-          "nextAction": "Add previews for each admission preset and dynamic pricing/cohort toggle branch.",
+          "nextAction": "Widgetbook covers open capacity, cohort caps, invite only, request to join, and balanced singles with demand pricing; add only genuinely distinct policy combinations discovered later.",
           "captureIds": [
             "edit_hosted_event"
           ]
@@ -19649,7 +19678,7 @@
           "kind": "permission",
           "status": "captured",
           "source": "Started or active events render a read-only policy summary instead of editable policy controls.",
-          "nextAction": "Add policy-locked capture.",
+          "nextAction": "Policy-locked rendering is covered by the refreshed schedule-locked capture and focused widget test.",
           "captureIds": [
             "edit_hosted_event_schedule_locked"
           ]
@@ -19658,7 +19687,7 @@
           "id": "location_picker",
           "kind": "populated",
           "status": "captured",
-          "source": "MapPinTile opens LocationPickerScreen with map tiles optionally disabled for deterministic captures.",
+          "source": "CatchField.nav opens LocationPickerScreen with map tiles optionally disabled for deterministic captures.",
           "nextAction": "Selected-location capture is covered; add route callback proof for opening LocationPickerScreen if picker navigation becomes a product-risk area.",
           "captureIds": [
             "edit_hosted_event_location_selected"
@@ -19669,7 +19698,7 @@
           "kind": "error",
           "status": "captured",
           "source": "Required meeting point, distance, capacity, price, age, invite code, and pinned starting point requirements validate before save; missing pinned-location feedback uses the shared Catch snackbar helper.",
-          "nextAction": "Validation capture and save-blocking test are covered; keep moving validation state into a future HostEventEditScreenState adapter.",
+          "nextAction": "Validation capture and save-blocking tests are covered; keep field-owned errors aligned with HostEventEditScheduleValidationState and HostEventEditSaveRequest validation order.",
           "captureIds": [
             "edit_hosted_event_validation_error"
           ],
@@ -19722,7 +19751,7 @@
           "kind": "permission",
           "status": "captured",
           "source": "Cancelled events show Cancelled event scope notice and disable save/edit controls.",
-          "nextAction": "Add cancelled event capture.",
+          "nextAction": "Cancelled-event disabled rendering is registered and focused tests prove the canonical fields, map handoff, and save action stay disabled.",
           "captureIds": [
             "edit_hosted_event_cancelled"
           ]
@@ -19742,7 +19771,7 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "The dense long form needs text-scale coverage for scope notice, fields, policy cards, and footer.",
-          "nextAction": "Add text-scale capture and Widgetbook section states.",
+          "nextAction": "The text-scale 2.0 capture was refreshed on 2026-07-16; keep future field additions inside the same scrolling Form and fixed footer contract.",
           "captureIds": [
             "edit_hosted_event_text_scale_2"
           ]
@@ -19752,7 +19781,7 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Date/time picker, location picker, and route transition need reduced-motion review.",
-          "nextAction": "Add reduced-motion review after fixtures are stable.",
+          "nextAction": "Reduced-motion capture is registered; rerun it when CatchField reveal motion changes.",
           "captureIds": [
             "edit_hosted_event_reduced_motion"
           ]
@@ -19762,15 +19791,15 @@
           "kind": "theme",
           "status": "captured",
           "source": "Edit event uses tokenized surfaces and controls.",
-          "nextAction": "Add light/dark capture pair before pixel diff enforcement.",
+          "nextAction": "The light/dark pair was refreshed on 2026-07-16; keep both themes in the deterministic capture set.",
           "captureIds": [
             "edit_hosted_event_light_dark"
           ]
         }
       ],
       "composition": {
-        "currentLayout": "EditHostedEventRouteScreen owns provider loading/access through HostEventEditState. EditHostedEventScreen owns form controllers, validation, location picker navigation, mutation execution, snackbar, and Navigator side effects while HostEventEditScreenState owns loaded editability, schedule/policy locks, field display state, save footer state, save error display input, feedback copy, and pop-on-success policy; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditFieldDisplayState owns schedule, location/details, and policy display values.",
-        "targetLayout": "Host Edit Event should keep route access in HostEventEditState and compose provider-free form sections from the existing field display adapters.",
+        "currentLayout": "EditHostedEventRouteScreen owns provider loading/access through HostEventEditState. EditHostedEventScreen retains the single Form, controller state, validation order, location picker navigation, mutation execution, snackbar, and Navigator side effects while CatchSectionList and CatchSection field rows own form rhythm. CatchField.nav owns date/time/location handoffs; CatchField.input owns text and numeric entry; CatchField.choices owns pace/admission/cancellation; CatchField.stepper owns duration; CatchField.toggle owns dependent policy switches; and CatchField.read owns locked summaries. HostEventEditScreenState owns loaded editability, schedule/policy locks, field display state, save footer state, save error display input, feedback copy, and pop-on-success policy; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditFieldDisplayState owns schedule, location/details, and policy display values.",
+        "targetLayout": "Keep route access in HostEventEditState, provider-free display and validation policy in the Host Event Edit adapter family, all form rhythm in CatchSection, and all semantic field interactions in CatchField.",
         "sections": [
           {
             "id": "section.host.event_edit.route_adapter",
@@ -19839,6 +19868,7 @@
             "currentOwner": "EditHostedEventScreen",
             "targetOwner": "provider-free schedule section",
             "dependencies": [
+              "catch.section",
               "catch.field",
               "catch.button",
               "catch.surface"
@@ -19848,7 +19878,7 @@
               "schedule_locked",
               "validation_error"
             ],
-            "migration": "HostEventEditScheduleFieldState owns date/time/duration display and validation copy; HostEventEditScreenState owns schedule lock state."
+            "migration": "Completed field adoption: editable date/time use CatchField.nav, duration uses CatchField.stepper, and locked schedule values use CatchField.read inside one CatchSection.fieldRows. HostEventEditScheduleFieldState still owns display/validation copy and HostEventEditScreenState still owns the lock."
           },
           {
             "id": "section.host.event_edit.location_details",
@@ -19865,6 +19895,7 @@
             "currentOwner": "EditHostedEventScreen",
             "targetOwner": "provider-free location/details section",
             "dependencies": [
+              "catch.section",
               "catch.field",
               "catch.surface"
             ],
@@ -19873,7 +19904,7 @@
               "location_picker",
               "validation_error"
             ],
-            "migration": "HostEventEditLocationDetailsFieldState owns map pin, distance, pace, description, and picker display state."
+            "migration": "Completed field adoption: location text uses CatchField.input, the map handoff uses CatchField.nav, pace uses CatchField.choices, and distance/description remain canonical inputs grouped by CatchSection.fieldRows. HostEventEditLocationDetailsFieldState and the existing picker side effects remain unchanged."
           },
           {
             "id": "section.host.event_edit.policy",
@@ -19890,7 +19921,7 @@
             "currentOwner": "EditHostedEventScreen private policy widgets",
             "targetOwner": "provider-free policy editor section",
             "dependencies": [
-              "catch.chip",
+              "catch.section",
               "catch.field",
               "catch.surface"
             ],
@@ -19899,7 +19930,7 @@
               "policy_locked",
               "private_access_loading"
             ],
-            "migration": "HostEventEditPolicyFieldState owns policy editor display switches, admission/cancellation copy, currency labels, and selected policy state; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy."
+            "migration": "Completed field adoption: capacity, price, invite, cohort, demand-pricing, and age values use CatchField input/toggle rows; admission and cancellation use CatchField.choices; dependent numeric groups use CatchSection.containedFieldRows; and locked summaries use CatchField.read. HostEventEditPolicyFieldState and HostEventEditPrivateAccessState retain all conditional and async ownership."
           },
           {
             "id": "section.host.event_edit.footer",
@@ -19936,7 +19967,7 @@
         {
           "id": "DS-HOST-EVENT-EDIT-002",
           "status": "closed",
-          "nextAction": "Closed: deterministic captures cover route loading/error/offline/not-found/unauthorized, prefilled event, schedule/policy locked, selected location, validation, private-access loading, submit pending/error, cancelled disabled, text scale, reduced motion, and light/dark. Prefilled-event pixel comparison is already within threshold."
+          "nextAction": "Closed: the 2026-07-16 deterministic run refreshed prefilled, locked, selected-location, validation, text-scale, and light/dark output after the CatchField/CatchSection migration; all six capture tests passed and the rendered field/section composition was reviewed."
         },
         {
           "id": "DS-HOST-EVENT-EDIT-003",
@@ -19945,8 +19976,8 @@
         },
         {
           "id": "DS-HOST-EVENT-EDIT-004",
-          "status": "closed",
-          "nextAction": "Closed for the owner-edit reference: edit_hosted_event compares within threshold against the registered Claude reference at 9.25% mismatch / 10.93 meanDelta. Reopen only if design adds new canonical Host Edit Event references."
+          "status": "blocked",
+          "nextAction": "The fresh 2026-07-16 design-phone capture computes within the registered thresholds at 8.84% mismatch / 11.09 meanDelta using the repository's masked comparator algorithm. The canonical check stops first on unrelated design/source_packs/host-v2/source-pack.json hash drift for host-coverage-manifest.json; repair that source-pack integrity blocker before closing this gap."
         }
       ]
     },
@@ -21115,7 +21146,7 @@
             "symbol": "ExternalLinkController"
           }
         ],
-        "notes": "EventLocationMapRouteScreen resolves the event by id through the Event Detail view-model seam, renders chromeless loading/error/not-found states, rejects events without exact starting coordinates, resolves EventLocationMapState, owns the external directions side effect, and delegates provider-free pinned map rendering to EventLocationMapScreen."
+        "notes": "EventLocationMapRouteScreen resolves the event by id through the Event Detail view-model seam, renders chromeless loading/error/not-found states, resolves the required exact location through EventLocationMapState, owns the external directions side effect, and delegates provider-free pinned map rendering to EventLocationMapScreen."
       },
       "designRefs": [
         {
@@ -21123,7 +21154,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/events/events_widgets_test.dart",
-          "notes": "Event widget tests cover the pinned map body, exact-location label, floating back control, route-owned unavailable-coordinate branch, provider-free state adapter, and directions launch action."
+          "notes": "Event widget tests cover the pinned map body, required exact-location label, floating back control, provider-free state adapter, and directions launch action."
         },
         {
           "id": "claude.event-location-map",
@@ -21152,11 +21183,6 @@
           "id": "event_location_map_not_found",
           "status": "captured",
           "notes": "Route-wrapper missing/deleted event state."
-        },
-        {
-          "id": "event_location_map_no_coordinate",
-          "status": "captured",
-          "notes": "No exact coordinate state with branded Location unavailable copy."
         },
         {
           "id": "event_location_map_text_scale_2",
@@ -21210,22 +21236,6 @@
           ],
           "captureIds": [
             "event_location_map_not_found"
-          ]
-        },
-        {
-          "id": "no_exact_coordinate",
-          "kind": "empty",
-          "status": "captured",
-          "source": "EventLocationMapRouteScreen gates unavailable coordinates from EventLocationMapState; direct EventLocationMapScreen fixture mode renders the same Location unavailable copy.",
-          "nextAction": "Keep no-coordinate copy aligned with future map reference masks.",
-          "previewIds": [
-            "EventLocationMapScreen/Map states"
-          ],
-          "captureIds": [
-            "event_location_map_no_coordinate"
-          ],
-          "tests": [
-            "test/events/events_widgets_test.dart"
           ]
         },
         {
@@ -21325,8 +21335,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "EventLocationMapRouteScreen owns route event loading, error handling, coordinate gate, chromeless scaffold/floating controls, EventLocationMapState creation, and external directions intent before composing provider-free map chrome and bottom summary content.",
-        "targetLayout": "Event Location Map should keep EventLocationMapState as the provider-free adapter for coordinate availability, map fixture mode, summary rows, and directions intent while future visual parity work adds exported map masks and reference comparisons.",
+        "currentLayout": "EventLocationMapRouteScreen owns route event loading, error handling, chromeless scaffold/floating controls, EventLocationMapState creation from the event's required exact location, and external directions intent before composing provider-free map chrome and bottom summary content.",
+        "targetLayout": "Event Location Map should keep EventLocationMapState as the provider-free adapter for required exact location, map fixture mode, summary rows, and directions intent while future visual parity work adds exported map masks and reference comparisons.",
         "sections": [
           {
             "id": "section.event_location_map.adapter",
@@ -21351,7 +21361,7 @@
               "event_not_found",
               "pinned_location"
             ],
-            "migration": "Route event lookup, coordinate availability, fixture mode, and directions callback are now behind the route/state boundary; keep future visual work provider-free.",
+            "migration": "Route event lookup, required exact location, fixture mode, and directions callback are now behind the route/state boundary; keep future visual work provider-free.",
             "previewIds": [
               "EventLocationMapRouteScreen/Route states"
             ]
@@ -21406,7 +21416,7 @@
               "directions_action",
               "text_scale_2"
             ],
-            "migration": "Location name, notes, coordinate availability, and directions URI now come from EventLocationMapState; visual edits should keep summary rendering provider-free.",
+            "migration": "Location name, notes, required coordinate, and directions URI now come from EventLocationMapState; visual edits should keep summary rendering provider-free.",
             "previewIds": [
               "EventLocationMapScreen/Map states"
             ]
@@ -21446,12 +21456,12 @@
         {
           "id": "DP-EVENT-MAP-001",
           "status": "closed",
-          "nextAction": "Widgetbook now covers route loading/error/not-found, no coordinate, pinned map, summary card, disabled network tiles, and addon-driven text scale, reduced motion, and light/dark review states."
+          "nextAction": "Widgetbook now covers route loading/error/not-found, the required pinned map, summary card, disabled network tiles, and addon-driven text scale, reduced motion, and light/dark review states."
         },
         {
           "id": "DP-EVENT-MAP-002",
           "status": "closed",
-          "nextAction": "Closed by deterministic captures for route loading, route error, event not found, no coordinate, text scale, reduced motion, and paired light/dark output."
+          "nextAction": "Closed by deterministic captures for route loading, route error, event not found, required pinned location, text scale, reduced motion, and paired light/dark output."
         },
         {
           "id": "DP-EVENT-MAP-003",

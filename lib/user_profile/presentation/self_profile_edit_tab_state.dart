@@ -181,10 +181,13 @@ class SelfProfileTextFieldRowDescriptor extends SelfProfileFieldRowDescriptor {
     required super.id,
     required super.icon,
     required super.label,
-    required this.value,
     required this.currentValue,
     required this.fieldName,
     required this.patchForValue,
+    this.emptyValueText,
+    this.inputHint,
+    this.leadingUnit,
+    this.showClearButton = false,
     this.currentFieldValue,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
@@ -193,8 +196,11 @@ class SelfProfileTextFieldRowDescriptor extends SelfProfileFieldRowDescriptor {
     this.toFieldValue,
   });
 
-  final String value;
   final String currentValue;
+  final String? emptyValueText;
+  final String? inputHint;
+  final String? leadingUnit;
+  final bool showClearButton;
   final Object? currentFieldValue;
   final String fieldName;
   final TextInputType? keyboardType;
@@ -259,14 +265,14 @@ class SelfProfileSingleChoiceFieldRowDescriptor<T extends Labelled>
     required this.value,
     required this.fieldName,
     required this.patchForValue,
-    this.placeholder,
+    this.emptyValueText,
   });
 
   final List<T> values;
   final T? value;
   final String fieldName;
   final UpdateUserProfilePatch Function(T? value) patchForValue;
-  final String? placeholder;
+  final String? emptyValueText;
 
   @override
   R map<R>({
@@ -291,8 +297,8 @@ class SelfProfileMultiChoiceFieldRowDescriptor<T extends Labelled>
     required this.values,
     required this.selected,
     required this.fieldName,
-    required this.placeholder,
     required this.patchForValues,
+    this.emptyValueText,
     this.patchForLatestProfile,
     this.isAddAffordanceWhenEmpty = true,
   });
@@ -300,7 +306,7 @@ class SelfProfileMultiChoiceFieldRowDescriptor<T extends Labelled>
   final List<T> values;
   final List<T> selected;
   final String fieldName;
-  final String placeholder;
+  final String? emptyValueText;
   final UpdateUserProfilePatch Function(List<T> values) patchForValues;
   final UpdateUserProfilePatch Function(UserProfile user, List<T> values)?
   patchForLatestProfile;
@@ -376,7 +382,6 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
       id: 'displayName',
       icon: CatchIcons.personOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelDisplayName,
-      value: user.publicDisplayName,
       currentValue: user.publicDisplayName,
       currentFieldValue: user.displayName.trim().isEmpty
           ? null
@@ -387,6 +392,7 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
       autofillHints: const [AutofillHints.nickname],
       validator: validateRequiredDisplayName,
       toFieldValue: (value) => value.trim(),
+      showClearButton: true,
     ),
     SelfProfileReadOnlyFieldRowDescriptor(
       id: 'dateOfBirth',
@@ -417,7 +423,6 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
       id: 'email',
       icon: CatchIcons.emailOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelEmail,
-      value: l10n.userProfileSelfProfileEditTabStateVisiblecopyEmail,
       currentValue: user.email,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyEmaile69bb2,
       patchForValue: patchFactory.email,
@@ -430,12 +435,7 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
       id: 'instagramHandle',
       icon: CatchIcons.alternateEmailOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelInstagram,
-      value: l10n.userProfileSelfProfileEditTabStateVisiblecopyInstagram,
-      currentValue: user.instagramHandle?.isNotEmpty == true
-          ? l10n.userProfileSelfProfileEditTabStateVisiblecopyInstagramhandle(
-              instagramHandle: user.instagramHandle!,
-            )
-          : '',
+      currentValue: user.instagramHandle ?? '',
       currentFieldValue: user.instagramHandle,
       fieldName: l10n
           .userProfileSelfProfileEditTabStateVisiblecopyInstagramhandle71eebb,
@@ -443,6 +443,8 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
       keyboardType: TextInputType.text,
       textCapitalization: TextCapitalization.none,
       validator: validateOptionalInstagramHandle,
+      leadingUnit: '@',
+      showClearButton: true,
       toFieldValue: (value) {
         final handle = normalizeInstagramHandle(value);
         return handle.isEmpty ? null : handle;
@@ -484,7 +486,6 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
       id: 'occupation',
       icon: CatchIcons.workOutline,
       label: l10n.userProfileSelfProfileEditTabStateLabelJobTitle,
-      value: l10n.userProfileSelfProfileEditTabStateVisiblecopyJobTitle,
       currentValue: user.occupation ?? '',
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyOccupation,
       patchForValue: patchFactory.occupation,
@@ -497,7 +498,6 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
       id: 'company',
       icon: CatchIcons.businessOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelCompany,
-      value: l10n.userProfileSelfProfileEditTabStateVisiblecopyCompany,
       currentValue: user.company ?? '',
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyCompanyfd8aec,
@@ -532,7 +532,6 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
       values: Language.values,
       selected: user.languages,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyLanguages,
-      placeholder: l10n.userProfileSelfProfileEditTabStatePlaceholderLanguages,
       patchForValues: patchFactory.languages,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<RelationshipGoal>(
@@ -579,8 +578,6 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
       selected: user.preferredDistances,
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyPreferreddistances,
-      placeholder:
-          l10n.userProfileSelfProfileEditTabStatePlaceholderPreferredDistances,
       patchForValues: (values) => patchFactory.preferredDistances(user, values),
       patchForLatestProfile: patchFactory.preferredDistances,
     ),
@@ -592,7 +589,6 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
       selected: user.runningReasons,
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyRunningreasons,
-      placeholder: l10n.userProfileSelfProfileEditTabStatePlaceholderWhyIEvent,
       patchForValues: (values) => patchFactory.runningReasons(user, values),
       patchForLatestProfile: patchFactory.runningReasons,
     ),
@@ -604,8 +600,6 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
       selected: user.preferredRunTimes,
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyPreferredruntimes,
-      placeholder:
-          l10n.userProfileSelfProfileEditTabStatePlaceholderFavoriteEventTimes,
       patchForValues: (values) => patchFactory.preferredRunTimes(user, values),
       patchForLatestProfile: patchFactory.preferredRunTimes,
     ),

@@ -8,14 +8,17 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-const double _chatsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;
 const double _hostInboxFilterHeight = CatchLayout.tabRailHeight;
 
 double chatsBrowseHeaderHeight({
+  required BuildContext context,
   required bool hasHostFilter,
   required bool hasHeaderSubtitle,
 }) =>
-    (hasHeaderSubtitle ? _chatsBrowseHeaderHeight : CatchLayout.topBarHeight) +
+    CatchScreenTopBar.heightFor(
+      context: context,
+      hasSubtitle: hasHeaderSubtitle,
+    ) +
     (hasHostFilter ? _hostInboxFilterHeight : 0);
 
 class ChatsBrowseHeader extends StatefulWidget {
@@ -28,8 +31,6 @@ class ChatsBrowseHeader extends StatefulWidget {
     required this.hostUnreadCount,
     required this.onHostFilterChanged,
     this.showHostSubtitle = true,
-    this.height,
-    this.contentPadding,
   });
 
   final bool showSearchAction;
@@ -39,8 +40,6 @@ class ChatsBrowseHeader extends StatefulWidget {
   final int hostUnreadCount;
   final ValueChanged<HostInboxFilter>? onHostFilterChanged;
   final bool showHostSubtitle;
-  final double? height;
-  final EdgeInsetsGeometry? contentPadding;
 
   @override
   State<ChatsBrowseHeader> createState() => _ChatsBrowseHeaderState();
@@ -62,49 +61,32 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
     final hasHeaderSubtitle = isHostApp && widget.showHostSubtitle;
     final query = widget.searchValue;
     final searchActive = _searchController.isSearchActive(query);
-    final headerHeight =
-        widget.height ??
-        (hasHeaderSubtitle
-            ? CatchLayout.browseHeaderHeight
-            : CatchLayout.topBarHeight);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(
-              MediaQuery.textScalerOf(context).scale(1.0).clamp(0.85, 1.0),
-            ),
-          ),
-          child: CatchScreenTopBar(
-            title: isHostApp ? l10n.hostInboxTitle : l10n.consumerChatsTitle,
-            subtitle: hasHeaderSubtitle ? l10n.hostInboxSubtitle : null,
-            leadingType: CatchTopBarLeading.none,
-            applySafeArea: false,
-            height: headerHeight,
-            contentPadding:
-                widget.contentPadding ??
-                (hasHeaderSubtitle
-                    ? CatchInsets.screenTitleBlock
-                    : CatchInsets.screenTitleBlockCompact),
-            searchEnabled: widget.showSearchAction || searchActive,
-            searchExpanded: searchActive,
-            onSearchExpandedChanged: (expanded) =>
-                setState(() => _searchController.setExpanded(expanded)),
-            searchValue: query,
-            onSearch: widget.onSearchChanged ?? (_) {},
-            searchPlaceholder: l10n.sharedSearchByNameHint,
-            searchAutofocus: true,
-            onSearchSubmitted: _closeEmptySearch,
-            onSearchFocusChanged: _handleSearchFocusChanged,
-            searchTooltip: isHostApp
-                ? l10n.hostSearchAttendeesAction
-                : l10n.consumerSearchChatsAction,
-            searchSemanticLabel: isHostApp
-                ? l10n.hostSearchAttendeesAction
-                : l10n.consumerSearchChatsAction,
-          ),
+        CatchScreenTopBar(
+          context: context,
+          title: isHostApp ? l10n.hostInboxTitle : l10n.consumerChatsTitle,
+          subtitle: hasHeaderSubtitle ? l10n.hostInboxSubtitle : null,
+          leadingType: CatchTopBarLeading.none,
+          applySafeArea: false,
+          searchEnabled: widget.showSearchAction || searchActive,
+          searchExpanded: searchActive,
+          onSearchExpandedChanged: (expanded) =>
+              setState(() => _searchController.setExpanded(expanded)),
+          searchValue: query,
+          onSearch: widget.onSearchChanged ?? (_) {},
+          searchPlaceholder: l10n.sharedSearchByNameHint,
+          searchAutofocus: true,
+          onSearchSubmitted: _closeEmptySearch,
+          onSearchFocusChanged: _handleSearchFocusChanged,
+          searchTooltip: isHostApp
+              ? l10n.hostSearchAttendeesAction
+              : l10n.consumerSearchChatsAction,
+          searchSemanticLabel: isHostApp
+              ? l10n.hostSearchAttendeesAction
+              : l10n.consumerSearchChatsAction,
         ),
         if (widget.hostFilter != null)
           CatchTabRail<HostInboxFilter>(

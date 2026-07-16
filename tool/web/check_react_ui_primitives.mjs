@@ -17,6 +17,10 @@ const surfaces = {
       "website/src/shared/ui/",
     ],
   },
+  webui: {
+    root: "packages/web-ui/src",
+    primitiveOwners: ["packages/web-ui/src/"],
+  },
 };
 
 const checkedExtensions = new Set([".tsx", ".jsx", ".ts", ".js"]);
@@ -207,7 +211,7 @@ function fail(message) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/web/check_react_ui_primitives.mjs [--check] [--surface all|website|admin] [--summary]
+  console.log(`Usage: node tool/web/check_react_ui_primitives.mjs [--check] [--surface all|website|admin|webui] [--summary]
 
 Fails when React app/feature code renders native interactive HTML directly
 instead of routing controls through shared UI primitives.

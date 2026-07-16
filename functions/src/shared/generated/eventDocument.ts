@@ -219,7 +219,7 @@ export interface EventDocument {
     | "dinner"
     | "singlesMixer"
     | "openActivity";
-  discoveryGeoCell: string | null;
+  discoveryGeoCell: string;
   discoveryHasOpenSpots: boolean;
   discoveryAvailability: "open" | "waitlist" | "gated" | "full" | "cancelled";
   /**

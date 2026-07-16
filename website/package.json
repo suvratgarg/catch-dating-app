@@ -28,10 +28,14 @@
     "preview": "vite preview --host 127.0.0.1",
     "storybook": "HOME=/tmp/catch-storybook-home STORYBOOK_DISABLE_TELEMETRY=1 storybook dev -p 6006 --host 127.0.0.1 --disable-telemetry",
     "build:storybook": "HOME=/tmp/catch-storybook-home STORYBOOK_DISABLE_TELEMETRY=1 storybook build --disable-telemetry",
+    "test:visual": "node ../tool/web/check_storybook_visuals.mjs --surface website --check && node ../tool/web/check_storybook_visuals.mjs --surface webui --check",
     "test:storybook:a11y": "STORYBOOK_DISABLE_TELEMETRY=1 vitest run --project=storybook",
+    "test:unit": "vitest run --project=unit",
+    "test:unit:coverage": "vitest run --project=unit --coverage",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false"
   },
   "dependencies": {
+    "@catch/web-ui": "0.1.0",
     "@tanstack/react-query": "^5.101.2",
     "firebase": "^12.14.0",
     "react": "^19.2.7",
@@ -46,6 +50,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
     "@vitest/browser-playwright": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.10",
     "playwright": "^1.61.1",
     "storybook": "^10.4.6",
     "typescript": "^6.0.3",

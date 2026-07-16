@@ -1,6 +1,7 @@
 {
-  "schemaVersion": 1,
-  "policyId": "operations-tool-boundary-v1",
+  "schemaVersion": 2,
+  "policyId": "operations-tool-boundary-v2",
+  "toolRoot": "tool",
   "legacyRoots": [
     {"path": "tool/host_discovery", "codeFileCeiling": 7},
     {"path": "tool/marketing/event_guide", "codeFileCeiling": 5},
@@ -12,7 +13,15 @@
   "codeExtensions": [".js", ".mjs", ".cjs", ".ts", ".tsx"],
   "forbiddenLegacyImports": [
     "@catch/operations",
-    "operations/src/platform",
-    "operations/src/workflows"
+    "operations/src/"
+  ],
+  "durableWorkflowMarkerThreshold": 2,
+  "durableWorkflowMarkers": [
+    "OperationsEngine",
+    "recordIdempotency(",
+    "putWorkItem(",
+    "promotionReceipt(",
+    "createReconciliationPlan(",
+    "lifecycleStatus"
   ]
 }

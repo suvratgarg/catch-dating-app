@@ -65,6 +65,7 @@ const appRoutingSource = `${appSource}\n${routeRegistrySource}`;
 const routeStoryDeclarations = collectStoryRouteDeclarations(storiesRoot);
 
 validateContractShape(contract);
+validateRedirects(contract.redirects ?? [], hostingConfig);
 validateRoutes(contract.routes ?? [], routeStoryDeclarations);
 validateGeneratedListingFamilies(contract.routes ?? [], hostListings);
 validateMarketingNotFoundHosting(contract.routes ?? [], hostingConfig);
@@ -105,6 +106,9 @@ function validateContractShape(value) {
   }
   if (!Array.isArray(value.routes) || value.routes.length === 0) {
     errors.push("routes.json must declare at least one route.");
+  }
+  if (!Array.isArray(value.redirects)) {
+    errors.push("routes.json must declare redirects as an array.");
   }
   for (const key of ["metadataContent", "metadataSchema", "hostingConfig"]) {
     const sourcePath = value.sourceOfTruth?.[key];
@@ -270,9 +274,6 @@ function validatePageKey(route) {
   if (route.pageKey === "home" && routePath !== "/") {
     errors.push(`${route.id}: home pageKey should be reserved for /.`);
   }
-  if (route.id === "host_preview" && !appRoutingSource.includes("/host/preview")) {
-    errors.push("host_preview: App.tsx must detect /host/preview.");
-  }
   if (route.pageKey === "not_found") {
     if (route.id !== "not_found") {
       errors.push(`${route.id}: not_found pageKey is reserved for not_found.`);
@@ -287,6 +288,70 @@ function validatePageKey(route) {
       errors.push("not_found: App.tsx must render NotFoundPage for fallback routes.");
     }
   }
+}
+
+function validateRedirects(redirects, config) {
+  errors.push(...redirectValidationErrors(redirects, config));
+}
+
+function redirectValidationErrors(redirects, config) {
+  const errors = [];
+  if (!Array.isArray(redirects)) return errors;
+  const targets = Array.isArray(config?.hosting) ? config.hosting : [];
+  const marketing = targets.find((target) => target?.target === "marketing");
+  const hostingRedirects = Array.isArray(marketing?.redirects) ? marketing.redirects : [];
+  const contractBySource = new Map();
+
+  for (const redirect of redirects) {
+    const label = redirect?.source ?? "<missing-source>";
+    if (!redirect || typeof redirect !== "object" || Array.isArray(redirect)) {
+      errors.push("redirect entries must be objects.");
+      continue;
+    }
+    if (typeof redirect.source !== "string" || redirect.source.length === 0) {
+      errors.push("redirect missing source.");
+      continue;
+    }
+    if (contractBySource.has(redirect.source)) {
+      errors.push(`${label}: duplicate redirect source.`);
+    }
+    contractBySource.set(redirect.source, redirect);
+    if (typeof redirect.destination !== "string" || redirect.destination.length === 0) {
+      errors.push(`${label}: redirect missing destination.`);
+    }
+    if (![301, 302].includes(redirect.status)) {
+      errors.push(`${label}: redirect status must be 301 or 302.`);
+    }
+    if (redirect.preserveQuery !== true) {
+      errors.push(`${label}: redirect must explicitly preserve query parameters.`);
+    }
+  }
+
+  if (!marketing) {
+    errors.push("redirects: firebase.json must declare the marketing Hosting target.");
+    return errors;
+  }
+
+  const hostingBySource = new Map(hostingRedirects.map((redirect) => [redirect.source, redirect]));
+  for (const [source, redirect] of contractBySource) {
+    const hostingRedirect = hostingBySource.get(source);
+    if (!hostingRedirect) {
+      errors.push(`${source}: missing matching Firebase Hosting redirect.`);
+      continue;
+    }
+    if (hostingRedirect.destination !== redirect.destination) {
+      errors.push(`${source}: Firebase destination must be ${redirect.destination}.`);
+    }
+    if (hostingRedirect.type !== redirect.status) {
+      errors.push(`${source}: Firebase redirect type must be ${redirect.status}.`);
+    }
+  }
+  for (const source of hostingBySource.keys()) {
+    if (!contractBySource.has(source)) {
+      errors.push(`${source}: Firebase marketing redirect is missing from routes.json.`);
+    }
+  }
+  return errors;
 }
 
 function validateMeta(route) {
@@ -776,6 +841,34 @@ export const OrganizerSearch = {
       }],
     }).join("\n"),
     /must not use a \*\* rewrite/u
+  );
+  const redirects = [
+    {source: "/host/preview", destination: "/host/", status: 301, preserveQuery: true},
+    {source: "/host/preview/**", destination: "/host/", status: 301, preserveQuery: true},
+  ];
+  const redirectHosting = {
+    hosting: [{
+      target: "marketing",
+      redirects: redirects.map(({source, destination, status}) => ({
+        source,
+        destination,
+        type: status,
+      })),
+    }],
+  };
+  assert.deepEqual(redirectValidationErrors(redirects, redirectHosting), []);
+  assert.match(
+    redirectValidationErrors(
+      [{...redirects[0], preserveQuery: false}, redirects[1]],
+      redirectHosting
+    ).join("\n"),
+    /explicitly preserve query parameters/u
+  );
+  assert.match(
+    redirectValidationErrors(redirects, {
+      hosting: [{target: "marketing", redirects: redirectHosting.hosting[0].redirects.slice(0, 1)}],
+    }).join("\n"),
+    /\/host\/preview\/\*\*: missing matching Firebase Hosting redirect/u
   );
   console.log("Website route checker self-test passed.");
 }

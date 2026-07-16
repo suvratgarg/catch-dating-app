@@ -237,7 +237,7 @@ export const ListingReviewsEmpty: Story = {
 };
 
 export const ListingEventSuccess: Story = {
-  name: "Event Success",
+  name: "Playbook outcomes",
   parameters: {
     catchComponent: {
       id: "listing_event_success_section",
@@ -245,9 +245,13 @@ export const ListingEventSuccess: Story = {
       states: ["app-created-aggregate"],
     },
   },
-  render: () => appCreatedListing.eventSuccessSummary ? (
-    <ListingEventSuccessSection summary={appCreatedListing.eventSuccessSummary} />
-  ) : null,
+  render: () => (
+    <>
+      {appCreatedListing.eventSuccessSummary ? (
+        <ListingEventSuccessSection summary={appCreatedListing.eventSuccessSummary} />
+      ) : null}
+    </>
+  ),
 };
 
 export const ListingFit: Story = {

@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {type FormEvent, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
@@ -46,7 +47,7 @@ export function useListingClaimController(listing: HostListing) {
     }
     if (!user) {
       setStatus({
-        message: "Sign in before requesting this claim.",
+        message: websiteCopy["uselistingclaimcontroller_0107"],
         tone: "is-error",
       });
       return;
@@ -93,7 +94,7 @@ export function useListingClaimController(listing: HostListing) {
       });
       form.reset();
       setStatus({
-        message: "Claim request received. Catch will review it before ownership changes.",
+        message: websiteCopy["uselistingclaimcontroller_0106"],
         tone: "is-success",
       });
       trackMarketingEvent("listing_claim_submitted", {

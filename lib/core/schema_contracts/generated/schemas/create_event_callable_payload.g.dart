@@ -16,6 +16,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
     'startTimeMillis',
     'endTimeMillis',
     'meetingPoint',
+    'meetingLocation',
     'startingPointLat',
     'startingPointLng',
     'distanceKm',

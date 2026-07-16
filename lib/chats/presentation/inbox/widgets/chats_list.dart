@@ -121,7 +121,6 @@ class ChatsListSkeleton extends StatelessWidget {
             ),
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
       ],
     );
   }

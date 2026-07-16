@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 2,
+  "logicalName": "catch-screen-top-bar-ownership",
+  "tabRootManifestPath": "tool/design/tab_root_scroll_contracts.json",
+  "screenGeometry": {
+    "tokenPath": "lib/core/theme/catch_tokens.dart",
+    "token": "screenTitleBlock",
+    "topInset": "CatchSpacing.s0"
+  },
+  "contracts": [
+    {
+      "path": "lib/chats/presentation/chat_screen.dart",
+      "role": "identity",
+      "expression": "CatchTopBar.identity",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/dashboard/presentation/activity_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
+    },
+    {
+      "path": "lib/event_policies/presentation/event_policy_lab_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_event_preview_body_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_event_preview_loading_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_lab_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/events/presentation/calendar/calendar_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
+    },
+    {
+      "path": "lib/events/presentation/saved_events_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_manage_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
+    },
+    {
+      "path": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/payments/presentation/payment_history_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
+    },
+    {
+      "path": "lib/public_profile/presentation/public_profile_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/reviews/presentation/reviews_history_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
+    },
+    {
+      "path": "lib/safety/presentation/settings_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
+    },
+    {
+      "path": "lib/swipes/presentation/event_recap_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/swipes/presentation/filters_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    }
+  ],
+  "rootHeaders": [
+    {
+      "branchKey": "_dashboardShellKey",
+      "routeName": "Routes.dashboardScreen.name",
+      "surfaces": [
+        {
+          "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
+          "symbol": "DashboardHomeScreen",
+          "owner": "CatchScreenHeaderTitle.block"
+        }
+      ]
+    },
+    {
+      "branchKey": "_exploreShellKey",
+      "routeName": "Routes.exploreScreen.name",
+      "surfaces": [
+        {
+          "path": "lib/explore/presentation/widgets/explore_header.dart",
+          "symbol": "ExploreBrowseHeaderContent",
+          "owner": "CatchScreenHeaderTitle.block"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_header.dart",
+          "symbol": "ExploreBrowseHeaderContent",
+          "owner": "CatchScreenTopBar"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_header.dart",
+          "symbol": "_ExploreDiscoveryTopBar",
+          "owner": "CatchScreenTopBar"
+        }
+      ]
+    },
+    {
+      "branchKey": "_chatsShellKey",
+      "routeName": "Routes.matchesListScreen.name",
+      "surfaces": [
+        {
+          "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+          "symbol": "_ChatsBrowseHeaderState",
+          "owner": "CatchScreenTopBar"
+        }
+      ]
+    },
+    {
+      "branchKey": "_profileShellKey",
+      "routeName": "Routes.profileScreen.name",
+      "surfaces": [
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "symbol": "_ProfileScreenState",
+          "owner": "CatchTabbedScreenScaffold"
+        }
+      ]
+    },
+    {
+      "branchKey": "_hostTodayShellKey",
+      "routeName": "Routes.hostHomeScreen.name",
+      "surfaces": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_today.dart",
+          "symbol": "HostTodayHeader",
+          "owner": "CatchScreenHeaderTitle.block"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "symbol": "_HostEventsScaffoldState",
+          "owner": "CatchScreenHeaderTitle.block"
+        }
+      ]
+    },
+    {
+      "branchKey": "_hostEventsShellKey",
+      "routeName": "Routes.hostEventsScreen.name",
+      "surfaces": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
+          "symbol": "HostEventsClubSection",
+          "owner": "CatchScreenHeaderTitle.block"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "symbol": "_HostEventsScaffoldState",
+          "owner": "CatchScreenHeaderTitle.block"
+        }
+      ]
+    },
+    {
+      "branchKey": "_hostInboxShellKey",
+      "routeName": "Routes.hostInboxScreen.name",
+      "surfaces": [
+        {
+          "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+          "symbol": "_ChatsBrowseHeaderState",
+          "owner": "CatchScreenTopBar"
+        }
+      ]
+    },
+    {
+      "branchKey": "_hostOrganizerShellKey",
+      "routeName": "Routes.hostOrganizerScreen.name",
+      "surfaces": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "symbol": "_HostClubsScaffoldState",
+          "owner": "CatchTabbedScreenScaffold"
+        }
+      ]
+    }
+  ],
+  "rawChromeExceptions": [
+    {
+      "path": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+      "expression": "SliverAppBar",
+      "occurrences": 1,
+      "reason": "Club detail media hero owns collapsing photo chrome, not a route title bar."
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "expression": "SliverAppBar",
+      "occurrences": 1,
+      "reason": "Event detail media hero owns collapsing photo chrome, not a route title bar."
+    }
+  ]
+}

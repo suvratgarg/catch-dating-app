@@ -45,14 +45,6 @@ final class UtilitySurfaceFixtures {
     longitude: 72.8227,
   );
 
-  static final eventWithoutCoordinate = eventFixture(
-    id: 'design-utility-event-address-only',
-    meetingPoint: 'Kala Ghoda meeting point',
-    notes: 'Exact pin shared after booking',
-    latitude: null,
-    longitude: null,
-  );
-
   static final payments = <Payment>[
     payment(
       id: 'payment-completed',
@@ -173,8 +165,8 @@ final class UtilitySurfaceFixtures {
     required String id,
     required String meetingPoint,
     required String? notes,
-    required double? latitude,
-    required double? longitude,
+    required double latitude,
+    required double longitude,
   }) {
     final start = DateTime(2026, 6, 24, 18, 30);
     return Event(
@@ -183,12 +175,14 @@ final class UtilitySurfaceFixtures {
       startTime: start,
       endTime: start.add(const Duration(hours: 1, minutes: 30)),
       meetingPoint: meetingPoint,
-      meetingLocation: EventMeetingLocation.legacy(
+      meetingLocation: EventMeetingLocation(
         name: meetingPoint,
         latitude: latitude,
         longitude: longitude,
         notes: notes,
       ),
+      startingPointLat: latitude,
+      startingPointLng: longitude,
       eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.socialRun),
       distanceKm: 5,
       pace: PaceLevel.easy,

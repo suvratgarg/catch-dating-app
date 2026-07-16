@@ -34,9 +34,7 @@ class CatchDivider extends StatelessWidget {
   static Color colorFor(CatchTokens tokens, CatchDividerRole role) {
     return switch (role) {
       CatchDividerRole.section => tokens.line,
-      CatchDividerRole.fieldRow => tokens.line.withValues(
-        alpha: CatchOpacity.fieldRowDivider,
-      ),
+      CatchDividerRole.fieldRow => tokens.line,
     };
   }
 

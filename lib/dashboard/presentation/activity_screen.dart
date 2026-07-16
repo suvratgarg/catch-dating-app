@@ -50,6 +50,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
     return Scaffold(
       backgroundColor: t.bg,
       appBar: CatchScreenTopBar(
+        context: context,
         title: context.l10n.dashboardActivityScreenTitleActivity,
         actions: [
           if (state.showMarkAllReadAction)

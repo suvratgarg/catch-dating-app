@@ -1,28 +1,26 @@
 import {
+  AlertTriangle,
+  ArrowLeft,
   CheckCircle2,
   Clock3,
   Lock,
   RefreshCw,
+  Search,
   ShieldCheck,
   UserCheck,
 } from "lucide-react";
 import type {
-  AdminRoleAssignmentRow,
   AdminRoleClaim,
   AdminUserRoleRecord,
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
-  AdminEditorGrid,
-  AdminEditorPanel,
-  AdminEditorSection,
   AdminFieldGrid,
-  AdminMetricCard,
-  AdminMetricGrid,
-  AdminPublishingFormShell,
-  AdminRoadmapList,
-  AdminRoadmapListItem,
+  AdminRowTitle,
+  AdminSecondaryDisclosure,
+  AdminTableRow,
   AdminTag,
+  AdminTagRow,
   AdminToolbar,
   AdminWorkbenchStack,
   AlertRow,
@@ -31,22 +29,17 @@ import {
   EmptyState,
   Panel,
   QualityList,
+  SearchField,
   SelectField,
   StateRow,
   StatusChip,
   TableActionButton,
   TextareaField,
   TextField,
-  AdminTagList,
-  AdminIntakeSection,
-  AdminIntakeSectionTitle,
-  AdminRowTitle,
-  AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {
-  type AdminRoleManagementController,
   type AdminRoleAssignmentStatusFilter,
-  type AdminRoleChangeRecord,
+  type AdminRoleManagementController,
   type AdminRoleScopeContract,
   useAdminRoleManagementController,
 } from "../controllers/useAdminRoleManagementController";
@@ -62,300 +55,182 @@ const assignmentStatusOptions: Array<{
 
 export function AdminRoleManagementScreen({
   currentUserUid,
+  onBackToRegister,
   onError,
   onNotice,
+  onSelectTargetUid,
+  selectedTargetUid = null,
 }: {
   currentUserUid: string | null;
+  onBackToRegister?: () => void;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
+  onSelectTargetUid?: (targetUid: string) => void;
+  selectedTargetUid?: string | null;
 }) {
   const controller = useAdminRoleManagementController({
     currentUserUid,
     onError,
     onNotice,
+    onSelectTargetUid,
+    selectedTargetUid,
   });
-  return <AdminRoleManagementWorkspace controller={controller} />;
+  return (
+    <AdminRoleManagementWorkspace
+      controller={controller}
+      currentUserUid={currentUserUid}
+      onBackToRegister={onBackToRegister}
+    />
+  );
 }
 
 export function AdminRoleManagementWorkspace({
   controller,
+  currentUserUid = null,
+  onBackToRegister,
 }: {
   controller: AdminRoleManagementController;
+  currentUserUid?: string | null;
+  onBackToRegister?: () => void;
 }) {
+  if (controller.selectedTargetUid) {
+    return (
+      <RoleDetailWorkspace
+        controller={controller}
+        currentUserUid={currentUserUid}
+        onBackToRegister={onBackToRegister}
+      />
+    );
+  }
   return (
     <AdminWorkbenchStack>
-      <AdminMetricGrid ariaLabel="Admin role management state">
-        <AdminMetricCard label="Loaded user" value={controller.selectedUser ? 1 : 0} />
-        <AdminMetricCard label="Selected roles" value={controller.selectedRoles.length} />
-        <AdminMetricCard label="Recent changes" value={controller.recentChanges.length} />
-        <AdminMetricCard
-          label="Save blocked"
-          tone={controller.selectedUser && controller.validationIssue ?
-            "attention" :
-            "normal"}
-          value={controller.selectedUser && controller.validationIssue ? 1 : 0}
-        />
-      </AdminMetricGrid>
-      <Panel
-        span={2}
-        icon={<UserCheck size={18} strokeWidth={1.9} />}
-        title="Admin role lookup"
-        action="adminOwner"
-      >
-        <AdminToolbar>
-          <TextField
-            label="Firebase Auth uid"
-            onChange={controller.setTargetUid}
-            placeholder="admin-owner"
-            value={controller.targetUid}
-          />
-          <AdminButton
-            disabled={controller.isLoading}
-            icon={<RefreshCw size={15} strokeWidth={1.9} />}
-            onClick={() => void controller.load()}
-            variant="primary"
-          >
-            {controller.isLoading ? "Loading" : "Load roles"}
-          </AdminButton>
-        </AdminToolbar>
-        <RoleScopeContractPanel contract={controller.scopeContract} />
-      </Panel>
-      <AdminEditorGrid>
-        <RoleEditorPanel
-          isSaving={controller.isSaving}
-          note={controller.note}
-          roleOptions={controller.roleOptions}
-          selectedRoles={controller.selectedRoles}
-          selectedUser={controller.selectedUser}
-          validationIssue={controller.validationIssue}
-          onNoteChange={controller.setNote}
-          onRoleToggle={controller.toggleRole}
-          onSave={() => void controller.save()}
-        />
-        <AdminWorkbenchStack>
-          <RoleDetailPanel selectedUser={controller.selectedUser} />
-          <AssignmentRegisterPanel
-            filter={controller.assignmentFilter}
-            generatedAt={controller.assignmentGeneratedAt}
-            isLoading={controller.isAssignmentListLoading}
-            rows={controller.assignmentRows}
-            onFilterChange={controller.setAssignmentFilter}
-            onRefresh={controller.refreshAssignments}
-            onSelect={controller.selectAssignment}
-          />
-          <RecentChangesPanel changes={controller.recentChanges} />
-          <Panel
-            icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-            title="Authority boundary"
-            action="audited"
-          >
-            <QualityList>
-              <StateRow label="Read callable" value="adminGetAdminUserRoles" />
-              <StateRow label="Write callable" value="adminSetAdminUserRoles" />
-              <StateRow label="Required role" value="adminOwner" />
-              <StateRow label="Assignment register" value="adminRoleAssignments/{uid}" />
-              <StateRow label="Protection" value="Cannot remove your own adminOwner claim" />
-              <StateRow label="Directory" value="Bounded assignment register; no email/name search" />
-            </QualityList>
-          </Panel>
-        </AdminWorkbenchStack>
-      </AdminEditorGrid>
+      <AssignmentRegisterPanel controller={controller} />
+      <ExactUidLookupPanel controller={controller} />
+      <RoleBoundaryDisclosure contract={controller.scopeContract} />
     </AdminWorkbenchStack>
   );
 }
 
-function RoleScopeContractPanel({
-  contract,
+function RoleDetailWorkspace({
+  controller,
+  currentUserUid,
+  onBackToRegister,
 }: {
-  contract: AdminRoleScopeContract;
+  controller: AdminRoleManagementController;
+  currentUserUid: string | null;
+  onBackToRegister?: () => void;
 }) {
   return (
-    <AdminIntakeSection>
-      <AlertRow
-        icon={<ShieldCheck size={16} strokeWidth={1.9} />}
-        title={contract.statusLabel}
-        tone={contract.canLoad ? "neutral" : "warning"}
-      >
-        {contract.statusDetail}
-      </AlertRow>
-      <QualityList>
-        <StateRow label="Normalized uid" value={contract.normalizedUid} />
-        <StateRow label="Assignment path" value={contract.assignmentPath} />
-        <StateRow label="Sources" value={contract.sourceOfTruth.join(", ")} />
-      </QualityList>
-      <AdminIntakeSectionTitle>Not Supported Here</AdminIntakeSectionTitle>
-      <AdminTagList>
-        {contract.blockedInputs.map((input) => (
-          <AdminTag key={input}>{input}</AdminTag>
-        ))}
-        {contract.blockedActions.map((action) => (
-          <AdminTag key={action} tone="muted">{action}</AdminTag>
-        ))}
-      </AdminTagList>
-    </AdminIntakeSection>
-  );
-}
-
-function RoleEditorPanel({
-  isSaving,
-  note,
-  onNoteChange,
-  onRoleToggle,
-  onSave,
-  roleOptions,
-  selectedRoles,
-  selectedUser,
-  validationIssue,
-}: {
-  isSaving: boolean;
-  note: string;
-  onNoteChange: (value: string) => void;
-  onRoleToggle: (role: AdminRoleClaim, checked: boolean) => void;
-  onSave: () => void;
-  roleOptions: readonly AdminRoleClaim[];
-  selectedRoles: AdminRoleClaim[];
-  selectedUser: AdminUserRoleRecord | null;
-  validationIssue: string | null;
-}) {
-  return (
-    <AdminEditorPanel
-      icon={<Lock size={18} strokeWidth={1.9} />}
-      title="Role assignment"
-      action={selectedUser ? selectedUser.targetUid : "No user"}
-    >
-      {selectedUser ? (
-        <AdminPublishingFormShell>
-          <AdminEditorSection>
-            <legend>Admin roles</legend>
-            <AdminFieldGrid columns={2}>
-              {roleOptions.map((role) => (
-                <CheckboxField
-                  checked={selectedRoles.includes(role)}
-                  key={role}
-                  label={role}
-                  onChange={(checked) => onRoleToggle(role, checked)}
-                />
-              ))}
-            </AdminFieldGrid>
-          </AdminEditorSection>
-          <AdminEditorSection>
-            <legend>Audit note</legend>
-            <TextareaField
-              label="Review note"
-              onChange={onNoteChange}
-              placeholder="Record who requested the role change and why."
-              rows={5}
-              value={note}
-            />
-            <StateRow label="Note length" value={`${note.trim().length}/1000`} />
-            <StateRow label="Save check" value={validationIssue ?? "Ready"} />
-          </AdminEditorSection>
-          <AdminButton
-            disabled={Boolean(validationIssue) || isSaving}
-            icon={<CheckCircle2 size={15} strokeWidth={1.9} />}
-            onClick={onSave}
-            variant="primary"
-          >
-            {isSaving ? "Saving roles" : "Save role changes"}
-          </AdminButton>
-        </AdminPublishingFormShell>
-      ) : (
-        <EmptyState
-          variant="workbench"
-          icon={<Clock3 size={16} strokeWidth={1.9} />}
-        >
-          Load a Firebase Auth uid to inspect and edit admin roles.
-        </EmptyState>
-      )}
-    </AdminEditorPanel>
-  );
-}
-
-function AssignmentRegisterPanel({
-  filter,
-  generatedAt,
-  isLoading,
-  onFilterChange,
-  onRefresh,
-  onSelect,
-  rows,
-}: {
-  filter: AdminRoleAssignmentStatusFilter;
-  generatedAt: string | null;
-  isLoading: boolean;
-  onFilterChange: (value: AdminRoleAssignmentStatusFilter) => void;
-  onRefresh: () => void;
-  onSelect: (row: AdminRoleAssignmentRow) => void;
-  rows: AdminRoleAssignmentRow[];
-}) {
-  return (
-    <Panel
-      icon={<Lock size={18} strokeWidth={1.9} />}
-      title="Access register"
-      action={isLoading ? "Loading" : `${rows.length} ${filter}`}
-    >
-      <AdminToolbar compact>
-        <SelectField
-          label="Status"
-          onChange={(value) =>
-            onFilterChange(value as AdminRoleAssignmentStatusFilter)}
-          options={assignmentStatusOptions}
-          value={filter}
-        />
+    <AdminWorkbenchStack>
+      <AdminToolbar>
         <AdminButton
-          disabled={isLoading}
-          icon={<RefreshCw size={15} strokeWidth={1.9} />}
-          onClick={onRefresh}
+          icon={<ArrowLeft size={15} strokeWidth={1.9} />}
+          onClick={onBackToRegister}
         >
-          Refresh
+          Back to access register
         </AdminButton>
       </AdminToolbar>
-      <StateRow
-        label="Source"
-        value={`adminRoleAssignments${generatedAt ? ` / ${formatDateTime(generatedAt)}` : ""}`}
-      />
-      {rows.length === 0 ? (
-        <EmptyState
-          variant="workbench"
-          icon={<Clock3 size={16} strokeWidth={1.9} />}
+      {controller.selectedUser ? (
+        <>
+          <RoleIdentityPanel selectedUser={controller.selectedUser} />
+          <RoleEditorPanel
+            controller={controller}
+            currentUserUid={currentUserUid}
+          />
+          <SaveReceiptPanel controller={controller} />
+        </>
+      ) : controller.selectedUnavailable ? (
+        <Panel
+          span={2}
+          icon={<AlertTriangle size={18} strokeWidth={1.9} />}
+          title="Role target unavailable"
+          action="Exact uid only"
         >
-          No admin role assignments match this filter.
+          <AlertRow
+            icon={<AlertTriangle size={16} strokeWidth={1.9} />}
+            title="No role record was returned for this uid"
+            tone="warning"
+          >
+            Return to the register or load another exact Firebase Auth uid. No
+            user directory search or substitute assignment is used.
+          </AlertRow>
+        </Panel>
+      ) : (
+        <EmptyState variant="workbench" icon={<Clock3 size={16} strokeWidth={1.9} />}>
+          Loading exact role assignment.
+        </EmptyState>
+      )}
+      <RoleBoundaryDisclosure contract={controller.scopeContract} />
+    </AdminWorkbenchStack>
+  );
+}
+
+function AssignmentRegisterPanel({controller}: {controller: AdminRoleManagementController}) {
+  return (
+    <Panel
+      span={2}
+      icon={<Lock size={18} strokeWidth={1.9} />}
+      title="Access register"
+      action={controller.isAssignmentListLoading ? "Loading" : `${controller.assignmentVisibleRows.length} shown`}
+    >
+      <AdminToolbar>
+        <SearchField
+          ariaLabel="Search returned admin assignments"
+          icon={<Search size={16} strokeWidth={1.8} />}
+          onChange={controller.setAssignmentQuery}
+          placeholder="Search these returned assignments"
+          value={controller.assignmentQuery}
+        />
+        <SelectField
+          label="Status"
+          onChange={(value) => controller.setAssignmentFilter(value as AdminRoleAssignmentStatusFilter)}
+          options={assignmentStatusOptions}
+          value={controller.assignmentFilter}
+        />
+        <AdminButton
+          disabled={controller.isAssignmentListLoading}
+          icon={<RefreshCw size={15} strokeWidth={1.9} />}
+          onClick={() => void controller.refreshAssignments()}
+        >
+          Refresh register
+        </AdminButton>
+      </AdminToolbar>
+      <AlertRow
+        icon={<ShieldCheck size={16} strokeWidth={1.9} />}
+        title={controller.assignmentCapped ?
+          "Showing the 50 most recently updated assignments" :
+          `${controller.assignmentRows.length} returned assignments`}
+        tone="neutral"
+      >
+        Local search only filters this bounded result. Source generated {formatDateTime(controller.assignmentGeneratedAt)}.
+      </AlertRow>
+      {controller.assignmentVisibleRows.length === 0 ? (
+        <EmptyState variant="workbench" icon={<Clock3 size={16} strokeWidth={1.9} />}>
+          No returned assignments match this local search and status filter.
         </EmptyState>
       ) : (
-        <DataTable compact variant="workbench">
+        <DataTable ariaLabel="Admin role assignments" compact variant="workbench">
           <thead>
             <tr>
               <th>User</th>
               <th>Roles</th>
               <th>Status</th>
-              <th>Select</th>
+              <th>Review</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={row.targetUid}>
+            {controller.assignmentVisibleRows.map((row) => (
+              <AdminTableRow key={row.targetUid}>
                 <td>
                   <AdminRowTitle compact>
                     <strong>{row.email ?? row.targetUid}</strong>
-                    <span>
-                      {row.displayName ?? row.targetUid} · {
-                        formatDateTime(row.updatedAt)
-                      }
-                    </span>
+                    <span>{row.displayName ?? row.targetUid} · {formatDateTime(row.updatedAt)}</span>
                   </AdminRowTitle>
                 </td>
                 <td>{roleList(row.roles)}</td>
-                <td>
-                  <AdminTag tone={row.status === "active" ? "neutral" : "muted"}>
-                    {row.status}
-                  </AdminTag>
-                </td>
-                <td>
-                  <TableActionButton onClick={() => onSelect(row)}>
-                    Load
-                  </TableActionButton>
-                </td>
-              </tr>
+                <td><AdminTag tone={row.status === "active" ? "neutral" : "muted"}>{row.status}</AdminTag></td>
+                <td><TableActionButton onClick={() => controller.selectAssignment(row)}>Review</TableActionButton></td>
+              </AdminTableRow>
             ))}
           </tbody>
         </DataTable>
@@ -364,90 +239,187 @@ function AssignmentRegisterPanel({
   );
 }
 
-function RoleDetailPanel({
-  selectedUser,
-}: {
-  selectedUser: AdminUserRoleRecord | null;
-}) {
+function ExactUidLookupPanel({controller}: {controller: AdminRoleManagementController}) {
   return (
     <Panel
+      span={2}
       icon={<UserCheck size={18} strokeWidth={1.9} />}
-      title="User detail"
-      action={selectedUser?.disabled ? "disabled" : "active"}
+      title="Exact uid lookup"
+      action="Fallback"
     >
-      {selectedUser ? (
-        <QualityList>
-          <StateRow label="UID" value={selectedUser.targetUid} />
-          <StateRow label="Email" value={selectedUser.email ?? "none"} />
-          <StateRow label="Display name" value={selectedUser.displayName ?? "none"} />
-          <StateRow label="Auth disabled" value={selectedUser.disabled ? "yes" : "no"} />
-          <StateRow label="Assignment doc" value={selectedUser.assignmentPath} />
-          <StateRow
-            label="Current roles"
-            value={
-              selectedUser.roles.length > 0 ? (
-                <AdminTagRow as="span">
-                  {selectedUser.roles.map((role) => (
-                    <StatusChip key={role}>{role}</StatusChip>
-                  ))}
-                </AdminTagRow>
-              ) : "none"
-            }
-          />
-        </QualityList>
-      ) : (
-        <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
-          No user loaded.
-        </EmptyState>
-      )}
+      <AdminToolbar>
+        <TextField
+          label="Firebase Auth uid"
+          onChange={controller.setTargetUid}
+          placeholder="Enter an exact uid"
+          value={controller.targetUid}
+        />
+        <AdminButton
+          disabled={controller.isLoading}
+          icon={<UserCheck size={15} strokeWidth={1.9} />}
+          onClick={() => void controller.load()}
+          variant="primary"
+        >
+          Review uid
+        </AdminButton>
+      </AdminToolbar>
+      <StateRow label="Boundary" value="No email, display-name, phone, or unbounded Firebase Auth search" />
     </Panel>
   );
 }
 
-function RecentChangesPanel({
-  changes,
-}: {
-  changes: AdminRoleChangeRecord[];
-}) {
+function RoleIdentityPanel({selectedUser}: {selectedUser: AdminUserRoleRecord}) {
   return (
     <Panel
-      icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
-      title="Recent changes"
-      action={`${changes.length} local`}
+      span={2}
+      icon={<UserCheck size={18} strokeWidth={1.9} />}
+      title={selectedUser.displayName ?? selectedUser.email ?? selectedUser.targetUid}
+      action={selectedUser.disabled ? "Auth disabled" : "Auth active"}
     >
-      {changes.length === 0 ? (
-        <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
-          No role changes in this session.
-        </EmptyState>
-      ) : (
-        <AdminRoadmapList>
-          {changes.map((change) => (
-            <AdminRoadmapListItem
-              key={`${change.targetUid}:${change.afterRoles.join(",")}`}
-            >
-              <CheckCircle2 size={15} strokeWidth={1.9} />
-              <span>
-                <strong>{change.targetUid}</strong> ·{" "}
-                {roleList(change.beforeRoles)} to {roleList(change.afterRoles)}
-              </span>
-            </AdminRoadmapListItem>
-          ))}
-        </AdminRoadmapList>
-      )}
+      <QualityList>
+        <StateRow label="UID" value={selectedUser.targetUid} />
+        <StateRow label="Email" value={selectedUser.email ?? "Unavailable"} />
+        <StateRow label="Assignment path" value={selectedUser.assignmentPath} />
+        <StateRow
+          label="Current roles"
+          value={selectedUser.roles.length ? (
+            <AdminTagRow as="span">
+              {selectedUser.roles.map((role) => <StatusChip key={role}>{role}</StatusChip>)}
+            </AdminTagRow>
+          ) : "None"}
+        />
+      </QualityList>
     </Panel>
+  );
+}
+
+function RoleEditorPanel({
+  controller,
+  currentUserUid,
+}: {
+  controller: AdminRoleManagementController;
+  currentUserUid: string | null;
+}) {
+  const isSelf = Boolean(controller.selectedUser && currentUserUid === controller.selectedUser.targetUid);
+  return (
+    <Panel
+      span={2}
+      icon={<Lock size={18} strokeWidth={1.9} />}
+      title="Role change"
+      action={controller.hasHighRiskChange ? "High risk" : "Governed"}
+    >
+      <AdminFieldGrid columns={2}>
+        {controller.rolePolicies.map((policy) => {
+          const selfOwnerLock = isSelf && policy.role === "adminOwner";
+          return (
+            <CheckboxField
+              checked={controller.selectedRoles.includes(policy.role)}
+              disabled={selfOwnerLock}
+              key={policy.role}
+              label={
+                <span>
+                  <strong>{policy.label}</strong> · {policy.role}<br />
+                  <small>{policy.capability} Risk: {policy.risk}.{selfOwnerLock ? " Cannot remove your own owner role." : ""}</small>
+                </span>
+              }
+              onChange={(checked) => controller.toggleRole(policy.role, checked)}
+            />
+          );
+        })}
+      </AdminFieldGrid>
+      <RoleDiffPanel controller={controller} />
+      <TextareaField
+        label="Review note"
+        onChange={controller.setNote}
+        placeholder="Who requested this change, why, and what was verified?"
+        rows={4}
+        value={controller.note}
+      />
+      {controller.hasHighRiskChange ? (
+        <CheckboxField
+          checked={controller.highRiskConfirmed}
+          label="I confirm this high-risk role change and reviewed the before/after access difference."
+          onChange={controller.setHighRiskConfirmed}
+        />
+      ) : null}
+      <StateRow label="Save check" value={controller.validationIssue ?? "Ready to save"} />
+      <AdminButton
+        disabled={Boolean(controller.validationIssue) || controller.isSaving}
+        icon={<CheckCircle2 size={15} strokeWidth={1.9} />}
+        onClick={() => void controller.save()}
+        variant="primary"
+      >
+        {controller.isSaving ? "Saving roles" : "Save role change"}
+      </AdminButton>
+    </Panel>
+  );
+}
+
+function RoleDiffPanel({controller}: {controller: AdminRoleManagementController}) {
+  return (
+    <QualityList>
+      <StateRow label="Before" value={roleList(controller.selectedUser?.roles ?? [])} />
+      <StateRow label="After" value={roleList(controller.selectedRoles)} />
+      <StateRow label="Added" value={roleList(controller.roleDiff.added)} />
+      <StateRow label="Removed" value={roleList(controller.roleDiff.removed)} />
+    </QualityList>
+  );
+}
+
+function SaveReceiptPanel({controller}: {controller: AdminRoleManagementController}) {
+  if (!controller.saveReceipt) return null;
+  return (
+    <Panel
+      span={2}
+      icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
+      title="Save receipt"
+      action="Callable confirmed"
+    >
+      <QualityList>
+        <StateRow label="Target uid" value={controller.saveReceipt.targetUid} />
+        <StateRow label="Assignment path" value={controller.saveReceipt.assignmentPath} />
+        <StateRow label="Before" value={roleList(controller.saveReceipt.beforeRoles)} />
+        <StateRow label="After" value={roleList(controller.saveReceipt.afterRoles)} />
+      </QualityList>
+      <AlertRow
+        icon={<RefreshCw size={16} strokeWidth={1.9} />}
+        title="The target needs a new Firebase ID token"
+        tone="neutral"
+      >
+        Ask the target user to refresh claims or sign out and back in before
+        testing the updated access.
+      </AlertRow>
+    </Panel>
+  );
+}
+
+function RoleBoundaryDisclosure({contract}: {contract: AdminRoleScopeContract}) {
+  return (
+    <AdminSecondaryDisclosure summary="Role authority and lookup boundary">
+      <AlertRow
+        icon={<ShieldCheck size={16} strokeWidth={1.9} />}
+        title={contract.statusLabel}
+        tone={contract.canLoad ? "neutral" : "warning"}
+      >
+        {contract.statusDetail}
+      </AlertRow>
+      <QualityList>
+        <StateRow label="Sources" value={contract.sourceOfTruth.join(", ")} />
+        <StateRow label="Assignment path" value={contract.assignmentPath ?? "Enter an exact uid"} />
+        <StateRow label="Blocked lookup" value={contract.blockedInputs.join(", ")} />
+        <StateRow label="Blocked actions" value={contract.blockedActions.join(", ")} />
+      </QualityList>
+    </AdminSecondaryDisclosure>
   );
 }
 
 function roleList(roles: AdminRoleClaim[]): string {
-  return roles.length > 0 ? roles.join(", ") : "none";
+  return roles.length ? roles.join(", ") : "None";
 }
 
 function formatDateTime(value: string | null): string {
-  if (!value) return "not recorded";
+  if (!value) return "Unavailable";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
+  if (Number.isNaN(date.getTime())) return "Malformed timestamp";
+  return new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeStyle: "short"}).format(date);
 }

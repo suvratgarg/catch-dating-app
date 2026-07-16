@@ -26,6 +26,7 @@ export 'data/clubs_repository.dart';
 
 // ── Presentation — screens ──────────────────────────────────────────────────
 export 'presentation/detail/club_detail_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/detail/club_detail_read_only_preview.dart'; // public-api: provider-backed read-only club detail composition for owner previews
 
 // ── Presentation — view models & controllers ────────────────────────────────
 export 'presentation/detail/club_detail_view_model.dart'; // public-api: read-model seam for route composition

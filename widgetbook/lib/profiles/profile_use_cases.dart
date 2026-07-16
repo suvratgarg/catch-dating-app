@@ -10,10 +10,12 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
@@ -30,14 +32,6 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_choice.dart'
-    show
-        ProfileChipOptions,
-        ProfileChipPlaceholder,
-        ProfileMultiChipValue,
-        ProfileSingleChipValue;
-import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart'
-    show ProfileHeightStepButton, ProfileHeightStepperControls;
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart'
@@ -106,6 +100,18 @@ Widget profileScreenSelfRouteStates(BuildContext context) {
       _StateCard(
         label: 'edit tab default',
         child: const _DeviceFrame(child: _SelfProfileRouteScope()),
+      ),
+      _StateCard(
+        label: 'preview tab default',
+        child: const _DeviceFrame(
+          child: _SelfProfileRouteScope(initialTab: SelfProfileTab.preview),
+        ),
+      ),
+      _StateCard(
+        label: 'insights tab default',
+        child: const _DeviceFrame(
+          child: _SelfProfileRouteScope(initialTab: SelfProfileTab.insights),
+        ),
       ),
       _StateCard(
         label: 'upload pending in photo grid',
@@ -250,9 +256,15 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
           height: 360,
           child: Column(
             children: const [
-              Expanded(child: _ProfileHeaderPreview(initialIndex: 0)),
+              Expanded(
+                child: _ProfileHeaderPreview(initialTab: SelfProfileTab.edit),
+              ),
               CatchDivider.section(),
-              Expanded(child: _ProfileHeaderPreview(initialIndex: 1)),
+              Expanded(
+                child: _ProfileHeaderPreview(
+                  initialTab: SelfProfileTab.preview,
+                ),
+              ),
             ],
           ),
         ),
@@ -360,21 +372,21 @@ Widget profileTabBarStates(BuildContext context) {
         label: 'edit selected',
         child: const _SectionFrame(
           height: 96,
-          child: _ProfileTabBarPreview(initialIndex: 0),
+          child: _ProfileTabBarPreview(initialTab: SelfProfileTab.edit),
         ),
       ),
       _StateCard(
         label: 'preview selected',
         child: const _SectionFrame(
           height: 96,
-          child: _ProfileTabBarPreview(initialIndex: 1),
+          child: _ProfileTabBarPreview(initialTab: SelfProfileTab.preview),
         ),
       ),
       _StateCard(
         label: 'insights selected',
         child: const _SectionFrame(
           height: 96,
-          child: _ProfileTabBarPreview(initialIndex: 2),
+          child: _ProfileTabBarPreview(initialTab: SelfProfileTab.insights),
         ),
       ),
     ],
@@ -539,6 +551,7 @@ Widget profilePhotosSectionStates(BuildContext context) {
 )
 Widget profileFieldRowStates(BuildContext context) {
   final editState = SelfProfileEditTabState.fromProfile(
+    l10n: context.l10n,
     user: _viewer,
     today: ProfileSurfaceFixtures.now,
     uploadState: (loadingIndices: <int>{}, uploadError: null),
@@ -692,7 +705,6 @@ Widget profileDirectTextEntryStates(BuildContext context) {
           child: ProfileDirectTextEntry(
             icon: CatchIcons.personOutlined,
             label: 'Display name',
-            value: _viewer.displayName,
             currentValue: _viewer.displayName,
             currentFieldValue: _viewer.displayName,
             fieldName: 'displayName',
@@ -744,7 +756,6 @@ Widget profileSingleEnumEntryStates(BuildContext context) {
             value: null,
             fieldName: 'education',
             patchForValue: (value) => UpdateUserProfilePatch(education: value),
-            placeholder: 'Education',
             isExpanded: true,
             onTap: () {},
             onSaved: () {},
@@ -776,7 +787,6 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
             values: Language.values,
             selected: const [Language.english, Language.hindi],
             fieldName: 'languages',
-            placeholder: 'Languages',
             patchForValues: (values) =>
                 UpdateUserProfilePatch(languages: values),
             isExpanded: false,
@@ -796,7 +806,6 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
             values: Language.values,
             selected: const [],
             fieldName: 'languages',
-            placeholder: 'Languages',
             patchForValues: (values) =>
                 UpdateUserProfilePatch(languages: values),
             isExpanded: true,
@@ -817,6 +826,7 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
 )
 Widget profilePromptEntryStates(BuildContext context) {
   final editState = SelfProfileEditTabState.fromProfile(
+    l10n: context.l10n,
     user: _viewer,
     today: ProfileSurfaceFixtures.now,
     uploadState: (loadingIndices: <int>{}, uploadError: null),
@@ -991,24 +1001,6 @@ Widget profileInfoSkeletonTileStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Inline text value states',
-  type: ProfileInlineTextValue,
-  path: '[P1 product surfaces]/Profiles/Inline Editors',
-)
-Widget profileInlineTextValueStates(BuildContext context) {
-  return const _ProfileCatalog(
-    title: 'ProfileInlineTextValue',
-    contractId: 'screen.profile.inline.text_value',
-    children: [
-      _StateCard(
-        label: 'display and editing',
-        child: _SectionFrame(height: 220, child: _InlineTextValueCatalog()),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Direct text entry states',
   type: ProfileDirectTextEntryField,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
@@ -1019,18 +1011,31 @@ Widget profileDirectTextEntryFieldStates(BuildContext context) {
     contractId: 'screen.profile.inline.direct_text_entry',
     children: [
       _StateCard(
-        label: 'focused direct input',
+        label: 'editable and legal identity rows',
         child: _SectionFrame(
-          height: 160,
-          child: ProfileDirectTextEntryField(
-            icon: CatchIcons.personOutlined,
-            label: 'Display name',
-            value: 'Neha',
-            currentValue: 'Neha',
-            currentFieldValue: 'Neha',
-            fieldName: 'displayName',
-            patchForValue: (value) =>
-                UpdateUserProfilePatch(displayName: value as String),
+          height: 300,
+          child: Column(
+            children: [
+              ProfileDirectTextEntryField(
+                icon: CatchIcons.personOutlined,
+                label: 'Display name',
+                currentValue: 'Neha',
+                currentFieldValue: 'Neha',
+                fieldName: 'displayName',
+                patchForValue: (value) =>
+                    UpdateUserProfilePatch(displayName: value as String),
+              ),
+              CatchField.read(
+                icon: CatchIcons.cakeOutlined,
+                title: 'Date of birth',
+                body: '16/07/1994 (31 years)',
+              ),
+              CatchField.read(
+                icon: CatchIcons.groupOutlined,
+                title: 'Gender',
+                body: 'Woman',
+              ),
+            ],
           ),
         ),
       ),
@@ -1045,34 +1050,37 @@ Widget profileDirectTextEntryFieldStates(BuildContext context) {
 )
 Widget profileInlinePromptEntryEditorStates(BuildContext context) {
   final prompt = _viewer.profilePrompts.first;
+  Widget promptEditor({required bool expanded}) {
+    return ProfileInlinePromptEntryEditor(
+      icon: CatchIcons.formatQuoteRounded,
+      label: profilePromptDefinition(prompt.promptId).title,
+      currentAnswer: prompt.answer,
+      currentPromptId: prompt.promptId,
+      currentPrompts: _viewer.profilePrompts,
+      promptIndex: 0,
+      availablePromptIds: profilePromptCatalog
+          .map((definition) => definition.id)
+          .take(5)
+          .toList(growable: false),
+      fieldName: 'profilePrompt:0',
+      isExpanded: expanded,
+      onTap: () {},
+      onSaved: () {},
+      onCancel: () {},
+    );
+  }
 
   return _ProfileCatalog(
     title: 'ProfileInlinePromptEntryEditor',
     contractId: 'screen.profile.inline.prompt_entry',
     children: [
       _StateCard(
-        label: 'expanded prompt entry',
-        child: _SectionFrame(
-          height: 360,
-          child: ProfileInlinePromptEntryEditor(
-            icon: CatchIcons.formatQuoteRounded,
-            label: profilePromptDefinition(prompt.promptId).title,
-            value: prompt.answer,
-            currentAnswer: prompt.answer,
-            currentPromptId: prompt.promptId,
-            currentPrompts: _viewer.profilePrompts,
-            promptIndex: 0,
-            availablePromptIds: profilePromptCatalog
-                .map((definition) => definition.id)
-                .take(4)
-                .toList(growable: false),
-            fieldName: 'profilePrompt:0',
-            isExpanded: true,
-            onTap: () {},
-            onSaved: () {},
-            onCancel: () {},
-          ),
-        ),
+        label: 'collapsed question + separate answer',
+        child: _SectionFrame(height: 180, child: promptEditor(expanded: false)),
+      ),
+      _StateCard(
+        label: 'expanded inline question choices + separate answer',
+        child: _SectionFrame(height: 560, child: promptEditor(expanded: true)),
       ),
     ],
   );
@@ -1110,23 +1118,28 @@ Widget profileInlineHeightEditorStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Height stepper control states',
-  type: ProfileHeightStepperControls,
+  name: 'Canonical height stepper states',
+  type: CatchFieldStepper,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileHeightStepperControlsStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'ProfileHeightStepperControls',
-    contractId: 'screen.profile.inline.height_stepper_controls',
+    title: 'CatchFieldStepper',
+    contractId: 'catch.field.stepper',
     children: [
       _StateCard(
         label: 'enabled',
         child: _SectionFrame(
           height: 120,
           child: Center(
-            child: ProfileHeightStepperControls(
+            child: CatchFieldStepper(
               value: 172,
+              min: 120,
+              max: 220,
+              unit: 'cm',
               enabled: true,
+              decreaseSemanticLabel: 'Decrease height',
+              increaseSemanticLabel: 'Increase height',
               onChanged: (_) {},
             ),
           ),
@@ -1137,9 +1150,14 @@ Widget profileHeightStepperControlsStates(BuildContext context) {
         child: _SectionFrame(
           height: 120,
           child: Center(
-            child: ProfileHeightStepperControls(
+            child: CatchFieldStepper(
               value: 172,
+              min: 120,
+              max: 220,
+              unit: 'cm',
               enabled: false,
+              decreaseSemanticLabel: 'Decrease height',
+              increaseSemanticLabel: 'Increase height',
               onChanged: (_) {},
             ),
           ),
@@ -1150,38 +1168,42 @@ Widget profileHeightStepperControlsStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Height step button states',
-  type: ProfileHeightStepButton,
+  name: 'Canonical height stepper bounds',
+  type: CatchFieldStepper,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileHeightStepButtonStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'ProfileHeightStepButton',
-    contractId: 'screen.profile.inline.height_step_button',
+    title: 'CatchFieldStepper bounds',
+    contractId: 'catch.field.stepper.bounds',
     children: [
       _StateCard(
-        label: 'enabled and disabled',
+        label: 'minimum and maximum endpoints',
         child: _SectionFrame(
-          height: 120,
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ProfileHeightStepButton(
-                  tooltip: 'Decrease height',
-                  icon: CatchIcons.removeRounded,
-                  enabled: true,
-                  onPressed: () {},
-                ),
-                gapW8,
-                ProfileHeightStepButton(
-                  tooltip: 'Increase height',
-                  icon: CatchIcons.addRounded,
-                  enabled: false,
-                  onPressed: () {},
-                ),
-              ],
-            ),
+          height: 180,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CatchFieldStepper(
+                value: 120,
+                min: 120,
+                max: 220,
+                unit: 'cm',
+                decreaseSemanticLabel: 'Decrease height',
+                increaseSemanticLabel: 'Increase height',
+                onChanged: (_) {},
+              ),
+              gapH16,
+              CatchFieldStepper(
+                value: 220,
+                min: 120,
+                max: 220,
+                unit: 'cm',
+                decreaseSemanticLabel: 'Decrease height',
+                increaseSemanticLabel: 'Increase height',
+                onChanged: (_) {},
+              ),
+            ],
           ),
         ),
       ),
@@ -1232,68 +1254,56 @@ Widget profileInlineMultiChoiceEntryEditorStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Single chip value states',
-  type: ProfileSingleChipValue,
+  name: 'Canonical single-choice chip states',
+  type: CatchFieldChoiceChip,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileSingleChipValueStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'ProfileSingleChipValue',
-    contractId: 'screen.profile.inline.single_chip_value',
+    title: 'CatchFieldChoiceChip',
+    contractId: 'catch.field.choice_chip.single',
     children: [
       _StateCard(
-        label: 'collapsed selected',
+        label: 'selected',
         child: _SectionFrame(
           height: 120,
-          child: Padding(
-            padding: CatchInsets.content,
-            child: ProfileSingleChipValue<RelationshipGoal>(
-              emptyValue: 'Looking for',
-              displayValue: RelationshipGoal.relationship.label,
-              isEditing: false,
-              selected: RelationshipGoal.relationship,
+          child: Center(
+            child: CatchFieldChoiceChip(
+              label: RelationshipGoal.relationship.label,
+              selected: true,
+              multi: false,
               enabled: true,
-              isAddAffordance: false,
-              allowEmptySelection: true,
-              onSelectedTap: (_) {},
+              onPressed: () {},
             ),
           ),
         ),
       ),
       _StateCard(
-        label: 'editing empty',
+        label: 'unselected',
         child: _SectionFrame(
           height: 120,
-          child: Padding(
-            padding: CatchInsets.content,
-            child: ProfileSingleChipValue<RelationshipGoal>(
-              emptyValue: 'Looking for',
-              displayValue: 'Looking for',
-              isEditing: true,
-              selected: null,
+          child: Center(
+            child: CatchFieldChoiceChip(
+              label: RelationshipGoal.friendship.label,
+              selected: false,
+              multi: false,
               enabled: true,
-              isAddAffordance: true,
-              allowEmptySelection: true,
-              onSelectedTap: (_) {},
+              onPressed: () {},
             ),
           ),
         ),
       ),
       _StateCard(
-        label: 'editing selected disabled',
+        label: 'selected disabled',
         child: _SectionFrame(
           height: 120,
-          child: Padding(
-            padding: CatchInsets.content,
-            child: ProfileSingleChipValue<RelationshipGoal>(
-              emptyValue: 'Looking for',
-              displayValue: RelationshipGoal.relationship.label,
-              isEditing: true,
-              selected: RelationshipGoal.relationship,
+          child: Center(
+            child: CatchFieldChoiceChip(
+              label: RelationshipGoal.relationship.label,
+              selected: true,
+              multi: false,
               enabled: false,
-              isAddAffordance: false,
-              allowEmptySelection: true,
-              onSelectedTap: (_) {},
+              onPressed: () {},
             ),
           ),
         ),
@@ -1303,65 +1313,57 @@ Widget profileSingleChipValueStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Multi chip value states',
-  type: ProfileMultiChipValue,
+  name: 'Canonical wrapping choice control states',
+  type: CatchFieldChoiceControl,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileMultiChipValueStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'ProfileMultiChipValue',
-    contractId: 'screen.profile.inline.multi_chip_value',
+    title: 'CatchFieldChoiceControl',
+    contractId: 'catch.field.choice_control.multi',
     children: [
       _StateCard(
-        label: 'collapsed selected',
+        label: 'selected and unselected wrap',
         child: _SectionFrame(
-          height: 120,
+          height: 180,
           child: Padding(
             padding: CatchInsets.content,
-            child: ProfileMultiChipValue<Language>(
-              emptyValue: 'Languages',
-              displayValue: 'English, Hindi',
-              isEditing: false,
+            child: CatchFieldChoiceControl<Language>(
+              values: const [
+                Language.english,
+                Language.hindi,
+                Language.marathi,
+                Language.tamil,
+                Language.gujarati,
+              ],
+              itemLabel: (value) => value.label,
               selected: const {Language.english, Language.hindi},
+              multi: true,
               enabled: true,
-              isAddAffordance: false,
-              onSelectedTap: (_) {},
+              onSelectionChanged: (_) {},
             ),
           ),
         ),
       ),
       _StateCard(
-        label: 'editing selected',
+        label: 'disabled wrap',
         child: _SectionFrame(
-          height: 120,
+          height: 180,
           child: Padding(
             padding: CatchInsets.content,
-            child: ProfileMultiChipValue<Language>(
-              emptyValue: 'Languages',
-              displayValue: 'English, Hindi',
-              isEditing: true,
+            child: CatchFieldChoiceControl<Language>(
+              values: const [
+                Language.english,
+                Language.hindi,
+                Language.marathi,
+                Language.tamil,
+                Language.gujarati,
+              ],
+              itemLabel: (value) => value.label,
               selected: const {Language.english, Language.hindi},
-              enabled: true,
-              isAddAffordance: false,
-              onSelectedTap: (_) {},
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'editing empty disabled',
-        child: _SectionFrame(
-          height: 120,
-          child: Padding(
-            padding: CatchInsets.content,
-            child: ProfileMultiChipValue<Language>(
-              emptyValue: 'Languages',
-              displayValue: 'Languages',
-              isEditing: true,
-              selected: const {},
+              multi: true,
               enabled: false,
-              isAddAffordance: true,
-              onSelectedTap: (_) {},
+              onSelectionChanged: (_) {},
             ),
           ),
         ),
@@ -1371,35 +1373,39 @@ Widget profileMultiChipValueStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Chip placeholder states',
-  type: ProfileChipPlaceholder,
+  name: 'Canonical collapsed choice states',
+  type: CatchField,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileChipPlaceholderStates(BuildContext context) {
-  return const _ProfileCatalog(
-    title: 'ProfileChipPlaceholder',
-    contractId: 'screen.profile.inline.chip_placeholder',
+  return _ProfileCatalog(
+    title: 'CatchField.choices collapsed',
+    contractId: 'catch.field.choices.collapsed',
     children: [
       _StateCard(
-        label: 'empty and filled',
+        label: 'empty and selected values',
         child: _SectionFrame(
-          height: 140,
-          child: Padding(
-            padding: CatchInsets.content,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ProfileChipPlaceholder(
-                  value: 'Add languages',
-                  isAddAffordance: true,
-                ),
-                gapH12,
-                ProfileChipPlaceholder(
-                  value: 'English, Hindi',
-                  isAddAffordance: false,
-                ),
-              ],
-            ),
+          height: 180,
+          child: Column(
+            children: [
+              CatchField.choices<Language>(
+                title: 'Languages',
+                values: const [Language.english, Language.hindi],
+                itemLabel: (value) => value.label,
+                selected: const {},
+                multi: true,
+                onSelectionChanged: (_) {},
+              ),
+              CatchField.choices<Language>(
+                title: 'Languages',
+                body: 'English · Hindi',
+                values: const [Language.english, Language.hindi],
+                itemLabel: (value) => value.label,
+                selected: const {Language.english, Language.hindi},
+                multi: true,
+                onSelectionChanged: (_) {},
+              ),
+            ],
           ),
         ),
       ),
@@ -1408,14 +1414,14 @@ Widget profileChipPlaceholderStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Chip option states',
-  type: ProfileChipOptions,
+  name: 'Canonical choice option states',
+  type: CatchFieldChoiceControl,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileChipOptionsStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'ProfileChipOptions',
-    contractId: 'screen.profile.inline.chip_options',
+    title: 'CatchFieldChoiceControl options',
+    contractId: 'catch.field.choice_control.options',
     children: [
       _StateCard(
         label: 'enabled selected',
@@ -1423,15 +1429,17 @@ Widget profileChipOptionsStates(BuildContext context) {
           height: 140,
           child: Padding(
             padding: CatchInsets.content,
-            child: ProfileChipOptions<Language>(
+            child: CatchFieldChoiceControl<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
                 Language.marathi,
               ],
+              itemLabel: (value) => value.label,
               selected: const {Language.english},
+              multi: true,
               enabled: true,
-              onTap: (_) {},
+              onSelectionChanged: (_) {},
             ),
           ),
         ),
@@ -1442,15 +1450,17 @@ Widget profileChipOptionsStates(BuildContext context) {
           height: 140,
           child: Padding(
             padding: CatchInsets.content,
-            child: ProfileChipOptions<Language>(
+            child: CatchFieldChoiceControl<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
                 Language.marathi,
               ],
+              itemLabel: (value) => value.label,
               selected: const {Language.english, Language.hindi},
+              multi: true,
               enabled: false,
-              onTap: (_) {},
+              onSelectionChanged: (_) {},
             ),
           ),
         ),
@@ -1869,11 +1879,13 @@ class _SelfProfileRouteScope extends StatelessWidget {
     this.profileStream,
     this.uploadLoadingIndices = const {},
     this.themeMode = ThemeMode.light,
+    this.initialTab = SelfProfileTab.edit,
   });
 
   final Stream<UserProfile?>? profileStream;
   final Set<int> uploadLoadingIndices;
   final ThemeMode themeMode;
+  final SelfProfileTab initialTab;
 
   @override
   Widget build(BuildContext context) {
@@ -1896,7 +1908,7 @@ class _SelfProfileRouteScope extends StatelessWidget {
           ),
         ),
       ],
-      child: _ProfileRouter(themeMode: themeMode),
+      child: _ProfileRouter(themeMode: themeMode, initialTab: initialTab),
     );
   }
 }
@@ -1919,7 +1931,10 @@ class _SelfProfileTabBodyPreviewState extends State<_SelfProfileTabBodyPreview>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: SelfProfileTab.values.length,
+      vsync: this,
+    );
     _previewScrollController = ScrollController();
   }
 
@@ -1932,27 +1947,10 @@ class _SelfProfileTabBodyPreviewState extends State<_SelfProfileTabBodyPreview>
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        final headerSlivers = CatchSliverHeader(
-          title: const CatchScreenHeaderTitle.block(
-            title: 'Your profile',
-            actions: [ProfileSettingsButton()],
-          ),
-          bottomHeight: CatchLayout.tabRailHeight,
-          bottom: ProfileTabBar(controller: _tabController),
-        ).buildSlivers(context);
-        final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
-        final pinnedSliver = headerSlivers.last;
-
-        return [
-          ...collapsibleSlivers,
-          SliverOverlapAbsorber(
-            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-            sliver: pinnedSliver,
-          ),
-        ];
-      },
+    return CatchTabbedScreenScaffold(
+      title: 'Your profile',
+      actions: const [ProfileSettingsButton()],
+      tabRail: ProfileTabBar(controller: _tabController),
       body: SelfProfileTabBody(
         state: widget.state,
         controller: _tabController,
@@ -2027,9 +2025,10 @@ class _PublicProfileRouteScope extends StatelessWidget {
 }
 
 class _ProfileRouter extends StatelessWidget {
-  const _ProfileRouter({required this.themeMode});
+  const _ProfileRouter({required this.themeMode, required this.initialTab});
 
   final ThemeMode themeMode;
+  final SelfProfileTab initialTab;
 
   @override
   Widget build(BuildContext context) {
@@ -2039,7 +2038,7 @@ class _ProfileRouter extends StatelessWidget {
         GoRoute(
           path: Routes.profileScreen.path,
           name: Routes.profileScreen.name,
-          builder: (_, _) => const ProfileScreen(),
+          builder: (_, _) => ProfileScreen(initialTab: initialTab),
         ),
         GoRoute(
           path: Routes.settingsScreen.path,
@@ -2060,9 +2059,9 @@ class _ProfileRouter extends StatelessWidget {
 }
 
 class _ProfileHeaderPreview extends StatefulWidget {
-  const _ProfileHeaderPreview({required this.initialIndex});
+  const _ProfileHeaderPreview({required this.initialTab});
 
-  final int initialIndex;
+  final SelfProfileTab initialTab;
 
   @override
   State<_ProfileHeaderPreview> createState() => _ProfileHeaderPreviewState();
@@ -2076,8 +2075,8 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
   void initState() {
     super.initState();
     _controller = TabController(
-      length: 3,
-      initialIndex: widget.initialIndex,
+      length: SelfProfileTab.values.length,
+      initialIndex: widget.initialTab.index,
       vsync: this,
     );
   }
@@ -2090,29 +2089,27 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        ...CatchSliverHeader(
-          title: const CatchScreenHeaderTitle.block(
-            title: 'Your profile',
-            actions: [ProfileSettingsButton()],
+    return CatchTabbedScreenScaffold(
+      title: 'Your profile',
+      actions: const [ProfileSettingsButton()],
+      tabRail: ProfileTabBar(controller: _controller),
+      body: const CatchTabbedPageScrollView(
+        scrollKey: PageStorageKey('profile-header-preview-scroll'),
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: Text('Header review body')),
           ),
-          bottomHeight: CatchLayout.tabRailHeight,
-          bottom: ProfileTabBar(controller: _controller),
-        ).buildSlivers(context),
-        const SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(child: Text('Header review body')),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
 class _ProfileTabBarPreview extends StatefulWidget {
-  const _ProfileTabBarPreview({required this.initialIndex});
+  const _ProfileTabBarPreview({required this.initialTab});
 
-  final int initialIndex;
+  final SelfProfileTab initialTab;
 
   @override
   State<_ProfileTabBarPreview> createState() => _ProfileTabBarPreviewState();
@@ -2126,8 +2123,8 @@ class _ProfileTabBarPreviewState extends State<_ProfileTabBarPreview>
   void initState() {
     super.initState();
     _controller = TabController(
-      length: 3,
-      initialIndex: widget.initialIndex,
+      length: SelfProfileTab.values.length,
+      initialIndex: widget.initialTab.index,
       vsync: this,
     );
   }
@@ -2174,57 +2171,6 @@ class _InlineEditorVariants extends StatefulWidget {
 
   @override
   State<_InlineEditorVariants> createState() => _InlineEditorVariantsState();
-}
-
-class _InlineTextValueCatalog extends StatefulWidget {
-  const _InlineTextValueCatalog();
-
-  @override
-  State<_InlineTextValueCatalog> createState() =>
-      _InlineTextValueCatalogState();
-}
-
-class _InlineTextValueCatalogState extends State<_InlineTextValueCatalog> {
-  late final TextEditingController _displayController;
-  late final TextEditingController _editingController;
-
-  @override
-  void initState() {
-    super.initState();
-    _displayController = TextEditingController(text: 'Neha');
-    _editingController = TextEditingController(text: 'Product lead');
-  }
-
-  @override
-  void dispose() {
-    _displayController.dispose();
-    _editingController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: CatchInsets.content,
-      children: [
-        ProfileInlineTextValue(
-          label: 'Display name',
-          displayValue: 'Neha',
-          controller: _displayController,
-          isEditing: false,
-          enabled: true,
-        ),
-        gapH20,
-        ProfileInlineTextValue(
-          label: 'Job title',
-          displayValue: 'Product lead',
-          controller: _editingController,
-          isEditing: true,
-          enabled: true,
-        ),
-      ],
-    );
-  }
 }
 
 class ProfileInlineRelationshipGoalChoiceEntryEditor extends StatelessWidget {
@@ -2278,7 +2224,6 @@ class _InlineEditorVariantsState extends State<_InlineEditorVariants> {
         ProfileDirectTextEntryField(
           icon: CatchIcons.personOutlined,
           label: 'Display name',
-          value: 'Neha',
           currentValue: 'Neha',
           currentFieldValue: 'Neha',
           fieldName: 'displayName',
@@ -2289,7 +2234,7 @@ class _InlineEditorVariantsState extends State<_InlineEditorVariants> {
         ProfileDirectTextEntryField(
           icon: CatchIcons.workOutline,
           label: 'Job title',
-          value: 'Job title',
+          inputHint: 'e.g. Product designer',
           currentValue: '',
           currentFieldValue: null,
           fieldName: 'occupation',

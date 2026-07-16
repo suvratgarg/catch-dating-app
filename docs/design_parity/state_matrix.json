@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-11",
+  "updated": "2026-07-16",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -1183,7 +1183,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "Captured the Explore map route with deterministic feed pins, selected-pin seed, distance-ring seed, and network tiles disabled."
+              "notes": "Captured the Explore map route with deterministic feed pins, selected-pin seed, device-location-backed distance-ring seed, and the explicit neutral no-network fixture. Production uses native Google tiles."
             },
             {
               "id": "map_loading",
@@ -1587,7 +1587,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel and has deterministic ready, selected-card, and distance-ring captures."
+              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel, defaults production to native Google tiles, and has deterministic neutral-fixture ready, selected-card, and distance-ring captures."
             },
             {
               "id": "selected_pin",
@@ -1611,16 +1611,19 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "Distance-ring capture seeds user location plus an active distance filter in the deterministic map placeholder."
+              "notes": "Distance-ring capture seeds user location plus an active distance filter in the neutral fixture; native runtime uses a geographic circle and projected CatchDistanceRingLabel."
             },
             {
-              "id": "no_exact_pins",
+              "id": "zero_radius_results",
               "kind": "empty",
               "status": "implemented",
               "previewIds": [
                 "ExploreMapScreen/Map route states"
               ],
-              "notes": "Widgetbook covers the no-exact-pins route branch by feeding events without exact coordinates through ExploreMapScreen and EventMapView; no pixel capture is registered for this branch yet."
+              "tests": [
+                "test/explore/explore_widgets_test.dart"
+              ],
+              "notes": "ExploreMapScreen preserves the canvas and distance ring when a radius returns zero events, then offers the next wider radius or Show all."
             },
             {
               "id": "map_loading",
@@ -1651,12 +1654,12 @@
             {
               "id": "DP-EXPLORE-MAP-001",
               "status": "closed",
-              "nextAction": "Explore map route now has the `explore_map` capture with network tiles disabled; global visual-diff mask files remain part of the pixel-comparison backlog."
+              "nextAction": "Explore map route has deterministic neutral-fixture captures while production defaults to real Google tiles; global visual-diff mask files remain part of the pixel-comparison backlog."
             },
             {
               "id": "DP-EXPLORE-MAP-002",
               "status": "closed",
-              "nextAction": "Closed by the selected EventDateRailCard route state, DS MapPin parity for deterministic placeholders and native marker bitmaps, Widgetbook coverage for ready/selected/loading/empty/no-exact-pins/error/distance-ring branches, and widget tests for preselect, pin-tap selection, card navigation, background dismissal, feed-drop clearing, lost-pin clearing, placeholder pin parity, and byte-backed marker support."
+              "nextAction": "Closed by the selected compact EventDateRailCard route state, DS MapPin parity for the neutral fixture and native marker bitmaps, geographic native distance circle plus projected branded label, Widgetbook route coverage, full distance-catalog tests, and 2026-07-13 iPhone 17 runtime proof of loaded muted tiles, accessible custom pins, selection, and the branded ring."
             }
           ]
         }
@@ -3883,6 +3886,8 @@
           "routeId": "profileScreen",
           "implementationPaths": [
             "lib/user_profile/presentation/profile_screen.dart",
+            "lib/core/widgets/catch_tabbed_screen.dart",
+            "lib/core/widgets/catch_tab_rail.dart",
             "lib/user_profile/presentation/profile_edit_controller.dart",
             "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
             "lib/user_profile/presentation/widgets/profile_tab.dart",
@@ -3897,7 +3902,7 @@
             "catch.chip",
             "catch.field",
             "catch.icon_button",
-            "catch.segmented_control",
+            "catch.tab_rail",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -3909,6 +3914,7 @@
             "profile_self_unavailable",
             "profile_self_edit_tab",
             "profile_self_preview_tab",
+            "profile_self_insights_tab",
             "profile_self_photo_upload_pending",
             "profile_self_photo_upload_error",
             "profile_self_inline_save_pending",
@@ -3986,7 +3992,7 @@
                 "test/profile/profile_widgets_test.dart",
                 "test/image_uploads/photo_grid_test.dart"
               ],
-              "notes": "_ProfilePhotosSection composes PhotoGrid with upload loading indices, delete, reorder, and slot-edit callbacks. Add Widgetbook states for empty, minimum, full, loading, reorder, delete-disabled, and long prompt photo-grid states.",
+              "notes": "ProfilePhotosSection and ProfilePhotosSkeletonSection compose the ready/loading grids inside CatchSection.fieldRows. The canonical section owns the full-width header rule and the grid starts 12 px below it; upload loading indices, delete, reorder, and slot-edit callbacks remain parent-owned. Widgetbook covers ready, upload-pending, and loading-skeleton composition; empty, minimum, reorder, delete-disabled, and long-prompt states remain future variants.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ]
@@ -4020,6 +4026,18 @@
               ]
             },
             {
+              "id": "inline_prompt_edit",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/profile/profile_widgets_test.dart"
+              ],
+              "notes": "Each prompt renders as one CatchSection.containedFieldRows card with an inline CatchField.choices question editor and a separate multiline CatchField.input answer. Ordinary focus chrome is owned by exactly one child field while the outer perimeter stays neutral; section errors may still own the outer danger border. Question changes use staged Cancel/Done, answers save on blur, and production preserves the existing three-prompt and 300-character business limits. Widgetbook covers collapsed and question-expanded production compositions plus primitive focus ownership; deterministic route captures still need refreshing against the 2026-07-14 Field handoff.",
+              "previewIds": [
+                "ProfileScreen/Self section states"
+              ]
+            },
+            {
               "id": "inline_choice_edit",
               "kind": "mutation",
               "status": "tested",
@@ -4038,7 +4056,7 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "Inline editors hold the drawer open and expose pending Done behavior until ProfileEditController save completes. profile_self_inline_save_pending captures a real single-choice inline save held pending through ProfileEditController.",
+              "notes": "Explicit multi-adjustment editors hold their disclosure open and expose pending Done behavior until ProfileEditController save completes. Direct text and prompt-answer fields remain in place while blur saves expose the field-owned saving status. profile_self_inline_save_pending currently captures the explicit single-choice path and should be refreshed with a prompt-answer blur-save variant.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ],
@@ -4053,7 +4071,7 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "Inline save failures keep the editor open and render the shared inline error banner copy. profile_self_inline_save_error captures a real prompt inline save failure through ProfileEditController.",
+              "notes": "Inline save failures keep the relevant field/card visible and render error copy within the owning CatchField/CatchSection chrome. profile_self_inline_save_error predates the contained prompt-pair migration and should be refreshed against the inline prompt answer error state.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ],
@@ -4077,6 +4095,21 @@
               "notes": "profile_self_preview_tab captures the full ProfileScreen route opened directly on Preview through the initial-tab seam, with no-network profile-surface fixture data.",
               "previewIds": [
                 "ProfileScreen/Self section states"
+              ]
+            },
+            {
+              "id": "insights_tab_default",
+              "kind": "populated",
+              "status": "captured",
+              "captureIds": [
+                "profile_self_insights_tab"
+              ],
+              "tests": [
+                "test/profile/profile_widgets_test.dart"
+              ],
+              "notes": "profile_self_insights_tab captures the full ProfileScreen route opened directly on Insights through the typed initial-tab seam, retaining the same shared title and pinned tab rail used by Edit and Preview.",
+              "previewIds": [
+                "ProfileScreen/Self route states"
               ]
             },
             {
@@ -4472,6 +4505,11 @@
           ],
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
+            "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
+            "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+            "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+            "lib/core/widgets/catch_tabbed_screen.dart",
+            "lib/core/widgets/catch_tab_rail.dart",
             "lib/hosts/presentation/host_home_screen_state.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/events/data/event_repository.dart"
@@ -4804,7 +4842,7 @@
             "catch.chip",
             "catch.field",
             "catch.icon_button",
-            "catch.segmented_control",
+            "catch.tab_rail",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -4847,8 +4885,8 @@
             {
               "id": "host-clubs-reference",
               "kind": "external",
-              "status": "available",
-              "notes": "The repo-pinned Host Organizer reference is registered. The 2026-07-10 production full-shell comparison includes navigation chrome and is within the aggregate advisory threshold at mismatch 12.02%, meanDelta 7.79, maxDelta 240, masked 260416.",
+        "status": "blocked",
+        "notes": "The repo-pinned Host Organizer source is retained as historical evidence, but its four-tab layout predates the consolidated Edit/Insights/Preview workspace and is no longer registered as an active comparison. A current canonical Host Clubs export is required before pixel parity can close again.",
               "path": "design/reference_screens/screen.host.clubs/organizer.png"
             },
             {
@@ -4910,13 +4948,13 @@
               ]
             },
             {
-              "id": "organizer_overview",
+              "id": "consolidated_edit",
               "kind": "populated",
               "status": "captured",
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Owned clubs now default to the Organizer overview with the selected-club header, payout callout, metrics, public page row, team summary, trend strip, and manage rows. Edit, Insights, and Preview remain separately captured through dedicated tab states.",
+              "notes": "Owned clubs now default to one consolidated Edit workspace. The title-only shared header identifies the club, while the page stacks payout readiness, current metrics, team and manage rows, profile fields, event defaults, and owner-only management controls. Provider-backed analytics and the read-only public club surface live exclusively in the separately captured Insights and Preview tabs.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -4931,7 +4969,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Co-hosted clubs show Host team role language and suppress owner-only payout/team editing controls. HostClubsScreenState owns the owner/co-host display decision.",
+              "notes": "Co-hosted clubs begin directly with Identity and suppress owner-only payout/team editing controls; the redundant role/activity metadata row is absent. HostClubsScreenState owns the owner/co-host capability decision.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5101,7 +5139,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "HostInsightsScreen requires an exact operated-club id and renders Insights unavailable instead of silently falling back to the first club. Back navigation returns to Organizer.",
+              "notes": "HostInsightsScreen requires an exact operated-club id and renders Insights unavailable instead of silently falling back to the first club. Back navigation returns to Host Clubs.",
               "previewIds": [
                 "HostInsightsScreen/Dedicated route states"
               ]
@@ -5110,8 +5148,9 @@
               "id": "insights_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "The dedicated Insights route watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load. A deterministic route capture covers this state without the legacy Clubs tab rail.",
+              "notes": "HostClubInsightsPane watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton inside the ordinary HostClubsScaffold, preserving the same persistent rail used by Edit and Preview.",
               "previewIds": [
+                "HostClubsScreen/Route states",
                 "HostInsightsScreen/Dedicated route states"
               ],
               "captureIds": [
@@ -5122,8 +5161,9 @@
               "id": "insights_report",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostInsightsScreen renders exact organizer back/title/range chrome and HostAnalyticsReportView renders backend metrics, a real demand/bookings dual-series trend with adjacent granularity control, top events, reviews/saves, and data quality. The routed 390x812 capture and tall report capture are registered; reference export/comparison remains open under HOST-V2-INSIGHTS-REFERENCE-001.",
+              "notes": "HostClubInsightsPane begins directly with range and granularity controls inside the shared HostClubsScaffold for ordinary tab navigation, while HostInsightsScreen preserves exact-id utility/deep-link handling. HostAnalyticsReportView renders backend metrics, a real demand/bookings dual-series trend with adjacent granularity control, top events, reviews/saves, and data quality. The tall report capture uses the shared workspace; the routed 390x812 capture retains deep-link evidence.",
               "previewIds": [
+                "HostClubsScreen/Route states",
                 "HostInsightsScreen/Dedicated route states"
               ],
               "captureIds": [
@@ -5135,8 +5175,9 @@
               "id": "insights_error",
               "kind": "error",
               "status": "captured",
-              "notes": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
+              "notes": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query inside the shared HostClubsScaffold. Captures cover generic and offline analytics errors without losing workspace chrome.",
               "previewIds": [
+                "HostClubsScreen/Route states",
                 "HostInsightsScreen/Dedicated route states"
               ],
               "captureIds": [
@@ -5149,9 +5190,11 @@
               "kind": "populated",
               "status": "captured",
               "tests": [
-                "test/hosts/host_operations_screen_test.dart"
+                "test/hosts/host_operations_screen_test.dart",
+                "test/clubs/clubs_controllers_test.dart",
+                "test/clubs/club_detail_read_only_preview_test.dart"
               ],
-              "notes": "_HostClubPreviewPane renders club description and receives a typed public-preview route callback from _HostClubsScaffold. Coordinate with screen.host.club.detail so public-preview display state shares fixtures.",
+              "notes": "ClubDetailReadOnlyPreviewSliver renders the canonical consumer Club Detail composition directly inside HostClubsScaffold. It hydrates from clubDetailViewModelProvider, removes route Back/Share and membership chrome, preserves consumer schedule visuals, clears button/tap semantics, and blocks pointer interaction without a second preview action.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5181,7 +5224,7 @@
               "id": "text_scale_2",
               "kind": "accessibility",
               "status": "captured",
-              "notes": "Host Clubs default Organizer overview has a deterministic text-scale 2.0 capture. Add text-scale captures for expanded inline editors, analytics metrics, and preview text if those layouts diverge.",
+              "notes": "Host Clubs consolidated Edit workspace has a deterministic text-scale 2.0 capture. Add text-scale captures for expanded inline editors, analytics metrics, and preview text if those layouts diverge.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5193,7 +5236,7 @@
               "id": "reduced_motion",
               "kind": "accessibility",
               "status": "captured",
-              "notes": "Host Clubs default Organizer overview has a deterministic reduced-motion capture. Review tab switching, inline editor expansion, menus, sheets, and future analytics motion under reduced-motion settings.",
+              "notes": "Host Clubs consolidated Edit workspace has a deterministic reduced-motion capture. Review tab switching, inline editor expansion, menus, sheets, and future analytics motion under reduced-motion settings.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5205,7 +5248,7 @@
               "id": "light_dark",
               "kind": "theme",
               "status": "captured",
-              "notes": "Host Clubs default Organizer overview has paired light/dark deterministic capture output. Add paired theme captures for insights, preview, and mutation/error overlays if those layouts diverge.",
+              "notes": "Host Clubs consolidated Edit workspace has paired light/dark deterministic capture output. Add paired theme captures for insights, preview, and mutation/error overlays if those layouts diverge.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5218,12 +5261,12 @@
             {
               "id": "DS-HOST-CLUBS-001",
               "status": "closed",
-              "nextAction": "Signed-out, default organizer overview, co-host, empty, loading, generic/offline load errors, analytics loading/error/offline/report, payout provider loading/ready/restricted/error/offline, inline editor pending/error/offline, payout action pending/error/offline, host-team mutation pending/error/offline, text-scale, reduced-motion, light/dark, insights report, and preview tab variants are captured. Additional pixel variants depend on future Claude exports because the local bundle exposes only the organizer baseline for this screen."
+              "nextAction": "Signed-out, consolidated Edit, co-host, empty, loading, generic/offline load errors, analytics loading/error/offline/report, payout provider loading/ready/restricted/error/offline, inline editor pending/error/offline, payout action pending/error/offline, host-team mutation pending/error/offline, text-scale, reduced-motion, light/dark, insights report, and preview tab variants are captured. A current canonical Host Clubs export is still required for renewed pixel comparison."
             },
             {
               "id": "DS-HOST-CLUBS-002",
               "status": "closed",
-              "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostClubsScreenState. _HostClubsScaffold defaults to the Organizer overview and routes its public preview, payout/edit, insights, settings, and club-switch actions through typed callbacks. Inline edit and payout actions now have controller mutations; Host Team sheet/dialog states are public; HostClubInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
+              "nextAction": "Selected club, selected tab, and owner/co-host capability live in HostClubsScreenState. HostClubsScaffold defaults to Edit and shares CatchTabbedScreenScaffold, CatchTabControllerRail, TabBarView, and CatchTabbedPageScrollView with ProfileScreen; the former organizer summary and profile/default-management sections share that page, while preview actions select the direct embedded consumer preview. Payout/edit, settings, and club switching remain typed callbacks. Broader provider-free section extraction remains part of GOAL-DS-002."
             },
             {
               "id": "DS-HOST-CLUBS-003",
@@ -5232,8 +5275,8 @@
             },
             {
               "id": "DS-HOST-CLUBS-004",
-              "status": "closed",
-              "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
+              "status": "blocked",
+              "nextAction": "The old four-tab Host Organizer export is retained only as historical evidence and was retired from the active reference manifest after Organizer merged into Edit. Resume pixel comparison when a canonical consolidated Edit/Insights/Preview Host Clubs export exists."
             }
           ]
         },
@@ -5361,13 +5404,14 @@
               ]
             },
             {
-              "id": "host_schedule_hosted",
+              "id": "public_preview_schedule",
               "kind": "populated",
               "status": "captured",
               "tests": [
-                "test/explore/explore_widgets_test.dart"
+                "test/clubs/clubs_controllers_test.dart",
+                "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "ClubDetailBody passes isHost into ClubScheduleSection so host route events use HOSTED badge and host event tile status while empty schedules keep public profile copy. Add additional schedule-row captures only if long titles, live/past states, or event tap routing become visually distinct.",
+              "notes": "ClubDetailBodyState.publicPreview preserves consumer display policy, so host public-preview routes and the embedded Preview render no HOSTED badge or host event status. Refresh host_club_detail_public after this policy correction.",
               "previewIds": [
                 "ClubDetailScreen/Public preview states"
               ],
@@ -5379,7 +5423,7 @@
               "id": "host_schedule_empty",
               "kind": "empty",
               "status": "captured",
-              "notes": "ClubScheduleSection keeps public empty-schedule copy on the host public-profile route while host-owned rows still use hosted schedule treatment. Keep operational Add event actions in Host Home/Host Clubs unless the Host Club Detail design contract intentionally moves them here.",
+              "notes": "ClubScheduleSection keeps consumer empty-schedule copy on host public-preview surfaces. Operational Add event actions remain in Host Home and Host Clubs.",
               "previewIds": [
                 "ClubDetailScreen/Public preview states"
               ],
@@ -10199,7 +10243,6 @@
             "event_location_map_loading",
             "event_location_map_error",
             "event_location_map_not_found",
-            "event_location_map_no_coordinate",
             "event_location_map_text_scale_2",
             "event_location_map_reduced_motion"
           ],
@@ -10256,21 +10299,6 @@
               ],
               "captureIds": [
                 "event_location_map_not_found"
-              ]
-            },
-            {
-              "id": "no_exact_coordinate",
-              "kind": "empty",
-              "status": "captured",
-              "notes": "EventLocationMapScreen renders Location unavailable when Event.hasExactStartingPoint is false.",
-              "previewIds": [
-                "EventLocationMapScreen/Map states"
-              ],
-              "captureIds": [
-                "event_location_map_no_coordinate"
-              ],
-              "tests": [
-                "test/events/events_widgets_test.dart"
               ]
             },
             {
@@ -10366,12 +10394,12 @@
             {
               "id": "DP-EVENT-MAP-001",
               "status": "closed",
-              "nextAction": "Widgetbook now covers route loading/error/not-found, no coordinate, pinned map, summary card, disabled network tiles, and addon-driven text scale, reduced motion, and light/dark review states."
+              "nextAction": "Widgetbook covers route loading/error/not-found, pinned map, summary card, disabled network tiles, and addon-driven text scale, reduced motion, and light/dark review states."
             },
             {
               "id": "DP-EVENT-MAP-002",
               "status": "closed",
-              "nextAction": "Closed by deterministic captures for route loading, route error, event not found, no coordinate, text scale, reduced motion, and paired light/dark output."
+              "nextAction": "Closed by deterministic captures for route loading, route error, event not found, text scale, reduced motion, and paired light/dark output."
             },
             {
               "id": "DP-EVENT-MAP-003",

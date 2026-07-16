@@ -9,34 +9,31 @@ export const RUN_STATUSES = Object.freeze([
   "cancelled",
 ]);
 
-export const PRIMARY_STAGES = Object.freeze([
-  "incoming",
-  "verify",
-  "resolve",
-  "ready",
-]);
-
-export const LIFECYCLE_STATUSES = Object.freeze([
-  "active",
-  "published",
-  "rejected",
-  "expired",
-  "cancelled",
-  "taken_down",
-]);
-
-const ALLOWED_TRANSITIONS = Object.freeze({
-  incoming: new Set(["verify", "resolve", "ready"]),
-  verify: new Set(["resolve", "ready"]),
-  resolve: new Set(["verify", "ready"]),
-  ready: new Set(["resolve"]),
+export const MIN_WORK_ITEMS_PER_RUN = 1;
+export const MAX_WORK_ITEMS_PER_RUN = 10_000;
+export const SUPPORTED_EXECUTION_MODES = Object.freeze(["shadow"]);
+export const PLATFORM_CAPABILITY_CEILING = Object.freeze({
+  network: false,
+  modelCalls: false,
+  publicWrites: false,
+  ruleDeployment: false,
 });
 
 export function assertRun(run) {
   invariant(run && typeof run === "object", "INVALID_RUN", "Run must be an object.");
   invariant(validId(run.runId), "INVALID_RUN", "Run has an invalid runId.", {runId: run.runId});
   invariant(RUN_STATUSES.includes(run.status), "INVALID_RUN", "Run has an invalid status.", {status: run.status});
-  invariant(run.mode === "shadow", "UNSAFE_MODE", "Only shadow execution is implemented.", {mode: run.mode});
+  invariant(SUPPORTED_EXECUTION_MODES.includes(run.mode), "UNSAFE_MODE",
+    "Only registered platform execution modes are implemented.",
+    {mode: run.mode});
+  invariant(
+    Number.isSafeInteger(run.budget?.limits?.workItems) &&
+      run.budget.limits.workItems >= MIN_WORK_ITEMS_PER_RUN &&
+      run.budget.limits.workItems <= MAX_WORK_ITEMS_PER_RUN,
+    "RUN_SHARD_REQUIRED",
+    `Runs are limited to ${MAX_WORK_ITEMS_PER_RUN} work items.`,
+    {workItemBudget: run.budget?.limits?.workItems ?? null}
+  );
   return run;
 }
 
@@ -44,15 +41,15 @@ export function assertWorkItem(item) {
   invariant(item && typeof item === "object", "INVALID_WORK_ITEM", "Work item must be an object.");
   invariant(validId(item.workItemId), "INVALID_WORK_ITEM", "Work item has an invalid id.", {workItemId: item.workItemId});
   invariant(validId(item.runId), "INVALID_WORK_ITEM", "Work item has an invalid run id.", {runId: item.runId});
-  invariant(PRIMARY_STAGES.includes(item.primaryStage), "INVALID_WORK_ITEM", "Work item has an invalid primary stage.", {
+  invariant(validWorkflowToken(item.primaryStage), "INVALID_WORK_ITEM", "Work item has an invalid primary stage.", {
     stage: item.primaryStage,
   });
   invariant(Array.isArray(item.taskFlags), "INVALID_WORK_ITEM", "Work item taskFlags must be an array.");
   invariant(Array.isArray(item.blockers), "INVALID_WORK_ITEM", "Work item blockers must be an array.");
-  invariant(LIFECYCLE_STATUSES.includes(item.lifecycleStatus), "INVALID_WORK_ITEM", "Work item has an invalid lifecycle status.", {
+  invariant(validWorkflowToken(item.lifecycleStatus), "INVALID_WORK_ITEM", "Work item has an invalid lifecycle status.", {
     lifecycleStatus: item.lifecycleStatus,
   });
-  invariant(["event", "organizer", "source_result", "source_profile"].includes(item.entityKind), "INVALID_WORK_ITEM", "Work item has an invalid entity kind.", {
+  invariant(validWorkflowToken(item.entityKind), "INVALID_WORK_ITEM", "Work item has an invalid entity kind.", {
     entityKind: item.entityKind,
   });
   invariant(typeof item.sourceEntity?.id === "string", "INVALID_WORK_ITEM", "Work item source entity id is required.");
@@ -63,12 +60,21 @@ export function assertWorkItem(item) {
   return item;
 }
 
-export function transitionWorkItem(item, nextStage, {at, reason, taskFlags, blockers} = {}) {
+export function transitionWorkItem(item, nextStage, {
+  at,
+  reason,
+  taskFlags,
+  blockers,
+  allowedTransitions,
+} = {}) {
   assertWorkItem(item);
-  invariant(PRIMARY_STAGES.includes(nextStage), "INVALID_TRANSITION", "Unknown work-item stage.", {nextStage});
+  invariant(validWorkflowToken(nextStage), "INVALID_TRANSITION", "Unknown work-item stage.", {nextStage});
+  invariant(allowedTransitions && typeof allowedTransitions === "object",
+    "INVALID_TRANSITION", "Workflow transition policy is required.");
   if (item.primaryStage !== nextStage) {
     invariant(
-      ALLOWED_TRANSITIONS[item.primaryStage].has(nextStage),
+      Array.isArray(allowedTransitions[item.primaryStage]) &&
+        allowedTransitions[item.primaryStage].includes(nextStage),
       "INVALID_TRANSITION",
       `Cannot transition work item from ${item.primaryStage} to ${nextStage}.`,
       {workItemId: item.workItemId, from: item.primaryStage, to: nextStage}
@@ -104,4 +110,9 @@ export function safeId(value) {
 
 export function uniqueSorted(values) {
   return [...new Set((values ?? []).filter(Boolean).map(String))].sort();
+}
+
+function validWorkflowToken(value) {
+  return typeof value === "string" &&
+    /^[a-z][a-z0-9_]{0,79}$/.test(value);
 }

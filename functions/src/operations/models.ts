@@ -2,6 +2,8 @@ export type JsonObject = Record<string, unknown>;
 export type IsoDateTime = string;
 export type Sha256 = string;
 
+export const MAX_OPERATION_WORK_ITEMS_PER_RUN = 10_000;
+
 export interface OperationActor {
   actorType: "human" | "agent" | "system";
   actorId: string;
@@ -79,18 +81,9 @@ export type WorkItemLifecycleStatus =
   | "published"
   | "terminal";
 
-export type WorkItemPrimaryStage =
-  | "incoming"
-  | "verify"
-  | "resolve"
-  | "ready";
+export type WorkItemPrimaryStage = string;
 
-export type WorkItemOutcome =
-  | "published"
-  | "rejected"
-  | "expired"
-  | "cancelled"
-  | "taken_down";
+export type WorkItemOutcome = string;
 
 export interface FieldProvenance {
   field: string;

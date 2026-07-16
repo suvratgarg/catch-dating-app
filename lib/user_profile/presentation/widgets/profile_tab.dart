@@ -4,7 +4,6 @@ import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -46,7 +45,7 @@ class ProfileTab extends ConsumerWidget {
       builder: (context, children) => ListView(
         key: scrollViewKey,
         physics: physics,
-        padding: CatchInsets.formEditBodyRelaxed,
+        padding: CatchInsets.formEditBodyRelaxed.copyWith(bottom: 0),
         children: [
           Center(
             child: ConstrainedBox(
@@ -62,6 +61,7 @@ class ProfileTab extends ConsumerWidget {
               ),
             ),
           ),
+          const CatchScrollTerminalPadding(),
         ],
       ),
     );
@@ -84,7 +84,7 @@ class ProfileTabSliverBody extends ConsumerWidget {
       user: user,
       uploadState: uploadState,
       builder: (context, children) => SliverPadding(
-        padding: CatchInsets.formEditBodyRelaxed,
+        padding: CatchInsets.formEditBodyRelaxed.copyWith(bottom: 0),
         sliver: SliverToBoxAdapter(
           child: Center(
             child: ConstrainedBox(
@@ -126,6 +126,10 @@ class ProfileTabContent extends ConsumerStatefulWidget {
 }
 
 class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
+  static const _firstPromptPadding = EdgeInsets.only(top: CatchSpacing.s3);
+  static const _promptCardPadding = EdgeInsets.only(top: CatchSpacing.micro10);
+  static const _promptAddPadding = EdgeInsets.only(top: CatchSpacing.s1);
+
   String? _expandedField;
 
   bool _isExpanded(String fieldName) => _expandedField == fieldName;
@@ -152,8 +156,15 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
       uploadState: uploadState,
     );
     const photoActions = SelfProfilePhotoIntentFactory();
+    final visiblePromptSlots = editState.promptSlots
+        .where(
+          (slot) =>
+              slot.index < editState.completedPromptCount ||
+              slot.index == editState.completedPromptCount,
+        )
+        .toList(growable: false);
     final prompts = [
-      for (final slot in editState.promptSlots)
+      for (final slot in visiblePromptSlots)
         ProfilePromptEntry(
           user: user,
           slot: slot,
@@ -220,10 +231,22 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                   completedPromptCount: editState.completedPromptCount,
                   maxProfilePromptAnswers: maxProfilePromptAnswers,
                 ),
-            children: prompts,
+            showInternalDividers: false,
+            children: [
+              for (var index = 0; index < prompts.length; index++)
+                Padding(
+                  padding: index == 0
+                      ? _firstPromptPadding
+                      : visiblePromptSlots[index].isAddAffordance
+                      ? _promptAddPadding
+                      : _promptCardPadding,
+                  child: prompts[index],
+                ),
+            ],
           ),
           CatchSection.fieldRows(
             title: context.l10n.userProfileProfileTabTitleAboutYou,
+            dividerInset: CatchFieldRow.textLaneInset,
             children: [
               for (final row in editState.aboutSectionRows)
                 ProfileFieldRow(
@@ -237,6 +260,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
           CatchSection.fieldRows(
             title: context.l10n.userProfileProfileTabTitleRunning,
+            dividerInset: CatchFieldRow.textLaneInset,
             children: [
               for (final row in editState.runningRows)
                 ProfileFieldRow(
@@ -250,6 +274,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
           CatchSection.fieldRows(
             title: context.l10n.userProfileProfileTabTitleLifestyle,
+            dividerInset: CatchFieldRow.textLaneInset,
             children: [
               for (final row in editState.lifestyleRows)
                 ProfileFieldRow(
@@ -263,7 +288,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
         ],
       ),
-      gapH32,
     ]);
   }
 }
@@ -287,7 +311,7 @@ class ProfileFieldRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return descriptor.map(
-      readOnly: (descriptor) => CatchField.nav(
+      readOnly: (descriptor) => CatchField.read(
         icon: descriptor.icon,
         title: descriptor.label,
         body: descriptor.body,
@@ -296,9 +320,12 @@ class ProfileFieldRow extends StatelessWidget {
       text: (descriptor) => ProfileDirectTextEntry(
         icon: descriptor.icon,
         label: descriptor.label,
-        value: descriptor.value,
         currentValue: descriptor.currentValue,
         currentFieldValue: descriptor.currentFieldValue,
+        emptyValueText: descriptor.emptyValueText,
+        inputHint: descriptor.inputHint,
+        leadingUnit: descriptor.leadingUnit,
+        showClearButton: descriptor.showClearButton,
         fieldName: descriptor.fieldName,
         patchForValue: descriptor.patchForValue,
         keyboardType: descriptor.keyboardType,
@@ -328,7 +355,7 @@ class ProfileFieldRow extends StatelessWidget {
             value: descriptor.value,
             fieldName: descriptor.fieldName,
             patchForValue: descriptor.patchForValue,
-            placeholder: descriptor.placeholder,
+            emptyValueText: descriptor.emptyValueText,
             isExpanded: isExpanded(descriptor.fieldName),
             onTap: () => onToggle(descriptor.fieldName),
             onSaved: onSaved,
@@ -340,7 +367,7 @@ class ProfileFieldRow extends StatelessWidget {
         values: descriptor.values,
         selected: descriptor.selected,
         fieldName: descriptor.fieldName,
-        placeholder: descriptor.placeholder,
+        emptyValueText: descriptor.emptyValueText,
         patchForValues: descriptor.patchForValues,
         patchForLatestProfile: descriptor.patchForLatestProfile,
         isExpanded: isExpanded(descriptor.fieldName),
@@ -378,8 +405,11 @@ class ProfileDirectTextEntry extends StatelessWidget {
     super.key,
     required this.icon,
     required this.label,
-    required this.value,
     required this.fieldName,
+    this.emptyValueText,
+    this.inputHint,
+    this.leadingUnit,
+    this.showClearButton = false,
     this.currentValue,
     this.currentFieldValue,
     this.keyboardType,
@@ -392,7 +422,11 @@ class ProfileDirectTextEntry extends StatelessWidget {
 
   final IconData icon;
   final String label;
-  final String value;
+
+  final String? emptyValueText;
+  final String? inputHint;
+  final String? leadingUnit;
+  final bool showClearButton;
   final String fieldName;
   final String? currentValue;
   final Object? currentFieldValue;
@@ -408,9 +442,12 @@ class ProfileDirectTextEntry extends StatelessWidget {
     return ProfileDirectTextEntryField(
       icon: icon,
       label: label,
-      value: value,
-      currentValue: currentValue ?? value,
-      currentFieldValue: currentFieldValue ?? currentValue ?? value,
+      emptyValueText: emptyValueText,
+      inputHint: inputHint,
+      leadingUnit: leadingUnit,
+      showClearButton: showClearButton,
+      currentValue: currentValue ?? '',
+      currentFieldValue: currentFieldValue ?? currentValue,
       fieldName: fieldName,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,
@@ -435,7 +472,7 @@ class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
     required this.onSaved,
     required this.onCancel,
     this.value,
-    this.placeholder,
+    this.emptyValueText,
   });
 
   final IconData icon;
@@ -444,7 +481,7 @@ class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
   final T? value;
   final String fieldName;
   final UpdateUserProfilePatch Function(T? value) patchForValue;
-  final String? placeholder;
+  final String? emptyValueText;
   final bool isExpanded;
   final VoidCallback onTap;
   final VoidCallback onSaved;
@@ -452,7 +489,7 @@ class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayValue = value?.label ?? placeholder ?? label;
+    final displayValue = value?.label ?? emptyValueText ?? label;
     return ProfileInlineSingleChoiceEntryEditor<T>(
       key: ValueKey('inline-$fieldName-entry-editor'),
       icon: icon,
@@ -460,6 +497,7 @@ class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
       value: displayValue,
       values: values,
       currentValue: value,
+      emptyValueText: emptyValueText,
       fieldName: fieldName,
       patchForValue: patchForValue,
       isExpanded: isExpanded,
@@ -479,13 +517,13 @@ class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
     required this.values,
     required this.selected,
     required this.fieldName,
-    required this.placeholder,
     required this.patchForValues,
     required this.isExpanded,
     required this.onTap,
     required this.onSaved,
     required this.onCancel,
     this.patchForLatestProfile,
+    this.emptyValueText,
     this.isAddAffordanceWhenEmpty = true,
   });
 
@@ -494,7 +532,7 @@ class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
   final List<T> values;
   final List<T> selected;
   final String fieldName;
-  final String placeholder;
+  final String? emptyValueText;
   final UpdateUserProfilePatch Function(List<T> values) patchForValues;
   final UpdateUserProfilePatch Function(UserProfile user, List<T> values)?
   patchForLatestProfile;
@@ -508,7 +546,7 @@ class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEmpty = selected.isEmpty;
     final displayValue = isEmpty
-        ? placeholder
+        ? emptyValueText ?? label
         : selected.map((v) => v.label).join(', ');
     return ProfileInlineMultiChoiceEntryEditor<T>(
       key: ValueKey('inline-$fieldName-entry-editor'),
@@ -517,6 +555,7 @@ class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
       value: displayValue,
       values: values,
       currentValues: selected,
+      emptyValueText: emptyValueText,
       fieldName: fieldName,
       patchForValues: patchForValues,
       patchForLatestProfile: patchForLatestProfile,
@@ -554,7 +593,6 @@ class ProfilePromptEntry extends StatelessWidget {
       key: ValueKey('inline-${slot.fieldName}-entry-editor'),
       icon: CatchIcons.formatQuoteRounded,
       label: slot.definition.title,
-      value: text.isNotEmpty ? text : slot.definition.placeholder,
       currentAnswer: text,
       currentPromptId: slot.currentPromptId,
       currentPrompts: user.profilePrompts,
@@ -590,7 +628,7 @@ class ProfilePhotosSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final completedCount = state.profilePhotos.length;
 
-    return CatchSection.divided(
+    return CatchSection.fieldRows(
       title: context.l10n.userProfileProfileTabTitlePhotos,
       count: context.l10n
           .userProfileProfileTabVisiblecopyCompletedcountOfMaximumprofilephotocountAdded(
@@ -598,13 +636,16 @@ class ProfilePhotosSection extends StatelessWidget {
             maximumProfilePhotoCount: maximumProfilePhotoCount,
           ),
       first: first,
-      child: PhotoGrid(
-        profilePhotos: state.profilePhotos,
-        loadingIndices: state.loadingIndices,
-        onSlotTapped: onSlotTapped,
-        canDeletePhotos: state.canDeletePhotos,
-        onDeletePhoto: state.canDeletePhotos ? onDeletePhoto : null,
-        onReorderPhoto: onReorderPhoto,
+      child: Padding(
+        padding: const EdgeInsets.only(top: CatchSpacing.s3),
+        child: PhotoGrid(
+          profilePhotos: state.profilePhotos,
+          loadingIndices: state.loadingIndices,
+          onSlotTapped: onSlotTapped,
+          canDeletePhotos: state.canDeletePhotos,
+          onDeletePhoto: state.canDeletePhotos ? onDeletePhoto : null,
+          onReorderPhoto: onReorderPhoto,
+        ),
       ),
     );
   }

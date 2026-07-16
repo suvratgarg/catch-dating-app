@@ -29,8 +29,8 @@ export interface ExternalEventDocument {
     name: string;
     address: string | null;
     placeId: string | null;
-    latitude: (number | null) | null;
-    longitude: (number | null) | null;
+    latitude: number | null;
+    longitude: number | null;
     notes: string | null;
   };
   locationDetails: string | null;

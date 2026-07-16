@@ -11,6 +11,11 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  test('root screen title geometry has no post-safe-area top inset', () {
+    expect(CatchInsets.screenTitleBlock.top, 0);
+    expect(CatchInsets.screenTitleBlockCompact, CatchInsets.screenTitleBlock);
+  });
+
   testWidgets('CatchTopBar renders the handoff-sized title row', (
     tester,
   ) async {
@@ -44,8 +49,12 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _wrap(
-        const CatchScreenTopBar(title: 'Activity', subtitle: 'Notifications'),
+      _wrapScreenTopBar(
+        (context) => CatchScreenTopBar(
+          context: context,
+          title: 'Activity',
+          subtitle: 'Notifications',
+        ),
       ),
     );
 
@@ -60,6 +69,43 @@ void main() {
       ),
     );
     expect(find.text('Notifications'), findsOneWidget);
+    expect(tester.getTopLeft(find.text('Activity')).dy, 0);
+  });
+
+  testWidgets('CatchScreenTopBar inherits the accessible text scale', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrapScreenTopBar(
+        (context) => CatchScreenTopBar(context: context, title: 'Chats'),
+        textScale: 2,
+      ),
+    );
+
+    final titleContext = tester.element(find.text('Chats'));
+    expect(MediaQuery.textScalerOf(titleContext).scale(1), 2);
+    expect(
+      tester.getSize(find.byType(CatchTopBar)).height,
+      greaterThan(CatchLayout.topBarHeight),
+    );
+  });
+
+  testWidgets('CatchScreenHeaderTitle supports reviewed two-line titles', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: CatchScreenHeaderTitle.block(
+            title: 'Good evening, Mira',
+            titleMaxLines: 2,
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.widget<Text>(find.text('Good evening, Mira')).maxLines, 2);
   });
 
   testWidgets('CatchTopBar wires leading and action controls', (tester) async {
@@ -92,6 +138,84 @@ void main() {
     await tester.tap(find.byIcon(CatchIcons.settingsOutlined));
     await tester.pump();
     expect(actionTaps, 1);
+  });
+
+  testWidgets('CatchTopBarActionGroup owns peer gaps and trailing gutter', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchTopBar(
+          title: 'Home',
+          showBackButton: false,
+          actions: [
+            CatchIconAction(
+              key: const ValueKey('top-action-share'),
+              icon: CatchIcons.share,
+              tooltip: 'Share',
+              onPressed: () {},
+            ),
+            CatchIconAction(
+              key: const ValueKey('top-action-save'),
+              icon: CatchIcons.savedOutlined,
+              tooltip: 'Save',
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final first = tester.getRect(
+      find.byKey(const ValueKey('top-action-share')),
+    );
+    final second = tester.getRect(
+      find.byKey(const ValueKey('top-action-save')),
+    );
+    expect(second.left - first.right, CatchSpacing.s2);
+    expect(390 - second.right, CatchSpacing.screenPx);
+    expect(find.byType(CatchTopBarActionGroup), findsOneWidget);
+  });
+
+  testWidgets('CatchScreenHeaderTitle uses the same action group', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: SizedBox(
+            width: 390,
+            child: CatchScreenHeaderTitle(
+              title: 'Your profile',
+              actions: [
+                SizedBox.square(
+                  key: ValueKey('header-action-one'),
+                  dimension: 40,
+                ),
+                SizedBox.square(
+                  key: ValueKey('header-action-two'),
+                  dimension: 40,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final first = tester.getRect(
+      find.byKey(const ValueKey('header-action-one')),
+    );
+    final second = tester.getRect(
+      find.byKey(const ValueKey('header-action-two')),
+    );
+    expect(second.left - first.right, CatchSpacing.s2);
   });
 
   testWidgets('CatchIconAction uses the shared app-bar nav extent by default', (
@@ -467,6 +591,23 @@ Widget _wrapWithTextScale(
       ),
     ),
   );
+}
+
+Widget _wrapScreenTopBar(
+  PreferredSizeWidget Function(BuildContext context) appBarBuilder, {
+  double? textScale,
+}) {
+  Widget home = Builder(
+    builder: (context) =>
+        Scaffold(appBar: appBarBuilder(context), body: const SizedBox.shrink()),
+  );
+  if (textScale != null) {
+    home = MediaQuery(
+      data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+      child: Center(child: SizedBox(width: 390, height: 812, child: home)),
+    );
+  }
+  return MaterialApp(theme: AppTheme.light, home: home);
 }
 
 Material _topBarMaterial(WidgetTester tester) {

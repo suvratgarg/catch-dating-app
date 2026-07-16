@@ -1,16 +1,15 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
-    show CatchFieldInsetScope;
+    show CatchField, CatchFieldInsetScope;
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:flutter/material.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/widgets/catch_divider.dart';
 
@@ -145,11 +144,35 @@ class CatchSliverPageBody extends StatelessWidget {
   }
 }
 
+/// Box-native terminal clearance for root scroll views.
+///
+/// Use this as the final child of a [ListView] or other box scroll owner. It
+/// clears floating shell chrome when present, otherwise the device bottom safe
+/// area, then adds Catch's standard bottom breathing space.
+class CatchScrollTerminalPadding extends StatelessWidget {
+  const CatchScrollTerminalPadding({
+    super.key,
+    this.extra = CatchSpacing.screenPb,
+    this.includeSafeArea = true,
+  });
+
+  final double extra;
+  final bool includeSafeArea;
+
+  @override
+  Widget build(BuildContext context) {
+    final height = includeSafeArea
+        ? AppShellActiveTab.scrollTerminalClearanceOf(context, extra: extra)
+        : extra;
+    return SizedBox(height: height);
+  }
+}
+
 /// Sliver-native terminal clearance for root scroll views.
 ///
 /// Use this as the final sliver when a screen owns a full-height
-/// [CustomScrollView] and needs enough room for home-indicator safe area plus
-/// Catch's standard bottom breathing space.
+/// [CustomScrollView]. It shares the shell-aware and safe-area-aware clearance
+/// contract with [CatchScrollTerminalPadding].
 class CatchSliverTerminalPadding extends StatelessWidget {
   const CatchSliverTerminalPadding({
     super.key,
@@ -162,13 +185,12 @@ class CatchSliverTerminalPadding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final safeBottomInset = includeSafeArea
-        ? math.max(
-            MediaQuery.paddingOf(context).bottom,
-            MediaQuery.viewPaddingOf(context).bottom,
-          )
-        : 0.0;
-    return SliverToBoxAdapter(child: SizedBox(height: safeBottomInset + extra));
+    return SliverToBoxAdapter(
+      child: CatchScrollTerminalPadding(
+        extra: extra,
+        includeSafeArea: includeSafeArea,
+      ),
+    );
   }
 }
 
@@ -267,6 +289,7 @@ class CatchSection extends StatelessWidget {
     this.footer,
     this.focused = false,
     this.hasError = false,
+    this._fieldRows = false,
     this.children,
     this.child,
   }) : assert(
@@ -322,9 +345,10 @@ class CatchSection extends StatelessWidget {
     bool first = false,
     Widget? footer,
     Color? dividerColor,
+    double? dividerInset,
     CatchDividerRole dividerRole = CatchDividerRole.section,
     Color? titleColor,
-    double bodyGap = CatchSpacing.micro10,
+    double bodyGap = CatchFieldTokens.sectionRuleGap,
     bool showInternalDividers = true,
     List<Widget>? children,
     Widget? child,
@@ -337,13 +361,54 @@ class CatchSection extends StatelessWidget {
          first: first,
          variant: _CatchSectionVariant.divided,
          dividerColor: dividerColor,
-         dividerIndent: CatchLayout.fieldRowTextLaneInset,
+         dividerIndent: dividerInset ?? double.nan,
          dividerRole: dividerRole,
          internalDividerRole: CatchDividerRole.fieldRow,
          titleColor: titleColor,
          bodyGap: bodyGap,
          showInternalDividers: showInternalDividers,
          footer: footer,
+         fieldRows: true,
+         children: children,
+         child: child,
+       );
+
+  /// Contained FieldSection variant from the form-field handoff. Unlike the
+  /// generic card constructor, this surface clips field rows, owns a 1px
+  /// line/ink focus border, and never adds generic card elevation.
+  const CatchSection.containedFieldRows({
+    Key? key,
+    String? title,
+    Object? count,
+    Widget? trailing,
+    Widget? footer,
+    Color? backgroundColor,
+    Color? borderColor,
+    Color? titleColor,
+    double? dividerInset,
+    bool showInternalDividers = true,
+    bool focused = false,
+    bool hasError = false,
+    List<Widget>? children,
+    Widget? child,
+  }) : this._(
+         key: key,
+         title: title,
+         count: count,
+         trailing: trailing,
+         variant: _CatchSectionVariant.contained,
+         titleColor: titleColor,
+         bodyGap: CatchFieldTokens.sectionHeaderGap,
+         padding: EdgeInsets.zero,
+         backgroundColor: backgroundColor,
+         borderColor: borderColor,
+         elevation: CatchSurfaceElevation.none,
+         showInternalDividers: showInternalDividers,
+         footer: footer,
+         focused: focused,
+         hasError: hasError,
+         dividerIndent: dividerInset ?? double.nan,
+         fieldRows: true,
          children: children,
          child: child,
        );
@@ -440,6 +505,7 @@ class CatchSection extends StatelessWidget {
   final Widget? footer;
   final bool focused;
   final bool hasError;
+  final bool _fieldRows;
   final List<Widget>? children;
   final Widget? child;
 
@@ -450,7 +516,10 @@ class CatchSection extends StatelessWidget {
       _CatchSectionVariant.contained => _buildContained(context),
       _CatchSectionVariant.plain => _buildPlain(context),
     };
-    if (footer == null) return section;
+    if (footer == null ||
+        (_variant == _CatchSectionVariant.contained && _fieldRows)) {
+      return section;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [section, footer!],
@@ -465,6 +534,32 @@ class CatchSection extends StatelessWidget {
     final effectiveTitleColor =
         titleColor ?? (lead && activityAccent != null ? activityAccent : t.ink);
     final displayTitle = title?.trim();
+    if (_fieldRows) {
+      final fieldContent = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (displayTitle != null && displayTitle.isNotEmpty) ...[
+            _buildCatchSectionKicker(
+              context,
+              text: displayTitle,
+              count: count,
+              color: effectiveTitleColor,
+            ),
+            SizedBox(height: bodyGap),
+            CatchDivider(
+              color: dividerColor ?? CatchDivider.colorFor(t, dividerRole),
+              role: dividerRole,
+            ),
+          ],
+          CatchFieldInsetScope(flush: true, child: _body(context, t)),
+        ],
+      );
+      if (first) return fieldContent;
+      return Padding(
+        padding: const EdgeInsets.only(top: CatchSpacing.s6),
+        child: fieldContent,
+      );
+    }
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -506,6 +601,80 @@ class CatchSection extends StatelessWidget {
 
   Widget _buildContained(BuildContext context) {
     final t = CatchTokens.of(context);
+    final displayTitle = title?.trim();
+    final hasTitle = displayTitle != null && displayTitle.isNotEmpty;
+    final displayCount = count?.toString().trim();
+    final hasCount = displayCount != null && displayCount.isNotEmpty;
+    final sectionTrailing = trailing;
+    final sectionFooter = footer;
+    final hasHeader = hasTitle || hasCount || sectionTrailing != null;
+    final content = _fieldRows
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (hasHeader)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    CatchFieldTokens.rowHorizontalPadding,
+                    CatchFieldTokens.sectionHeaderTopPadding,
+                    CatchFieldTokens.rowHorizontalPadding,
+                    CatchFieldTokens.sectionHeaderBottomPadding,
+                  ),
+                  child: Row(
+                    children: [
+                      if (hasTitle)
+                        Expanded(
+                          child: CatchKicker(
+                            label: displayTitle,
+                            color: titleColor ?? t.ink2,
+                          ),
+                        ),
+                      if (!hasTitle) const Spacer(),
+                      if (hasCount)
+                        Text(
+                          displayCount,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                          style: CatchTextStyles.sectionCount(
+                            context,
+                            color: t.ink3,
+                          ),
+                        ),
+                      if (hasCount && sectionTrailing != null)
+                        const SizedBox(width: CatchSpacing.s3),
+                      if (sectionTrailing != null)
+                        DefaultTextStyle.merge(
+                          style: CatchTextStyles.sectionCount(
+                            context,
+                            color: t.ink3,
+                          ),
+                          child: sectionTrailing,
+                        ),
+                    ],
+                  ),
+                ),
+              _body(context, t),
+              if (sectionFooter != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    CatchFieldTokens.rowHorizontalPadding,
+                    CatchFieldTokens.sectionFooterTopPadding,
+                    CatchFieldTokens.rowHorizontalPadding,
+                    CatchFieldTokens.rowVerticalPadding,
+                  ),
+                  child: DefaultTextStyle.merge(
+                    style: CatchTextStyles.fieldLabel(
+                      context,
+                      color: t.ink3,
+                    ).copyWith(height: 1.5),
+                    child: sectionFooter,
+                  ),
+                ),
+            ],
+          )
+        : _sectionContent(context, t, contained: true);
     return CatchSectionFocusSurface(
       padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
       backgroundColor: backgroundColor,
@@ -515,10 +684,8 @@ class CatchSection extends StatelessWidget {
       boxShadow: boxShadow,
       focused: focused,
       hasError: hasError,
-      child: CatchFieldInsetScope(
-        flush: true,
-        child: _sectionContent(context, t, contained: true),
-      ),
+      fieldRows: _fieldRows,
+      child: CatchFieldInsetScope(flush: !_fieldRows, child: content),
     );
   }
 
@@ -618,28 +785,62 @@ class CatchSection extends StatelessWidget {
 
     final sectionChildren = children ?? const <Widget>[];
     if (sectionChildren.isEmpty) return const SizedBox.shrink();
+    final effectiveDividerIndent = _fieldRows && dividerIndent.isNaN
+        ? _automaticFieldDividerInset(sectionChildren)
+        : dividerIndent;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        for (var i = 0; i < sectionChildren.length; i++)
-          if (i == 0 || !showInternalDividers)
-            sectionChildren[i]
-          else
-            Stack(
-              children: [
-                sectionChildren[i],
-                Positioned(
-                  top: 0,
-                  left: dividerIndent,
-                  right: 0,
-                  child: CatchDivider(role: internalDividerRole),
-                ),
-              ],
-            ),
+        if (_fieldRows)
+          for (var i = 0; i < sectionChildren.length; i++)
+            if (!showInternalDividers || i == sectionChildren.length - 1)
+              sectionChildren[i]
+            else
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    bottom: -CatchStroke.hairline,
+                    left: effectiveDividerIndent,
+                    right: _variant == _CatchSectionVariant.contained
+                        ? CatchFieldTokens.rowHorizontalPadding
+                        : 0,
+                    child: CatchDivider(role: internalDividerRole),
+                  ),
+                  sectionChildren[i],
+                ],
+              )
+        else
+          for (var i = 0; i < sectionChildren.length; i++)
+            if (i == 0 || !showInternalDividers)
+              sectionChildren[i]
+            else
+              Stack(
+                children: [
+                  sectionChildren[i],
+                  Positioned(
+                    top: 0,
+                    left: effectiveDividerIndent,
+                    right: 0,
+                    child: CatchDivider(role: internalDividerRole),
+                  ),
+                ],
+              ),
       ],
     );
+  }
+
+  double _automaticFieldDividerInset(List<Widget> sectionChildren) {
+    final hasLeadingIcon = sectionChildren.whereType<CatchField>().any(
+      (field) => !field.add && (field.icon != null || field.prefixIcon != null),
+    );
+    final rowEdgeInset = _variant == _CatchSectionVariant.contained
+        ? CatchFieldTokens.rowHorizontalPadding
+        : 0.0;
+    return rowEdgeInset +
+        (hasLeadingIcon ? CatchFieldTokens.textLaneInset : 0.0);
   }
 }
 
@@ -655,6 +856,7 @@ class CatchSectionFocusSurface extends StatefulWidget {
     this.boxShadow,
     required this.focused,
     required this.hasError,
+    this.fieldRows = false,
   });
 
   final Widget child;
@@ -666,6 +868,7 @@ class CatchSectionFocusSurface extends StatefulWidget {
   final List<BoxShadow>? boxShadow;
   final bool focused;
   final bool hasError;
+  final bool fieldRows;
 
   @override
   State<CatchSectionFocusSurface> createState() =>
@@ -678,15 +881,35 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final effectiveFocused = widget.focused || _descendantFocused;
 
+    if (widget.fieldRows) {
+      final duration = MediaQuery.maybeOf(context)?.disableAnimations == true
+          ? Duration.zero
+          : CatchFieldTokens.standard;
+      return AnimatedContainer(
+        duration: duration,
+        curve: CatchFieldTokens.curve,
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          color: widget.backgroundColor ?? t.surface,
+          borderRadius: BorderRadius.circular(CatchFieldTokens.sectionRadius),
+          border: Border.all(
+            color: widget.hasError
+                ? t.danger
+                : widget.focused
+                ? t.ink
+                : widget.borderColor ?? t.line2,
+          ),
+        ),
+        child: Padding(padding: widget.padding, child: widget.child),
+      );
+    }
+
+    final effectiveFocused = widget.focused || _descendantFocused;
     return Focus(
       canRequestFocus: false,
       skipTraversal: true,
-      onFocusChange: (focused) {
-        if (_descendantFocused == focused) return;
-        setState(() => _descendantFocused = focused);
-      },
+      onFocusChange: _handleFocusChange,
       child: CatchSurface(
         role: CatchSurfaceRole.card,
         padding: widget.padding,
@@ -706,6 +929,11 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
       ),
     );
   }
+
+  void _handleFocusChange(bool focused) {
+    if (_descendantFocused == focused) return;
+    setState(() => _descendantFocused = focused);
+  }
 }
 
 Widget _buildCatchSectionKicker(
@@ -718,18 +946,20 @@ Widget _buildCatchSectionKicker(
   if (count == null || count.toString().isEmpty) {
     return CatchKicker(label: text, color: color);
   }
-  final style = CatchKicker.styleOf(context, color: color);
-  return Text.rich(
-    TextSpan(
-      text: text.toUpperCase(),
-      children: [
-        TextSpan(
-          text: context.l10n.coreCatchSectionLayoutTextCount(count: count),
-          style: style.copyWith(color: t.ink3, fontWeight: FontWeight.w600),
-        ),
-      ],
-    ),
-    style: style,
+  return Row(
+    children: [
+      Expanded(
+        child: CatchKicker(label: text, color: color),
+      ),
+      const SizedBox(width: CatchSpacing.s3),
+      Text(
+        count.toString(),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.end,
+        style: CatchTextStyles.sectionCount(context, color: t.ink3),
+      ),
+    ],
   );
 }
 

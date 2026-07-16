@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
 import 'package:flutter/material.dart';
@@ -37,44 +37,59 @@ void main() {
       ),
     );
 
-    expect(_selectChip('Pairs', active: true), findsOneWidget);
-    expect(_selectChip('Auto', active: true), findsOneWidget);
-    expect(_selectChip('Avoid repeats', active: true), findsOneWidget);
+    expect(_choice('Pairs', selected: true), findsOneWidget);
+    expect(_choice('Auto', selected: true), findsOneWidget);
+    expect(_choice('Avoid repeats', selected: true), findsOneWidget);
 
-    await tester.tap(find.text('Fill extra rounds'));
+    _invokeChoice(tester, 'Fill extra rounds');
     await tester.pump();
 
     expect(
       value.rotationRepeatStrategy,
       EventSuccessRotationRepeatStrategy.allowWhenExhausted,
     );
-    expect(_selectChip('Fill extra rounds', active: true), findsOneWidget);
+    await _openField(tester, 'Repeat policy');
+    expect(_choice('Fill extra rounds', selected: true), findsOneWidget);
 
-    await tester.tap(find.text('Spread skill'));
+    _invokeChoice(tester, 'Spread skill');
     await tester.pump();
 
     expect(value.balanceActivityAttributes, [
       EventSuccessActivityAssignmentAttribute.skillBand,
     ]);
     expect(value.clusterActivityAttributes, isEmpty);
-    expect(_selectChip('Spread skill', active: true), findsOneWidget);
+    expect(_choice('Spread skill', selected: true), findsOneWidget);
 
-    await tester.tap(find.text('Skill together'));
+    _invokeChoice(tester, 'Skill together');
     await tester.pump();
 
     expect(value.balanceActivityAttributes, isEmpty);
     expect(value.clusterActivityAttributes, [
       EventSuccessActivityAssignmentAttribute.skillBand,
     ]);
-    expect(_selectChip('Skill together', active: true), findsOneWidget);
+    expect(_choice('Skill together', selected: true), findsOneWidget);
   });
 }
 
-Finder _selectChip(String label, {bool? active}) {
+void _invokeChoice(WidgetTester tester, String label) {
+  tester.widgetList<CatchFieldChoiceChip>(_choice(label)).last.onPressed();
+}
+
+Future<void> _openField(WidgetTester tester, String title) async {
+  final field = find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == title,
+  );
+  await tester.ensureVisible(field);
+  await tester.tap(field);
+  await tester.pump(kThemeAnimationDuration);
+  await tester.pump();
+}
+
+Finder _choice(String label, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchSelectChip &&
+        widget is CatchFieldChoiceChip &&
         widget.label == label &&
-        (active == null || widget.active == active),
+        (selected == null || widget.selected == selected),
   );
 }

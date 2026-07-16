@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -16,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -30,11 +32,13 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
@@ -71,7 +75,7 @@ import 'package:catch_dating_app/core/widgets/src/catch_inline_message_surface.d
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
@@ -103,7 +107,6 @@ Event _eventDetailEvent({
   ActivityKind activityKind = ActivityKind.socialRun,
   EventPolicyBundle? eventPolicy,
   List<UploadedPhoto> eventPhotos = const <UploadedPhoto>[],
-  bool exactLocation = true,
   int capacityLimit = 12,
   int bookedCount = 9,
   int priceInPaise = 0,
@@ -112,21 +115,20 @@ Event _eventDetailEvent({
 }) {
   final start = startTime ?? _eventDetailStart;
   const meetingPoint = 'Carter Road Jetty';
-  final location = exactLocation
-      ? EventMeetingLocation.legacy(
-          name: meetingPoint,
-          latitude: 19.0676,
-          longitude: 72.8227,
-          notes: 'Bandra West',
-        )
-      : null;
   return Event(
     id: id,
     clubId: 'club-widgetbook',
     startTime: start,
     endTime: start.add(const Duration(hours: 1, minutes: 45)),
     meetingPoint: meetingPoint,
-    meetingLocation: location,
+    meetingLocation: const EventMeetingLocation(
+      name: meetingPoint,
+      latitude: 19.0676,
+      longitude: 72.8227,
+      notes: 'Bandra West',
+    ),
+    startingPointLat: 19.0676,
+    startingPointLng: 72.8227,
     photoUrl: null,
     eventPhotos: eventPhotos,
     eventFormat: EventFormatSnapshot.fromActivityKind(activityKind),
@@ -620,6 +622,136 @@ Widget catchSliverPageBodyCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: CatchScrollTerminalPadding,
+  path: '[Core catalog]/Layout',
+)
+Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
+  const safeBottom = 34.0;
+  const previewMediaQuery = MediaQueryData(
+    size: Size(390, 844),
+    padding: EdgeInsets.only(bottom: safeBottom),
+    viewPadding: EdgeInsets.only(bottom: safeBottom),
+  );
+  final t = CatchTokens.of(context);
+
+  Widget clearanceBand(String measurement) {
+    return Stack(
+      children: [
+        ColoredBox(
+          color: t.primary.withValues(alpha: 0.12),
+          child: const SizedBox(
+            width: double.infinity,
+            child: CatchScrollTerminalPadding(),
+          ),
+        ),
+        Positioned.fill(
+          child: Center(
+            child: Text(
+              measurement,
+              style: CatchTextStyles.supporting(context, color: t.primary),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget sample({
+    required String label,
+    required String description,
+    required Widget child,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(label, style: CatchTextStyles.titleS(context)),
+        gapH4,
+        Text(description, style: CatchTextStyles.supporting(context)),
+        gapH8,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(CatchRadius.sm),
+          child: child,
+        ),
+      ],
+    );
+  }
+
+  return _CatalogScreen(
+    title: 'CatchScrollTerminalPadding',
+    catalogId: 'catch.scroll_terminal_padding',
+    children: [
+      _StateCard(
+        label: 'floating / anchored / no shell',
+        description:
+            'The colored band is the real terminal spacer. Each state uses '
+            'the same default breathing room.',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            sample(
+              label: 'iOS floating shell',
+              description:
+                  'Consumes the complete floating tab-bar obstruction.',
+              child: Theme(
+                data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+                child: MediaQuery(
+                  data: previewMediaQuery,
+                  child: Builder(
+                    builder: (context) {
+                      final overlay = CatchTabBar.reservedBottomInset(context);
+                      final total = overlay + CatchSpacing.screenPb;
+                      return AppShellActiveTab(
+                        index: appShellHomeTabIndex,
+                        bottomOverlayInset: overlay,
+                        bottomBarPlacement: AppShellBottomBarPlacement.floating,
+                        child: clearanceBand(
+                          '${total.toStringAsFixed(0)} px · overlay + breathing',
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            gapH16,
+            sample(
+              label: 'Android anchored shell',
+              description:
+                  'Scaffold already reserves the bar, so only breathing '
+                  'space remains.',
+              child: MediaQuery(
+                data: previewMediaQuery,
+                child: AppShellActiveTab(
+                  index: appShellHomeTabIndex,
+                  bottomBarPlacement: AppShellBottomBarPlacement.anchored,
+                  child: clearanceBand(
+                    '${CatchSpacing.screenPb.toStringAsFixed(0)} px · breathing',
+                  ),
+                ),
+              ),
+            ),
+            gapH16,
+            sample(
+              label: 'No shell chrome',
+              description:
+                  'Preserves the device safe area, then adds breathing space.',
+              child: MediaQuery(
+                data: previewMediaQuery,
+                child: clearanceBand(
+                  '${(safeBottom + CatchSpacing.screenPb).toStringAsFixed(0)} '
+                  'px · safe area + breathing',
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: CatchTicketHero,
   path: '[Core catalog]/Motion',
 )
@@ -637,6 +769,38 @@ Widget catchTicketHeroCatalogStates(BuildContext context) {
             child: Text(
               'Ticket surface keeps the shared Hero tag and flight behavior.',
               style: CatchTextStyles.bodyM(context),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchMapRevealTransition,
+  path: '[Core catalog]/Motion',
+)
+Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchMapRevealTransition',
+    catalogId: 'core.motion.catch_map_reveal_transition',
+    children: [
+      _StateCard(
+        label: 'paper veil / mid reveal',
+        child: SizedBox(
+          height: CatchLayout.distanceRingDefaultSize,
+          child: CatchMapRevealTransition(
+            animation: const AlwaysStoppedAnimation<double>(0.58),
+            child: CatchSurface.card(
+              child: Center(
+                child: Text(
+                  'Native map remains stationary below the veil.',
+                  style: CatchTextStyles.bodyM(context),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           ),
         ),
@@ -715,6 +879,79 @@ Widget catchToggleCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: CatchFieldCommitButton,
+  path: '[Core catalog]/Fields',
+)
+Widget catchFieldCommitButtonCatalogStates(BuildContext context) {
+  final l10n = context.l10n;
+  return _CatalogScreen(
+    title: 'CatchFieldCommitButton',
+    catalogId: 'core.widgets.catch_field_commit_button',
+    children: [
+      _StateCard(
+        label: 'cancel / done / saving',
+        child: _InlineWrap(
+          children: [
+            CatchFieldCommitButton(
+              label: l10n.coreCatchFieldLabelCancel,
+              onPressed: _noop,
+            ),
+            CatchFieldCommitButton(
+              label: l10n.coreCatchFieldLabelDone,
+              onPressed: _noop,
+              primary: true,
+            ),
+            CatchFieldCommitButton(
+              label: l10n.coreCatchFieldLabelSaving,
+              onPressed: null,
+              primary: true,
+              loading: true,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchFieldToggle,
+  path: '[Core catalog]/Fields',
+)
+Widget catchFieldToggleCatalogStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'CatchFieldToggle',
+    catalogId: 'core.widgets.catch_field_toggle',
+    children: [
+      _StateCard(
+        label: 'on / off / saving-disabled',
+        child: _CatchFieldToggleDemo(),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchFieldRepeatButton,
+  path: '[Core catalog]/Fields',
+)
+Widget catchFieldRepeatButtonCatalogStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'CatchFieldRepeatButton',
+    catalogId: 'core.widgets.catch_field_repeat_button',
+    children: [
+      _StateCard(
+        label: 'decrease / increase / bounded-disabled',
+        child: _CatchFieldRepeatButtonDemo(),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: CatchScreenTopBar,
   path: '[Core catalog]/Navigation',
 )
@@ -726,6 +963,7 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
       _StateCard(
         label: 'root title / subtitle / action',
         child: CatchScreenTopBar(
+          context: context,
           title: 'Chats',
           subtitle: 'Messages from your matches',
           actions: [
@@ -740,6 +978,7 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
       _StateCard(
         label: 'root search chrome',
         child: CatchScreenTopBar(
+          context: context,
           leading: CatchIconAction(
             icon: CatchIcons.locationOnOutlined,
             tooltip: 'Change city',
@@ -819,6 +1058,64 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
               items: const [
                 CatchActionMenuItem(value: 'share', label: 'Share'),
                 CatchActionMenuItem(value: 'report', label: 'Report'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchTopBarActionGroup,
+  path: '[Core catalog]/Navigation',
+)
+Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchTopBarActionGroup',
+    catalogId: 'core.widgets.catch_top_bar_action_group',
+    children: [
+      _StateCard(
+        label: 'two actions / conditional third / disabled',
+        description:
+            'The group owns one fixed gap regardless of which actions are present.',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CatchTopBarActionGroup(
+              actions: [
+                CatchIconAction(
+                  icon: CatchIcons.share,
+                  tooltip: 'Share',
+                  onPressed: _noop,
+                ),
+                CatchIconAction(
+                  icon: CatchIcons.savedOutlined,
+                  tooltip: 'Save',
+                  onPressed: _noop,
+                ),
+              ],
+            ),
+            gapH12,
+            CatchTopBarActionGroup(
+              actions: [
+                CatchIconAction(
+                  icon: CatchIcons.share,
+                  tooltip: 'Share',
+                  onPressed: _noop,
+                ),
+                CatchIconAction(
+                  icon: CatchIcons.calendarAdd,
+                  tooltip: 'Add to calendar',
+                  onPressed: _noop,
+                ),
+                CatchIconAction(
+                  icon: CatchIcons.savedOutlined,
+                  tooltip: 'Save pending',
+                  onPressed: null,
+                ),
               ],
             ),
           ],
@@ -1639,6 +1936,11 @@ Widget catchActivityMapPinCatalogStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchDistanceRing,
+  path: '[Core catalog]/Activity',
+)
 Widget catchDistanceRingCatalogStates(BuildContext context) {
   return _CatalogScreen(
     title: 'CatchDistanceRing',
@@ -1650,6 +1952,29 @@ Widget catchDistanceRingCatalogStates(BuildContext context) {
           children: [
             const CatchDistanceRing(size: 96),
             CatchDistanceRing(size: 132, label: '2 km', onTap: _noop),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchDistanceRingLabel,
+  path: '[Core catalog]/Activity',
+)
+Widget catchDistanceRingLabelCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchDistanceRingLabel',
+    catalogId: 'core.widgets.catch_distance_ring_label',
+    children: [
+      _StateCard(
+        label: 'resting / tappable',
+        child: _InlineWrap(
+          children: [
+            const CatchDistanceRingLabel(label: '3 km'),
+            CatchDistanceRingLabel(label: '5 km', onTap: _noop),
           ],
         ),
       ),
@@ -2151,15 +2476,14 @@ Widget eventDetailMapCardCatalogStates(BuildContext context) {
               child: EventDetailMapCard(
                 event: _eventDetailEvent(),
                 onTap: _noop,
+                enableNetworkTiles: false,
               ),
             ),
             SizedBox(
               width: 320,
               child: EventDetailMapCard(
-                event: _eventDetailEvent(
-                  id: 'map-morning-of',
-                  exactLocation: false,
-                ),
+                event: _eventDetailEvent(id: 'map-morning-of'),
+                enableNetworkTiles: false,
               ),
             ),
           ],
@@ -2175,6 +2499,33 @@ Widget eventDetailMapCardCatalogStates(BuildContext context) {
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailMechanismListCatalogStates(BuildContext context) {
+  final open = eventDetailInformationStateFrom(
+    event: _eventDetailEvent(),
+    l10n: context.l10n,
+  );
+  final approval = eventDetailInformationStateFrom(
+    event: _eventDetailEvent(
+      id: 'approval-mechanism',
+      eventPolicy: EventPolicyBundle.requestToJoinEvent(
+        capacityLimit: 10,
+        basePriceInPaise: 0,
+      ),
+    ),
+    l10n: context.l10n,
+  );
+  final balanced = eventDetailInformationStateFrom(
+    event: _eventDetailEvent(
+      id: 'balanced-mechanism',
+      activityKind: ActivityKind.dinner,
+      eventPolicy: EventPolicyBundle.balancedSinglesEvent(
+        capacityLimit: 12,
+        basePriceInPaise: 140000,
+      ),
+      priceInPaise: 140000,
+    ),
+    l10n: context.l10n,
+  );
+
   return _CatalogScreen(
     title: 'EventDetailMechanismList',
     catalogId: 'events.widgets.event_detail_mechanism_list',
@@ -2186,32 +2537,23 @@ Widget eventDetailMechanismListCatalogStates(BuildContext context) {
           children: [
             SizedBox(
               width: 320,
-              child: EventDetailMechanismList(event: _eventDetailEvent()),
-            ),
-            SizedBox(
-              width: 320,
               child: EventDetailMechanismList(
-                event: _eventDetailEvent(
-                  id: 'approval-mechanism',
-                  eventPolicy: EventPolicyBundle.requestToJoinEvent(
-                    capacityLimit: 10,
-                    basePriceInPaise: 0,
-                  ),
-                ),
+                rows: open.signUpRows,
+                activityKind: open.activityKind,
               ),
             ),
             SizedBox(
               width: 320,
               child: EventDetailMechanismList(
-                event: _eventDetailEvent(
-                  id: 'balanced-mechanism',
-                  activityKind: ActivityKind.dinner,
-                  eventPolicy: EventPolicyBundle.balancedSinglesEvent(
-                    capacityLimit: 12,
-                    basePriceInPaise: 140000,
-                  ),
-                  priceInPaise: 140000,
-                ),
+                rows: approval.signUpRows,
+                activityKind: approval.activityKind,
+              ),
+            ),
+            SizedBox(
+              width: 320,
+              child: EventDetailMechanismList(
+                rows: balanced.signUpRows,
+                activityKind: balanced.activityKind,
               ),
             ),
           ],
@@ -2223,62 +2565,57 @@ Widget eventDetailMechanismListCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventDetailHostCard,
+  type: CatchHostRow,
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailHostCardCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return _CatalogScreen(
-    title: 'EventDetailHostCard',
-    catalogId: 'events.widgets.event_detail_host_card',
+    title: 'CatchHostRow',
+    catalogId: 'core.widgets.catch_host_row',
     children: [
       _StateCard(
-        label: 'actions / no stats / dark surface',
+        label: 'interactive / passive / dark surface',
         child: _InlineWrap(
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             SizedBox(
               width: 340,
-              child: EventDetailHostCard(
+              child: CatchHostRow(
                 activityKind: ActivityKind.socialRun,
-                hostName: 'Sunday sea-face crew',
+                name: 'Sunday sea-face crew',
                 meta: 'HOSTING SINCE FEB 2026 - BANDRA',
-                stats: const [
-                  EventDetailHostStat(value: '23', label: 'Runs'),
-                  EventDetailHostStat(value: '412', label: 'Runners'),
-                  EventDetailHostStat(value: '92%', label: 'Return'),
-                ],
+                verified: true,
+                onTap: _noop,
                 onMessage: _noop,
-                onViewClub: _noop,
+                messageTooltip: 'Message host',
               ),
             ),
             const SizedBox(
               width: 340,
-              child: EventDetailHostCard(
+              child: CatchHostRow(
                 activityKind: ActivityKind.dinner,
-                hostName: 'Catch supper club',
+                name: 'Catch supper club',
                 meta: 'HOSTING SINCE MAR 2026',
                 verified: false,
               ),
             ),
             SizedBox(
               width: 340,
-              child: EventDetailHostCard(
-                activityKind: ActivityKind.pickleball,
-                hostName: 'Courtside social',
-                meta: 'HOSTING SINCE JAN 2026 - REPLIES FAST',
-                stats: const [
-                  EventDetailHostStat(value: '14', label: 'Mixers'),
-                  EventDetailHostStat(value: '4.9', label: 'Rating'),
-                ],
-                surfaceColor: t.ink,
+              child: CatchSurface(
+                backgroundColor: t.ink,
                 borderColor: t.ink2,
-                nameColor: t.primaryInk,
-                metaColor: t.primaryInk.withValues(alpha: 0.72),
-                statValueColor: t.primaryInk,
-                statLabelColor: t.primaryInk.withValues(alpha: 0.62),
-                dividerColor: t.ink2,
-                onViewClub: _noop,
+                padding: const EdgeInsets.all(CatchSpacing.s3),
+                child: CatchHostRow(
+                  activityKind: ActivityKind.pickleball,
+                  name: 'Courtside social',
+                  meta: 'HOSTING SINCE JAN 2026 - REPLIES FAST',
+                  verified: true,
+                  nameColor: t.primaryInk,
+                  metaColor: t.primaryInk.withValues(alpha: 0.72),
+                  actionColor: t.primaryInk,
+                  onTap: _noop,
+                ),
               ),
             ),
           ],
@@ -2302,10 +2639,10 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
       _StateCard(
         label: 'bookable / booked / waitlist / attended',
         description:
-            'Representative dock states built from the lower-level dock primitive until EventDetailCta is split into a provider-free BookingDock adapter.',
+            'Representative booking states rendered through the shared platform-adaptive bottom action.',
         child: Column(
           children: [
-            CatchBottomDock.cta(
+            CatchBottomAction(
               label: 'Join event - 3 spots left',
               onPressed: _noop,
               leadingContent: const PriceLeading(
@@ -2318,7 +2655,7 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
               catchLineAccent: t.primary,
             ),
             gapH12,
-            CatchBottomDock.cta(
+            CatchBottomAction(
               label: 'Cancel booking',
               onPressed: _noop,
               leadingContent: EventCtaStatusLeading(
@@ -2327,9 +2664,9 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
               ),
             ),
             gapH12,
-            CatchBottomDock.cta(label: 'Join waitlist', onPressed: _noop),
+            CatchBottomAction(label: 'Join waitlist', onPressed: _noop),
             gapH12,
-            CatchBottomDock.cta(
+            CatchBottomAction(
               label: 'You attended this event',
               onPressed: null,
               leadingContent: EventCtaStatusLeading(
@@ -2526,7 +2863,6 @@ Widget catchMetaEntryViewCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchBottomDockCatalogStates(BuildContext context) {
-  final t = CatchTokens.of(context);
   return _CatalogScreen(
     title: 'CatchBottomDock',
     catalogId: 'core.widgets.catch_bottom_dock',
@@ -2559,18 +2895,71 @@ Widget catchBottomDockCatalogStates(BuildContext context) {
           ],
         ),
       ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchBottomAction,
+  path: '[Core catalog]/Sheets and footers',
+)
+Widget catchBottomActionCatalogStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'CatchBottomAction',
+    catalogId: 'core.widgets.catch_bottom_action',
+    children: [
       _StateCard(
-        label: 'cta footer variants',
+        label: 'iOS floating / Android anchored',
+        description:
+            'One action contract resolves the correct chrome from the target platform.',
         child: Column(
           children: [
-            CatchBottomDock.cta(
+            Theme(
+              data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  padding: const EdgeInsets.only(bottom: 34),
+                  viewPadding: const EdgeInsets.only(bottom: 34),
+                ),
+                child: const CatchBottomAction(
+                  label: 'Join event',
+                  onPressed: _noop,
+                ),
+              ),
+            ),
+            gapH12,
+            Theme(
+              data: Theme.of(
+                context,
+              ).copyWith(platform: TargetPlatform.android),
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  viewPadding: const EdgeInsets.only(bottom: 24),
+                ),
+                child: const CatchBottomAction(
+                  label: 'Join event',
+                  onPressed: _noop,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'catch line / leading content / loading / disabled',
+        child: Column(
+          children: [
+            CatchBottomAction(
               label: 'Join event',
               onPressed: _noop,
               catchLine: 'Matching opens after check-in',
               catchLineAccent: t.primary,
             ),
             gapH12,
-            CatchBottomDock.cta(
+            CatchBottomAction(
               label: 'Book spot',
               onPressed: _noop,
               leadingContent: Column(
@@ -2586,13 +2975,64 @@ Widget catchBottomDockCatalogStates(BuildContext context) {
               footnote: 'Refundable until 24 hours before start.',
             ),
             gapH12,
-            CatchBottomDock.cta(
+            CatchBottomAction(
               label: 'Joining',
               onPressed: _noop,
               isLoading: true,
             ),
             gapH12,
-            const CatchBottomDock.cta(label: 'Sold out', onPressed: null),
+            const CatchBottomAction(label: 'Sold out', onPressed: null),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchBottomActionContent,
+  path: '[Core catalog]/Sheets and footers',
+)
+Widget catchBottomActionContentCatalogStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'CatchBottomActionContent',
+    catalogId: 'core.widgets.catch_bottom_action_content',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: CatchBottomActionContent(label: 'Join event', onPressed: _noop),
+      ),
+      _StateCard(
+        label: 'leading content / catch line / footnote',
+        child: CatchBottomActionContent(
+          label: 'Book spot',
+          onPressed: _noop,
+          leadingContent: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('₹799', style: CatchTextStyles.titleL(context)),
+              Text('incl. coffee', style: CatchTextStyles.supporting(context)),
+            ],
+          ),
+          buttonAccentColor: t.primary,
+          catchLine: 'Matching opens after check-in',
+          catchLineAccent: t.primary,
+          footnote: 'Refundable until 24 hours before start.',
+        ),
+      ),
+      const _StateCard(
+        label: 'loading / disabled',
+        child: Column(
+          children: [
+            CatchBottomActionContent(
+              label: 'Joining',
+              onPressed: null,
+              isLoading: true,
+            ),
+            SizedBox(height: CatchSpacing.s3),
+            CatchBottomActionContent(label: 'Sold out', onPressed: null),
           ],
         ),
       ),
@@ -3746,6 +4186,102 @@ class _ToggleDemoState extends State<_ToggleDemo> {
           onChanged: (value) => setState(() => _off = value),
         ),
         const CatchToggle(value: true, onChanged: null),
+      ],
+    );
+  }
+}
+
+class _CatchFieldToggleDemo extends StatefulWidget {
+  const _CatchFieldToggleDemo();
+
+  @override
+  State<_CatchFieldToggleDemo> createState() => _CatchFieldToggleDemoState();
+}
+
+class _CatchFieldToggleDemoState extends State<_CatchFieldToggleDemo> {
+  var _on = true;
+  var _off = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return _InlineWrap(
+      children: [
+        CatchFieldToggle(
+          value: _on,
+          semanticLabel: 'Profile visibility on',
+          onChanged: (value) => setState(() => _on = value),
+        ),
+        CatchFieldToggle(
+          value: _off,
+          semanticLabel: 'Profile visibility off',
+          onChanged: (value) => setState(() => _off = value),
+        ),
+        const CatchFieldToggle(
+          value: true,
+          semanticLabel: 'Saving profile visibility',
+          onChanged: null,
+        ),
+      ],
+    );
+  }
+}
+
+class _CatchFieldRepeatButtonDemo extends StatefulWidget {
+  const _CatchFieldRepeatButtonDemo();
+
+  @override
+  State<_CatchFieldRepeatButtonDemo> createState() =>
+      _CatchFieldRepeatButtonDemoState();
+}
+
+class _CatchFieldRepeatButtonDemoState
+    extends State<_CatchFieldRepeatButtonDemo> {
+  var _value = 168;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return _InlineWrap(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CatchFieldRepeatButton(
+              icon: CatchIcons.removeRounded,
+              semanticLabel: 'Decrease height',
+              enabled: _value > 120,
+              onStep: () => setState(() => _value -= 1),
+            ),
+            const SizedBox(width: CatchFieldTokens.stepperLayoutGap),
+            ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: CatchFieldTokens.stepperValueMinWidth,
+              ),
+              child: Text(
+                '$_value cm',
+                textAlign: TextAlign.center,
+                style: CatchTextStyles.fieldRowTitle(context, color: t.ink)
+                    .copyWith(
+                      fontSize: CatchFieldTokens.stepperValueFontSize,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ),
+            const SizedBox(width: CatchFieldTokens.stepperLayoutGap),
+            CatchFieldRepeatButton(
+              icon: CatchIcons.addRounded,
+              semanticLabel: 'Increase height',
+              enabled: _value < 220,
+              onStep: () => setState(() => _value += 1),
+            ),
+          ],
+        ),
+        CatchFieldRepeatButton(
+          icon: CatchIcons.addRounded,
+          semanticLabel: 'Increase height at maximum',
+          enabled: false,
+          onStep: _noop,
+        ),
       ],
     );
   }

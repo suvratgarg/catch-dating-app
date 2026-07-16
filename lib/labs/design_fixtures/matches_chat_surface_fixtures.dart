@@ -36,6 +36,13 @@ final class MatchesChatSurfaceFixtures {
     startTime: DateTime(2026, 6, 24, 18, 30),
     endTime: DateTime(2026, 6, 24, 20),
     meetingPoint: 'Carter Road Jetty',
+    meetingLocation: const EventMeetingLocation(
+      name: 'Carter Road Jetty',
+      latitude: 19.0676,
+      longitude: 72.8227,
+    ),
+    startingPointLat: 19.0676,
+    startingPointLng: 72.8227,
     eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.socialRun),
     distanceKm: 5,
     pace: PaceLevel.easy,

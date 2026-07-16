@@ -1,0 +1,778 @@
+{
+  "schemaVersion": 1,
+  "version": 7,
+  "updated": "2026-07-14",
+  "owner": "admin_dashboard",
+  "purpose": "Track production adoption of the comprehensive Catch admin console design export without presenting prototype-only behavior as backed functionality.",
+  "sourceInputs": {
+    "visualTokens": "/Users/suvratgarg/Downloads/Catch Design System (1)",
+    "interactionContract": "/Users/suvratgarg/Downloads/Admin dashboard marketing tab refactor (1)/CLAUDE.md",
+    "combinedPrototype": "/Users/suvratgarg/Downloads/Admin dashboard marketing tab refactor (1)/Marketing & Intake.dc.html",
+    "screenshots": "/Users/suvratgarg/Downloads/Admin dashboard marketing tab refactor (1)/screenshots",
+    "authorityOrder": [
+      "interactionContract",
+      "combinedPrototype",
+      "component prototypes",
+      "screenshots"
+    ]
+  },
+  "approvedProposalTranche": {
+    "source": "/Users/suvratgarg/.codex/visualizations/2026/07/12/019f5819-1f28-7451-9aa0-bda8bbf0f447/admin-tabs-approval/admin-tabs-proposal-tracker.md",
+    "approvedReadyCount": 68,
+    "status": "implemented_verified",
+    "excludedStatuses": [
+      "Contract-first",
+      "Guardrail"
+    ],
+    "knownContractLimits": [
+      "External-event and Finance deep links can resolve only records present in their existing bounded source responses because no dedicated point-read contract exists.",
+      "Marketing working-copy edits remain session-only; a server review receipt records a decision but does not persist arbitrary dashboard edits.",
+      "Safety list ordering, severity, SLA, roster, escalation, and durable history remain limited to fields exposed by current production responses."
+    ],
+    "visualCoverageBoundary": "The route/workspace Storybook entries each name only the deterministic state they actually render. Alternate loading, partial, missing, stale, forbidden, oversized, and unavailable behavior is controller-tested and browser-checked where exercised; it is not counted as a separate visual capture until a dedicated story fixture exists."
+  },
+  "proposalProofGroups": [
+    {
+      "area": "shared",
+      "proposalIds": [
+        "ADM-PROP-SHARED-001",
+        "ADM-PROP-SHARED-002",
+        "ADM-PROP-SHARED-003",
+        "ADM-PROP-SHARED-004",
+        "ADM-PROP-SHARED-005",
+        "ADM-PROP-SHARED-006",
+        "ADM-PROP-SHARED-007"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/app/App.tsx",
+        "admin/src/shared/ui/AdminPrimitives",
+        "admin/src/styles.css"
+      ],
+      "verification": [
+        "admin unit tests",
+        "web:admin-components",
+        "web:react-ui-primitives",
+        "web:react-component-governance"
+      ]
+    },
+    {
+      "area": "overview",
+      "proposalIds": [
+        "ADM-PROP-OVERVIEW-001",
+        "ADM-PROP-OVERVIEW-002",
+        "ADM-PROP-OVERVIEW-003",
+        "ADM-PROP-OVERVIEW-004",
+        "ADM-PROP-OVERVIEW-005",
+        "ADM-PROP-OVERVIEW-006"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/overview/controllers/useOverviewController.ts",
+        "admin/src/features/overview/ui/OverviewScreen.tsx",
+        "admin/src/features/overview/ui/OverviewRouteScreen.tsx"
+      ],
+      "verification": [
+        "admin/src/features/overview/controllers/useOverviewController.test.tsx",
+        "AdminRoutes Overview story"
+      ]
+    },
+    {
+      "area": "safety",
+      "proposalIds": [
+        "ADM-PROP-SAFETY-001",
+        "ADM-PROP-SAFETY-002",
+        "ADM-PROP-SAFETY-004",
+        "ADM-PROP-SAFETY-005",
+        "ADM-PROP-SAFETY-006"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/safety/controllers/useSafetyTriageController.ts",
+        "admin/src/features/safety/ui/SafetyTriageScreen.tsx"
+      ],
+      "verification": [
+        "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
+        "AdminRoutes Safety stories"
+      ]
+    },
+    {
+      "area": "launch access",
+      "proposalIds": [
+        "ADM-PROP-ACCESS-001",
+        "ADM-PROP-ACCESS-002",
+        "ADM-PROP-ACCESS-003",
+        "ADM-PROP-ACCESS-004",
+        "ADM-PROP-ACCESS-005"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/access/controllers/useAccessReviewController.ts",
+        "admin/src/features/access/ui/AccessReviewScreen.tsx"
+      ],
+      "verification": [
+        "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
+        "AdminRoutes Launch access story"
+      ]
+    },
+    {
+      "area": "organizers",
+      "proposalIds": [
+        "ADM-PROP-ORGANIZERS-001",
+        "ADM-PROP-ORGANIZERS-002",
+        "ADM-PROP-ORGANIZERS-003",
+        "ADM-PROP-ORGANIZERS-004",
+        "ADM-PROP-ORGANIZERS-005",
+        "ADM-PROP-ORGANIZERS-006"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
+        "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
+        "admin/src/features/organizers/ui"
+      ],
+      "verification": [
+        "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
+        "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
+        "AdminRoutes Organizers story"
+      ]
+    },
+    {
+      "area": "events",
+      "proposalIds": [
+        "ADM-PROP-EVENTS-001",
+        "ADM-PROP-EVENTS-002",
+        "ADM-PROP-EVENTS-003",
+        "ADM-PROP-EVENTS-004",
+        "ADM-PROP-EVENTS-005",
+        "ADM-PROP-EVENTS-006",
+        "ADM-PROP-EVENTS-007"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/events/controllers/useEventPublishingController.ts",
+        "admin/src/features/events/ui"
+      ],
+      "verification": [
+        "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
+        "AdminRoutes Events story"
+      ]
+    },
+    {
+      "area": "growth",
+      "proposalIds": [
+        "ADM-PROP-GROWTH-001",
+        "ADM-PROP-GROWTH-002",
+        "ADM-PROP-GROWTH-003",
+        "ADM-PROP-GROWTH-004",
+        "ADM-PROP-GROWTH-005"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/growth/controllers/useGrowthKpiController.ts",
+        "admin/src/features/growth/ui/GrowthKpiScreen.tsx"
+      ],
+      "verification": [
+        "admin/src/features/growth/controllers/useGrowthKpiController.test.tsx",
+        "AdminRoutes Growth story"
+      ]
+    },
+    {
+      "area": "marketing",
+      "proposalIds": [
+        "ADM-PROP-MARKETING-001",
+        "ADM-PROP-MARKETING-002",
+        "ADM-PROP-MARKETING-003",
+        "ADM-PROP-MARKETING-004",
+        "ADM-PROP-MARKETING-005",
+        "ADM-PROP-MARKETING-006"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
+        "admin/src/features/marketing/ui"
+      ],
+      "verification": [
+        "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
+        "admin/src/shared/controllers/marketingReviewDecisionHelpers.test.ts",
+        "AdminRoutes Marketing story"
+      ]
+    },
+    {
+      "area": "users",
+      "proposalIds": [
+        "ADM-PROP-USERS-001",
+        "ADM-PROP-USERS-002",
+        "ADM-PROP-USERS-003",
+        "ADM-PROP-USERS-004",
+        "ADM-PROP-USERS-005",
+        "ADM-PROP-USERS-006"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/users/api/userAnalyticsRepository.ts",
+        "admin/src/features/users/controllers/useUserAnalyticsController.ts",
+        "admin/src/features/users/ui/UserAnalyticsScreen.tsx"
+      ],
+      "verification": [
+        "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
+        "AdminRoutes Users story"
+      ]
+    },
+    {
+      "area": "finance",
+      "proposalIds": [
+        "ADM-PROP-FINANCE-002",
+        "ADM-PROP-FINANCE-003",
+        "ADM-PROP-FINANCE-004",
+        "ADM-PROP-FINANCE-006"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/finance/api/financeOpsRepository.ts",
+        "admin/src/features/finance/controllers/useFinanceOpsController.ts",
+        "admin/src/features/finance/ui/FinanceOpsScreen.tsx"
+      ],
+      "verification": [
+        "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
+        "AdminRoutes Finance story"
+      ]
+    },
+    {
+      "area": "data quality",
+      "proposalIds": [
+        "ADM-PROP-DATAQUALITY-001",
+        "ADM-PROP-DATAQUALITY-002",
+        "ADM-PROP-DATAQUALITY-003",
+        "ADM-PROP-DATAQUALITY-004",
+        "ADM-PROP-DATAQUALITY-005"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/data-quality/api/dataQualityRepository.ts",
+        "admin/src/features/data-quality/controllers/useDataQualityController.ts",
+        "admin/src/features/data-quality/ui/DataQualityScreen.tsx"
+      ],
+      "verification": [
+        "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
+        "AdminRoutes Data quality story"
+      ]
+    },
+    {
+      "area": "admin roles",
+      "proposalIds": [
+        "ADM-PROP-ADMINROLES-001",
+        "ADM-PROP-ADMINROLES-002",
+        "ADM-PROP-ADMINROLES-003",
+        "ADM-PROP-ADMINROLES-004",
+        "ADM-PROP-ADMINROLES-005",
+        "ADM-PROP-ADMINROLES-006"
+      ],
+      "status": "implemented",
+      "repoEvidence": [
+        "admin/src/features/admin-roles/controllers/adminRolePolicies.ts",
+        "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+        "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx"
+      ],
+      "verification": [
+        "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+        "AdminRoutes Admin roles story"
+      ]
+    }
+  ],
+  "knownDebt": [
+    {
+      "id": "ADM-DEBT-EXTERNAL-POINT-READ-001",
+      "status": "contract-first",
+      "area": "events",
+      "impact": "A direct external-event URL can resolve only a record present in the current bounded source query.",
+      "mitigation": "The UI says the record is unavailable in the current source query and does not substitute another row.",
+      "nextAction": "Add a dedicated authorized external-event point-read contract before claiming complete deep-link support."
+    },
+    {
+      "id": "ADM-DEBT-FINANCE-POINT-READ-001",
+      "status": "contract-first",
+      "area": "finance",
+      "impact": "A direct Finance issue URL is limited to the current overview and fixed 30-day analytics responses.",
+      "mitigation": "The detail surface discloses the bounded evidence source and remains read-only.",
+      "nextAction": "Add a typed finance issue read model and point-read endpoint before enabling complete deep links or mutations."
+    },
+    {
+      "id": "ADM-DEBT-MARKETING-SPA-DIRTY-GUARD-001",
+      "status": "planned",
+      "area": "marketing",
+      "impact": "Browser unload is guarded, but in-app sidebar navigation can discard unsaved session edits.",
+      "mitigation": "The primary workflow labels edits as session-only and displays a persistent dirty-state warning.",
+      "nextAction": "Add a tested shell-level route-transition guard or a durable draft-edit persistence contract."
+    },
+    {
+      "id": "ADM-DEBT-STORYBOOK-STATE-COVERAGE-001",
+      "status": "planned",
+      "area": "visual qa",
+      "impact": "Each registered route/workspace story renders one deterministic primary state; alternate loading, error, unavailable, mutation, and receipt states are not separate visual captures.",
+      "mitigation": "Registry states name only the rendered fixture; alternate behavior is covered by controller tests and targeted browser QA where exercised.",
+      "nextAction": "Add dedicated deterministic story exports before claiming visual coverage for alternate operating states."
+    },
+    {
+      "id": "ADM-DEBT-STORYBOOK-INTAKE-BUDGET-001",
+      "status": "watch",
+      "area": "bundle",
+      "impact": "The Intake Storybook chunk has approximately 1.2 KB of headroom against its 510 KB ratchet.",
+      "mitigation": "The Storybook bundle-budget gate remains required and currently passes.",
+      "nextAction": "Split the Intake story fixture or lazy-load its heaviest deterministic data before adding more imports."
+    }
+  ],
+  "adoptionPolicy": [
+    "Preserve production authentication, custom-claim authorization, environment context, account controls, and backend-owned mutation boundaries even when the prototype omits them.",
+    "Use URL-owned list/detail routes for staff workspaces; never stack a record editor below its directory.",
+    "Overview routes to owning verticals and does not mutate records.",
+    "Do not add a visible action until the production repository and callable contract support its loading, failure, success, authorization, and audit behavior.",
+    "Do not apply a date range to metrics or lists whose APIs do not accept that range.",
+    "Use one plain route title in the global top bar. Reserve in-page headings for record identity or task structure; do not repeat route kickers, subtitles, prototype labels, or sample-console branding."
+  ],
+  "firstTranche": [
+    "ADM-CHROME-001",
+    "ADM-OVERVIEW-001",
+    "ADM-SAFETY-001"
+  ],
+  "secondTranche": [
+    "ADM-VISUAL-HIERARCHY-001",
+    "ADM-SAFETY-003",
+    "ADM-A11Y-001"
+  ],
+  "summary": {
+    "implemented": 15,
+    "partial": 9,
+    "planned": 0,
+    "blocked": 2,
+    "sourceDefect": 1
+  },
+  "qa": {
+    "result": "passed",
+    "scope": "All 68 approval-ready proposals across shared chrome, Overview, Safety, Launch access, Organizers, Events, Growth, Marketing, Users, Finance, Data quality, Admin roles, and task-first Intake workspaces.",
+    "viewport": "2048x800 final in-app-browser review",
+    "additionalViewports": [
+      "1280x800 Storybook desktop",
+      "375x812 Storybook mobile"
+    ],
+    "comparisonMethod": "The user-supplied pre-refactor chrome screenshot and the final streamlined Organizers screen were reviewed together in one comparison input. Deterministic Storybook desktop and mobile states then passed all 516 baseline comparisons.",
+    "automatedEvidence": [
+      "32 admin unit-test files and 98 tests passed",
+      "6 Storybook accessibility files and 265 tests passed",
+      "258 ready stories and 516 desktop/mobile visual captures passed",
+      "Production build passed: 388.9 KB entry against 460 KB and 430.7 KB largest async chunk against 505 KB",
+      "Storybook build passed: 40.86 KB route story against 50 KB and 508.83 KB Intake chunk against 510 KB",
+      "React architecture, primitive, governance, shared-adoption, controller-target, feature-size, feature-export, component-registry, Storybook, manifest, TypeScript, and bundle-budget gates passed"
+    ],
+    "verifiedInteractions": [
+      "Overview queue row routes to its owning workflow",
+      "Safety row opens an encoded deep-link route",
+      "All safety cases returns to the list route",
+      "Launch access, organizer claim, external-event, and admin-role malformed deep links keep the requested identity and render explicit unavailable states",
+      "Production record deep links remain intact while Firebase authentication and admin claims resolve",
+      "Organizer Intake defaults to a staged queue and opens the generated diagnostic surface on demand",
+      "Event Intake defaults to candidate verification and returns from diagnostics without losing its workflow route",
+      "Intake workspaces preserve the existing note, evidence, approval, and audit-gate behavior",
+      "Sidebar collapses to an icon rail and expands without losing route state",
+      "Account disclosure opens, closes on Escape, and returns focus",
+      "Marketing exposes one route title, preserves its tab workflow, and keeps refresh and create actions unambiguous",
+      "A clean Organizers route produced no console warnings or errors",
+      "Safety chart labels and values remain readable without color"
+    ],
+    "intentionalDifferences": [
+      "Production keeps environment, account, authentication, and role controls that the prototype omits.",
+      "Overview analytics filters remain local to analytics rather than implying control over live stock and open queues.",
+      "Production splits moderation and payment queues so each row has one unambiguous owner.",
+      "Safety uses complete aggregate queue counts while priority and age are explicitly scoped to the capped returned preview.",
+      "Intake uses four operator stages—Incoming, Verify, Resolve, and Ready—because the current backend does not expose a durable crawl-job or canonical-promotion state machine.",
+      "Organizer discovery configuration and full pipeline diagnostics remain visible behind a deliberate secondary view instead of being presented as a live discovery action."
+    ]
+  },
+  "items": [
+    {
+      "id": "ADM-CHROME-001",
+      "area": "chrome",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Role-aware, collapsible navigation and restrained account chrome",
+      "sourceEvidence": "The export uses a compact operations rail and keeps exact UID lookup inside Users; owner review rejected prototype-only sample-console branding and decorative route title copy.",
+      "repoEvidence": [
+        "admin/src/app/App.tsx",
+        "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+        "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+        "admin/src/styles.css"
+      ],
+      "decision": "Use Catch Admin as the sole product label, hide the production environment badge, use plain Development, Local, or Staging labels only when non-production context matters, keep roles and local-data context inside the account disclosure, use one route title without kicker or subtitle, group visible routes by staff task, retain the collapsible rail, and remove the shell-wide exact-UID field that duplicated Users.",
+      "nextAction": "Evaluate a keyboard command palette only after it can route more than one entity type."
+    },
+    {
+      "id": "ADM-OVERVIEW-001",
+      "area": "overview",
+      "priority": "P0",
+      "status": "implemented",
+      "title": "Overview is a read-only router",
+      "sourceEvidence": "CLAUDE.md requires queue rows to open their owning vertical and forbids Overview mutations.",
+      "repoEvidence": [
+        "admin/src/features/overview/ui/OverviewScreen.tsx",
+        "admin/src/features/overview/ui/OverviewRouteScreen.tsx"
+      ],
+      "decision": "Route Safety, Access, Organizer, moderation, and payment rows to role-checked owning workflows, remove the inline queue-detail dead end, and reduce the headline wall from ten tiles to the source's six cross-vertical signals.",
+      "nextAction": "Add explicit SLA and assignee fields when the overview response exposes them consistently."
+    },
+    {
+      "id": "ADM-VISUAL-HIERARCHY-001",
+      "area": "shared visual language",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Mockup-derived operational hierarchy on canonical Catch tokens",
+      "sourceEvidence": "The export uses mono eyebrows, condensed display headings, aligned metric anatomy, ownership labels, full-width queue sections, hairlines, and restrained elevation to make daily work scannable.",
+      "repoEvidence": [
+        "admin/src/app/App.tsx",
+        "admin/src/styles.css",
+        "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+        "admin/src/shared/ui/AdminPrimitives/overview.tsx",
+        "design/admin/components.json",
+        "design-qa.md"
+      ],
+      "decision": "Adopt the export's hierarchy and density through canonical Archivo, IBM Plex Mono, paper/ink surfaces, explicit metric context and ownership, flat section captions, neutral queue composition, and routine hairlines rather than decorative shadows or global accent color.",
+      "nextAction": "Apply the same hierarchy route by route, starting with Events, without changing backed workflow or mutation boundaries."
+    },
+    {
+      "id": "ADM-SAFETY-001",
+      "area": "safety",
+      "priority": "P0",
+      "status": "implemented",
+      "title": "Safety list and case detail use URL-owned master-detail navigation",
+      "sourceEvidence": "The source separates the queue from one case, starts detail with All safety cases, and returns after a successful decision.",
+      "repoEvidence": [
+        "admin/src/app/App.tsx",
+        "admin/src/features/safety/ui/SafetyTriageScreen.tsx",
+        "admin/src/features/safety/controllers/useSafetyTriageController.ts"
+      ],
+      "decision": "Encode target paths in /safety/{targetPath}, preserve existing assignment and reviewed/dismissed callables, and return to the list only after a successful decision.",
+      "nextAction": "Persist queue filters in the URL after the shared filter contract is defined."
+    },
+    {
+      "id": "ADM-SAFETY-002",
+      "area": "safety",
+      "priority": "P0",
+      "status": "partial",
+      "title": "Safety outcome model and safeguards",
+      "sourceEvidence": "The prototype exposes only reviewed and dismissed outcomes and session-local history.",
+      "repoEvidence": [
+        "admin/src/features/safety/ui/SafetyTriageScreen.tsx",
+        "admin/src/features/safety/api/safetyTriageRepository.ts"
+      ],
+      "decision": "Keep only backed assignment, reviewed, and dismissed actions with required notes. Do not invent suspension, restriction, escalation, appeal, or undo controls.",
+      "nextAction": "Product and Safety owners must define outcome taxonomy, escalation authority, reason codes, appeals, and reversible-action policy."
+    },
+    {
+      "id": "ADM-SAFETY-003",
+      "area": "safety",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Queue-health and backlog-aging charts",
+      "sourceEvidence": "The source list pairs four headline metrics with open-by-queue, priority, and backlog-age charts.",
+      "repoEvidence": [
+        "admin/src/features/safety/controllers/safetyTriageAnalytics.ts",
+        "admin/src/features/safety/controllers/safetyTriageAnalytics.test.ts",
+        "admin/src/features/safety/controllers/useSafetyTriageController.ts",
+        "admin/src/features/safety/ui/SafetyTriageScreen.tsx"
+      ],
+      "decision": "Use aggregate metric ids for complete open-by-queue counts. Derive priority and age only from returned rows, anchor age to generatedAt, treat invalid or future timestamps as unknown, and disclose the capped preview scope beside the charts.",
+      "nextAction": "Add full-backlog aging only after the backend exposes an uncapped aggregate age distribution or a bounded ordered analytics endpoint; do not add a cosmetic date picker."
+    },
+    {
+      "id": "ADM-ACCESS-001",
+      "area": "access",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Access directory and decision detail",
+      "sourceEvidence": "The export specifies separate application list and one-record decision states.",
+      "repoEvidence": [
+        "admin/src/features/access/ui/AccessReviewScreen.tsx"
+      ],
+      "decision": "Use URL-owned list/detail routes, separate authoritative pending totals from capped preview rows, put source-backed applicant evidence before the sticky note-gated decision rail, and label not-selected-yet exactly as the callable outcome.",
+      "nextAction": "Keep cohort catalogue, invitation, pagination, and durable history absent until their dedicated contracts exist."
+    },
+    {
+      "id": "ADM-GROWTH-001",
+      "area": "growth",
+      "priority": "P2",
+      "status": "implemented",
+      "title": "Growth stage triage and chart-first analytics",
+      "sourceEvidence": "The export uses stage filters, a signup funnel, booking trend, and separate metric detail.",
+      "repoEvidence": [
+        "admin/src/features/growth/ui/GrowthKpiScreen.tsx"
+      ],
+      "decision": "Lead with four backed outcomes, separate current overview signals from selected-range host analytics, use the shared accessible trend with table fallback, and URL-own stage-filtered signal detail.",
+      "nextAction": "Keep cohort conversion, drop-off, attribution, paid ROI, and retention claims absent until aligned contracts exist."
+    },
+    {
+      "id": "ADM-USERS-001",
+      "area": "users",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Exact-UID aggregate analytics landing and report",
+      "sourceEvidence": "The source explicitly forbids a browseable member directory and keeps identity, moderation, payment, and account actions out of Users.",
+      "repoEvidence": [
+        "admin/src/features/users/ui/UserAnalyticsScreen.tsx",
+        "admin/src/features/users/api/userAnalyticsRepository.ts"
+      ],
+      "decision": "Keep exact-UID lookup inside Users, mask the prior report while a different UID loads, bind rendered data to the requested UID, show four backed outcomes plus an accessible activity chart/table, and preserve explicit read-only privacy and failure states.",
+      "nextAction": "Keep broad member search, identity/profile detail, support notes, payment or safety history, and account mutations absent."
+    },
+    {
+      "id": "ADM-INTAKE-001",
+      "area": "intake",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Task-first staged event and organizer review workbench",
+      "sourceEvidence": "The source defines Crawl, Raw results, Candidates, Location or Outreach, and Promote as one-workspace-at-a-time stages.",
+      "repoEvidence": [
+        "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
+        "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
+        "admin/src/features/intake/events/ui/eventIntakeWorkbench.tsx",
+        "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+        "admin/src/shared/ui/AdminPrimitives/intake.tsx"
+      ],
+      "decision": "Default to a URL-owned Event leads or Organizers workspace with backed filters, Incoming/Verify/Resolve/Ready stages, a master-detail evidence queue, readiness gates, downstream impact, notes, and sticky real decision actions. Preserve the generated pipeline and editable diagnostic controls behind an explicit Diagnostics handoff rather than crowding daily review.",
+      "nextAction": "Keep the task-first queue as the default and extend it only when a new stage has a durable backend state, real action, and audit receipt."
+    },
+    {
+      "id": "ADM-INTAKE-002",
+      "area": "intake discovery",
+      "priority": "P1",
+      "status": "partial",
+      "title": "Discovery execution, bridge freshness, and run receipts",
+      "sourceEvidence": "The source shows crawl and discovery controls as if they were live job actions.",
+      "repoEvidence": [
+        "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
+        "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
+        "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx"
+      ],
+      "decision": "Event Refresh reads the backed dashboard; Organizer Discovery plan opens the generated plan and diagnostics because the repository does not expose a safe live discovery job. Do not label the generated bridge as current crawl execution.",
+      "nextAction": "Define an audited discovery job state machine with requestedBy, requestedAt, idempotency key, source scope, progress, failure, generatedAt, output receipt, and retry authority before adding Run discovery."
+    },
+    {
+      "id": "ADM-INTAKE-003",
+      "area": "intake handoff",
+      "priority": "P0",
+      "status": "partial",
+      "title": "Canonical event promotion and organizer publication boundaries",
+      "sourceEvidence": "The source places Promote at the end of intake but does not prove all canonical writes and downstream side effects.",
+      "repoEvidence": [
+        "admin/src/features/intake/events/ui/eventIntakeWorkbench.tsx",
+        "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx"
+      ],
+      "decision": "Event approval remains a decision record and explicitly does not create a canonical event. Organizer approval uses the existing publication handoff while app visibility, claims, recurring crawl, and canonical edits remain separate and visible in the impact panel.",
+      "nextAction": "Add canonical event import only through a reviewed contract that handles dedupe, ownership, location, availability, notifications, audit receipts, and safe retries."
+    },
+    {
+      "id": "ADM-ORGANIZERS-001",
+      "area": "organizers",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Organizer directory, detail, and claims separation",
+      "sourceEvidence": "The export separates directory from one organizer editor and deliberately separates app visibility from public-page publication.",
+      "repoEvidence": [
+        "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
+        "admin/src/features/organizers/ui/organizerDirectoryPanels.tsx"
+      ],
+      "decision": "Separate Directory and Claims routes, keep four loaded-result metrics, use URL-owned record detail, combine readiness blockers, order the editor by task, separate app visibility from public-web publication and indexing, and keep Save and Save plus publish in one sticky footer.",
+      "nextAction": "Only add Intake-to-Organizer handoff when approval returns a validated canonical clubId or target path."
+    },
+    {
+      "id": "ADM-EVENTS-001",
+      "area": "events",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Event directory and safe listing editor",
+      "sourceEvidence": "The export opens one event and limits admin editing to display copy and interaction format while organizer-owned schedule, capacity, price, venue, gates, and age remain read-only.",
+      "repoEvidence": [
+        "admin/src/features/events/ui/EventPublishingScreen.tsx",
+        "admin/src/features/events/ui/eventPublishingDirectoryPanels.tsx"
+      ],
+      "decision": "Use URL-owned canonical detail, readiness, and external-inventory routes; reduce the directory to four truthful metrics; separate safe listing edits from organizer-owned fields; show only backed performance; enable route-relevant queries; and preserve filters in URL search params.",
+      "nextAction": "A direct external-event point read and Intake handoff still require canonical target contracts; bounded list responses must not be presented as complete inventory."
+    },
+    {
+      "id": "ADM-MARKETING-001",
+      "area": "marketing",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Marketing lifecycle, composer, libraries, and truthful export state",
+      "sourceEvidence": "The source has Posts, Event library, Media library, Activity, and a gated four-stage composer.",
+      "repoEvidence": [
+        "admin/src/features/marketing/ui/MarketingOpsScreen.tsx"
+      ],
+      "decision": "Use one Marketing top-bar title and one New post action, URL-own every studio and composer step, keep fetched snapshots immutable, label saved snapshot, unsaved session edits, and review receipts separately, require explicit image-rights confirmation, enforce the backend-identical edit-size limit, and move commands and boundaries to Diagnostics.",
+      "nextAction": "Keep direct publishing, scheduling, hosted upload, durable arbitrary autosave, assignment, and complete audit history absent until contracts exist."
+    },
+    {
+      "id": "ADM-INSTAGRAM-001",
+      "area": "marketing",
+      "priority": "P0",
+      "status": "blocked",
+      "title": "Direct Instagram queueing and publish state",
+      "sourceEvidence": "The mock sets an in-memory queued state and does not prove a secure publishing job.",
+      "repoEvidence": [
+        "admin/src/features/marketing/ui/MarketingOpsScreen.tsx"
+      ],
+      "decision": "Do not expose direct publishing as working functionality.",
+      "nextAction": "Requires server-held credentials, explicit final approval, idempotency, retries, job receipts, failure recovery, and durable audit history."
+    },
+    {
+      "id": "ADM-FINANCE-001",
+      "area": "finance",
+      "priority": "P0",
+      "status": "implemented",
+      "title": "Read-only provider evidence and reconciliation boundary",
+      "sourceEvidence": "The source forbids retry, refund, status edit, payout release, or other money movement.",
+      "repoEvidence": [
+        "admin/src/features/finance/ui/FinanceOpsScreen.tsx"
+      ],
+      "decision": "Keep Finance read-only, scope every metric to its source response, isolate overview and 30-day analytics failures, use URL-owned issue detail, distinguish sourced, inferred, and unknown fields, and omit malformed rows with a visible count.",
+      "nextAction": "Add dedicated point reads and a typed finance issue model before claiming complete issue detail, stable provider or amount fields, or finance-role access."
+    },
+    {
+      "id": "ADM-DATE-RANGE-001",
+      "area": "shared analytics",
+      "priority": "P1",
+      "status": "blocked",
+      "title": "One shared date-range contract",
+      "sourceEvidence": "The source applies Today, 7 days, 30 days, quarter, all time, and custom range to data tabs.",
+      "repoEvidence": [
+        "admin/src/features/overview/controllers/useOverviewController.ts",
+        "admin/src/features/users/controllers/useUserAnalyticsController.ts"
+      ],
+      "decision": "Do not add a shell-wide visual filter while each repository accepts different or no range parameters.",
+      "nextAction": "Define per-endpoint range semantics, timezone, stock-versus-flow rules, and URL serialization before a shared control is adopted."
+    },
+    {
+      "id": "ADM-ACTION-SAFETY-001",
+      "area": "shared mutations",
+      "priority": "P0",
+      "status": "partial",
+      "title": "Diff, confirmation, in-flight, receipt, conflict, and rollback states",
+      "sourceEvidence": "The source shows save, hide, publish, crawl, approve, and reject controls without a complete operational state model.",
+      "repoEvidence": [
+        "admin/src/shared/ui/AdminPrimitives",
+        "admin/src/shared/query/usePendingMutationRecord.ts"
+      ],
+      "decision": "Use the shared sticky decision footer on backed Safety, Access, Organizer, Event, Marketing, and role-assignment decisions while preserving each callable's validation, confirmation, pending, and receipt semantics; never imply rollback when the backend cannot provide it.",
+      "nextAction": "Add generic conflict or rollback affordances only when callable responses expose authoritative conflict tokens and reversal contracts."
+    },
+    {
+      "id": "ADM-AUDIT-RECEIPTS-001",
+      "area": "auditability",
+      "priority": "P0",
+      "status": "partial",
+      "title": "Durable server-side action receipts and entity timeline",
+      "sourceEvidence": "Several prototype histories are explicitly limited to this session.",
+      "repoEvidence": [
+        "admin/src/shared/types/adminTypes.ts",
+        "functions/src/admin"
+      ],
+      "decision": "Keep session history labelled as session history; do not present it as an immutable audit log.",
+      "nextAction": "Standardize receipt identifiers, actor, request id, before/after summary, policy note, and entity activity queries."
+    },
+    {
+      "id": "ADM-OPERATING-STATES-001",
+      "area": "shared states",
+      "priority": "P1",
+      "status": "partial",
+      "title": "Complete loading, empty, stale, partial, permission, conflict, retry, and session-expiry states",
+      "sourceEvidence": "The export primarily demonstrates populated and empty states.",
+      "repoEvidence": [
+        "admin/src/shared/ui/AdminPrimitives"
+      ],
+      "decision": "Do not infer success from absence of an error. The approved routes now expose relevant loading, empty, stale, partial, missing, forbidden, oversized, malformed, and retry states without inventing conflict or rollback semantics.",
+      "nextAction": "Add shared conflict and session-expiry states only after the affected callable responses expose authoritative conflict and authentication detail."
+    },
+    {
+      "id": "ADM-A11Y-001",
+      "area": "accessibility",
+      "priority": "P1",
+      "status": "partial",
+      "title": "Keyboard, focus, target-size, contrast, and chart semantics pass",
+      "sourceEvidence": "The export uses low-contrast microcopy, small controls, color-heavy status meaning, custom selects, and unlabeled charts.",
+      "repoEvidence": [
+        "admin/src/styles.css",
+        "admin/src/shared/ui/AdminPrimitives"
+      ],
+      "decision": "Keep production controls, raise routine control height, darken semantic foregrounds, expose chart labels and values in the accessibility tree, preserve honest zero values, remove dialog semantics from the non-modal account disclosure, and verify the registered Storybook surface with axe.",
+      "nextAction": "Complete manual 200 percent browser zoom and target-size audits on every route as each remaining design tranche is adopted."
+    },
+    {
+      "id": "ADM-FILTER-URL-001",
+      "area": "routing",
+      "priority": "P2",
+      "status": "partial",
+      "title": "Bookmarkable filters, saved views, sorting, and pagination",
+      "sourceEvidence": "The export contains filters but keeps all state in memory.",
+      "repoEvidence": [
+        "admin/src/features"
+      ],
+      "decision": "Master-detail route ownership is canonical across approved staff workspaces, and Events preserves route-relevant filter state in URL search params. Other filters remain local until one shared serialization contract is justified.",
+      "nextAction": "Define shared query keys, reset behavior, active-filter count, saved-view ownership, and pagination before generalizing URL filters."
+    },
+    {
+      "id": "ADM-DATA-TRUST-001",
+      "area": "data provenance",
+      "priority": "P1",
+      "status": "partial",
+      "title": "Visible source, freshness, partial-load warning, evidence, and audit history",
+      "sourceEvidence": "The source includes some generated timestamps and provenance, but coverage is inconsistent.",
+      "repoEvidence": [
+        "admin/src/features/safety/ui/SafetyTriageScreen.tsx",
+        "admin/src/features/data-quality/ui/DataQualityScreen.tsx"
+      ],
+      "decision": "Retain generated-at and source details where backed; never invent freshness for static or unavailable data.",
+      "nextAction": "Define a shared data-freshness contract and reusable evidence drawer after backend responses expose consistent metadata."
+    },
+    {
+      "id": "ADM-DATA-QUALITY-001",
+      "area": "data quality",
+      "priority": "P1",
+      "status": "implemented",
+      "title": "Independent source health and URL-owned signal detail",
+      "sourceEvidence": "The approved proposal requires successful sources to remain usable when another source fails and forbids plan configuration from being presented as scheduler execution telemetry.",
+      "repoEvidence": [
+        "admin/src/features/data-quality/api/dataQualityRepository.ts",
+        "admin/src/features/data-quality/controllers/useDataQualityController.ts",
+        "admin/src/features/data-quality/ui/DataQualityScreen.tsx"
+      ],
+      "decision": "Give each of five sources its own query and retry boundary, settle bulk refresh independently, model load, freshness, and configuration separately, sort a compact register by severity then owner, URL-own signal detail, and expose only validated owning-workflow handoffs.",
+      "nextAction": "Keep scheduler history, last-run or last-error receipts, acknowledgement, backfill progress, and remediation controls absent until telemetry and mutation contracts exist."
+    },
+    {
+      "id": "ADM-ADMIN-ROLES-001",
+      "area": "admin roles",
+      "priority": "P0",
+      "status": "implemented",
+      "title": "Register-first governed role assignment",
+      "sourceEvidence": "The approved proposal puts the bounded assignment register before exact-UID fallback and requires capability, risk, diff, confirmation, receipt, and token-refresh context.",
+      "repoEvidence": [
+        "admin/src/features/admin-roles/controllers/adminRolePolicies.ts",
+        "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+        "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx"
+      ],
+      "decision": "Show the 50 most recently updated assignments first with local-only search, URL-own exact-UID detail, derive six capability policies from the existing allowlist, show before and after roles, lock self-removal of adminOwner, require high-risk confirmation, and show the server save receipt with ID-token refresh guidance.",
+      "nextAction": "Keep broad Auth search, pagination, account disable or enable, session revocation, and non-admin claim editing absent."
+    },
+    {
+      "id": "ADM-MOCK-CORRECTNESS-001",
+      "area": "source prototype",
+      "priority": "P1",
+      "status": "source-defect",
+      "title": "Prototype crawl and candidate-editor controls are not persistent",
+      "sourceEvidence": "Organizer Run crawl updates the event stage instead of orgStage, and Intake candidate Save closes uncontrolled inputs without persisting values.",
+      "repoEvidence": [],
+      "decision": "Treat the export as UX intent, not implementation authority; do not port these handlers.",
+      "nextAction": "Correct the design prototype only if it remains an active review artifact; production work must use repository and callable contracts."
+    }
+  ]
+}

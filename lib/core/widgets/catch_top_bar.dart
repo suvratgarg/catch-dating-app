@@ -19,6 +19,29 @@ export 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
 
 enum CatchTopBarLeading { auto, back, close, none }
 
+/// Canonical trailing-action layout for Catch top bars and screen headers.
+///
+/// Action spacing is intentionally owned here so callers cannot create subtly
+/// different header geometry by composing their own [Row].
+class CatchTopBarActionGroup extends StatelessWidget {
+  const CatchTopBarActionGroup({super.key, required this.actions});
+
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var index = 0; index < actions.length; index++) ...[
+          Flexible(child: actions[index]),
+          if (index != actions.length - 1) gapW8,
+        ],
+      ],
+    );
+  }
+}
+
 /// Root-screen title stack shared by the main tabs and root-like app bars.
 class CatchScreenHeaderTitle extends StatelessWidget {
   const CatchScreenHeaderTitle({
@@ -28,6 +51,8 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     this.subtitle,
     this.leading,
     this.actions = const <Widget>[],
+    this.titleMaxLines = 1,
+    this.rowCrossAxisAlignment = CrossAxisAlignment.center,
     this.padding,
     this.material = false,
     this.backgroundColor,
@@ -40,6 +65,8 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     this.subtitle,
     this.leading,
     this.actions = const <Widget>[],
+    this.titleMaxLines = 1,
+    this.rowCrossAxisAlignment = CrossAxisAlignment.center,
     this.padding = CatchInsets.screenTitleBlock,
     this.backgroundColor,
   }) : material = true;
@@ -49,6 +76,8 @@ class CatchScreenHeaderTitle extends StatelessWidget {
   final String? subtitle;
   final Widget? leading;
   final List<Widget> actions;
+  final int titleMaxLines;
+  final CrossAxisAlignment rowCrossAxisAlignment;
   final EdgeInsetsGeometry? padding;
   final bool material;
   final Color? backgroundColor;
@@ -60,6 +89,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     final hasSubtitle = subtitle != null && subtitle!.isNotEmpty;
 
     Widget child = Row(
+      crossAxisAlignment: rowCrossAxisAlignment,
       children: [
         if (leading != null) ...[leading!, gapW12],
         Expanded(
@@ -78,7 +108,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
               ],
               Text(
                 title,
-                maxLines: 1,
+                maxLines: titleMaxLines,
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.headline(context, color: t.ink),
               ),
@@ -96,7 +126,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
         ),
         if (actions.isNotEmpty) ...[
           gapW12,
-          Row(mainAxisSize: MainAxisSize.min, children: actions),
+          CatchTopBarActionGroup(actions: actions),
         ],
       ],
     );
@@ -119,41 +149,123 @@ class CatchScreenHeaderTitle extends StatelessWidget {
 
 /// App-bar wrapper for root screens that should use the tab-screen title voice.
 class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
-  const CatchScreenTopBar({
+  factory CatchScreenTopBar({
+    Key? key,
+    required BuildContext context,
+    required String title,
+    String? eyebrow,
+    String? subtitle,
+    Widget? leading,
+    CatchTopBarLeading leadingType = CatchTopBarLeading.auto,
+    List<Widget> actions = const <Widget>[],
+    int titleMaxLines = 1,
+    CrossAxisAlignment rowCrossAxisAlignment = CrossAxisAlignment.center,
+    Color? backgroundColor,
+    bool surface = false,
+    bool border = false,
+    bool? divider,
+    bool gutter = false,
+    bool applySafeArea = true,
+    PreferredSizeWidget? bottom,
+    Widget? trailing,
+    String? searchValue,
+    bool? searchEnabled,
+    bool? searchExpanded,
+    ValueChanged<bool>? onSearchExpandedChanged,
+    ValueChanged<String>? onSearch,
+    String searchPlaceholder = 'Search',
+    bool searchAutofocus = false,
+    TextInputAction searchTextInputAction = TextInputAction.done,
+    ValueChanged<String>? onSearchSubmitted,
+    ValueChanged<bool>? onSearchFocusChanged,
+    String searchTooltip = 'Search',
+    String? searchSemanticLabel,
+    double searchCollapsedExtent = CatchIconButton.navSize,
+    Color? searchBackgroundColor,
+    Color? searchBorderColor,
+    Color? searchForegroundColor,
+    Color? searchMutedForegroundColor,
+  }) => CatchScreenTopBar._(
+    heightFor(
+      context: context,
+      hasEyebrow: eyebrow?.isNotEmpty ?? false,
+      hasSubtitle: subtitle?.isNotEmpty ?? false,
+      titleMaxLines: titleMaxLines,
+    ),
+    key: key,
+    title: title,
+    eyebrow: eyebrow,
+    subtitle: subtitle,
+    leading: leading,
+    leadingType: leadingType,
+    actions: actions,
+    titleMaxLines: titleMaxLines,
+    rowCrossAxisAlignment: rowCrossAxisAlignment,
+    backgroundColor: backgroundColor,
+    surface: surface,
+    border: border,
+    divider: divider,
+    gutter: gutter,
+    applySafeArea: applySafeArea,
+    contentPadding: CatchInsets.screenTitleBlock,
+    bottom: bottom,
+    trailing: trailing,
+    searchValue: searchValue,
+    searchEnabled: searchEnabled,
+    searchExpanded: searchExpanded,
+    onSearchExpandedChanged: onSearchExpandedChanged,
+    onSearch: onSearch,
+    searchPlaceholder: searchPlaceholder,
+    searchAutofocus: searchAutofocus,
+    searchTextInputAction: searchTextInputAction,
+    onSearchSubmitted: onSearchSubmitted,
+    onSearchFocusChanged: onSearchFocusChanged,
+    searchTooltip: searchTooltip,
+    searchSemanticLabel: searchSemanticLabel,
+    searchCollapsedExtent: searchCollapsedExtent,
+    searchBackgroundColor: searchBackgroundColor,
+    searchBorderColor: searchBorderColor,
+    searchForegroundColor: searchForegroundColor,
+    searchMutedForegroundColor: searchMutedForegroundColor,
+  );
+
+  const CatchScreenTopBar._(
+    this._resolvedHeight, {
     super.key,
     required this.title,
-    this.eyebrow,
-    this.subtitle,
-    this.leading,
-    this.leadingType = CatchTopBarLeading.auto,
-    this.actions = const <Widget>[],
-    this.backgroundColor,
-    this.surface = false,
-    this.border = false,
-    this.divider,
-    this.gutter = false,
-    this.applySafeArea = true,
-    this.contentPadding = CatchInsets.screenTitleBlock,
-    this.height = CatchLayout.browseHeaderHeight,
-    this.bottom,
-    this.trailing,
-    this.searchValue,
-    this.searchEnabled,
-    this.searchExpanded,
-    this.onSearchExpandedChanged,
-    this.onSearch,
-    this.searchPlaceholder = 'Search',
-    this.searchAutofocus = false,
-    this.searchTextInputAction = TextInputAction.done,
-    this.onSearchSubmitted,
-    this.onSearchFocusChanged,
-    this.searchTooltip = 'Search',
-    this.searchSemanticLabel,
-    this.searchCollapsedExtent = CatchIconButton.navSize,
-    this.searchBackgroundColor,
-    this.searchBorderColor,
-    this.searchForegroundColor,
-    this.searchMutedForegroundColor,
+    required this.eyebrow,
+    required this.subtitle,
+    required this.leading,
+    required this.leadingType,
+    required this.actions,
+    required this.titleMaxLines,
+    required this.rowCrossAxisAlignment,
+    required this.backgroundColor,
+    required this.surface,
+    required this.border,
+    required this.divider,
+    required this.gutter,
+    required this.applySafeArea,
+    required this.contentPadding,
+    required this.bottom,
+    required this.trailing,
+    required this.searchValue,
+    required this.searchEnabled,
+    required this.searchExpanded,
+    required this.onSearchExpandedChanged,
+    required this.onSearch,
+    required this.searchPlaceholder,
+    required this.searchAutofocus,
+    required this.searchTextInputAction,
+    required this.onSearchSubmitted,
+    required this.onSearchFocusChanged,
+    required this.searchTooltip,
+    required this.searchSemanticLabel,
+    required this.searchCollapsedExtent,
+    required this.searchBackgroundColor,
+    required this.searchBorderColor,
+    required this.searchForegroundColor,
+    required this.searchMutedForegroundColor,
   });
 
   final String title;
@@ -162,6 +274,8 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
   final CatchTopBarLeading leadingType;
   final List<Widget> actions;
+  final int titleMaxLines;
+  final CrossAxisAlignment rowCrossAxisAlignment;
   final Color? backgroundColor;
   final bool surface;
   final bool border;
@@ -169,7 +283,6 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   final bool gutter;
   final bool applySafeArea;
   final EdgeInsetsGeometry? contentPadding;
-  final double height;
   final PreferredSizeWidget? bottom;
   final Widget? trailing;
   final String? searchValue;
@@ -189,6 +302,47 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? searchBorderColor;
   final Color? searchForegroundColor;
   final Color? searchMutedForegroundColor;
+  final double _resolvedHeight;
+
+  static double heightFor({
+    required BuildContext context,
+    bool hasEyebrow = false,
+    bool hasSubtitle = false,
+    int titleMaxLines = 1,
+  }) {
+    final textScaler = MediaQuery.textScalerOf(context);
+    final resolvedPadding = CatchInsets.screenTitleBlock.resolve(
+      Directionality.of(context),
+    );
+    double lineHeight(TextStyle style) =>
+        textScaler.scale(style.fontSize!) * (style.height ?? 1);
+
+    var textHeight =
+        lineHeight(CatchTextStyles.headline(context)) * titleMaxLines;
+    if (hasEyebrow) {
+      textHeight +=
+          lineHeight(CatchTextStyles.kicker(context)) + CatchSpacing.micro2;
+    }
+    if (hasSubtitle) {
+      textHeight +=
+          CatchGaps.headerTitleToSubtitle +
+          lineHeight(CatchTextStyles.supporting(context));
+    }
+
+    final baseline = hasEyebrow || hasSubtitle || titleMaxLines > 1
+        ? CatchLayout.browseHeaderHeight
+        : CatchLayout.topBarHeight;
+    final contentHeight = textHeight > CatchIconButton.navSize
+        ? textHeight
+        : CatchIconButton.navSize;
+    // Text layout can round a scaled glyph run slightly above the nominal
+    // style height, so reserve the next logical pixel in the preferred size.
+    final requiredHeight = (contentHeight + resolvedPadding.vertical)
+        .ceilToDouble();
+    return requiredHeight > baseline ? requiredHeight : baseline;
+  }
+
+  double get height => _resolvedHeight;
 
   @override
   Size get preferredSize =>
@@ -201,6 +355,8 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
         title: title,
         eyebrow: eyebrow,
         subtitle: subtitle,
+        titleMaxLines: titleMaxLines,
+        rowCrossAxisAlignment: rowCrossAxisAlignment,
       ),
       large: false,
       leading: leading,
@@ -214,6 +370,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       applySafeArea: applySafeArea,
       contentPadding: contentPadding,
       height: height,
+      contentCrossAxisAlignment: CrossAxisAlignment.start,
       bottom: bottom,
       trailing: trailing,
       searchValue: searchValue,
@@ -263,6 +420,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.applySafeArea = true,
     this.contentPadding,
     this.height = CatchLayout.topBarHeight,
+    this.contentCrossAxisAlignment = CrossAxisAlignment.center,
     this.bottom,
     this.actionIcon,
     this.actionVariant = CatchIconButtonVariant.plain,
@@ -309,6 +467,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.applySafeArea = true,
     this.contentPadding,
     this.height = CatchLayout.topBarHeight,
+    this.contentCrossAxisAlignment = CrossAxisAlignment.center,
     this.bottom,
     this.trailing,
   }) : title = null,
@@ -360,6 +519,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final bool applySafeArea;
   final EdgeInsetsGeometry? contentPadding;
   final double height;
+  final CrossAxisAlignment contentCrossAxisAlignment;
   final PreferredSizeWidget? bottom;
   final IconData? actionIcon;
   final CatchIconButtonVariant actionVariant;
@@ -443,6 +603,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
           _buildCompactTopBarFrame(
             context,
             height: widget.height,
+            contentCrossAxisAlignment: widget.contentCrossAxisAlignment,
             gutter: widget.gutter,
             contentPadding: widget.contentPadding,
             showDivider: showDivider && widget.bottom == null,
@@ -555,7 +716,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
 
   Widget? _buildTrailingActions(BuildContext context) {
     if (widget.actions.isNotEmpty) {
-      return _buildTopBarActionRow(widget.actions);
+      return CatchTopBarActionGroup(actions: widget.actions);
     }
     if (widget.actionIcon != null) {
       return CatchIconAction(
@@ -612,6 +773,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
 Widget _buildCompactTopBarFrame(
   BuildContext context, {
   required double height,
+  required CrossAxisAlignment contentCrossAxisAlignment,
   required bool gutter,
   required EdgeInsetsGeometry? contentPadding,
   required bool showDivider,
@@ -637,16 +799,23 @@ Widget _buildCompactTopBarFrame(
     ),
     child: LayoutBuilder(
       builder: (context, constraints) => Row(
+        crossAxisAlignment: contentCrossAxisAlignment,
         children: [
           if (leading != null) ...[leading, gapW12],
           Expanded(
             child: _TopBarSearchLane(
               alignment: Alignment.centerRight,
+              crossAxisAlignment: contentCrossAxisAlignment,
               searchOpen: searchOpen,
               searchCollapsedExtent: searchCollapsedExtent,
               search: search,
               trailing: trailing,
-              title: Align(alignment: Alignment.centerLeft, child: title),
+              title: Align(
+                alignment: contentCrossAxisAlignment == CrossAxisAlignment.start
+                    ? Alignment.topLeft
+                    : Alignment.centerLeft,
+                child: title,
+              ),
               trailingMaxWidth:
                   constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
             ),
@@ -694,6 +863,7 @@ Widget _buildLargeTopBarFrame(
           Expanded(
             child: _TopBarSearchLane(
               alignment: Alignment.topRight,
+              crossAxisAlignment: CrossAxisAlignment.start,
               searchOpen: searchOpen,
               searchCollapsedExtent: searchCollapsedExtent,
               search: search,
@@ -712,6 +882,7 @@ Widget _buildLargeTopBarFrame(
 class _TopBarSearchLane extends StatelessWidget {
   const _TopBarSearchLane({
     required this.alignment,
+    required this.crossAxisAlignment,
     required this.searchOpen,
     required this.searchCollapsedExtent,
     required this.search,
@@ -721,6 +892,7 @@ class _TopBarSearchLane extends StatelessWidget {
   });
 
   final Alignment alignment;
+  final CrossAxisAlignment crossAxisAlignment;
   final bool searchOpen;
   final double searchCollapsedExtent;
   final Widget? Function(double maxWidth) search;
@@ -735,6 +907,7 @@ class _TopBarSearchLane extends StatelessWidget {
         final searchWidget = search(constraints.maxWidth);
         if (searchWidget == null) {
           return Row(
+            crossAxisAlignment: crossAxisAlignment,
             children: [
               Expanded(child: title),
               _buildTopBarTrailingEdge(
@@ -755,6 +928,7 @@ class _TopBarSearchLane extends StatelessWidget {
                 duration: CatchMotion.base,
                 curve: CatchMotion.standardCurve,
                 child: Row(
+                  crossAxisAlignment: crossAxisAlignment,
                   children: [
                     Expanded(child: title),
                     _buildTopBarTrailingEdge(
@@ -786,18 +960,6 @@ Widget _buildTopBarTrailingEdge({
       mainAxisSize: MainAxisSize.min,
       children: [Flexible(child: trailing)],
     ),
-  );
-}
-
-Widget _buildTopBarActionRow(List<Widget> actions) {
-  return Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      for (var index = 0; index < actions.length; index++) ...[
-        Flexible(child: actions[index]),
-        if (index != actions.length - 1) gapW8,
-      ],
-    ],
   );
 }
 
@@ -1036,11 +1198,11 @@ class CatchTopBarTextAction extends StatelessWidget {
 /// Use this instead of [CatchTopBar] when the content below should scroll
 /// beneath the header.
 class CatchSliverTopBar extends SliverAppBar {
-  const CatchSliverTopBar({
+  CatchSliverTopBar({
     super.key,
     Widget? titleWidget,
     super.leading,
-    List<Widget> super.actions = const [],
+    List<Widget> actions = const [],
     super.backgroundColor,
     double expandedHeight = 56,
     super.bottom,
@@ -1051,6 +1213,9 @@ class CatchSliverTopBar extends SliverAppBar {
          elevation: 0,
          surfaceTintColor: Colors.transparent,
          title: const SizedBox.shrink(),
+         actions: actions.isEmpty
+             ? const <Widget>[]
+             : <Widget>[CatchTopBarActionGroup(actions: actions)],
          expandedHeight: expandedHeight,
          flexibleSpace: titleWidget,
        );

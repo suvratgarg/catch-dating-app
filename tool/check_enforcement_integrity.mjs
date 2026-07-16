@@ -14,7 +14,7 @@ const allowedStages = new Set([
   "retired",
 ]);
 
-const allowedRoles = new Set(["gate", "ratchet", "finder", "generator"]);
+const allowedRoles = new Set(["gate", "ratchet", "finder", "generator", "operator"]);
 const activeRuleStatuses = new Set(["active"]);
 const allowedRuleKinds = new Set([
   "contract",

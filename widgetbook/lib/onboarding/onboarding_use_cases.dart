@@ -8,6 +8,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -210,6 +211,7 @@ Widget onboardingTopBarState(BuildContext context) {
         label: 'profile completion photos',
         child: OnboardingTopBar(
           state: OnboardingTopBarState.from(
+            l10n: context.l10n,
             step: OnboardingStep.photos,
             entryMode: OnboardingEntryMode.profileCompletion,
             canGoBack: false,
@@ -767,6 +769,7 @@ Widget promptFieldStates(BuildContext context) {
       _StateCard(
         label: 'answered',
         child: PromptField(
+          index: 0,
           definition: profilePromptDefinition(promptIds[0]),
           controller: answeredController,
           availablePromptIds: promptIds,
@@ -777,6 +780,7 @@ Widget promptFieldStates(BuildContext context) {
       _StateCard(
         label: 'empty',
         child: PromptField(
+          index: 1,
           definition: profilePromptDefinition(promptIds[1]),
           controller: emptyController,
           availablePromptIds: promptIds,

@@ -25,6 +25,8 @@ typedef ClubShareHandler =
 
 enum ClubHeroVariant { polaroid, masthead, full }
 
+enum ClubHeroPresentationMode { route, embeddedReadOnlyPreview }
+
 @visibleForTesting
 ClubHeroVariant clubHeroVariantFor(Club club) {
   if (_clubHeroPrimaryPhotoUrl(club) != null) {
@@ -56,12 +58,14 @@ class ClubHeroAppBar extends StatelessWidget {
     required this.isHost,
     this.locationLabel,
     this.onShareClub,
+    this.presentationMode = ClubHeroPresentationMode.route,
   });
 
   final Club club;
   final bool isHost;
   final String? locationLabel;
   final ClubShareHandler? onShareClub;
+  final ClubHeroPresentationMode presentationMode;
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +86,24 @@ class ClubHeroAppBar extends StatelessWidget {
     );
     final moduleHeight =
         mediaHeight + (clubInteractionMediaInset * 2) + captionExtent;
+    final heroModule = Material(
+      color: Colors.transparent,
+      child: ClubHeroModule(
+        club: club,
+        variant: variant,
+        mediaHeight: mediaHeight,
+        captionExtent: captionExtent,
+        kickerLabel: kickerLabel,
+        locationLabel: resolvedLocationLabel,
+      ),
+    );
+
+    if (presentationMode == ClubHeroPresentationMode.embeddedReadOnlyPreview) {
+      return SliverToBoxAdapter(
+        child: SizedBox(height: moduleHeight, child: heroModule),
+      );
+    }
+
     final expandedHeight = (moduleHeight - topInset)
         .clamp(kToolbarHeight, moduleHeight)
         .toDouble();
@@ -153,17 +175,7 @@ class ClubHeroAppBar extends StatelessWidget {
               child: Hero(
                 tag: clubInteractionHeroTag(club.id),
                 transitionOnUserGestures: true,
-                child: Material(
-                  color: Colors.transparent,
-                  child: ClubHeroModule(
-                    club: club,
-                    variant: variant,
-                    mediaHeight: mediaHeight,
-                    captionExtent: captionExtent,
-                    kickerLabel: kickerLabel,
-                    locationLabel: resolvedLocationLabel,
-                  ),
-                ),
+                child: heroModule,
               ),
             ),
           ),

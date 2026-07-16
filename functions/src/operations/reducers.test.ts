@@ -5,9 +5,10 @@ import {
   reduceRunTransition,
   reduceWorkItemLifecycle,
   reduceWorkItemTransition,
-  supplyIntakeStagePolicy,
   WorkItemTransitionCommand,
 } from "./reducers";
+import {supplyIntakeStagePolicy} from
+  "./workflows/supplyIntakePolicy";
 import {hashes, operationRun, operationWorkItem} from "./testFixtures";
 
 function transition(
@@ -65,6 +66,48 @@ test("ready stage requires accepted decision and no blockers", () => {
   });
 });
 
+test("custom workflow stage gates are policy-driven", () => {
+  const policy = {
+    workflowId: "custom-workflow",
+    stages: {
+      review: {lifecycleStatus: "in_progress" as const},
+      approved: {
+        lifecycleStatus: "ready" as const,
+        requiresDecision: true,
+        requiresNoBlockers: true,
+      },
+    },
+    transitions: {review: ["approved"], approved: []},
+    publication: null,
+  };
+  const current = operationWorkItem({
+    workflowId: "custom-workflow",
+    primaryStage: "review",
+    lifecycleStatus: "in_progress",
+    blockerCodes: ["custom_blocker"],
+  });
+  assert.throws(() => reduceWorkItemTransition(
+    current,
+    transition({targetStage: "approved"}),
+    policy
+  ), (error: unknown) => {
+    assert.ok(error instanceof OperationDomainError);
+    assert.equal(error.code, "stage_gates_not_met");
+    return true;
+  });
+  const result = reduceWorkItemTransition(
+    current,
+    transition({
+      targetStage: "approved",
+      blockerCodes: [],
+      decisionId: "decision:custom",
+    }),
+    policy
+  );
+  assert.equal(result.workItem.primaryStage, "approved");
+  assert.equal(result.workItem.lifecycleStatus, "ready");
+});
+
 test("published work can be reconciled to taken down but not reopened", () => {
   const published = operationWorkItem({
     primaryStage: "ready",
@@ -90,7 +133,8 @@ test("published work can be reconciled to taken down but not reopened", () => {
       modelVersion: null,
       reasonCodes: ["source_takedown_received"],
       occurredAt: "2026-07-14T08:05:00.000Z",
-    }
+    },
+    supplyIntakeStagePolicy
   );
   assert.equal(result.workItem.lifecycleStatus, "terminal");
   assert.equal(result.workItem.outcome, "taken_down");
@@ -110,7 +154,8 @@ test("published work can be reconciled to taken down but not reopened", () => {
       modelVersion: null,
       reasonCodes: ["retry"],
       occurredAt: "2026-07-14T08:06:00.000Z",
-    }
+    },
+    supplyIntakeStagePolicy
   ));
 });
 

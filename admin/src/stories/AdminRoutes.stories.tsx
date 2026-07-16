@@ -14,10 +14,11 @@ import {
   type AdminRoleManagementController,
 } from "../features/admin-roles/controllers/useAdminRoleManagementController";
 import {AdminRoleManagementWorkspace} from "../features/admin-roles/ui/AdminRoleManagementScreen";
+import {adminRolePolicyList} from "../features/admin-roles/controllers/adminRolePolicies";
 import type {
   DataQualityController,
   DataQualityRow,
-  DataQualityStateFilter,
+  DataQualitySeverity,
 } from "../features/data-quality/controllers/useDataQualityController";
 import {DataQualityWorkspace} from "../features/data-quality/ui/DataQualityScreen";
 import {
@@ -35,10 +36,13 @@ import {EventPublishingWorkspace} from "../features/events/ui/EventPublishingScr
 import eventIntakeBridgeFixture from "../generated/eventIntakeBridge.json";
 import type {EventIntakeController} from "../features/intake/events/controllers/useEventIntakeController";
 import {EventIntakePreviewWorkspace} from "../features/intake/events/ui/EventIntakeWorkspace";
+import type {IntakeOperationsController} from "../features/intake/operations/controllers/useIntakeOperationsController";
+import {IntakeOperationsPreviewWorkspace} from "../features/intake/operations/ui/IntakeOperationsWorkspace";
 import organizerIntakeBridgeFixture from "../features/intake/organizer/generated/organizerIntakeBridge.json";
 import type {OrganizerIntakeController} from "../features/intake/organizer/controllers/useOrganizerIntakeController";
 import {OrganizerIntakeWorkspace} from "../features/intake/organizer/ui/OrganizerIntakeScreen";
 import {IntakeWorkspace} from "../features/intake/ui/IntakeWorkspaceScreen";
+import {sampleIntakeOperations} from "../shared/operations/sampleIntakeOperations";
 import {
   buildFinanceIssueReview,
   type FinanceIssueKind,
@@ -88,7 +92,6 @@ import {
   type EventIntakeCandidate,
   type EventIntakeSourceProfile,
   type EventIntakeSourceResult,
-  adminRoleClaimKeys,
   type AdminRoleAssignmentRow,
   type AdminRoleClaim,
   type AdminUserRoleRecord,
@@ -141,6 +144,9 @@ const eventController: EventPublishingController = {
   openExternalSupply: () => {
     noop();
   },
+  openReadiness: () => {
+    noop();
+  },
   publishExternalEvent: async (_request) => {
     noop();
     return false;
@@ -170,6 +176,9 @@ const eventController: EventPublishingController = {
   selectExternalEvent: (_value) => {
     noop();
   },
+  selectReadinessAction: (_value) => {
+    noop();
+  },
   selectedExternalEvent,
   selectedExternalEventId: selectedExternalEvent?.eventId ?? null,
   selectedExternalImportReview: buildExternalEventImportReview(
@@ -177,6 +186,7 @@ const eventController: EventPublishingController = {
     eventSupplyReadiness.importPlan,
     eventSupplyReadiness.executionPlan
   ),
+  selectedReadinessActionId: null,
   setEventId: (_value) => {
     noop();
   },
@@ -242,6 +252,13 @@ const eventIntakeController: EventIntakeController = {
   ) => {
     noop();
   },
+};
+const intakeOperationsController: IntakeOperationsController = {
+  data: sampleIntakeOperations(),
+  isLoading: false,
+  isLoadingMore: false,
+  loadMore: async () => false,
+  refresh: async () => true,
 };
 const organizerIntakeBridge =
   organizerIntakeBridgeFixture as unknown as OrganizerIntakeController["bridge"];
@@ -342,10 +359,17 @@ const marketingOpsSelectedDraft =
 const marketingOpsController: MarketingOpsController = {
   activeTab: "posts",
   bridge: marketingOpsBridge,
+  bridgeError: null,
+  bridgeGeneratedAt: marketingOpsBridge?.generatedAt ?? null,
+  bridgeIsStale: false,
   composerStep: 0,
   createDraft: async (_draftType) => {
     noop();
   },
+  discardSelectedDraftEdits: () => {
+    noop();
+  },
+  hasUnsavedChanges: false,
   inFlight: {},
   isLoading: false,
   loadBridge: async () => {
@@ -354,8 +378,16 @@ const marketingOpsController: MarketingOpsController = {
   },
   localDecisions: {},
   notes: {},
+  reviewReceiptRecorded: false,
+  rightsConfirmed: false,
+  savedBridge: marketingOpsBridge,
   selectedDraft: marketingOpsSelectedDraft,
+  selectedDraftDirty: false,
   selectedDraftId: marketingOpsSelectedDraft?.id ?? null,
+  selectedDraftUnavailable: false,
+  selectedEditSize: marketingOpsSelectedDraft ?
+    JSON.stringify(marketingOpsSelectedDraft).length : 0,
+  selectedEditTooLarge: false,
   setActiveTab: (_value) => {
     noop();
   },
@@ -365,7 +397,7 @@ const marketingOpsController: MarketingOpsController = {
   setNote: (_key: string, _value: string) => {
     noop();
   },
-  setSelectedDraftId: (_value) => {
+  setRightsConfirmed: (_value: boolean) => {
     noop();
   },
   setTypeFilter: (_value) => {
@@ -382,6 +414,9 @@ const marketingOpsController: MarketingOpsController = {
     noop();
   },
   updateRecommendationItem: (_setId, _itemId, _patch) => {
+    noop();
+  },
+  openDraft: (_draftId: string) => {
     noop();
   },
 };
@@ -453,26 +488,20 @@ const organizerPublishingController: OrganizerPublishingController = {
   view: "list",
 };
 const safetyRows: SafetyTriageController["rows"] = [
-  ...overview.queues.safetyReports.map((row, index) => ({
+  ...overview.queues.safetyReports.map((row) => ({
     ...row,
     queueKind: "reports" as const,
     queueLabel: "User reports",
-    priority: index === 0 ? "high" as const : "medium" as const,
-    routeOwner: index === 0 ? "Trust and safety" : "Support review",
   })),
-  ...overview.queues.moderationFlags.map((row, index) => ({
+  ...overview.queues.moderationFlags.map((row) => ({
     ...row,
     queueKind: "moderation" as const,
     queueLabel: "Moderation flags",
-    priority: index === 1 ? "high" as const : "medium" as const,
-    routeOwner: "Moderation",
   })),
   ...overview.queues.eventSafetyReports.map((row) => ({
     ...row,
     queueKind: "event" as const,
     queueLabel: "Event reports",
-    priority: "high" as const,
-    routeOwner: "Event safety",
   })),
 ];
 const safetySelected = safetyRows[0] ?? null;
@@ -484,7 +513,7 @@ const safetySelectedDetail: NonNullable<SafetyTriageController["selectedDetail"]
     severity: "high",
   },
   clubId: null,
-  contextId: "sample/context",
+  contextId: "local-preview/context",
   createdAt: safetySelected?.createdAt ?? null,
   eventId: null,
   evidence: [
@@ -560,28 +589,15 @@ const safetyController: SafetyTriageController = {
   isDetailLoading: false,
   isLoading: false,
   metrics: {
-    eventReports: overview.queues.eventSafetyReports.length,
-    highPriority: safetyRows.filter((row) => row.priority === "high").length,
-    moderation: overview.queues.moderationFlags.length,
-    reports: overview.queues.safetyReports.length,
+    eventReports: overview.metrics.find((metric) =>
+      metric.id === "eventSafetyReports")?.value ?? 0,
+    moderation: overview.metrics.find((metric) =>
+      metric.id === "pendingModerationFlags")?.value ?? 0,
+    reports: overview.metrics.find((metric) =>
+      metric.id === "openReports")?.value ?? 0,
   },
   query: "",
   queueFilter: "all",
-  recentAssignments: [
-    {
-      assignment: safetySelectedDetail.assignment,
-      note: "Escalated to same-day safety queue.",
-      targetPath: safetySelectedDetail.targetPath,
-    },
-  ],
-  recentDecisions: [
-    {
-      decision: "review",
-      note: "Confirmed enough evidence for reviewed status.",
-      status: "reviewed",
-      targetPath: "moderationFlags/flag-1",
-    },
-  ],
   rows: safetyRows,
   selected: safetySelected,
   selectedDetail: safetySelectedDetail,
@@ -673,28 +689,28 @@ const accessSelectedDetails: AdminAccessApplicationDetails = {
 };
 const accessController: AccessReviewController = {
   decisionInFlight: null,
+  detailError: null,
   filteredRows: accessRows,
   form: accessForm,
+  generatedAt: "2026-07-03T08:00:00.000Z",
   isDetailLoading: false,
   isLoading: false,
+  pendingTotal: 41,
   query: "",
-  recentDecisions: [
-    {
-      applicationUid: "access-archive-1",
-      decision: "deny",
-      status: "notSelectedYet",
-      title: "Incomplete duplicate application",
-    },
-  ],
   rows: accessRows,
   selected: accessSelected,
+  selectedApplicationUid: null,
   selectedDetails: accessSelectedDetails,
+  selectedUnavailable: false,
   validationIssue: null,
   decide: async (_decision: AccessApplicationDecision) => {
     noop();
     return true;
   },
   refresh: async () => {
+    noop();
+  },
+  refreshDetail: async () => {
     noop();
   },
   select: (_row: AdminQueueItem) => {
@@ -738,22 +754,24 @@ const adminRoleController: AdminRoleManagementController = {
   assignmentFilter: "active",
   assignmentGeneratedAt: "2026-07-03T09:55:00.000Z",
   assignmentRows: adminRoleAssignmentRows,
+  assignmentVisibleRows: adminRoleAssignmentRows,
+  assignmentQuery: "",
+  assignmentCapped: false,
+  highRiskConfirmed: false,
+  hasHighRiskChange: false,
   isAssignmentListLoading: false,
   isLoading: false,
   isSaving: false,
   note: "",
-  recentChanges: [
-    {
-      afterRoles: ["support", "analyticsViewer"],
-      beforeRoles: ["support"],
-      targetUid: "support-ops",
-    },
-  ],
+  roleDiff: {added: [], removed: []},
+  rolePolicies: adminRolePolicyList,
+  saveReceipt: null,
   refreshAssignments: async () => {
     noop();
   },
-  roleOptions: adminRoleClaimKeys,
   selectedRoles: ["adminOwner"],
+  selectedTargetUid: "admin-owner",
+  selectedUnavailable: false,
   selectedUser: adminRoleSelectedUser,
   scopeContract: buildAdminRoleScopeContract("admin-owner", "admin-owner"),
   targetUid: "admin-owner",
@@ -772,6 +790,12 @@ const adminRoleController: AdminRoleManagementController = {
   setAssignmentFilter: (_value: AdminRoleAssignmentStatusFilter) => {
     noop();
   },
+  setAssignmentQuery: (_value: string) => {
+    noop();
+  },
+  setHighRiskConfirmed: (_value: boolean) => {
+    noop();
+  },
   setNote: (_value: string) => {
     noop();
   },
@@ -785,68 +809,125 @@ const adminRoleController: AdminRoleManagementController = {
 const dataQualityRows: DataQualityRow[] = [
   {
     id: "overview-club-claims",
+    sourceId: "overview",
     source: "Overview",
+    category: "Platform signal",
     label: "Organizer claim queue",
     state: "blocked",
+    severity: "blocked",
     detail: "3 organizer claims need canonical owner validation before publication.",
+    stateDefinition: "State is provided by the admin overview read model.",
     owner: "Admin ops",
     runbook: "admin > Organizers > Claim review",
     nextAction: "Resolve claim identity conflicts before enabling public claim CTAs.",
     updatedAt: "2026-07-03T08:30:00.000Z",
+    freshness: "current",
+    timestampLabel: "Current by 7-day heuristic",
+    owningWorkflowPath: "/organizers/claims",
   },
   {
     id: "event-supply-readiness-preflight",
+    sourceId: "event-supply-readiness",
     source: "Event supply readiness",
+    category: "Preflight result",
     label: "External event import blockers",
     state: "partial",
+    severity: "warning",
     detail: "12 candidates, 8 write-ready, 4 blocked by location or schema checks.",
+    stateDefinition: "Counts come from generated preflight plans, not write receipts.",
     owner: "Events intake",
     runbook: "admin > Events > External import readiness",
     nextAction: "Resolve review, location, schema, or projection blockers before publishing readiness again.",
     updatedAt: "2026-07-03T07:45:00.000Z",
+    freshness: "current",
+    timestampLabel: "Current by 7-day heuristic",
+    owningWorkflowPath: "/events/readiness",
   },
   {
     id: "host-analytics-booking-window",
+    sourceId: "host-analytics",
     source: "Host analytics",
+    category: "Analytics signal",
     label: "Booking attribution",
     state: "warning",
-    detail: "Analytics range uses a generated sample bridge older than the current launch week.",
+    severity: "warning",
+    detail: "Analytics range uses a generated local-preview bridge older than the current launch week.",
+    stateDefinition: "State is provided by the fixed 30-day host analytics read.",
     owner: "Growth ops",
     runbook: "admin > Growth > Host analytics",
     nextAction: "Regenerate the host analytics bridge before launch reporting.",
     updatedAt: "2026-07-02T12:00:00.000Z",
+    freshness: "stale",
+    timestampLabel: "Stale heuristic (>7 days)",
+    owningWorkflowPath: "/growth",
   },
   {
     id: "generated-marketing-bridge",
-    source: "Generated bridge",
+    sourceId: "marketing-bridge",
+    source: "Marketing bridge",
+    category: "Source freshness",
     label: "Marketing ops bridge",
     state: "ok",
+    severity: "healthy",
     detail: "Generated today for Indore launch week content packaging.",
+    stateDefinition: "Stale is a client heuristic when generatedAt is more than 7 days old.",
     owner: "Marketing ops",
     runbook: "admin/src/generated/marketingOpsBridge.json",
     nextAction: "No action; generated bridge is fresh enough for the launch workspace.",
     updatedAt: "2026-07-03T09:15:00.000Z",
+    freshness: "current",
+    timestampLabel: "Current by 7-day heuristic",
+    owningWorkflowPath: "/marketing",
   },
 ];
 const dataQualityController: DataQualityController = {
+  failedSources: [],
   filteredRows: dataQualityRows,
-  generatedAt: "2026-07-03T09:30:00.000Z",
   isLoading: false,
+  isPartial: false,
+  isUnavailable: false,
   metrics: dataQualityMetrics(dataQualityRows),
+  ownerFilter: "all",
+  ownerOptions: ["Admin ops", "Events intake", "Growth ops", "Marketing ops"],
   query: "",
   rows: dataQualityRows,
-  selected: dataQualityRows[0] ?? null,
-  stateFilter: "all",
+  selected: null,
+  selectedSignalId: null,
+  selectedUnavailable: false,
+  severityFilter: "all",
+  sourceHealth: [
+    "overview",
+    "host-analytics",
+    "marketing-bridge",
+    "event-intake",
+    "event-supply-readiness",
+  ].map((sourceId) => ({
+    sourceId: sourceId as DataQualityRow["sourceId"],
+    label: sourceId.replaceAll("-", " "),
+    loadState: "loaded" as const,
+    freshness: "current" as const,
+    configuration: sourceId.includes("bridge") || sourceId === "event-intake" ?
+      "configured" as const : "not_applicable" as const,
+    generatedAt: "2026-07-03T09:30:00.000Z",
+    loadedAt: "2026-07-03T09:30:05.000Z",
+    error: null,
+    hasCachedData: true,
+  })),
   refresh: async () => {
     noop();
+    return true;
   },
+  retrySource: async () => true,
   select: (_row: DataQualityRow) => {
+    noop();
+  },
+  setOwnerFilter: (_value: string) => {
     noop();
   },
   setQuery: (_value: string) => {
     noop();
   },
-  setStateFilter: (_value: DataQualityStateFilter) => {
+  setSeverityFilter: (_value: DataQualitySeverity) => {
     noop();
   },
 };
@@ -859,6 +940,10 @@ const growthRows: GrowthSignalRow[] = [
     unit: "count",
     status: "ready",
     source: "adminGetOverview",
+    sourceGeneratedAt: "2026-07-03T09:30:00.000Z",
+    metricBasis: "Current calendar-week overview total.",
+    range: "Current / overview-defined",
+    timezone: "UTC",
     detail: "Launch demand created this week across Indore and Mumbai.",
   },
   {
@@ -869,6 +954,10 @@ const growthRows: GrowthSignalRow[] = [
     unit: "count",
     status: "partial",
     source: "adminGetOverview",
+    sourceGeneratedAt: "2026-07-03T09:30:00.000Z",
+    metricBasis: "Current organizer-claim stock.",
+    range: "Current / overview-defined",
+    timezone: "UTC",
     detail: "Organizer claim demand waiting for review before publication.",
   },
   {
@@ -879,6 +968,10 @@ const growthRows: GrowthSignalRow[] = [
     unit: "count",
     status: "ready",
     source: "adminGetHostAnalytics",
+    sourceGeneratedAt: "2026-07-03T09:35:00.000Z",
+    metricBasis: "Selected-range host analytics summary.",
+    range: "2026-06-04 to 2026-07-03 (day)",
+    timezone: "UTC",
     detail: "Bookings confirmed by host analytics summary cards.",
   },
   {
@@ -889,6 +982,10 @@ const growthRows: GrowthSignalRow[] = [
     unit: "percent",
     status: "partial",
     source: "adminGetHostAnalytics",
+    sourceGeneratedAt: "2026-07-03T09:35:00.000Z",
+    metricBasis: "Selected-range host analytics summary.",
+    range: "2026-06-04 to 2026-07-03 (day)",
+    timezone: "UTC",
     detail: "Conversion is usable for launch review but not yet channel-attributed.",
   },
   {
@@ -899,6 +996,10 @@ const growthRows: GrowthSignalRow[] = [
     unit: "count",
     status: "ready",
     source: "adminGetHostAnalytics.discoverySummary",
+    sourceGeneratedAt: "2026-07-03T09:35:00.000Z",
+    metricBasis: "Selected-range discovery summary.",
+    range: "2026-06-04 to 2026-07-03 (day)",
+    timezone: "UTC",
     detail: "Organizer claim intent captured from public pages.",
   },
 ];
@@ -928,16 +1029,31 @@ const growthTrend: HostAnalyticsTrendPoint[] = [
 ];
 const growthController: GrowthKpiController = {
   filteredRows: growthRows,
+  hostAnalyticsError: null,
+  hostAnalyticsGeneratedAt: "2026-07-03T09:35:00.000Z",
+  isHostAnalyticsLoading: false,
   isLoading: false,
+  isOverviewLoading: false,
   loadedAt: "2026-07-03T09:40:00.000Z",
   metrics: growthMetrics(growthRows),
+  overviewError: null,
+  overviewGeneratedAt: "2026-07-03T09:30:00.000Z",
   query: "",
   rangePreset: "30d",
   rows: growthRows,
   selected: growthRows[1] ?? null,
+  selectedSignalId: null,
   stageFilter: "all",
   trend: growthTrend,
   refresh: async () => {
+    noop();
+    return true;
+  },
+  refreshHostAnalytics: async () => {
+    noop();
+    return true;
+  },
+  refreshOverview: async () => {
     noop();
     return true;
   },
@@ -967,6 +1083,9 @@ const financeRows: FinanceIssueRow[] = [
     currency: "INR",
     severity: "high",
     nextAction: "Open the provider record before retry, refund, or manual follow-up.",
+    sourceScope: "Current capped overview payment preview",
+    amountEvidence: "inferred",
+    providerEvidence: "inferred",
   },
   {
     id: "event-mumbai-padel-payments",
@@ -980,6 +1099,9 @@ const financeRows: FinanceIssueRow[] = [
     currency: "INR",
     severity: "high",
     nextAction: "Use event and provider records to reconcile payment state before action.",
+    sourceScope: "30-day host event analytics",
+    amountEvidence: "source",
+    providerEvidence: "unknown",
   },
   {
     id: "payout-restricted-hosts",
@@ -993,31 +1115,58 @@ const financeRows: FinanceIssueRow[] = [
     currency: "INR",
     severity: "medium",
     nextAction: "Inspect provider authority before changing payout or settlement state.",
+    sourceScope: "Current overview aggregate",
+    amountEvidence: "unknown",
+    providerEvidence: "unknown",
   },
 ];
 const selectedFinanceRow = financeRows[0] ?? null;
 const financeController: FinanceOpsController = {
   filteredRows: financeRows,
   isLoading: false,
+  isPartial: false,
+  isUnavailable: false,
   kindFilter: "all",
-  loadedAt: "2026-07-03T09:45:00.000Z",
+  malformedCount: 0,
   metrics: {
-    completedPayments: 418,
+    paymentPreviewCount: 5,
     failedPayments: 6,
     payoutRestrictedHosts: 3,
-    revenueMinor: 9275000,
-    signupFailedPayments: 2,
+    eventIssueCount30d: 1,
   },
   query: "",
   rows: financeRows,
   selected: selectedFinanceRow,
+  selectedIssueId: selectedFinanceRow?.id ?? null,
   selectedReview: selectedFinanceRow ?
     buildFinanceIssueReview(selectedFinanceRow) :
     null,
+  selectedUnavailable: false,
+  sources: [
+    {
+      id: "overview",
+      label: "Overview payment preview",
+      scope: "Current capped overview preview and current payout restriction metrics",
+      status: "ready",
+      generatedAt: "2026-07-03T09:45:00.000Z",
+      loadedAt: "2026-07-03T09:45:05.000Z",
+      error: null,
+    },
+    {
+      id: "hostAnalytics",
+      label: "Event payment analytics",
+      scope: "30-day host analytics, weekly granularity",
+      status: "ready",
+      generatedAt: "2026-07-03T09:44:00.000Z",
+      loadedAt: "2026-07-03T09:45:05.000Z",
+      error: null,
+    },
+  ],
   refresh: async () => {
     noop();
     return true;
   },
+  retrySource: async () => true,
   select: (_row: FinanceIssueRow) => {
     noop();
   },
@@ -1037,6 +1186,7 @@ const userAnalyticsPayload: UserAnalyticsQueryPayload = {
 };
 const userAnalyticsController: UserAnalyticsController = {
   endDate: "2026-07-03",
+  errorMessage: null,
   granularity: "day",
   isLoading: false,
   lookupContract: buildUserLookupContract("users/user-1"),
@@ -1045,6 +1195,7 @@ const userAnalyticsController: UserAnalyticsController = {
   report: sampleUserAnalyticsReport(userAnalyticsPayload),
   startDate: "2026-06-04",
   userId: "users/user-1",
+  viewState: "ready",
   load: async (_nextUserId?: string) => {
     noop();
     return true;
@@ -1093,25 +1244,20 @@ const setRangePreset = (_value: OverviewAnalyticsRangePreset) => {
 
 function dataQualityMetrics(rows: DataQualityRow[]) {
   return {
-    total: rows.length,
-    blocking: rows.filter((row) =>
-      row.state === "blocked" || row.state === "missing"
-    ).length,
-    watch: rows.filter((row) =>
-      row.state === "warning" || row.state === "partial"
-    ).length,
-    ok: rows.filter((row) => row.state === "ok").length,
-    sources: new Set(rows.map((row) => row.source)).size,
+    openIssues: rows.filter((row) => row.severity !== "healthy").length,
+    blocked: rows.filter((row) => row.severity === "blocked").length,
+    warnings: rows.filter((row) => row.severity === "warning").length,
+    owners: new Set(rows.map((row) => row.owner)).size,
   };
 }
 
 function growthMetrics(rows: GrowthSignalRow[]) {
   const value = (id: string) => rows.find((row) => row.id === id)?.value ?? 0;
   return {
-    signals: rows.length,
-    watch: rows.filter((row) => row.status !== "ready").length,
     signupsThisWeek: value("signupsThisWeek"),
+    completedProfiles: value("completedProfiles"),
     bookings: value("bookings"),
+    attendanceRate: value("attendanceRate"),
   };
 }
 
@@ -1344,6 +1490,14 @@ const renderOrganizerIntakeWorkspace = () => (
   </AdminWorkspace>
 );
 
+const renderIntakeOperationsWorkspace = () => (
+  <AdminWorkspace>
+    <IntakeOperationsPreviewWorkspace
+      controller={intakeOperationsController}
+    />
+  </AdminWorkspace>
+);
+
 const renderMarketingOpsWorkspace = () => (
   <AdminWorkspace>
     <MarketingOpsWorkspace controller={marketingOpsController} />
@@ -1361,6 +1515,7 @@ const renderIntakeWorkspace = () => (
     <IntakeWorkspace
       activeWorkspace="events"
       eventsContent={<EventIntakePreviewWorkspace controller={eventIntakeController} />}
+      operationsContent={<IntakeOperationsPreviewWorkspace controller={intakeOperationsController} />}
       organizersContent={<OrganizerIntakeWorkspace controller={organizerIntakeController} />}
       onWorkspaceChange={noop}
     />
@@ -1391,9 +1546,27 @@ const renderAdminRoleWorkspace = () => (
   </AdminWorkspace>
 );
 
+const safetyListController: SafetyTriageController = {
+  ...safetyController,
+  assignmentValidationIssue: "Select a safety queue item before assigning.",
+  decisionValidationIssue: "Select a safety queue item before deciding.",
+  selected: null,
+  selectedDetail: null,
+};
+
+const renderSafetyTriageList = () => (
+  <AdminWorkspace>
+    <SafetyTriageWorkspace controller={safetyListController} view="list" />
+  </AdminWorkspace>
+);
+
 const renderSafetyTriageWorkspace = () => (
   <AdminWorkspace>
-    <SafetyTriageWorkspace controller={safetyController} />
+    <SafetyTriageWorkspace
+      controller={safetyController}
+      onBackToList={noop}
+      view="detail"
+    />
   </AdminWorkspace>
 );
 
@@ -1402,10 +1575,16 @@ export const SafetyTriageRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_safety_triage",
-      states: ["default", "queue-detail", "assignment-decision"],
+      states: [
+        "directory",
+        "filters",
+        "open-action",
+        "queue-health",
+        "honest-preview-analytics",
+      ],
     },
   },
-  render: renderSafetyTriageWorkspace,
+  render: renderSafetyTriageList,
 };
 
 export const SafetyTriageWorkspaceStory: Story = {
@@ -1413,29 +1592,29 @@ export const SafetyTriageWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_safety_triage",
-      states: ["default", "queue-detail", "assignment-decision"],
+      states: ["case-detail", "assignment", "decision"],
     },
   },
   render: renderSafetyTriageWorkspace,
 };
 
 export const AccessReviewRouteStory: Story = {
-  name: "Access",
+  name: "Launch access",
   parameters: {
     catchComponent: {
       id: "route_access_review",
-      states: ["default", "application-detail", "decision-controls"],
+      states: ["capped-directory"],
     },
   },
   render: renderAccessReviewWorkspace,
 };
 
 export const AccessReviewWorkspaceStory: Story = {
-  name: "Access Workspace",
+  name: "Launch access workspace",
   parameters: {
     catchComponent: {
       id: "workspace_access_review",
-      states: ["default", "application-detail", "decision-controls"],
+      states: ["capped-directory"],
     },
   },
   render: renderAccessReviewWorkspace,
@@ -1446,7 +1625,7 @@ export const DataQualityRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_data_quality",
-      states: ["default", "signals", "detail"],
+      states: ["source-register"],
     },
   },
   render: renderDataQualityWorkspace,
@@ -1457,7 +1636,7 @@ export const DataQualityWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_data_quality",
-      states: ["default", "signals", "detail"],
+      states: ["source-register"],
     },
   },
   render: renderDataQualityWorkspace,
@@ -1468,7 +1647,7 @@ export const EventPublishingRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_event_publishing",
-      states: ["default", "canonical-directory", "external-supply"],
+      states: ["canonical-directory"],
     },
   },
   render: renderEventPublishingWorkspace,
@@ -1479,7 +1658,7 @@ export const EventPublishingWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_event_publishing",
-      states: ["default", "canonical-directory", "external-supply"],
+      states: ["canonical-directory"],
     },
   },
   render: renderEventPublishingWorkspace,
@@ -1490,7 +1669,7 @@ export const IntakeWorkspaceRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_intake_workspace",
-      states: ["default", "event-intake", "run-plan"],
+      states: ["event-review"],
     },
   },
   render: renderIntakeWorkspace,
@@ -1501,7 +1680,7 @@ export const IntakeWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_intake_workspace",
-      states: ["default", "event-intake", "run-plan"],
+      states: ["event-review"],
     },
   },
   render: renderIntakeWorkspace,
@@ -1540,45 +1719,56 @@ export const OrganizerIntakeWorkspaceStory: Story = {
   render: renderOrganizerIntakeWorkspace,
 };
 
+export const IntakeOperationsWorkspaceStory: Story = {
+  name: "Supply Intake Automation Workspace",
+  parameters: {
+    catchComponent: {
+      id: "workspace_intake_operations",
+      states: ["default", "human-review", "read-only-boundary"],
+    },
+  },
+  render: renderIntakeOperationsWorkspace,
+};
+
 export const MarketingOpsRouteStory: Story = {
-  name: "Marketing Ops",
+  name: "Marketing",
   parameters: {
     catchComponent: {
       id: "route_marketing_ops",
-      states: ["default", "post-board", "action-boundary"],
+      states: ["post-board"],
     },
   },
   render: renderMarketingOpsWorkspace,
 };
 
 export const MarketingOpsWorkspaceStory: Story = {
-  name: "Marketing Ops Workspace",
+  name: "Marketing workspace",
   parameters: {
     catchComponent: {
       id: "workspace_marketing_ops",
-      states: ["default", "post-board", "action-boundary"],
+      states: ["post-board"],
     },
   },
   render: renderMarketingOpsWorkspace,
 };
 
 export const OrganizerPublishingRouteStory: Story = {
-  name: "Organizer Publishing",
+  name: "Organizers",
   parameters: {
     catchComponent: {
       id: "route_organizer_publishing",
-      states: ["default", "canonical-directory", "publishing-contract"],
+      states: ["canonical-directory"],
     },
   },
   render: renderOrganizerPublishingWorkspace,
 };
 
 export const OrganizerPublishingWorkspaceStory: Story = {
-  name: "Organizer Publishing Workspace",
+  name: "Organizers workspace",
   parameters: {
     catchComponent: {
       id: "workspace_organizer_publishing",
-      states: ["default", "canonical-directory", "publishing-contract"],
+      states: ["canonical-directory"],
     },
   },
   render: renderOrganizerPublishingWorkspace,
@@ -1589,7 +1779,7 @@ export const GrowthRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_growth_kpi",
-      states: ["default", "signals", "trend"],
+      states: ["signal-directory"],
     },
   },
   render: renderGrowthWorkspace,
@@ -1600,7 +1790,7 @@ export const GrowthWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_growth_kpi",
-      states: ["default", "signals", "trend"],
+      states: ["signal-directory"],
     },
   },
   render: renderGrowthWorkspace,
@@ -1611,7 +1801,7 @@ export const FinanceRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_finance_ops",
-      states: ["default", "issues", "reconciliation"],
+      states: ["issue-detail"],
     },
   },
   render: renderFinanceWorkspace,
@@ -1622,7 +1812,7 @@ export const FinanceWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_finance_ops",
-      states: ["default", "issues", "reconciliation"],
+      states: ["issue-detail"],
     },
   },
   render: renderFinanceWorkspace,
@@ -1633,7 +1823,7 @@ export const UserAnalyticsRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_user_analytics",
-      states: ["default", "lookup-contract", "report"],
+      states: ["aggregate-report"],
     },
   },
   render: renderUserAnalyticsWorkspace,
@@ -1644,7 +1834,7 @@ export const UserAnalyticsWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_user_analytics",
-      states: ["default", "lookup-contract", "report"],
+      states: ["aggregate-report"],
     },
   },
   render: renderUserAnalyticsWorkspace,
@@ -1655,7 +1845,7 @@ export const AdminRoleManagementRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_admin_role_management",
-      states: ["default", "scope-contract", "assignment-register"],
+      states: ["role-assignment-detail"],
     },
   },
   render: renderAdminRoleWorkspace,
@@ -1666,7 +1856,7 @@ export const AdminRoleManagementWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_admin_role_management",
-      states: ["default", "scope-contract", "assignment-register"],
+      states: ["role-assignment-detail"],
     },
   },
   render: renderAdminRoleWorkspace,
@@ -1677,7 +1867,13 @@ export const OverviewRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_overview",
-      states: ["default", "analytics-controls", "queue-detail"],
+      states: [
+        "default",
+        "analytics-controls",
+        "queue-router",
+        "metric-ownership",
+        "scoped-analytics",
+      ],
     },
   },
   render: () => (
@@ -1690,6 +1886,7 @@ export const OverviewRouteStory: Story = {
         analyticsRangePreset="30d"
         analyticsStartDate="2026-06-04"
         hostAnalytics={hostAnalytics}
+        isLoading={false}
         overview={overview}
         onAnalyticsClubIdChange={noop}
         onAnalyticsEndDateChange={noop}
@@ -1698,6 +1895,8 @@ export const OverviewRouteStory: Story = {
         onAnalyticsRangePresetChange={setRangePreset}
         onAnalyticsStartDateChange={noop}
         onClearAnalyticsScope={noop}
+        onOpenQueue={noop}
+        onRefresh={noop}
       />
     </AdminWorkspace>
   ),

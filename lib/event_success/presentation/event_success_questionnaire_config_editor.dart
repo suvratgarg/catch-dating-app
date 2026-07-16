@@ -5,13 +5,15 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+const _customQuestionSetId = '__custom__';
 
 class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
   const EventSuccessQuestionnaireConfigEditor({
@@ -36,107 +38,104 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
     final t = CatchTokens.of(context);
     final normalized = value.normalized();
     final pack = normalized.pack;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final templates = EventSuccessQuestionnairePackLibrary.allTemplates;
+    final questionSetIds = [
+      ...templates.map((template) => template.id),
+      _customQuestionSetId,
+    ];
+    final selectedQuestionSetId = normalized.usesCustom
+        ? _customQuestionSetId
+        : normalized.templateId;
+
+    return CatchSectionList(
+      gap: CatchGaps.formField,
       children: [
-        Text(
-          context
+        CatchField.choices<String>(
+          title: context
               .l10n
               .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet,
-          style: CatchTextStyles.labelL(context),
-        ),
-        gapH6,
-        Text(
-          context
+          body: context
               .l10n
               .eventSuccessEventSuccessQuestionnaireConfigEditorTextChooseAReusableTemplate,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          values: questionSetIds,
+          itemLabel: (id) => id == _customQuestionSetId
+              ? context
+                    .l10n
+                    .eventSuccessEventSuccessQuestionnaireConfigEditorLabelCustom
+              : templates.firstWhere((template) => template.id == id).title,
+          selected: {selectedQuestionSetId},
+          enabled: enabled,
+          initiallyOpen: true,
+          onSelectionChanged: enabled
+              ? (selection) {
+                  final id = selection.single;
+                  onChanged(
+                    id == _customQuestionSetId
+                        ? (normalized.usesCustom
+                              ? normalized
+                              : const EventSuccessQuestionnaireConfig.customTemplate())
+                        : EventSuccessQuestionnaireConfig(templateId: id),
+                  );
+                }
+              : null,
         ),
-        gapH10,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (final template
-                in EventSuccessQuestionnairePackLibrary.allTemplates)
-              CatchSelectChip(
-                label: template.title,
-                active:
-                    !normalized.usesCustom &&
-                    normalized.templateId == template.id,
-                enabled: enabled,
-                onTap: () => onChanged(
-                  EventSuccessQuestionnaireConfig(templateId: template.id),
-                ),
-              ),
-            CatchSelectChip(
-              label: context
-                  .l10n
-                  .eventSuccessEventSuccessQuestionnaireConfigEditorLabelCustom,
-              active: normalized.usesCustom,
-              enabled: enabled,
-              onTap: () => onChanged(
-                normalized.usesCustom
-                    ? normalized
-                    : const EventSuccessQuestionnaireConfig.customTemplate(),
-              ),
-            ),
-          ],
-        ),
-        gapH12,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            CatchBadge(
-              label: pack.title,
-              icon: pack.custom
-                  ? CatchIcons.editNoteRounded
-                  : CatchIcons.styleOutlined,
-            ),
-            CatchBadge(
-              label: context.l10n
-                  .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
-                    length: pack.questions.length,
+        CatchSection.plain(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  CatchBadge(
+                    label: pack.title,
+                    icon: pack.custom
+                        ? CatchIcons.editNoteRounded
+                        : CatchIcons.styleOutlined,
                   ),
-              icon: CatchIcons.quizOutlined,
-            ),
-          ],
+                  CatchBadge(
+                    label: context.l10n
+                        .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
+                          length: pack.questions.length,
+                        ),
+                    icon: CatchIcons.quizOutlined,
+                  ),
+                ],
+              ),
+              gapH6,
+              Text(
+                pack.subtitle,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+          ),
         ),
-        gapH6,
-        Text(
-          pack.subtitle,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-        if (normalized.usesCustom) ...[
-          gapH14,
+        if (normalized.usesCustom)
           if (useBottomSheetForCustom)
-            CatchButton(
-              label: context
+            CatchField.action(
+              title: context
                   .l10n
                   .eventSuccessEventSuccessQuestionnaireConfigEditorLabelEditCustomQuestions,
-              icon: Icon(CatchIcons.editNoteRounded),
-              variant: CatchButtonVariant.secondary,
-              onPressed: enabled
+              icon: CatchIcons.editNoteRounded,
+              onTap: enabled
                   ? () => _openCustomQuestionnaireSheet(
                       context,
                       initial: normalized,
                       onChanged: onChanged,
                     )
                   : null,
-              fullWidth: true,
             )
           else
             CustomQuestionnaireFields(
               value: normalized,
               enabled: enabled,
               onChanged: onChanged,
-            ),
-        ] else ...[
-          gapH12,
-          QuestionnairePreview(questions: pack.questions),
-        ],
+            )
+        else
+          CatchSection.plain(
+            child: QuestionnairePreview(questions: pack.questions),
+          ),
       ],
     );
   }
@@ -254,30 +253,31 @@ class CustomQuestionnaireFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final questions = value.customQuestions;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return CatchSectionList(
       children: [
-        CatchField.input(
-          key: const ValueKey('customQuestionnaireTitle'),
-          title: context
-              .l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorTitleCustomQuestionSetName,
-          initialValue:
-              value.customTitle ??
-              context
-                  .l10n
-                  .eventSuccessEventSuccessQuestionnaireConfigEditorVisiblecopyCustomQuestionSet,
-          enabled: enabled,
-          inputFormatters: [LengthLimitingTextInputFormatter(80)],
-          textInputAction: TextInputAction.next,
-          onChanged: (title) => onChanged(value.copyWith(customTitle: title)),
+        CatchSection.fieldRows(
+          first: true,
+          child: CatchField.input(
+            key: const ValueKey('customQuestionnaireTitle'),
+            title: context
+                .l10n
+                .eventSuccessEventSuccessQuestionnaireConfigEditorTitleCustomQuestionSetName,
+            initialValue:
+                value.customTitle ??
+                context
+                    .l10n
+                    .eventSuccessEventSuccessQuestionnaireConfigEditorVisiblecopyCustomQuestionSet,
+            enabled: enabled,
+            inputFormatters: [LengthLimitingTextInputFormatter(80)],
+            textInputAction: TextInputAction.next,
+            onChanged: (title) => onChanged(value.copyWith(customTitle: title)),
+          ),
         ),
-        gapH12,
         for (
           var questionIndex = 0;
           questionIndex < questions.length;
           questionIndex++
-        ) ...[
+        )
           CustomQuestionFields(
             question: questions[questionIndex],
             index: questionIndex,
@@ -295,45 +295,45 @@ class CustomQuestionnaireFields extends StatelessWidget {
                     onChanged(value.copyWith(customQuestions: nextQuestions));
                   },
           ),
-          gapH14,
-        ],
-        Row(
-          children: [
-            Expanded(
-              child: CatchButton(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessQuestionnaireConfigEditorLabelAddQuestion,
-                icon: Icon(CatchIcons.addRounded),
-                variant: CatchButtonVariant.secondary,
-                onPressed: enabled && questions.length < 8
-                    ? () => onChanged(
-                        value.copyWith(
-                          customQuestions: [
-                            ...questions,
-                            _blankQuestion(questions.length, context.l10n),
-                          ],
-                        ),
-                      )
-                    : null,
+        CatchSection.plain(
+          child: Row(
+            children: [
+              Expanded(
+                child: CatchButton(
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessQuestionnaireConfigEditorLabelAddQuestion,
+                  icon: Icon(CatchIcons.addRounded),
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: enabled && questions.length < 8
+                      ? () => onChanged(
+                          value.copyWith(
+                            customQuestions: [
+                              ...questions,
+                              _blankQuestion(questions.length, context.l10n),
+                            ],
+                          ),
+                        )
+                      : null,
+                ),
               ),
-            ),
-            gapW10,
-            Expanded(
-              child: CatchButton(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessQuestionnaireConfigEditorLabelReset,
-                icon: Icon(CatchIcons.refreshRounded),
-                variant: CatchButtonVariant.ghost,
-                onPressed: enabled
-                    ? () => onChanged(
-                        const EventSuccessQuestionnaireConfig.customTemplate(),
-                      )
-                    : null,
+              gapW10,
+              Expanded(
+                child: CatchButton(
+                  label: context
+                      .l10n
+                      .eventSuccessEventSuccessQuestionnaireConfigEditorLabelReset,
+                  icon: Icon(CatchIcons.refreshRounded),
+                  variant: CatchButtonVariant.ghost,
+                  onPressed: enabled
+                      ? () => onChanged(
+                          const EventSuccessQuestionnaireConfig.customTemplate(),
+                        )
+                      : null,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -358,37 +358,27 @@ class CustomQuestionFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                context.l10n
-                    .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionValue1(
-                      value1: index + 1,
-                    ),
-                style: CatchTextStyles.labelL(context),
-              ),
-            ),
-            if (onRemove != null)
-              Tooltip(
-                message: context
-                    .l10n
-                    .eventSuccessEventSuccessQuestionnaireConfigEditorMessageRemoveQuestion,
-                child: CatchIconButton(
-                  onTap: enabled ? onRemove : null,
-                  child: Icon(
-                    CatchIcons.deleteOutlineRounded,
-                    size: CatchIcon.md,
-                    color: enabled ? t.danger : t.ink3,
-                  ),
+    return CatchSection.containedFieldRows(
+      title: context.l10n
+          .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionValue1(
+            value1: index + 1,
+          ),
+      trailing: onRemove == null
+          ? null
+          : Tooltip(
+              message: context
+                  .l10n
+                  .eventSuccessEventSuccessQuestionnaireConfigEditorMessageRemoveQuestion,
+              child: CatchIconButton(
+                onTap: enabled ? onRemove : null,
+                child: Icon(
+                  CatchIcons.deleteOutlineRounded,
+                  size: CatchIcon.md,
+                  color: enabled ? t.danger : t.ink3,
                 ),
               ),
-          ],
-        ),
-        gapH6,
+            ),
+      children: [
         CatchField.input(
           key: ValueKey('customQuestionPrompt-$index'),
           title: context
@@ -400,12 +390,11 @@ class CustomQuestionFields extends StatelessWidget {
           textInputAction: TextInputAction.next,
           onChanged: (prompt) => onChanged(question.copyWith(prompt: prompt)),
         ),
-        gapH8,
         for (
           var optionIndex = 0;
           optionIndex < question.options.length;
           optionIndex++
-        ) ...[
+        )
           CatchField.input(
             key: ValueKey('customQuestionOption-$index-$optionIndex'),
             title: context.l10n
@@ -426,8 +415,6 @@ class CustomQuestionFields extends StatelessWidget {
               onChanged(question.copyWith(options: nextOptions));
             },
           ),
-          if (optionIndex != question.options.length - 1) gapH8,
-        ],
       ],
     );
   }

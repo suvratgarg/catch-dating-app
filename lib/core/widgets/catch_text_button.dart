@@ -15,6 +15,15 @@ class CatchTextButton extends StatelessWidget {
     required this.onPressed,
     this.tone = CatchTextButtonTone.primary,
     this.foregroundColor,
+    this.backgroundColor,
+    this.disabledForegroundColor,
+    this.disabledBackgroundColor,
+    this.side,
+    this.shape,
+    this.textStyle,
+    this.leading,
+    this.leadingGap = CatchSpacing.micro6,
+    this.tapTargetSize,
     this.minimumSize = const Size.square(CatchSpacing.s10),
     this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
   });
@@ -23,6 +32,15 @@ class CatchTextButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final CatchTextButtonTone tone;
   final Color? foregroundColor;
+  final Color? backgroundColor;
+  final Color? disabledForegroundColor;
+  final Color? disabledBackgroundColor;
+  final BorderSide? side;
+  final OutlinedBorder? shape;
+  final TextStyle? textStyle;
+  final Widget? leading;
+  final double leadingGap;
+  final MaterialTapTargetSize? tapTargetSize;
   final Size minimumSize;
   final EdgeInsetsGeometry padding;
 
@@ -30,22 +48,37 @@ class CatchTextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final color = foregroundColor ?? _toneColor(t);
-    final effectiveColor = onPressed == null ? t.ink3 : color;
+    final effectiveDisabledColor = disabledForegroundColor ?? t.ink3;
+    final effectiveColor = onPressed == null ? effectiveDisabledColor : color;
+    final effectiveTextStyle = textStyle ?? CatchTextStyles.labelL(context);
 
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
         foregroundColor: color,
-        disabledForegroundColor: t.ink3,
+        backgroundColor: backgroundColor,
+        disabledForegroundColor: effectiveDisabledColor,
+        disabledBackgroundColor: disabledBackgroundColor,
         minimumSize: minimumSize,
         padding: padding,
-        textStyle: CatchTextStyles.labelL(context),
+        tapTargetSize: tapTargetSize,
+        side: side,
+        shape: shape,
+        textStyle: effectiveTextStyle,
       ),
-      child: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: CatchTextStyles.labelL(context, color: effectiveColor),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (leading != null) ...[leading!, SizedBox(width: leadingGap)],
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: effectiveTextStyle.copyWith(color: effectiveColor),
+            ),
+          ),
+        ],
       ),
     );
   }

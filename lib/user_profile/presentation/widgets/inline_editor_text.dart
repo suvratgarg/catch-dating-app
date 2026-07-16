@@ -3,26 +3,27 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart' show CatchTokens;
+import 'package:catch_dating_app/core/theme/catch_tokens.dart'
+    show CatchFieldTokens;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 class ProfileDirectTextEntryField extends ConsumerStatefulWidget {
   const ProfileDirectTextEntryField({
     super.key,
     required this.icon,
     required this.label,
-    required this.value,
     required this.currentValue,
     required this.currentFieldValue,
     required this.fieldName,
     required this.patchForValue,
+    this.emptyValueText,
+    this.inputHint,
+    this.leadingUnit,
+    this.showClearButton = false,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
     this.autofillHints,
@@ -32,7 +33,11 @@ class ProfileDirectTextEntryField extends ConsumerStatefulWidget {
 
   final IconData icon;
   final String label;
-  final String value;
+
+  final String? emptyValueText;
+  final String? inputHint;
+  final String? leadingUnit;
+  final bool showClearButton;
   final String currentValue;
   final Object? currentFieldValue;
   final String fieldName;
@@ -55,6 +60,8 @@ class _ProfileDirectTextEntryFieldState
   String? _validationError;
   Object? _lastCommittedFieldValue;
   bool _hasFocus = false;
+  CatchFieldStatus _status = CatchFieldStatus.idle;
+  Timer? _savedStatusTimer;
 
   @override
   void initState() {
@@ -78,15 +85,22 @@ class _ProfileDirectTextEntryFieldState
 
   @override
   void dispose() {
+    _savedStatusTimer?.cancel();
     _controller.removeListener(_clearInlineErrors);
     _controller.dispose();
     super.dispose();
   }
 
   void _clearInlineErrors() {
-    if (_validationError == null && saveError == null) return;
+    if (_validationError == null &&
+        saveError == null &&
+        _status == CatchFieldStatus.idle) {
+      return;
+    }
+    _savedStatusTimer?.cancel();
     setState(() {
       _validationError = null;
+      _status = CatchFieldStatus.idle;
       clearSaveError();
     });
   }
@@ -126,8 +140,19 @@ class _ProfileDirectTextEntryFieldState
         (fieldValue == '' && currentFieldValue == null);
     if (isUnchanged) return;
 
+    setState(() => _status = CatchFieldStatus.saving);
     final saved = await saveFields(widget.patchForValue(fieldValue));
-    if (saved) _lastCommittedFieldValue = fieldValue;
+    if (!mounted) return;
+    if (!saved) {
+      setState(() => _status = CatchFieldStatus.idle);
+      return;
+    }
+    _lastCommittedFieldValue = fieldValue;
+    setState(() => _status = CatchFieldStatus.saved);
+    _savedStatusTimer?.cancel();
+    _savedStatusTimer = Timer(CatchFieldTokens.savedStatusHold, () {
+      if (mounted) setState(() => _status = CatchFieldStatus.idle);
+    });
   }
 
   @override
@@ -145,133 +170,20 @@ class _ProfileDirectTextEntryFieldState
     return CatchField.input(
       icon: widget.icon,
       title: widget.label,
-      placeholder: widget.value,
+      emptyValueText: widget.emptyValueText,
+      inputHint: widget.inputHint,
+      leadingUnit: widget.leadingUnit,
+      showClearButton: widget.showClearButton,
       controller: _controller,
       keyboardType: widget.keyboardType,
       textInputAction: TextInputAction.done,
       textCapitalization: widget.textCapitalization,
       autofillHints: widget.autofillHints,
-      enabled: !isSaving,
+      readOnly: isSaving,
+      status: isSaving ? CatchFieldStatus.saving : _status,
       error: errorText,
       onFocusChanged: _handleFocusChanged,
       onSubmitted: (_) => _submit(),
-    );
-  }
-}
-
-class ProfileInlineTextValue extends StatelessWidget {
-  const ProfileInlineTextValue({
-    super.key,
-    required this.label,
-    required this.displayValue,
-    required this.controller,
-    required this.isEditing,
-    required this.enabled,
-    this.placeholder,
-    this.isAddAffordance = false,
-    this.keyboardType,
-    this.textCapitalization = TextCapitalization.sentences,
-    this.textInputAction,
-    this.maxLines = 1,
-    this.minLines,
-    this.maxLength,
-    this.collapseStackedBlankLines = false,
-    this.autofillHints,
-    this.onSubmitted,
-  });
-
-  final String label;
-  final String displayValue;
-  final String? placeholder;
-  final TextEditingController controller;
-  final bool isEditing;
-  final bool enabled;
-  final bool isAddAffordance;
-  final TextInputType? keyboardType;
-  final TextCapitalization textCapitalization;
-  final TextInputAction? textInputAction;
-  final int? maxLines;
-  final int? minLines;
-  final int? maxLength;
-  final bool collapseStackedBlankLines;
-  final Iterable<String>? autofillHints;
-  final ValueChanged<String>? onSubmitted;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final valueStyle = CatchTextStyles.profileAnswer(
-      context,
-      color: isAddAffordance && !isEditing ? t.ink3 : t.ink,
-    );
-
-    if (!isEditing) {
-      return Text(
-        isAddAffordance
-            ? context.l10n.userProfileInlineEditorTextTextDisplayvalue(
-                displayValue: displayValue,
-              )
-            : displayValue,
-        key: ValueKey(
-          context.l10n.userProfileInlineEditorTextTextProfileInlineDisplayLabel(
-            label: label,
-            displayValue: displayValue,
-            isAddAffordance: isAddAffordance,
-          ),
-        ),
-        style: valueStyle,
-      );
-    }
-
-    final inputFormatters = <TextInputFormatter>[
-      if (collapseStackedBlankLines) const _StackedBlankLinesFormatter(),
-      if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
-    ];
-
-    return CatchField.input(
-      title: label,
-      placeholder: placeholder ?? displayValue,
-      controller: controller,
-      keyboardType: keyboardType,
-      textInputAction:
-          textInputAction ??
-          (maxLines == 1 ? TextInputAction.done : TextInputAction.newline),
-      textCapitalization: textCapitalization,
-      inputFormatters: inputFormatters.isEmpty ? null : inputFormatters,
-      autofillHints: autofillHints,
-      maxLines: maxLines,
-      minLines: minLines,
-      enabled: enabled,
-      autofocus: true,
-      showLabel: false,
-      size: CatchFieldSize.floating,
-      variant: CatchFieldVariant.underline,
-      onSubmitted: onSubmitted,
-    );
-  }
-}
-
-class _StackedBlankLinesFormatter extends TextInputFormatter {
-  const _StackedBlankLinesFormatter();
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final collapsed = collapseStackedPromptBlankLines(newValue.text);
-    if (collapsed == newValue.text) return newValue;
-
-    final selectionEnd = newValue.selection.end;
-    final normalizedOffset = selectionEnd < 0
-        ? collapsed.length
-        : collapseStackedPromptBlankLines(
-            newValue.text.substring(0, selectionEnd),
-          ).length;
-    final offset = normalizedOffset.clamp(0, collapsed.length);
-    return TextEditingValue(
-      text: collapsed,
-      selection: TextSelection.collapsed(offset: offset),
     );
   }
 }

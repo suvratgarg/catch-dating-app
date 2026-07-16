@@ -1,3 +1,5 @@
+import {websiteCopy} from "@content/generated";
+import {websiteTemplates} from "@content/templates";
 import {trackMarketingEvent} from "../../../analytics";
 import {
   AuthStatusRow,
@@ -27,7 +29,7 @@ import {
   UiLabel,
   VerificationMethodGrid,
 } from "../../../shared/ui/primitives";
-import {claimUnlocks} from "../../marketing/content";
+import {claimUnlocks} from "@content/marketing";
 import {ActivityMark, StatusBadge} from "../../organizers/OrganizerIdentity";
 import {activityForListing} from "../../organizers/publicDiscovery";
 import type {HostListing} from "../../organizers/types";
@@ -52,9 +54,9 @@ function trackProcessStatusAction(action: ProcessStatusAction) {
 export function ClaimHeroSection({listing}: {listing: HostListing | null}) {
   return (
     <ClaimFlowHero
-      eyebrow="Claim your listing"
-      title="Take control of how your events show up."
-      body="Find an unclaimed organizer page, prove your role, and send the operating packet Catch needs before owner tools unlock."
+      eyebrow={websiteCopy["claimpagesections_0049"]}
+      title={websiteCopy["claimpagesections_0092"]}
+      body={websiteCopy["claimpagesections_0056"]}
       summaryTitle={listing?.name ?? "No listing selected"}
       summaryBody={listing ?
         `${listing.category} · ${listing.city} · ${listing.sourceConfidence.replaceAll("_", " ")}` :
@@ -105,7 +107,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
         currentIndex={currentStepIndex}
         getDisabled={(_item, index) => index > currentStepIndex}
         items={claimFlowSteps}
-        label="Claim progress"
+        label={websiteCopy["claimpagesections_0047"]}
         onSelect={setStep}
       />
 
@@ -114,9 +116,9 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
           <ClaimFlowStage>
             <TextField
               id="claim-search"
-              label="Search unclaimed listings"
+              label={websiteCopy["claimpagesections_0085"]}
               value={query}
-              placeholder="Organizer, venue, category, or city"
+              placeholder={websiteCopy["claimpagesections_0071"]}
               onChange={(event) => setQuery(event.currentTarget.value)}
             />
             <ClaimListingResults>
@@ -132,35 +134,26 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
                   <ActivityMark listing={item} size="sm" />
                   <span>
                     <strong>{item.name}</strong>
-                    <small>{item.category} · {item.city} · {item.sources.length} sources</small>
+                    <small>{item.category} · {item.city} · {item.sources.length}{websiteCopy["claimpagesections_0088"]}</small>
                   </span>
                   <StatusBadge listing={item} compact />
                 </ClaimResultButton>
               ))}
               {!searchResults.length ? (
                 <EmptyState variant="claim">
-                  <strong>No unclaimed listing found.</strong>
-                  <p>
-                    Start as a fresh host so Catch can create the organizer
-                    profile from first-party details.
-                  </p>
-                  <ButtonLink variant="ghost" href="/host/#founding-hosts">
-                    Start fresh
-                  </ButtonLink>
+                  <strong>{websiteCopy["claimpagesections_0067"]}</strong>
+                  <p>{websiteCopy["claimpagesections_0089"]}</p>
+                  <ButtonLink variant="ghost" href="/host/#founding-hosts">{websiteCopy["claimpagesections_0090"]}</ButtonLink>
                 </EmptyState>
               ) : null}
             </ClaimListingResults>
             <ActionGroup>
-              <ButtonLink variant="ghost" href="/host/#founding-hosts">
-                My organizer is not listed
-              </ButtonLink>
+              <ButtonLink variant="ghost" href="/host/#founding-hosts">{websiteCopy["claimpagesections_0064"]}</ButtonLink>
               <Button
                 disabled={!listing}
                 type="button"
                 onClick={() => setStep("role")}
-              >
-                Continue
-              </Button>
+              >{websiteCopy["claimpagesections_0052"]}</Button>
             </ActionGroup>
           </ClaimFlowStage>
         ) : null}
@@ -173,15 +166,13 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
                 <strong>{listing.name}</strong>
                 <small>{listing.category} · {listing.city}</small>
               </span>
-              <TextActionButton onClick={() => setStep("listing")}>
-                Change
-              </TextActionButton>
+              <TextActionButton onClick={() => setStep("listing")}>{websiteCopy["claimpagesections_0043"]}</TextActionButton>
             </SelectedListingCard>
 
             <FieldGrid>
               <TextField
                 id="claim-name"
-                label="Your name"
+                label={websiteCopy["claimpagesections_0101"]}
                 value={requesterName}
                 autoComplete="name"
                 onChange={(event) => setRequesterName(event.currentTarget.value)}
@@ -189,7 +180,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
               />
               <SelectField
                 id="claim-role"
-                label="Role"
+                label={websiteCopy["claimpagesections_0081"]}
                 value={requesterRole}
                 onChange={(event) => setRequesterRole(event.currentTarget.value as ClaimRole)}
                 required
@@ -202,7 +193,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
               </SelectField>
               <TextField
                 id="claim-email"
-                label="Business email"
+                label={websiteCopy["claimpagesections_0038"]}
                 type="email"
                 value={businessEmail}
                 autoComplete="email"
@@ -210,7 +201,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
               />
               <TextField
                 id="claim-phone"
-                label="Business phone"
+                label={websiteCopy["claimpagesections_0039"]}
                 type="tel"
                 value={businessPhone}
                 autoComplete="tel"
@@ -218,26 +209,22 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
               />
               <TextAreaField
                 id="claim-proof"
-                label="Proof links"
+                label={websiteCopy["claimpagesections_0074"]}
                 rows={3}
                 value={proofUrls}
-                placeholder="Official website, Instagram, Luma, Linktree, or event page"
+                placeholder={websiteCopy["claimpagesections_0069"]}
                 onChange={(event) => setProofUrls(event.currentTarget.value)}
                 span
               />
             </FieldGrid>
 
             <ActionGroup>
-              <Button variant="ghost" type="button" onClick={() => setStep("listing")}>
-                Back
-              </Button>
+              <Button variant="ghost" type="button" onClick={() => setStep("listing")}>{websiteCopy["claimpagesections_0037"]}</Button>
               <Button
                 disabled={!canContinueRole}
                 type="button"
                 onClick={() => setStep("verify")}
-              >
-                Continue
-              </Button>
+              >{websiteCopy["claimpagesections_0052"]}</Button>
             </ActionGroup>
           </ClaimFlowStage>
         ) : null}
@@ -245,15 +232,12 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
         {step === "verify" && listing ? (
           <ClaimFlowStage>
             <div>
-              <UiLabel>Verification method</UiLabel>
-              <h2>How Catch should verify ownership.</h2>
-              <p>
-                Approved claims attach this page to a host account before
-                editing, review responses, events, or analytics are unlocked.
-              </p>
+              <UiLabel>{websiteCopy["claimpagesections_0098"]}</UiLabel>
+              <h2>{websiteCopy["claimpagesections_0059"]}</h2>
+              <p>{websiteCopy["claimpagesections_0035"]}</p>
             </div>
 
-            <VerificationMethodGrid>
+            <VerificationMethodGrid aria-label={websiteCopy["claimpagesections_0059"]}>
               {claimVerificationMethods.map((method) => (
                 <ChoiceCard
                   body={method.body}
@@ -267,16 +251,16 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
 
             <ContentGrid variant="claim-review">
               <div>
-                <UiLabel>Claim packet</UiLabel>
+                <UiLabel>{websiteCopy["claimpagesections_0046"]}</UiLabel>
                 <dl>
-                  <div><dt>Listing</dt><dd>{listing.name}</dd></div>
-                  <div><dt>Requester</dt><dd>{requesterName}</dd></div>
-                  <div><dt>Role</dt><dd>{claimRoleOptions.find((option) => option.value === requesterRole)?.label}</dd></div>
-                  <div><dt>Contact</dt><dd>{businessEmail || businessPhone || "Proof links only"}</dd></div>
+                  <div><dt>{websiteCopy["claimpagesections_0061"]}</dt><dd>{listing.name}</dd></div>
+                  <div><dt>{websiteCopy["claimpagesections_0078"]}</dt><dd>{requesterName}</dd></div>
+                  <div><dt>{websiteCopy["claimpagesections_0081"]}</dt><dd>{claimRoleOptions.find((option) => option.value === requesterRole)?.label}</dd></div>
+                  <div><dt>{websiteCopy["claimpagesections_0050"]}</dt><dd>{businessEmail || businessPhone || "Proof links only"}</dd></div>
                 </dl>
               </div>
               <div>
-                <UiLabel>Unlocks after approval</UiLabel>
+                <UiLabel>{websiteCopy["claimpagesections_0096"]}</UiLabel>
                 <ul>
                   {claimUnlocks.map((item) => (
                     <li key={item}>{item}</li>
@@ -287,11 +271,11 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
 
             <TextAreaField
               id="claim-message"
-              label="Note for review"
+              label={websiteCopy["claimpagesections_0068"]}
               rows={3}
               value={message}
               maxLength={1000}
-              placeholder="Anything Catch should know before approving ownership"
+              placeholder={websiteCopy["claimpagesections_0033"]}
               onChange={(event) => setMessage(event.currentTarget.value)}
             />
 
@@ -299,9 +283,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
               variant="flow"
               action={
                 user ? (
-                  <Button variant="ghost" onClick={() => void handleSignOut()} type="button">
-                    Sign out
-                  </Button>
+                  <Button variant="ghost" onClick={() => void handleSignOut()} type="button">{websiteCopy["claimpagesections_0087"]}</Button>
                 ) : (
                   <Button
                     variant="ghost"
@@ -324,9 +306,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
             </AuthStatusRow>
 
             <ActionGroup>
-              <Button variant="ghost" type="button" onClick={() => setStep("role")}>
-                Back
-              </Button>
+              <Button variant="ghost" type="button" onClick={() => setStep("role")}>{websiteCopy["claimpagesections_0037"]}</Button>
               <Button disabled={isSubmitting || !user} type="submit">
                 {isSubmitting ? "Submitting..." : "Submit claim"}
               </Button>
@@ -338,24 +318,24 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
           <ClaimFlowStage>
             <ProcessStatusPanel
               mark="✓"
-              eyebrow="Claim in review"
-              title={`${listing.name} is waiting for owner approval.`}
+              eyebrow={websiteCopy["claimpagesections_0045"]}
+              title={websiteTemplates.listingOwnerPending(listing.name)}
               body={requestId ?
                 `Request ${requestId} is pending. Catch will verify ownership before attaching host tools.` :
                 "Catch will verify ownership before attaching host tools, review responses, event publishing, or analytics."}
               items={claimWhileYouWaitItems(listing)}
               onActionClick={trackProcessStatusAction}
               actions={[
-                {href: listing.path, label: "View public listing", variant: "secondary"},
-                {href: "/host/", label: "Explore host tools", variant: "primary"},
+                {href: listing.path, label: websiteCopy["claimpagesections_0099"], variant: "secondary"},
+                {href: "/host/", label: websiteCopy["claimpagesections_0055"], variant: "primary"},
               ]}
             />
             <OwnerUnlockBoard
               items={[
-                {title: "Profile", body: "Fix source details, description, photos, and event categories."},
-                {title: "Events", body: "Publish the first Catch event with admission, price, waitlist, and Event Success."},
-                {title: "Reviews", body: "Respond as owner and separate public reviews from verified attendee reviews."},
-                {title: "Reports", body: "Track attendance, catches, matches, repeat interest, and safety totals."},
+                {title: websiteCopy["claimpagesections_0073"], body: websiteCopy["claimpagesections_0057"]},
+                {title: websiteCopy["claimpagesections_0054"], body: websiteCopy["claimpagesections_0076"]},
+                {title: websiteCopy["claimpagesections_0080"], body: websiteCopy["claimpagesections_0079"]},
+                {title: websiteCopy["claimpagesections_0077"], body: websiteCopy["claimpagesections_0095"]},
               ]}
             />
           </ClaimFlowStage>
@@ -382,28 +362,28 @@ export function ClaimUrlStateSection({
     return (
       <ProcessStatusPanel
         mark="C"
-        eyebrow="Already claimed"
-        title={`${listing.name} already has owner context.`}
-        body="Catch does not open a second owner request from this public claim flow. Use the public profile, events, or organizer search instead."
+        eyebrow={websiteCopy["claimpagesections_0032"]}
+        title={websiteTemplates.listingHasOwner(listing.name)}
+        body={websiteCopy["claimpagesections_0040"]}
         items={[
           {
-            title: "Owner tools stay gated",
-            body: "Edits, event publishing, review responses, and reports stay attached to the verified owner account.",
+            title: websiteCopy["claimpagesections_0072"],
+            body: websiteCopy["claimpagesections_0053"],
           },
           {
-            title: "Public profile remains visible",
-            body: "Members can still inspect source details, Catch events, reviews, and event outcomes from the profile.",
+            title: websiteCopy["claimpagesections_0075"],
+            body: websiteCopy["claimpagesections_0063"],
           },
           {
-            title: "Need a different organizer?",
-            body: "Search unclaimed seed pages or start fresh so Catch can review a new host packet.",
+            title: websiteCopy["claimpagesections_0065"],
+            body: websiteCopy["claimpagesections_0086"],
           },
         ]}
         onActionClick={trackProcessStatusAction}
         actions={[
-          {href: listing.path, label: "View public listing", variant: "primary"},
-          {href: "/claim/", label: "Search claimable pages", variant: "secondary"},
-          {href: "/host/#founding-hosts", label: "Start fresh", variant: "secondary"},
+          {href: listing.path, label: websiteCopy["claimpagesections_0099"], variant: "primary"},
+          {href: "/claim/", label: websiteCopy["claimpagesections_0084"], variant: "secondary"},
+          {href: "/host/#founding-hosts", label: websiteCopy["claimpagesections_0090"], variant: "secondary"},
         ]}
       />
     );
@@ -413,28 +393,28 @@ export function ClaimUrlStateSection({
     return (
       <ProcessStatusPanel
         mark="!"
-        eyebrow="Claim setup in progress"
-        title={`${listing.name} is not accepting owner requests yet.`}
-        body="Catch has published this source-backed profile, but its owner-review target is not ready. No claim packet can be submitted from this page yet."
+        eyebrow={websiteCopy["claimpagesections_0048"]}
+        title={websiteTemplates.listingClaimUnavailable(listing.name)}
+        body={websiteCopy["claimpagesections_0041"]}
         items={[
           {
-            title: "The public profile stays visible",
-            body: "You can review the organizer facts and public sources while Catch finishes claim setup.",
+            title: websiteCopy["claimpagesections_0094"],
+            body: websiteCopy["claimpagesections_0100"],
           },
           {
-            title: "No partial request is created",
-            body: "Contact details and proof links are not collected until the verified claim target is available.",
+            title: websiteCopy["claimpagesections_0066"],
+            body: websiteCopy["claimpagesections_0051"],
           },
           {
-            title: "Hosts can still start fresh",
-            body: "Use the host application if you need to submit first-party organizer details now.",
+            title: websiteCopy["claimpagesections_0058"],
+            body: websiteCopy["claimpagesections_0097"],
           },
         ]}
         onActionClick={trackProcessStatusAction}
         actions={[
-          {href: listing.path, label: "View public listing", variant: "primary"},
-          {href: "/claim/", label: "Search claimable pages", variant: "secondary"},
-          {href: "/host/#founding-hosts", label: "Apply as host", variant: "secondary"},
+          {href: listing.path, label: websiteCopy["claimpagesections_0099"], variant: "primary"},
+          {href: "/claim/", label: websiteCopy["claimpagesections_0084"], variant: "secondary"},
+          {href: "/host/#founding-hosts", label: websiteCopy["claimpagesections_0034"], variant: "secondary"},
         ]}
       />
     );
@@ -444,7 +424,7 @@ export function ClaimUrlStateSection({
     return (
       <ProcessStatusPanel
         mark="..."
-        eyebrow="Claim in review"
+        eyebrow={websiteCopy["claimpagesections_0045"]}
         title={listing ? `${listing.name} is already in owner review.` : "This claim is in owner review."}
         body={requestId ?
           `Request ${requestId} is pending. Catch will verify ownership before attaching host tools.` :
@@ -452,9 +432,9 @@ export function ClaimUrlStateSection({
         items={claimWhileYouWaitItems(listing)}
         onActionClick={trackProcessStatusAction}
         actions={[
-          ...(listing ? [{href: listing.path, label: "View public listing", variant: "secondary" as const}] : []),
-          {href: "/host/", label: "Explore host tools", variant: "primary"},
-          {href: "/claim/", label: "Search another page", variant: "secondary"},
+          ...(listing ? [{href: listing.path, label: websiteCopy["claimpagesections_0099"], variant: "secondary" as const}] : []),
+          {href: "/host/", label: websiteCopy["claimpagesections_0055"], variant: "primary"},
+          {href: "/claim/", label: websiteCopy["claimpagesections_0082"], variant: "secondary"},
         ]}
       />
     );
@@ -463,28 +443,28 @@ export function ClaimUrlStateSection({
   return (
     <ProcessStatusPanel
       mark="?"
-      eyebrow="Listing not found"
+      eyebrow={websiteCopy["claimpagesections_0062"]}
       title={lookup ? `No claimable page matched "${lookup}".` : "No claimable page matched this link."}
-      body="The claim URL does not match a generated organizer page. The owner can still apply as a fresh host or search the source-backed directory."
+      body={websiteCopy["claimpagesections_0093"]}
       items={[
         {
-          title: "Check the directory",
-          body: "Search by organizer name, city, format, or source event before starting a new packet.",
+          title: websiteCopy["claimpagesections_0044"],
+          body: websiteCopy["claimpagesections_0083"],
         },
         {
-          title: "Start from first-party details",
-          body: "If the page does not exist yet, the host application can create a cleaner first-party profile.",
+          title: websiteCopy["claimpagesections_0091"],
+          body: websiteCopy["claimpagesections_0060"],
         },
         {
-          title: "Avoid duplicate claims",
-          body: "Catch should only review ownership against a stable generated page or a fresh host packet.",
+          title: websiteCopy["claimpagesections_0036"],
+          body: websiteCopy["claimpagesections_0042"],
         },
       ]}
       onActionClick={trackProcessStatusAction}
       actions={[
-        {href: "/claim/", label: "Search claimable pages", variant: "primary"},
-        {href: "/organizers/", label: "Open directory", variant: "secondary"},
-        {href: "/host/#founding-hosts", label: "Start fresh", variant: "secondary"},
+        {href: "/claim/", label: websiteCopy["claimpagesections_0084"], variant: "primary"},
+        {href: "/organizers/", label: websiteCopy["claimpagesections_0070"], variant: "secondary"},
+        {href: "/host/#founding-hosts", label: websiteCopy["claimpagesections_0090"], variant: "secondary"},
       ]}
     />
   );

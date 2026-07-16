@@ -9,7 +9,7 @@ export const captures: Record<string, CaptureRecord> = {
   "host-live-console": capture(
     "host-live-console",
     "Host live console",
-    "Live roster, check-in, and Event Success controls"
+    "Live roster, check-in, and Playbook controls"
   ),
   "host-post-event-report": capture(
     "host-post-event-report",

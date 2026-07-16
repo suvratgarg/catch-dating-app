@@ -13,7 +13,9 @@ class DashboardEmptyHomeScreen extends StatelessWidget {
         bottom: false,
         child: Semantics(
           label: context.l10n.dashboardDashboardEmptyHomeScreenLabelHome,
-          child: const CustomScrollView(slivers: [DashboardEmptySliverBody()]),
+          child: const CustomScrollView(
+            slivers: [DashboardEmptySliverBody(), CatchSliverTerminalPadding()],
+          ),
         ),
       ),
     );

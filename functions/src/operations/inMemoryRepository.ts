@@ -35,6 +35,11 @@ import {
   validateOperationWorkItem,
   ValidationResult,
 } from "./validation";
+import {
+  compareRunsNewestFirst,
+  decodeRunCursor,
+  encodeRunCursor,
+} from "./runPagination";
 
 function clone<T>(value: T): T {
   return structuredClone(value);
@@ -66,12 +71,16 @@ function pageById<T>(
   values: T[],
   getId: (value: T) => string,
   limit: number,
-  cursor?: string | null
+  cursor?: string | null,
+  direction: "asc" | "desc" = "asc"
 ): ListPage<T> {
   assertPageLimit(limit);
   const sorted = values
-    .filter((value) => !cursor || getId(value) > cursor)
-    .sort((left, right) => getId(left).localeCompare(getId(right)));
+    .filter((value) => !cursor || (direction === "asc" ?
+      getId(value) > cursor : getId(value) < cursor))
+    .sort((left, right) => direction === "asc" ?
+      getId(left).localeCompare(getId(right)) :
+      getId(right).localeCompare(getId(left)));
   const items = sorted.slice(0, limit).map(clone);
   return {
     items,
@@ -148,11 +157,19 @@ export class InMemoryOperationsRepository implements OperationsRepository {
   }
 
   async listRuns(query: RunListQuery): Promise<ListPage<OperationRun>> {
+    assertPageLimit(query.limit);
+    const cursor = query.cursor ? decodeRunCursor(query.cursor) : null;
     const values = [...this.runs.values()].filter((run) =>
       (!query.workflowId || run.workflowId === query.workflowId) &&
-      (!query.status || run.status === query.status)
-    );
-    return pageById(values, (run) => run.runId, query.limit, query.cursor);
+      (!query.status || run.status === query.status) &&
+      (!cursor || compareRunsNewestFirst(run, cursor) > 0)
+    ).sort(compareRunsNewestFirst);
+    const items = values.slice(0, query.limit).map(clone);
+    return {
+      items,
+      nextCursor: values.length > query.limit ?
+        encodeRunCursor(items[items.length - 1]) : null,
+    };
   }
 
   async createWorkItem(workItem: OperationWorkItem):
@@ -197,7 +214,9 @@ export class InMemoryOperationsRepository implements OperationsRepository {
       (!query.primaryStage || item.primaryStage === query.primaryStage) &&
       (!query.entityKind || item.entityKind === query.entityKind) &&
       (!query.lifecycleStatus ||
-        item.lifecycleStatus === query.lifecycleStatus)
+        item.lifecycleStatus === query.lifecycleStatus) &&
+      (!query.humanReviewRequired ||
+        item.taskFlags.includes("human_review_required"))
     );
     return pageById(
       values,

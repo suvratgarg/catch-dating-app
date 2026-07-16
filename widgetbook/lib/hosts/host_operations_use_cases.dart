@@ -88,6 +88,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -104,7 +105,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dar
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_picker_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -142,6 +142,8 @@ final _validationEvent = _editableEvent.copyWith(
     longitude: 72.8223,
     notes: 'Meet by the sea-facing steps',
   ),
+  startingPointLat: 19.0706,
+  startingPointLng: 72.8223,
   distanceKm: 0,
 );
 final _selectedLocationEvent = _editableEvent.copyWith(
@@ -173,6 +175,8 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   id: 'design-host-long-name-event',
   clubId: _longNameOwnerClub.id,
   meetingPoint: 'Bandra West Promenade amphitheatre',
+  meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation
+      .copyWith(name: 'Bandra West Promenade amphitheatre'),
 );
 final _customActivityEventDraft = HostOperationsFixtures.eventDraft.copyWith(
   id: 'design-host-event-custom-activity-draft',
@@ -572,7 +576,7 @@ Widget hostClubsRouteStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'organizer overview',
+        label: 'consolidated edit workspace',
         child: const _DeviceFrame(
           child: _HostShellScope(child: HostClubsScreen()),
         ),
@@ -585,6 +589,14 @@ Widget hostClubsRouteStates(BuildContext context) {
               initialClubId: HostOperationsFixtures.primaryClub.id,
               initialTab: HostClubTab.insights,
             ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'consumer club preview',
+        child: const _DeviceFrame(
+          child: _HostShellScope(
+            child: HostClubsScreen(initialTab: HostClubTab.preview),
           ),
         ),
       ),
@@ -703,136 +715,6 @@ Widget hostAnalyticsRangeSheetCatalogStates(BuildContext context) =>
 )
 Widget hostAnalyticsDualBarCatalogStates(BuildContext context) =>
     hostInsightsRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Top bar states',
-  type: HostOperationsTopBar,
-  path: '[P1 product surfaces]/Host operations/Sections',
-)
-Widget hostOperationsTopBarStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostOperationsTopBar',
-    contractId: 'section.host.home_top_bar',
-    children: [
-      _StateCard(
-        label: 'title with kicker',
-        child: const _HostHomeScaffoldFrame(
-          child: Scaffold(
-            appBar: HostOperationsTopBar(
-              kicker: 'OPERATIONS',
-              title: 'Sea Face Social',
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'club switcher action',
-        child: _HostHomeScaffoldFrame(
-          child: Scaffold(
-            appBar: HostOperationsTopBar(
-              kicker: 'OPERATIONS',
-              title: 'Sea Face Social',
-              actions: [
-                CatchTopBarMenuAction<int>(
-                  tooltip: 'Switch club',
-                  items: const [
-                    CatchActionMenuItem(value: 0, label: 'Sea Face Social'),
-                    CatchActionMenuItem(value: 1, label: 'Long Table Club'),
-                  ],
-                  onSelected: (_) {},
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'compact large text',
-        child: const _HostHomeScaffoldFrame(
-          textScaler: TextScaler.linear(2),
-          child: Scaffold(
-            appBar: HostOperationsTopBar(
-              kicker: 'OPERATIONS',
-              title: 'Sea Face Social',
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Picker states',
-  type: HostPickerTile,
-  path: '[P1 product surfaces]/Host operations/Controls',
-)
-Widget hostPickerTileStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostPickerTile',
-    contractId: 'control.host.picker_tile',
-    children: [
-      _StateCard(
-        label: 'selected date',
-        child: HostPickerTile(
-          icon: CatchIcons.calendarTodayOutlined,
-          value: 'Fri, Jul 3',
-          placeholder: 'Select a date',
-          onTap: () {},
-        ),
-      ),
-      _StateCard(
-        label: 'placeholder',
-        child: HostPickerTile(
-          icon: CatchIcons.scheduleOutlined,
-          value: '',
-          placeholder: 'Select start time',
-          onTap: () {},
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Meta row states',
-  type: HostMetaRow,
-  path: '[P1 product surfaces]/Host operations/Sections',
-)
-Widget hostHomeMetaRowStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostMetaRow',
-    contractId: 'section.host.home_meta_row',
-    children: [
-      _StateCard(
-        label: 'owner club metadata',
-        child: _HostHomeSectionFrame(
-          child: HostMetaRow(club: _club, roleLabel: 'Owner', owner: true),
-        ),
-      ),
-      _StateCard(
-        label: 'host team metadata',
-        child: _HostHomeSectionFrame(
-          child: HostMetaRow(
-            club: HostOperationsFixtures.coHostedClub,
-            roleLabel: 'Host team',
-            owner: false,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'missing area fallback',
-        child: _HostHomeSectionFrame(
-          child: HostMetaRow(
-            club: _club.copyWith(area: '', location: ''),
-            roleLabel: 'Owner',
-            owner: true,
-          ),
-        ),
-      ),
-    ],
-  );
-}
 
 @widgetbook.UseCase(
   name: 'Covered by host event section states',
@@ -1566,14 +1448,10 @@ Widget _hostClubPreviewFor(String focus) {
       club: club,
       currentUid: _hostUid,
       isOwner: true,
-      clubs: HostOperationsFixtures.clubs,
-      showClubPicker: true,
       eventsLoaded: true,
       eventCount: events.length,
       activeEventCount: events.where((event) => !event.isCancelled).length,
-      onSelectClubIndex: (_) {},
-      onSelectTab: (_) {},
-      onPreviewClub: (_) {},
+      onOpenEditor: () {},
       onOpenSettings: () {},
     ),
     'HostClubOrganizerOverviewController' =>
@@ -1581,22 +1459,14 @@ Widget _hostClubPreviewFor(String focus) {
         club: club,
         currentUid: _hostUid,
         isOwner: true,
-        clubs: HostOperationsFixtures.clubs,
-        showClubPicker: true,
-        onSelectClubIndex: (_) {},
-        onSelectTab: (_) {},
-        onPreviewClub: (_) {},
+        onOpenEditor: () {},
         onOpenSettings: () {},
       ),
-    'HostClubPreviewPane' => HostClubPreviewPane(
-      club: club,
-      onPreviewClub: (_) {},
-    ),
     'HostClubProfileCard' => HostClubProfileCard(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
-      onPreviewClub: (_) {},
+      onPreviewClub: () {},
     ),
     'HostEventsClubCard' => HostEventsClubCard(
       club: club,
@@ -1616,23 +1486,22 @@ Widget _hostClubPreviewFor(String focus) {
       currentUid: _hostUid,
       isOwner: true,
       initialExpandedField: 'ageRange',
-      onPreviewClub: (_) {},
+      onPreviewClub: () {},
     ),
     'HostInlineOptionEditor' => HostClubProfileCard(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
       initialExpandedField: 'primaryActivityKind',
-      onPreviewClub: (_) {},
+      onPreviewClub: () {},
     ),
     'HostInlineTextEntryEditor' => HostClubProfileCard(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
       initialExpandedField: 'name',
-      onPreviewClub: (_) {},
+      onPreviewClub: () {},
     ),
-    'HostOrganizerHeader' => HostOrganizerHeader(club: club),
     'HostOrganizerMetricGrid' => HostOrganizerMetricGrid(
       club: club,
       eventsLoaded: true,
@@ -1657,11 +1526,6 @@ Widget _hostClubPreviewFor(String focus) {
       profile: team.first,
       currentUid: _hostUid,
       divider: false,
-    ),
-    'HostOrganizerTrendStrip' => HostOrganizerTrendStrip(
-      memberCount: club.memberCount,
-      activeEventCount: events.length,
-      onTap: () {},
     ),
     'HostPaymentAccountCard' => HostPaymentAccountCard(
       club: club,
@@ -2066,11 +1930,6 @@ String _hostComponentSlug(String name) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
-  type: HostOrganizerHeader,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
   type: HostOrganizerPayoutPrompt,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -2097,11 +1956,6 @@ String _hostComponentSlug(String name) {
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
   type: HostOrganizerTeamRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizerTrendStrip,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -4575,9 +4429,34 @@ Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
         child: _DeviceFrame(child: _EditableHostedEventPolicyCardFrame()),
       ),
       _StateCard(
+        label: 'open capacity with cohort caps',
+        child: _DeviceFrame(
+          child: _EditableHostedEventPolicyCardFrame(cohortCapsEnabled: true),
+        ),
+      ),
+      _StateCard(
         label: 'invite only',
         child: _DeviceFrame(
-          child: _EditableHostedEventPolicyCardFrame(inviteOnly: true),
+          child: _EditableHostedEventPolicyCardFrame(
+            admissionPreset: EventAdmissionPreset.inviteOnly,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'request to join',
+        child: _DeviceFrame(
+          child: _EditableHostedEventPolicyCardFrame(
+            admissionPreset: EventAdmissionPreset.requestToJoin,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'balanced singles with demand pricing',
+        child: _DeviceFrame(
+          child: _EditableHostedEventPolicyCardFrame(
+            admissionPreset: EventAdmissionPreset.balancedSingles,
+            dynamicPricingEnabled: true,
+          ),
         ),
       ),
     ],
@@ -4799,14 +4678,6 @@ Widget hostStrictHostClubOrganizerOverviewCatalogStates(BuildContext context) =>
 Widget hostStrictHostClubOrganizerOverviewControllerCatalogStates(
   BuildContext context,
 ) => _hostClubExactCatalog(context, 'HostClubOrganizerOverviewController');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostClubPreviewPane,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostClubPreviewPaneCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubPreviewPane');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -5576,9 +5447,15 @@ class _EventSuccessStepFrameState extends State<_EventSuccessStepFrame> {
 }
 
 class _EditableHostedEventPolicyCardFrame extends StatefulWidget {
-  const _EditableHostedEventPolicyCardFrame({this.inviteOnly = false});
+  const _EditableHostedEventPolicyCardFrame({
+    this.admissionPreset = EventAdmissionPreset.openCapacity,
+    this.cohortCapsEnabled = false,
+    this.dynamicPricingEnabled = false,
+  });
 
-  final bool inviteOnly;
+  final EventAdmissionPreset admissionPreset;
+  final bool cohortCapsEnabled;
+  final bool dynamicPricingEnabled;
 
   @override
   State<_EditableHostedEventPolicyCardFrame> createState() =>
@@ -5604,9 +5481,9 @@ class _EditableHostedEventPolicyCardFrameState
   @override
   void initState() {
     super.initState();
-    _admissionPreset = widget.inviteOnly
-        ? EventAdmissionPreset.inviteOnly
-        : EventAdmissionPreset.openCapacity;
+    _admissionPreset = widget.admissionPreset;
+    _cohortCapsEnabled = widget.cohortCapsEnabled;
+    _dynamicPricingEnabled = widget.dynamicPricingEnabled;
     _capacityController = TextEditingController(text: '24');
     _priceController = TextEditingController(text: '0');
     _minAgeController = TextEditingController(text: '24');
@@ -5637,7 +5514,13 @@ class _EditableHostedEventPolicyCardFrameState
     return Padding(
       padding: CatchInsets.content,
       child: EditableHostedEventPolicyCard(
-        currencyCode: currencyCodeForCityName(_club.location),
+        state: HostEventEditPolicyFieldState.from(
+          currencyCode: currencyCodeForCityName(_club.location),
+          admissionPreset: _admissionPreset,
+          cohortCapsEnabled: _cohortCapsEnabled,
+          dynamicPricingEnabled: _dynamicPricingEnabled,
+          cancellationPolicyId: _cancellationPolicyId,
+        ),
         capacityController: _capacityController,
         priceController: _priceController,
         minAgeController: _minAgeController,
@@ -5647,16 +5530,12 @@ class _EditableHostedEventPolicyCardFrameState
         inviteCodeController: _inviteCodeController,
         dynamicPricingStepController: _dynamicPricingStepController,
         dynamicPricingMaxController: _dynamicPricingMaxController,
-        admissionPreset: _admissionPreset,
         onAdmissionPresetChanged: (preset) =>
             setState(() => _admissionPreset = preset),
-        cohortCapsEnabled: _cohortCapsEnabled,
         onCohortCapsEnabledChanged: (enabled) =>
             setState(() => _cohortCapsEnabled = enabled),
-        dynamicPricingEnabled: _dynamicPricingEnabled,
         onDynamicPricingChanged: (enabled) =>
             setState(() => _dynamicPricingEnabled = enabled),
-        cancellationPolicyId: _cancellationPolicyId,
         onCancellationPolicyChanged: (policyId) =>
             setState(() => _cancellationPolicyId = policyId),
         privateAccessAsync: const CatchAsyncState<EventPrivateAccess?>.data(
@@ -5832,24 +5711,6 @@ class _HostHomeSectionFrame extends StatelessWidget {
         child: framedChild,
       ),
     );
-  }
-}
-
-class _HostHomeScaffoldFrame extends StatelessWidget {
-  const _HostHomeScaffoldFrame({required this.child, this.textScaler});
-
-  final Widget child;
-  final TextScaler? textScaler;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget framedChild = child;
-    final scaler = textScaler;
-    if (scaler != null) {
-      framedChild = _MediaOverride(textScaler: scaler, child: framedChild);
-    }
-
-    return _DeviceFrame(child: _HostShellScope(child: framedChild));
   }
 }
 
@@ -6063,6 +5924,11 @@ class _HostShellScope extends StatelessWidget {
       for (final club in effectiveOwnedClubs) club.id,
       ...clubEventStreams.keys,
     };
+    final clubsById = <String, Club>{
+      for (final club in HostOperationsFixtures.clubs) club.id: club,
+      for (final club in effectiveHostedClubs) club.id: club,
+      for (final club in effectiveOwnedClubs) club.id: club,
+    };
     final overrides = [
       uidProvider.overrideWithValue(AsyncData<String?>(uid)),
       watchHostProfileProvider(effectiveUid).overrideWith(
@@ -6090,6 +5956,26 @@ class _HostShellScope extends StatelessWidget {
       hostAnalyticsRepositoryProvider.overrideWithValue(analyticsRepository),
     ];
     for (final clubId in eventClubIds) {
+      final club = clubsById[clubId];
+      if (club != null) {
+        overrides.add(
+          clubDetailViewModelProvider(clubId).overrideWithValue(
+            AsyncData<ClubDetailViewModel?>(
+              ClubDetailViewModel(
+                club: club,
+                isHost: true,
+                isMember: false,
+                upcomingEvents:
+                    HostOperationsFixtures.eventsByClub[clubId] ?? const [],
+                reviews: const [],
+                userProfile: uid == null ? null : HostOperationsFixtures.owner,
+                uid: uid,
+                isAuthenticated: uid != null,
+              ),
+            ),
+          ),
+        );
+      }
       overrides.add(
         watchEventsForClubProvider(clubId).overrideWith(
           (ref) =>

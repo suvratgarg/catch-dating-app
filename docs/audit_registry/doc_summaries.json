@@ -1,10 +1,10 @@
 {
-  "version": "4.5.143",
-  "updated": "2026-07-05",
+  "version": "4.5.149",
+  "updated": "2026-07-14",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
-      "purpose": "High-level repo map and durable project context. Use docs/app_architecture.md for canonical app code-organization policy.",
+      "purpose": "High-level repo map and durable project context, including the canonical market catalog and repository boundary. Use docs/app_architecture.md for canonical app code-organization policy.",
       "read_when": [
         "Starting broad repo work",
         "Explaining app architecture",
@@ -61,7 +61,7 @@
       ]
     },
     "docs/agent_regression_ledger.json": {
-      "purpose": "Machine-readable list of hard-won agent regression guards, including audit-loop, design-system, generated-metadata, Widgetbook, nullable organizer data, parallel Flutter test, parallel delegation ownership, and enforcement-integrity drift failures.",
+      "purpose": "Machine-readable list of hard-won agent regression guards, including audit-loop, design-system, generated-metadata, Widgetbook, canonical market display, nullable organizer data, parallel Flutter test, parallel delegation ownership, and enforcement-integrity drift failures.",
       "read_when": [
         "Generating a context pack",
         "Touching a scope with known agent regression risks",
@@ -94,7 +94,7 @@
       ]
     },
     "docs/app_architecture.md": {
-      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, Firebase/domain boundaries, mutation-cardinality grain, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
+      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
       "read_when": [
         "Changing code organization under lib/",
         "Starting or continuing an architecture migration rollout",
@@ -302,15 +302,40 @@
         "No backend write ownership or notification behavior is touched"
       ]
     },
+    "docs/operations_platform.md": {
+      "purpose": "Canonical architecture and safety boundary for durable, resumable business workflows; Supply Intake is the reference workflow, tool remains repository automation rather than workflow runtime, and the admin projection crosses into Firestore only through the trusted dry-run-first importer.",
+      "read_when": [
+        "Adding or changing a durable admin or agent-operated workflow",
+        "Changing operation runs, work items, leases, budgets, decisions, receipts, learning rules, or publication plans",
+        "Deciding whether behavior belongs under operations or tool",
+        "Activating source fetches, model calls, or public writes"
+      ],
+      "skip_when": [
+        "Only changing a stateless repository check, generator, migration, deploy helper, or data repair command",
+        "Only changing an ordinary request-response admin feature with no durable workflow state"
+      ]
+    },
     "docs/audit_registry/README.md": {
-      "purpose": "Recursive audit workflow, registry files, enforcement metadata, manifest role requirements, allowedFindings/maxCounts baseline receipts, architecture pattern-adoption tracker, pruning policy, and completion criteria.",
+      "purpose": "Recursive audit workflow, registry files including the admin-console design adoption tracker, enforcement metadata, manifest role requirements, allowedFindings/maxCounts baseline receipts including the live widget-cleanup ratchet, architecture pattern-adoption tracker, pruning policy, and completion criteria.",
       "read_when": [
         "Starting any repeated cleanup/audit pass",
         "Changing rule enforcement entries, manifest rule bindings, vacuity proof declarations, or ratchet baseline receipts",
-        "Changing manifest role requirements or allowedFindings/maxCounts baseline receipts"
+        "Changing manifest role requirements or allowedFindings/maxCounts baseline receipts",
+        "Changing the widget cleanup scanner categories or live ratchet baseline",
+        "Reviewing or updating admin-console design adoption status"
       ],
       "skip_when": [
         "Task is a trivial one-off command"
+      ]
+    },
+    "docs/audit_registry/admin_console_design_adoption.json": {
+      "purpose": "Production adoption tracker for the comprehensive admin-console design export, with explicit implementation, partial, blocked, and prototype-defect statuses.",
+      "read_when": [
+        "Planning or reviewing admin-console UX implementation",
+        "Changing admin route ownership, chrome, list-detail workflows, data ranges, or mutation affordances"
+      ],
+      "skip_when": [
+        "The task does not touch the admin console"
       ]
     },
     "docs/audit_registry/backlog.json": {
@@ -326,7 +351,7 @@
       ]
     },
     "docs/audit_registry/architecture_pattern_adoption.json": {
-      "purpose": "Machine-readable tracker for architecture reference exhibits, prototype files, adopters, variants, exceptions, screen-boundary candidates, and required back-propagation.",
+      "purpose": "Machine-readable tracker for architecture reference exhibits, prototype files, adopters, variants, exceptions, screen-boundary candidates, feature-owned startup provider orchestration, and required back-propagation.",
       "read_when": [
         "Starting architecture migration work from a reusable pattern",
         "Changing a reference implementation exhibit",
@@ -402,8 +427,9 @@
       ]
     },
     "docs/location_stack_plan.md": {
-      "purpose": "Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and map/demo readiness source of truth.",
+      "purpose": "Canonical market identity and display labels, Google Maps/Places, location permissions, event coordinates, check-in geofencing, map navigation, and map/demo readiness source of truth.",
       "read_when": [
+        "Changing stored market ids, city labels, or city pickers",
         "Changing location permissions",
         "Changing Google Maps or Places usage",
         "Changing run coordinates, check-in fences, or directions",
@@ -546,6 +572,20 @@
       ],
       "skip_when": [
         "Only fixing one lint violation without changing rule behavior"
+      ]
+    },
+    "docs/plans/repository_root_hygiene_spec.md": {
+      "purpose": "Fable/owner review spec for the full project-root inventory, reproducible disk cleanup, protected local state, legacy artifact retirement, root documentation consolidation, artifact retention, Firebase deploy safety, and manifest-backed root hygiene enforcement.",
+      "read_when": [
+        "Deleting, moving, reclassifying, or adding a project-root entry",
+        "Cleaning local caches, logs, artifacts, or worktrees",
+        "Consolidating CLAUDE.md, PROJECT_CONTEXT.md, README.md, or TESTS.md",
+        "Implementing root manifest, portability, test-inventory, retention, or protected-cleanup tooling",
+        "Reviewing the recorded Fable dispositions or the pending-owner root-hygiene decisions"
+      ],
+      "skip_when": [
+        "A narrow feature change does not affect root layout, local cleanup, documentation ownership, artifacts, or deploy safety",
+        "The accepted root-hygiene work is complete and permanent policy has moved into owner docs and enforcement"
       ]
     },
     "docs/marketing_website_architecture.md": {

@@ -396,6 +396,15 @@ void main() {
       expect(content.publicPreviewMode, isTrue);
       expect(content.showMembershipDock, isFalse);
       expect(content.isInitialFallback, isFalse);
+
+      final bodyState = ClubDetailBodyState.fromContent(
+        content,
+        appRole: AppRole.host,
+      );
+      expect(bodyState.isHost, isFalse);
+      expect(bodyState.isMember, isFalse);
+      expect(bodyState.dockState, isNull);
+      expect(bodyState.canMessageHosts, isFalse);
     });
 
     test('uses initial club fallback while live host data loads', () {
@@ -557,6 +566,33 @@ void main() {
         expect(
           state.eventRouteTarget,
           ClubDetailEventRouteTarget.hostEventDetail,
+        );
+      },
+    );
+
+    test(
+      'public preview keeps consumer display policy but removes the dock',
+      () {
+        final club = buildClub(
+          hostProfiles: const [
+            ClubHostProfile(uid: 'owner-1', displayName: 'Owner Host'),
+            ClubHostProfile(uid: 'host-2', displayName: 'Co Host'),
+          ],
+        );
+
+        final state = ClubDetailBodyState.publicPreview(
+          club: club,
+          uid: 'owner-1',
+        );
+
+        expect(state.isHost, isFalse);
+        expect(state.isMember, isFalse);
+        expect(state.dockState, isNull);
+        expect(state.canMessageHosts, isTrue);
+        expect(state.messageableHostUids, {'host-2'});
+        expect(
+          state.eventRouteTarget,
+          ClubDetailEventRouteTarget.consumerEventDetail,
         );
       },
     );

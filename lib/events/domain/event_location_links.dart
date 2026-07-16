@@ -3,12 +3,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 Uri directionsUriForEvent(Event event) {
   final lat = event.effectiveStartingPointLat;
   final lng = event.effectiveStartingPointLng;
-
-  if (lat != null && lng != null) {
-    return _directionsUri(latitude: lat, longitude: lng);
-  }
-
-  return _searchUri(query: event.locationName);
+  return _directionsUri(latitude: lat, longitude: lng);
 }
 
 Uri _directionsUri({required double latitude, required double longitude}) {
@@ -17,12 +12,5 @@ Uri _directionsUri({required double latitude, required double longitude}) {
     'api': '1',
     'destination': destination,
     'travelmode': 'walking',
-  });
-}
-
-Uri _searchUri({required String query}) {
-  return Uri.https('www.google.com', '/maps/search/', {
-    'api': '1',
-    'query': query,
   });
 }

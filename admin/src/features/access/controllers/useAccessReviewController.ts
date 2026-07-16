@@ -17,27 +17,25 @@ export interface AccessReviewFormState {
   cohortId: string;
 }
 
-export interface AccessRecentDecision {
-  applicationUid: string;
-  title: string;
-  decision: AccessApplicationDecision;
-  status: "approvedForProfile" | "notSelectedYet";
-}
-
 export interface AccessReviewController {
   decisionInFlight: AccessApplicationDecision | null;
+  detailError: string | null;
   filteredRows: AdminQueueItem[];
   form: AccessReviewFormState;
+  generatedAt: string | null;
   isDetailLoading: boolean;
   isLoading: boolean;
+  pendingTotal: number;
   query: string;
-  recentDecisions: AccessRecentDecision[];
   rows: AdminQueueItem[];
   selected: AdminQueueItem | null;
+  selectedApplicationUid: string | null;
   selectedDetails: AdminAccessApplicationDetails | null;
+  selectedUnavailable: boolean;
   validationIssue: string | null;
   decide: (decision: AccessApplicationDecision) => Promise<boolean>;
   refresh: () => Promise<void>;
+  refreshDetail: () => Promise<void>;
   select: (row: AdminQueueItem) => void;
   setForm: (form: AccessReviewFormState) => void;
   setQuery: (query: string) => void;
@@ -46,40 +44,49 @@ export interface AccessReviewController {
 export function useAccessReviewController({
   onError,
   onNotice,
+  onSelectedApplicationUidChange,
+  selectedApplicationUid: controlledSelectedApplicationUid,
 }: {
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
+  onSelectedApplicationUidChange?: (applicationUid: string | null) => void;
+  selectedApplicationUid?: string | null;
 }): AccessReviewController {
   const queryClient = useQueryClient();
-  const [selectedTargetPath, setSelectedTargetPath] = useState<string | null>(
-    null
-  );
+  const [localSelectedApplicationUid, setLocalSelectedApplicationUid] =
+    useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [form, setForm] = useState<AccessReviewFormState>({
     note: "",
     cohortId: "",
   });
-  const [recentDecisions, setRecentDecisions] = useState<AccessRecentDecision[]>(
-    []
-  );
+  const selectedApplicationUid = controlledSelectedApplicationUid === undefined ?
+    localSelectedApplicationUid :
+    controlledSelectedApplicationUid;
+
+  const setSelectedApplicationUid = useCallback((applicationUid: string | null) => {
+    if (controlledSelectedApplicationUid === undefined) {
+      setLocalSelectedApplicationUid(applicationUid);
+    }
+    onSelectedApplicationUidChange?.(applicationUid);
+  }, [controlledSelectedApplicationUid, onSelectedApplicationUidChange]);
 
   const listQuery = useQuery({
     queryKey: adminQueryKeys.access.applications(),
     queryFn: listAccessApplications,
   });
-  const rows = listQuery.data ?? [];
+  const rows = listQuery.data?.rows ?? [];
 
   const filteredRows = useMemo(
     () => filterAccessRows(rows, query),
     [query, rows]
   );
-  const selected = useMemo(
-    () => rows.find((row) => row.targetPath === selectedTargetPath) ?? null,
-    [rows, selectedTargetPath]
+  const selectedRow = useMemo(
+    () => rows.find((row) =>
+      applicationUidFromTargetPath(row.targetPath) === selectedApplicationUid
+    ) ?? null,
+    [rows, selectedApplicationUid]
   );
-  const selectedApplicationUid = selected ?
-    applicationUidFromTargetPath(selected.targetPath) :
-    null;
   const detailQuery = useQuery({
     enabled: Boolean(selectedApplicationUid),
     queryKey: adminQueryKeys.access.detail(selectedApplicationUid ?? "none"),
@@ -90,6 +97,10 @@ export function useAccessReviewController({
   const decideMutation = useMutation({
     mutationFn: decideAccessReview,
   });
+  const selectedDetails = detailQuery.data?.application ?? null;
+  const selected = selectedRow ?? (
+    selectedDetails ? queueItemFromAccessDetails(selectedDetails) : null
+  );
   const validationIssue = validateAccessReview(selected, form);
 
   useEffect(() => {
@@ -100,37 +111,32 @@ export function useAccessReviewController({
       ));
       return;
     }
-    if (listQuery.isSuccess) {
+    if (listQuery.isSuccess && !detailQuery.isError) {
       onError(null);
     }
-  }, [listQuery.error, listQuery.isError, listQuery.isSuccess, onError]);
+  }, [detailQuery.isError, listQuery.error, listQuery.isError, listQuery.isSuccess, onError]);
 
   useEffect(() => {
-    if (!detailQuery.isError) return;
-    onError(messageFromError(
-      detailQuery.error,
-      "Unable to load access application detail."
-    ));
-  }, [detailQuery.error, detailQuery.isError, onError]);
-
-  useEffect(() => {
-    setSelectedTargetPath((current) => {
-      if (current && rows.some((row) => row.targetPath === current)) {
-        return current;
-      }
-      return null;
-    });
-  }, [rows]);
+    if (detailQuery.isError) {
+      onError(messageFromError(
+        detailQuery.error,
+        "Unable to load access application detail."
+      ));
+      return;
+    }
+    if (detailQuery.isSuccess && !listQuery.isError) onError(null);
+  }, [detailQuery.error, detailQuery.isError, detailQuery.isSuccess, listQuery.isError, onError]);
 
   const select = useCallback((row: AdminQueueItem) => {
-    setSelectedTargetPath(row.targetPath);
     setForm({note: "", cohortId: ""});
     onError(null);
     const applicationUid = applicationUidFromTargetPath(row.targetPath);
     if (!applicationUid) {
       onError("Cannot load access application detail without a valid target.");
+      return;
     }
-  }, [onError]);
+    setSelectedApplicationUid(applicationUid);
+  }, [onError, setSelectedApplicationUid]);
 
   const decide = useCallback(async (decision: AccessApplicationDecision) => {
     if (!selected) {
@@ -154,57 +160,91 @@ export function useAccessReviewController({
         note: form.note.trim(),
         cohortId: nullableText(form.cohortId),
       });
-      queryClient.setQueryData<AdminQueueItem[]>(
+      queryClient.setQueryData<{
+        generatedAt: string;
+        pendingTotal: number;
+        rows: AdminQueueItem[];
+      }>(
         adminQueryKeys.access.applications(),
-        (current) =>
-          (current ?? []).filter((row) => row.targetPath !== selected.targetPath)
+        (current) => current ? ({
+          ...current,
+          pendingTotal: Math.max(0, current.pendingTotal - 1),
+          rows: current.rows.filter((row) => row.targetPath !== selected.targetPath),
+        }) : current
       );
       await queryClient.invalidateQueries({
         queryKey: adminQueryKeys.access.applications(),
       });
-      setRecentDecisions((current) => [{
-        applicationUid,
-        title: selected.title,
-        decision,
-        status: result.status,
-      }, ...current].slice(0, 6));
-      setSelectedTargetPath(null);
+      setSelectedApplicationUid(null);
       setForm({note: "", cohortId: ""});
       onError(null);
       onNotice(
-        `${decision === "approve" ? "Approved" : "Denied"} ${selected.title}.`
+        decision === "approve" ?
+          `Approved ${selected.title} for profile creation.` :
+          `Marked ${selected.title} as not selected yet.`
       );
       return true;
     } catch (error) {
       onError(messageFromError(error, "Unable to decide access application."));
       return false;
     }
-  }, [decideMutation, form, onError, onNotice, queryClient, selected]);
+  }, [decideMutation, form, onError, onNotice, queryClient, selected, setSelectedApplicationUid]);
 
   const refresh = useCallback(async () => {
     await listQuery.refetch();
   }, [listQuery]);
 
+  const refreshDetail = useCallback(async () => {
+    await detailQuery.refetch();
+  }, [detailQuery]);
+
+  const detailError = detailQuery.isError ? messageFromError(
+    detailQuery.error,
+    "Unable to load access application detail."
+  ) : null;
+
   return {
     decisionInFlight: decideMutation.isPending ?
       decideMutation.variables?.decision ?? null :
       null,
+    detailError,
     filteredRows,
     form,
+    generatedAt: listQuery.data?.generatedAt ?? null,
     isLoading: listQuery.isPending || listQuery.isFetching,
-    isDetailLoading: Boolean(selected) &&
+    isDetailLoading: Boolean(selectedApplicationUid) &&
       (detailQuery.isPending || detailQuery.isFetching),
+    pendingTotal: listQuery.data?.pendingTotal ?? rows.length,
     query,
-    recentDecisions,
     rows,
     selected,
-    selectedDetails: detailQuery.data?.application ?? null,
+    selectedApplicationUid,
+    selectedDetails,
+    selectedUnavailable: Boolean(
+      selectedApplicationUid &&
+      !detailQuery.isPending &&
+      (detailQuery.isError || !selectedDetails)
+    ),
     validationIssue,
     decide,
     refresh,
+    refreshDetail,
     select,
     setForm,
     setQuery,
+  };
+}
+
+function queueItemFromAccessDetails(
+  details: AdminAccessApplicationDetails
+): AdminQueueItem {
+  return {
+    id: details.targetPath,
+    title: details.uid,
+    detail: [details.city, details.role].filter(Boolean).join(" · "),
+    status: details.status,
+    createdAt: details.submittedAt ?? details.createdAt,
+    targetPath: details.targetPath,
   };
 }
 

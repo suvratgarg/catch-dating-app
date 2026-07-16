@@ -93,25 +93,31 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
         body: SafeArea(
           bottom: false,
           child: ListView(
-            padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s12),
+            padding: EdgeInsets.zero,
             children: [
-              if (selectedClub == null)
-                HostEmptyActionCard(
-                  title: context
-                      .l10n
-                      .hostsHostEventsScaffoldTitleCreateYourFirstClub,
-                  body: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-                  actions: [
-                    CatchButton(
-                      label:
-                          context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-                      icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                      onPressed: () =>
-                          context.pushNamed(Routes.hostCreateClubScreen.name),
-                    ),
-                  ],
-                )
-              else
+              if (selectedClub == null) ...[
+                CatchScreenHeaderTitle.block(
+                  title: context.l10n.hostNavigationToday,
+                ),
+                Padding(
+                  padding: CatchInsets.pageHorizontal,
+                  child: HostEmptyActionCard(
+                    title: context
+                        .l10n
+                        .hostsHostEventsScaffoldTitleCreateYourFirstClub,
+                    body: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+                    actions: [
+                      CatchButton(
+                        label:
+                            context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+                        icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                        onPressed: () =>
+                            context.pushNamed(Routes.hostCreateClubScreen.name),
+                      ),
+                    ],
+                  ),
+                ),
+              ] else
                 HostTodayDashboardCard(
                   club: selectedClub,
                   currentUid: _state.currentUid,
@@ -129,6 +135,7 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
                   onOpenTask: _openTodayTask,
                   now: _clockNow,
                 ),
+              const CatchScrollTerminalPadding(),
             ],
           ),
         ),
@@ -139,31 +146,38 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
       backgroundColor: t.bg,
       body: SafeArea(
         bottom: false,
-        child: ListView(
-          padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s3),
-          children: [
-            if (selectedClub == null) ...[
-              Text(
-                context.l10n.hostsHostEventsScaffoldTextEvents,
-                style: CatchTextStyles.headline(context, color: t.ink),
-              ),
-              gapH24,
-              HostEmptyActionCard(
-                title: context
-                    .l10n
-                    .hostsHostEventsScaffoldTitleCreateYourFirstClub,
-                body: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-                actions: [
-                  CatchButton(
-                    label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-                    icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                    onPressed: () =>
-                        context.pushNamed(Routes.hostCreateClubScreen.name),
+        child: selectedClub == null
+            ? ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  CatchScreenHeaderTitle.block(
+                    title: context.l10n.hostsHostEventsListTextEvents,
                   ),
+                  Padding(
+                    padding: CatchInsets.pageHorizontal,
+                    child: HostEmptyActionCard(
+                      title: context
+                          .l10n
+                          .hostsHostEventsScaffoldTitleCreateYourFirstClub,
+                      body:
+                          context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+                      actions: [
+                        CatchButton(
+                          label: context
+                              .l10n
+                              .hostsHostEventsScaffoldLabelCreateClub,
+                          icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                          onPressed: () => context.pushNamed(
+                            Routes.hostCreateClubScreen.name,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const CatchScrollTerminalPadding(),
                 ],
-              ),
-            ] else
-              HostEventsClubCard(
+              )
+            : HostEventsClubCard(
                 club: selectedClub,
                 currentUid: _state.currentUid,
                 clubs: _state.clubs,
@@ -178,8 +192,6 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
                 onManageEvent: _openManageEvent,
                 now: _clockNow,
               ),
-          ],
-        ),
       ),
     );
   }

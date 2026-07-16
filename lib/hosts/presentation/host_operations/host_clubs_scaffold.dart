@@ -20,8 +20,14 @@ class HostClubsScaffold extends StatefulWidget {
   State<HostClubsScaffold> createState() => _HostClubsScaffoldState();
 }
 
-class _HostClubsScaffoldState extends State<HostClubsScaffold> {
+class _HostClubsScaffoldState extends State<HostClubsScaffold>
+    with SingleTickerProviderStateMixin {
+  static const _editorRevealAlignment = 0.08;
+
   late HostClubsScreenState _state;
+  late final TabController _tabController;
+  final GlobalKey _profileSectionsKey = GlobalKey();
+  bool _didRevealInitialEditor = false;
 
   @override
   void initState() {
@@ -32,11 +38,20 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
       selectedClubId: widget.initialClubId,
       selectedTab: _effectiveInitialTab,
     );
+    _tabController = TabController(
+      length: HostClubTab.values.length,
+      initialIndex: HostClubTab.values.indexOf(_state.selectedTab),
+      vsync: this,
+    )..addListener(_handleTabControllerChanged);
   }
 
   @override
   void didUpdateWidget(HostClubsScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialExpandedEditField != widget.initialExpandedEditField ||
+        oldWidget.initialClubId != widget.initialClubId) {
+      _didRevealInitialEditor = false;
+    }
     _state = HostClubsScreenState.resolve(
       clubs: widget.clubs,
       currentUid: widget.currentUid,
@@ -44,70 +59,39 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
       selectedClubId: _state.selectedClub?.id,
       selectedTab: _state.selectedTab,
     );
+    final selectedIndex = HostClubTab.values.indexOf(_state.selectedTab);
+    if (_tabController.index != selectedIndex) {
+      _tabController.index = selectedIndex;
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabController
+      ..removeListener(_handleTabControllerChanged)
+      ..dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final selectedClub = _state.selectedClub;
-    final organizerMode =
-        selectedClub != null && _state.selectedTab == HostClubTab.organizer;
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      appBar: organizerMode
-          ? null
-          : HostOperationsTopBar(
-              kicker: context.l10n.hostsHostClubsScaffoldKickerHostClubs,
-              title: _state.title(context.l10n),
-              bottom: selectedClub == null
-                  ? null
-                  : CatchTabRail<HostClubTab>(
-                      groupKey: _hostClubTabRailKey,
-                      selected: _state.selectedTab,
-                      onChanged: _selectTab,
-                      options: [
-                        CatchOption(
-                          value: HostClubTab.organizer,
-                          label:
-                              context.l10n.hostsHostClubsScaffoldLabelOrganizer,
-                        ),
-                        CatchOption(
-                          value: HostClubTab.edit,
-                          label: context.l10n.hostsHostClubsScaffoldLabelEdit,
-                        ),
-                        CatchOption(
-                          value: HostClubTab.insights,
-                          label:
-                              context.l10n.hostsHostClubsScaffoldLabelInsights,
-                        ),
-                        CatchOption(
-                          value: HostClubTab.preview,
-                          label:
-                              context.l10n.hostsHostClubsScaffoldLabelPreview,
-                        ),
-                      ],
-                    ),
-              actions: [
-                if (_state.showClubPicker)
-                  CatchTopBarMenuAction<int>(
-                    tooltip:
-                        context.l10n.hostsHostClubsScaffoldTooltipSwitchClub,
-                    icon: CatchIcons.expandMoreRounded,
-                    items: _hostClubSwitcherItems(_state, context.l10n),
-                    onSelected: _selectClubIndex,
-                  ),
-              ],
-            ),
-      body: SafeArea(
-        top: organizerMode,
-        bottom: false,
-        child: ListView(
-          padding: organizerMode
-              ? CatchInsets.pageBody.copyWith(top: CatchSpacing.s12)
-              : CatchInsets.pageBodyUnderHeader,
-          children: [
-            if (selectedClub == null)
+    if (selectedClub == null) {
+      return Scaffold(
+        backgroundColor: t.bg,
+        appBar: CatchScreenTopBar(
+          context: context,
+          eyebrow: context.l10n.hostsHostClubsScaffoldKickerHostClubs,
+          title: _state.title(context.l10n),
+          border: true,
+        ),
+        body: SafeArea(
+          top: false,
+          bottom: false,
+          child: ListView(
+            padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
+            children: [
               HostEmptyActionCard(
                 title: context.l10n.hostsHostClubsScaffoldTitleNoHostClubsYet,
                 body: context.l10n.hostsHostClubsScaffoldBodyCreateAClubOr,
@@ -119,38 +103,121 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
                         context.pushNamed(Routes.hostCreateClubScreen.name),
                   ),
                 ],
-              )
-            else
-              switch (_state.selectedTab) {
-                HostClubTab.edit => HostClubProfileCard(
-                  club: selectedClub,
-                  currentUid: _state.currentUid,
-                  isOwner: _state.selectedClubIsOwner,
-                  initialExpandedField: widget.initialExpandedEditField,
-                  onPreviewClub: _openClubPreview,
-                ),
-                HostClubTab.organizer => HostClubOrganizerOverviewController(
-                  club: selectedClub,
-                  currentUid: _state.currentUid,
-                  isOwner: _state.selectedClubIsOwner,
-                  clubs: _state.clubs,
-                  showClubPicker: _state.showClubPicker,
-                  onSelectClubIndex: _selectClubIndex,
-                  onSelectTab: _selectTab,
-                  onPreviewClub: _openClubPreview,
-                  onOpenSettings: _openHostSettings,
-                ),
-                HostClubTab.insights => HostClubInsightsPane(
-                  club: selectedClub,
-                  isOwner: _state.selectedClubIsOwner,
-                ),
-                HostClubTab.preview => HostClubPreviewPane(
-                  club: selectedClub,
-                  onPreviewClub: _openClubPreview,
-                ),
-              },
-          ],
+              ),
+              const CatchScrollTerminalPadding(),
+            ],
+          ),
         ),
+      );
+    }
+
+    _scheduleInitialEditorReveal();
+
+    return CatchTabbedScreenScaffold(
+      title: selectedClub.name,
+      actions: [
+        if (_state.showClubPicker)
+          CatchTopBarMenuAction<int>(
+            tooltip: context.l10n.hostsHostClubsScaffoldTooltipSwitchClub,
+            icon: CatchIcons.expandMoreRounded,
+            items: _hostClubSwitcherItems(_state, context.l10n),
+            onSelected: _selectClubIndex,
+          ),
+      ],
+      tabRail: CatchTabControllerRail<HostClubTab>(
+        controller: _tabController,
+        groupKey: _hostClubTabRailKey,
+        options: [
+          CatchOption(
+            value: HostClubTab.edit,
+            label: context.l10n.hostsHostClubsScaffoldLabelEdit,
+          ),
+          CatchOption(
+            value: HostClubTab.insights,
+            label: context.l10n.hostsHostClubsScaffoldLabelInsights,
+          ),
+          CatchOption(
+            value: HostClubTab.preview,
+            label: context.l10n.hostsHostClubsScaffoldLabelPreview,
+          ),
+        ],
+      ),
+      semanticsLabel: context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
+      semanticsHint: context.l10n.hostsHostClubsScaffoldBodyDragLeftOrRight,
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          CatchTabbedPageScrollView(
+            scrollKey: PageStorageKey(
+              'host-club-${selectedClub.id}-edit-scroll',
+            ),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    HostClubOrganizerOverviewController(
+                      key: ValueKey(
+                        'host-club-${selectedClub.id}-edit-summary',
+                      ),
+                      club: selectedClub,
+                      currentUid: _state.currentUid,
+                      isOwner: _state.selectedClubIsOwner,
+                      onOpenEditor: _openEditorSections,
+                      onOpenSettings: _openHostSettings,
+                    ),
+                    Padding(
+                      padding: CatchInsets.pageBodyUnderHeader.copyWith(
+                        bottom: 0,
+                      ),
+                      child: KeyedSubtree(
+                        key: _profileSectionsKey,
+                        child: HostClubProfileCard(
+                          key: ValueKey('host-club-${selectedClub.id}-edit'),
+                          club: selectedClub,
+                          currentUid: _state.currentUid,
+                          isOwner: _state.selectedClubIsOwner,
+                          initialExpandedField: widget.initialExpandedEditField,
+                          onPreviewClub: () => _selectTab(HostClubTab.preview),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          CatchTabbedPageScrollView(
+            scrollKey: PageStorageKey(
+              'host-club-${selectedClub.id}-insights-scroll',
+            ),
+            slivers: [
+              SliverPadding(
+                padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
+                sliver: SliverToBoxAdapter(
+                  child: HostClubInsightsPane(
+                    key: ValueKey('host-club-${selectedClub.id}-insights'),
+                    club: selectedClub,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          ColoredBox(
+            color: t.surface,
+            child: CatchTabbedPageScrollView(
+              scrollKey: PageStorageKey(
+                'host-club-${selectedClub.id}-preview-scroll',
+              ),
+              slivers: [
+                ClubDetailReadOnlyPreviewSliver(
+                  initialClub: selectedClub,
+                  currentUid: _state.currentUid,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -161,32 +228,63 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
       : HostClubTab.edit;
 
   void _selectTab(HostClubTab tab) {
-    if (tab == HostClubTab.insights &&
-        _state.selectedTab != HostClubTab.insights &&
-        _state.selectedClub != null) {
-      context.pushNamed(
-        Routes.hostInsightsScreen.name,
-        pathParameters: {'clubId': _state.selectedClub!.id},
-      );
-      return;
-    }
-    setState(() => _state = _state.selectTab(tab));
+    final index = HostClubTab.values.indexOf(tab);
+    if (_tabController.index == index) return;
+    _tabController.animateTo(index);
   }
 
   void _selectClubIndex(int index) {
-    setState(() => _state = _state.selectClubIndex(index));
+    setState(() {
+      _state = _state.selectClubIndex(index);
+      _didRevealInitialEditor = false;
+    });
   }
 
-  void _openClubPreview(Club club) {
-    context.pushNamed(
-      Routes.hostClubDetailScreen.name,
-      pathParameters: {'clubId': club.id},
-      extra: club,
-    );
+  void _handleTabControllerChanged() {
+    final tab = HostClubTab.values[_tabController.index];
+    if (tab == _state.selectedTab || !mounted) return;
+    setState(() => _state = _state.selectTab(tab));
   }
 
   void _openHostSettings() {
     context.pushNamed(Routes.hostSettingsScreen.name);
+  }
+
+  void _openEditorSections() {
+    final editorContext = _profileSectionsKey.currentContext;
+    if (editorContext == null) return;
+    unawaited(
+      Scrollable.ensureVisible(
+        editorContext,
+        alignment: _editorRevealAlignment,
+        duration: MediaQuery.maybeOf(context)?.disableAnimations == true
+            ? Duration.zero
+            : CatchMotion.pageStep,
+        curve: CatchMotion.standardCurve,
+      ),
+    );
+  }
+
+  void _scheduleInitialEditorReveal() {
+    if (_didRevealInitialEditor || widget.initialExpandedEditField == null) {
+      return;
+    }
+    _didRevealInitialEditor = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final editorContext = _profileSectionsKey.currentContext;
+      if (editorContext == null) {
+        _didRevealInitialEditor = false;
+        return;
+      }
+      unawaited(
+        Scrollable.ensureVisible(
+          editorContext,
+          alignment: _editorRevealAlignment,
+          duration: Duration.zero,
+        ),
+      );
+    });
   }
 }
 

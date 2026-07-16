@@ -35,6 +35,7 @@ import 'package:catch_dating_app/events/presentation/event_location_map_screen.d
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
@@ -67,6 +68,7 @@ import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -233,14 +235,22 @@ Widget eventDetailScreenStates(BuildContext context) {
         label: 'loading',
         child: _RouteFrame(
           value: const AsyncLoading<EventDetailViewModel?>(),
-          child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+          child: EventDetailScreen(
+            clubId: _clubId,
+            eventId: _event.id,
+            enableMapNetworkTiles: false,
+          ),
         ),
       ),
       _StateCard(
         label: 'not found',
         child: _RouteFrame(
           value: const AsyncData<EventDetailViewModel?>(null),
-          child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+          child: EventDetailScreen(
+            clubId: _clubId,
+            eventId: _event.id,
+            enableMapNetworkTiles: false,
+          ),
         ),
       ),
       _StateCard(
@@ -250,14 +260,22 @@ Widget eventDetailScreenStates(BuildContext context) {
             StateError('Widgetbook event detail load failed'),
             StackTrace.empty,
           ),
-          child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+          child: EventDetailScreen(
+            clubId: _clubId,
+            eventId: _event.id,
+            enableMapNetworkTiles: false,
+          ),
         ),
       ),
       _StateCard(
         label: 'member default',
         child: _RouteFrame(
           value: AsyncData(_eventVm(_event, participation: _signedUp)),
-          child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+          child: EventDetailScreen(
+            clubId: _clubId,
+            eventId: _event.id,
+            enableMapNetworkTiles: false,
+          ),
         ),
       ),
       _StateCard(
@@ -266,7 +284,11 @@ Widget eventDetailScreenStates(BuildContext context) {
           value: AsyncData(
             _eventVm(_event, isAuthenticated: false, isSaved: false),
           ),
-          child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+          child: EventDetailScreen(
+            clubId: _clubId,
+            eventId: _event.id,
+            enableMapNetworkTiles: false,
+          ),
         ),
       ),
       _StateCard(
@@ -275,7 +297,11 @@ Widget eventDetailScreenStates(BuildContext context) {
           value: AsyncData(
             _eventVm(_event, userProfile: _hostViewer, isHost: true),
           ),
-          child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+          child: EventDetailScreen(
+            clubId: _clubId,
+            eventId: _event.id,
+            enableMapNetworkTiles: false,
+          ),
         ),
       ),
       _StateCard(
@@ -285,7 +311,11 @@ Widget eventDetailScreenStates(BuildContext context) {
             StateError('No network connection for Event Detail'),
             StackTrace.empty,
           ),
-          child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+          child: EventDetailScreen(
+            clubId: _clubId,
+            eventId: _event.id,
+            enableMapNetworkTiles: false,
+          ),
         ),
       ),
       _StateCard(
@@ -295,6 +325,7 @@ Widget eventDetailScreenStates(BuildContext context) {
           child: EventDetailScreen(
             clubId: _clubId,
             eventId: _event.id,
+            enableMapNetworkTiles: false,
             presentationMode: EventDetailPresentationMode.ticket,
           ),
         ),
@@ -306,6 +337,7 @@ Widget eventDetailScreenStates(BuildContext context) {
           child: EventDetailScreen(
             clubId: _clubId,
             eventId: _event.id,
+            enableMapNetworkTiles: false,
             presentationMode: EventDetailPresentationMode.spotlightDark,
           ),
         ),
@@ -318,7 +350,11 @@ Widget eventDetailScreenStates(BuildContext context) {
           ).copyWith(textScaler: TextScaler.linear(2)),
           child: _RouteFrame(
             value: AsyncData(_eventVm(_event, participation: _signedUp)),
-            child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+            child: EventDetailScreen(
+              clubId: _clubId,
+              eventId: _event.id,
+              enableMapNetworkTiles: false,
+            ),
           ),
         ),
       ),
@@ -328,7 +364,11 @@ Widget eventDetailScreenStates(BuildContext context) {
           enabled: false,
           child: _RouteFrame(
             value: AsyncData(_eventVm(_event, participation: _signedUp)),
-            child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+            child: EventDetailScreen(
+              clubId: _clubId,
+              eventId: _event.id,
+              enableMapNetworkTiles: false,
+            ),
           ),
         ),
       ),
@@ -535,34 +575,55 @@ Widget eventDetailHeroTimeChipStates(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailOverviewSectionStates(BuildContext context) {
+  final fallbackEvent = _event.copyWith(description: '', eventPhotos: const []);
+  final approvalEvent = _eventDetailEvent(
+    id: 'widgetbook-event-detail-approval',
+    activityKind: ActivityKind.dinner,
+    priceInPaise: 140000,
+    bookedCount: 10,
+    eventPolicy: EventPolicyBundle.requestToJoinEvent(
+      capacityLimit: 12,
+      basePriceInPaise: 140000,
+    ),
+  );
+
   return _CatalogScreen(
     title: 'EventDetailOverviewSection',
     catalogId: 'section.event.plan',
     children: [
       _StateCard(
         label: 'standard run plan',
-        child: EventDetailOverviewSection(event: _event, onLocationTap: _noop),
+        child: EventDetailOverviewSection(
+          event: _event,
+          informationState: eventDetailInformationStateFrom(
+            event: _event,
+            l10n: context.l10n,
+          ),
+          onLocationTap: _noop,
+          enableMapNetworkTiles: false,
+        ),
       ),
       _StateCard(
         label: 'fallback plan / no photos',
         child: EventDetailOverviewSection(
-          event: _event.copyWith(description: '', eventPhotos: const []),
+          event: fallbackEvent,
+          informationState: eventDetailInformationStateFrom(
+            event: fallbackEvent,
+            l10n: context.l10n,
+          ),
+          enableMapNetworkTiles: false,
         ),
       ),
       _StateCard(
         label: 'approval and paid policy',
         child: EventDetailOverviewSection(
-          event: _eventDetailEvent(
-            id: 'widgetbook-event-detail-approval',
-            activityKind: ActivityKind.dinner,
-            priceInPaise: 140000,
-            bookedCount: 10,
-            eventPolicy: EventPolicyBundle.requestToJoinEvent(
-              capacityLimit: 12,
-              basePriceInPaise: 140000,
-            ),
+          event: approvalEvent,
+          informationState: eventDetailInformationStateFrom(
+            event: approvalEvent,
+            l10n: context.l10n,
           ),
           onLocationTap: _noop,
+          enableMapNetworkTiles: false,
         ),
       ),
     ],
@@ -581,18 +642,6 @@ Widget eventDescriptionState(BuildContext context) {
       description:
           'A low-pressure morning plan with a clear route, relaxed pace, and coffee after.',
     ),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'What to expect',
-  type: WhatToExpectSection,
-  path: '[Event Detail]/Sections',
-)
-Widget eventWhatToExpectState(BuildContext context) {
-  return Padding(
-    padding: CatchInsets.contentDense,
-    child: WhatToExpectSection(event: _event),
   );
 }
 
@@ -636,6 +685,10 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
               companionState: const EventDetailCompanionState.hidden(),
               hostState: const EventDetailHostState.loading(),
               socialState: const EventDetailSocialState.loading(),
+              informationState: eventDetailInformationStateFrom(
+                event: _event,
+                l10n: context.l10n,
+              ),
               onLocationTap: _noop,
               onOpenCompanion: _noop,
               onRetryCompanion: _noop,
@@ -643,6 +696,7 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
               onMessageHost: _noopMessageHost,
               onRetryHosts: _noop,
               now: _now,
+              enableMapNetworkTiles: false,
             ),
           ),
         ),
@@ -685,6 +739,10 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
                     companionState: const EventDetailCompanionState.hidden(),
                     hostState: const EventDetailHostState.loading(),
                     socialState: const EventDetailSocialState.loading(),
+                    informationState: eventDetailInformationStateFrom(
+                      event: _event,
+                      l10n: context.l10n,
+                    ),
                     onLocationTap: _noop,
                     onOpenCompanion: _noop,
                     onRetryCompanion: _noop,
@@ -693,6 +751,7 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
                     onRetryHosts: _noop,
                     now: _now,
                     presentationMode: EventDetailPresentationMode.spotlightDark,
+                    enableMapNetworkTiles: false,
                   ),
                 ),
               );
@@ -765,51 +824,6 @@ Widget eventDetailSocialSkeletonState(BuildContext context) {
   return const Padding(
     padding: CatchInsets.contentDense,
     child: EventDetailSocialSkeleton(),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Policy summary states',
-  type: EventDetailPolicySummary,
-  path: '[Event Detail]/Sections',
-)
-Widget eventDetailPolicySummaryStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'EventDetailPolicySummary',
-    catalogId: 'section.event.plan.policy_summary',
-    children: [
-      _StateCard(
-        label: 'open free event',
-        child: EventDetailPolicySummary(event: _event),
-      ),
-      _StateCard(
-        label: 'request to join paid event',
-        child: EventDetailPolicySummary(
-          event: _eventDetailEvent(
-            id: 'widgetbook-policy-paid-request',
-            activityKind: ActivityKind.dinner,
-            priceInPaise: 140000,
-            eventPolicy: EventPolicyBundle.requestToJoinEvent(
-              capacityLimit: 12,
-              basePriceInPaise: 140000,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Policy summary line',
-  type: EventDetailPolicySummaryLine,
-  path: '[Event Detail]/Sections',
-)
-Widget eventDetailPolicySummaryLineState(BuildContext context) {
-  return EventDetailPolicySummaryLine(
-    icon: CatchIcons.groupOutlined,
-    title: 'Open booking',
-    body: 'Anyone who meets the event requirements can book instantly.',
   );
 }
 
@@ -948,6 +962,65 @@ Widget eventDetailHairlineListStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Fact list states',
+  type: EventDetailFactList,
+  path: '[Event Detail]/Design Primitives',
+)
+Widget eventDetailFactListStates(BuildContext context) {
+  final informationState = eventDetailInformationStateFrom(
+    event: _event,
+    l10n: context.l10n,
+  );
+
+  return _CatalogScreen(
+    title: 'EventDetailFactList',
+    catalogId: 'event_detail.design.fact_list',
+    children: [
+      _StateCard(
+        label: 'stacked mechanism facts',
+        child: EventDetailFactList.stacked(
+          rows: informationState.signUpRows,
+          activityKind: informationState.activityKind,
+        ),
+      ),
+      _StateCard(
+        label: 'inline supporting facts',
+        child: EventDetailFactList.inline(
+          rows: informationState.goodToKnowRows,
+          activityKind: informationState.activityKind,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Good to know list states',
+  type: EventDetailGoodToKnowList,
+  path: '[Event Detail]/Design Primitives',
+)
+Widget eventDetailGoodToKnowListStates(BuildContext context) {
+  final informationState = eventDetailInformationStateFrom(
+    event: _event,
+    l10n: context.l10n,
+  );
+
+  return _CatalogScreen(
+    title: 'EventDetailGoodToKnowList',
+    catalogId: 'event_detail.design.good_to_know_list',
+    children: [
+      _StateCard(
+        label: 'validated inline facts',
+        child: EventDetailGoodToKnowList(
+          rows: informationState.goodToKnowRows,
+          activityKind: informationState.activityKind,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Itinerary row states',
   type: ItineraryRow,
   path: '[Event Detail]/Design Primitives',
@@ -996,63 +1069,6 @@ Widget eventDetailItineraryRowStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Map pill states',
-  type: MapPill,
-  path: '[Event Detail]/Design Primitives',
-)
-Widget eventDetailMapPillStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return _CatalogScreen(
-    title: 'MapPill',
-    catalogId: 'event_detail.design.map_pill',
-    children: [
-      _StateCard(
-        label: 'location labels',
-        child: Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            MapPill(text: 'Carter Road Jetty', color: t.ink),
-            MapPill(text: 'PIN READY', color: t.ink2),
-            MapPill(text: 'DROPS MORNING-OF', color: t.ink2),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Host avatar states',
-  type: HostAvatar,
-  path: '[Event Detail]/Design Primitives',
-)
-Widget eventDetailHostAvatarStates(BuildContext context) {
-  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
-  return _CatalogScreen(
-    title: 'HostAvatar',
-    catalogId: 'event_detail.design.host_avatar',
-    children: [
-      _StateCard(
-        label: 'fallback and photo',
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            HostAvatar(activity: activity),
-            gapW12,
-            HostAvatar(
-              activity: activity,
-              photoUrl:
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&q=80',
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Social states',
   type: EventDetailSocialSection,
   path: '[Event Detail]/Sections',
@@ -1074,12 +1090,14 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
             userProfile: null,
             state: eventDetailSocialStateFrom(
               event: _event,
+              hasReviews: false,
               userProfile: null,
               isAuthenticated: false,
               renderAsHost: false,
               participation: null,
               now: _now,
             ),
+            now: _now,
           ),
         ),
       ),
@@ -1095,12 +1113,14 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
             userProfile: _viewer,
             state: eventDetailSocialStateFrom(
               event: _event,
+              hasReviews: false,
               userProfile: _viewer,
               isAuthenticated: true,
               renderAsHost: false,
               participation: _signedUp,
               now: _now,
             ),
+            now: _now,
           ),
         ),
       ),
@@ -1116,12 +1136,14 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
             userProfile: _viewer,
             state: eventDetailSocialStateFrom(
               event: _emptyEvent,
+              hasReviews: false,
               userProfile: _viewer,
               isAuthenticated: true,
               renderAsHost: false,
               participation: null,
               now: _now,
             ),
+            now: _now,
           ),
         ),
       ),
@@ -1138,12 +1160,14 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
             userProfile: _viewer,
             state: eventDetailSocialStateFrom(
               event: _pastEvent,
+              hasReviews: _reviews.isNotEmpty,
               userProfile: _viewer,
               isAuthenticated: true,
               renderAsHost: false,
               participation: _attended,
               now: _now,
             ),
+            now: _now,
           ),
         ),
       ),
@@ -1185,7 +1209,7 @@ Widget eventDetailReviewsSectionStates(BuildContext context) {
           reviews: _reviews,
           currentUid: _viewerUid,
           userProfile: _viewer,
-          hasAttended: true,
+          canWrite: true,
         ),
       ),
       _StateCard(
@@ -1196,7 +1220,7 @@ Widget eventDetailReviewsSectionStates(BuildContext context) {
           reviews: _reviews,
           currentUid: 'host-mira',
           userProfile: _viewer.copyWith(uid: 'host-mira', name: 'Mira Shah'),
-          isHost: true,
+          canRespond: true,
         ),
       ),
     ],
@@ -1611,11 +1635,16 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               hostState: const EventDetailHostState.hidden(),
               socialState: eventDetailSocialStateFrom(
                 event: _event,
+                hasReviews: false,
                 userProfile: _viewer,
                 isAuthenticated: true,
                 renderAsHost: false,
                 participation: null,
                 now: _now,
+              ),
+              informationState: eventDetailInformationStateFrom(
+                event: _event,
+                l10n: context.l10n,
               ),
               onLocationTap: null,
               onOpenCompanion: _noop,
@@ -1624,6 +1653,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               onMessageHost: _noopMessageHost,
               onRetryHosts: _noop,
               now: _now,
+              enableMapNetworkTiles: false,
             ),
           ),
         ),
@@ -1659,11 +1689,16 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               hostState: const EventDetailHostState.hidden(),
               socialState: eventDetailSocialStateFrom(
                 event: _event,
+                hasReviews: _reviews.isNotEmpty,
                 userProfile: _viewer,
                 isAuthenticated: true,
                 renderAsHost: false,
                 participation: _signedUp,
                 now: _now,
+              ),
+              informationState: eventDetailInformationStateFrom(
+                event: _event,
+                l10n: context.l10n,
               ),
               onLocationTap: null,
               onOpenCompanion: _noop,
@@ -1672,6 +1707,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               onMessageHost: _noopMessageHost,
               onRetryHosts: _noop,
               now: _now,
+              enableMapNetworkTiles: false,
             ),
           ),
         ),
@@ -1707,11 +1743,16 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               hostState: const EventDetailHostState.hidden(),
               socialState: eventDetailSocialStateFrom(
                 event: _event,
+                hasReviews: _reviews.isNotEmpty,
                 userProfile: _viewer,
                 isAuthenticated: true,
                 renderAsHost: false,
                 participation: _signedUp,
                 now: _now,
+              ),
+              informationState: eventDetailInformationStateFrom(
+                event: _event,
+                l10n: context.l10n,
               ),
               onLocationTap: null,
               onOpenCompanion: _noop,
@@ -1721,6 +1762,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               onRetryHosts: _noop,
               now: _now,
               presentationMode: EventDetailPresentationMode.ticket,
+              enableMapNetworkTiles: false,
             ),
           ),
         ),
@@ -1972,11 +2014,6 @@ Widget eventDetailHostSectionStates(BuildContext context) {
                   'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&q=80',
               meta: 'HOSTING SINCE JAN 2025 · BANDRA',
               verified: true,
-              stats: [
-                EventDetailHostStat(value: '128', label: 'Members'),
-                EventDetailHostStat(value: '4.9', label: 'Rating'),
-                EventDetailHostStat(value: '42', label: 'Reviews'),
-              ],
               canMessage: true,
             ),
             onViewClub: _noopString,
@@ -2542,7 +2579,6 @@ Widget eventAgendaDayGroupState(BuildContext context) {
       onEventSelected: (_) {},
       showClubName: true,
       dayLabelBottomGap: CatchLayout.agendaDayLabelBottomGap,
-      itemGap: CatchLayout.agendaItemGap,
     ),
   );
 }
@@ -2675,7 +2711,9 @@ Widget eventDateRailCardState(BuildContext context) {
   return EventDateRailCard(
     event: _event,
     kicker: _club.name,
-    statusLabel: 'Open',
+    title: _event.eventFormat.label,
+    supportingLabel: '5 km · Conversational · Carter Road Jetty',
+    capacityLabel: '18 going · 6 left',
     onTap: _noop,
   );
 }
@@ -2685,6 +2723,10 @@ Widget eventDateRailState(BuildContext context) {
   return DateRail(
     startTime: _event.startTime,
     color: CatchTokens.of(context).accent,
+    activityIcon: eventActivityVisual(
+      _event.activityKind,
+      context: context,
+    ).icon,
   );
 }
 
@@ -3321,10 +3363,7 @@ List<EventMapItem> _eventMapItems() {
   return [
     for (var index = 0; index < events.length; index += 1)
       EventMapItem(
-        event: events[index].copyWith(
-          startingPointLat: _mapCenter.latitude + (index * 0.006),
-          startingPointLng: _mapCenter.longitude + (index * 0.004),
-        ),
+        event: _eventAtMapCoordinate(events[index], index),
         status: switch (index) {
           0 => EventTileStatus.joined,
           1 => EventTileStatus.saved,
@@ -3333,6 +3372,19 @@ List<EventMapItem> _eventMapItems() {
         clubName: _club.name,
       ),
   ];
+}
+
+Event _eventAtMapCoordinate(Event event, int index) {
+  final latitude = _mapCenter.latitude + (index * 0.006);
+  final longitude = _mapCenter.longitude + (index * 0.004);
+  return event.copyWith(
+    meetingLocation: event.meetingLocation.copyWith(
+      latitude: latitude,
+      longitude: longitude,
+    ),
+    startingPointLat: latitude,
+    startingPointLng: longitude,
+  );
 }
 
 class _CatalogScreen extends StatelessWidget {
@@ -3518,12 +3570,14 @@ Event _eventDetailEvent({
     startTime: start,
     endTime: start.add(const Duration(hours: 1, minutes: 45)),
     meetingPoint: 'Carter Road Jetty',
-    meetingLocation: EventMeetingLocation.legacy(
+    meetingLocation: const EventMeetingLocation(
       name: 'Carter Road Jetty',
       latitude: 19.0676,
       longitude: 72.8227,
       notes: 'Bandra West',
     ),
+    startingPointLat: 19.0676,
+    startingPointLng: 72.8227,
     eventPhotos: [
       _photo('seaface', 0),
       _photo('coffee', 1),

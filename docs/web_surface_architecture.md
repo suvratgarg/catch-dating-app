@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.135
-updated: 2026-07-12
+version: 0.7.150
+updated: 2026-07-14
 owner: web_platform
 status: active
 ---
@@ -29,6 +29,24 @@ React + TypeScript stack where practical.
 - Root `package.json` exposes npm workspace scripts for the web-native apps.
 - `packages/web-config/` contains shared Vite, TypeScript, and token/base CSS
   plumbing for React web surfaces.
+- `packages/web-ui/` is the pure presentational React workspace. It has no
+  Firebase, router, query, or feature dependencies; both apps consume its
+  structural controls through surface-owned adapters so class names and visual
+  variants remain local.
+- `docs/audit_registry/web_shared_primitive_adoption.json` is the active
+  cross-surface compatibility and improvement queue. The non-vacuous
+  `web:shared-ui-adoption` gate classifies every exact-name primitive overlap,
+  every package export, the shared focus contract, and package CI coverage.
+- The adopted package layer now owns compatible native behavior for buttons,
+  checkboxes, text/select/textarea controls, labelled toggle groups, badges,
+  empty states, and named keyboard-scrollable data tables. Website/admin
+  adapters still own density, visual classes, domain tones, option mapping, and
+  feature composition. `ToggleGroupControl`/`ToggleButtonControl` remain the
+  reference implementation for this split.
+- Cross-stack labels deliberately separate hierarchy from status:
+  `catch.ui_label` binds `CatchSectionLabel`, website `UiLabel`, admin
+  `AdminEyebrow`, and web-ui `UiLabel`; `catch.badge` binds status adapters and
+  `BadgeControl`. The lexicon test rejects future semantic collapse.
 - `website/` is a Vite + React + TypeScript marketing app.
 - `website/src/app/App.tsx` uses React Router for the client route shell and
   `website/src/app/routeRegistry.ts` for runtime route patterns; the route
@@ -39,8 +57,33 @@ React + TypeScript stack where practical.
   `admin/src/shared/ui/**` are the React shared primitive owners. Feature,
   app, and story code must compose these primitives rather than hand-rolling
   native interactive controls.
+- `design/web-ui/components.json` registers extracted package primitives and
+  binds them back to `design/components/catch.components.json`. Imports use
+  `@catch/web-ui`; deep package imports are blocked by both app boundary gates.
 - `tool/web/check_react_ui_primitives.mjs` enforces the first React primitive
-  guard for `website/` and `admin/`.
+  guard for `website/`, `admin/`, and `webui`.
+- `tool/web/check_storybook_visuals.mjs` resolves registry entries marked
+  `ready` against built Storybook indexes and compares fixed desktop/mobile
+  captures under `design/visual_baselines/`. Repeatable
+  `--component <registry-id>` filters isolate task-owned checks and baseline
+  updates while another surface refactor is dirty.
+- `web:admin-bundle-budget` reads the built Vite manifest and ratchets both the
+  admin entry chunk and largest async chunk. Query/API controllers belong
+  behind lazy route wrappers; importing one into `admin/src/app/App.tsx` is a
+  performance-boundary regression even when its view remains lazy.
+- `tool/web/react_controller_test_targets.json` classifies every feature
+  controller/mutation hook as `required`, `planned`, or an explained `exempt`.
+  `web:react-controller-test-targets` rejects unclassified hooks and required
+  targets whose named behavior suite is missing, while aggregate coverage stays
+  informational rather than becoming a brittle percentage gate.
+- Admin Storybook uses named feature chunks plus a separate generated-intake
+  data chunk. `web:admin-storybook-bundle-budget` ratchets Catch-authored chunks
+  independently of Storybook, axe, and other framework/vendor runtime; route
+  coverage remains registry-complete rather than being removed to hit a budget.
+- Admin feature route/workspace entries stay below 900 lines and feature-private
+  panel modules below 1,200 lines through `web:admin-feature-ui-size`. Large
+  workflows use lower-case module APIs so route/workspace exports remain the
+  only public feature component boundary enforced by `web:admin-feature-exports`.
 - `website/public/` contains Vite public assets, including `.well-known/`, fonts,
   app-sourced marketing screenshots, and the favicon.
 - `website/dist/` is the deployable marketing build.
@@ -71,6 +114,10 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   not render raw `<button>`, `<a>`, `<input>`, `<select>`, or `<textarea>`
   controls. Add missing neutral controls to the owning shared primitive module
   instead of styling them per screen.
+- Shared keyboard focus behavior starts in
+  `packages/web-config/styles/catch-web.css`. Surface CSS may style a composite
+  wrapper with `:focus-within`, but it must not remove a native outline without
+  an equally visible token-backed replacement.
 - Keep governed component families centralized. Feature, app, and Storybook code
   must not pass `className` directly outside shared primitive owner files. Run
   `node tool/run.mjs check web:react-classname-boundaries` before handoff. The
@@ -95,6 +142,117 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   Storybook exports under `admin/src/stories`; run
   `node tool/run.mjs check web:admin-storybook` whenever admin preview coverage
   changes.
+  Cross-surface extractions and explicit keep decisions are checked separately
+  by `node tool/run.mjs check web:shared-ui-adoption`; adding a new shared
+  package export or same-named website/admin primitive without a tracker entry
+  fails that gate. Marking a candidate adopted also requires both surface
+  adapters to import and use a classified package symbol.
+
+## Admin Console Route and Information Architecture
+
+The admin shell has one product identity, `Catch Admin`, and one plain route
+title in the global top bar. Prototype labels such as `sample console`, route
+kickers, and decorative subtitles are not production chrome. The production
+environment badge is omitted; Development, Local, or Staging is shown only when
+the non-production context changes operator risk. Account identity, roles,
+local-data context, and sign-out live in the account disclosure.
+
+Operational directories and record review use URL-owned master-detail routes.
+Canonical list/workspace roots are `/overview`, `/safety`, `/access`, `/growth`,
+`/organizers`, `/organizers/claims`, `/events`, `/events/readiness`,
+`/events/external`, `/users`, `/finance`, `/quality`, and `/admin-roles`.
+
+Intake owns `/intake/organizers`, `/intake/events`, and `/intake/operations`.
+Marketing owns `/marketing` (default Posts), `/marketing/posts`,
+`/marketing/new`, `/marketing/events`, `/marketing/media`,
+`/marketing/activity`, and `/marketing/diagnostics`; draft composition uses
+`/marketing/drafts/{draftId}/{source|copy|compliance|export}`.
+
+URL-owned detail families are `/safety/{targetPath}`, `/access/{uid}`,
+`/organizers/{clubId}`, `/organizers/claims/{requestId}`, `/events/{eventId}`,
+`/events/readiness/{actionId}`, `/events/external/{candidateId}`,
+`/growth/signals/{signalId}`, `/finance/issues/{issueId}`,
+`/quality/signals/{signalId}`, and `/admin-roles/{uid}`. A missing direct record
+stays unavailable; controllers must never auto-select another row to make a
+deep link appear valid.
+
+Route shells own path and search-param parsing. Feature controllers accept
+explicit selected ids and navigation callbacks, while repositories keep remote
+sources independent where partial results are useful. Overview, Growth,
+Finance, and Data quality therefore retain successful source data when another
+query fails and expose retry at the smallest truthful source boundary.
+
+Loaded lists must disclose their scope. A returned preview, local search result,
+or 50-row assignment register is not a complete directory. Dates and ranges
+apply only to endpoints that accept them. Evidence labels distinguish sourced,
+inferred, unknown, generated-at, loaded-at, and session-only state. Diagnostics,
+command material, unsupported actions, and source paths use secondary disclosure
+instead of occupying the primary task flow.
+
+Mutation interfaces may reuse the shared sticky decision footer only when the
+owning callable has validation, authorization, pending, success, and receipt
+behavior. The UI must not imply direct social publishing, money movement,
+canonical intake promotion, rollback, scheduler execution history, or broad
+member/Auth search without dedicated contracts.
+
+## Admin Intake Operations Projection
+
+`/intake/operations` is the third Intake workspace, labelled Automation. It is
+a read-only projection of canonical `operationRuns` and `operationWorkItems`;
+it does not derive execution state from the older Event or Organizer Intake tab
+filters. The UI displays the same exclusive Incoming, Verify, Resolve, and
+Ready stage values persisted by the operations worker, with task flags and
+blockers rendered as overlapping review concerns.
+
+The feature follows the standard repository/controller/workspace split under
+`admin/src/features/intake/operations/`. Live data crosses only
+`adminListIntakeOperations`; sample mode uses a contract-shaped fixture. The
+browser offers refresh, search, stage/entity filters, and hash-bound evidence
+inspection, but intentionally exposes no Run, model, deploy-rule, or Publish
+action. Those capabilities require separate trusted-worker and policy
+boundaries rather than a browser toggle.
+
+The callable orders runs by persisted `updatedAt` plus document id and reads
+whole-run stage, work-item, and human-review aggregates from the imported run
+metadata and fails closed when they are absent or inconsistent. The controller
+pins that run, loads one ordinary page, and drains only the server-filtered
+human-exception cursor before rendering. Every counted active exception can be
+opened immediately; ordinary items advance through **Load 200 more**, preserve
+already-loaded exceptions, and cannot overwrite a newer refresh. Published and
+terminal history is excluded from the active stage rail. Run pagination is
+separate: `loadedRunCount`, `nextRunCursor`, `nextWorkItemCursor`, and the
+workspace copy describe loaded pages rather than a false persisted total. The
+query disables automatic retry so the 10,000-item/200-page/120-per-minute
+capacity contract remains bounded. The separate apply-guarded importer is a
+trusted operator, not a browser route or callable.
+
+An exception is resolved in the owning Event or Organizer Intake surface. The
+Automation workspace does not write an `OperationDecision` or resume the same
+run; a later Supply Intake run can see that decision only after the owning
+compatibility artifact is regenerated. Reconciliation creates a separate
+immutable child run for expiry and stale-evidence changes rather than editing an
+already imported run.
+
+## Admin Callable Validation Boundary
+
+`admin/src/shared/api/adminApi.ts` owns the single live Firebase callable
+boundary for the admin React surface. Its local `httpsCallable` wrapper always
+validates request payloads before network invocation and validates response
+payloads in development or when `VITE_ADMIN_VALIDATE_RESPONSES=true`.
+
+`admin/scripts/generateCallableValidators.mjs` discovers every callable name in
+that API module, compiles the applicable `contracts/callables/**` and
+`contracts/callable_responses/**` schemas plus their references, and writes the
+committed typed registry under `admin/src/generated/validators/`. Callables
+without a dedicated JSON contract receive an explicit top-level object
+validator and remain listed separately from strict schema coverage; they must
+not disappear from the registry or be described as strictly validated.
+
+Run `node tool/run.mjs check web:admin-callable-validators`. Admin
+`pretypecheck` runs the same drift check, so a callable or schema change cannot
+ship with stale validators. Validation failures use
+`AdminCallableValidationError` and include callable name, direction, and the
+first failing JSON instance path.
 
 ## Marketing Route Contract
 
@@ -386,7 +544,7 @@ remediation table above.
    This finding is being closed through the React component-governance loop. The
    legacy `website/src/components/site.tsx` barrel has been retired: neutral site
    chrome belongs in `website/src/shared/site/**`, governed visual primitives
-   belong in `website/src/shared/ui/primitives.tsx`, and organizer/claim/host
+   belong in `website/src/shared/ui/primitives/`, and organizer/claim/host
    domain adapters belong in their feature folders. The component-governance
    scanner now blocks recreating or importing the retired barrel.
 
@@ -518,11 +676,11 @@ Current canonical component layer under `website/src/components/` includes:
 - site shell: `SiteHeader`, `SiteFooter`;
 - shared display primitives: `StatusBadge`, `SectionHeader`;
 - shared identity display primitives: `ActivityMark` and `ProfileStrength`
-  under `website/src/shared/ui/primitives.tsx`;
+  under `website/src/shared/ui/primitives/`;
 - shared process status panel primitive: `ProcessStatusPanel` under
-  `website/src/shared/ui/primitives.tsx`;
+  `website/src/shared/ui/primitives/`;
 - shared app-capture primitive: `CaptureCard` under
-  `website/src/shared/ui/primitives.tsx`;
+  `website/src/shared/ui/primitives/`;
 - public discovery primitives: `PublicSearchBar`, `PublicEventCard`;
 - host/product blocks including `ProductModuleGrid`, listing event blocks
   including `EventActionCard`, and listing/claim/review

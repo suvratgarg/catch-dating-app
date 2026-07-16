@@ -70,7 +70,7 @@ void main() {
       },
     );
 
-    test('filters map pins without dropping unpinned sheet rows', () {
+    test('pins every upcoming event because exact location is required', () {
       final pinned = buildEvent(
         id: 'pinned',
         startTime: DateTime(2026, 1, 2, 7),
@@ -89,7 +89,10 @@ void main() {
       );
 
       expect(viewModel.events.map((event) => event.id), ['pinned', 'unpinned']);
-      expect(viewModel.pinnedEvents.map((event) => event.id), ['pinned']);
+      expect(viewModel.pinnedEvents.map((event) => event.id), [
+        'pinned',
+        'unpinned',
+      ]);
       expect(viewModel.selectedEvent('unpinned'), unpinned);
     });
 

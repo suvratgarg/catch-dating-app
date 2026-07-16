@@ -1,7 +1,7 @@
 ---
 doc_id: schema_contracts
-version: 0.2.5
-updated: 2026-07-03
+version: 0.2.9
+updated: 2026-07-14
 owner: data_contracts
 status: active
 ---
@@ -105,6 +105,15 @@ Schema:
 - `callables/`: callable Function request payload schemas.
 - `callable_responses/`: callable Function response payload schemas decoded by
   typed Flutter response objects.
+- `operations/`: portable run, work-item, receipt, decision, lease,
+  publication-plan, learning, and enforced workflow-manifest schemas for
+  durable business workflows. Run/work-item validators are generated into the
+  trusted Functions runtime; conditional lifecycle and human-review rules are
+  not maintained as a weaker hand-written subset. The reusable work-item
+  vocabulary is workflow-owned; consumer response schemas, such as Supply
+  Intake, narrow it to their declared stage contract. Workflow manifests bind
+  ordered stages to explicit active, published, and expired lifecycle semantic
+  groups so generic runtime behavior does not depend on Supply Intake tokens.
 - `bigquery/`: BigQuery table schemas that generate typed Functions runtime
   shapes for analytics tables.
 - `patches/`: patch-only payload schemas, currently profile updates.
@@ -131,6 +140,7 @@ The current contract layer covers:
 - profile and photo prompt catalogs;
 - event, event-success, club, relationship, social, payment, safety,
   operational, and demo Firestore document contracts;
+- durable operations contracts with valid/invalid lifecycle fixtures;
 - callable request payloads for profile, event, club, review, safety, payment,
   and Places operations;
 - profile patch payloads backed by typed Dart patch classes;

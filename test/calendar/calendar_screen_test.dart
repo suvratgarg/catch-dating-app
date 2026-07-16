@@ -5,7 +5,9 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -39,7 +41,7 @@ void main() {
       );
 
       expect(find.byType(CatchSkeleton), findsWidgets);
-      expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
       expect(find.text('No planned events yet'), findsNothing);
     });
 
@@ -74,7 +76,7 @@ void main() {
 
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
       expect(find.text('No planned events yet'), findsNothing);
     });
 
@@ -100,7 +102,13 @@ void main() {
         ],
       );
 
-      expect(find.text('Calendar'), findsOneWidget);
+      final monthLabel = _monthYearLabel(event.startTime);
+      expect(find.byType(CatchScreenTopBar), findsOneWidget);
+      expect(find.text(monthLabel), findsOneWidget);
+      expect(
+        tester.widget<Text>(find.text(monthLabel)).style?.fontFamily,
+        CatchFonts.voiceFamily,
+      );
       expect(find.text('Planned'), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -236,7 +244,6 @@ void main() {
         ],
       );
 
-      expect(find.text('Calendar'), findsOneWidget);
       expect(find.text(_monthYearLabel(firstEventStart)), findsOneWidget);
       expect(find.text('Planned'), findsOneWidget);
       expect(
@@ -743,7 +750,7 @@ void main() {
         );
         await _pumpRouterFrame(tester);
 
-        expect(find.text('Calendar'), findsWidgets);
+        expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
         expect(_routerPath(router), app_router.Routes.calendarScreen.path);
 
         await _scrollCalendarDown(tester);
@@ -760,7 +767,7 @@ void main() {
 
         expect(_routerPath(router), app_router.Routes.calendarScreen.path);
         expect(find.byType(EventDetailScreen), findsNothing);
-        expect(find.text('Calendar'), findsWidgets);
+        expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
       },
     );
   });

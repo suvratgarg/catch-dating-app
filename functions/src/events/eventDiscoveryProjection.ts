@@ -80,11 +80,17 @@ export function eventDiscoveryProjection(
         waitlistOpen ?
           "waitlist" :
           "full";
-  const latitude = coordinateOrNull(
-    event.startingPointLat ?? event.meetingLocation?.latitude
+  const latitude = requiredDiscoveryCoordinate(
+    event.meetingLocation?.latitude ?? event.startingPointLat,
+    "latitude",
+    -90,
+    90
   );
-  const longitude = coordinateOrNull(
-    event.startingPointLng ?? event.meetingLocation?.longitude
+  const longitude = requiredDiscoveryCoordinate(
+    event.meetingLocation?.longitude ?? event.startingPointLng,
+    "longitude",
+    -180,
+    180
   );
   const cohortProjection = discoveryCohortProjection({
     policy,
@@ -104,9 +110,7 @@ export function eventDiscoveryProjection(
     }),
     discoveryActivityKind:
       event.eventFormat?.activityKind ?? "socialRun",
-    discoveryGeoCell: latitude == null || longitude == null ?
-      null :
-      discoveryGeoCellFor(latitude, longitude),
+    discoveryGeoCell: discoveryGeoCellFor(latitude, longitude),
     discoveryHasOpenSpots: hasOpenSpots,
     discoveryAvailability: availability,
     discoveryOpenCohorts: cohortProjection.open,
@@ -177,12 +181,28 @@ export function discoveryGeoCellFor(
 }
 
 /**
- * Normalizes optional coordinate inputs from legacy and meeting-location docs.
+ * Requires a finite event coordinate before publishing discovery projection.
  * @param {unknown} value Candidate coordinate.
- * @return {number|null} Finite coordinate or null.
+ * @param {string} field Coordinate label.
+ * @param {number} minimum Minimum accepted value.
+ * @param {number} maximum Maximum accepted value.
+ * @return {number} Validated coordinate.
  */
-function coordinateOrNull(value: unknown): number | null {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
+function requiredDiscoveryCoordinate(
+  value: unknown,
+  field: string,
+  minimum: number,
+  maximum: number
+): number {
+  if (
+    typeof value !== "number" ||
+    !Number.isFinite(value) ||
+    value < minimum ||
+    value > maximum
+  ) {
+    throw new Error(`Event discovery requires a valid ${field}.`);
+  }
+  return value;
 }
 
 /**

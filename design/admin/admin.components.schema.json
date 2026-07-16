@@ -107,6 +107,13 @@
             "type": "string",
             "pattern": "^[A-Z][A-Za-z0-9_]*$"
           },
+          "lexicon": {
+            "type": "boolean"
+          },
+          "lexiconId": {
+            "type": "string",
+            "pattern": "^catch\\.[a-z0-9_.-]+$"
+          },
           "css": {
             "type": "array",
             "items": {

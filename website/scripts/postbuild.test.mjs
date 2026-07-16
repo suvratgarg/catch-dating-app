@@ -36,7 +36,7 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     path.join(distRoot, "organizers", "afterfly", "index.html"),
     "utf8"
   );
-  assert.match(listingHtml, /<title>AFTER FLY \| Indore organizer profile \| Catch<\/title>/);
+  assert.match(listingHtml, /<title>AFTER FLY \| Indore events &amp; reviews \| Catch<\/title>/);
   assert.match(
     listingHtml,
     /<link rel="canonical" href="https:\/\/example\.test\/organizers\/afterfly\/" \/>/
@@ -63,7 +63,7 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     path.join(distRoot, "claim", "index.html"),
     "utf8"
   );
-  assert.match(claimHtml, /<title>Claim your organizer listing \| Catch<\/title>/);
+  assert.match(claimHtml, /<title>Claim your organizer page \| Catch<\/title>/);
   assert.match(
     claimHtml,
     /<link rel="canonical" href="https:\/\/example\.test\/claim\/" \/>/

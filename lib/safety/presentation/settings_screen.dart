@@ -182,6 +182,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ],
       child: Scaffold(
         appBar: CatchScreenTopBar(
+          context: context,
           title: context.l10n.safetySettingsScreenTitleSettings,
         ),
         body: CatchScreenBody(

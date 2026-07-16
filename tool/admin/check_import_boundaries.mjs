@@ -108,6 +108,14 @@ for (const file of walkSourceFiles(adminSrcRoot)) {
   const source = fs.readFileSync(file, "utf8");
 
   for (const specifier of importSpecifiers(source)) {
+    if (specifier.startsWith("@catch/web-ui/")) {
+      violations.push({
+        source: sourceRelativePath,
+        specifier,
+        reason: "shared web UI must be imported from @catch/web-ui without deep imports",
+      });
+      continue;
+    }
     if (!specifier.startsWith(".")) {
       continue;
     }

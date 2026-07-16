@@ -1,19 +1,23 @@
 import {
+  AlertTriangle,
+  ArrowLeft,
   CheckCircle2,
   Database,
+  ExternalLink,
   RefreshCw,
   Search,
   ShieldCheck,
 } from "lucide-react";
 import {
   AdminButton,
-  AdminEditorGrid,
-  AdminEditorPanel,
   AdminMetricCard,
   AdminMetricGrid,
+  AdminRowTitle,
+  AdminSecondaryDisclosure,
   AdminTableRow,
   AdminToolbar,
   AdminWorkbenchStack,
+  AlertRow,
   DataTable,
   EmptyState,
   Panel,
@@ -23,51 +27,81 @@ import {
   SelectField,
   StateRow,
   TableActionButton,
-  AdminRowTitle,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   type DataQualityController,
   type DataQualityRow,
-  type DataQualityState,
-  type DataQualityStateFilter,
+  type DataQualitySeverity,
+  type DataQualitySourceId,
   useDataQualityController,
 } from "../controllers/useDataQualityController";
 
-const stateOptions: Array<{label: string; value: DataQualityStateFilter}> = [
-  {label: "All states", value: "all"},
+const severityOptions = [
+  {label: "All severities", value: "all"},
   {label: "Blocked", value: "blocked"},
-  {label: "Missing", value: "missing"},
   {label: "Warning", value: "warning"},
-  {label: "Partial", value: "partial"},
-  {label: "OK", value: "ok"},
+  {label: "Healthy", value: "healthy"},
 ];
 
 export function DataQualityScreen({
+  onBackToList,
   onError,
+  onOpenOwningWorkflow,
+  onSelectSignalId,
+  selectedSignalId = null,
 }: {
+  onBackToList?: () => void;
   onError: (message: string | null) => void;
+  onOpenOwningWorkflow?: (path: string) => void;
+  onSelectSignalId?: (signalId: string) => void;
+  selectedSignalId?: string | null;
 }) {
-  const controller = useDataQualityController({onError});
-  return <DataQualityWorkspace controller={controller} />;
+  const controller = useDataQualityController({
+    onError,
+    onSelectSignalId,
+    selectedSignalId,
+  });
+  return (
+    <DataQualityWorkspace
+      controller={controller}
+      onBackToList={onBackToList}
+      onOpenOwningWorkflow={onOpenOwningWorkflow}
+    />
+  );
 }
 
 export function DataQualityWorkspace({
   controller,
+  onBackToList,
+  onOpenOwningWorkflow,
 }: {
   controller: DataQualityController;
+  onBackToList?: () => void;
+  onOpenOwningWorkflow?: (path: string) => void;
 }) {
+  if (controller.selectedSignalId) {
+    return (
+      <QualityDetailWorkspace
+        controller={controller}
+        onBackToList={onBackToList}
+        onOpenOwningWorkflow={onOpenOwningWorkflow}
+      />
+    );
+  }
   return (
     <AdminWorkbenchStack>
+      <QualitySourceAlerts controller={controller} />
       <AdminMetricGrid ariaLabel="Data quality state">
-        <AdminMetricCard label="Signals" value={controller.metrics.total} />
+        <AdminMetricCard label="Open issues" value={controller.metrics.openIssues} />
         <AdminMetricCard
-          label="Blocking"
-          tone={controller.metrics.blocking > 0 ? "attention" : "normal"}
-          value={controller.metrics.blocking}
+          label="Blocked"
+          tone={controller.metrics.blocked > 0 ? "attention" : "normal"}
+          value={controller.metrics.blocked}
         />
-        <AdminMetricCard label="Watch" value={controller.metrics.watch} />
-        <AdminMetricCard label="Sources" value={controller.metrics.sources} />
+        <AdminMetricCard label="Warnings" value={controller.metrics.warnings} />
+        <AdminMetricCard label="Owners" value={controller.metrics.owners} />
       </AdminMetricGrid>
+      <SourceHealthPanel controller={controller} />
       <Panel
         span={2}
         icon={<Database size={18} strokeWidth={1.9} />}
@@ -79,117 +113,205 @@ export function DataQualityWorkspace({
             ariaLabel="Search data quality signals"
             icon={<Search size={16} strokeWidth={1.8} />}
             onChange={controller.setQuery}
-            placeholder="Search source, owner, runbook, issue"
+            placeholder="Search signal, source, or owner"
             value={controller.query}
           />
           <SelectField
-            label="State"
-            onChange={(value) =>
-              controller.setStateFilter(value as DataQualityStateFilter)
-            }
-            options={stateOptions}
-            value={controller.stateFilter}
+            label="Severity"
+            onChange={(value) => controller.setSeverityFilter(value as DataQualitySeverity)}
+            options={severityOptions}
+            value={controller.severityFilter}
+          />
+          <SelectField
+            label="Owner"
+            onChange={controller.setOwnerFilter}
+            options={[
+              {label: "All owners", value: "all"},
+              ...controller.ownerOptions.map((owner) => ({label: owner, value: owner})),
+            ]}
+            value={controller.ownerFilter}
           />
           <AdminButton
             disabled={controller.isLoading}
             icon={<RefreshCw size={15} strokeWidth={1.9} />}
             onClick={() => void controller.refresh()}
           >
-            Refresh
+            Refresh all sources
           </AdminButton>
         </AdminToolbar>
-        <QualityTable
-          onSelect={controller.select}
-          rows={controller.filteredRows}
-          selectedId={controller.selected?.id ?? null}
-        />
+        <QualityTable onSelect={controller.select} rows={controller.filteredRows} />
       </Panel>
-      <AdminEditorGrid>
-        <QualityDetailPanel selected={controller.selected} />
-        <AdminWorkbenchStack>
-          <Panel
-            icon={<ShieldCheck size={18} strokeWidth={1.9} />}
-            title="Operations boundary"
-            action="read-only"
-          >
-            <QualityList>
-              <StateRow label="Sources" value="adminGetOverview, adminGetHostAnalytics, adminGetMarketingOpsDashboard, adminGetEventIntakeDashboard, adminGetEventSupplyReadiness" />
-              <StateRow label="Mutations" value="None from this tab" />
-              <StateRow label="Metadata" value="Owner/runbook/action fields come from source payloads" />
-              <StateRow label="Not here" value="finance reconciliation, safety actions, crawler edits" />
-            </QualityList>
-          </Panel>
-          <Panel
-            icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
-            title="Current read"
-            action={formatDateTime(controller.generatedAt)}
-          >
-            <QualityList>
-              <StateRow label="OK" value={controller.metrics.ok} />
-              <StateRow label="Needs watch" value={controller.metrics.watch} />
-              <StateRow label="Blocking/missing" value={controller.metrics.blocking} />
-              <StateRow label="Visible rows" value={controller.filteredRows.length} />
-            </QualityList>
-          </Panel>
-        </AdminWorkbenchStack>
-      </AdminEditorGrid>
+      <QualityBoundaryDisclosure />
     </AdminWorkbenchStack>
+  );
+}
+
+function QualityDetailWorkspace({
+  controller,
+  onBackToList,
+  onOpenOwningWorkflow,
+}: {
+  controller: DataQualityController;
+  onBackToList?: () => void;
+  onOpenOwningWorkflow?: (path: string) => void;
+}) {
+  return (
+    <AdminWorkbenchStack>
+      <AdminToolbar>
+        <AdminButton icon={<ArrowLeft size={15} strokeWidth={1.9} />} onClick={onBackToList}>
+          Back to Data quality
+        </AdminButton>
+        <AdminButton
+          disabled={controller.isLoading}
+          icon={<RefreshCw size={15} strokeWidth={1.9} />}
+          onClick={() => void controller.refresh()}
+        >
+          Refresh sources
+        </AdminButton>
+      </AdminToolbar>
+      <QualitySourceAlerts controller={controller} />
+      {controller.selected ? (
+        <QualityDetailPanel
+          selected={controller.selected}
+          onOpenOwningWorkflow={onOpenOwningWorkflow}
+        />
+      ) : controller.selectedUnavailable ? (
+        <Panel
+          span={2}
+          icon={<AlertTriangle size={18} strokeWidth={1.9} />}
+          title="Signal unavailable"
+          action="No fallback selected"
+        >
+          <AlertRow
+            icon={<AlertTriangle size={16} strokeWidth={1.9} />}
+            title="This signal is not present in the available source reads"
+            tone="warning"
+          >
+            Retry the failed source or return to the register. The workspace will
+            not substitute a different signal.
+          </AlertRow>
+        </Panel>
+      ) : (
+        <EmptyState variant="workbench" icon={<Database size={16} strokeWidth={1.9} />}>
+          Loading signal detail.
+        </EmptyState>
+      )}
+      <SourceHealthPanel controller={controller} />
+      <QualityBoundaryDisclosure />
+    </AdminWorkbenchStack>
+  );
+}
+
+function QualitySourceAlerts({controller}: {controller: DataQualityController}) {
+  if (controller.isUnavailable) {
+    return (
+      <AlertRow
+        icon={<AlertTriangle size={16} strokeWidth={1.9} />}
+        title="All data-quality sources are unavailable"
+        tone="blocked"
+      >
+        Retry individual source reads below. No synthetic signals are shown.
+      </AlertRow>
+    );
+  }
+  if (controller.isPartial) {
+    return (
+      <AlertRow
+        icon={<AlertTriangle size={16} strokeWidth={1.9} />}
+        title={`${controller.failedSources.length} source read${controller.failedSources.length === 1 ? "" : "s"} failed`}
+        tone="warning"
+      >
+        Available signals remain visible. A source with cached data is labelled
+        as a failed refresh rather than silently replaced.
+      </AlertRow>
+    );
+  }
+  return null;
+}
+
+function SourceHealthPanel({controller}: {controller: DataQualityController}) {
+  return (
+    <Panel
+      span={2}
+      icon={<ShieldCheck size={18} strokeWidth={1.9} />}
+      title="Source health"
+      action={`${controller.sourceHealth.filter((source) => source.loadState === "loaded").length}/${controller.sourceHealth.length} loaded`}
+    >
+      <DataTable ariaLabel="Data quality source health" variant="workbench">
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Read</th>
+            <th>Freshness</th>
+            <th>Configuration</th>
+            <th>Retry</th>
+          </tr>
+        </thead>
+        <tbody>
+          {controller.sourceHealth.map((source) => (
+            <AdminTableRow key={source.sourceId}>
+              <td>
+                <AdminRowTitle>
+                  <strong>{source.label}</strong>
+                  <span>{source.error && source.hasCachedData ? "Refresh failed; showing last successful read" : formatDateTime(source.generatedAt)}</span>
+                </AdminRowTitle>
+              </td>
+              <td>{source.loadState}</td>
+              <td>{freshnessLabel(source.freshness)}</td>
+              <td>{source.configuration.replaceAll("_", " ")}</td>
+              <td>
+                {source.error ? (
+                  <TableActionButton onClick={() => void controller.retrySource(source.sourceId as DataQualitySourceId)}>
+                    Retry source read
+                  </TableActionButton>
+                ) : "—"}
+              </td>
+            </AdminTableRow>
+          ))}
+        </tbody>
+      </DataTable>
+    </Panel>
   );
 }
 
 function QualityTable({
   onSelect,
   rows,
-  selectedId,
 }: {
   onSelect: (row: DataQualityRow) => void;
   rows: DataQualityRow[];
-  selectedId: string | null;
 }) {
   if (rows.length === 0) {
     return (
-      <EmptyState
-        variant="workbench"
-        icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
-      >
-        No data-quality signals match this filter.
+      <EmptyState variant="workbench" icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+        No available signals match these filters.
       </EmptyState>
     );
   }
   return (
-    <DataTable variant="workbench">
+    <DataTable ariaLabel="Data-quality signals" variant="workbench">
       <thead>
         <tr>
           <th>Signal</th>
-          <th>State</th>
+          <th>Severity</th>
           <th>Owner</th>
-          <th>Runbook</th>
-          <th>Next action</th>
-          <th>Select</th>
+          <th>Freshness</th>
+          <th>Open</th>
         </tr>
       </thead>
       <tbody>
         {rows.map((row) => (
-          <AdminTableRow key={row.id} selected={selectedId === row.id}>
+          <AdminTableRow key={row.id}>
             <td>
               <AdminRowTitle>
                 <strong>{row.label}</strong>
-                <span>{row.source} · {row.detail}</span>
+                <span>{row.source} · {row.category}</span>
               </AdminRowTitle>
             </td>
-            <td>
-              <RiskBadge tone={riskTone(row.state)}>
-                {stateLabel(row.state)}
-              </RiskBadge>
-            </td>
+            <td><RiskBadge tone={riskTone(row)}>{row.severity}</RiskBadge></td>
             <td>{row.owner}</td>
-            <td>{row.runbook}</td>
-            <td>{row.nextAction}</td>
-            <td>
-              <TableActionButton onClick={() => onSelect(row)}>
-                Review
-              </TableActionButton>
-            </td>
+            <td>{row.timestampLabel}</td>
+            <td><TableActionButton onClick={() => onSelect(row)}>Review</TableActionButton></td>
           </AdminTableRow>
         ))}
       </tbody>
@@ -198,64 +320,78 @@ function QualityTable({
 }
 
 function QualityDetailPanel({
+  onOpenOwningWorkflow,
   selected,
 }: {
-  selected: DataQualityRow | null;
+  onOpenOwningWorkflow?: (path: string) => void;
+  selected: DataQualityRow;
 }) {
   return (
-    <AdminEditorPanel
+    <Panel
+      span={2}
       icon={<Database size={18} strokeWidth={1.9} />}
-      title="Signal detail"
-      action={selected ? stateLabel(selected.state) : "No signal"}
+      title={selected.label}
+      action={selected.severity}
     >
-      {selected ? (
-        <QualityList>
-          <StateRow label="Source" value={selected.source} />
-          <StateRow label="Signal" value={selected.label} />
-          <StateRow
-            label="State"
-            value={
-              <RiskBadge tone={riskTone(selected.state)}>
-                {stateLabel(selected.state)}
-              </RiskBadge>
-            }
-          />
-          <StateRow label="Owner" value={selected.owner} />
-          <StateRow label="Runbook" value={selected.runbook} />
-          <StateRow label="Updated" value={formatDateTime(selected.updatedAt)} />
-          <StateRow label="Detail" value={selected.detail} />
-          <StateRow label="Next action" value={selected.nextAction} />
-        </QualityList>
-      ) : (
-        <EmptyState
-          variant="workbench"
-          icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
+      <AlertRow
+        icon={<ShieldCheck size={16} strokeWidth={1.9} />}
+        title="Read-only governance signal"
+        tone="neutral"
+      >
+        Resolve the underlying workflow; this screen does not acknowledge,
+        backfill, mutate records, or claim a job execution result.
+      </AlertRow>
+      <QualityList>
+        <StateRow label="Source" value={selected.source} />
+        <StateRow label="Category" value={selected.category} />
+        <StateRow label="Source state" value={selected.state} />
+        <StateRow label="Severity" value={<RiskBadge tone={riskTone(selected)}>{selected.severity}</RiskBadge>} />
+        <StateRow label="Owner" value={selected.owner} />
+        <StateRow label="Freshness" value={selected.timestampLabel} />
+        <StateRow label="Generated" value={formatDateTime(selected.updatedAt)} />
+        <StateRow label="State definition" value={selected.stateDefinition} />
+        <StateRow label="Evidence" value={selected.detail} />
+        <StateRow label="Runbook" value={selected.runbook} />
+        <StateRow label="Next action" value={selected.nextAction} />
+      </QualityList>
+      {selected.owningWorkflowPath ? (
+        <AdminButton
+          icon={<ExternalLink size={15} strokeWidth={1.9} />}
+          onClick={() => onOpenOwningWorkflow?.(selected.owningWorkflowPath!)}
+          variant="primary"
         >
-          Select a data-quality signal to inspect.
-        </EmptyState>
-      )}
-    </AdminEditorPanel>
+          Open owning workflow
+        </AdminButton>
+      ) : null}
+    </Panel>
   );
 }
 
-function riskTone(state: DataQualityState): "low" | "medium" | "high" | "watch" {
-  if (state === "blocked" || state === "missing") return "high";
-  if (state === "warning") return "medium";
-  if (state === "partial") return "watch";
-  return "low";
+function QualityBoundaryDisclosure() {
+  return (
+    <AdminSecondaryDisclosure summary="Read-only boundary and source definitions">
+      <QualityList>
+        <StateRow label="Mutations" value="None from Data quality" />
+        <StateRow label="Stale" value="Client heuristic when source generatedAt is more than 7 days old" />
+        <StateRow label="Configuration" value="Run-plan and policy configuration; not scheduler execution telemetry" />
+        <StateRow label="Not available" value="Acknowledgement, backfill progress, last-run receipts, or remediation actions" />
+      </QualityList>
+    </AdminSecondaryDisclosure>
+  );
 }
 
-function stateLabel(state: DataQualityState): string {
-  if (state === "ok") return "OK";
-  return state;
+function riskTone(row: DataQualityRow): "low" | "medium" | "high" | "watch" {
+  return row.severity === "blocked" ? "high" : row.severity === "warning" ? "medium" : "low";
+}
+
+function freshnessLabel(value: DataQualityRow["freshness"]): string {
+  return value === "stale" ? "Stale heuristic (>7 days)" :
+    value === "current" ? "Current" : "Unknown";
 }
 
 function formatDateTime(value: string | null): string {
-  if (!value) return "not loaded";
+  if (!value) return "Unavailable";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
+  if (Number.isNaN(date.getTime())) return "Malformed timestamp";
+  return new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeStyle: "short"}).format(date);
 }

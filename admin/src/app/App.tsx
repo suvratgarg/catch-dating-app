@@ -1,8 +1,6 @@
 import {
   lazy,
   Suspense,
-  type FormEvent,
-  type KeyboardEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -24,7 +22,6 @@ import {
   LineChart,
   Lock,
   Megaphone,
-  Search,
   ShieldAlert,
   Sparkles,
   UserCheck,
@@ -32,22 +29,21 @@ import {
 } from "lucide-react";
 import {getIdTokenResult, onAuthStateChanged, User} from "firebase/auth";
 import {
+  AdminAccountMenu,
   AdminAppShell,
-  AdminAuthStatus,
   AdminBrandBlock,
   AdminBrandCopy,
   AdminBrandMark,
-  AdminBrandSubtitle,
   AdminBrandTitle,
   AdminButton,
   AdminEnvironmentStatus,
   AdminFeatureLoadingState,
-  AdminIconButton,
   AdminLoadingIcon,
   AdminNavButton,
+  AdminNavGroup,
   AdminNavList,
   AdminSidebar,
-  AdminSidebarFooter,
+  AdminSidebarToggle,
   AdminSignInActions,
   AdminSignInMeta,
   AdminSignInPanel,
@@ -55,23 +51,18 @@ import {
   AdminTopbar,
   AdminTopbarActions,
   AdminWorkspace,
-  SearchField,
-  SegmentedControl,
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
 import {auth, signInWithGoogle, signOutAdmin} from "../shared/api/firebase";
-import type {
-  OverviewAnalyticsRangePreset,
-} from "../features/overview/controllers/useOverviewController";
-import {useOverviewController} from
-  "../features/overview/controllers/useOverviewController";
-import {dataMode} from "../shared/api/adminApi";
+import {dataMode} from "../shared/api/dataMode";
 import {
   AdminRoleClaim,
   DataMode,
   adminRoleClaimKeys,
 } from "../shared/types/adminTypes";
 import {AdminFeedbackProvider} from "../shared/feedback/AdminFeedbackContext";
+import type {OverviewQueueDestination} from
+  "../features/overview/ui/OverviewScreen";
 
 type AdminNavId =
   | "overview"
@@ -86,20 +77,6 @@ type AdminNavId =
   | "finance"
   | "quality"
   | "admin-roles";
-
-type AnalyticsRangePreset = NonNullable<
-  OverviewAnalyticsRangePreset
->;
-
-interface AdminSectionCopy {
-  title: string;
-  subtitle: string;
-}
-
-interface UserAnalyticsSearchHandoff {
-  userId: string;
-  requestId: number;
-}
 
 const MarketingOpsScreen = lazy(() =>
   import("../features/marketing/ui/MarketingOpsScreen").then((module) => ({
@@ -151,9 +128,9 @@ const UserAnalyticsScreen = lazy(() =>
     default: module.UserAnalyticsScreen,
   }))
 );
-const OverviewScreen = lazy(() =>
-  import("../features/overview/ui/OverviewScreen").then((module) => ({
-    default: module.OverviewScreen,
+const OverviewRouteScreen = lazy(() =>
+  import("../features/overview/ui/OverviewRouteScreen").then((module) => ({
+    default: module.OverviewRouteScreen,
   }))
 );
 const DataQualityScreen = lazy(() =>
@@ -169,24 +146,56 @@ const AdminRoleManagementScreen = lazy(() =>
   )
 );
 
-const navigation: Array<{
+interface AdminNavigationItem {
   id: AdminNavId;
   label: string;
   icon: typeof Activity;
+}
+
+const navigationGroups: Array<{
+  id: string;
+  label: string;
+  items: AdminNavigationItem[];
 }> = [
-  {id: "overview", label: "Overview", icon: Activity},
-  {id: "safety", label: "Safety", icon: ShieldAlert},
-  {id: "access", label: "Access", icon: UserCheck},
-  {id: "growth", label: "Growth", icon: LineChart},
-  {id: "marketing-ops", label: "Marketing", icon: Megaphone},
-  {id: "organizer-intake", label: "Intake", icon: FolderSearch},
-  {id: "organizers", label: "Organizers", icon: Users},
-  {id: "events", label: "Events", icon: BarChart3},
-  {id: "users", label: "Users", icon: Sparkles},
-  {id: "finance", label: "Finance", icon: CircleDollarSign},
-  {id: "quality", label: "Data quality", icon: Database},
-  {id: "admin-roles", label: "Admin roles", icon: Lock},
+  {
+    id: "queues",
+    label: "Work queues",
+    items: [
+      {id: "overview", label: "Overview", icon: Activity},
+      {id: "safety", label: "Safety", icon: ShieldAlert},
+      {id: "access", label: "Launch access", icon: UserCheck},
+    ],
+  },
+  {
+    id: "supply",
+    label: "Supply",
+    items: [
+      {id: "organizer-intake", label: "Intake", icon: FolderSearch},
+      {id: "organizers", label: "Organizers", icon: Users},
+      {id: "events", label: "Events", icon: BarChart3},
+    ],
+  },
+  {
+    id: "growth",
+    label: "Growth & insights",
+    items: [
+      {id: "growth", label: "Growth", icon: LineChart},
+      {id: "marketing-ops", label: "Marketing", icon: Megaphone},
+      {id: "users", label: "Users", icon: Sparkles},
+      {id: "finance", label: "Finance", icon: CircleDollarSign},
+    ],
+  },
+  {
+    id: "governance",
+    label: "Governance",
+    items: [
+      {id: "quality", label: "Data quality", icon: Database},
+      {id: "admin-roles", label: "Admin roles", icon: Lock},
+    ],
+  },
 ];
+
+const navigation = navigationGroups.flatMap((group) => group.items);
 
 const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   overview: adminRoleClaimKeys,
@@ -208,42 +217,41 @@ const hostAnalyticsRoles: readonly AdminRoleClaim[] = [
   "analyticsViewer",
 ];
 
-const adminSectionCopy: Partial<Record<AdminNavId, AdminSectionCopy>> = {
-  safety: {
-    title: "Safety",
-    subtitle:
-      "Review user reports, moderation flags, and event safety reports before policy actions move to audited safety callables.",
-  },
-  access: {
-    title: "Access",
-    subtitle:
-      "Review launch access applications with required notes, optional cohorts, and auditable approve/deny decisions.",
-  },
-  growth: {
-    title: "Growth",
-    subtitle:
-      "Inspect launch KPIs across acquisition, supply, conversion, and marketplace stages.",
-  },
-  users: {
-    title: "Users",
-    subtitle:
-      "Load a role-scoped aggregate user analytics view by exact users/{uid} handoff or selected user id.",
-  },
-  finance: {
-    title: "Finance",
-    subtitle:
-      "Inspect read-only payment, payout, and event revenue signals before finance mutation contracts exist.",
-  },
-  quality: {
-    title: "Data quality",
-    subtitle:
-      "Monitor source freshness, bridge readiness, import blockers, owners, runbooks, and next actions.",
-  },
-  "admin-roles": {
-    title: "Admin roles",
-    subtitle:
-      "Look up exact Firebase Auth users and assign audited Catch admin custom claims.",
-  },
+const adminSidebarPreferenceKey = "catch-admin.sidebar-collapsed.v1";
+
+function readAdminSidebarPreference(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(adminSidebarPreferenceKey) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function writeAdminSidebarPreference(collapsed: boolean): void {
+  try {
+    window.localStorage.setItem(
+      adminSidebarPreferenceKey,
+      String(collapsed)
+    );
+  } catch {
+    // The in-memory preference still works when storage is unavailable.
+  }
+}
+
+const adminSectionTitles: Record<AdminNavId, string> = {
+  overview: "Overview",
+  safety: "Safety",
+  access: "Launch access",
+  growth: "Growth",
+  "marketing-ops": "Marketing",
+  "organizer-intake": "Intake",
+  organizers: "Organizers",
+  events: "Events",
+  users: "Users",
+  finance: "Finance",
+  quality: "Data quality",
+  "admin-roles": "Admin roles",
 };
 
 export function App() {
@@ -263,15 +271,14 @@ function AdminRouteApp() {
   );
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [globalSearchQuery, setGlobalSearchQuery] = useState("");
-  const [userAnalyticsHandoff, setUserAnalyticsHandoff] =
-    useState<UserAnalyticsSearchHandoff | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAuthActionPending, setIsAuthActionPending] = useState(false);
   const [isRoleCheckPending, setIsRoleCheckPending] = useState(false);
   const [rolesResolved, setRolesResolved] = useState(mode === "sample");
   const [user, setUser] = useState<User | null>(null);
   const [adminRoles, setAdminRoles] = useState<string[]>([]);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] =
+    useState(readAdminSidebarPreference);
 
   useEffect(() => {
     if (mode === "sample") {
@@ -338,24 +345,23 @@ function AdminRouteApp() {
   const currentNav: AdminNavId = routeNavVisible ?
     routeNav :
     visibleNavigation[0]?.id ?? "overview";
+  const canResolveNavigation = mode !== "live" ||
+    (user !== null && rolesResolved && adminRoles.length > 0);
 
   useEffect(() => {
+    if (!canResolveNavigation) return;
     if (routeNav === currentNav) return;
     navigate(adminPathForNav(currentNav), {replace: true});
-  }, [currentNav, navigate, routeNav]);
+  }, [canResolveNavigation, currentNav, navigate, routeNav]);
 
   const setActiveNav = useCallback((nextNav: AdminNavId) => {
     navigate(adminPathForNav(nextNav));
   }, [navigate]);
 
-  const overviewController = useOverviewController({
-    adminRoles,
-    isSessionReady: mode === "sample" ||
-      (rolesResolved && adminRoles.length > 0),
-    mode,
-    onError: setError,
-    onNotice: setNotice,
-  });
+  const handleSidebarCollapsedChange = useCallback((collapsed: boolean) => {
+    setIsSidebarCollapsed(collapsed);
+    writeAdminSidebarPreference(collapsed);
+  }, []);
 
   const handleSignIn = useCallback(async () => {
     setAuthError(null);
@@ -418,44 +424,50 @@ function AdminRouteApp() {
     }
   }, [user]);
 
-  const runGlobalSearch = useCallback(() => {
-    const parsed = parseGlobalSearchQuery(globalSearchQuery);
-    if (!parsed) {
+  const handleOverviewQueueOpen = useCallback((
+    destination: OverviewQueueDestination,
+    targetPath?: string | null
+  ) => {
+    const destinationItem = visibleNavigation.find((item) =>
+      item.id === destination
+    );
+    if (!destinationItem) {
       setNotice(null);
-      setError(
-        "Global search currently supports exact user analytics jumps: users/{uid} or uid:{uid}."
-      );
+      setError(`Your admin role cannot open the ${destination} workflow.`);
       return;
     }
-    if (!visibleNavigation.some((item) => item.id === "users")) {
-      setNotice(null);
-      setError("Your admin role cannot open Users analytics.");
-      return;
-    }
-    setUserAnalyticsHandoff({
-      userId: parsed.userId,
-      requestId: Date.now(),
-    });
-    setGlobalSearchQuery(`users/${parsed.userId}`);
-    setActiveNav("users");
     setError(null);
-    setNotice(`Opening aggregate analytics for users/${parsed.userId}.`);
-  }, [globalSearchQuery, visibleNavigation]);
+    setNotice(null);
+    if (targetPath && destination === "safety") {
+      navigate(`/safety/${encodeURIComponent(targetPath)}`);
+      return;
+    }
+    const targetId = targetPath?.split("/").filter(Boolean).at(-1) ?? null;
+    if (targetId && destination === "access") {
+      navigate(`/access/${encodeURIComponent(targetId)}`);
+      return;
+    }
+    if (targetId && destination === "organizers") {
+      navigate(targetPath?.startsWith("clubClaimRequests/") ?
+        `/organizers/claims/${encodeURIComponent(targetId)}` :
+        `/organizers/${encodeURIComponent(targetId)}`);
+      return;
+    }
+    if (targetPath && destination === "finance") {
+      navigate(`/finance/issues/${encodeURIComponent(targetPath)}`);
+      return;
+    }
+    setActiveNav(destination);
+  }, [navigate, setActiveNav, visibleNavigation]);
 
-  const handleGlobalSearchSubmit = useCallback((
-    event: FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
-    runGlobalSearch();
-  }, [runGlobalSearch]);
+  const topbarTitle = titleForAdminSection(currentNav, location.pathname);
 
-  const handleGlobalSearchKeyDown = useCallback((
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
-    runGlobalSearch();
-  }, [runGlobalSearch]);
+  useEffect(() => {
+    const nextTitle = mode === "live" && !user ?
+      "Catch Admin" :
+      `${topbarTitle} — Catch Admin`;
+    document.title = nextTitle;
+  }, [mode, topbarTitle, user]);
 
   if (mode === "live" && !user) {
     return (
@@ -488,88 +500,72 @@ function AdminRouteApp() {
     );
   }
 
-  const topbarCopy = copyForAdminSection(currentNav);
-
   return (
-    <AdminAppShell>
-      <AdminSidebar aria-label="Admin sections">
+    <AdminAppShell sidebarCollapsed={isSidebarCollapsed}>
+      <AdminSidebar aria-label="Admin sections" id="admin-sidebar">
         <AdminBrandBlock>
           <AdminBrandMark>C</AdminBrandMark>
           <AdminBrandCopy>
-            <AdminBrandTitle>Catch Ops</AdminBrandTitle>
-            <AdminBrandSubtitle>{mode} console</AdminBrandSubtitle>
+            <AdminBrandTitle>Catch Admin</AdminBrandTitle>
           </AdminBrandCopy>
         </AdminBrandBlock>
-        <AdminNavList>
-          {visibleNavigation.map((item) => {
-            const Icon = item.icon;
-            const selected = currentNav === item.id;
+        <AdminNavList aria-label="Admin navigation">
+          {navigationGroups.map((group) => {
+            const visibleItems = group.items.filter((item) =>
+              visibleNavigation.some((visibleItem) =>
+                visibleItem.id === item.id
+              )
+            );
+            if (visibleItems.length === 0) return null;
             return (
-              <AdminNavButton
-                icon={<Icon aria-hidden="true" size={17} strokeWidth={1.8} />}
-                key={item.id}
-                label={item.label}
-                onClick={() => setActiveNav(item.id)}
-                selected={selected}
-              />
+              <AdminNavGroup key={group.id} label={group.label}>
+                {visibleItems.map((item) => {
+                  const Icon = item.icon;
+                  const selected = currentNav === item.id;
+                  return (
+                    <AdminNavButton
+                      icon={<Icon aria-hidden="true" size={17} strokeWidth={1.8} />}
+                      key={item.id}
+                      label={item.label}
+                      onClick={() => setActiveNav(item.id)}
+                      selected={selected}
+                      title={isSidebarCollapsed ? item.label : undefined}
+                    />
+                  );
+                })}
+              </AdminNavGroup>
             );
           })}
         </AdminNavList>
-        <AdminSidebarFooter>
-          <Lock size={15} strokeWidth={1.8} />
-          <span>Admin claim required</span>
-        </AdminSidebarFooter>
+        <AdminSidebarToggle
+          collapsed={isSidebarCollapsed}
+          controlsId="admin-sidebar"
+          onCollapsedChange={handleSidebarCollapsedChange}
+        />
       </AdminSidebar>
 
       <AdminWorkspace>
         <AdminTopbar>
-          <div>
-            <h1>{topbarCopy.title}</h1>
-            <p>{topbarCopy.subtitle}</p>
-          </div>
-          <AdminTopbarActions onSubmit={handleGlobalSearchSubmit}>
-            <SearchField
-              ariaLabel="Jump to user analytics"
-              icon={<Search size={16} strokeWidth={1.8} />}
-              onChange={setGlobalSearchQuery}
-              onKeyDown={handleGlobalSearchKeyDown}
-              placeholder="Jump to users/{uid}"
-              value={globalSearchQuery}
-            />
+          <h1>{topbarTitle}</h1>
+          <AdminTopbarActions>
             <AdminEnvironmentStatus
               environment={adminEnvironment}
-              mode={mode}
             />
-            <AdminAuthStatus
+            <AdminAccountMenu
+              isSigningOut={isAuthActionPending}
               mode={mode}
+              onSignOut={mode === "live" ?
+                () => void handleSignOut() :
+                undefined}
               roles={adminRoles}
-              userLabel={user?.email ?? user?.uid ?? "Signed in"}
+              userLabel={
+                user?.displayName ??
+                user?.email ??
+                user?.phoneNumber ??
+                user?.uid ??
+                "Local preview"
+              }
             />
-            <SegmentedControl<AnalyticsRangePreset>
-              ariaLabel="Time range"
-              options={(["7d", "30d", "90d", "month"] as AnalyticsRangePreset[])
-                .map((range) => ({
-                  id: range,
-                  label: range === "month" ? "month" : range,
-                }))}
-              value={overviewController.analyticsRangePreset}
-              onChange={overviewController.setAnalyticsRangePreset}
-            />
-            <AdminIconButton
-              disabled={overviewController.isLoading}
-              label="Refresh"
-              onClick={() => void overviewController.refresh()}
-            >
-              <AdminLoadingIcon active={overviewController.isLoading} />
-            </AdminIconButton>
-            {mode === "live" && (
-              <AdminButton
-                disabled={isAuthActionPending}
-                onClick={() => void handleSignOut()}
-              >
-                {isAuthActionPending ? "Signing out" : "Sign out"}
-              </AdminButton>
-            )}
           </AdminTopbarActions>
         </AdminTopbar>
 
@@ -596,25 +592,57 @@ function AdminRouteApp() {
             <SafetyTriageScreen
               onError={setError}
               onNotice={setNotice}
+              selectedTargetPath={safetyTargetPathForPath(location.pathname)}
+              onBackToList={() => navigate(adminPathForNav("safety"))}
+              onSelectTargetPath={(targetPath) => {
+                navigate(
+                  `${adminPathForNav("safety")}/${encodeURIComponent(targetPath)}`
+                );
+              }}
             />
           </Suspense>
         ) : currentNav === "marketing-ops" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Marketing" />}>
             <MarketingOpsScreen
+              activeTab={marketingTabForPath(location.pathname)}
+              composerStep={marketingComposerStepForPath(location.pathname)}
+              onComposerStepChange={(step) => {
+                const draftId = marketingDraftIdForPath(location.pathname);
+                if (draftId) {
+                  navigate(`/marketing/drafts/${encodeURIComponent(draftId)}/${step}`);
+                }
+              }}
+              onDraftOpen={(draftId, step) => {
+                navigate(`/marketing/drafts/${encodeURIComponent(draftId)}/${step}`);
+              }}
               onError={setError}
               onNotice={setNotice}
+              onTabChange={(tab) => navigate(marketingPathForTab(tab))}
+              selectedDraftId={marketingDraftIdForPath(location.pathname)}
             />
           </Suspense>
         ) : currentNav === "access" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Access" />}>
             <AccessReviewScreen
+              selectedApplicationUid={accessApplicationUidForPath(location.pathname)}
+              onBackToList={() => navigate(adminPathForNav("access"))}
               onError={setError}
               onNotice={setNotice}
+              onSelectApplicationUid={(applicationUid) => {
+                navigate(`${adminPathForNav("access")}/${encodeURIComponent(applicationUid)}`);
+              }}
             />
           </Suspense>
         ) : currentNav === "growth" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Growth" />}>
-            <GrowthKpiScreen onError={setError} />
+            <GrowthKpiScreen
+              onBackToList={() => navigate(adminPathForNav("growth"))}
+              onError={setError}
+              onSelectSignalId={(signalId) => {
+                navigate(`/growth/signals/${encodeURIComponent(signalId)}`);
+              }}
+              selectedSignalId={growthSignalIdForPath(location.pathname)}
+            />
           </Suspense>
         ) : currentNav === "organizer-intake" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Intake" />}>
@@ -623,60 +651,118 @@ function AdminRouteApp() {
         ) : currentNav === "organizers" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Organizers" />}>
             <OrganizerPublishingScreen
+              activeWorkspace={isOrganizerClaimsPath(location.pathname) ?
+                "claims" :
+                "directory"}
               selectedClubId={organizerClubIdForPath(location.pathname)}
               onBackToList={() => navigate(adminPathForNav("organizers"))}
+              onBackToClaims={() => navigate(`${adminPathForNav("organizers")}/claims`)}
+              onSelectClaimRequestId={(requestId) => {
+                navigate(
+                  `${adminPathForNav("organizers")}/claims/${encodeURIComponent(requestId)}`
+                );
+              }}
               onSelectClubId={(clubId) => {
                 navigate(`${adminPathForNav("organizers")}/${encodeURIComponent(clubId)}`);
               }}
+              onWorkspaceChange={(workspace) => {
+                navigate(workspace === "claims" ?
+                  `${adminPathForNav("organizers")}/claims` :
+                  adminPathForNav("organizers"));
+              }}
+              selectedClaimRequestId={organizerClaimRequestIdForPath(location.pathname)}
             />
           </Suspense>
         ) : currentNav === "events" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Events" />}>
-            <EventPublishingScreen />
+            <EventPublishingScreen
+              activeWorkspace={eventWorkspaceForPath(location.pathname)}
+              selectedEventId={eventIdForPath(location.pathname)}
+              selectedExternalEventId={externalEventIdForPath(location.pathname)}
+              selectedReadinessActionId={readinessActionIdForPath(location.pathname)}
+              onBackToList={() => navigate(
+                `${adminPathForNav("events")}${location.search}`
+              )}
+              onSelectEventId={(eventId) => {
+                navigate(
+                  `${adminPathForNav("events")}/${encodeURIComponent(eventId)}` +
+                  location.search
+                );
+              }}
+              onSelectExternalEventId={(eventId) => {
+                navigate(eventId ?
+                  `${adminPathForNav("events")}/external/${encodeURIComponent(eventId)}` +
+                    location.search :
+                  `${adminPathForNav("events")}/external${location.search}`);
+              }}
+              onSelectReadinessActionId={(sourceActionId) => {
+                navigate(sourceActionId ?
+                  `${adminPathForNav("events")}/readiness/${encodeURIComponent(sourceActionId)}` +
+                    location.search :
+                  `${adminPathForNav("events")}/readiness${location.search}`);
+              }}
+              onWorkspaceChange={(workspace) => {
+                navigate(workspace === "directory" ?
+                  adminPathForNav("events") :
+                  `${adminPathForNav("events")}/${workspace}`);
+              }}
+            />
           </Suspense>
         ) : currentNav === "users" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Users" />}>
             <UserAnalyticsScreen
-              handoffRequestId={userAnalyticsHandoff?.requestId ?? null}
-              handoffUserId={userAnalyticsHandoff?.userId ?? null}
+              handoffRequestId={null}
+              handoffUserId={null}
               onError={setError}
               onNotice={setNotice}
             />
           </Suspense>
         ) : currentNav === "finance" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Finance" />}>
-            <FinanceOpsScreen onError={setError} />
+            <FinanceOpsScreen
+              onBackToList={() => navigate(adminPathForNav("finance"))}
+              onError={setError}
+              onSelectIssueId={(issueId) => {
+                navigate(`/finance/issues/${encodeURIComponent(issueId)}`);
+              }}
+              selectedIssueId={financeIssueIdForPath(location.pathname)}
+            />
           </Suspense>
         ) : currentNav === "quality" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Data quality" />}>
-            <DataQualityScreen onError={setError} />
+            <DataQualityScreen
+              onBackToList={() => navigate(adminPathForNav("quality"))}
+              onError={setError}
+              onOpenOwningWorkflow={(path) => navigate(path)}
+              onSelectSignalId={(signalId) => {
+                navigate(`/quality/signals/${encodeURIComponent(signalId)}`);
+              }}
+              selectedSignalId={qualitySignalIdForPath(location.pathname)}
+            />
           </Suspense>
         ) : currentNav === "admin-roles" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Admin roles" />}>
             <AdminRoleManagementScreen
               currentUserUid={user?.uid ?? null}
+              onBackToRegister={() => navigate(adminPathForNav("admin-roles"))}
               onError={setError}
               onNotice={setNotice}
+              onSelectTargetUid={(targetUid) => {
+                navigate(`/admin-roles/${encodeURIComponent(targetUid)}`);
+              }}
+              selectedTargetUid={adminRoleTargetUidForPath(location.pathname)}
             />
           </Suspense>
         ) : (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Overview" />}>
-            <OverviewScreen
-              analyticsClubId={overviewController.analyticsClubId}
-              analyticsEndDate={overviewController.analyticsEndDate}
-              analyticsEventId={overviewController.analyticsEventId}
-              analyticsGranularity={overviewController.analyticsGranularity}
-              analyticsRangePreset={overviewController.analyticsRangePreset}
-              analyticsStartDate={overviewController.analyticsStartDate}
-              hostAnalytics={overviewController.hostAnalytics}
-              overview={overviewController.overview}
-              onAnalyticsClubIdChange={overviewController.setAnalyticsClubId}
-              onAnalyticsEndDateChange={overviewController.setAnalyticsEndDate}
-              onAnalyticsEventIdChange={overviewController.setAnalyticsEventId}
-              onAnalyticsGranularityChange={overviewController.setAnalyticsGranularity}
-              onAnalyticsRangePresetChange={overviewController.setAnalyticsRangePreset}
-              onAnalyticsStartDateChange={overviewController.setAnalyticsStartDate}
-              onClearAnalyticsScope={overviewController.clearAnalyticsScope}
+            <OverviewRouteScreen
+              adminRoles={adminRoles}
+              isSessionReady={mode === "sample" ||
+                (rolesResolved && adminRoles.length > 0)}
+              mode={mode}
+              onError={setError}
+              onNotice={setNotice}
+              onOpenQueue={handleOverviewQueueOpen}
             />
           </Suspense>
         )}
@@ -686,41 +772,46 @@ function AdminRouteApp() {
   );
 }
 
-function copyForAdminSection(activeNav: AdminNavId) {
-  if (activeNav === "marketing-ops") {
-    return {
-      title: "Marketing ops",
-      subtitle:
-        "Package approved intake records into recommendations, content drafts, media, and manual export packets.",
-    };
+function titleForAdminSection(activeNav: AdminNavId, pathname = ""): string {
+  if (activeNav === "safety" && safetyTargetPathForPath(pathname)) {
+    return "Safety case";
   }
   if (activeNav === "organizer-intake") {
-    return {
-      title: "Intake",
-      subtitle:
-        "Review event and organizer intake before records become canonical, public, or available to Marketing.",
-    };
-  }
-  if (activeNav === "organizers") {
-    return {
-      title: "Organizers",
-      subtitle:
-        "Triage canonical organizer projections, claim state, public pages, and app visibility before publishing to Firestore.",
-    };
+    if (pathname.startsWith("/intake/events")) return "Event intake";
+    if (pathname.startsWith("/intake/operations")) {
+      return "Supply intake operations";
+    }
+    return "Organizer intake";
   }
   if (activeNav === "events") {
-    return {
-      title: "Events",
-      subtitle:
-        "Review canonical app events, safe display fields, discovery projection, and search indexing before the Flutter app reads them.",
-    };
+    if (eventIdForPath(pathname)) return "Event detail";
+    if (eventWorkspaceForPath(pathname) === "readiness") {
+      return readinessActionIdForPath(pathname) ?
+        "Event readiness review" :
+        "Event readiness";
+    }
+    if (eventWorkspaceForPath(pathname) === "external") {
+      return externalEventIdForPath(pathname) ?
+        "External event" :
+        "External inventory";
+    }
   }
-  const sectionCopy = adminSectionCopy[activeNav];
-  if (sectionCopy) return sectionCopy;
-  return {
-    title: "Overview",
-    subtitle: "Live operations, cohort health, finance risk, and marketplace signals.",
-  };
+  if (activeNav === "growth" && growthSignalIdForPath(pathname)) {
+    return "Growth signal";
+  }
+  if (activeNav === "finance" && financeIssueIdForPath(pathname)) {
+    return "Finance issue";
+  }
+  if (activeNav === "quality" && qualitySignalIdForPath(pathname)) {
+    return "Data quality signal";
+  }
+  if (activeNav === "admin-roles" && adminRoleTargetUidForPath(pathname)) {
+    return "Admin role assignment";
+  }
+  if (activeNav === "marketing-ops" && marketingDraftIdForPath(pathname)) {
+    return "Marketing draft";
+  }
+  return adminSectionTitles[activeNav];
 }
 
 function adminNavForPath(pathname: string): AdminNavId | null {
@@ -736,7 +827,7 @@ function adminNavForPath(pathname: string): AdminNavId | null {
 function adminPathForNav(nav: AdminNavId): string {
   if (nav === "overview") return "/overview";
   if (nav === "marketing-ops") return "/marketing";
-  if (nav === "organizer-intake") return "/intake";
+  if (nav === "organizer-intake") return "/intake/organizers";
   return `/${nav}`;
 }
 
@@ -746,6 +837,20 @@ function isAdminNavId(value: string): value is AdminNavId {
 
 function organizerClubIdForPath(pathname: string): string | null {
   const match = pathname.match(/^\/organizers\/([^/]+)\/?$/u);
+  if (!match || match[1] === "claims") return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function isOrganizerClaimsPath(pathname: string): boolean {
+  return /^\/organizers\/claims(?:\/|$)/u.test(pathname);
+}
+
+function organizerClaimRequestIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/organizers\/claims\/([^/]+)\/?$/u);
   if (!match) return null;
   try {
     return decodeURIComponent(match[1]);
@@ -754,33 +859,144 @@ function organizerClubIdForPath(pathname: string): string | null {
   }
 }
 
-function parseGlobalSearchQuery(
-  query: string
-): {userId: string} | null {
-  const normalized = query.trim().replace(/^\/+/u, "");
-  if (!normalized) return null;
-
-  const usersPathMatch = normalized.match(/^users\/([^/\s]+)$/iu);
-  if (usersPathMatch) {
-    return userAnalyticsSearchResult(usersPathMatch[1]);
+function accessApplicationUidForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/access\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
   }
-
-  const uidMatch = normalized.match(/^uid[:\s]+([^/\s]+)$/iu);
-  if (uidMatch) {
-    return userAnalyticsSearchResult(uidMatch[1]);
-  }
-
-  if (/^user-[A-Za-z0-9_-]+$/u.test(normalized)) {
-    return userAnalyticsSearchResult(normalized);
-  }
-
-  return null;
 }
 
-function userAnalyticsSearchResult(userId: string): {userId: string} | null {
-  const trimmed = userId.trim();
-  if (!/^[A-Za-z0-9_-]{3,128}$/u.test(trimmed)) return null;
-  return {userId: trimmed};
+function eventWorkspaceForPath(
+  pathname: string
+): "directory" | "readiness" | "external" {
+  if (/^\/events\/readiness(?:\/|$)/u.test(pathname)) return "readiness";
+  if (/^\/events\/external(?:\/|$)/u.test(pathname)) return "external";
+  return "directory";
+}
+
+function growthSignalIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/growth\/signals\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function financeIssueIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/finance\/issues\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function qualitySignalIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/quality\/signals\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function adminRoleTargetUidForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/admin-roles\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+type MarketingRouteTab =
+  | "posts"
+  | "new"
+  | "events"
+  | "media"
+  | "activity"
+  | "diagnostics"
+  | "draft";
+type MarketingRouteStep = "source" | "copy" | "compliance" | "export";
+
+function marketingTabForPath(pathname: string): MarketingRouteTab {
+  if (/^\/marketing\/drafts\//u.test(pathname)) return "draft";
+  const segment = pathname.match(/^\/marketing\/([^/]+)\/?/u)?.[1] ?? "posts";
+  if (["new", "events", "media", "activity", "diagnostics"].includes(segment)) {
+    return segment as Exclude<MarketingRouteTab, "posts" | "draft">;
+  }
+  return "posts";
+}
+
+function marketingDraftIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/marketing\/drafts\/([^/]+)(?:\/|$)/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function marketingComposerStepForPath(pathname: string): MarketingRouteStep {
+  const match = pathname.match(/^\/marketing\/drafts\/[^/]+\/([^/]+)\/?$/u);
+  const step = match?.[1] ?? "source";
+  return ["source", "copy", "compliance", "export"].includes(step) ?
+    step as MarketingRouteStep : "source";
+}
+
+function marketingPathForTab(tab: Exclude<MarketingRouteTab, "draft">): string {
+  return tab === "posts" ? "/marketing/posts" : `/marketing/${tab}`;
+}
+
+function eventIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/events\/([^/]+)\/?$/u);
+  if (!match || match[1] === "readiness" || match[1] === "external") {
+    return null;
+  }
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function externalEventIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/events\/external\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function readinessActionIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/events\/readiness\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function safetyTargetPathForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/safety\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
 }
 
 function hasAnyAdminRole(
@@ -803,7 +1019,7 @@ function SignInScreen({
     <AdminSignInScreen>
       <AdminSignInPanel>
         <AdminBrandMark size="large">C</AdminBrandMark>
-        <h1>Catch Ops</h1>
+        <h1>Catch Admin</h1>
         <p>Internal admin access requires Firebase Auth and an admin claim.</p>
         {error && (
           <StatusBanner

@@ -1,4 +1,5 @@
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
+import {useSearchParams} from "react-router";
 import {
   ArrowLeft,
   CalendarDays,
@@ -91,6 +92,7 @@ import {
   type ExternalEventSupplyFilter,
   type EventPublishingController,
   type EventPublishingFilter,
+  type EventPublishingWorkspace as EventPublishingWorkspaceId,
   useEventPublishingController,
 } from "../controllers/useEventPublishingController";
 import {
@@ -110,6 +112,12 @@ import {
 } from "../controllers/eventPublishingHelpers";
 import {isLaunchMarketId} from "../../../shared/config/launchMarkets";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
+import {eventPublishingDirectoryPanels} from "./eventPublishingDirectoryPanels";
+import {eventPublishingSupplyPanels} from "./eventPublishingSupplyPanels";
+import {eventPublishingReadinessPanels} from "./eventPublishingReadinessPanels";
+import {eventPublishingEditorPanels} from "./eventPublishingEditorPanels";
+// Panels from "./eventPublishingDirectoryPanels.tsx" and sibling modules stay feature-private.
+
 
 type EventImportReadinessFilter =
   | "needsAction"
@@ -137,1732 +145,181 @@ interface EventImportReadinessRow {
   sourceActionId: string;
   publishReady: boolean;
 }
-
-export function EventPublishingScreen() {
+export function EventPublishingScreen({
+  activeWorkspace = "directory",
+  onBackToList,
+  onSelectEventId,
+  onSelectExternalEventId,
+  onSelectReadinessActionId,
+  onWorkspaceChange,
+  selectedEventId,
+  selectedExternalEventId,
+  selectedReadinessActionId,
+}: {
+  activeWorkspace?: EventPublishingWorkspaceId;
+  onBackToList?: () => void;
+  onSelectEventId?: (eventId: string) => void;
+  onSelectExternalEventId?: (eventId: string | null) => void;
+  onSelectReadinessActionId?: (sourceActionId: string | null) => void;
+  onWorkspaceChange?: (workspace: EventPublishingWorkspaceId) => void;
+  selectedEventId?: string | null;
+  selectedExternalEventId?: string | null;
+  selectedReadinessActionId?: string | null;
+}) {
   const {setError: onError, setNotice: onNotice} = useAdminFeedback();
-  const controller = useEventPublishingController({onError, onNotice});
-  return <EventPublishingWorkspace controller={controller} />;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const controller = useEventPublishingController({
+    activeWorkspace,
+    onBackToList,
+    onError,
+    onNotice,
+    onSelectEventId,
+    onSelectExternalEventId,
+    onSelectReadinessActionId,
+    onWorkspaceChange,
+    selectedEventId,
+    selectedExternalEventId,
+    selectedReadinessActionId,
+  });
+
+  useEffect(() => {
+    const routeFilter = searchParams.get("filter");
+    const routeQuery = searchParams.get("q") ?? "";
+    if (activeWorkspace === "external") {
+      controller.setExternalFilter(
+        isExternalEventSupplyFilter(routeFilter) ? routeFilter : "public"
+      );
+      controller.setExternalQuery(routeQuery);
+      return;
+    }
+    if (activeWorkspace === "directory") {
+      controller.setFilter(
+        isEventPublishingFilter(routeFilter) ? routeFilter : "launchCities"
+      );
+      controller.setQuery(routeQuery);
+    }
+  }, [activeWorkspace, searchParams]);
+
+  const updateSearchParam = (
+    key: "filter" | "q",
+    value: string,
+    defaultValue = ""
+  ) => {
+    const next = new URLSearchParams(searchParams);
+    if (!value || value === defaultValue) {
+      next.delete(key);
+    } else {
+      next.set(key, value);
+    }
+    setSearchParams(next, {replace: true});
+  };
+  const routedController: EventPublishingController = {
+    ...controller,
+    setFilter: (next) => {
+      const value = typeof next === "function" ? next(controller.filter) : next;
+      controller.setFilter(value);
+      updateSearchParam("filter", value, "launchCities");
+    },
+    setQuery: (next) => {
+      const value = typeof next === "function" ? next(controller.query) : next;
+      controller.setQuery(value);
+      updateSearchParam("q", value);
+    },
+    setExternalFilter: (next) => {
+      const value = typeof next === "function" ?
+        next(controller.externalFilter) :
+        next;
+      controller.setExternalFilter(value);
+      updateSearchParam("filter", value, "public");
+    },
+    setExternalQuery: (next) => {
+      const value = typeof next === "function" ?
+        next(controller.externalQuery) :
+        next;
+      controller.setExternalQuery(value);
+      updateSearchParam("q", value);
+    },
+  };
+  return (
+    <EventPublishingWorkspace
+      activeWorkspace={activeWorkspace}
+      controller={routedController}
+      onWorkspaceChange={onWorkspaceChange}
+    />
+  );
 }
 
 export function EventPublishingWorkspace({
+  activeWorkspace = "directory",
   controller,
+  onWorkspaceChange = () => undefined,
 }: {
+  activeWorkspace?: EventPublishingWorkspaceId;
   controller: EventPublishingController;
+  onWorkspaceChange?: (workspace: EventPublishingWorkspaceId) => void;
 }) {
   const activeCount = controller.rows.filter((row) =>
     row.status === "active"
   ).length;
   const fullCount = controller.rows.filter(eventIsFull).length;
   const searchIssueCount = controller.rows.filter(eventNeedsSearchBackfill).length;
-  const launchCityCount = controller.rows.filter((row) =>
-    isLaunchMarketId(row.citySlug)
-  ).length;
-  const externalReviewCount =
-    controller.externalRows.filter(externalEventNeedsReview).length;
-  const importBlockedCount =
-    (controller.supplyReadiness?.importPlan.summary.blocked ?? 0) +
-    (controller.supplyReadiness?.executionPlan.summary.blocked ?? 0);
-  const readOnlyImportCount =
-    controller.supplyReadiness?.importPlan.summary.proposedReadOnlyEvents ??
-    controller.supplyReadiness?.importPlan.summary.proposedCreates ??
-    0;
-
-  if (controller.view === "detail") {
-    return <EventDetailView controller={controller} />;
-  }
-
-  if (controller.view === "external") {
-    return <ExternalEventSupplyView controller={controller} />;
-  }
 
   return (
-    <EventDirectoryView
-      activeCount={activeCount}
-      controller={controller}
-      externalReviewCount={externalReviewCount}
-      fullCount={fullCount}
-      importBlockedCount={importBlockedCount}
-      launchCityCount={launchCityCount}
-      readOnlyImportCount={readOnlyImportCount}
-      searchIssueCount={searchIssueCount}
-    />
-  );
-}
-
-function EventDirectoryView({
-  activeCount,
-  controller,
-  externalReviewCount,
-  fullCount,
-  importBlockedCount,
-  launchCityCount,
-  readOnlyImportCount,
-  searchIssueCount,
-}: {
-  activeCount: number;
-  controller: EventPublishingController;
-  externalReviewCount: number;
-  fullCount: number;
-  importBlockedCount: number;
-  launchCityCount: number;
-  readOnlyImportCount: number;
-  searchIssueCount: number;
-}) {
-  return (
-    <AdminDirectoryScreenStack>
-      <PageHeader
-        actions={
-          <AdminButton
-            icon={<ExternalLink size={15} strokeWidth={1.9} />}
-            onClick={controller.openExternalSupply}
-          >
-            External supply
-          </AdminButton>
-        }
-        eyebrow="Events"
-        title="Canonical Event Directory"
+    <AdminWorkbenchStack compact>
+      <SegmentedControl<EventPublishingWorkspaceId>
+        ariaLabel="Event workspaces"
+        options={[
+          {id: "directory", label: "Directory"},
+          {id: "readiness", label: "Readiness"},
+          {id: "external", label: "External inventory"},
+        ]}
+        onChange={onWorkspaceChange}
+        value={activeWorkspace}
       />
-      <AdminMetricGrid ariaLabel="Event publishing state">
-        <AdminMetricCard label="Canonical events" value={controller.rows.length} />
-        <AdminMetricCard label="External supply" value={controller.externalRows.length} />
-        <AdminMetricCard label="Launch city events" value={launchCityCount} />
-        <AdminMetricCard label="Active" value={activeCount} />
-        <AdminMetricCard
-          label="Full / waitlist"
-          tone={fullCount > 0 ? "attention" : "normal"}
-          value={fullCount}
-        />
-        <AdminMetricCard
-          label="Search issues"
-          tone={searchIssueCount > 0 ? "attention" : "normal"}
-          value={searchIssueCount}
-        />
-        <AdminMetricCard
-          label="External review"
-          tone={externalReviewCount > 0 ? "attention" : "normal"}
-          value={externalReviewCount}
-        />
-        <AdminMetricCard label="Read-only drafts" value={readOnlyImportCount} />
-        <AdminMetricCard
-          label="Import blockers"
-          tone={importBlockedCount > 0 ? "attention" : "normal"}
-          value={importBlockedCount}
-        />
-      </AdminMetricGrid>
-
-      <EventDirectoryPanel controller={controller} />
-      <EventExternalSupplySummaryPanel
-        controller={controller}
-        externalReviewCount={externalReviewCount}
-        importBlockedCount={importBlockedCount}
-        readOnlyImportCount={readOnlyImportCount}
-      />
-    </AdminDirectoryScreenStack>
-  );
-}
-
-function EventDetailView({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  const title = controller.event?.title || controller.eventId || "Event";
-  return (
-    <AdminDetailScreenStack>
-      <PageHeader
-        actions={
-          <AdminButton
-            icon={<ArrowLeft size={15} strokeWidth={1.9} />}
-            onClick={controller.backToList}
-          >
-            Directory
-          </AdminButton>
-        }
-        eyebrow="Event detail"
-        title={title}
-      />
-      <EventDetailSummary controller={controller} />
-      <EventEditor
-        diffRows={controller.diffRows}
-        event={controller.event}
-        eventId={controller.eventId}
-        form={controller.form}
-        isDetailLoading={controller.isDetailLoading}
-        isSaving={controller.isSaving}
-        validationIssues={controller.validationIssues}
-        onEventIdChange={controller.setEventId}
-        onFormChange={controller.setForm}
-        onLoad={() => void controller.selectEvent(controller.eventId)}
-        onSave={() => void controller.save()}
-      />
-      <EventContractPanel
-        externalListGeneratedAt={controller.externalListGeneratedAt}
-        listGeneratedAt={controller.listGeneratedAt}
-      />
-    </AdminDetailScreenStack>
-  );
-}
-
-function ExternalEventSupplyView({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  return (
-    <AdminDetailScreenStack>
-      <PageHeader
-        actions={
-          <AdminButton
-            icon={<ArrowLeft size={15} strokeWidth={1.9} />}
-            onClick={controller.backToList}
-          >
-            Event directory
-          </AdminButton>
-        }
-        eyebrow="Events"
-        title="External Event Supply"
-      />
-      <ExternalEventSupplyPanel controller={controller} />
-      <EventSupplyReadinessPanel
-        executionPlan={controller.supplyReadiness?.executionPlan ?? null}
-        generatedAt={controller.supplyReadiness?.generatedAt ?? null}
-        importPlan={controller.supplyReadiness?.importPlan ?? null}
-        isLoading={controller.isSupplyReadinessLoading}
-        onPublishExternalEvent={controller.publishExternalEvent}
-        publishingExternalActionId={controller.publishingExternalActionId}
-        source={controller.supplyReadiness?.source ?? null}
-      />
-    </AdminDetailScreenStack>
-  );
-}
-
-function EventDirectoryPanel({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  return (
-    <Panel
-      span={2}
-      icon={<CalendarDays size={18} strokeWidth={1.9} />}
-      title="Canonical event directory"
-      action={
-        controller.isListLoading ?
-          "Loading" :
-          `${controller.filteredRows.length} shown`
-      }
-    >
-      <AdminToolbar>
-        <SegmentedControl<EventPublishingFilter>
-          ariaLabel="Event filters"
-          options={[
-            {id: "launchCities", label: "Indore + Mumbai"},
-            {id: "upcoming", label: "Upcoming"},
-            {id: "all", label: "All"},
-            {id: "active", label: "Active"},
-            {id: "cancelled", label: "Cancelled"},
-            {id: "full", label: "Full"},
-            {id: "searchIssues", label: "Search issues"},
-          ]}
-          value={controller.filter}
-          onChange={controller.setFilter}
-        />
-        <SearchField
-          ariaLabel="Search canonical events"
-          icon={<Search size={16} strokeWidth={1.8} />}
-          onChange={controller.setQuery}
-          placeholder="Search event, organizer, id, city, venue"
-          value={controller.query}
-        />
-        <AdminButton
-          disabled={controller.isListLoading || controller.isExternalListLoading}
-          icon={<RefreshCw size={15} strokeWidth={1.9} />}
-          onClick={() => {
-            void controller.refreshList();
-            void controller.refreshExternalList();
-            void controller.refreshSupplyReadiness();
-          }}
-        >
-          Refresh
-        </AdminButton>
-      </AdminToolbar>
-      <EventDirectoryTable
-        rows={controller.filteredRows}
-        selectedEventId={controller.event?.eventId ?? controller.eventId}
-        onSelect={controller.selectEvent}
-      />
-    </Panel>
-  );
-}
-
-function EventExternalSupplySummaryPanel({
-  controller,
-  externalReviewCount,
-  importBlockedCount,
-  readOnlyImportCount,
-}: {
-  controller: EventPublishingController;
-  externalReviewCount: number;
-  importBlockedCount: number;
-  readOnlyImportCount: number;
-}) {
-  return (
-    <Panel
-      icon={<ExternalLink size={18} strokeWidth={1.9} />}
-      title="External supply"
-      action={`${controller.filteredExternalRows.length} shown`}
-    >
-      <AdminStatusGrid compact>
-        <StateRow label="Total" value={String(controller.externalRows.length)} />
-        <StateRow label="Review open" value={String(externalReviewCount)} />
-        <StateRow label="Read-only drafts" value={String(readOnlyImportCount)} />
-        <StateRow label="Import blockers" value={String(importBlockedCount)} />
-        <StateRow
-          label="Snapshot"
-          value={formatDateTime(controller.externalListGeneratedAt)}
-        />
-      </AdminStatusGrid>
-      <AdminPanelActions>
-        <AdminButton
-          icon={<ExternalLink size={15} strokeWidth={1.9} />}
-          onClick={controller.openExternalSupply}
-        >
-          Review supply
-        </AdminButton>
-      </AdminPanelActions>
-    </Panel>
-  );
-}
-
-function EventDetailSummary({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  const event = controller.event;
-  return (
-    <Panel
-      span={2}
-      icon={<CalendarDays size={18} strokeWidth={1.9} />}
-      title="Event status"
-      action={event?.status ?? "Not loaded"}
-    >
-      <AdminStatusGrid>
-        <StateRow label="Document" value={event?.eventId ?? controller.eventId} />
-        <StateRow label="Organizer" value={event?.organizerName} />
-        <StateRow label="City" value={event?.discovery.citySlug} />
-        <StateRow label="Venue" value={event?.meetingPoint} />
-        <StateRow label="Starts" value={formatDateTime(event?.startTime)} />
-        <StateRow
-          label="Capacity"
-          value={event ? `${event.bookedCount}/${event.capacityLimit}` : null}
-        />
-        <StateRow label="Search" value={event?.searchIndexStatus} />
-        <StateRow
-          label="Changes"
-          value={`${controller.diffRows.length} pending`}
-        />
-      </AdminStatusGrid>
-    </Panel>
-  );
-}
-
-function ExternalEventSupplyPanel({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  return (
-    <Panel
-      span={2}
-      icon={<ExternalLink size={18} strokeWidth={1.9} />}
-      title="Read-only external event supply"
-      action={
-        controller.isExternalListLoading ?
-          "Loading" :
-          `${controller.filteredExternalRows.length} shown`
-      }
-    >
-      <AdminToolbar>
-        <SegmentedControl<ExternalEventSupplyFilter>
-          ariaLabel="External event supply filters"
-          options={[
-            {id: "reviewOpen", label: "Review open"},
-            {id: "launchCities", label: "Indore + Mumbai"},
-            {id: "upcoming", label: "Upcoming"},
-            {id: "public", label: "Public"},
-            {id: "active", label: "Active"},
-            {id: "cancelled", label: "Cancelled"},
-            {id: "all", label: "All"},
-          ]}
-          value={controller.externalFilter}
-          onChange={controller.setExternalFilter}
-        />
-        <SearchField
-          ariaLabel="Search external event supply"
-          icon={<Search size={16} strokeWidth={1.8} />}
-          onChange={controller.setExternalQuery}
-          placeholder="Search source, organizer, candidate, venue"
-          value={controller.externalQuery}
-        />
-      </AdminToolbar>
-      <AdminEventSupplyReviewGrid>
-        <ExternalEventSupplyTable
-          onSelect={controller.selectExternalEvent}
-          rows={controller.filteredExternalRows}
-          selectedEventId={controller.selectedExternalEventId}
-        />
-        <AdminEventSupplyDetailStack>
-          <ExternalEventSupplyDetail event={controller.selectedExternalEvent} />
-          <ExternalEventImportReviewPanel
-            review={controller.selectedExternalImportReview}
-          />
-        </AdminEventSupplyDetailStack>
-      </AdminEventSupplyReviewGrid>
-    </Panel>
-  );
-}
-
-function EventContractPanel({
-  externalListGeneratedAt,
-  listGeneratedAt,
-}: {
-  externalListGeneratedAt: string | null;
-  listGeneratedAt: string | null;
-}) {
-  return (
-    <Panel
-      icon={<Database size={18} strokeWidth={1.9} />}
-      title="Event contract"
-      action="events"
-    >
-      <QualityList>
-        <StateRow label="Source of truth" value="Cloud Firestore events/{id}" />
-        <StateRow
-          label="Search/list"
-          value="adminListEventDetails + startTime window + adminSearch.tokens"
-        />
-        <StateRow
-          label="Canonical snapshot"
-          value={formatDateTime(listGeneratedAt)}
-        />
-        <StateRow
-          label="External snapshot"
-          value={formatDateTime(externalListGeneratedAt)}
-        />
-        <StateRow
-          label="Default"
-          value="Upcoming active events in Indore and Mumbai"
-        />
-        <StateRow
-          label="External default"
-          value="Open review queue for Indore and Mumbai supply"
-        />
-        <StateRow
-          label="Safe writes"
-          value="description, photoUrl, format, distance, pace"
-        />
-        <StateRow
-          label="Read-only here"
-          value="schedule, capacity, price, status, cancellation"
-        />
-        <StateRow
-          label="App title"
-          value="Flutter derives title from time + eventFormat"
-        />
-        <StateRow
-          label="Intake handoff"
-          value="Approved external candidates target externalEvents/{id}, not events/{id}"
-        />
-        <StateRow
-          label="External events"
-          value="Read-only, outbound-only, no Catch booking/payments/waitlist"
-        />
-        <StateRow
-          label="External publish"
-          value="One preflight-ready row at a time through adminPublishExternalEvent"
-        />
-      </QualityList>
-    </Panel>
-  );
-}
-
-function EventDirectoryTable({
-  onSelect,
-  rows,
-  selectedEventId,
-}: {
-  onSelect: (eventId: string) => void;
-  rows: AdminEventListRow[];
-  selectedEventId: string;
-}) {
-  if (rows.length === 0) {
-    return (
-      <EmptyState
-        variant="workbench"
-        icon={<FolderSearch size={16} strokeWidth={1.9} />}
-      >
-        No canonical events match this filter.
-      </EmptyState>
-    );
-  }
-  return (
-    <DataTable variant="workbench">
-      <thead>
-        <tr>
-          <th>Event</th>
-          <th>Organizer</th>
-          <th>City / venue</th>
-          <th>Time</th>
-          <th>Status / demand</th>
-          <th>Readiness</th>
-          <th>Select</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row) => (
-          <AdminTableRow key={row.eventId} selected={selectedEventId === row.eventId}>
-            <td>
-              <AdminRowTitle>
-                <strong>{row.title}</strong>
-                <span>{row.eventId}</span>
-              </AdminRowTitle>
-            </td>
-            <td>
-              <AdminRowTitle compact>
-                <span>{row.organizerName ?? "Unknown organizer"}</span>
-                <span>{row.clubId}</span>
-              </AdminRowTitle>
-            </td>
-            <td>
-              <AdminRowTitle compact>
-                <span>{row.citySlug ?? "No city"}</span>
-                <span>{row.meetingPoint || "No meeting point"}</span>
-              </AdminRowTitle>
-            </td>
-            <td>{formatDateTime(row.startTime)}</td>
-            <td>
-              <AdminRowTitle compact>
-                <span>{row.status} / {row.availability ?? "no availability"}</span>
-                <span>
-                  {row.bookedCount}/{row.capacityLimit} · {formatMoney(row)}
-                </span>
-              </AdminRowTitle>
-            </td>
-            <td>
-              <AdminTagRow>
-                <AdminTag tone={row.searchIndexStatus === "indexed" ? "muted" : "neutral"}>
-                  {row.searchIndexStatus}
-                </AdminTag>
-                {eventIsFull(row) ? <AdminTag>full</AdminTag> : null}
-              </AdminTagRow>
-            </td>
-            <td>
-              <TableActionButton onClick={() => onSelect(row.eventId)}>
-                Open
-              </TableActionButton>
-            </td>
-          </AdminTableRow>
-        ))}
-      </tbody>
-    </DataTable>
-  );
-}
-
-function ExternalEventSupplyTable({
-  onSelect,
-  rows,
-  selectedEventId,
-}: {
-  onSelect: (eventId: string) => void;
-  rows: AdminExternalEventListRow[];
-  selectedEventId: string | null;
-}) {
-  if (rows.length === 0) {
-    return (
-      <EmptyState
-        variant="workbench"
-        icon={<FolderSearch size={16} strokeWidth={1.9} />}
-      >
-        No read-only external events match this filter.
-      </EmptyState>
-    );
-  }
-  return (
-    <DataTable variant="workbench">
-      <thead>
-        <tr>
-          <th>External event</th>
-          <th>Organizer</th>
-          <th>City / source</th>
-          <th>Time</th>
-          <th>Status</th>
-          <th>Import guard</th>
-          <th>Source</th>
-          <th>Select</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row) => (
-          <AdminTableRow key={row.eventId} selected={selectedEventId === row.eventId}>
-            <td>
-              <AdminRowTitle>
-                <strong>{row.title}</strong>
-                <span>{row.targetPath}</span>
-              </AdminRowTitle>
-            </td>
-            <td>
-              <AdminRowTitle compact>
-                <span>{row.canonicalHostId}</span>
-                <span>compat: {row.compatibilityClubId}</span>
-              </AdminRowTitle>
-            </td>
-            <td>
-              <AdminRowTitle compact>
-                <span>{row.citySlug ?? "No city"}</span>
-                <span>{row.platform} / {row.sourceEventKey}</span>
-              </AdminRowTitle>
-            </td>
-            <td>{formatDateTime(row.startTime)}</td>
-            <td>
-              <AdminTagRow>
-                <AdminTag
-                  tone={row.publicationStatus === "public" ? "muted" : "neutral"}
-                >
-                  {row.publicationStatus}
-                </AdminTag>
-                <AdminTag tone="muted">{row.status}</AdminTag>
-                <AdminTag tone="muted">{row.availability}</AdminTag>
-              </AdminTagRow>
-            </td>
-            <td>
-              <AdminTagRow>
-                <AdminTag
-                  tone={row.importPolicyAcknowledged ? "muted" : "neutral"}
-                >
-                  policy {row.importPolicyAcknowledged ? "ok" : "open"}
-                </AdminTag>
-                <AdminTag tone={row.ownerSafeCopyReviewed ? "muted" : "neutral"}>
-                  copy {row.ownerSafeCopyReviewed ? "ok" : "open"}
-                </AdminTag>
-                {row.duplicateCandidateCount > 0 ? (
-                  <AdminTag tone="muted">
-                    {row.duplicateCandidateCount} duplicate
-                  </AdminTag>
-                ) : null}
-              </AdminTagRow>
-            </td>
-            <td>
-              {row.primaryExternalUrl ? (
-                <AdminLinkButton
-                  href={row.primaryExternalUrl}
-                  icon={<ExternalLink size={15} strokeWidth={1.9} />}
-                  label={`Open source for ${row.title}`}
-                  rel="noreferrer"
-                  target="_blank"
-                  variant="icon"
-                />
-              ) : (
-                <AdminMutedCell>none</AdminMutedCell>
-              )}
-            </td>
-            <td>
-              <TableActionButton onClick={() => onSelect(row.eventId)}>
-                Inspect
-              </TableActionButton>
-            </td>
-          </AdminTableRow>
-        ))}
-      </tbody>
-    </DataTable>
-  );
-}
-
-function ExternalEventSupplyDetail({
-  event,
-}: {
-  event: AdminExternalEventListRow | null;
-}) {
-  if (!event) {
-    return (
-      <AdminEventSupplyEmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
-        Select an external event to inspect source attribution.
-      </AdminEventSupplyEmptyState>
-    );
-  }
-
-  return (
-    <AdminEventSupplyDetail
-      aria-label={`External event supply detail for ${event.title}`}
-    >
-      <AdminSearchCandidateHeader>
-        <div>
-          <AdminEyebrow>{event.targetPath}</AdminEyebrow>
-          <h3>{event.title}</h3>
-        </div>
-        <StatusChip tone={externalEventNeedsReview(event) ? "" : "ready"}>
-          {externalEventNeedsReview(event) ? "review open" : "reviewed"}
-        </StatusChip>
-      </AdminSearchCandidateHeader>
-      <QualityList>
-        <StateRow label="Canonical organizer" value={event.canonicalHostId} />
-        <StateRow label="Compatibility club" value={event.compatibilityClubId} />
-        <StateRow label="City" value={event.citySlug} />
-        <StateRow label="Starts" value={formatDateTime(event.startTime)} />
-        <StateRow label="Ends" value={formatDateTime(event.endTime)} />
-        <StateRow label="Venue" value={event.meetingPoint || null} />
-        <StateRow label="Activity" value={formatEventLabel(event.activityKind)} />
-        <StateRow
-          label="Format"
-          value={formatEventLabel(event.interactionModel)}
-        />
-        <StateRow
-          label="Price"
-          value={event.priceDisplayText ?? formatExternalMoney(event)}
-        />
-        <StateRow label="Publication" value={event.publicationStatus} />
-      </QualityList>
-      <AdminTagRow>
-        <AdminTag tone={event.importPolicyAcknowledged ? "muted" : "neutral"}>
-          import policy {event.importPolicyAcknowledged ? "ok" : "open"}
-        </AdminTag>
-        <AdminTag tone={event.ownerSafeCopyReviewed ? "muted" : "neutral"}>
-          owner-safe copy {event.ownerSafeCopyReviewed ? "ok" : "open"}
-        </AdminTag>
-        <AdminTag tone={event.duplicateCandidateCount > 0 ? "neutral" : "muted"}>
-          {event.duplicateCandidateCount} duplicate candidates
-        </AdminTag>
-        <AdminTag tone="muted">{event.availability}</AdminTag>
-      </AdminTagRow>
-      <AdminIntakeSourceList>
-        <StateRow label="Platform" value={event.platform} />
-        <StateRow label="Source key" value={event.sourceEventKey} />
-        <StateRow label="Candidate" value={event.candidateId} />
-        <StateRow label="Normalized key" value={event.normalizedEventKey} />
-        <StateRow label="Primary candidate" value={event.primaryCandidateId} />
-        <StateRow label="Review batch" value={event.reviewBatchId} />
-        <StateRow label="Reviewer" value={event.reviewer} />
-        <StateRow label="Decided" value={event.decidedAt} />
-      </AdminIntakeSourceList>
-      <AdminEventSupplyLinks>
-        {event.eventUrl ? (
-          <AdminLinkButton
-            href={event.eventUrl}
-            icon={<ExternalLink size={15} strokeWidth={1.9} />}
-            label={`Open external event page for ${event.title}`}
-            rel="noreferrer"
-            target="_blank"
-          >
-            Event page
-          </AdminLinkButton>
-        ) : null}
-        {event.sourceUrl && event.sourceUrl !== event.eventUrl ? (
-          <AdminLinkButton
-            href={event.sourceUrl}
-            icon={<ExternalLink size={15} strokeWidth={1.9} />}
-            label={`Open source page for ${event.title}`}
-            rel="noreferrer"
-            target="_blank"
-          >
-            Source page
-          </AdminLinkButton>
-        ) : null}
-        {event.primaryExternalUrl &&
-          event.primaryExternalUrl !== event.eventUrl &&
-          event.primaryExternalUrl !== event.sourceUrl ? (
-            <AdminLinkButton
-              href={event.primaryExternalUrl}
-              icon={<ExternalLink size={15} strokeWidth={1.9} />}
-              label={`Open primary outbound link for ${event.title}`}
-              rel="noreferrer"
-              target="_blank"
-            >
-              Primary outbound
-            </AdminLinkButton>
-          ) : null}
-      </AdminEventSupplyLinks>
-    </AdminEventSupplyDetail>
-  );
-}
-
-function ExternalEventImportReviewPanel({
-  review,
-}: {
-  review: ExternalEventImportReview | null;
-}) {
-  if (!review) {
-    return (
-      <AdminEventSupplyEmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
-        Select an external event to inspect import eligibility.
-      </AdminEventSupplyEmptyState>
-    );
-  }
-
-  return (
-    <AdminEventSupplyDetail
-      aria-label="External event import eligibility"
-    >
-      <QualityRow
-        tone={importReviewToneClass(review.status)}
-        icon={<Lock size={16} strokeWidth={1.9} />}>
-        <strong>{review.label}</strong>
-        <span>{review.detail}</span>
-      </QualityRow>
-      <QualityList>
-        <StateRow label="Target" value={review.targetPath} />
-        <StateRow label="Import action" value={review.importActionId} />
-        <StateRow label="Preflight action" value={review.executionActionId} />
-        <StateRow label="Next command" value={review.nextCommand} />
-      </QualityList>
-      {review.blockers.length > 0 ? (
-        <AdminTagList>
-          {review.blockers.map((blocker) => (
-            <AdminTag key={blocker} tone="muted">
-              {blocker.replaceAll("_", " ")}
-            </AdminTag>
-          ))}
-        </AdminTagList>
+      {controller.view === "detail" ? (
+        <eventPublishingDirectoryPanels.EventDetailView controller={controller} />
+      ) : controller.view === "readiness" ? (
+        <eventPublishingDirectoryPanels.EventReadinessView controller={controller} />
+      ) : controller.view === "external" ? (
+        <eventPublishingDirectoryPanels.ExternalEventInventoryView controller={controller} />
       ) : (
-        <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
-          No deterministic blockers in the current snapshot.
-        </EmptyState>
+        <eventPublishingDirectoryPanels.EventDirectoryView
+          activeCount={activeCount}
+          controller={controller}
+          fullCount={fullCount}
+          searchIssueCount={searchIssueCount}
+        />
       )}
-    </AdminEventSupplyDetail>
-  );
-}
-
-function EventSupplyReadinessPanel({
-  executionPlan,
-  generatedAt,
-  importPlan,
-  isLoading,
-  onPublishExternalEvent,
-  publishingExternalActionId,
-  source,
-}: {
-  executionPlan: ExternalEventImportExecutionPlan | null;
-  generatedAt: string | null;
-  importPlan: ExternalEventImportPlan | null;
-  isLoading: boolean;
-  onPublishExternalEvent: (
-    request: ExternalEventPublishRequest
-  ) => Promise<boolean>;
-  publishingExternalActionId: string | null;
-  source: string | null;
-}) {
-  const [actionFilter, setActionFilter] =
-    useState<EventImportReadinessFilter>("needsAction");
-  const [actionQuery, setActionQuery] = useState("");
-  const [publishReviewNote, setPublishReviewNote] = useState("");
-  const [publishChecklist, setPublishChecklist] = useState(
-    initialExternalPublishChecklist
-  );
-  const publishChecklistComplete = Object.values(publishChecklist)
-    .every(Boolean);
-  const publishDisabledReason =
-    !publishReviewNote.trim() ?
-      "Add an external publish review note before publishing." :
-    !publishChecklistComplete ?
-      "Complete the external publish checklist before publishing." :
-    undefined;
-
-  function initialExternalPublishChecklist() {
-    return {
-      preflightActionReviewed: false,
-      outboundLinksReviewed: false,
-      noCatchBookingPaymentsWaitlist: false,
-      ownerSafeCopyReviewed: false,
-    };
-  }
-
-  const actionRows = useMemo(
-    () => buildImportReadinessRows(importPlan, executionPlan),
-    [executionPlan, importPlan]
-  );
-  const filteredActionRows = useMemo(
-    () => filterImportReadinessRows(actionRows, actionFilter, actionQuery),
-    [actionFilter, actionQuery, actionRows]
-  );
-  const visibleActionRows = filteredActionRows.slice(0, 50);
-  const actionLabel = isLoading ? "Loading" : importPlan?.policy.status ?? "No plan";
-
-  return (
-    <Panel
-      span={2}
-      icon={<Settings2 size={18} strokeWidth={1.9} />}
-      title="External import readiness"
-      action={actionLabel}
-    >
-      {importPlan && executionPlan ? (
-        <AdminSearchCandidatePanel>
-          <AdminIntakeStateGrid>
-            <StateRow label="Candidates" value={String(importPlan.summary.candidates)} />
-            <StateRow label="Source" value={source ?? "unknown"} />
-            <StateRow label="Generated" value={formatDateTime(generatedAt)} />
-            <StateRow
-              label="Read-only drafts"
-              value={String(
-                importPlan.summary.proposedReadOnlyEvents ??
-                  importPlan.summary.proposedCreates
-              )}
-            />
-            <StateRow
-              label="Merged links"
-              value={String(importPlan.summary.mergedSourceLinks ?? 0)}
-            />
-            <StateRow label="Write-ready" value={String(importPlan.summary.writeReady)} />
-            <StateRow label="Waiting review" value={String(importPlan.summary.waitingReview)} />
-            <StateRow label="Blocked" value={String(importPlan.summary.blocked)} />
-            <StateRow
-              label="Preflight valid"
-              value={String(
-                executionPlan.summary.projectionValid ??
-                  executionPlan.summary.payloadValid
-              )}
-            />
-            <StateRow
-              label="Preflight errors"
-              value={String(
-                executionPlan.summary.projectionInvalidCount ??
-                  executionPlan.summary.payloadInvalid
-              )}
-            />
-          </AdminIntakeStateGrid>
-
-          <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
-            <strong>
-              {importPlan.policy.writeEnabled ?
-                "Import writes enabled" :
-                "Import writes disabled"}
-            </strong>
-            <span>{importPlan.policy.reason}</span>
-            <span>
-              Preflight: {executionPlan.policy.authorityModel} /{" "}
-              {executionPlan.policy.reason}
-            </span>
-          </QualityRow>
-
-          <AdminTagList>
-            {importPlan.guardrails.slice(0, 10).map((guardrail) => (
-              <AdminTag key={guardrail} tone="muted">
-                {guardrail.replaceAll("_", " ")}
-              </AdminTag>
-            ))}
-          </AdminTagList>
-
-          <AdminIntakeSection>
-            <AdminIntakeSectionTitle>Import Action Directory</AdminIntakeSectionTitle>
-            <AdminToolbar>
-              <SegmentedControl<EventImportReadinessFilter>
-                ariaLabel="External import action filters"
-                options={[
-                  {id: "needsAction", label: "Needs action"},
-                  {id: "writeReady", label: "Write-ready"},
-                  {id: "blocked", label: "Blocked"},
-                  {id: "waitingReview", label: "Waiting"},
-                  {id: "rejected", label: "Rejected"},
-                  {id: "all", label: "All"},
-                ]}
-                value={actionFilter}
-                onChange={setActionFilter}
-              />
-              <SearchField
-                ariaLabel="Search import actions"
-                icon={<Search size={16} strokeWidth={1.8} />}
-                onChange={setActionQuery}
-                placeholder="Search title, target, candidate, source"
-                value={actionQuery}
-              />
-            </AdminToolbar>
-            <StateRow
-              label="Visible rows"
-              value={`${visibleActionRows.length} of ${filteredActionRows.length}`}
-            />
-            <AdminIntakeSection>
-              <AdminIntakeSectionTitle>Publish Gates</AdminIntakeSectionTitle>
-              <TextareaField
-                label="External publish review note"
-                onChange={setPublishReviewNote}
-                placeholder="Why this reviewed external event can become public read-only supply"
-                rows={3}
-                value={publishReviewNote}
-              />
-              <QualityList>
-                <CheckboxField
-                  checked={publishChecklist.preflightActionReviewed}
-                  label="Selected action matches the latest preflight snapshot"
-                  onChange={(checked) => setPublishChecklist((current) => ({
-                    ...current,
-                    preflightActionReviewed: checked,
-                  }))}
-                />
-                <CheckboxField
-                  checked={publishChecklist.outboundLinksReviewed}
-                  label="Outbound event/source links were reviewed"
-                  onChange={(checked) => setPublishChecklist((current) => ({
-                    ...current,
-                    outboundLinksReviewed: checked,
-                  }))}
-                />
-                <CheckboxField
-                  checked={publishChecklist.noCatchBookingPaymentsWaitlist}
-                  label="No Catch booking, payments, reservations, or waitlist"
-                  onChange={(checked) => setPublishChecklist((current) => ({
-                    ...current,
-                    noCatchBookingPaymentsWaitlist: checked,
-                  }))}
-                />
-                <CheckboxField
-                  checked={publishChecklist.ownerSafeCopyReviewed}
-                  label="Owner-safe copy and attribution were reviewed"
-                  onChange={(checked) => setPublishChecklist((current) => ({
-                    ...current,
-                    ownerSafeCopyReviewed: checked,
-                  }))}
-                />
-              </QualityList>
-            </AdminIntakeSection>
-            <EventImportReadinessTable
-              publishDisabledReason={publishDisabledReason}
-              publishingExternalActionId={publishingExternalActionId}
-              rows={visibleActionRows}
-              onPublish={async (row) => {
-                const published = await onPublishExternalEvent({
-                  sourceActionId: row.sourceActionId,
-                  targetPath: row.targetPath,
-                  reviewNote: publishReviewNote,
-                  checklist: publishChecklist,
-                });
-                if (published) {
-                  setPublishReviewNote("");
-                  setPublishChecklist(initialExternalPublishChecklist());
-                }
-              }}
-            />
-          </AdminIntakeSection>
-
-          <AdminIntakeSection>
-            <AdminIntakeSectionTitle>Operator Commands</AdminIntakeSectionTitle>
-            <AdminCommandStack>
-              {Object.entries({
-                ...importPlan.commands,
-                preflight: executionPlan.commands.preflight,
-              }).map(([label, command]) => (
-                <AdminCommandRow key={`${label}:${command}`}>
-                  <span>{label}</span>
-                  <code>{command}</code>
-                </AdminCommandRow>
-              ))}
-            </AdminCommandStack>
-          </AdminIntakeSection>
-
-          <AdminIntakeSourceList>
-            <StateRow
-              label="Candidate queue"
-              value={importPlan.generatedFrom.externalEventCandidateQueue}
-            />
-            <StateRow
-              label="Import plan"
-              value={executionPlan.generatedFrom.externalEventImportPlan}
-            />
-          </AdminIntakeSourceList>
-        </AdminSearchCandidatePanel>
-      ) : (
-        <EmptyState
-          variant="workbench"
-          icon={<FolderSearch size={16} strokeWidth={1.9} />}
-        >
-          No external import readiness snapshot is available.
-        </EmptyState>
-      )}
-    </Panel>
-  );
-}
-
-function EventImportReadinessTable({
-  onPublish,
-  publishDisabledReason,
-  publishingExternalActionId,
-  rows,
-}: {
-  onPublish: (row: EventImportReadinessRow) => Promise<void>;
-  publishDisabledReason: string | undefined;
-  publishingExternalActionId: string | null;
-  rows: EventImportReadinessRow[];
-}) {
-  if (rows.length === 0) {
-    return (
-      <EmptyState
-        variant="workbench"
-        icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
-      >
-        No import actions match this readiness filter.
-      </EmptyState>
-    );
-  }
-
-  return (
-    <DataTable variant="workbench">
-      <thead>
-        <tr>
-          <th>Candidate</th>
-          <th>Organizer / time</th>
-          <th>Status</th>
-          <th>Preflight</th>
-          <th>Evidence</th>
-          <th>Source</th>
-          <th>Publish</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row) => {
-          const isPublishing = publishingExternalActionId === row.sourceActionId;
-          const rowDisabledReason = importPublishDisabledReason(
-            row,
-            publishDisabledReason,
-            publishingExternalActionId
-          );
-          return (
-            <tr key={row.key}>
-              <td>
-                <AdminRowTitle>
-                  <strong>{row.title}</strong>
-                  <span>{row.targetPath}</span>
-                </AdminRowTitle>
-              </td>
-              <td>
-                <AdminRowTitle compact>
-                  <span>{row.canonicalHostId}</span>
-                  <span>{formatDateTime(row.startTime)}</span>
-                </AdminRowTitle>
-              </td>
-              <td>
-                <AdminTagRow>
-                  <AdminTag tone={row.status === "write_ready" ? "muted" : "neutral"}>
-                    {row.status.replaceAll("_", " ")}
-                  </AdminTag>
-                  <AdminTag tone="muted">{row.platform}</AdminTag>
-                </AdminTagRow>
-              </td>
-              <td>
-                <AdminRowTitle compact>
-                  <span>{row.executionStatus?.replaceAll("_", " ") ?? "not preflighted"}</span>
-                  <span>
-                    {row.validationErrorCount} validation error
-                    {row.validationErrorCount === 1 ? "" : "s"}
-                  </span>
-                </AdminRowTitle>
-              </td>
-              <td>
-                <AdminRowTitle compact>
-                  <span>{row.candidateId}</span>
-                  <span>
-                    {row.blockers.length} blocker
-                    {row.blockers.length === 1 ? "" : "s"} ·{" "}
-                    {row.outboundLinkCount} link
-                    {row.outboundLinkCount === 1 ? "" : "s"}
-                  </span>
-                </AdminRowTitle>
-              </td>
-              <td>
-                {row.primaryExternalUrl ? (
-                  <AdminLinkButton
-                    href={row.primaryExternalUrl}
-                    icon={<ExternalLink size={15} strokeWidth={1.9} />}
-                    label={`Open source for ${row.title}`}
-                    rel="noreferrer"
-                    target="_blank"
-                    variant="icon"
-                  />
-                ) : (
-                  <AdminMutedCell>none</AdminMutedCell>
-                )}
-              </td>
-              <td>
-                <TableActionButton
-                  disabled={Boolean(rowDisabledReason)}
-                  onClick={() => void onPublish(row)}
-                  title={rowDisabledReason}
-                >
-                  {isPublishing ? "Publishing" : "Publish"}
-                </TableActionButton>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </DataTable>
-  );
-}
-
-function importPublishDisabledReason(
-  row: EventImportReadinessRow,
-  publishDisabledReason: string | undefined,
-  publishingExternalActionId: string | null
-): string | undefined {
-  if (publishingExternalActionId) {
-    return publishingExternalActionId === row.sourceActionId ?
-      "External event publish is already in progress." :
-      "Wait for the current external event publish to finish.";
-  }
-  if (!row.publishReady) {
-    if (row.blockers.length > 0) {
-      return `Resolve ${row.blockers.length} import blocker${
-        row.blockers.length === 1 ? "" : "s"
-      } before publishing.`;
-    }
-    if (row.validationErrorCount > 0) {
-      return `Resolve ${row.validationErrorCount} preflight validation error${
-        row.validationErrorCount === 1 ? "" : "s"
-      } before publishing.`;
-    }
-    if (row.status !== "write_ready") {
-      return `Import action is ${row.status.replaceAll("_", " ")}.`;
-    }
-    if (row.executionStatus !== "would_publish_read_only") {
-      return `Preflight is ${
-        row.executionStatus?.replaceAll("_", " ") ?? "not available"
-      }.`;
-    }
-    return "Regenerate event supply readiness before publishing.";
-  }
-  return publishDisabledReason;
-}
-
-function buildImportReadinessRows(
-  importPlan: ExternalEventImportPlan | null,
-  executionPlan: ExternalEventImportExecutionPlan | null
-): EventImportReadinessRow[] {
-  const publishPolicyEnabled =
-    importPlan?.policy.writeEnabled === true &&
-    executionPlan?.policy.writeEnabled === true &&
-    executionPlan.policy.authorityModel === "admin_import_service";
-  const executionBySourceActionId = new Map(
-    (executionPlan?.actions ?? []).map((action) => [
-      action.sourceActionId,
-      action,
-    ])
-  );
-  return (importPlan?.actions ?? []).map((action) => {
-    const executionAction =
-      executionBySourceActionId.get(action.actionId) ?? null;
-    const draft = action.proposedReadOnlyEventDraft;
-    const primaryLink =
-      draft.booking.externalLinks.find((link) => link.primary) ??
-      draft.booking.externalLinks[0] ??
-      null;
-    const blockers = uniqueStrings([
-      ...action.blockers,
-      ...(executionAction?.blockers ?? []),
-      ...(publishPolicyEnabled ? [] : ["external_event_import_policy_disabled"]),
-    ]);
-    const validationErrorCount =
-      (executionAction?.projectionValidation?.errors.length ?? 0) +
-      (executionAction?.payloadValidation.errors.length ?? 0);
-    const executionStatus = executionAction?.status ?? null;
-    return {
-      key: action.actionId,
-      title: draft.title || draft.eventId,
-      platform: action.platform,
-      status: action.status,
-      executionStatus,
-      targetPath: action.targetPath,
-      candidateId: action.candidateId,
-      sourceEventKey: action.sourceEventKey,
-      canonicalHostId: draft.canonicalHostId,
-      startTime: draft.startTime,
-      outboundLinkCount: draft.booking.externalLinks.length,
-      primaryExternalUrl: primaryLink?.url ?? null,
-      blockers,
-      validationErrorCount,
-      sourceActionId: action.actionId,
-      publishReady:
-        action.status === "write_ready" &&
-        executionStatus === "would_publish_read_only" &&
-        publishPolicyEnabled &&
-        blockers.length === 0 &&
-        validationErrorCount === 0 &&
-        executionAction?.projectionValidation?.valid === true &&
-        executionAction?.payloadValidation.valid === true,
-    };
-  });
-}
-
-function filterImportReadinessRows(
-  rows: EventImportReadinessRow[],
-  filter: EventImportReadinessFilter,
-  query: string
-): EventImportReadinessRow[] {
-  const tokens = query.toLowerCase().trim().split(/\s+/u).filter(Boolean);
-  return rows.filter((row) => {
-    if (!importReadinessRowMatchesFilter(row, filter)) return false;
-    if (tokens.length === 0) return true;
-    const haystack = [
-      row.title,
-      row.platform,
-      row.status,
-      row.executionStatus,
-      row.targetPath,
-      row.candidateId,
-      row.sourceEventKey,
-      row.canonicalHostId,
-      row.startTime,
-      row.primaryExternalUrl,
-      ...row.blockers,
-    ]
-      .filter((item): item is string => typeof item === "string")
-      .join(" ")
-      .toLowerCase();
-    return tokens.every((token) => haystack.includes(token));
-  });
-}
-
-function importReadinessRowMatchesFilter(
-  row: EventImportReadinessRow,
-  filter: EventImportReadinessFilter
-): boolean {
-  if (filter === "all") return true;
-  if (filter === "writeReady") {
-    return row.status === "write_ready" ||
-      row.executionStatus === "would_publish_read_only";
-  }
-  if (filter === "blocked") {
-    return row.status === "blocked" ||
-      row.executionStatus === "blocked" ||
-      row.executionStatus === "projection_invalid" ||
-      row.executionStatus === "schema_invalid" ||
-      row.blockers.length > 0 ||
-      row.validationErrorCount > 0;
-  }
-  if (filter === "waitingReview") return row.status === "waiting_review";
-  if (filter === "rejected") return row.status === "rejected";
-  return row.status === "blocked" ||
-    row.status === "waiting_review" ||
-    row.status === "rejected" ||
-    row.executionStatus === "blocked" ||
-    row.executionStatus === "projection_invalid" ||
-    row.executionStatus === "schema_invalid" ||
-    row.blockers.length > 0 ||
-    row.validationErrorCount > 0;
-}
-
-function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values.filter(Boolean))).sort();
-}
-
-function importReviewToneClass(status: ExternalEventImportReview["status"]):
-  "success" | "warning" | "blocked" {
-  if (
-    status === "publishedExternal" ||
-    status === "preflightReady" ||
-    status === "mergedDuplicate"
-  ) {
-    return "success";
-  }
-  if (status === "blocked" || status === "rejected") return "blocked";
-  return "warning";
-}
-
-function EventEditor({
-  diffRows,
-  event,
-  eventId,
-  form,
-  isDetailLoading,
-  isSaving,
-  onEventIdChange,
-  onFormChange,
-  onLoad,
-  onSave,
-  validationIssues,
-}: {
-  diffRows: EventDiffRow[];
-  event: AdminEventDetails | null;
-  eventId: string;
-  form: EventPublishingFormState | null;
-  isDetailLoading: boolean;
-  isSaving: boolean;
-  onEventIdChange: (eventId: string) => void;
-  onFormChange: (form: EventPublishingFormState | null) => void;
-  onLoad: () => void;
-  onSave: () => void;
-  validationIssues: EventValidationIssue[];
-}) {
-  const update = <K extends keyof EventPublishingFormState>(
-    key: K,
-    value: EventPublishingFormState[K]
-  ) => {
-    if (!form) return;
-    onFormChange({...form, [key]: value});
-  };
-  const saveBlockerCount = countBlockingEventIssues(validationIssues);
-  const saveDisabledReason =
-    !form ? "Load a canonical event before saving." :
-    diffRows.length === 0 ? "No event changes to save." :
-    saveBlockerCount > 0 ?
-      `Resolve ${saveBlockerCount} save blocker${
-        saveBlockerCount === 1 ? "" : "s"
-      } before saving.` :
-    isDetailLoading ? "Wait for the event to finish loading." :
-    isSaving ? "Event save is already in progress." :
-    undefined;
-  const canSave = !saveDisabledReason;
-
-  return (
-    <AdminEditorGrid>
-      <AdminEditorPanel
-        icon={<Save size={18} strokeWidth={1.9} />}
-        title="Event editor"
-        action={event?.status ?? "No event"}
-      >
-        <AdminPublishingLoadbar>
-          <TextField
-            label="events/{id}"
-            onChange={onEventIdChange}
-            value={eventId}
-          />
-          <AdminButton
-            disabled={isDetailLoading}
-            icon={<FolderSearch size={15} strokeWidth={1.9} />}
-            onClick={onLoad}
-          >
-            Load
-          </AdminButton>
-          <AdminButton
-            disabled={!canSave}
-            icon={<Save size={15} strokeWidth={1.9} />}
-            onClick={onSave}
-            title={saveDisabledReason}
-            variant="primary"
-          >
-            Save
-          </AdminButton>
-        </AdminPublishingLoadbar>
-
-        {form ? (
-          <AdminForm variant="publishing" onSubmit={(submitEvent) => {
-            submitEvent.preventDefault();
-            if (canSave) onSave();
-          }}>
-            <AdminEditorSection>
-              <legend>App-Facing Copy</legend>
-              <TextareaField
-                label="Description"
-                onChange={(value) => update("description", value)}
-                rows={5}
-                value={form.description}
-              />
-              <TextField
-                label="Photo URL"
-                onChange={(value) => update("photoUrl", value)}
-                value={form.photoUrl}
-              />
-            </AdminEditorSection>
-
-            <AdminEditorSection>
-              <legend>Format</legend>
-              <AdminFieldGrid columns={3}>
-                <SelectField
-                  label="Activity kind"
-                  onChange={(value) =>
-                    update("activityKind", value as AdminEventActivityKind)}
-                  options={eventActivityKindOptions.map((value) => ({
-                    value,
-                    label: formatEventLabel(value),
-                  }))}
-                  value={form.activityKind}
-                />
-                <SelectField
-                  label="Interaction model"
-                  onChange={(value) =>
-                    update("interactionModel", value as AdminEventInteractionModel)}
-                  options={eventInteractionModelOptions.map((value) => ({
-                    value,
-                    label: formatEventLabel(value),
-                  }))}
-                  value={form.interactionModel}
-                />
-                <TextField
-                  label="Custom label"
-                  onChange={(value) => update("customActivityLabel", value)}
-                  value={form.customActivityLabel}
-                />
-                <TextField
-                  inputMode="decimal"
-                  label="Distance km"
-                  onChange={(value) => update("distanceKm", value)}
-                  type="number"
-                  value={form.distanceKm}
-                />
-                <SelectField
-                  label="Pace"
-                  onChange={(value) => update("pace", value as AdminEventPace)}
-                  options={eventPaceOptions.map((value) => ({
-                    value,
-                    label: formatEventLabel(value),
-                  }))}
-                  value={form.pace}
-                />
-                <TextField
-                  label="Review note"
-                  onChange={(value) => update("reviewNote", value)}
-                  value={form.reviewNote}
-                />
-              </AdminFieldGrid>
-            </AdminEditorSection>
-
-            <AdminEditorSection>
-              <legend>Read-Only Lifecycle</legend>
-              <AdminFieldGrid columns={3}>
-                <ReadonlyState label="Start" value={formatDateTime(event?.startTime)} />
-                <ReadonlyState label="End" value={formatDateTime(event?.endTime)} />
-                <ReadonlyState label="Status" value={event?.status ?? null} />
-                <ReadonlyState
-                  label="Capacity"
-                  value={event ? `${event.bookedCount}/${event.capacityLimit}` : null}
-                />
-                <ReadonlyState
-                  label="Waitlist"
-                  value={event ? String(event.waitlistedCount) : null}
-                />
-                <ReadonlyState
-                  label="Price"
-                  value={event ? formatMoney(event) : null}
-                />
-              </AdminFieldGrid>
-            </AdminEditorSection>
-          </AdminForm>
-        ) : (
-          <EmptyState
-            variant="editor"
-            icon={<Clock3 size={16} strokeWidth={1.9} />}
-          >
-            Load an event document to review canonical fields.
-          </EmptyState>
-        )}
-      </AdminEditorPanel>
-
-      <EventSidePanel
-        diffRows={diffRows}
-        event={event}
-        form={form}
-        validationIssues={validationIssues}
-      />
-    </AdminEditorGrid>
-  );
-}
-
-function EventSidePanel({
-  diffRows,
-  event,
-  form,
-  validationIssues,
-}: {
-  diffRows: EventDiffRow[];
-  event: AdminEventDetails | null;
-  form: EventPublishingFormState | null;
-  validationIssues: EventValidationIssue[];
-}) {
-  return (
-    <AdminWorkbenchStack>
-      <Panel
-        icon={<FileWarning size={18} strokeWidth={1.9} />}
-        title="Save checks"
-        action={`${countBlockingEventIssues(validationIssues)} blockers`}
-      >
-        <IssueList issues={validationIssues} />
-      </Panel>
-      <Panel
-        icon={<Database size={18} strokeWidth={1.9} />}
-        title="Before / after diff"
-        action={`${countEventDiffRows(diffRows)} changes`}
-      >
-        <DiffList rows={diffRows} />
-      </Panel>
-      <Panel
-        icon={<Smartphone size={18} strokeWidth={1.9} />}
-        title="App event preview"
-        action={event?.status ?? "No event"}
-      >
-        {form && event ? (
-          <AppEventPreview event={event} form={form} />
-        ) : (
-          <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
-            No event loaded
-          </EmptyState>
-        )}
-      </Panel>
-      <Panel
-        icon={<MapPin size={18} strokeWidth={1.9} />}
-        title="Discovery projection"
-        action={event?.discovery.availability ?? "No discovery"}
-      >
-        {event ? (
-          <QualityList>
-            <StateRow label="City" value={event.discovery.citySlug} />
-            <StateRow label="Activity" value={event.discovery.activityKind} />
-            <StateRow label="Availability" value={event.discovery.availability} />
-            <StateRow
-              label="Open spots"
-              value={event.discovery.hasOpenSpots === null ?
-                null :
-                event.discovery.hasOpenSpots ? "yes" : "no"}
-            />
-            <StateRow
-              label="Gates"
-              value={[
-                event.discovery.inviteRequired ? "invite" : null,
-                event.discovery.membershipRequired ? "membership" : null,
-                event.discovery.manualApprovalRequired ? "manual" : null,
-              ].filter(Boolean).join(", ") || "none"}
-            />
-            <StateRow
-              label="Age"
-              value={`${event.discovery.minAge ?? "?"}-${event.discovery.maxAge ?? "?"}`}
-            />
-            <StateRow label="Search index" value={event.searchIndexStatus} />
-          </QualityList>
-        ) : (
-          <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
-            No event loaded
-          </EmptyState>
-        )}
-      </Panel>
-      <Panel
-        icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
-        title="Mutation boundary"
-        action="safe fields"
-      >
-        <QualityList>
-          <StateRow label="Callable" value="adminUpdateEventDetails" />
-          <StateRow label="Audit log" value="adminAuditLogs/{id}" />
-          <StateRow label="Search rebuild" value="adminSearch projection" />
-          <StateRow label="Discovery rebuild" value="eventDiscoveryProjection" />
-          <StateRow label="Excluded" value="schedule, policy, cancellation" />
-        </QualityList>
-      </Panel>
     </AdminWorkbenchStack>
   );
 }
 
-function AppEventPreview({
-  event,
-  form,
-}: {
-  event: AdminEventDetails;
-  form: EventPublishingFormState;
-}) {
-  const label = form.customActivityLabel || formatEventLabel(form.activityKind);
-  return (
-    <QualityList>
-      <StateRow label="Collection" value={`events/${event.eventId}`} />
-      <StateRow label="Organizer" value={event.organizerName} />
-      <StateRow label="Time" value={formatDateTime(event.startTime)} />
-      <StateRow label="Venue" value={event.meetingPoint} />
-      <AdminSurfacePreview>
-        <strong>{label}</strong>
-        <span>
-          {[event.organizerName, event.discovery.citySlug, formatDateTime(event.startTime)]
-            .filter(Boolean)
-            .join(" · ")}
-        </span>
-        <span>{form.description || "No description"}</span>
-        <AdminTagRow>
-          <AdminTag tone="muted">{formatEventLabel(form.interactionModel)}</AdminTag>
-          <AdminTag tone="muted">{form.distanceKm} km</AdminTag>
-          <AdminTag tone="muted">{formatEventLabel(form.pace)}</AdminTag>
-        </AdminTagRow>
-      </AdminSurfacePreview>
-    </QualityList>
-  );
+const eventPublishingFilters: readonly EventPublishingFilter[] = [
+  "launchCities",
+  "upcoming",
+  "all",
+  "active",
+  "cancelled",
+  "full",
+  "searchIssues",
+];
+
+const externalEventSupplyFilters: readonly ExternalEventSupplyFilter[] = [
+  "launchCities",
+  "upcoming",
+  "public",
+  "active",
+  "cancelled",
+];
+
+function isEventPublishingFilter(
+  value: string | null
+): value is EventPublishingFilter {
+  return eventPublishingFilters.some((candidate) => candidate === value);
 }
 
-function IssueList({issues}: {issues: EventValidationIssue[]}) {
-  if (issues.length === 0) {
-    return (
-      <QualityList>
-        <StateRow label="Ready" value="No validation blockers" />
-      </QualityList>
-    );
-  }
-  return (
-    <AdminRoadmapList>
-      {issues.map((issue) => (
-        <AdminRoadmapListItem key={issue.id}>
-          <FileWarning size={15} strokeWidth={1.9} />
-          <span>
-            <strong>{issue.label}:</strong> {issue.detail}
-          </span>
-        </AdminRoadmapListItem>
-      ))}
-    </AdminRoadmapList>
-  );
-}
-
-function DiffList({rows}: {rows: EventDiffRow[]}) {
-  if (rows.length === 0) {
-    return (
-      <QualityList>
-        <StateRow label="Changes" value="No unsaved changes" />
-      </QualityList>
-    );
-  }
-  return (
-    <AdminDiffList>
-      {rows.slice(0, 12).map((row) => (
-        <AdminDiffRow
-          key={row.field}
-          field={row.field}
-          before={row.before}
-          after={row.after}
-        />
-      ))}
-      {rows.length > 12 && (
-        <AdminMutedCell>{rows.length - 12} more changes</AdminMutedCell>
-      )}
-    </AdminDiffList>
-  );
-}
-
-function ReadonlyState({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | null;
-}) {
-  return <StateRow label={label} value={value} />;
-}
-
-function formatDateTime(value: string | null | undefined): string {
-  if (!value) return "none";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
-}
-
-function formatMoney(row: {
-  currency: string;
-  priceInPaise: number;
-}): string {
-  const amount = row.priceInPaise / 100;
-  return new Intl.NumberFormat("en-IN", {
-    currency: row.currency,
-    maximumFractionDigits: 0,
-    style: "currency",
-  }).format(amount);
-}
-
-function formatExternalMoney(row: {
-  currency: string;
-  parsedPriceInPaise: number | null;
-}): string {
-  if (row.parsedPriceInPaise === null) return "none";
-  return formatMoney({
-    currency: row.currency,
-    priceInPaise: row.parsedPriceInPaise,
-  });
+function isExternalEventSupplyFilter(
+  value: string | null
+): value is ExternalEventSupplyFilter {
+  return externalEventSupplyFilters.some((candidate) => candidate === value);
 }

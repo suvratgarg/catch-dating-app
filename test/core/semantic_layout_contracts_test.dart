@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:flutter/material.dart';
@@ -140,10 +141,88 @@ void main() {
     expect(gap.height, CatchGaps.section);
   });
 
-  testWidgets('CatchSliverTerminalPadding owns scrollable bottom safe area', (
+  testWidgets(
+    'CatchSliverTerminalPadding uses the larger device safe area outside shell',
+    (tester) async {
+      const terminalPaddingKey = Key('terminal-padding');
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(
+              size: Size(390, 844),
+              padding: EdgeInsets.only(bottom: 12),
+              viewPadding: EdgeInsets.only(bottom: 34),
+              viewInsets: EdgeInsets.only(bottom: 300),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: CustomScrollView(
+                slivers: [
+                  CatchSliverTerminalPadding(
+                    key: terminalPaddingKey,
+                    extra: 10,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final terminalBox = tester.widget<SizedBox>(
+        find.descendant(
+          of: find.byKey(terminalPaddingKey),
+          matching: find.byType(SizedBox),
+        ),
+      );
+
+      expect(terminalBox.height, 44);
+    },
+  );
+
+  testWidgets(
+    'CatchScrollTerminalPadding uses raw floating shell inset plus extra',
+    (tester) async {
+      const terminalPaddingKey = Key('box-terminal-padding');
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(
+              size: Size(390, 844),
+              padding: EdgeInsets.only(bottom: 34),
+              viewPadding: EdgeInsets.only(bottom: 34),
+              viewInsets: EdgeInsets.only(bottom: 300),
+            ),
+            child: AppShellActiveTab(
+              index: appShellHomeTabIndex,
+              bottomOverlayInset: 102,
+              bottomBarPlacement: AppShellBottomBarPlacement.floating,
+              child: CatchScrollTerminalPadding(
+                key: terminalPaddingKey,
+                extra: 10,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final terminalBox = tester.widget<SizedBox>(
+        find.descendant(
+          of: find.byKey(terminalPaddingKey),
+          matching: find.byType(SizedBox),
+        ),
+      );
+
+      expect(terminalBox.height, 112);
+    },
+  );
+
+  testWidgets('CatchScrollTerminalPadding uses extra only in anchored shell', (
     tester,
   ) async {
-    const terminalPaddingKey = Key('terminal-padding');
+    const terminalPaddingKey = Key('anchored-terminal-padding');
 
     await tester.pumpWidget(
       const MaterialApp(
@@ -153,12 +232,12 @@ void main() {
             padding: EdgeInsets.only(bottom: 34),
             viewPadding: EdgeInsets.only(bottom: 34),
           ),
-          child: SafeArea(
-            bottom: false,
-            child: CustomScrollView(
-              slivers: [
-                CatchSliverTerminalPadding(key: terminalPaddingKey, extra: 10),
-              ],
+          child: AppShellActiveTab(
+            index: appShellHomeTabIndex,
+            bottomBarPlacement: AppShellBottomBarPlacement.anchored,
+            child: CatchScrollTerminalPadding(
+              key: terminalPaddingKey,
+              extra: 10,
             ),
           ),
         ),
@@ -172,6 +251,42 @@ void main() {
       ),
     );
 
-    expect(terminalBox.height, 44);
+    expect(terminalBox.height, 10);
   });
+
+  testWidgets(
+    'CatchScrollTerminalPadding preserves safe area when shell has no bar',
+    (tester) async {
+      const terminalPaddingKey = Key('no-bar-terminal-padding');
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(
+              size: Size(390, 844),
+              padding: EdgeInsets.only(bottom: 12),
+              viewPadding: EdgeInsets.only(bottom: 34),
+              viewInsets: EdgeInsets.only(bottom: 300),
+            ),
+            child: AppShellActiveTab(
+              index: appShellHomeTabIndex,
+              child: CatchScrollTerminalPadding(
+                key: terminalPaddingKey,
+                extra: 10,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final terminalBox = tester.widget<SizedBox>(
+        find.descendant(
+          of: find.byKey(terminalPaddingKey),
+          matching: find.byType(SizedBox),
+        ),
+      );
+
+      expect(terminalBox.height, 44);
+    },
+  );
 }

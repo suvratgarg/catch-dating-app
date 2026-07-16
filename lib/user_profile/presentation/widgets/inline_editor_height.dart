@@ -1,10 +1,10 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchLayout, CatchIcon, CatchOpacity, CatchSpacing, CatchTokens;
+    show CatchFieldTokens;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -47,6 +47,8 @@ class _ProfileInlineHeightEditorState
     extends ConsumerState<ProfileInlineHeightEditor>
     with InlineSaveState<ProfileInlineHeightEditor> {
   late int _heightCm = normalizeHeightCm(widget.currentValue);
+  CatchFieldStatus _status = CatchFieldStatus.idle;
+  Timer? _savedStatusTimer;
 
   @override
   void didUpdateWidget(covariant ProfileInlineHeightEditor oldWidget) {
@@ -56,8 +58,18 @@ class _ProfileInlineHeightEditorState
     }
   }
 
+  @override
+  void dispose() {
+    _savedStatusTimer?.cancel();
+    super.dispose();
+  }
+
   void _cancel() {
-    setState(() => _heightCm = normalizeHeightCm(widget.currentValue));
+    _savedStatusTimer?.cancel();
+    setState(() {
+      _heightCm = normalizeHeightCm(widget.currentValue);
+      _status = CatchFieldStatus.idle;
+    });
     widget.onCancel();
   }
 
@@ -68,7 +80,18 @@ class _ProfileInlineHeightEditorState
       return;
     }
     final saved = await saveFields(widget.patchForValue(_heightCm));
-    if (saved && mounted) widget.onSaved();
+    if (saved && mounted) {
+      _showSaved();
+      widget.onSaved();
+    }
+  }
+
+  void _showSaved() {
+    _savedStatusTimer?.cancel();
+    setState(() => _status = CatchFieldStatus.saved);
+    _savedStatusTimer = Timer(CatchFieldTokens.savedStatusHold, () {
+      if (mounted) setState(() => _status = CatchFieldStatus.idle);
+    });
   }
 
   @override
@@ -77,28 +100,42 @@ class _ProfileInlineHeightEditorState
         ? context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
             heightCm: _heightCm,
           )
-        : (widget.isAddAffordance
-              ? context.l10n.userProfileInlineEditorHeightBodyValue(
-                  value: widget.value,
-                )
-              : widget.value);
-    return CatchField.actions(
+        : widget.isAddAffordance
+        ? null
+        : widget.value;
+    return CatchField.stepper(
       icon: widget.icon,
       title: widget.label,
       body: body,
+      addable: widget.isAddAffordance,
+      isOptional: true,
       tone: widget.isAddAffordance
           ? CatchFieldTone.primary
           : CatchFieldTone.normal,
-      initiallyExpanded: widget.isExpanded,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (isSaving || expanded == widget.isExpanded) return;
+        widget.onTap();
+      },
       isLoading: isSaving,
+      status: isSaving ? CatchFieldStatus.saving : _status,
       error: _errorMessage(),
-      onTap: isSaving ? null : widget.onTap,
-      control: const SizedBox.shrink(),
-      actionLeading: ProfileHeightStepperControls(
-        value: _heightCm,
-        enabled: !isSaving,
-        onChanged: (value) => setState(() => _heightCm = value),
-      ),
+      value: _heightCm,
+      min: minimumHeightCm,
+      max: maximumHeightCm,
+      formatter: (value) => context.l10n
+          .userProfileInlineEditorHeightBodyHeightcmCm(heightCm: value.toInt()),
+      decreaseSemanticLabel:
+          context.l10n.userProfileInlineEditorHeightTooltipDecreaseHeight,
+      increaseSemanticLabel:
+          context.l10n.userProfileInlineEditorHeightTooltipIncreaseHeight,
+      onChanged: (value) {
+        _savedStatusTimer?.cancel();
+        setState(() {
+          _heightCm = value.toInt();
+          _status = CatchFieldStatus.idle;
+        });
+      },
       onCancel: _cancel,
       onSubmit: _submit,
     );
@@ -111,87 +148,6 @@ class _ProfileInlineHeightEditorState
       error,
       l10n: context.l10n,
       context: AppErrorContext.profile,
-    );
-  }
-}
-
-class ProfileHeightStepperControls extends StatelessWidget {
-  const ProfileHeightStepperControls({
-    super.key,
-    required this.value,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final int value;
-  final bool enabled;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final canDecrease = enabled && value > minimumHeightCm;
-    final canIncrease = enabled && value < maximumHeightCm;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ProfileHeightStepButton(
-          tooltip:
-              context.l10n.userProfileInlineEditorHeightTooltipDecreaseHeight,
-          icon: CatchIcons.removeRounded,
-          enabled: canDecrease,
-          onPressed: () => onChanged(value - 1),
-        ),
-        gapW4,
-        ProfileHeightStepButton(
-          tooltip:
-              context.l10n.userProfileInlineEditorHeightTooltipIncreaseHeight,
-          icon: CatchIcons.addRounded,
-          enabled: canIncrease,
-          onPressed: () => onChanged(value + 1),
-        ),
-      ],
-    );
-  }
-}
-
-class ProfileHeightStepButton extends StatelessWidget {
-  const ProfileHeightStepButton({
-    super.key,
-    required this.tooltip,
-    required this.icon,
-    required this.enabled,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final bool enabled;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: t.raised,
-        shape: const CircleBorder(),
-        child: InkResponse(
-          onTap: enabled ? onPressed : null,
-          radius: CatchSpacing.micro18,
-          customBorder: const CircleBorder(),
-          child: SizedBox.square(
-            dimension: CatchLayout.profileHeightStepButtonExtent,
-            child: Icon(
-              icon,
-              size: CatchIcon.profileHeightStep,
-              color: enabled
-                  ? t.ink
-                  : t.ink3.withValues(alpha: CatchOpacity.profileDisabledIcon),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

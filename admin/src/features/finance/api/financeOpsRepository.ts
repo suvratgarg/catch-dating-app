@@ -7,21 +7,10 @@ import type {
   HostAnalyticsResponse,
 } from "../../../shared/types/adminTypes";
 
-export interface FinanceOpsSnapshot {
-  loadedAt: string;
-  overview: AdminOverviewResponse;
-  hostAnalytics: HostAnalyticsResponse;
+export function loadFinanceOverview(): Promise<AdminOverviewResponse> {
+  return loadOverview();
 }
 
-export async function loadFinanceOpsSnapshot():
-  Promise<FinanceOpsSnapshot> {
-  const [overview, hostAnalytics] = await Promise.all([
-    loadOverview(),
-    loadHostAnalytics({rangePreset: "30d", granularity: "week"}),
-  ]);
-  return {
-    loadedAt: new Date().toISOString(),
-    overview,
-    hostAnalytics,
-  };
+export function loadFinanceHostAnalytics(): Promise<HostAnalyticsResponse> {
+  return loadHostAnalytics({rangePreset: "30d", granularity: "week"});
 }

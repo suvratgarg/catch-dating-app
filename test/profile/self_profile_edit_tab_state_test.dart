@@ -163,8 +163,9 @@ void main() {
       final instagram =
           state.basicRows.singleWhere((row) => row.id == 'instagramHandle')
               as SelfProfileTextFieldRowDescriptor;
-      expect(instagram.currentValue, '@suvrat_events');
+      expect(instagram.currentValue, 'suvrat_events');
       expect(instagram.currentFieldValue, 'suvrat_events');
+      expect(instagram.leadingUnit, '@');
 
       final height =
           state.basicRows.singleWhere((row) => row.id == 'height')

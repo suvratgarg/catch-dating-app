@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.0.129
-updated: 2026-07-03
+version: 1.0.135
+updated: 2026-07-13
 owner: agent_operating_model
 status: active
 ---
@@ -38,6 +38,12 @@ Loop:
    shared UI primitive owner and run:
    `node tool/run.mjs check web:react-ui-primitives`.
 7. Do not hand-roll governed component families in feature code. The canonical governed-family registry is emitted by `node tool/web/check_react_component_governance.mjs --families-json` and checked in at `docs/audit_registry/react_component_governance_families.json`. Run `node tool/run.mjs check web:react-component-governance`. This scanner is a known-family blocklist: passing it does not classify novel shell families automatically, so repeated new shell drift must be added to the scanner before handoff.
+   Cross-surface compatibility decisions live in
+   `docs/audit_registry/web_shared_primitive_adoption.json`; run
+   `node tool/run.mjs check web:shared-ui-adoption` whenever either surface
+   primitive owner or `packages/web-ui` changes. Adopted candidates must route
+   through package controls in both surface adapters; styling and feature
+   composition stay surface-owned.
 8. For the marketing website, every exported uppercase component under `website/src/features/**/*.tsx` must be declared in `design/website/components.json` as a route, section, flow, or supporting component, or made private. Run `node tool/run.mjs check marketing:website-components` after adding, moving, or exporting website route/section/supporting components.
 9. For admin feature UI, export only route/workspace entry components such as `*Screen` and `*Workspace`; reusable panels/cards/lists/sections belong in `admin/src/shared/ui` or stay private. Route/workspace entries, shared admin primitives, and admin feedback providers must be declared in `design/admin/components.json`. Run `node tool/run.mjs check web:admin-feature-exports` and `node tool/run.mjs check web:admin-components` after touching admin feature or shared admin UI exports. When an admin registry entry becomes preview-ready, add or update `admin/src/stories/**` metadata and run `node tool/run.mjs check web:admin-storybook`.
 10. For marketing website public route changes, update
@@ -54,8 +60,14 @@ Loop:
    `node tool/run.mjs check marketing:website-components` and
    `npm --workspace catch-marketing run build:storybook`.
 13. For admin feature work, keep `features/<feature>/api|controllers|ui` intact
-   and run `npm --workspace catch-admin run check:boundaries`.
-14. Stamp the pass with `dart tool/audit_registry.dart mark-pass`, including
+   and run `npm --workspace catch-admin run check:boundaries`. Keep route and
+   workspace entries thin, put cohesive private panels behind lower-case module
+   APIs, and run `node tool/run.mjs check web:admin-feature-ui-size`.
+14. Keep `tool/web/react_controller_test_targets.json` exhaustive. Promote
+    behavior-critical query/mutation controllers to `required` with a named
+    importing suite, and run
+    `node tool/run.mjs check web:react-controller-test-targets`.
+15. Stamp the pass with `dart tool/audit_registry.dart mark-pass`, including
     `WEB-UI-PRIMITIVE-001` and `WEB-UI-COMPONENT-001` whenever UI primitive or
     component-family enforcement is relevant.
 
@@ -76,11 +88,18 @@ Required checks for a cross-React pass:
 ```sh
 node tool/run.mjs check web:react-ui-primitives
 node tool/run.mjs check web:react-component-governance
+node tool/run.mjs check web:shared-ui-adoption
+node tool/run.mjs check web:react-controller-test-targets
+node tool/run.mjs check web:admin-bundle-budget
+node tool/run.mjs check web:admin-storybook-bundle-budget
 node tool/run.mjs check web:admin-feature-exports
+node tool/run.mjs check web:admin-feature-ui-size
 node tool/run.mjs check web:admin-components
 node tool/run.mjs check web:admin-storybook
 npm --workspace catch-marketing run typecheck
 npm --workspace catch-admin run typecheck
+npm --workspace @catch/web-ui run test
+npm --workspace @catch/web-ui run typecheck
 npm --workspace catch-marketing run build
 npm --workspace catch-admin run build
 node tool/run.mjs check --manifest-only

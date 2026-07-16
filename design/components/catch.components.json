@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
-  "version": 1,
-  "updated": "2026-07-11",
+  "version": 2,
+  "updated": "2026-07-16",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -15,13 +15,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Small status badge for compact metadata, state, and count-adjacent labels.",
-      "dart": {
-        "symbol": "CatchBadge",
-        "file": "lib/core/widgets/catch_badge.dart",
-        "constructors": [
-          "CatchBadge"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -82,6 +75,12 @@
             "dartType": "IconData?"
           },
           {
+            "name": "leadingUnit",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
             "name": "uppercase",
             "type": "bool",
             "required": false,
@@ -99,7 +98,6 @@
         "tokens": [
           "space.s1",
           "space.micro6",
-          "space.micro10",
           "space.micro14",
           "radius.pill",
           "theme.light.color.primary",
@@ -188,6 +186,122 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchBadge",
+        "file": "lib/core/widgets/catch_badge.dart",
+        "constructors": [
+          "CatchBadge"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchBadge",
+        "website": "StatusBadge",
+        "admin": "StatusChip",
+        "webui": "BadgeControl"
+      }
+    },
+    {
+      "id": "catch.ui_label",
+      "name": "CatchSectionLabel",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Structural eyebrow or compact metadata label that introduces a section without communicating status.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/UI Label",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "UiLabel",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "accentColor",
+            "type": "object",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "maxLines",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "dartType": "int"
+          }
+        ],
+        "states": [
+          "eyebrow",
+          "metadata-label",
+          "with-icon",
+          "accented",
+          "truncated"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "theme.light.color.primary",
+          "theme.light.color.ink2"
+        ],
+        "dartRoles": [
+          "CatchSectionLabel",
+          "CatchTextStyles.kicker",
+          "CatchIcon.md"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use to introduce hierarchy or metadata context; use catch.badge for state, status, counts, or alerts.",
+          "Keep copy short and scannable. Long explanatory text belongs in supporting copy.",
+          "Surface adapters own casing, color, spacing, and element choice while preserving non-interactive semantics."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.ui_label",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchSectionLabel",
+        "file": "lib/core/widgets/catch_section_label.dart",
+        "constructors": [
+          "CatchSectionLabel"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchSectionLabel",
+        "website": "UiLabel",
+        "admin": "AdminEyebrow",
+        "webui": "UiLabel"
       }
     },
     {
@@ -196,13 +310,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical action button for product CTAs, destructive actions, and secondary commands.",
-      "dart": {
-        "symbol": "CatchButton",
-        "file": "lib/core/widgets/catch_button.dart",
-        "constructors": [
-          "CatchButton"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -383,6 +490,169 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchButton",
+        "file": "lib/core/widgets/catch_button.dart",
+        "constructors": [
+          "CatchButton"
+        ]
+      },
+      "surfaces": {
+      "flutter": "CatchButton",
+      "website": "Button",
+      "admin": "AdminButton",
+      "webui": "ButtonControl"
+      }
+    },
+    {
+      "id": "catch.chat_composer",
+      "name": "ChatInputBar",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Canonical floating chat composer with a multiline field and matching 44px image/send actions; derives focus and sendability locally and keeps unrelated controls usable during pending operations.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/ChatComposer",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "ChatComposer",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "controller",
+            "type": "object",
+            "required": true,
+            "dartType": "TextEditingController"
+          },
+          {
+            "name": "onSend",
+            "type": "callback",
+            "required": true,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "sending",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "onSendImage",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "sendingImage",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "disabledReason",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "showImageButton",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "autofocus",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          }
+        ],
+        "states": [
+          "empty-unfocused",
+          "empty-focused",
+          "draft-unfocused",
+          "draft-focused",
+          "multiline",
+          "sending-text",
+          "uploading-image",
+          "disabled",
+          "text-only"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.s5",
+          "radius.pill",
+          "theme.light.color.surface",
+          "theme.light.color.ink",
+          "theme.light.color.ink2",
+          "theme.light.color.ink3",
+          "theme.light.color.line",
+          "theme.light.color.line2",
+          "theme.light.color.primary",
+          "theme.light.color.primaryInk"
+        ],
+        "dartRoles": [
+          "CatchField",
+          "CatchIconButton.defaultSize",
+          "CatchLoadingIndicator",
+          "CatchElevation.raised",
+          "CatchElevation.focusRing",
+          "CatchMotion.fast",
+          "CatchSpacing.screenPx",
+          "TextFieldTapRegion"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.field",
+          "catch.icon_button",
+          "catch.loading",
+          "catch.control_shell"
+        ],
+        "notes": [
+          "Both actions use CatchIconButton.defaultSize; composer call sites cannot supply independent image/send geometry.",
+          "Empty text disables Send automatically; callbacks describe capability, not draft validity.",
+          "Text-send and image-upload pending states disable only their relevant action and do not disable or defocus the editor.",
+          "Upload failures remain route-owned transient feedback through CatchMutationErrorListeners; do not add feature-local inline error chrome."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.chat_composer",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "ChatInputBar",
+        "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
+        "constructors": [
+          "ChatInputBar"
+        ]
+      },
+      "surfaces": {
+        "flutter": "ChatInputBar"
       }
     },
     {
@@ -391,13 +661,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Quiet fact/filter pill with optional icon, selected state, and remove action.",
-      "dart": {
-        "symbol": "CatchChip",
-        "file": "lib/core/widgets/catch_chip.dart",
-        "constructors": [
-          "CatchChip"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -543,6 +806,18 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchChip",
+        "file": "lib/core/widgets/catch_chip.dart",
+        "constructors": [
+          "CatchChip"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchChip",
+        "website": "ChoiceChip",
+        "webui": "ToggleButtonControl"
       }
     },
     {
@@ -550,14 +825,7 @@
       "name": "CatchEmptyState",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical success-empty-state composition for stacked or inline empty content, optional icon, optional action, and optional contained surface.",
-      "dart": {
-        "symbol": "CatchEmptyState",
-        "file": "lib/core/widgets/catch_empty_state.dart",
-        "constructors": [
-          "CatchEmptyState"
-        ]
-      },
+      "summary": "Canonical success-empty-state composition for stacked or inline empty content, optional icon, optional action, and optional contained surface. When given bounded height, it centers content across the available viewport while retaining scroll fallback when that content grows taller than the viewport.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -713,6 +981,19 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchEmptyState",
+        "file": "lib/core/widgets/catch_empty_state.dart",
+        "constructors": [
+          "CatchEmptyState"
+        ]
+      },
+      "surfaces": {
+      "flutter": "CatchEmptyState",
+      "website": "EmptyState",
+      "admin": "EmptyState",
+      "webui": "EmptyStateControl"
       }
     },
     {
@@ -721,14 +1002,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Canonical branded app-facing error surface family for full-screen, inline, compact, scaffold, sliver, and icon-only placements.",
-      "dart": {
-        "symbol": "CatchErrorState",
-        "file": "lib/core/widgets/catch_error_state.dart",
-        "constructors": [
-          "CatchErrorState",
-          "CatchErrorState.fromError"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -949,6 +1222,17 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchErrorState",
+        "file": "lib/core/widgets/catch_error_state.dart",
+        "constructors": [
+          "CatchErrorState",
+          "CatchErrorState.fromError"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchErrorState"
       }
     },
     {
@@ -957,14 +1241,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Persistent inline error-feedback banner family for mutation and async failures inside existing page content.",
-      "dart": {
-        "symbol": "CatchErrorBanner",
-        "file": "lib/core/widgets/catch_error_banner.dart",
-        "constructors": [
-          "CatchErrorBanner",
-          "CatchErrorBanner.fromError"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1085,6 +1361,17 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchErrorBanner",
+        "file": "lib/core/widgets/catch_error_banner.dart",
+        "constructors": [
+          "CatchErrorBanner",
+          "CatchErrorBanner.fromError"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchErrorBanner"
       }
     },
     {
@@ -1093,13 +1380,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Ambient app notice family for queued/persistent top-of-screen status, success, warning, danger, and event notices.",
-      "dart": {
-        "symbol": "CatchNotice",
-        "file": "lib/core/widgets/catch_notice.dart",
-        "constructors": [
-          "CatchNotice"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1219,6 +1499,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchNotice",
+        "file": "lib/core/widgets/catch_notice.dart",
+        "constructors": [
+          "CatchNotice"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchNotice"
       }
     },
     {
@@ -1226,20 +1516,7 @@
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
-      "summary": "Unified field primitive with a stable row anatomy: optional leading icon, label/value column with configurable emphasis, and an optional trailing value, chevron, toggle, expanded control, select trigger, or add action.",
-      "dart": {
-        "symbol": "CatchField",
-        "file": "lib/core/widgets/catch_field.dart",
-        "constructors": [
-          "CatchField.read",
-          "CatchField.nav",
-          "CatchField.toggle",
-          "CatchField.input",
-          "CatchField.expanding",
-          "CatchField.add",
-          "CatchField.select"
-        ]
-      },
+      "summary": "Unified handoff field primitive with stable label/value geometry, one-gesture press-to-focus transfer, native cursor placement, persistent animated disclosure controls, wrapping choices, bounded steppers, exact toggles, async status, direct and explicit-save text editing, select triggers, and add actions.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1342,7 +1619,88 @@
             "dartType": "Widget?"
           },
           {
+            "name": "supporting",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "secondaryAction",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "open",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool?"
+          },
+          {
+            "name": "initiallyOpen",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "addable",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "isOptional",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "onOpenChanged",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<bool>?"
+          },
+          {
+            "name": "onBlur",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<String>?"
+          },
+          {
+            "name": "status",
+            "type": "enum",
+            "required": false,
+            "default": "idle",
+            "dartType": "CatchFieldStatus",
+            "values": [
+              "idle",
+              "saving",
+              "saved"
+            ]
+          },
+          {
+            "name": "maxLength",
+            "type": "number",
+            "required": false,
+            "dartType": "int?"
+          },
+          {
             "name": "placeholder",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "emptyValueText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "inputHint",
             "type": "string",
             "required": false,
             "dartType": "String?"
@@ -1418,9 +1776,24 @@
           "row-title",
           "value-line",
           "chevron",
-          "toggle",
-          "expanded-control",
-          "text-entry",
+          "toggle-on",
+          "toggle-off",
+          "control-collapsed",
+          "control-open",
+          "disclosure-active-pressed",
+          "choices-wrapped",
+          "stepper-open",
+          "direct-input-one-tap",
+          "direct-input-focused-cursor",
+          "read-only-row",
+          "editable-row",
+          "saving",
+          "saved",
+          "explicit-save-collapsed",
+          "explicit-save-focused",
+          "explicit-save-error",
+          "editable-empty-at-rest",
+          "editable-empty-focused",
           "edit-empty",
           "edit-filled",
           "edit-focused",
@@ -1443,6 +1816,16 @@
             "name": "control",
             "kind": "optional-expanded-widget",
             "notes": "Use for option groups, chips, steppers, or other controlled primitives."
+          },
+          {
+            "name": "supporting",
+            "kind": "optional-supporting-widget",
+            "notes": "In explicit-save editors this follows the value lane and precedes secondary and commit actions."
+          },
+          {
+            "name": "secondaryAction",
+            "kind": "optional-secondary-action-widget",
+            "notes": "In explicit-save editors this follows supporting metadata or errors and precedes Cancel/Done."
           },
           {
             "name": "prefixIcon",
@@ -1470,15 +1853,17 @@
           "theme.light.color.ink",
           "theme.light.color.ink2",
           "theme.light.color.danger",
-          "theme.light.color.line"
+          "theme.light.color.line",
+          "theme.light.color.line2"
         ],
         "dartRoles": [
+          "CatchFieldTokens",
+          "CatchElevation.fieldActive",
           "CatchFormFieldLabel",
           "CatchRadius.sm",
           "CatchStroke.hairline",
           "CatchTextStyles.fieldLabel",
-          "CatchTextStyles.titleS",
-          "CatchToggle"
+          "CatchTextStyles.titleS"
         ],
         "goldens": [],
         "members": [
@@ -1523,6 +1908,79 @@
             "file": "lib/core/widgets/catch_field.dart"
           },
           {
+            "id": "catch.field.choice_control",
+            "symbol": "CatchFieldChoiceControl",
+            "summary": "Field-owned wrapping single- or multi-choice control with staged selection and canonical commit actions.",
+            "states": [
+              "single",
+              "multi",
+              "required",
+              "optional",
+              "wrapped"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.choice_chip",
+            "symbol": "CatchFieldChoiceChip",
+            "summary": "Exact single-line field-choice tile whose visual and hit box are identical, with selected check, pressed scale, and 8 px wrapped-run spacing.",
+            "states": [
+              "selected",
+              "unselected",
+              "disabled",
+              "pressed"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.stepper",
+            "symbol": "CatchFieldStepper",
+            "summary": "Bounded minus-value-plus control with 44 px hit areas and accelerated press-and-hold repetition.",
+            "states": [
+              "default",
+              "minimum",
+              "maximum",
+              "repeating"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.commit_button",
+            "symbol": "CatchFieldCommitButton",
+            "summary": "Field-owned Cancel or Done pill with exact 18 by 10 padding and the Saving ellipsis state.",
+            "states": [
+              "cancel",
+              "done",
+              "saving",
+              "disabled"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.toggle",
+            "symbol": "CatchFieldToggle",
+            "summary": "Exact 44 by 26 field switch retained and dimmed while its row is saving.",
+            "states": [
+              "off",
+              "on",
+              "saving",
+              "disabled"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.repeat_button",
+            "symbol": "CatchFieldRepeatButton",
+            "summary": "Stepper-owned 44 px repeat target with a 32 px visual circle and accelerated hold cadence.",
+            "states": [
+              "enabled",
+              "disabled",
+              "pressed",
+              "repeating"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
             "id": "catch.field.form_field_label.optional_badge",
             "symbol": "CatchFormFieldOptionalBadge",
             "file": "lib/core/widgets/catch_form_field_label.dart",
@@ -1542,8 +2000,12 @@
         ],
         "notes": [
           "CatchField is the only global field primitive. Its row anatomy is leadingIcon? | label/value column | trailingSlot?, and title/body emphasis is controlled by CatchFieldEmphasis.",
-          "Use the named constructors read, nav, toggle, input, select, expanding, and add so call sites select one field family explicitly.",
-          "Text entry collapses to the single-line row shape while empty and unfocused, then expands/floats the label when focused or populated.",
+          "Use the named constructors read, nav, action, toggle, input, inputActions, control, choices, stepper, select, and add so call sites select one field capability explicitly.",
+          "Trailing affordances are derived by the constructor contract: read, action, and direct input never synthesize a chevron; actionable nav derives a fixed chevron; control, choices, stepper, inputActions, and select derive rotating disclosure glyphs. No call-site chevron override is permitted.",
+          "Explicit-save order is editor, supporting metadata or error, secondary action, then Cancel and Done. Focus may change color but never label size, weight, baseline, or position.",
+          "Press feedback begins on pointer down; focus or disclosure ownership transfers once on pointer up. The pressed and active states animate one opaque surface rather than flickering between layers. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchFieldTokens.reveal, and becomes instantaneous when reduced motion is enabled.",
+          "Choice chips use a compact full-width wrapping layout, identical visual/hit boxes, and an 8 px visual run gap; explicit-save choices preserve staged selection until Done, while a single choice without a save bar closes after 180 ms. Steppers keep their value centered between bounded 44 px repeat targets; toggle tracks are 44 by 26 px, stay visible but disabled while saving, and vertically center with the leading icon and text lane.",
+          "Direct text entry keeps one native editable mounted while its row changes between empty-at-rest and focused/populated label geometry, preventing focus flicker and preserving cursor placement from the initiating gesture.",
           "CatchField does not own rounded section or input-container chrome; use CatchSection contained focus/error chrome when fields need a grouped rounded surface.",
           "Field labels and support/error text belong to catch.field; shared container chrome belongs to CatchSection."
         ]
@@ -1558,6 +2020,29 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchField",
+        "file": "lib/core/widgets/catch_field.dart",
+        "constructors": [
+          "CatchField.read",
+          "CatchField.nav",
+          "CatchField.action",
+          "CatchField.toggle",
+          "CatchField.input",
+          "CatchField.inputActions",
+          "CatchField.control",
+          "CatchField.choices",
+          "CatchField.stepper",
+          "CatchField.add",
+          "CatchField.select"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchField",
+        "website": "TextField",
+        "admin": "TextField",
+      "webui": "TextInputControl"
       }
     },
     {
@@ -1565,16 +2050,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical information-grouping primitive for divided hairline sections, contained rounded sections, and plain titled content groups. Call sites use the named constructors CatchSection.divided, CatchSection.contained, and CatchSection.plain so section anatomy is explicit.",
-      "dart": {
-        "symbol": "CatchSection",
-        "file": "lib/core/widgets/catch_section_layout.dart",
-        "constructors": [
-          "CatchSection.divided",
-          "CatchSection.contained",
-          "CatchSection.plain"
-        ]
-      },
+      "summary": "Canonical information-grouping primitive for divided field rows, exact contained field-row surfaces, generic contained sections, and plain titled content groups. Call sites use named constructors so header, divider, focus, and surface ownership stay explicit.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1593,7 +2069,7 @@
       },
       "contract": {
         "constructorProps": {
-          "CatchSection.divided": [
+      "CatchSection.divided": [
             "title",
             "count",
             "activityKind",
@@ -1603,6 +2079,37 @@
             "titleColor",
             "bodyGap",
             "showInternalDividers",
+            "children",
+        "child"
+      ],
+      "CatchSection.fieldRows": [
+        "title",
+        "count",
+        "activityKind",
+        "lead",
+        "first",
+        "footer",
+        "dividerColor",
+        "dividerInset",
+        "dividerRole",
+        "titleColor",
+        "bodyGap",
+        "showInternalDividers",
+        "children",
+        "child"
+      ],
+          "CatchSection.containedFieldRows": [
+            "title",
+            "count",
+            "trailing",
+            "footer",
+            "backgroundColor",
+            "borderColor",
+            "titleColor",
+            "dividerInset",
+            "showInternalDividers",
+            "focused",
+            "hasError",
             "children",
             "child"
           ],
@@ -1717,6 +2224,12 @@
             "dartType": "Color?"
           },
           {
+            "name": "dividerInset",
+            "type": "number",
+            "required": false,
+            "dartType": "double?"
+          },
+          {
             "name": "titleColor",
             "type": "color",
             "required": false,
@@ -1759,6 +2272,9 @@
           "divided-section",
           "contained-section",
           "plain-section",
+          "divided-field-rows",
+          "contained-field-rows-child-active",
+          "contained-field-rows-explicit-focused",
           "field-list",
           "mixed-modes",
           "single-field",
@@ -1803,9 +2319,9 @@
         "dartRoles": [
           "CatchSurface.card",
           "CatchField",
+          "CatchFieldTokens",
           "CatchKicker",
           "CatchSectionHeader",
-          "CatchSectionLabel",
           "CatchDaySectionHeader",
           "CatchDaySectionHeaderDelegate",
           "CatchHorizontalRail",
@@ -1830,27 +2346,16 @@
             ]
           },
           {
-            "id": "catch.section.label",
-            "symbol": "CatchSectionLabel",
-            "file": "lib/core/widgets/catch_section_label.dart",
-            "summary": "Activity-accent eyebrow label for section introductions with optional leading glyph and bounded text.",
-            "states": [
-              "label",
-              "with-icon",
-              "accented",
-              "truncated",
-              "multi-line"
-            ]
-          },
-          {
             "id": "catch.section.focus_surface",
             "symbol": "CatchSectionFocusSurface",
             "file": "lib/core/widgets/catch_section_layout.dart",
-            "summary": "Public contained-section focus and error chrome member used by CatchSection.contained.",
+            "summary": "Public contained-section focus and error chrome member. Generic contained sections may reflect descendant focus; contained field-row cards keep descendant focus child-owned and change their perimeter only for explicit focused or error state.",
             "states": [
               "default",
               "focused",
-              "error"
+              "error",
+              "field-rows-child-active",
+              "field-rows-explicit-focused"
             ]
           },
           {
@@ -1913,9 +2418,9 @@
         ],
         "notes": [
           "Use divided sections for top-level information groups when nested rounded rectangles would add visual clutter.",
-          "Use contained sections for grouped field rows or carded content that needs one bounded surface.",
+          "Use containedFieldRows for the handoff field surface: it owns a clipped 14 px radius, neutral line border, explicit section-focus/error border, inset internal rules, and no generic elevation. Descendant field focus remains child-owned so the outer perimeter and active row never draw competing rings. Its optional title, right-aligned count, and trailing slot use 14 px / 16 px / 2 px in-card header padding; its optional footer stays inside the border with 2 px / 16 px / 12 px padding. Headerless prompt cards begin directly with their first field row. Use contained for non-field carded content that needs one bounded surface.",
           "Use plain sections for compact titled blocks without a container or divider.",
-          "The section owns the outer grouping and internal dividers. Fields own information content and interaction mode.",
+          "The section owns the outer grouping and internal dividers. Divided field sections use the full line token so an active field's 10 px bleed can cover the shared boundary. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
           "Section headers, section labels, day headers, vertical sections, and horizontal rails are public members of this grouping family, not separate section systems."
         ]
       },
@@ -1929,6 +2434,20 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchSection",
+        "file": "lib/core/widgets/catch_section_layout.dart",
+        "constructors": [
+      "CatchSection.divided",
+      "CatchSection.fieldRows",
+          "CatchSection.containedFieldRows",
+      "CatchSection.contained",
+          "CatchSection.plain"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchSection"
       }
     },
     {
@@ -1937,18 +2456,6 @@
       "status": "active",
       "kind": "pattern",
       "summary": "Canonical loading family for content-shaped skeletons, skeleton lists, compact spinners, and async screen/sliver loading placements.",
-      "dart": {
-        "symbol": "CatchSkeleton",
-        "file": "lib/core/widgets/catch_skeleton.dart",
-        "constructors": [
-          "CatchSkeleton.card",
-          "CatchSkeleton.box",
-          "CatchSkeleton.text",
-          "CatchSkeleton.textBlock",
-          "CatchSkeleton.circle",
-          "CatchSkeleton.custom"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2165,6 +2672,21 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchSkeleton",
+        "file": "lib/core/widgets/catch_skeleton.dart",
+        "constructors": [
+          "CatchSkeleton.card",
+          "CatchSkeleton.box",
+          "CatchSkeleton.text",
+          "CatchSkeleton.textBlock",
+          "CatchSkeleton.circle",
+          "CatchSkeleton.custom"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchSkeleton"
       }
     },
     {
@@ -2173,13 +2695,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Public text-role atom family for uppercase kicker labels and single-line mono metadata labels.",
-      "dart": {
-        "symbol": "CatchKicker",
-        "file": "lib/core/widgets/catch_kicker.dart",
-        "constructors": [
-          "CatchKicker"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2248,6 +2763,7 @@
           "CatchKickerSize",
           "CatchTextStyles.kicker",
           "CatchTextStyles.kickerLg",
+          "CatchTextStyles.sectionCount",
           "CatchTextStyles.monoLabel",
           "CatchMonoLabel"
         ],
@@ -2283,6 +2799,16 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchKicker",
+        "file": "lib/core/widgets/catch_kicker.dart",
+        "constructors": [
+          "CatchKicker"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchKicker"
       }
     },
     {
@@ -2291,13 +2817,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Compact mini bar chart for dense metric panels and data-coverage summaries.",
-      "dart": {
-        "symbol": "CatchMiniBarChart",
-        "file": "lib/core/widgets/catch_mini_bar_chart.dart",
-        "constructors": [
-          "CatchMiniBarChart"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2391,6 +2910,16 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchMiniBarChart",
+        "file": "lib/core/widgets/catch_mini_bar_chart.dart",
+        "constructors": [
+          "CatchMiniBarChart"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchMiniBarChart"
       }
     },
     {
@@ -2399,13 +2928,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical compact value-over-label metric rail for detail stats and summary data pairs.",
-      "dart": {
-        "symbol": "CatchMetricStrip",
-        "file": "lib/core/widgets/catch_metric_strip.dart",
-        "constructors": [
-          "CatchMetricStrip"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2603,6 +3125,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchMetricStrip",
+        "file": "lib/core/widgets/catch_metric_strip.dart",
+        "constructors": [
+          "CatchMetricStrip"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchMetricStrip"
       }
     },
     {
@@ -2611,13 +3143,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Canonical sheet-shell family for rounded bottom-sheet surfaces, grabber handles, draggable persistent shells, and share-card sheet presentation.",
-      "dart": {
-        "symbol": "CatchBottomSheetScaffold",
-        "file": "lib/core/widgets/catch_bottom_sheet.dart",
-        "constructors": [
-          "CatchBottomSheetScaffold"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2828,6 +3353,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchBottomSheetScaffold",
+        "file": "lib/core/widgets/catch_bottom_sheet.dart",
+        "constructors": [
+          "CatchBottomSheetScaffold"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchBottomSheetScaffold"
       }
     },
     {
@@ -2836,14 +3371,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Circular icon action for toolbar, overlay, and plain glyph-button affordances.",
-      "dart": {
-        "symbol": "CatchIconButton",
-        "file": "lib/core/widgets/catch_icon_button.dart",
-        "constructors": [
-          "CatchIconButton",
-          "CatchIconButton.icon"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2954,6 +3481,18 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchIconButton",
+        "file": "lib/core/widgets/catch_icon_button.dart",
+        "constructors": [
+          "CatchIconButton",
+          "CatchIconButton.icon"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchIconButton",
+        "admin": "AdminIconButton"
       }
     },
     {
@@ -2962,13 +3501,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Canonical anchored menu family for overflow actions, row selection, disabled rows, destructive actions, and typed callbacks.",
-      "dart": {
-        "symbol": "CatchMenu",
-        "file": "lib/core/widgets/catch_menu.dart",
-        "constructors": [
-          "CatchMenu"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3089,6 +3621,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchMenu",
+        "file": "lib/core/widgets/catch_menu.dart",
+        "constructors": [
+          "CatchMenu"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchMenu"
       }
     },
     {
@@ -3097,13 +3639,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Decorative square icon tile for quick actions, data cards, and compact labeled rows where the icon is content rather than a tappable command.",
-      "dart": {
-        "symbol": "CatchIconTile",
-        "file": "lib/core/widgets/catch_icon_tile.dart",
-        "constructors": [
-          "CatchIconTile"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3206,6 +3741,16 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchIconTile",
+        "file": "lib/core/widgets/catch_icon_tile.dart",
+        "constructors": [
+          "CatchIconTile"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchIconTile"
       }
     },
     {
@@ -3214,13 +3759,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Shared one-line control chrome for fields, selects, steppers, search controls, and compact picker triggers.",
-      "dart": {
-        "symbol": "CatchControlShell",
-        "file": "lib/core/widgets/catch_control_shell.dart",
-        "constructors": [
-          "CatchControlShell"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3371,6 +3909,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchControlShell",
+        "file": "lib/core/widgets/catch_control_shell.dart",
+        "constructors": [
+          "CatchControlShell"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchControlShell"
       }
     },
     {
@@ -3379,13 +3927,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical numeric increment/decrement control with bounded step logic, accessible tooltips, and Catch control-shell chrome.",
-      "dart": {
-        "symbol": "CatchNumberStepper",
-        "file": "lib/core/widgets/catch_number_stepper.dart",
-        "constructors": [
-          "CatchNumberStepper"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3507,6 +4048,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchNumberStepper",
+        "file": "lib/core/widgets/catch_number_stepper.dart",
+        "constructors": [
+          "CatchNumberStepper"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchNumberStepper"
       }
     },
     {
@@ -3515,13 +4066,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Selectable explanatory choice card for mutually exclusive options with a sentence of supporting copy.",
-      "dart": {
-        "symbol": "CatchOptionCard",
-        "file": "lib/core/widgets/catch_option_card.dart",
-        "constructors": [
-          "CatchOptionCard"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3607,7 +4151,18 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
-      }
+      },
+      "dart": {
+        "symbol": "CatchOptionCard",
+        "file": "lib/core/widgets/catch_option_card.dart",
+        "constructors": [
+          "CatchOptionCard"
+        ]
+      },
+    "surfaces": {
+      "flutter": "CatchOptionCard",
+      "website": "ChoiceCard"
+    }
     },
     {
       "id": "catch.segmented_control",
@@ -3615,14 +4170,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Pill-style segmented selector for two or more peer modes.",
-      "dart": {
-        "symbol": "CatchSegmentedControl",
-        "file": "lib/core/widgets/catch_segmented_control.dart",
-        "constructors": [
-          "CatchSegmentedControl",
-          "CatchSegment"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3656,8 +4203,8 @@
           {
             "name": "onChanged",
             "type": "callback",
-            "required": true,
-            "dartType": "ValueChanged<T>"
+            "required": false,
+            "dartType": "ValueChanged<T>?"
           },
           {
             "name": "expanded",
@@ -3761,6 +4308,18 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchSegmentedControl",
+        "file": "lib/core/widgets/catch_segmented_control.dart",
+        "constructors": [
+          "CatchSegmentedControl",
+          "CatchSegment"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchSegmentedControl",
+        "admin": "SegmentedControl"
       }
     },
     {
@@ -3769,16 +4328,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted notes, inline messages, and tappable tiles.",
-      "dart": {
-        "symbol": "CatchSurface",
-        "file": "lib/core/widgets/catch_surface.dart",
-        "constructors": [
-          "CatchSurface",
-          "CatchSurface.card",
-          "CatchSurface.tinted",
-          "CatchSurface.message"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3964,6 +4513,19 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchSurface",
+        "file": "lib/core/widgets/catch_surface.dart",
+        "constructors": [
+          "CatchSurface",
+          "CatchSurface.card",
+          "CatchSurface.tinted",
+          "CatchSurface.message"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchSurface"
       }
     },
     {
@@ -3972,13 +4534,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Canonical app-bar primitive for compact/large title chrome, back/close leading, trailing actions, and expanding search.",
-      "dart": {
-        "symbol": "CatchTopBar",
-        "file": "lib/core/widgets/catch_top_bar.dart",
-        "constructors": [
-          "CatchTopBar"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4085,6 +4640,7 @@
           "with-leading",
           "with-action-icon",
           "with-action-text",
+          "with-grouped-actions",
           "with-search",
           "conversation-title",
           "surface",
@@ -4126,7 +4682,12 @@
           "CatchTextStyles.headline",
           "CatchTextStyles.titleL",
           "CatchTextStyles.appBarSubtitle",
+          "CatchInsets.screenTitleBlock",
+          "CatchLayout.browseHeaderHeight",
           "CatchCollapsedSliverTitle",
+          "CatchInsets.topBarLeadingAction",
+          "CatchInsets.topBarTrailingActions",
+          "CatchTopBarActionGroup",
           "CatchTopBarIconAction",
           "CatchTopBarMenuAction",
           "CatchTopBarTextAction",
@@ -4135,14 +4696,26 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.top_bar.action_group",
+            "symbol": "CatchTopBarActionGroup",
+            "file": "lib/core/widgets/catch_top_bar.dart",
+            "summary": "Canonical trailing top-bar action layout with one automatic peer gap shared by screen headers, regular bars, and sliver bars.",
+            "states": [
+              "single-action",
+              "multiple-actions",
+              "constrained-width"
+            ]
+          },
+          {
             "id": "catch.top_bar.screen_header_title",
             "symbol": "CatchScreenHeaderTitle",
             "file": "lib/core/widgets/catch_top_bar.dart",
-            "summary": "Root-screen title stack for Home, Explore, Chats, Profile, Activity, and Settings using Archivo headline typography with optional eyebrow, subtitle, leading, action, material, and padding slots.",
+            "summary": "Screen-title stack for consumer and Host root surfaces using Archivo headline typography, a canonical zero post-safe-area top inset, and optional eyebrow, subtitle, multi-line title, leading, action, and material slots.",
             "states": [
               "title",
               "eyebrow",
               "subtitle",
+              "two-line-title",
               "leading",
               "actions"
             ]
@@ -4151,10 +4724,11 @@
             "id": "catch.top_bar.screen_top_bar",
             "symbol": "CatchScreenTopBar",
             "file": "lib/core/widgets/catch_top_bar.dart",
-            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeaderTitle inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, and expanding search configuration.",
+            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeaderTitle inside CatchTopBar, owns zero-post-safe-area padding, resolves preferred height from active text scale and supplemental copy, and preserves actions, leading, safe-area opt-out, bottom, and expanding search configuration.",
             "states": [
               "root-title",
               "with-subtitle",
+              "accessible-text-scale",
               "with-search",
               "with-leading",
               "with-actions"
@@ -4226,7 +4800,8 @@
           "Use CatchScreenHeaderTitle or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
-          "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets."
+          "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets.",
+          "Pass sibling trailing actions without feature-owned spacer widgets; CatchTopBarActionGroup owns their consistent peer gap."
         ]
       },
       "governance": {
@@ -4239,6 +4814,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchTopBar",
+        "file": "lib/core/widgets/catch_top_bar.dart",
+        "constructors": [
+          "CatchTopBar"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchTopBar"
       }
     },
     {
@@ -4247,13 +4832,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Compact privacy/visibility label for user-private, Catch-private, and host-visible metadata.",
-      "dart": {
-        "symbol": "CatchPrivacyBadge",
-        "file": "lib/core/widgets/catch_privacy_badge.dart",
-        "constructors": [
-          "CatchPrivacyBadge"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4323,6 +4901,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchPrivacyBadge",
+        "file": "lib/core/widgets/catch_privacy_badge.dart",
+        "constructors": [
+          "CatchPrivacyBadge"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchPrivacyBadge"
       }
     },
     {
@@ -4331,13 +4919,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Numbered, line-traced sequence for ordered onboarding, dashboard, or event journey steps.",
-      "dart": {
-        "symbol": "CatchJourneySteps",
-        "file": "lib/core/widgets/catch_journey_steps.dart",
-        "constructors": [
-          "CatchJourneySteps"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4423,6 +5004,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchJourneySteps",
+        "file": "lib/core/widgets/catch_journey_steps.dart",
+        "constructors": [
+          "CatchJourneySteps"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchJourneySteps"
       }
     },
     {
@@ -4431,13 +5022,6 @@
       "status": "active",
       "kind": "pattern",
       "summary": "Standard non-sliver screen body wrapper that owns page gutters, vertical padding, and optional scrolling.",
-      "dart": {
-        "symbol": "CatchScreenBody",
-        "file": "lib/core/widgets/catch_section_layout.dart",
-        "constructors": [
-          "CatchScreenBody"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4581,6 +5165,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchScreenBody",
+        "file": "lib/core/widgets/catch_section_layout.dart",
+        "constructors": [
+          "CatchScreenBody"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchScreenBody"
       }
     },
     {
@@ -4589,13 +5183,6 @@
       "status": "active",
       "kind": "pattern",
       "summary": "Standard stack wrapper for handoff sections, owning page padding and optional inserted gaps between section blocks.",
-      "dart": {
-        "symbol": "CatchSectionStack",
-        "file": "lib/core/widgets/catch_section_layout.dart",
-        "constructors": [
-          "CatchSectionStack"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4716,6 +5303,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchSectionStack",
+        "file": "lib/core/widgets/catch_section_layout.dart",
+        "constructors": [
+          "CatchSectionStack"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchSectionStack"
       }
     },
     {
@@ -4724,13 +5321,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Selectable host-roster count tiles for filtering participant boards by lifecycle or attention state.",
-      "dart": {
-        "symbol": "CatchRosterTiles",
-        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-        "constructors": [
-          "CatchRosterTiles"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4813,6 +5403,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchRosterTiles",
+        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+        "constructors": [
+          "CatchRosterTiles"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchRosterTiles"
       }
     },
     {
@@ -4821,13 +5421,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Host-roster participant row with identity, signal badge, and typed action cell.",
-      "dart": {
-        "symbol": "CatchRosterRow",
-        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-        "constructors": [
-          "CatchRosterRow"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4955,6 +5548,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchRosterRow",
+        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+        "constructors": [
+          "CatchRosterRow"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchRosterRow"
       }
     },
     {
@@ -4963,13 +5566,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Host-roster table shell with fixed identity/signal/action columns and built-in empty state.",
-      "dart": {
-        "symbol": "CatchRosterTable",
-        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-        "constructors": [
-          "CatchRosterTable"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5076,6 +5672,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchRosterTable",
+        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+        "constructors": [
+          "CatchRosterTable"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchRosterTable"
       }
     },
     {
@@ -5084,13 +5690,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Activity-pigmented art shell with gradient, motif texture, ghost glyph, optional dim layer, and overlay child.",
-      "dart": {
-        "symbol": "CatchActivityArt",
-        "file": "lib/core/widgets/catch_activity_art.dart",
-        "constructors": [
-          "CatchActivityArt"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5213,6 +5812,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchActivityArt",
+        "file": "lib/core/widgets/catch_activity_art.dart",
+        "constructors": [
+          "CatchActivityArt"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchActivityArt"
       }
     },
     {
@@ -5221,13 +5830,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Activity-aware chip that binds ActivityKind labels, glyphs, and pigment to a compact selectable/tappable surface.",
-      "dart": {
-        "symbol": "CatchActivityChip",
-        "file": "lib/core/widgets/catch_activity_chip.dart",
-        "constructors": [
-          "CatchActivityChip"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5332,6 +5934,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchActivityChip",
+        "file": "lib/core/widgets/catch_activity_chip.dart",
+        "constructors": [
+          "CatchActivityChip"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchActivityChip"
       }
     },
     {
@@ -5340,13 +5952,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical remote and bundled image primitive with decode sizing, branded fallback, loading hook, and semantic-label support.",
-      "dart": {
-        "symbol": "CatchNetworkImage",
-        "file": "lib/core/widgets/catch_network_image.dart",
-        "constructors": [
-          "CatchNetworkImage"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5466,6 +6071,16 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchNetworkImage",
+        "file": "lib/core/widgets/catch_network_image.dart",
+        "constructors": [
+          "CatchNetworkImage"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchNetworkImage"
       }
     },
     {
@@ -5473,14 +6088,7 @@
       "name": "CatchDistanceRing",
       "status": "active",
       "kind": "primitive",
-      "summary": "Map-adjacent radius ring with optional mono label and tappable label semantics.",
-      "dart": {
-        "symbol": "CatchDistanceRing",
-        "file": "lib/core/widgets/catch_distance_ring.dart",
-        "constructors": [
-          "CatchDistanceRing"
-        ]
-      },
+      "summary": "Map-adjacent radius ring plus a reusable branded edge label for native geographic circles.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5512,6 +6120,18 @@
             "dartType": "String?"
           },
           {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "semanticHint",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
             "name": "onTap",
             "type": "callback",
             "required": false,
@@ -5537,9 +6157,25 @@
         "dartRoles": [
           "CatchLayout.distanceRingDefaultSize",
           "CatchLayout.distanceRingStrokeWidth",
-          "CatchTextStyles.monoLabelS"
+          "CatchLayout.distanceRingLabelHorizontal",
+          "CatchLayout.distanceRingLabelFontSize",
+          "CatchLayout.countPillMinExtent",
+          "CatchOpacity.distanceRingLabelFill",
+          "CatchTextStyles.monoCapsLabel"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.distance_ring.label",
+            "symbol": "CatchDistanceRingLabel",
+            "summary": "Tappable mono edge label shared by static and native geographic distance rings.",
+            "states": [
+              "label",
+              "tappable"
+            ],
+            "file": "lib/core/widgets/catch_distance_ring.dart"
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
@@ -5557,6 +6193,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchDistanceRing",
+        "file": "lib/core/widgets/catch_distance_ring.dart",
+        "constructors": [
+          "CatchDistanceRing"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchDistanceRing"
       }
     },
     {
@@ -5565,13 +6211,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Static one-time-code visual row for handoff previews and externally managed code-entry state.",
-      "dart": {
-        "symbol": "CatchCodeInput",
-        "file": "lib/core/widgets/catch_otp_code_field.dart",
-        "constructors": [
-          "CatchCodeInput"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5720,6 +6359,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchCodeInput",
+        "file": "lib/core/widgets/catch_otp_code_field.dart",
+        "constructors": [
+          "CatchCodeInput"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchCodeInput"
       }
     },
     {
@@ -5728,13 +6377,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Underline option group for inline scope controls, lens tabs, and compact mode pickers.",
-      "dart": {
-        "symbol": "CatchOptionGroup",
-        "file": "lib/core/widgets/catch_option_group.dart",
-        "constructors": [
-          "CatchOptionGroup"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5866,6 +6508,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchOptionGroup",
+        "file": "lib/core/widgets/catch_option_group.dart",
+        "constructors": [
+          "CatchOptionGroup"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchOptionGroup"
       }
     },
     {
@@ -5874,13 +6526,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Preferred-size app-bar bottom rail that wraps CatchOptionGroup in the standard tab-rail shell.",
-      "dart": {
-        "symbol": "CatchTabRail",
-        "file": "lib/core/widgets/catch_tab_rail.dart",
-        "constructors": [
-          "CatchTabRail"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5908,8 +6553,8 @@
           {
             "name": "onChanged",
             "type": "callback",
-            "required": true,
-            "dartType": "ValueChanged<T>"
+            "required": false,
+            "dartType": "ValueChanged<T>?"
           },
           {
             "name": "options",
@@ -5927,7 +6572,9 @@
         "states": [
           "two-option",
           "four-option",
-          "selected-middle"
+          "selected-middle",
+          "controller-bound",
+          "swipe-interpolated"
         ],
         "slots": [],
         "tokens": [
@@ -5940,16 +6587,32 @@
         "dartRoles": [
           "CatchOptionGroup",
           "CatchOption",
+          "CatchTabControllerRail",
+          "TabController",
           "CatchLayout.tabRailHeight"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.tab_rail.controller",
+            "symbol": "CatchTabControllerRail",
+            "file": "lib/core/widgets/catch_tab_rail.dart",
+            "summary": "Typed adapter that binds a route-owned TabController to CatchTabRail so option taps, TabBarView paging, and interpolation share one controller.",
+            "states": [
+              "tap-selected",
+              "swipe-interpolated",
+              "programmatic-selection"
+            ]
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [
           "catch.option_group"
         ],
         "notes": [
-          "Use for app-bar bottom tabs. Use CatchOptionGroup directly for inline scope controls that are not PreferredSizeWidget app-bar bottoms."
+          "Use for app-bar bottom tabs. Use CatchOptionGroup directly for inline scope controls that are not PreferredSizeWidget app-bar bottoms.",
+          "Use CatchTabControllerRail with TabBarView; the route owns the controller lifecycle and its length must equal the option count."
         ]
       },
       "governance": {
@@ -5962,6 +6625,194 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchTabRail",
+        "file": "lib/core/widgets/catch_tab_rail.dart",
+        "constructors": [
+          "CatchTabRail"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchTabRail"
+      }
+    },
+    {
+      "id": "catch.tabbed_screen",
+      "name": "CatchTabbedScreenScaffold",
+      "status": "active",
+      "kind": "pattern",
+      "summary": "Canonical root-screen shell for a scroll-away identity title, pinned option rail, native horizontal pager, and independently restored vertical tab pages.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/TabbedScreen",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "TabbedScreen",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "tabRail",
+            "type": "widget",
+            "required": true,
+            "dartType": "PreferredSizeWidget"
+          },
+          {
+            "name": "body",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "eyebrow",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "subtitle",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "leading",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "actions",
+            "type": "list",
+            "required": false,
+            "dartType": "List<Widget>"
+          },
+          {
+            "name": "titleMaxLines",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "dartType": "int"
+          },
+          {
+            "name": "rowCrossAxisAlignment",
+            "type": "object",
+            "required": false,
+            "dartType": "CrossAxisAlignment"
+          },
+          {
+            "name": "outerScrollController",
+            "type": "object",
+            "required": false,
+            "dartType": "ScrollController?"
+          },
+          {
+            "name": "semanticsLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "semanticsHint",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "title-expanded",
+          "title-collapsed",
+          "tab-rail-pinned",
+          "tab-page-restored"
+        ],
+        "slots": [
+          {
+            "name": "tabRail",
+            "kind": "pinned-preferred-size",
+            "allowedComponents": [
+              "catch.tab_rail"
+            ]
+          },
+          {
+            "name": "body",
+            "kind": "horizontal-tab-pager",
+            "notes": "The route supplies a TabBarView bound to the same controller as the rail."
+          }
+        ],
+        "tokens": [
+          "theme.light.color.bg"
+        ],
+        "dartRoles": [
+          "CatchScreenHeaderTitle.block",
+          "CatchSliverHeader",
+          "NestedScrollView",
+          "SliverOverlapAbsorber",
+          "SliverOverlapInjector",
+          "CatchPagerFocusBoundary",
+          "CatchSliverTerminalPadding"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.tabbed_screen.page_scroll_view",
+            "symbol": "CatchTabbedPageScrollView",
+            "file": "lib/core/widgets/catch_tabbed_screen.dart",
+            "summary": "Per-page vertical owner for focus isolation, matching overlap injection, stable PageStorage restoration, and shell-aware terminal padding.",
+            "states": [
+              "top",
+              "scrolled",
+              "restored",
+              "terminal-clearance"
+            ]
+          }
+        ]
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.tab_rail"
+        ],
+        "notes": [
+          "The route owns the typed TabController and TabBarView; the shell owns title, pinned rail, overlap, and safe-area composition.",
+          "Every page uses CatchTabbedPageScrollView with a stable PageStorageKey. Never switch tab children inside one shared vertical ListView.",
+          "Feature code retains async state, data policy, route actions, and specialized inner-scroll bridges."
+        ]
+      },
+      "governance": {
+        "role": "pattern",
+        "canonicalFamily": "catch.tabbed_screen",
+        "publicApi": true,
+        "stateOwnership": "none",
+        "asyncOwnership": "none",
+        "layoutOwnership": "screen-layout",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchTabbedScreenScaffold",
+        "file": "lib/core/widgets/catch_tabbed_screen.dart",
+        "constructors": [
+          "CatchTabbedScreenScaffold"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchTabbedScreenScaffold"
       }
     },
     {
@@ -5970,13 +6821,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical search input, including pill field mode and expanding/collapsed search affordance mode.",
-      "dart": {
-        "symbol": "CatchSearchField",
-        "file": "lib/core/widgets/catch_search_field.dart",
-        "constructors": [
-          "CatchSearchField"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -6113,6 +6957,17 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchSearchField",
+        "file": "lib/core/widgets/catch_search_field.dart",
+        "constructors": [
+          "CatchSearchField"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchSearchField",
+        "admin": "SearchField"
       }
     },
     {
@@ -6121,13 +6976,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical dual-thumb range slider with Catch track, thumb, endpoint label, and semantic-value styling.",
-      "dart": {
-        "symbol": "CatchRangeSlider",
-        "file": "lib/core/widgets/catch_range_slider.dart",
-        "constructors": [
-          "CatchRangeSlider"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -6236,6 +7084,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchRangeSlider",
+        "file": "lib/core/widgets/catch_range_slider.dart",
+        "constructors": [
+          "CatchRangeSlider"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchRangeSlider"
       }
     },
     {
@@ -6244,13 +7102,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical settings toggle control: pill track, primary on fill, quiet off track, and surface knob.",
-      "dart": {
-        "symbol": "CatchToggle",
-        "file": "lib/core/widgets/catch_toggle.dart",
-        "constructors": [
-          "CatchToggle"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -6329,6 +7180,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchToggle",
+        "file": "lib/core/widgets/catch_toggle.dart",
+        "constructors": [
+          "CatchToggle"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchToggle"
       }
     },
     {
@@ -6337,13 +7198,6 @@
       "status": "active",
       "kind": "pattern",
       "summary": "Phone-frame status row used for handoff previews and screenshot framing, not product navigation chrome.",
-      "dart": {
-        "symbol": "CatchStatusBar",
-        "file": "lib/core/widgets/catch_status_bar.dart",
-        "constructors": [
-          "CatchStatusBar"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -6425,6 +7279,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchStatusBar",
+        "file": "lib/core/widgets/catch_status_bar.dart",
+        "constructors": [
+          "CatchStatusBar"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchStatusBar"
       }
     },
     {
@@ -6433,13 +7297,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Wizard/step-flow header built from CatchTopBar large mode plus an optional progress hairline.",
-      "dart": {
-        "symbol": "CatchStepHeader",
-        "file": "lib/core/widgets/catch_step_flow_header.dart",
-        "constructors": [
-          "CatchStepHeader"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -6585,6 +7442,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchStepHeader",
+        "file": "lib/core/widgets/catch_step_flow_header.dart",
+        "constructors": [
+          "CatchStepHeader"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchStepHeader"
       }
     },
     {
@@ -6593,13 +7460,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Adaptive bottom navigation bar with icon-only unselected tabs, selected icon-label pill reveal, badges, and platform-specific chrome.",
-      "dart": {
-        "symbol": "CatchTabBar",
-        "file": "lib/core/widgets/catch_tab_bar.dart",
-        "constructors": [
-          "CatchTabBar"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -6644,6 +7504,9 @@
           "with-badge",
           "disabled-readonly",
           "safe-area",
+          "ios-floating",
+          "android-anchored",
+          "ios-keyboard-open",
           "text-scale",
           "reduced-motion",
           "with-four-tabs"
@@ -6710,6 +7573,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchTabBar",
+        "file": "lib/core/widgets/catch_tab_bar.dart",
+        "constructors": [
+          "CatchTabBar"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchTabBar"
       }
     },
     {
@@ -6717,15 +7590,7 @@
       "name": "CatchBottomDock",
       "status": "active",
       "kind": "composite",
-      "summary": "Anchored bottom utility and CTA dock for chat inputs, filter actions, booking footers, and compact controls above the device safe area.",
-      "dart": {
-        "symbol": "CatchBottomDock",
-        "file": "lib/core/widgets/catch_bottom_dock.dart",
-        "constructors": [
-          "CatchBottomDock",
-          "CatchBottomDock.cta"
-        ]
-      },
+      "summary": "Anchored bottom utility surface for chat inputs, filter actions, and compact custom controls above the device safe area.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -6747,8 +7612,8 @@
           {
             "name": "child",
             "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
+            "required": true,
+            "dartType": "Widget"
           },
           {
             "name": "padding",
@@ -6762,54 +7627,11 @@
             "required": false,
             "default": true,
             "dartType": "bool"
-          },
-          {
-            "name": "label",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "onPressed",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
-          },
-          {
-            "name": "leadingContent",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
-          },
-          {
-            "name": "isLoading",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "catchLine",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "footnote",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
           }
         ],
         "states": [
           "custom",
-          "custom-no-safe-area",
-          "cta",
-          "cta-leading-content",
-          "cta-catch-line",
-          "cta-footnote",
-          "loading",
-          "disabled"
+          "custom-no-safe-area"
         ],
         "slots": [
           {
@@ -6819,14 +7641,6 @@
               "catch.button",
               "catch.search_field",
               "catch.icon_button"
-            ]
-          },
-          {
-            "name": "leadingContent",
-            "kind": "cta-leading-content",
-            "allowedComponents": [
-              "catch.badge",
-              "catch.metric_strip"
             ]
           }
         ],
@@ -6839,26 +7653,9 @@
           "theme.light.color.line",
           "theme.light.color.surface"
         ],
-        "dartRoles": [
-          "CatchBottomDockVariant",
-          "CatchButton",
-          "CatchIcons.sparkle",
-          "CatchTextStyles.monoLabel"
-        ],
+        "dartRoles": [],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.bottom_dock.cta",
-            "symbol": "CatchBottomDockCta",
-            "summary": "Direct sticky CTA footer renderer used by CatchBottomDock.cta.",
-            "states": [
-              "default",
-              "leading-content",
-              "catch-line-footnote"
-            ],
-            "file": "lib/core/widgets/catch_bottom_dock.dart"
-          }
-        ]
+        "members": []
       },
       "handoff": {
         "allowedChildren": [
@@ -6869,7 +7666,7 @@
           "catch.metric_strip"
         ],
         "notes": [
-          "Use CatchBottomDock for anchored utility chrome and sticky CTA footers.",
+          "Use CatchBottomDock only for anchored custom utility chrome; primary screen CTAs belong to CatchBottomAction.",
           "Use CatchTabBar for bottom navigation; do not merge tab navigation behavior into this utility dock."
         ]
       },
@@ -6883,6 +7680,195 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchBottomDock",
+        "file": "lib/core/widgets/catch_bottom_dock.dart",
+        "constructors": [
+          "CatchBottomDock"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchBottomDock"
+      }
+    },
+    {
+      "id": "catch.bottom_action",
+      "name": "CatchBottomAction",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Canonical platform-adaptive primary bottom action: inset floating chrome on Cupertino platforms and an anchored full-width action bar on Material platforms.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/BottomAction",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "BookingDock",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "onPressed",
+            "type": "callback",
+            "required": true,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "leadingContent",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "buttonKey",
+            "type": "object",
+            "required": false,
+            "dartType": "Key?"
+          },
+          {
+            "name": "isLoading",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "backgroundColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "dividerColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "buttonAccentColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "catchLine",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "catchLineAccent",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "footnote",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "ios-floating",
+          "android-anchored",
+          "leading-content",
+          "catch-line",
+          "footnote",
+          "loading",
+          "disabled"
+        ],
+        "slots": [
+          {
+            "name": "leadingContent",
+            "kind": "optional-action-leading",
+            "allowedComponents": [
+              "catch.badge",
+              "catch.metric_strip"
+            ]
+          }
+        ],
+        "tokens": [
+          "space.s2",
+          "space.s3",
+          "space.s4",
+          "radius.lg",
+          "theme.light.color.ink2",
+          "theme.light.color.ink3",
+          "theme.light.color.line",
+          "theme.light.color.surface"
+        ],
+        "dartRoles": [
+          "CatchButton",
+          "CatchElevation.raised",
+          "CatchIcons.sparkle",
+          "CatchSpacing.screenPx",
+          "CatchTextStyles.monoLabel"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.bottom_action.content",
+            "symbol": "CatchBottomActionContent",
+            "file": "lib/core/widgets/catch_bottom_action.dart",
+            "summary": "Provider-free action contents shared by the floating and anchored platform shells.",
+            "states": [
+              "default",
+              "leading-content",
+              "catch-line",
+              "footnote",
+              "loading",
+              "disabled"
+            ]
+          }
+        ]
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.button",
+          "catch.badge",
+          "catch.metric_strip"
+        ],
+        "notes": [
+          "Callers provide one CTA contract; CatchBottomAction selects floating Cupertino or anchored Material chrome from the active platform.",
+          "Do not place primary screen CTAs in CatchBottomDock or branch on platform at feature call sites."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.bottom_action",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchBottomAction",
+        "file": "lib/core/widgets/catch_bottom_action.dart",
+        "constructors": [
+          "CatchBottomAction"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchBottomAction"
       }
     },
     {
@@ -6891,13 +7877,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Material Catch confirmation dialog body used by the adaptive confirm-dialog launcher on non-Cupertino platforms.",
-      "dart": {
-        "symbol": "CatchConfirmDialog",
-        "file": "lib/core/widgets/catch_adaptive_dialog.dart",
-        "constructors": [
-          "CatchConfirmDialog"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -6979,6 +7958,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchConfirmDialog",
+        "file": "lib/core/widgets/catch_adaptive_dialog.dart",
+        "constructors": [
+          "CatchConfirmDialog"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchConfirmDialog"
       }
     },
     {
@@ -6987,13 +7976,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Catch dialog shell for compact form bodies with title, slotted form content, and optional trailing action row.",
-      "dart": {
-        "symbol": "CatchFormDialog",
-        "file": "lib/core/widgets/catch_adaptive_dialog.dart",
-        "constructors": [
-          "CatchFormDialog"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -7093,6 +8075,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchFormDialog",
+        "file": "lib/core/widgets/catch_adaptive_dialog.dart",
+        "constructors": [
+          "CatchFormDialog"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchFormDialog"
       }
     },
     {
@@ -7100,14 +8092,7 @@
       "name": "CatchCountPill",
       "status": "active",
       "kind": "primitive",
-      "summary": "Floating pill affordance for map/list toggles and filters with optional icon, label, badge, and semantics.",
-      "dart": {
-        "symbol": "CatchCountPill",
-        "file": "lib/core/widgets/catch_count_pill.dart",
-        "constructors": [
-          "CatchCountPill"
-        ]
-      },
+      "summary": "Floating pill affordance with optional icon, system-function label, mono data value, badge, and semantics.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -7139,6 +8124,12 @@
             "dartType": "String?"
           },
           {
+            "name": "value",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
             "name": "badge",
             "type": "string",
             "required": false,
@@ -7160,6 +8151,7 @@
         "states": [
           "icon-only",
           "label",
+          "label-with-value",
           "label-with-icon",
           "with-badge",
           "semantic-label",
@@ -7178,9 +8170,13 @@
           "theme.light.color.surface"
         ],
         "dartRoles": [
-          "CatchTextStyles.monoLabel",
+          "CatchTextStyles.buttonSm",
+          "CatchTextStyles.monoCapsLabel",
           "CatchTextStyles.statusLabel",
-          "CatchLayout.countPillIconSize"
+          "CatchLayout.countPillIconSize",
+          "CatchLayout.countPillMinExtent",
+          "CatchLayout.tabBarBlurSigma",
+          "CatchOpacity.overlayPillFill"
         ],
         "goldens": []
       },
@@ -7200,6 +8196,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchCountPill",
+        "file": "lib/core/widgets/catch_count_pill.dart",
+        "constructors": [
+          "CatchCountPill"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchCountPill"
       }
     },
     {
@@ -7208,13 +8214,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Compact page/progress dot indicator with selected-width emphasis, semantic label support, and motion-token transitions.",
-      "dart": {
-        "symbol": "CatchPageDots",
-        "file": "lib/core/widgets/catch_page_dots.dart",
-        "constructors": [
-          "CatchPageDots"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -7311,6 +8310,16 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchPageDots",
+        "file": "lib/core/widgets/catch_page_dots.dart",
+        "constructors": [
+          "CatchPageDots"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchPageDots"
       }
     },
     {
@@ -7319,13 +8328,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Club-detail membership dock with role-specific guest, visitor, member, and owner action states.",
-      "dart": {
-        "symbol": "ClubDetailDock",
-        "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-        "constructors": [
-          "ClubDetailDock"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -7467,6 +8469,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "ClubDetailDock",
+        "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+        "constructors": [
+          "ClubDetailDock"
+        ]
+      },
+      "surfaces": {
+        "flutter": "ClubDetailDock"
       }
     },
     {
@@ -7475,13 +8487,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Explore cover/masthead composition with dark editorial ground, activity glow, optional chrome, CTA, and data lines.",
-      "dart": {
-        "symbol": "CatchCoverStory",
-        "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-        "constructors": [
-          "CatchCoverStory"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -7632,6 +8637,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchCoverStory",
+        "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+        "constructors": [
+          "CatchCoverStory"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchCoverStory"
       }
     },
     {
@@ -7640,13 +8655,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Explore person-in-feed card with postcard/photo variants, activity-gradient fallback, quote, attribution, CTA, and like action.",
-      "dart": {
-        "symbol": "CatchCrossPathsCard",
-        "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-        "constructors": [
-          "CatchCrossPathsCard"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -7803,6 +8811,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchCrossPathsCard",
+        "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
+        "constructors": [
+          "CatchCrossPathsCard"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchCrossPathsCard"
       }
     },
     {
@@ -7811,14 +8829,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical person/avatar bubble for photos, deterministic initials, activity-context fallback, rings, status dots, obscured states, square host shapes, and overflow counts.",
-      "dart": {
-        "symbol": "CatchPersonAvatar",
-        "file": "lib/core/widgets/catch_person_avatar.dart",
-        "constructors": [
-          "CatchPersonAvatar",
-          "CatchPersonAvatar.count"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8051,6 +9061,17 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchPersonAvatar",
+        "file": "lib/core/widgets/catch_person_avatar.dart",
+        "constructors": [
+          "CatchPersonAvatar",
+          "CatchPersonAvatar.count"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchPersonAvatar"
       }
     },
     {
@@ -8059,13 +9080,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Full-width hover, focus, pressed, tap, and semantic interaction layer for list and field rows.",
-      "dart": {
-        "symbol": "CatchRowPressSurface",
-        "file": "lib/core/widgets/catch_row_press_surface.dart",
-        "constructors": [
-          "CatchRowPressSurface"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8139,6 +9153,176 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchRowPressSurface",
+        "file": "lib/core/widgets/catch_row_press_surface.dart",
+        "constructors": [
+          "CatchRowPressSurface"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchRowPressSurface"
+      }
+    },
+    {
+      "id": "catch.host_row",
+      "name": "CatchHostRow",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Compact provider-free host or organizer identity row whose message and navigation affordances are derived directly from the available callbacks.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/HostRow",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "HostRow",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "activityKind",
+            "type": "enum",
+            "required": true,
+            "dartType": "ActivityKind",
+            "values": [
+              "socialRun",
+              "running",
+              "walking",
+              "pickleball",
+              "padel",
+              "tennis",
+              "badminton",
+              "cycling",
+              "spinClass",
+              "yoga",
+              "strengthTraining",
+              "pubQuiz",
+              "barCrawl",
+              "dinner",
+              "singlesMixer",
+              "openActivity"
+            ]
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "imageUrl",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "meta",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "verified",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "divider",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "onMessage",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "messageTooltip",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "identity-only",
+          "navigable",
+          "message-enabled",
+          "verified",
+          "divider",
+          "long-copy"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s1",
+          "space.s2",
+          "space.s3",
+          "space.s10",
+          "theme.light.color.ink",
+          "theme.light.color.ink3",
+          "theme.light.color.line",
+          "theme.light.color.primary"
+        ],
+        "dartRoles": [
+          "CatchPersonAvatar",
+          "CatchRowPressSurface",
+          "CatchIconButton",
+          "ActivityPalette"
+        ],
+        "goldens": [],
+        "members": []
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.person_avatar",
+          "catch.icon_button",
+          "catch.row_press_surface"
+        ],
+        "notes": [
+          "Supplying onTap automatically renders the navigation chevron; omitting onTap makes navigation chrome impossible.",
+          "Supplying onMessage automatically renders the message action and requires messageTooltip, so affordance and capability cannot drift."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.host_row",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchHostRow",
+        "file": "lib/core/widgets/catch_host_row.dart",
+        "constructors": [
+          "CatchHostRow"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchHostRow"
       }
     },
     {
@@ -8147,13 +9331,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Global people row for roster, safety, and chat-preview surfaces with configurable avatar shape, divider, timestamp, unread badge, and new-match marker.",
-      "dart": {
-        "symbol": "CatchPersonRow",
-        "file": "lib/core/widgets/catch_person_row.dart",
-        "constructors": [
-          "CatchPersonRow"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8298,6 +9475,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchPersonRow",
+        "file": "lib/core/widgets/catch_person_row.dart",
+        "constructors": [
+          "CatchPersonRow"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchPersonRow"
       }
     },
     {
@@ -8306,13 +9493,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Canonical ticket-style event card surface backed by shared activity visuals and event media atoms.",
-      "dart": {
-        "symbol": "CatchEventCard",
-        "file": "lib/core/widgets/catch_event_activity_cards.dart",
-        "constructors": [
-          "CatchEventCard.ticket"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8518,6 +9698,20 @@
             ]
           },
           {
+            "id": "catch.event_card.date_rail",
+            "symbol": "EventDateRailCard",
+            "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+            "summary": "Compact list and map DateTicket with an activity rail, organizer and event identity hierarchy, one optional context block, and a trailing price decision row.",
+            "states": [
+              "single-free",
+              "single-paid",
+              "strip-first",
+              "strip-middle",
+              "strip-last",
+              "text-scale"
+            ]
+          },
+          {
             "id": "catch.event_card.event_thumbnail.activity_fallback",
             "symbol": "CatchEventThumbnailActivityFallback",
             "file": "lib/core/widgets/catch_event_thumbnail.dart",
@@ -8547,9 +9741,10 @@
           "catch.badge"
         ],
         "notes": [
-          "Ticket, spotlight, and compact are named constructors on one event card API, not separate public card classes.",
+          "CatchEventCard.ticket is the canonical feature-card constructor; compact list and selected-map tickets belong to the EventDateRailCard family member instead of a competing public card class.",
           "CatchEventThumbnail is an event-card media member rather than a competing product concept.",
-          "Use activity visuals for no-photo event states so cards, thumbnails, map sheets, and detail headers share event-type color semantics."
+          "Use activity visuals for no-photo event states so cards, thumbnails, map sheets, and detail headers share event-type color semantics.",
+          "EventDateRailCard is the compact list and selected-map member of this family; do not recreate its ticket rail or decision hierarchy in feature code."
         ]
       },
       "governance": {
@@ -8562,6 +9757,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchEventCard",
+        "file": "lib/core/widgets/catch_event_activity_cards.dart",
+        "constructors": [
+          "CatchEventCard.ticket"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchEventCard"
       }
     },
     {
@@ -8570,13 +9775,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Global display-time image grade that gives uploaded and generated imagery the shared Catch visual treatment without mutating source media.",
-      "dart": {
-        "symbol": "CatchGradedImage",
-        "file": "lib/core/widgets/catch_graded_image.dart",
-        "constructors": [
-          "CatchGradedImage"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8653,6 +9851,16 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchGradedImage",
+        "file": "lib/core/widgets/catch_graded_image.dart",
+        "constructors": [
+          "CatchGradedImage"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchGradedImage"
       }
     },
     {
@@ -8661,13 +9869,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Canonical detail-page media backdrop state for photo-backed and branded-fallback heroes with optional scrim treatment.",
-      "dart": {
-        "symbol": "CatchDetailHeroBackdrop",
-        "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
-        "constructors": [
-          "CatchDetailHeroBackdrop"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8766,6 +9967,16 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchDetailHeroBackdrop",
+        "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
+        "constructors": [
+          "CatchDetailHeroBackdrop"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchDetailHeroBackdrop"
       }
     },
     {
@@ -8774,13 +9985,6 @@
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical activity-colored map pin for resting and selected map marks with optional uppercased selected-state flag text.",
-      "dart": {
-        "symbol": "CatchActivityMapPin",
-        "file": "lib/core/widgets/catch_activity_map_pin.dart",
-        "constructors": [
-          "CatchActivityMapPin"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8888,6 +10092,132 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchActivityMapPin",
+        "file": "lib/core/widgets/catch_activity_map_pin.dart",
+        "constructors": [
+          "CatchActivityMapPin"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchActivityMapPin"
+      }
+    },
+    {
+      "id": "catch.map_preview",
+      "name": "CatchMapPreview",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Read-only, attribution-safe Google Maps viewport for compact location previews with one exact marker and a deterministic no-network fallback.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/MapPreview",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "MapCard",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "coordinate",
+            "type": "object",
+            "required": true,
+            "dartType": "LocationCoordinate?"
+          },
+          {
+            "name": "fallbackLabel",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "markerHue",
+            "type": "enum",
+            "required": false,
+            "default": "orange",
+            "dartType": "CatchMapMarkerHue",
+            "values": [
+              "azure",
+              "green",
+              "orange",
+              "red",
+              "rose",
+              "yellow"
+            ]
+          },
+          {
+            "name": "enableNetworkTiles",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "zoom",
+            "type": "number",
+            "required": false,
+            "default": 15.5,
+            "dartType": "double"
+          }
+        ],
+        "states": [
+          "exact-location",
+          "missing-coordinate",
+          "network-disabled",
+          "android-lite-mode"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "theme.light.color.bg",
+          "theme.light.color.ink3"
+        ],
+        "dartRoles": [
+          "CatchGoogleMap",
+          "CatchMapMarker",
+          "CatchMapMarkerHue",
+          "LocationCoordinate"
+        ],
+        "goldens": [],
+        "members": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use CatchMapPreview inside compact cards; it disables gestures and controls, preserves Google attribution space, and enables Android lite mode automatically.",
+          "Use enableNetworkTiles=false only for deterministic tests, Widgetbook, captures, or offline review; production call sites default to real Google tiles."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.map_preview",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "CatchMapPreview",
+        "file": "lib/locations/shared/catch_map_preview.dart",
+        "constructors": [
+          "CatchMapPreview"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchMapPreview"
       }
     },
     {
@@ -8895,14 +10225,7 @@
       "name": "EventDetailSections",
       "status": "active",
       "kind": "screen-contract",
-      "summary": "Event Detail screen-section contract that groups the event-specific hero, ticket facts, overview primitives, host/social sections, companion prompt, and booking dock under one Catch-owned handoff boundary.",
-      "dart": {
-        "symbol": "EventDetailBody",
-        "file": "lib/events/presentation/widgets/event_detail_body.dart",
-        "constructors": [
-          "EventDetailBody"
-        ]
-      },
+      "summary": "Event Detail screen-section contract that groups the event-specific hero, ticket facts, typed information rows, Google map preview, compact host/social sections, companion prompt, and platform-adaptive booking action under one Catch-owned handoff boundary.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8940,6 +10263,25 @@
             "dartType": "EventDetailHostState"
           },
           {
+            "name": "socialState",
+            "type": "object",
+            "required": true,
+            "dartType": "EventDetailSocialState"
+          },
+          {
+            "name": "informationState",
+            "type": "object",
+            "required": true,
+            "dartType": "EventDetailInformationState"
+          },
+          {
+            "name": "enableMapNetworkTiles",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
             "name": "presentationMode",
             "type": "enum",
             "required": false,
@@ -8970,6 +10312,12 @@
           "host-hidden",
           "host-loading",
           "host-content",
+          "host-message-enabled",
+          "reviews-hidden",
+          "reviews-content",
+          "reviews-empty-write-prompt",
+          "map-google-tile",
+          "map-deterministic-fallback",
           "booking-eligible",
           "booking-waitlist",
           "booking-booked",
@@ -9005,7 +10353,7 @@
             "name": "bookingDock",
             "kind": "event-detail-bottom-dock",
             "allowedComponents": [
-              "catch.bottom_dock",
+              "catch.bottom_action",
               "catch.button",
               "catch.surface"
             ]
@@ -9030,6 +10378,10 @@
           "EventDetailSurfaceStyle",
           "EventDetailCompanionState",
           "EventDetailHostState",
+          "EventDetailSocialState",
+          "EventDetailReviewsState",
+          "EventDetailInformationState",
+          "EventDetailFactRow",
           "EventDetailBookingDockState",
           "EventDetailScreenState"
         ],
@@ -9039,7 +10391,7 @@
             "id": "catch.event_detail_sections.hero",
             "symbol": "EventDetailHeroAppBar",
             "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-            "summary": "Event detail hero section with standard, ticket, and spotlight-dark media treatments plus route-owned top actions.",
+            "summary": "Event detail hero section with standard, ticket, and spotlight-dark media treatments plus route-owned actions laid out through the canonical top-bar action group.",
             "states": [
               "standard",
               "ticket",
@@ -9097,10 +10449,10 @@
             "id": "catch.event_detail_sections.map_card",
             "symbol": "EventDetailMapCard",
             "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-            "summary": "Event detail map preview card with exact or morning-of pin states and optional route-owned tap action.",
+            "summary": "Event detail location card with a real read-only Google map tile for exact coordinates, a deterministic no-network fallback for tests and captures, and a route-owned caption action.",
             "states": [
-              "pin-ready",
-              "pin-drops-morning-of",
+              "google-tile-pin-ready",
+              "network-disabled-fallback",
               "tap-enabled",
               "tap-disabled"
             ]
@@ -9109,7 +10461,7 @@
             "id": "catch.event_detail_sections.mechanism_list",
             "symbol": "EventDetailMechanismList",
             "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-            "summary": "How-sign-ups-work list for open signup, approval, waitlist, and demand-pricing mechanics.",
+            "summary": "Flat How-sign-ups-work list rendered from validated EventDetailFactRow admission, waitlist, and pricing facts.",
             "states": [
               "open-signup",
               "approval",
@@ -9118,14 +10470,27 @@
             ]
           },
           {
+            "id": "catch.event_detail_sections.fact_list",
+            "symbol": "EventDetailFactList",
+            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "summary": "Provider-free flat fact-row renderer with structural stacked and inline section modes.",
+            "states": [
+              "stacked",
+              "inline",
+              "long-copy"
+            ]
+          },
+          {
             "id": "catch.event_detail_sections.policy_summary",
-            "symbol": "EventDetailPolicySummary",
-            "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-            "summary": "Good-to-know policy summary for requirements, expectations, booking, cancellation, and settlement rows.",
+            "symbol": "EventDetailGoodToKnowList",
+            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "summary": "Flat Good-to-know list rendered from validated requirements, experience, attendance, and cancellation facts; booking mechanics and settlement copy cannot be inserted here.",
             "states": [
               "requirements",
-              "expectations",
-              "booking-policy",
+              "experience",
+              "attendance",
+              "cancellation",
+              "free-event-plans-change",
               "no-requirements"
             ]
           },
@@ -9133,26 +10498,31 @@
             "id": "catch.event_detail_sections.hosts",
             "symbol": "EventDetailHostsSection",
             "file": "lib/events/presentation/widgets/event_detail_body.dart",
-            "summary": "Provider-free host section adapter for hidden, loading, error, and host-card content states.",
+            "summary": "Provider-free host section adapter for hidden, loading, error, and compact CatchHostRow content states.",
             "states": [
               "hidden",
               "loading",
               "error",
               "content",
-              "message-enabled"
+              "message-enabled",
+              "navigable",
+              "passive"
             ]
           },
           {
             "id": "catch.event_detail_sections.social",
             "symbol": "EventDetailSocialSection",
             "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
-            "summary": "Who's-going and reviews section composition for guest lock, member roster, review visibility, and attended review action states.",
+            "summary": "Who's-going and reviews composition with one route-owned catch-window message, hidden non-actionable empty reviews, inline eligible write prompts, and populated review actions derived from capability state.",
             "states": [
               "guest-locked",
               "member-visible",
               "reviews-hidden",
+              "reviews-empty-hidden",
+              "reviews-empty-inline-write",
               "reviews-visible",
-              "can-review"
+              "can-review",
+              "can-respond"
             ]
           },
           {
@@ -9171,7 +10541,7 @@
             "id": "catch.event_detail_sections.booking_dock",
             "symbol": "EventBookingDock",
             "file": "lib/events/presentation/widgets/event_detail_cta.dart",
-            "summary": "Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states.",
+            "summary": "Provider-free booking action renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states through platform-adaptive CatchBottomAction chrome.",
             "states": [
               "eligible",
               "paid",
@@ -9200,18 +10570,22 @@
       },
       "handoff": {
         "allowedChildren": [
-          "catch.bottom_dock",
+          "catch.bottom_action",
           "catch.button",
           "catch.detail_media",
           "catch.event_card",
+          "catch.host_row",
           "catch.icon_button",
+          "catch.map_preview",
           "catch.person_avatar",
           "catch.section",
-          "catch.surface"
+          "catch.surface",
+          "catch.top_bar"
         ],
         "notes": [
           "Use this screen contract for Event Detail section handoffs. Reusable primitives stay in their existing catch.* contracts; event-specific compounds remain members here until they prove reusable outside Event Detail.",
-          "Route-owned provider reads, booking mutations, save/share/calendar side effects, and navigation callbacks stay outside visual members."
+          "Route-owned provider reads, booking mutations, save/share/calendar side effects, and navigation callbacks stay outside visual members.",
+          "EventDetailInformationState is the only constructor for sign-up and good-to-know facts, which prevents duplicate facts, settlement leakage, or a fact appearing in the wrong section."
         ]
       },
       "governance": {
@@ -9224,6 +10598,16 @@
         "actionOwnership": "route-owned",
         "allowedDependencyLevel": "route-boundary",
         "reviewPolicy": "screen-contract-canonical"
+      },
+      "dart": {
+        "symbol": "EventDetailBody",
+        "file": "lib/events/presentation/widgets/event_detail_body.dart",
+        "constructors": [
+          "EventDetailBody"
+        ]
+      },
+      "surfaces": {
+        "flutter": "EventDetailBody"
       }
     },
     {
@@ -9232,13 +10616,6 @@
       "status": "active",
       "kind": "composite",
       "summary": "Activity notification list row with type glyph, read/unread emphasis, timestamp, optional body, divider, and tap semantics.",
-      "dart": {
-        "symbol": "NotificationRow",
-        "file": "lib/dashboard/presentation/widgets/activity_section.dart",
-        "constructors": [
-          "NotificationRow"
-        ]
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -9360,6 +10737,16 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "dart": {
+        "symbol": "NotificationRow",
+        "file": "lib/dashboard/presentation/widgets/activity_section.dart",
+        "constructors": [
+          "NotificationRow"
+        ]
+      },
+      "surfaces": {
+        "flutter": "NotificationRow"
       }
     }
   ]

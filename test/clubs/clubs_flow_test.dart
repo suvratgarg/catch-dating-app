@@ -293,9 +293,9 @@ void main() {
       );
       await _pumpClubFlow(tester);
 
-      await tester.scrollUntilVisible(find.text(event.title), 500);
+      await tester.scrollUntilVisible(find.text(event.eventFormat.label), 500);
       await _pumpClubFlow(tester);
-      await tester.tap(find.text(event.title));
+      await tester.tap(find.text(event.eventFormat.label));
       await _pumpClubFlow(tester);
 
       expect(find.text('Host event ${club.id}/${event.id}'), findsOneWidget);
@@ -371,6 +371,13 @@ Event _buildEvent({required String id, required String clubId}) {
     startTime: start,
     endTime: start.add(const Duration(hours: 1)),
     meetingPoint: 'Start',
+    meetingLocation: const EventMeetingLocation(
+      name: 'Start',
+      latitude: 19.0608,
+      longitude: 72.8365,
+    ),
+    startingPointLat: 19.0608,
+    startingPointLng: 72.8365,
     distanceKm: 5,
     pace: PaceLevel.easy,
     capacityLimit: 20,

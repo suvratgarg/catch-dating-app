@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.23
-updated: 2026-07-12
+version: 1.4.28
+updated: 2026-07-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -319,11 +319,71 @@ policy test is intentionally updated.
 Tab-root overlays that still coexist with the floating tab bar should use
 `AppShellActiveTab.bottomOverlayClearanceOf(context, minimum: ...)`; feature
 code should not recompute the tab-bar height, safe-area subtraction, or platform
-floating inset. Root scroll views without tab chrome should end with a semantic
-terminal sliver such as `CatchSliverTerminalPadding` instead of hard-coded
-bottom spacers. When a route uses this terminal sliver inside a `SafeArea`, the
-screen-level `SafeArea` must leave `bottom: false` so the device bottom inset
-remains visible to the sliver and becomes scrollable clearance.
+floating inset. Tab-root scroll owners end with `CatchSliverTerminalPadding`,
+or `CatchScrollTerminalPadding` for box-based lists, instead of hard-coded
+bottom spacers. Those primitives consume the raw floating obstruction published
+by the shell on iOS, add only normal breathing room when Android's anchored bar
+has already reduced the Scaffold body, and fall back to the device safe area
+outside shell chrome. When a route uses a terminal primitive inside a
+`SafeArea`, the screen-level `SafeArea` must leave `bottom: false` so the bottom
+inset remains visible to the terminal and becomes scrollable clearance.
+
+The versioned inventory in `tool/design/tab_root_scroll_contracts.json` must
+declare every direct consumer and host `StatefulShellBranch` plus every real
+root scroll owner. `design:tab-root-scroll-contracts` fails when a new branch is
+unregistered or an owner loses its terminal contract.
+
+### Exhibit ARCH-SHELL-SCROLL-001: Adaptive Tab-Root Scroll Clearance
+
+<!-- exhibit-freshness: ARCH-SHELL-SCROLL-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/core/presentation/catch_adaptive_tab_scaffold.dart`
+- `lib/core/presentation/app_shell_active_tab.dart`
+- `lib/core/widgets/catch_section_layout.dart`
+- `lib/core/widgets/catch_tabbed_screen.dart`
+- `lib/user_profile/presentation/profile_screen.dart`
+- `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart`
+- `tool/design/tab_root_scroll_contracts.json`
+
+`CatchAdaptiveTabScaffold` is the single placement owner for consumer and host
+navigation chrome. It publishes a typed `none`, `anchored`, or `floating`
+placement through `AppShellActiveTab`. Overlay controls use
+`bottomOverlayClearanceOf`; scroll endings use
+`scrollTerminalClearanceOf`. These are intentionally separate because a control
+inside `SafeArea` subtracts the safe inset while a scroll terminal must consume
+the complete raw obstruction.
+
+```dart
+return CatchAdaptiveTabScaffold(
+  activeIndex: navigationShell.currentIndex,
+  navigationBar: navigationBar,
+  body: navigationShell,
+);
+
+// Sliver root.
+CustomScrollView(
+  slivers: [
+    ...contentSlivers,
+    const CatchSliverTerminalPadding(),
+  ],
+);
+
+// Box/ListView root. Its ordinary page padding owns no bottom inset.
+ListView(
+  padding: CatchInsets.pageBody.copyWith(bottom: 0),
+  children: [
+    ...content,
+    const CatchScrollTerminalPadding(),
+  ],
+);
+```
+
+Do not pad the entire shell body, add keyboard `viewInsets`, or copy tab-bar
+dimensions into features. `CatchTabbedPageScrollView` puts the terminal inside
+the actual page scroll owner; specialized nested surfaces such as Profile
+Preview disable that terminal where their inner scroll owner supplies it.
 
 ## Layout, Spacing, And UI Architecture
 
@@ -472,8 +532,14 @@ Sliver rules:
 - Use `SliverList.builder`, `SliverList.separated`, or `SliverGrid` for
   repeated content that can grow.
 - Avoid a vertical `ListView` or large `Column` inside `SliverToBoxAdapter`.
-- Use `SliverFillRemaining(hasScrollBody: false)` for centered empty/error
-  states, not for tall skeletons or arbitrary content.
+- Use `SliverFillRemaining(hasScrollBody: false)` for non-scrollable centered
+  empty/error states, not for tall skeletons or arbitrary content. Leave
+  `hasScrollBody` enabled when the child is `CatchEmptyState`, because that
+  primitive owns its accessibility overflow scroll fallback.
+- Let `CatchEmptyState` center itself when it receives bounded remaining height;
+  do not add feature-local `Center` wrappers. Its shared bounded-height branch
+  preserves a scroll fallback when accessibility text or actions exceed the
+  viewport.
 - If a parent owns a sliver scroll view, async loading/error/empty/data state
   widgets should usually return slivers too.
 
@@ -494,6 +560,16 @@ For `NestedScrollView` plus pinned tab rows:
 - The absorbed sliver should be the pinned tab row, not the entire scroll-away
   title group.
 - Each tab body starts with the matching `SliverOverlapInjector`.
+- Use `CatchTabbedScreenScaffold` for the shared scroll-away title, pinned
+  option rail, safe-area, and overlap absorber contract. Use
+  `CatchTabbedPageScrollView` as each page's vertical owner.
+- The route owns one typed `TabController`; bind it to the visual rail through
+  `CatchTabControllerRail<T>` and to content through `TabBarView`. Do not switch
+  child widgets inside one shared `ListView`, because that leaks vertical offset
+  between tabs and disconnects horizontal paging from the option rail.
+- Give every page a stable `PageStorageKey` that includes its domain identity
+  when the same screen can switch records, such as a club id. This preserves
+  each page's offset while preventing one club's offset from leaking to another.
 - Body padding belongs to the tab body, not to the pinned tab row.
 - If a tab body contains an independently scrollable child and its top gap must
   remain visible when that child returns to offset zero, put the gap inside that
@@ -501,6 +577,41 @@ For `NestedScrollView` plus pinned tab rows:
 - If the intended UX is one continuous gesture, bridge both directions:
   child-upward scroll collapses the parent header first, and leading overscroll
   at the child top expands the parent header again.
+- When a tab previews an existing public screen, extract and compose the
+  canonical sliver renderer. Disable actions at the preview boundary with
+  `SliverIgnorePointer`; do not copy the public screen or mount a nested vertical
+  scroll view. Route-only chrome such as Back and Share remains outside the
+  embedded renderer.
+
+### Exhibit ARCH-TABBED-SCREEN-001: Route-Owned Nested Tab Screen Shell
+
+<!-- exhibit-freshness: ARCH-TABBED-SCREEN-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/core/widgets/catch_tabbed_screen.dart`
+- `lib/core/widgets/catch_tab_rail.dart`
+- `lib/user_profile/presentation/profile_screen.dart`
+- `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart`
+- `lib/clubs/presentation/detail/club_detail_read_only_preview.dart`
+
+The route owns one typed `TabController` and native `TabBarView`.
+`CatchTabbedScreenScaffold` owns `Scaffold`, top safe area,
+`NestedScrollView`, `CatchSliverHeader`, and the pinned overlap absorber.
+`CatchTabControllerRail<T>` maps typed page values onto the same controller.
+Every page owns one `CatchTabbedPageScrollView` with a stable
+`PageStorageKey`, focus boundary, overlap injector, and shell-aware terminal.
+Feature async/data policy remains at the feature boundary. Profile retains its
+specialized two-way inner Preview scroll bridge; Host Clubs embeds the canonical
+Club Detail slivers and suppresses route chrome and interactions at that seam.
+
+Required checks:
+
+```sh
+flutter test --concurrency=1 test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/clubs/clubs_controllers_test.dart test/clubs/club_hero_app_bar_test.dart test/clubs/club_detail_read_only_preview_test.dart
+node tool/design/check_component_contracts.mjs
+node tool/architecture/check_app_architecture_exhibits.mjs
+```
 
 ### Current Screen Layout Decisions
 
@@ -511,7 +622,8 @@ For `NestedScrollView` plus pinned tab rows:
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
 | Club detail | Keep sliver-native with agenda-style event list. |
-| User profile | Keep the current tested tab/scroll contract; preserve overlap injection and preview-card scroll bridge if the surface uses `NestedScrollView`. |
+| User profile | Use the canonical `CatchTabbedScreenScaffold` / `CatchTabControllerRail<SelfProfileTab>` / `CatchTabbedPageScrollView` contract; preserve the Preview bridge where `ProfileSurface` owns an independently scrollable card. |
+| Host Clubs | Use the same canonical tabbed-screen contract as Profile. Edit, Insights, and Preview are native pager pages with independent offsets. Edit stacks the remaining organizer summary and profile/default-management sections under a title-only club-name header; Preview composes the consumer Club Detail slivers read-only. |
 | Map-heavy screens | Audit before migrating. Stable map viewport may matter more than sliver composition. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Do not migrate just for consistency. |
@@ -1540,6 +1652,25 @@ changes enforcement, update `docs/audit_registry/rules.json`,
 baseline receipt together. Manual enforcement is explicit with `stage: manual`;
 absence of an enforcement entry is drift.
 
+### Screen Chrome Contract
+
+Every Flutter `Scaffold.appBar` declaration is classified in
+`tool/design/screen_top_bar_contracts.json`. The role determines the canonical
+owner instead of leaving title typography and action geometry to the call site:
+
+- `screen` uses `CatchScreenTopBar`, which owns the Archivo screen-title voice;
+- `compact` uses `CatchTopBar` for utility and detail-route chrome;
+- `identity` uses `CatchTopBar.identity`; and
+- `workspace` names a reviewed feature wrapper that ultimately composes the
+  shared top-bar system.
+
+`node tool/design/check_screen_top_bar_contracts.mjs --check` scans every
+handwritten Dart file under `lib/`, rejects unregistered `appBar` declarations,
+and verifies the declared expression and canonical owner. A new route cannot
+silently introduce a Material `AppBar`, a private header helper, or the wrong
+Catch top-bar variant: it must update the exhaustive role contract in the same
+change. `SCREEN-CHROME-001` owns this rule.
+
 ### Analyzer plugin rules
 
 Use `packages/catch_ui_lints` or a future architecture lint package for
@@ -1556,6 +1687,83 @@ Good analyzer-rule candidates:
   `AsyncValue`.
 - UI that watches a `Mutation` for pending state must also handle error state.
 - platform/plugin calls in widgets require an approved provider/service seam.
+
+### Provider topology graph
+
+The refreshable Riverpod source graph lives under
+`docs/generated/provider_graph/`:
+
+- `provider_graph.html` is the interactive feature/provider view;
+- `provider_graph.json` is the complete machine-readable declaration,
+  provider-to-provider, consumer, override, and Mutation graph; and
+- `provider_graph.mmd` is the aggregated cross-feature topology.
+
+Refresh and verify it with:
+
+```sh
+dart run tool/architecture/provider_graph.dart --write
+dart run tool/architecture/provider_graph.dart --check
+```
+
+The generator parses handwritten Dart ASTs rather than assembling relationships
+from file-reading notes. Generated providers, handwritten providers, aliases,
+families, consumer callsites, and Riverpod experimental `Mutation` nodes have
+separate identities. Family instances intentionally collapse to their source
+declaration, so this is the comprehensive static architecture graph, not a
+snapshot of runtime argument values.
+
+Riverpod's active-container and DevTools internals are not the source of truth:
+they only see instantiated nodes and do not provide a stable public full-graph
+export. A future runtime trace may overlay active family instances or override
+resolution, but it must not replace the deterministic source graph.
+
+`tool/architecture/provider_graph_reviews.json` records every relationship that
+needs judgment: high fan-out aggregates, core-to-feature data edges,
+cross-feature presentation edges, routing-to-presentation edges, aliases, and
+manual providers outside core. The check fails when a candidate is unreviewed
+or a review becomes stale. It also fails on duplicate/dangling providers,
+provider-internal unresolved refs, reactive cycles, and generated-artifact
+drift. Core-owned providers must not orchestrate feature data; move that
+provider into the owning feature or invert the dependency. Compatibility
+provider aliases should be removed when callers can use the canonical owner.
+
+### Exhibit ARCH-PROVIDER-001: Feature-Owned Startup Orchestration
+
+<!-- exhibit-freshness: ARCH-PROVIDER-001 source=lib/user_profile/data/profile_location_initializer.dart owner=user_profile -->
+
+App startup may activate a feature-owned provider, but feature data must not
+flow back into a `core` provider. The profile initializer owns profile lookup
+and persistence while consuming feature-neutral device-location and city
+services. `lib/app.dart` only activates the public provider.
+
+```dart
+// keepalive: profile location initialization should run once per app session,
+// not once per route rebuild.
+@Riverpod(keepAlive: true)
+class ProfileLocationInitializer extends _$ProfileLocationInitializer {
+  @override
+  Future<void> build() async {
+    final userProfile = ref.watch(watchUserProfileProvider).asData?.value;
+    final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
+    if (userProfile == null || deviceLocation == null) return;
+
+    final nearest = await ref
+        .read(cityRepositoryProvider)
+        .nearestCity(deviceLocation.latitude, deviceLocation.longitude);
+    await ref.read(userProfileRepositoryProvider).updateDetectedLocation(
+      uid: userProfile.uid,
+      latitude: deviceLocation.latitude,
+      longitude: deviceLocation.longitude,
+      city: userProfile.city == null ? nearest?.name : null,
+    );
+  }
+}
+```
+
+Use this pattern only for app-lifetime orchestration that genuinely belongs to
+one feature. Keep the platform/config inputs feature-neutral, preserve a
+documented `keepAlive` reason, and cover the activation-to-write behavior with a
+provider-container test.
 
 ### Scanners
 
@@ -1934,10 +2142,18 @@ Widget build(BuildContext context) {
 Reference files:
 
 - `lib/core/widgets/catch_top_bar.dart`
+- `lib/core/widgets/catch_tabbed_screen.dart`
 - `lib/dashboard/presentation/dashboard_home_screen.dart`
 - `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart`
 - `lib/explore/presentation/widgets/explore_header.dart`
 - `lib/user_profile/presentation/profile_screen.dart`
+- `lib/events/presentation/calendar/calendar_screen.dart`
+- `lib/hosts/presentation/host_operations/host_today.dart`
+- `lib/hosts/presentation/host_operations/host_events_list.dart`
+- `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart`
+- `lib/image_uploads/shared/profile_photo_editor_screen.dart`
+- `lib/payments/presentation/payment_history_screen.dart`
+- `lib/reviews/presentation/reviews_history_screen.dart`
 
 Use this pattern for root tab screens and root-like shell destinations whose
 screen title should read as Catch voice/head typography. The title text routes
@@ -1946,89 +2162,48 @@ through `CatchScreenHeaderTitle`, which uses `CatchTextStyles.headline`
 roles, and explicit leading/action slots. Sliver screens pass
 `CatchScreenHeaderTitle.block(...)` into `CatchSliverHeader.title`; app-bar
 screens use `CatchScreenTopBar(...)`, which wraps `CatchTopBar` while preserving
-search, leading, action, safe-area, and padding configuration.
+search, leading, action, and safe-area behavior.
+
+Tabbed root screens use `CatchTabbedScreenScaffold`, which applies the same
+`CatchScreenHeaderTitle.block(...)` voice and owns the `NestedScrollView`, pinned
+rail, and overlap contract. Profile and Host Clubs pass feature identity and
+actions into this shared shell; neither owns a feature-local top-bar wrapper.
+
+Root-screen geometry belongs to these primitives, not to feature widgets.
+`CatchInsets.screenTitleBlock` puts the title at the top safe-area boundary:
+20 px horizontal, **0 px after the safe area**, and 12 px below the title
+block. `CatchScreenTopBar(context: context, ...)` owns that padding and derives
+its preferred height from the actual text scale plus any eyebrow, subtitle, or
+reviewed second title line. Callers must not pass local `contentPadding`,
+`height`, or a `MediaQuery`/`TextScaler` override around root chrome.
 
 Do not use bare `CatchTopBar(title: ...)` for these root headers. That compact
 route-title path intentionally remains available for detail, edit, lab, and
 utility screens where the title is functional navigation chrome rather than the
 root screen voice.
 
+The exhaustive role boundary is checked by
+`tool/design/screen_top_bar_contracts.json`. The gate classifies every
+`Scaffold.appBar`, cross-checks every consumer and Host tab branch in
+`tab_root_scroll_contracts.json`, inspects every registered root-header class,
+and permits raw `SliverAppBar` only for reviewed media-hero exceptions. Photo
+Editor, Payment History, Review History, Host Today, Host Events, Host Clubs,
+Profile, and Consumer/Host Chats are explicit adopters; compact and identity
+app bars retain their declared variants.
+
 ```dart
-const CatchScreenHeaderTitle.block({
-  required this.title,
-  this.eyebrow,
-  this.subtitle,
-  this.leading,
-  this.actions = const <Widget>[],
-  this.padding = CatchInsets.screenTitleBlock,
-  this.backgroundColor,
-}) : material = true;
+final sliverTitle = CatchScreenHeaderTitle.block(
+  eyebrow: daypart,
+  title: greeting,
+  titleMaxLines: 2,
+  actions: [clubSwitcher],
+);
 
-@override
-Widget build(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return Row(
-    children: [
-      if (leading != null) ...[leading!, gapW12],
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (eyebrow != null) ...[
-              Text(
-                eyebrow!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.kicker(context, color: t.ink3),
-              ),
-              gapH2,
-            ],
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.headline(context, color: t.ink),
-            ),
-            if (subtitle != null) ...[
-              const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-              Text(
-                subtitle!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          ],
-        ),
-      ),
-      if (actions.isNotEmpty) ...[
-        gapW12,
-        Row(mainAxisSize: MainAxisSize.min, children: actions),
-      ],
-    ],
-  );
-}
-
-@override
-Widget build(BuildContext context) {
-  return CatchTopBar(
-    titleWidget: CatchScreenHeaderTitle(
-      title: title,
-      eyebrow: eyebrow,
-      subtitle: subtitle,
-    ),
-    large: false,
-    leading: leading,
-    leadingType: leadingType,
-    actions: actions,
-    contentPadding: contentPadding,
-    height: height,
-    searchValue: searchValue,
-    searchEnabled: searchEnabled,
-    onSearch: onSearch,
-  );
-}
+final appBar = CatchScreenTopBar(
+  context: context,
+  title: 'Chats',
+  actions: [searchAction],
+);
 ```
 
 ### Exhibit ARCH-UI-STATE-001: Provider-Free Presentation State Model

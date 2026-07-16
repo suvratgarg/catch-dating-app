@@ -212,7 +212,8 @@ class _ProfilePhotoEditorScreenState
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: CatchTopBar(
+      appBar: CatchScreenTopBar(
+        context: context,
         title: widget.photo == null
             ? context.l10n.imageUploadsProfilePhotoEditorScreenTitleAddPhoto
             : context.l10n.imageUploadsProfilePhotoEditorScreenTitleEditPhoto,

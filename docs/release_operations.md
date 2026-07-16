@@ -1,12 +1,90 @@
 ---
 doc_id: release_operations
-version: 1.9.4
-updated: 2026-07-12
+version: 1.10.1
+updated: 2026-07-13
 owner: recursive_audit_loop
 status: active
 ---
 
 # Release Operations
+
+## Local Firebase Safety
+
+The checked `.firebaserc` default points to `catchdates-dev` as a local safety
+net. Remote commands must still select `dev`, `staging`, or `prod` explicitly:
+
+```sh
+./tool/firebase_with_env.sh dev projects:list
+npm --prefix functions run deploy -- staging
+npm --prefix functions run logs -- prod --limit 50
+```
+
+Do not use bare `firebase deploy` or `firebase functions:log`. The Functions
+package scripts route through the checked wrapper and reject a missing or
+unknown environment. Hosting targets are intentionally mapped only for the
+production project. A development or staging `hosting:<target>` deployment
+therefore fails until that target is explicitly created and mapped; do not
+work around that failure by falling back to production.
+
+Flutter, Node, Java, Firebase CLI, and CocoaPods versions are owned together in
+`tool/ci/toolchain.env`. GitHub Actions and Xcode Cloud read that contract;
+`bash tool/ci/check_toolchain_consistency.sh` fails when a required pin or the
+Functions Node engine drifts.
+
+## Storage Rules Cross-Service Readiness
+
+Storage rules that use `firestore.get()` or `firestore.exists()` need one
+project-level dependency outside the ruleset: the Firebase Storage service
+agent must hold `roles/firebaserules.firestoreServiceAgent`. The required
+member is derived from each checked Firebase project number:
+
+```text
+service-{projectNumber}@gcp-sa-firebasestorage.iam.gserviceaccount.com
+```
+
+Check all environments before a Storage deploy. Check mode is read-only and
+fails if any binding is absent:
+
+```sh
+node tool/firebase/storage_rules_firestore_iam.mjs --all
+```
+
+Provision only missing bindings after reviewing the output. Production apply
+is intentionally double-guarded:
+
+```sh
+node tool/firebase/storage_rules_firestore_iam.mjs \
+  --all --apply --allow-prod
+```
+
+`tool/deploy_firebase_targets.sh` runs the single-environment check before its
+Storage phase, so a ruleset cannot deploy while its cross-service dependency is
+known missing. The deploy identity needs `resourcemanager.projects.getIamPolicy`
+for that preflight; it does not need permission to change IAM. Owner-operated
+apply preserves the policy etag, conditions, unrelated roles, and members.
+
+Emulator rules tests do not prove deployed IAM, App Check, or production
+cross-service access-call limits. After rules or this binding changes, run the
+authenticated upload/delete canary with an existing active participant and
+match. App Check is enforced, so provide a registered environment-owned debug
+token without placing it on the command line:
+
+```sh
+export FIREBASE_STORAGE_CANARY_APPCHECK_DEBUG_TOKEN='...'
+node tool/firebase/probe_chat_storage_rules.mjs \
+  --env dev --uid <uid> --match-id <active-match> --apply
+node tool/firebase/probe_chat_storage_rules.mjs \
+  --env prod --uid <uid> --match-id <active-match> --apply --allow-prod
+```
+
+The probe uploads one fixed 1x1 PNG through Firebase Auth and App Check, then
+deletes it through the same client rules. It never prints credentials. Chat
+image rules use the canonical match document for participant/status checks so
+one evaluation stays under Storage Rules' Firestore document-access limit;
+blocking projects that match to `status: blocked`. Creates require immutable
+`uploaderUid` custom metadata, updates are denied, and only that uploader may
+perform compensating deletion. Do not replace this with a blanket signed-in
+write rule.
 
 This is the durable owner for CI gates, Firebase deployment ordering, and
 release-readiness evidence. It replaces dated one-off runbooks and should stay

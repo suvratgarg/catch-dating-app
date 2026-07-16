@@ -7,11 +7,24 @@ on:
       - ".github/workflows/admin-website.yml"
       - ".firebaserc"
       - "admin/**"
+      - "contracts/callables/**"
+      - "contracts/callable_responses/**"
+      - "contracts/shared/**"
+      - "design/admin/**"
+      - "design/components/**"
+      - "design/web-ui/**"
+      - "docs/audit_registry/web_shared_primitive_adoption.json"
       - "firebase.json"
       - "package.json"
       - "package-lock.json"
+      - "packages/web-ui/**"
       - "tool/ci/toolchain.env"
       - "tool/env/check_web_hosting_env.mjs"
+      - "tool/design/check_component_lexicon.mjs"
+      - "tool/design/check_component_lexicon.test.mjs"
+      - "tool/web/check_shared_web_ui_adoption.mjs"
+      - "tool/web/check_react_controller_test_targets.mjs"
+      - "tool/web/react_controller_test_targets.json"
       - "tool/organizer_intake/**"
   push:
     branches: [main]
@@ -20,11 +33,24 @@ on:
       - ".github/workflows/admin-website.yml"
       - ".firebaserc"
       - "admin/**"
+      - "contracts/callables/**"
+      - "contracts/callable_responses/**"
+      - "contracts/shared/**"
+      - "design/admin/**"
+      - "design/components/**"
+      - "design/web-ui/**"
+      - "docs/audit_registry/web_shared_primitive_adoption.json"
       - "firebase.json"
       - "package.json"
       - "package-lock.json"
+      - "packages/web-ui/**"
       - "tool/ci/toolchain.env"
       - "tool/env/check_web_hosting_env.mjs"
+      - "tool/design/check_component_lexicon.mjs"
+      - "tool/design/check_component_lexicon.test.mjs"
+      - "tool/web/check_shared_web_ui_adoption.mjs"
+      - "tool/web/check_react_controller_test_targets.mjs"
+      - "tool/web/react_controller_test_targets.json"
       - "tool/organizer_intake/**"
   workflow_dispatch:
 
@@ -55,11 +81,39 @@ jobs:
 
       - run: npm ci
 
+      - name: Check cross-stack component lexicon
+        run: node tool/design/check_component_lexicon.mjs
+
       - name: Check organizer admin review bridge
         run: node tool/organizer_intake/check_admin_review_bridge.mjs
 
+      - name: Run admin unit tests
+        run: npm --workspace catch-admin run test
+
+      - name: Check named React controller test targets
+        run: npm run web:controller-tests:check
+
+      - name: Run shared web UI tests and typecheck
+        run: npm run web:ui:test && npm run web:ui:typecheck
+
+      - name: Report admin unit-test coverage
+        continue-on-error: true
+        run: npm --workspace catch-admin run test:coverage
+
       - name: Build admin website
         run: npm run web:admin:build
+
+      - name: Install Storybook accessibility browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build admin Storybook
+        run: npm --workspace catch-admin run build:storybook
+
+      - name: Run admin visual regression
+        run: npm --workspace catch-admin run test:visual
+
+      - name: Run Storybook accessibility gate
+        run: npm --workspace catch-admin run test:storybook:a11y
 
   deploy:
     name: Deploy admin Hosting

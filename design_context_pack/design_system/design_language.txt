@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.5.0
+version: 1.5.2
 updated: 2026-07-11
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -242,6 +242,33 @@ The audited application of this doctrine lives in
   `catchHeroSurface`/`CatchTicketHero` for ticket or polaroid flights. Avoid
   raw `Duration(...)`, ad-hoc `Hero`, and direct `HapticFeedback` in product UI
   unless a new named motion primitive is being introduced.
+
+---
+
+## Cross-stack component lexicon
+
+`design/components/catch.components.json` is the binding semantic lexicon for
+Flutter, website, admin, and the shared web UI package. Implementation remains
+stack-native; the registry shares identity and contract ownership, not widget
+or component code.
+
+Each component declares a `surfaces` map. Every declared symbol must exist in
+its owning source tree. Entries in `design/website/components.json`,
+`design/admin/components.json`, and `design/web-ui/components.json` opt into the
+binding with `lexicon: true` plus a `lexiconId`; the symbol must exactly match
+the corresponding surface link. New or moved design-system components must add
+the link in the same change.
+
+Run `node tool/run.mjs check design:component-lexicon`. The checker remains a
+repo-level JavaScript gate, including for Flutter symbol existence; do not move
+this contract into the `catch_ui_lints` analyzer plugin.
+
+Structural labels and status badges are separate semantic families. Use
+`catch.ui_label` (`CatchSectionLabel`, website `UiLabel`, admin
+`AdminEyebrow`, web-ui `UiLabel`) for eyebrows and compact hierarchy context.
+Use `catch.badge` (`CatchBadge`, `StatusBadge`, `StatusChip`, `BadgeControl`)
+for status, state, counts, and alerts. The lexicon gate pins these mappings so a
+shared visual treatment cannot erase their different meanings.
 
 ---
 

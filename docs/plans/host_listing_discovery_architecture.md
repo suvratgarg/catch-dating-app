@@ -1,7 +1,7 @@
 ---
 doc_id: host_listing_discovery_architecture
-version: 0.3.0
-updated: 2026-06-30
+version: 0.3.1
+updated: 2026-07-14
 owner: marketing_website
 status: draft
 ---
@@ -112,6 +112,14 @@ This keeps generated/crawler candidates out of canonical Firestore until the
 human review and schema-validation gates pass.
 
 Current repo implementation:
+
+The durable orchestration owner is now `operations/`, with Supply Intake as the
+reference workflow. The paths under `tool/organizer_intake`,
+`tool/host_discovery`, and `tool/marketing/event_guide` remain compatibility
+producers for reviewed artifacts and repository utilities; new run state,
+leases, checkpoints, decisions, and learning lifecycles must not be added there.
+This separation lets future admin workflows reuse one operations platform
+without turning `tool/` into a collection of unrelated business applications.
 
 - `tool/organizer_intake/lib/source_mention_resolution_core.mjs` builds private
   source artifacts, extracted mentions, resolution candidates, bounded candidate

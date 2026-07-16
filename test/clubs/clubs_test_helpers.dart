@@ -130,6 +130,13 @@ Event buildEvent({
     startTime: start,
     endTime: endTime ?? start.add(const Duration(hours: 1)),
     meetingPoint: 'Start',
+    meetingLocation: const EventMeetingLocation(
+      name: 'Start',
+      latitude: 19.0608,
+      longitude: 72.8365,
+    ),
+    startingPointLat: 19.0608,
+    startingPointLng: 72.8365,
     distanceKm: 5,
     pace: PaceLevel.easy,
     capacityLimit: 20,
@@ -450,6 +457,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     required String storagePath,
     required XFile image,
     ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    Map<String, String>? customMetadata,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
@@ -599,10 +607,12 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   Future<String> uploadChatImage({
     required String matchId,
     required String messageId,
+    required String uploaderUid,
     required XFile image,
   }) async => (await uploadChatImageWithMetadata(
     matchId: matchId,
     messageId: messageId,
+    uploaderUid: uploaderUid,
     image: image,
   )).url;
 
@@ -610,6 +620,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   Future<UploadedImage> uploadChatImageWithMetadata({
     required String matchId,
     required String messageId,
+    required String uploaderUid,
     required XFile image,
   }) async {
     if (uploadError != null) {

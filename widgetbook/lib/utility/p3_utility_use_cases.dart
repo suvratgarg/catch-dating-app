@@ -78,7 +78,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 const _viewerUid = UtilitySurfaceFixtures.viewerUid;
 final _viewer = UtilitySurfaceFixtures.viewer;
 final _event = UtilitySurfaceFixtures.event;
-final _eventWithoutCoordinate = UtilitySurfaceFixtures.eventWithoutCoordinate;
 final _payments = UtilitySurfaceFixtures.payments;
 final _reviews = UtilitySurfaceFixtures.reviews;
 final _notifications = UtilitySurfaceFixtures.notifications;
@@ -126,8 +125,8 @@ final _calendarSummary = CalendarEventSummary.from(
   savedEvents: _calendarSavedEvents,
   now: _calendarNow,
 );
-const _calendarWeekHeaderPreviewHeight = 150.0;
-const _calendarMonthHeaderPreviewHeight = 360.0;
+const _calendarWeekHeaderPreviewHeight = 92.0;
+const _calendarMonthHeaderPreviewHeight = 320.0;
 const _calendarClubNames = {'design-club': 'Sea Face Social'};
 const double _utilityDeviceFrameMaxWidth = 390;
 const double _utilityDeviceFrameHeight = 720;
@@ -1184,7 +1183,6 @@ Widget calendarDateHeaderStates(BuildContext context) {
             selectedDate: _calendarSummary.anchorDate,
             expanded: false,
             onDateSelected: (_) {},
-            onTodayPressed: _noop,
             onVerticalDragDelta: (_) {},
           ),
         ),
@@ -1198,7 +1196,6 @@ Widget calendarDateHeaderStates(BuildContext context) {
             selectedDate: _calendarSummary.anchorDate,
             expanded: true,
             onDateSelected: (_) {},
-            onTodayPressed: _noop,
             onVerticalDragDelta: (_) {},
           ),
         ),
@@ -1233,24 +1230,6 @@ Widget calendarWeekStripSkeletonStates(BuildContext context) {
     contractId: 'component.calendar.week_strip_skeleton',
     children: const [
       _StateCard(label: 'loading', child: CalendarWeekStripSkeleton()),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Title row state',
-  type: CalendarTitleRow,
-  path: '[P3 utility surfaces]/Calendar/Components',
-)
-Widget calendarTitleRowStates(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'CalendarTitleRow',
-    contractId: 'component.calendar.title_row',
-    children: [
-      _StateCard(
-        label: 'current month',
-        child: CalendarTitleRow(title: 'July 2026', onTodayPressed: _noop),
-      ),
     ],
   );
 }
@@ -1721,18 +1700,6 @@ Widget eventLocationMapScreenStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
-        label: 'no exact coordinate',
-        child: _DeviceFrame(
-          child: EventLocationMapScreen(
-            state: EventLocationMapState.fromEvent(
-              _eventWithoutCoordinate,
-              enableNetworkTiles: false,
-            ),
-            onGetDirections: () {},
-          ),
-        ),
-      ),
     ],
   );
 }
@@ -1854,7 +1821,6 @@ Widget notificationRowStates(BuildContext context) {
           title: 'You are booked',
           time: '5h',
           body: 'Your spot is confirmed for Wednesday evening.',
-          divider: true,
           onTap: _noop,
         ),
       ),
@@ -1867,7 +1833,6 @@ Widget notificationRowStates(BuildContext context) {
           body:
               'The host posted pacing notes, regroup points, and cafe timing for members returning after a break.',
           unread: true,
-          divider: true,
           onTap: _noop,
         ),
       ),
@@ -1878,7 +1843,6 @@ Widget notificationRowStates(BuildContext context) {
           title: 'Morning run was cancelled',
           time: 'mon',
           body: 'Heavy rain moved the session to next week.',
-          divider: true,
         ),
       ),
     ],
@@ -2176,7 +2140,7 @@ Widget reviewsPreviewSectionStates(BuildContext context) {
         child: const ReviewsPreviewSection(
           reviews: [],
           currentUid: _viewerUid,
-          compactEmptyState: true,
+          emptyPresentation: ReviewsEmptyPresentation.contained,
         ),
       ),
       _StateCard(
@@ -4135,8 +4099,8 @@ Event _utilityEvent({
   required String id,
   required String meetingPoint,
   required String? notes,
-  required double? latitude,
-  required double? longitude,
+  required double latitude,
+  required double longitude,
 }) => UtilitySurfaceFixtures.eventFixture(
   id: id,
   meetingPoint: meetingPoint,

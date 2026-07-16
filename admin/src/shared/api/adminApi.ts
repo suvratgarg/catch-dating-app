@@ -1,5 +1,11 @@
-import {httpsCallable} from "firebase/functions";
-import {functions} from "./firebase";
+import {httpsCallable as firebaseHttpsCallable} from "firebase/functions";
+import {functions} from "./firebaseFunctions";
+import {dataMode} from "./dataMode";
+export {dataMode} from "./dataMode";
+import {
+  validateAdminCallableRequest,
+  validateAdminCallableResponse,
+} from "../../generated/validators/adminCallableValidators";
 import {
   sampleClubDetails,
   sampleEventDetails,
@@ -14,6 +20,12 @@ import externalEventImportExecutionPlanJson
   from "../../generated/externalEventImportExecutionPlan.json";
 import externalEventImportPlanJson
   from "../../generated/externalEventImportPlan.json";
+import {sampleIntakeOperations} from
+  "../operations/sampleIntakeOperations";
+import type {
+  AdminListIntakeOperationsPayload,
+  AdminListIntakeOperationsResponse,
+} from "../operations/operationsTypes";
 import {
   AdminAssignSafetyTriageItemPayload,
   AdminAssignSafetyTriageItemResponse,
@@ -83,7 +95,6 @@ import {
   AdminUpdateEventDetailsResponse,
   AdminUpdateClubDetailsPayload,
   AdminUpdateClubDetailsResponse,
-  DataMode,
   HostAnalyticsQueryPayload,
   HostAnalyticsResponse,
   MarketingOpsBridge,
@@ -94,6 +105,29 @@ import {
 } from "../types/adminTypes";
 
 const sampleGeneratedAt = "2026-06-25T08:30:00.000Z";
+
+function shouldValidateAdminCallableResponses() {
+  return import.meta.env.DEV ||
+    import.meta.env.VITE_ADMIN_VALIDATE_RESPONSES === "true";
+}
+
+function httpsCallable<RequestData, ResponseData>(
+  functionsInstance: typeof functions,
+  name: string
+) {
+  const callable = firebaseHttpsCallable<RequestData, ResponseData>(
+    functionsInstance,
+    name
+  );
+  return async (payload: RequestData) => {
+    validateAdminCallableRequest(name, payload);
+    const result = await callable(payload);
+    if (shouldValidateAdminCallableResponses()) {
+      validateAdminCallableResponse(name, result.data);
+    }
+    return result;
+  };
+}
 
 const sampleAdminUsers = new Map<string, AdminUserRoleRecord>([
   ["admin-owner", {
@@ -139,10 +173,6 @@ function sampleAdminRoleAssignments(
     rows,
     source: "adminRoleAssignments",
   };
-}
-
-export function dataMode(): DataMode {
-  return import.meta.env.VITE_ADMIN_DATA_MODE === "live" ? "live" : "sample";
 }
 
 function sampleAdminUser(targetUid: string): AdminUserRoleRecord {
@@ -272,7 +302,7 @@ export async function decideSafetyTriageItem(
     ];
     const row = rows.find((item) => item.targetPath === payload.targetPath);
     if (!row) {
-      throw new Error(`Sample safety item ${payload.targetPath} was not found.`);
+      throw new Error(`Safety item ${payload.targetPath} was not found in local preview data.`);
     }
     const status = payload.decision === "review" ? "reviewed" : "dismissed";
     row.status = status;
@@ -327,7 +357,7 @@ function sampleSafetyTriageDetails(
   ];
   const row = rows.find((item) => item.targetPath === targetPath);
   if (!row) {
-    throw new Error(`Sample safety item ${targetPath} was not found.`);
+    throw new Error(`Safety item ${targetPath} was not found in local preview data.`);
   }
   const [collection] = targetPath.split("/");
   const kind = collection === "reports" ? "report" :
@@ -360,8 +390,8 @@ function sampleSafetyTriageDetails(
     clubId: extractDetailValue(detailParts, "club"),
     source: kind === "eventSafetyReport" ? "event_success_feedback" : source,
     contextId: kind === "moderationFlag" ?
-      "sample/moderation/context" :
-      kind === "eventSafetyReport" ? "sample/feedback" : "sample/context",
+      "local-preview/moderation/context" :
+      kind === "eventSafetyReport" ? "local-preview/feedback" : "local-preview/context",
     assignment: {
       ownerTeam: sampleSafetyOwnerTeam(kind, source),
       assigneeUid: null,
@@ -372,8 +402,8 @@ function sampleSafetyTriageDetails(
     evidence: sampleSafetyEvidence({
       clubId: extractDetailValue(detailParts, "club"),
       contextId: kind === "moderationFlag" ?
-        "sample/moderation/context" :
-        kind === "eventSafetyReport" ? "sample/feedback" : "sample/context",
+        "local-preview/moderation/context" :
+        kind === "eventSafetyReport" ? "local-preview/feedback" : "local-preview/context",
       detail: row.detail,
       eventId: kind === "eventSafetyReport" ?
         row.title.replace(/^Event\s+/u, "") :
@@ -471,7 +501,7 @@ function sampleSafetyOutcomeGuidance({
     guidance.push({
       id: "escalate_safety_lead",
       label: "Escalate to safety lead",
-      detail: "High-severity sample queue item. Keep a safety reviewer assigned before any account action.",
+      detail: "High-severity queue item. Keep a safety reviewer assigned before any account action.",
       severity: "critical",
       actionStatus: "manual",
     });
@@ -530,7 +560,7 @@ function sampleAccessApplicationDetails(
   );
   if (!row) {
     throw new Error(
-      `Sample access application ${applicationUid} was not found.`
+      `Access application ${applicationUid} was not found in local preview data.`
     );
   }
   const isMumbai = row.detail.toLowerCase().includes("mumbai");
@@ -769,6 +799,22 @@ export async function loadEventIntakeDashboard():
   return result.data;
 }
 
+export async function listIntakeOperations(
+  payload: AdminListIntakeOperationsPayload = {}
+): Promise<AdminListIntakeOperationsResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+    return sampleIntakeOperations(payload);
+  }
+
+  const callable = httpsCallable<
+    AdminListIntakeOperationsPayload,
+    AdminListIntakeOperationsResponse
+  >(functions, "adminListIntakeOperations");
+  const result = await callable(payload);
+  return result.data;
+}
+
 export async function createMarketingContentDraft(
   payload: AdminCreateMarketingContentDraftPayload
 ): Promise<AdminCreateMarketingContentDraftResponse> {
@@ -786,7 +832,7 @@ export async function createMarketingContentDraft(
     return {
       draft,
       bridge,
-      dashboardPath: "sample/marketingOpsDashboards/current",
+      dashboardPath: "local-preview/marketingOpsDashboards/current",
     };
   }
 
@@ -853,8 +899,8 @@ function buildSampleMarketingDraft(
     ],
     latestDecision: {
       decision: "new",
-      note: `Sample draft created at ${createdAt}.`,
-      reviewer: "sample-admin",
+      note: `Draft created in local preview at ${createdAt}.`,
+      reviewer: "local-preview-admin",
       reviewedAt: createdAt,
     },
   };
@@ -987,7 +1033,7 @@ function appendSampleMarketingDraft(
         targetId: draft.id,
         decision: "new",
         note: `Created ${draft.tone.replace("_", " ")} draft.`,
-        reviewer: "sample-admin",
+        reviewer: "local-preview-admin",
         reviewedAt: draft.latestDecision?.reviewedAt ?? null,
         edits: {draftType: draft.tone},
       },
@@ -1042,7 +1088,7 @@ export async function decideClubClaim(
     await new Promise((resolve) => window.setTimeout(resolve, 240));
     return {
       requestId: payload.requestId,
-      clubId: "sample-club",
+      clubId: "local-preview-club",
       decision: payload.decision,
       status: payload.decision === "approve" ? "approved" : "rejected",
     };
@@ -1066,7 +1112,7 @@ Promise<AdminListClubClaimRequestsResponse> {
         requestId: row.targetPath.split("/").at(-1) ?? row.id,
         targetPath: row.targetPath,
         clubId: index === 0 ? "afterfly" : "bhag",
-        requesterUid: index === 0 ? "sample-afterfly-owner" : "sample-bhag-manager",
+        requesterUid: index === 0 ? "local-preview-afterfly-owner" : "local-preview-bhag-manager",
         requesterName: row.title,
         requesterRole: index === 0 ? "founder" : "manager",
         contact: index === 0 ? "hello@afterfly.in" : null,
@@ -1376,7 +1422,7 @@ export async function loadClubDetails(
     const club = sampleClubDetails[payload.clubId];
     if (!club) {
       throw new Error(
-        `Sample organizer ${payload.clubId} was not found in clubs.`
+        `Organizer ${payload.clubId} was not found in local preview data.`
       );
     }
     return {club};
@@ -1443,7 +1489,7 @@ export async function loadEventDetails(
     const event = sampleEventDetails[payload.eventId];
     if (!event) {
       throw new Error(
-        `Sample event ${payload.eventId} was not found in events.`
+        `Event ${payload.eventId} was not found in local preview data.`
       );
     }
     return {event};
@@ -1569,7 +1615,7 @@ export async function saveEventDetails(
     const event = sampleEventDetails[payload.eventId];
     if (!event) {
       throw new Error(
-        `Sample event ${payload.eventId} was not found in events.`
+        `Event ${payload.eventId} was not found in local preview data.`
       );
     }
     if (event.status === "cancelled") {

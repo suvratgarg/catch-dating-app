@@ -229,7 +229,7 @@ void main() {
       await tester.pumpWidget(
         _authenticatedShellProviderScope(
           child: MaterialApp.router(
-            theme: AppTheme.light,
+            theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
             routerConfig: router,
           ),
         ),

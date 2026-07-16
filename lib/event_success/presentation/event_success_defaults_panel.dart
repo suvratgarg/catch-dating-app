@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +30,6 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final format =
         eventFormat ?? EventFormatSnapshot.fromActivityKind(activityKind);
     final normalized = defaults.normalizedForFormat(
@@ -41,63 +38,60 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     );
     final draft = normalized.toDraft(targetAttendeeCount: targetAttendeeCount);
 
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchField.toggle(
+    return CatchSectionList(
+      children: [
+        CatchSection.fieldRows(
+          first: true,
+          child: CatchField.toggle(
             title: title,
             body: subtitle,
+            bodyMaxLines: 5,
             value: normalized.enabled,
             onChanged: (value) =>
                 onChanged(normalized.copyWith(enabled: value)),
           ),
-          if (normalized.enabled) ...[
-            gapH12,
-            EventSuccessSetupBody(
-              draft: draft,
-              eventFormat: format,
-              targetAttendeeCount: draft.targetAttendeeCount,
-              attendeePrompt: normalized.attendeePrompt,
-              showResetToRecommended: !_matchesRecommendedSetup(
-                normalized,
-                format,
-                targetAttendeeCount,
-              ),
-              onResetToRecommended: () => onChanged(
-                EventSuccessDefaults.recommendedForFormat(
-                  format,
-                  enabled: normalized.enabled,
-                  targetAttendeeCount: targetAttendeeCount,
-                  attendeePrompt: normalized.attendeePrompt,
-                ),
-              ),
-              onDraftChanged: (nextDraft) {
-                onChanged(
-                  EventSuccessDefaults.fromDraft(
-                    nextDraft,
-                    enabled: normalized.enabled,
-                    attendeePrompt: normalized.attendeePrompt,
-                  ).normalizedForFormat(
-                    format,
-                    targetAttendeeCount: targetAttendeeCount,
-                  ),
-                );
-              },
-              onAttendeePromptChanged: (value) {
-                final trimmed = value.trim();
-                onChanged(
-                  normalized.copyWith(
-                    attendeePrompt: trimmed.isEmpty ? null : trimmed,
-                  ),
-                );
-              },
+        ),
+        if (normalized.enabled)
+          EventSuccessSetupBody(
+            draft: draft,
+            eventFormat: format,
+            targetAttendeeCount: draft.targetAttendeeCount,
+            attendeePrompt: normalized.attendeePrompt,
+            showResetToRecommended: !_matchesRecommendedSetup(
+              normalized,
+              format,
+              targetAttendeeCount,
             ),
-          ],
-        ],
-      ),
+            onResetToRecommended: () => onChanged(
+              EventSuccessDefaults.recommendedForFormat(
+                format,
+                enabled: normalized.enabled,
+                targetAttendeeCount: targetAttendeeCount,
+                attendeePrompt: normalized.attendeePrompt,
+              ),
+            ),
+            onDraftChanged: (nextDraft) {
+              onChanged(
+                EventSuccessDefaults.fromDraft(
+                  nextDraft,
+                  enabled: normalized.enabled,
+                  attendeePrompt: normalized.attendeePrompt,
+                ).normalizedForFormat(
+                  format,
+                  targetAttendeeCount: targetAttendeeCount,
+                ),
+              );
+            },
+            onAttendeePromptChanged: (value) {
+              final trimmed = value.trim();
+              onChanged(
+                normalized.copyWith(
+                  attendeePrompt: trimmed.isEmpty ? null : trimmed,
+                ),
+              );
+            },
+          ),
+      ],
     );
   }
 }

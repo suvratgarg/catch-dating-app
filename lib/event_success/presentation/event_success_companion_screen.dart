@@ -32,7 +32,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_arrival_miss
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -42,6 +41,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_wingman_requ
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -70,22 +70,6 @@ part 'companion_parts/event_success_companion_shared.dart';
 part 'companion_parts/event_success_companion_wingman.dart';
 part 'event_success_companion_body_screen.dart';
 
-PreferredSizeWidget _companionAppBar(BuildContext context) {
-  final t = CatchTokens.of(context);
-  final canPop = _companionCanPop(context);
-  return CatchTopBar(
-    title:
-        context.l10n.eventSuccessEventSuccessCompanionScreenTitleEventCompanion,
-    border: true,
-    leading: CatchIconAction(
-      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-      icon: CatchIcons.arrowBackIosNewRounded,
-      foregroundColor: canPop ? t.ink : t.ink3,
-      onPressed: canPop ? () => _popCompanion(context) : null,
-    ),
-  );
-}
-
 bool _companionCanPop(BuildContext context) =>
     Navigator.maybeOf(context)?.canPop() ?? false;
 
@@ -100,9 +84,22 @@ class CompanionScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final canPop = _companionCanPop(context);
     return Scaffold(
-      backgroundColor: CatchTokens.of(context).bg,
-      appBar: _companionAppBar(context),
+      backgroundColor: t.bg,
+      appBar: CatchTopBar(
+        title: context
+            .l10n
+            .eventSuccessEventSuccessCompanionScreenTitleEventCompanion,
+        border: true,
+        leading: CatchIconAction(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          icon: CatchIcons.arrowBackIosNewRounded,
+          foregroundColor: canPop ? t.ink : t.ink3,
+          onPressed: canPop ? () => _popCompanion(context) : null,
+        ),
+      ),
       body: body,
     );
   }

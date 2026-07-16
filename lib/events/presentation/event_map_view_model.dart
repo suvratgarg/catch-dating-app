@@ -1,15 +1,30 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_map_view_model.g.dart';
 
-class EventMapItem {
+sealed class EventMapPinItem {
+  const EventMapPinItem();
+
+  String get mapId;
+  LocationCoordinate get coordinate;
+  ActivityKind get activityKind;
+  String get locationName;
+  String get pinFlagLabel;
+  String get markerSemanticLabel;
+}
+
+class EventMapItem extends EventMapPinItem {
   const EventMapItem({
     required this.event,
     required this.status,
@@ -20,8 +35,62 @@ class EventMapItem {
   final EventTileStatus status;
   final String? clubName;
 
+  @override
+  String get mapId => event.id;
+
+  @override
+  LocationCoordinate get coordinate => LocationCoordinate(
+    event.effectiveStartingPointLat,
+    event.effectiveStartingPointLng,
+  );
+
+  @override
+  ActivityKind get activityKind => event.activityKind;
+
+  @override
+  String get locationName => event.locationName;
+
   EventTileData get tileData =>
       EventTileData.fromEvent(event: event, status: status, clubName: clubName);
+
+  @override
+  String get pinFlagLabel {
+    final eventIdentity = event.eventFormat.customActivityLabel == null
+        ? event.eventFormat.label
+        : event.eventFormat.eventTitleLabel;
+    return '${eventIdentity.toUpperCase()} · ${tileData.timeLabel.toUpperCase()}';
+  }
+
+  @override
+  String get markerSemanticLabel =>
+      '${event.title}, ${tileData.longDateLabel}, ${tileData.timeLabel}, ${tileData.meetingPoint}';
+}
+
+class ExternalEventMapItem extends EventMapPinItem {
+  const ExternalEventMapItem({required this.event});
+
+  final ExternalEvent event;
+
+  @override
+  LocationCoordinate get coordinate =>
+      LocationCoordinate(event.latitude, event.longitude);
+
+  @override
+  String get mapId => 'external:${event.id}';
+
+  @override
+  ActivityKind get activityKind => event.activityKind;
+
+  @override
+  String get locationName => event.meetingPoint;
+
+  @override
+  String get pinFlagLabel =>
+      '${event.activityKind.eventTitleLabel.toUpperCase()} · ${EventFormatters.time(event.startTime).toUpperCase()}';
+
+  @override
+  String get markerSemanticLabel =>
+      '${event.title}, ${EventFormatters.longDate(event.startTime)}, ${EventFormatters.time(event.startTime)}, ${event.meetingPoint}';
 }
 
 class EventMapViewModel {
@@ -30,28 +99,36 @@ class EventMapViewModel {
     required this.pinnedEvents,
     this.items = const [],
     this.pinnedItems = const [],
+    this.externalPinnedItems = const [],
   });
 
   final List<Event> events;
   final List<Event> pinnedEvents;
   final List<EventMapItem> items;
   final List<EventMapItem> pinnedItems;
+  final List<ExternalEventMapItem> externalPinnedItems;
 
-  bool get isEmpty => events.isEmpty;
-  bool get hasPinnedEvents => pinnedEvents.isNotEmpty;
+  bool get isEmpty => events.isEmpty && externalPinnedItems.isEmpty;
+  bool get hasPinnedEvents => !isEmpty;
   List<EventMapItem> get effectiveItems => items.isEmpty && events.isNotEmpty
       ? [
           for (final event in events)
             EventMapItem(event: event, status: EventTileStatus.open),
         ]
       : items;
-  List<EventMapItem> get effectivePinnedItems =>
-      pinnedItems.isEmpty && pinnedEvents.isNotEmpty
-      ? [
-          for (final event in pinnedEvents)
-            EventMapItem(event: event, status: EventTileStatus.open),
-        ]
-      : pinnedItems;
+  List<EventMapItem> get effectivePinnedItems {
+    if (pinnedItems.isNotEmpty) return pinnedItems;
+    if (pinnedEvents.isNotEmpty) {
+      return [
+        for (final event in pinnedEvents)
+          EventMapItem(event: event, status: EventTileStatus.open),
+      ];
+    }
+    return effectiveItems;
+  }
+
+  List<EventMapPinItem> get effectivePinItems =>
+      List.unmodifiable([...effectivePinnedItems, ...externalPinnedItems]);
 
   Event? selectedEvent(String? eventId) {
     if (eventId == null) return null;
@@ -65,6 +142,22 @@ class EventMapViewModel {
     if (eventId == null) return null;
     for (final item in effectiveItems) {
       if (item.event.id == eventId) return item;
+    }
+    return null;
+  }
+
+  ExternalEventMapItem? selectedExternalItem(String? mapId) {
+    if (mapId == null) return null;
+    for (final item in externalPinnedItems) {
+      if (item.mapId == mapId) return item;
+    }
+    return null;
+  }
+
+  LocationCoordinate? selectedCoordinate(String? mapId) {
+    if (mapId == null) return null;
+    for (final item in effectivePinItems) {
+      if (item.mapId == mapId) return item.coordinate;
     }
     return null;
   }
@@ -101,9 +194,7 @@ EventMapViewModel buildEventMapViewModel({
 
   final items = byId.values.toList()
     ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
-  final pinnedItems = items
-      .where((item) => hasEventMapPin(item.event))
-      .toList(growable: false);
+  final pinnedItems = List<EventMapItem>.unmodifiable(items);
   final events = items.map((item) => item.event).toList(growable: false);
   final pinnedEvents = pinnedItems
       .map((item) => item.event)
@@ -116,10 +207,6 @@ EventMapViewModel buildEventMapViewModel({
     pinnedItems: List.unmodifiable(pinnedItems),
   );
 }
-
-bool hasEventMapPin(Event event) =>
-    event.effectiveStartingPointLat != null &&
-    event.effectiveStartingPointLng != null;
 
 bool isUpcomingMapRun(Event event, DateTime now) =>
     !event.isCancelled && event.startTime.isAfter(now);

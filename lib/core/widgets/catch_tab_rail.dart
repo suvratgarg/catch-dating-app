@@ -59,3 +59,43 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
+
+/// Binds a route-owned [TabController] to the canonical [CatchTabRail].
+///
+/// This keeps tap selection, horizontal pager interpolation, and the standard
+/// option-group chrome on one shared path for tabbed root screens.
+class CatchTabControllerRail<T> extends StatelessWidget
+    implements PreferredSizeWidget {
+  const CatchTabControllerRail({
+    super.key,
+    required this.controller,
+    required this.options,
+    this.groupKey,
+  }) : assert(options.length == controller.length);
+
+  final TabController controller;
+  final List<CatchOption<T>> options;
+  final Key? groupKey;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller.animation!,
+      builder: (context, _) {
+        return CatchTabRail<T>(
+          groupKey: groupKey,
+          selected: options[controller.index].value,
+          selectionPosition: controller.animation!.value,
+          onChanged: (value) {
+            final index = options.indexWhere((option) => option.value == value);
+            if (index != -1) controller.animateTo(index);
+          },
+          options: options,
+        );
+      },
+    );
+  }
+}

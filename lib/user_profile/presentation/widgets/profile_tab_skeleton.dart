@@ -1,10 +1,11 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchAspectRatio, CatchInsets, CatchLayout, CatchRadius, CatchStroke;
+    show CatchInsets, CatchLayout, CatchRadius, CatchStroke;
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldRow;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -16,7 +17,7 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: CatchInsets.formEditBodyRelaxed,
+      padding: CatchInsets.formEditBodyRelaxed.copyWith(bottom: 0),
       sliver: SliverToBoxAdapter(
         child: Center(
           child: ConstrainedBox(
@@ -31,7 +32,7 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
                   CatchSectionList(
                     gap: 0,
                     children: [
-                      ProfilePhotosSkeletonSection(),
+                      const ProfilePhotosSkeletonSection(),
                       ProfileInfoSkeletonSection(
                         title: context
                             .l10n
@@ -58,7 +59,6 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
                       ),
                     ],
                   ),
-                  gapH32,
                 ],
               ),
             ),
@@ -74,24 +74,23 @@ class ProfilePhotosSkeletonSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
+    return CatchSection.fieldRows(
       title: context.l10n.userProfileProfileTabSkeletonTitlePhotos,
       count: context.l10n.userProfileProfileTabSkeletonVisiblecopyLoading,
       first: true,
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: CatchSpacing.s2,
-          crossAxisSpacing: CatchSpacing.s2,
-          childAspectRatio: CatchAspectRatio.portrait3x4,
-        ),
-        itemCount: maximumProfilePhotoCount,
-        itemBuilder: (context, index) => CatchSkeleton.box(
-          width: double.infinity,
-          height: double.infinity,
-          radius: CatchRadius.lg,
+      child: Padding(
+        padding: const EdgeInsets.only(top: CatchSpacing.s3),
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: ProfilePhotoGridLayout.padding,
+          gridDelegate: ProfilePhotoGridLayout.delegate,
+          itemCount: maximumProfilePhotoCount,
+          itemBuilder: (context, index) => CatchSkeleton.box(
+            width: double.infinity,
+            height: double.infinity,
+            radius: CatchRadius.lg,
+          ),
         ),
       ),
     );

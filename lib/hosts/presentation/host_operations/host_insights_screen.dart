@@ -46,11 +46,7 @@ class HostInsightsScreen extends ConsumerWidget {
         if (club == null) {
           return HostInsightsUnavailableScreen(onBack: () => _goBack(context));
         }
-        return HostInsightsScaffold(
-          club: club,
-          currentUid: uid,
-          onBack: () => _goBack(context),
-        );
+        return HostInsightsScaffold(club: club, onBack: () => _goBack(context));
       },
     );
   }
@@ -64,12 +60,10 @@ class HostInsightsScaffold extends StatelessWidget {
   const HostInsightsScaffold({
     super.key,
     required this.club,
-    required this.currentUid,
     required this.onBack,
   });
 
   final Club club;
-  final String currentUid;
   final VoidCallback onBack;
 
   @override
@@ -85,7 +79,6 @@ class HostInsightsScaffold extends StatelessWidget {
             gapH12,
             HostClubInsightsPane(
               club: club,
-              isOwner: club.isOwnedBy(currentUid),
               dedicated: true,
               onOpenEventReport: (eventId) => context.pushNamed(
                 Routes.hostAppEventManageScreen.name,
