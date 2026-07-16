@@ -1,16 +1,453 @@
 {
-  "version": 1,
+  "version": 2,
   "updated": "2026-07-16",
   "owner": "agent_operating_model",
-  "targetBranch": "codex/full-reconciliation-isolated-20260716",
-  "targetHeadBeforeRecovery": "971216df817b0f6b46d69939f090c3294113d5f8",
-  "reconciliationMerge": {
-    "commit": "c968699d8f04844ca6a5bba0ab3ab7a5318bd867",
-    "targetParent": "6bec6517a9338e472f447114a17ff094dd6ffa5f",
-    "preservedParent": "a59af56625eb78f1153bd16b337c3cab7e20881e",
-    "mergeBase": "c323772f334536ba62c6b4c49cac4251b8a069a1"
+  "status": "closed_with_external_data_defer",
+  "targetBranch": "codex/reconciliation-audit-closeout-20260716",
+  "implementation": {
+    "sha": "fb42a1dcf7be83ae2250f35f9ef1fe5c0bb9ef2e",
+    "tree": "fb9d74aa4fd56ebbb9e26c78e90a60c95d37765d",
+    "commits": [
+      {
+        "sha": "73234a768b38b240ae634ea0ab6282bcfb2a0e1f",
+        "subject": "fix(reconciliation): close recovery audit implementation"
+      },
+      {
+        "sha": "fb42a1dcf7be83ae2250f35f9ef1fe5c0bb9ef2e",
+        "subject": "fix(l10n): prune audited orphan catalog"
+      }
+    ]
   },
-  "classifications": [
+  "auditInputs": {
+    "base": {
+      "input": "c323772f334536ba62c6b4c49cac4251b8a069a1",
+      "commit": "c323772f334536ba62c6b4c49cac4251b8a069a1",
+      "tree": "f6c36781d97f859b63ca8a3fcf547ccd73cfbc3d"
+    },
+    "ours": {
+      "input": "6bec6517a9338e472f447114a17ff094dd6ffa5f",
+      "commit": "6bec6517a9338e472f447114a17ff094dd6ffa5f",
+      "tree": "2ca5d6fb4625cde632d19a38b90ff07174c94227"
+    },
+    "theirs": {
+      "input": "a59af56625eb78f1153bd16b337c3cab7e20881e",
+      "commit": "a59af56625eb78f1153bd16b337c3cab7e20881e",
+      "tree": "5c217359f18a75fabe5dbf38ae56ae371f58c064"
+    },
+    "merged": {
+      "input": "fb42a1dcf7be83ae2250f35f9ef1fe5c0bb9ef2e",
+      "commit": "fb42a1dcf7be83ae2250f35f9ef1fe5c0bb9ef2e",
+      "tree": "fb9d74aa4fd56ebbb9e26c78e90a60c95d37765d"
+    }
+  },
+  "sections": [
+    {
+      "section": "0",
+      "title": "preservation",
+      "status": "complete",
+      "evidence": "Named recovery tips and immutable stash backups are on origin; dirty source worktrees remain untouched."
+    },
+    {
+      "section": "4.1",
+      "title": "marketing component lexicon",
+      "status": "complete_strict",
+      "evidence": "Reusable React validation enforces the strict cross-stack surface map for admin and marketing."
+    },
+    {
+      "section": "4.2",
+      "title": "website primitives shim",
+      "status": "complete",
+      "evidence": "The shadowing file shim is deleted; the family-split directory is canonical."
+    },
+    {
+      "section": "4.3",
+      "title": "governance documentation",
+      "status": "complete",
+      "evidence": "Current mechanisms are documented and protected by the monotonic version ratchet."
+    },
+    {
+      "section": "4.4",
+      "title": "profile prompt disclosure",
+      "status": "complete",
+      "evidence": "Completed prompts plus exactly the next slot render through the finalized field API."
+    },
+    {
+      "section": "4.5",
+      "title": "orphaned l10n keys",
+      "status": "complete_zero_debt",
+      "evidence": "All 97 reviewed zero-reference keys were pruned; 2774 of 2774 catalog keys are used."
+    },
+    {
+      "section": "5.1",
+      "title": "strict event location",
+      "status": "closed_deferred_external_data",
+      "evidence": "Compatibility is complete and tested; strict activation waits for repair of 9 production blockers."
+    },
+    {
+      "section": "5.2",
+      "title": "adaptive tab scaffold",
+      "status": "complete",
+      "evidence": "Both shells adopt keyboard-safe CatchAdaptiveTabScaffold behavior."
+    },
+    {
+      "section": "5.3",
+      "title": "surface map strictness",
+      "status": "complete_strict",
+      "evidence": "Every declared component symbol has an object-valued surface mapping."
+    },
+    {
+      "section": "5.4",
+      "title": "bottom action ownership",
+      "status": "complete",
+      "evidence": "CatchBottomAction owns primary CTA composition; CatchBottomDock no longer has the rich CTA variant."
+    },
+    {
+      "section": "5.5",
+      "title": "hand-merged residuals",
+      "status": "complete",
+      "evidence": "All 248 both-diverged paths have exact semantic reviews; all 1173 exact discards have strict receipts."
+    },
+    {
+      "section": "5.6",
+      "title": "design context exports",
+      "status": "complete_regenerated",
+      "evidence": "Exports were regenerated from current canonical sources."
+    },
+    {
+      "section": "6",
+      "title": "active-session boundaries",
+      "status": "complete_preserved",
+      "evidence": "Original dirty work and both source-worktree backups were preserved without overwrite."
+    },
+    {
+      "section": "8",
+      "title": "prevention controls",
+      "status": "complete",
+      "evidence": "Push/rerere defaults, snapshot rules, merge auditing, doc ratchet, branch lifecycle, and no-shared-rewrite rules are active."
+    },
+    {
+      "section": "9",
+      "title": "cross-codebase improvements",
+      "status": "complete",
+      "evidence": "All seven listed improvements have implementation, generated artifacts, or enforcement tests."
+    },
+    {
+      "section": "10",
+      "title": "execution order",
+      "status": "complete",
+      "evidence": "Restore, decisions, exhaustive audit, preservation, and cleanup were executed in order."
+    }
+  ],
+  "strictMergeAudit": {
+    "tool": "node tool/git/audit_merge_drops.mjs",
+    "report": "docs/audit_registry/reconciliation_merge_drop_report_20260716.json",
+    "receipt": "docs/audit_registry/reconciliation_discard_receipt_20260716.json",
+    "semanticReview": "docs/audit_registry/reconciliation_semantic_review_20260716.json",
+    "classificationDigest": "sha256:6697d42a5dd8442c24d16d196392596b26b7d48596f29051f09df806699f9ab7",
+    "summary": {
+      "changedPaths": 3791,
+      "discarded-ours": 132,
+      "discarded-theirs": 1041,
+      "both-diverged": 248,
+      "resolved-equivalent": 596,
+      "retained-ours": 1541,
+      "retained-theirs": 233,
+      "discardedPaths": 1173,
+      "unreceiptedDiscardedPaths": 0,
+      "invalidReceipts": 0
+    },
+    "receiptCoverage": {
+      "expected": 1173,
+      "acknowledged": 1173,
+      "missing": 0,
+      "invalid": 0,
+      "strictPass": true
+    },
+    "semanticCoverage": {
+      "expectedBothDivergedPaths": 248,
+      "representedBothDivergedPaths": 248,
+      "uniquePaths": 248,
+      "exactPathCoverage": true,
+      "exactChangedAndEntrySnapshots": true,
+      "groupCounts": {
+        "adaptive-shell-navigation": 8,
+        "agent-git-preservation": 3,
+        "audit-registry-regeneration": 24,
+        "backend-contract": 1,
+        "design-context-regeneration": 6,
+        "design-system-consolidation": 64,
+        "doc-version-ratchet": 3,
+        "event-location-compatibility": 17,
+        "event-success-patterns": 20,
+        "explore-map-recovery": 7,
+        "host-surface-recovery": 20,
+        "l10n-ratchet": 19,
+        "lint-enforcement": 1,
+        "merge-drop-auditor": 2,
+        "mobile-feature-recovery": 19,
+        "profile-progressive-disclosure": 4,
+        "provider-topology": 5,
+        "react-architecture": 13,
+        "react-ci-convergence": 5,
+        "section-geometry": 7
+      },
+      "shapeCounts": {
+        "both-sides-changed": 125,
+        "ours-only-changed": 4,
+        "reconciliation-added": 60,
+        "reconciliation-deleted": 4,
+        "reconciliation-modified": 24,
+        "theirs-only-changed": 31
+      },
+      "outcomeCounts": {
+        "combined": 136,
+        "independent-reimplementation": 52,
+        "reconciliation-added": 35,
+        "reconciliation-deleted": 4,
+        "regenerated-canonical": 21
+      }
+    }
+  },
+  "productionDataBoundary": {
+    "status": "strict_reads_deferred",
+    "reason": "Nine coordinate-less production events require owner-reviewed repair before fail-closed reads can activate.",
+    "dryRun": {
+      "scanned": 272,
+      "valid": 125,
+      "deterministicRepairs": 138,
+      "blockers": 9,
+      "warnings": 0,
+      "writes": 0
+    },
+    "safeCurrentBehavior": [
+      "nullable meeting-location compatibility",
+      "coordinate-safe Explore/map pin filtering",
+      "maps-search directions fallback",
+      "coordinate-less repeat-event prefill",
+      "coordinate-less Host edit initialization"
+    ]
+  },
+  "preservation": {
+    "globalGitDefaults": {
+      "pushAutoSetupRemote": true,
+      "rerereEnabled": true
+    },
+    "remotePushVerified": true,
+    "remoteBranches": [
+      "codex/reconciliation-audit-closeout-20260716",
+      "codex/full-reconciliation-20260716",
+      "codex/automatic-prod-hosting",
+      "codex/recovery-adaptive-shell-20260716",
+      "codex/recovery-analytics-section-20260716",
+      "codex/recovery-bottom-action-20260716",
+      "codex/recovery-explore-pin-filter-20260716",
+      "codex/recovery-l10n-20260716",
+      "codex/recovery-l10n-missing-keys-20260716",
+      "codex/recovery-profile-20260716",
+      "codex/recovery-react-graph-20260716",
+      "codex/recovery-residual-review-a-20260716",
+      "codex/recovery-residual-review-b-20260716",
+      "codex/recovery-tooling-20260716",
+      "codex/recovery-topbar-remoteops-20260716",
+      "codex/recovery-ui-judgment-20260716",
+      "codex/recovery-web-doc-residuals-20260716",
+      "codex/delegation-design-handoff-audit-20260713",
+      "codex/delegation-explore-ticket-audit-20260713",
+      "codex/delegation-map-runtime-audit-20260713",
+      "codex/ops-backend-20260714",
+      "codex/ops-core-20260714",
+      "backup/primary-reconciliation-dirty-worktree-20260716",
+      "backup/explore-map-implementation-dirty-worktree-20260716",
+      "backup/pre-widget-reconciliation-active-work-20260716",
+      "backup/pre-recovery-active-work-20260716"
+    ],
+    "dirtyWorktreesPreserved": [
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/primary-reconciliation-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/explore-map-implementation-20260713"
+    ],
+    "stashes": {
+      "retained": [
+        "stash@{0}",
+        "stash@{1}",
+        "stash@{2} through stash@{13}"
+      ],
+      "immutableRemoteBackups": {
+        "stash@{0}": "backup/pre-widget-reconciliation-active-work-20260716",
+        "stash@{1}": "backup/pre-recovery-active-work-20260716"
+      }
+    }
+  },
+  "cleanup": {
+    "removedCleanRecoveryWorktrees": [
+      "/private/tmp/catch-full-reconciliation-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-adaptive-shell-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-analytics-section-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-bottom-action-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-explore-pin-filter-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-l10n-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-l10n-missing-keys-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-profile-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-react-graph-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-residual-review-a-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-residual-review-b-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-tooling-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-topbar-remoteops-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-ui-judgment-20260716",
+      "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/recovery-web-doc-residuals-20260716"
+    ],
+    "removedLegacySafeDeleteWorktrees": [
+      "admin-console-publish-20260714",
+      "admin-phone-auth-20260713",
+      "apple-signing-repair-20260715",
+      "apps-architecture-fixes-20260716",
+      "catch-field-focused-label-20260716",
+      "design-handoff-audit-20260713",
+      "explore-ticket-audit-20260713",
+      "map-runtime-audit-20260713",
+      "ops-backend-20260714",
+      "ops-core-20260714",
+      "port-widget-pattern-core-20260716",
+      "profile-field-scroll-fix-20260715",
+      "pwf-compact-controls-20260713",
+      "pwf-identity-20260713",
+      "pwf-progress-event-success-20260713",
+      "supply-intake-operations-publish-20260714",
+      "widget-dialog-r2-20260712",
+      "widget-pattern-core-20260712",
+      "widget-pattern-tests-20260712",
+      "widget-pattern-widgetbook-20260712",
+      "widget-triage-a-20260712",
+      "widget-triage-b-20260712"
+    ],
+    "removedCount": 37,
+    "removedGeneratedCacheDirectories": 3,
+    "deletedLocalBranchesNonForce": 24,
+    "retainedLocalBranchesAfterNonForceRefusal": [
+      "codex/ops-backend-20260714",
+      "codex/ops-core-20260714",
+      "codex/recovery-adaptive-shell-20260716",
+      "codex/recovery-analytics-section-20260716",
+      "codex/recovery-bottom-action-20260716",
+      "codex/recovery-explore-pin-filter-20260716",
+      "codex/recovery-l10n-20260716",
+      "codex/recovery-l10n-missing-keys-20260716",
+      "codex/recovery-profile-20260716",
+      "codex/recovery-react-graph-20260716",
+      "codex/recovery-tooling-20260716",
+      "codex/recovery-topbar-remoteops-20260716",
+      "codex/recovery-web-doc-residuals-20260716"
+    ],
+    "activeCloseoutWorktree": "/private/tmp/catch-reconciliation-closeout",
+    "policy": "All 37 audit-classified safe-delete worktrees were removed non-forcibly after remote preservation. Local branches were deleted only when git branch -d accepted them; 13 refusals remain as harmless remote-backed provenance refs.",
+    "preservedWorktrees": [
+      {
+        "path": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
+        "reason": "Original 203-path dirty source worktree; explicitly out of cleanup scope."
+      },
+      {
+        "path": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/primary-reconciliation-20260716",
+        "reason": "Explicit clean immutable source backup."
+      },
+      {
+        "path": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.claude/worktrees/explore-map-implementation-20260713",
+        "reason": "Explicit clean immutable source backup."
+      }
+    ],
+    "outOfAuditWorktreesRetained": [
+      {
+        "path": "charming-mccarthy-ea8738",
+        "state": "clean detached",
+        "reason": "Not named by the reconciliation audit."
+      },
+      {
+        "path": "config-cicd-hardening",
+        "state": "clean stale local main",
+        "reason": "Not named by the reconciliation audit; deleting a main worktree requires separate scope."
+      },
+      {
+        "path": "pwf-review-badge-20260713",
+        "state": "clean detached",
+        "reason": "Not named by the reconciliation audit."
+      },
+      {
+        "path": "pwf-review-context-progress-20260713",
+        "state": "five untracked generated Gradle-cache files",
+        "reason": "Not named by the reconciliation audit; preserved rather than force-cleaned."
+      },
+      {
+        "path": "pwf-review-controls-20260713",
+        "state": "clean detached",
+        "reason": "Not named by the reconciliation audit."
+      }
+    ]
+  },
+  "verification": [
+    {
+      "id": "flutter-analyzer",
+      "status": "passed",
+      "result": "Exit 0; 274 information findings; 0 warnings; 0 errors after the full l10n prune."
+    },
+    {
+      "id": "flutter-focused",
+      "status": "passed",
+      "result": "861 passing focused Flutter test executions across the reconciliation workstreams."
+    },
+    {
+      "id": "l10n",
+      "status": "passed",
+      "result": "11 scanner tests; 2774/2774 used catalog keys; zero orphans; zero missing getters."
+    },
+    {
+      "id": "data-contract",
+      "status": "passed",
+      "result": "Generated schemas synchronized; contract/rules checks and 163 Flutter tests passed."
+    },
+    {
+      "id": "web",
+      "status": "passed",
+      "result": "Both React tests, typechecks, builds, Storybook builds, architecture checks, and budgets passed."
+    },
+    {
+      "id": "operations",
+      "status": "passed",
+      "result": "75 tests plus operations check and smoke passed."
+    },
+    {
+      "id": "functions",
+      "status": "passed",
+      "result": "Functions TypeScript build passed."
+    },
+    {
+      "id": "design",
+      "status": "passed",
+      "result": "64 component contracts, 35 screens/239 sections, 880 components/929 builders/930 references, and selected scanners passed."
+    },
+    {
+      "id": "provider-graph",
+      "status": "passed",
+      "result": "211 providers, 411 callsites, and no cycles."
+    },
+    {
+      "id": "readiness",
+      "status": "passed",
+      "result": "Final evidence-state result: 100/100 and 3069/3069 checks passed."
+    }
+  ],
+  "advisories": [
+    {
+      "id": "WIDGETBOOK-CATALOG-COVERAGE",
+      "status": "tracked_nonblocking_existing_debt",
+      "evidence": "docs/design_parity/widgetbook_coverage_report.json",
+      "counts": {
+        "publicNeedsCatalogOrReplace": 109,
+        "privateNeedsRenameOrReplace": 5,
+        "staleDecisions": 0
+      },
+      "note": "Improved from 122 unresolved candidates to 114; this pre-existing catalog queue is not an unreviewed reconciliation drop."
+    }
+  ],
+  "historicalClassifications": [
     {
       "commit": "e5983f26753c897741d51da6ae7ca49965103bdd",
       "subject": "Point development clients at catchdates-dev",
@@ -76,16 +513,7 @@
       "evidence": "The current Host test keeps generated analytics rows on the independent-scroll-offset case."
     }
   ],
-  "verification": [
-    "dart analyze lib/user_profile/presentation/profile_screen.dart lib/user_profile/presentation/widgets/profile_sliver_header.dart test/profile/profile_widgets_test.dart test/ui_captures/catalog/screen_capture_catalog.dart",
-    "flutter test test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart",
-    "npm --prefix website run typecheck",
-    "npm --prefix website run build",
-    "npm --prefix operations test",
-    "npm --prefix operations run check",
-    "node tool/agent/check_agent_readiness.mjs"
-  ],
-  "inheritedBlockers": [
+  "supersededBlockers": [
     {
       "command": "flutter analyze --no-fatal-infos",
       "evidence": "The full repository analyzer still exits nonzero on pre-existing missing integration-test harness imports and providers; the four recovered Profile and capture files analyze without errors."

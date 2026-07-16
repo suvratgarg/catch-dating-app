@@ -6,32 +6,53 @@ handoff document for Codex: Section 4 is the restore queue, Section 5 needs
 owner judgment before acting, Section 6 is hands-off (active session owns it),
 Section 8 is prevention, Section 9 is transferable improvements.
 
-## Execution update — 2026-07-16
+## Authoritative closeout — 2026-07-16
 
-- **§0 named preservation set complete.** The current reconciliation branch,
-  both `a59af5662` preservation refs, every named 2026-07-16 recovery branch,
-  and the named widget-pattern family now exist on origin at their local tips.
-- **§4.1 reclassified as blocked on §5.3.** The preserved `a59af5662` tree
-  passes the lexicon check (66 contracts / 87 surface links), but clean current
-  HEAD and clean origin/main fail it. Current HEAD has 51 component contracts
-  without object-valued `surfaces`, plus a website `ChoiceCard` mismatch. A
-  marketing lexicon CI step would therefore make CI knowingly red unless the
-  strict-vs-incremental surfaces-map decision and contract reconciliation land
-  together. The independently valid named React controller-target gate and its
-  two path triggers were restored; its 24-hook classification check passes.
-- **§4.2 complete, with the audit wording corrected below.** Current HEAD no
-  longer held the original 4,977-line implementation; it held a one-line
-  compatibility re-export over the already-live family-split directory. That
-  shadowing shim is now deleted, and website typecheck/build/Storybook plus the
-  React import/governance checks pass through the directory index directly.
-- **Audit-registry stamping remains parent-session owned.** Per §6, this pass
-  did not overwrite the active session's `docs/audit_registry/**` edits.
+All audit items have a final disposition. The implementation tree audited for
+loss is `fb42a1dcf7be83ae2250f35f9ef1fe5c0bb9ef2e` on
+`codex/reconciliation-audit-closeout-20260716`. The only deferred behavior is
+strict production event-location reads: the implementation and repair path are
+ready, but activation is deliberately gated on repairing nine production data
+blockers. The audit performed no production writes.
 
-Audit method: three-way blob comparison per file between the preserved branch
-tree (`a59af5662` / `58bc22587`), origin/main (`1e5f49423`, PR #85), and the
-current branch HEAD (`1cec4f2f0` on `codex/full-reconciliation-20260716`).
-"Discarded" below means: the branch changed a file, but HEAD's blob is
-byte-identical to main's — i.e. the merge/port kept main's side wholesale.
+| Item | Final disposition | Durable proof |
+|---|---|---|
+| §0 preservation | Complete | Named preservation/recovery refs exist on origin; both dirty source worktrees also have immutable `backup/` branches. |
+| §4.1 + §5.3 React lexicon | Complete — strict | Reusable React validation runs the strict cross-stack surface map for both web apps; component/controller/governance checks pass. |
+| §4.2 primitives shim | Complete | The shadowing `website/src/shared/ui/primitives.tsx` shim is deleted; imports resolve the family-split directory and both web builds/Storybooks pass. |
+| §4.3 governance docs | Complete | Claims were reconciled to current code, governed versions moved forward, and the monotonic doc-version ratchet passes. |
+| §4.4 profile prompts | Complete | Profile edit shows completed prompts plus exactly the next slot; finalized field APIs and focused tests are retained. |
+| §4.5 l10n orphans | Complete — zero debt | All 97 verified zero-reference catalog keys (including the obsolete Host operations keys) were removed; inventory now reports 2,774/2,774 used, zero orphans, and zero missing getters. |
+| §5.1 event location | Handled — activation deferred | Nullable compatibility, map/list filtering, maps-search fallback, repeat prefill, and edit initialization are tested. Production dry-run: 272 scanned, 125 valid, 138 deterministic repairs, 9 blockers, 0 warnings, 0 writes. |
+| §5.2 adaptive tabs | Complete | `CatchAdaptiveTabScaffold` owns keyboard-safe behavior and is adopted by consumer and Host shells with navigation/keyboard tests. |
+| §5.4 bottom actions | Complete | `CatchBottomDock` no longer owns the rich CTA variant; `CatchBottomAction` is the canonical primary-action owner and contracts/tests were refreshed. |
+| §5.5 residual merge risk | Complete | Four-tree audit classified 3,791 paths; all 1,173 exact discards have receipts and all 248 both-diverged paths have semantic reviews. Strict mode reports zero missing/invalid receipts. |
+| §5.6 design context | Complete | Design-system exports were regenerated from current sources rather than restored from either historical side. |
+| §8 prevention | Complete | Push/rerere defaults are enabled; preservation-before-rewrite, daily WIP, omnibus retirement, parent-owned integration, branch lifecycle, merge receipts, and no-shared-history-rewrite rules are in the operating model or enforced tooling. |
+| §9 improvements | Complete | Reusable React CI, doc/l10n ratchets, merge auditor, legacy-mirror architecture guidance, React dependency graph, primitive-owned geometry checks, and anti-vacuity scanner tests are implemented. |
+
+Immutable audit inputs:
+
+- base: `c323772f334536ba62c6b4c49cac4251b8a069a1`
+- ours: `6bec6517a9338e472f447114a17ff094dd6ffa5f`
+- theirs: `a59af56625eb78f1153bd16b337c3cab7e20881e`
+- merged implementation: `fb42a1dcf7be83ae2250f35f9ef1fe5c0bb9ef2e`
+
+Machine-readable closeout evidence:
+
+- `docs/audit_registry/reconciliation_merge_drop_report_20260716.json`
+- `docs/audit_registry/reconciliation_discard_receipt_20260716.json`
+- `docs/audit_registry/reconciliation_semantic_review_20260716.json`
+- `docs/audit_registry/reconciliation_20260716.json`
+
+The remaining sections are the historical forensic record that produced this
+queue. Their branch names, HEAD values, and imperative wording describe the
+pre-closeout snapshot; the table above is authoritative for current status.
+
+Audit method: exact Git tree-entry comparison across base, ours, theirs, and
+the immutable merged implementation. "Discarded" means the merged entry kept
+one side byte-for-byte while the other side differed. Strict mode requires a
+non-empty, category-exact receipt for every such path.
 
 ---
 
