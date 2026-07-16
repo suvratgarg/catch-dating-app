@@ -7,6 +7,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_defaults.dar
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 
+
 // Typed callable request DTO emitted from callables/create_event_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
@@ -16,7 +17,9 @@ final class CreateEventPrivateAccess {
 
   final String? inviteCode;
 
-  Map<String, Object?> toJson() => {'inviteCode': ?inviteCode};
+  Map<String, Object?> toJson() => {
+    'inviteCode': ?inviteCode,
+  };
 }
 
 /// Callable payload accepted by createEvent.

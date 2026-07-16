@@ -120,7 +120,10 @@ class EventSuccessHostDraft {
     } else {
       nextIds.remove(moduleId);
     }
-    return copyWith(selectedModuleIds: nextIds);
+    final next = copyWith(selectedModuleIds: nextIds);
+    return selected && moduleId == EventSuccessModuleCatalog.guidedRotations.id
+        ? next.normalizedForSelectedModules()
+        : next;
   }
 
   EventSuccessHostDraft normalizeForActivity(ActivityKind activityKind) {
@@ -138,9 +141,7 @@ class EventSuccessHostDraft {
         .where(profile.isSelectable)
         .where(profile.playbook.moduleIds.contains)
         .toSet();
-    final selectedIds = compatibleSelectedIds.isEmpty
-        ? profile.defaultModuleIds
-        : compatibleSelectedIds;
+    final selectedIds = compatibleSelectedIds;
     return copyWith(
       playbook: profile.playbook,
       selectedModuleIds: selectedIds,
@@ -156,6 +157,30 @@ class EventSuccessHostDraft {
           ) &&
           (compatibilityAffectsRanking ||
               profile.compatibilityAffectsRankingByDefault),
+    ).normalizedForSelectedModules();
+  }
+
+  /// Applies invariants shared by the Flutter editor and assignment backend.
+  /// Guided rotations are currently a pair-only engine; larger units use the
+  /// generic group-assignment path instead.
+  EventSuccessHostDraft normalizedForSelectedModules() {
+    if (!selectedModuleIds.contains(
+      EventSuccessModuleCatalog.guidedRotations.id,
+    )) {
+      return this;
+    }
+    if (structureConfig.unitKind == EventSuccessUnitKind.pairs &&
+        structureConfig.unitSize == 2 &&
+        structureConfig.rotationIntervalMinutes != null) {
+      return this;
+    }
+    return copyWith(
+      structureConfig: structureConfig.copyWith(
+        unitKind: EventSuccessUnitKind.pairs,
+        unitSize: 2,
+        unitCount: null,
+        rotationIntervalMinutes: structureConfig.rotationIntervalMinutes ?? 15,
+      ),
     );
   }
 
@@ -180,6 +205,7 @@ class EventSuccessHostDraft {
     final canUseCompatibilityRanking = resolvedModuleIds.contains(
       EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
     );
+    final selectionChanged = playbook != null || selectedModuleIds != null;
     return EventSuccessHostDraft(
       playbook: resolvedPlaybook,
       selectedModuleIds: resolvedModuleIds,
@@ -188,16 +214,20 @@ class EventSuccessHostDraft {
           structureConfig?.normalizedForTarget(resolvedTargetAttendeeCount) ??
           this.structureConfig.normalizedForTarget(resolvedTargetAttendeeCount),
       hostGoal: hostGoal ?? this.hostGoal,
-      wingmanRequestsEnabled:
-          wingmanRequestsEnabled ?? this.wingmanRequestsEnabled,
-      contextualOpenersEnabled:
-          contextualOpenersEnabled ?? this.contextualOpenersEnabled,
+      wingmanRequestsEnabled: selectionChanged
+          ? resolvedModuleIds.contains(
+              EventSuccessModuleCatalog.wingmanRequests.id,
+            )
+          : wingmanRequestsEnabled ?? this.wingmanRequestsEnabled,
+      contextualOpenersEnabled: selectionChanged
+          ? resolvedModuleIds.contains(
+              EventSuccessModuleCatalog.contextualOpeners.id,
+            )
+          : contextualOpenersEnabled ?? this.contextualOpenersEnabled,
       compatibilityAffectsRanking:
           canUseCompatibilityRanking &&
           (compatibilityAffectsRanking ?? this.compatibilityAffectsRanking),
-      questionnaireConfig:
-          questionnaireConfig?.normalized() ??
-          this.questionnaireConfig.normalized(),
+      questionnaireConfig: questionnaireConfig ?? this.questionnaireConfig,
     );
   }
 
@@ -208,15 +238,16 @@ class EventSuccessHostDraft {
         'Target attendance should stay within ${playbook.capacity.min}-${playbook.capacity.max} for this format.',
       );
     }
-    if (!selectedModuleIds.contains(EventSuccessModuleCatalog.checkIn.id)) {
-      issues.add('Add check-in before using attendance for follow-up.');
-    }
-    if (!selectedModuleIds.contains(
-      EventSuccessModuleCatalog.safetyControls.id,
-    )) {
-      issues.add('Add safety controls before using this live.');
+    if (hostGoal.trim().isEmpty) {
+      issues.add('Add a host goal before saving the live guide.');
     }
     if (selectedModuleIds.contains(
+          EventSuccessModuleCatalog.guidedRotations.id,
+        ) &&
+        (structureConfig.unitKind != EventSuccessUnitKind.pairs ||
+            structureConfig.unitSize != 2)) {
+      issues.add('Guided rotations require two-person pairs.');
+    } else if (selectedModuleIds.contains(
           EventSuccessModuleCatalog.guidedRotations.id,
         ) &&
         structureConfig.rotationIntervalMinutes == null) {

@@ -56,7 +56,9 @@ class EventSuccessController extends _$EventSuccessController {
               ? null
               : normalizedPrompt,
         );
-    await ref.read(eventSuccessRepositoryProvider).savePlan(nextPlan);
+    await ref
+        .read(eventSuccessRepositoryProvider)
+        .savePlan(nextPlan, expectedUpdatedAt: plan.updatedAt);
   }
 
   Future<void> updateActiveStep({

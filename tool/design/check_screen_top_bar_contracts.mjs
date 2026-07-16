@@ -38,6 +38,7 @@ const rolePolicies = new Map([
   ],
 ]);
 const validRoles = new Set([...rolePolicies.keys(), "workspace"]);
+const validLeadingPolicies = new Set(["auto", "back", "none"]);
 const canonicalWorkspaceOwners = new Set([
   "CatchTopBar",
   "CatchScreenTopBar",
@@ -451,6 +452,23 @@ function checkContract({root, contract, appBars, findings}) {
       });
     }
   }
+
+  if (contract.leading === "back") {
+    const appBarsWithoutBack = appBars.filter(
+      (appBar) =>
+        !/\bleadingType\s*:\s*CatchTopBarLeading\.back\b/u.test(appBar.value) &&
+        !/\bshowBackButton\s*:\s*true\b/u.test(appBar.value),
+    );
+    if (appBarsWithoutBack.length > 0) {
+      findings.push({
+        code: "missing-required-back-navigation",
+        path: contract.path,
+        message:
+          "This pushed route requires an explicit back affordance; use " +
+          "leadingType: CatchTopBarLeading.back (or showBackButton: true).",
+      });
+    }
+  }
 }
 
 function validateManifest(manifest, findings, manifestPath) {
@@ -492,6 +510,16 @@ function validateManifest(manifest, findings, manifestPath) {
         code: "invalid-role",
         path: contract.path ?? manifestPath,
         message: `Unknown screen-chrome role ${contract.role}.`,
+      });
+    }
+    if (
+      contract.leading != null &&
+      !validLeadingPolicies.has(contract.leading)
+    ) {
+      findings.push({
+        code: "invalid-leading-policy",
+        path: contract.path ?? manifestPath,
+        message: `Unknown screen-chrome leading policy ${contract.leading}.`,
       });
     }
     if (

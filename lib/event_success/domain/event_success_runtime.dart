@@ -102,8 +102,9 @@ class EventSuccessRuntime {
 
   bool moduleEnabled(String moduleId) => plan.hasModule(moduleId);
 
-  bool get checkInEnabled =>
-      moduleEnabled(EventSuccessModuleCatalog.checkIn.id);
+  /// Attendance check-in is an event-platform primitive, not an optional
+  /// Event Success module. Old plans may still carry the legacy module id.
+  bool get checkInEnabled => true;
 
   bool get firstHelloCheckInEnabled =>
       moduleEnabled(EventSuccessModuleCatalog.firstHelloCheckIn.id);
@@ -166,8 +167,7 @@ class EventSuccessRuntime {
     return steps[index];
   }
 
-  bool canShowSelfCheckIn({required bool checkInOpen}) =>
-      checkInEnabled && checkInOpen;
+  bool canShowSelfCheckIn({required bool checkInOpen}) => checkInOpen;
 
   bool canShowFirstHelloCheckIn({
     required EventParticipationStatus? participationStatus,
@@ -177,7 +177,6 @@ class EventSuccessRuntime {
     bool arrivalMissionStartAvailable = false,
   }) {
     return firstHelloCheckInEnabled &&
-        checkInEnabled &&
         checkInOpen &&
         !eventEnded &&
         (arrivalMissionAssigned || arrivalMissionStartAvailable) &&

@@ -562,6 +562,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                 'maxLength': 120,
               },
             },
+            'moduleSelectionConfigured': <String, Object?>{
+              'type': 'boolean',
+            },
             'structureConfig': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -763,6 +766,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   'minLength': 1,
                   'maxLength': 120,
                 },
+              },
+              'moduleSelectionConfigured': <String, Object?>{
+                'type': 'boolean',
               },
               'structureConfig': <String, Object?>{
                 'type': 'object',

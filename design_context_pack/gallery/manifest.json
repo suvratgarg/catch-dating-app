@@ -3,11 +3,11 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 51,
-    "captures": 631,
+    "captures": 619,
     "statusCounts": {
       "excluded": 6,
-      "captured": 39,
-      "alias": 6
+      "captured": 38,
+      "alias": 7
     }
   },
   "profile": {
@@ -133,6 +133,23 @@
         "dark": "dark/profile_self_preview_tab.png"
       },
       "whatItIs": "Profile Self Preview Tab",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_insights_tab",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_insights_tab.png",
+        "dark": "dark/profile_self_insights_tab.png"
+      },
+      "whatItIs": "Profile Self Insights Tab",
       "keepChangeNotes": ""
     },
     {
@@ -2164,7 +2181,7 @@
     {
       "id": "host_clubs_insights_report",
       "routes": [
-        "hostInsightsScreen"
+        "hostClubsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2181,7 +2198,7 @@
     {
       "id": "host_clubs_insights_loading",
       "routes": [
-        "hostInsightsScreen"
+        "hostClubsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2198,7 +2215,7 @@
     {
       "id": "host_clubs_insights_error",
       "routes": [
-        "hostInsightsScreen"
+        "hostClubsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2215,7 +2232,7 @@
     {
       "id": "host_clubs_insights_offline",
       "routes": [
-        "hostInsightsScreen"
+        "hostClubsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2774,7 +2791,7 @@
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_profile_editor_sheet",
+      "id": "host_settings_inline_profile_edit",
       "routes": [
         "hostSettingsScreen"
       ],
@@ -2784,10 +2801,10 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_profile_editor_sheet.png",
-        "dark": "dark/host_settings_profile_editor_sheet.png"
+        "light": "light/host_settings_inline_profile_edit.png",
+        "dark": "dark/host_settings_inline_profile_edit.png"
       },
-      "whatItIs": "Host Settings Profile Editor Sheet",
+      "whatItIs": "Host Settings Inline Profile Edit",
       "keepChangeNotes": ""
     },
     {
@@ -4185,6 +4202,23 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "event_location_map_no_coordinate",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_no_coordinate.png",
+        "dark": "dark/event_location_map_no_coordinate.png"
+      },
+      "whatItIs": "Event Location Map No Coordinate",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "event_location_map_text_scale_2",
       "routes": [
         "eventLocationMapScreen"
@@ -4797,244 +4831,6 @@
         "dark": "dark/create_club_light_dark.png"
       },
       "whatItIs": "Create Club Light Dark",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_basics",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_basics.png",
-        "dark": "dark/edit_club_basics.png"
-      },
-      "whatItIs": "Edit Club Basics",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_validation_error",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_validation_error.png",
-        "dark": "dark/edit_club_validation_error.png"
-      },
-      "whatItIs": "Edit Club Validation Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_media_replacement",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_media_replacement.png",
-        "dark": "dark/edit_club_media_replacement.png"
-      },
-      "whatItIs": "Edit Club Media Replacement",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_submit_pending",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_submit_pending.png",
-        "dark": "dark/edit_club_submit_pending.png"
-      },
-      "whatItIs": "Edit Club Submit Pending",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_submit_error",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_submit_error.png",
-        "dark": "dark/edit_club_submit_error.png"
-      },
-      "whatItIs": "Edit Club Submit Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_route_loading",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_route_loading.png",
-        "dark": "dark/edit_club_route_loading.png"
-      },
-      "whatItIs": "Edit Club Route Loading",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_route_error",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_route_error.png",
-        "dark": "dark/edit_club_route_error.png"
-      },
-      "whatItIs": "Edit Club Route Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_route_offline",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_route_offline.png",
-        "dark": "dark/edit_club_route_offline.png"
-      },
-      "whatItIs": "Edit Club Route Offline",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_not_found",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_not_found.png",
-        "dark": "dark/edit_club_not_found.png"
-      },
-      "whatItIs": "Edit Club Not Found",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_cohost_media",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_cohost_media.png",
-        "dark": "dark/edit_club_cohost_media.png"
-      },
-      "whatItIs": "Edit Club Cohost Media",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_forbidden",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_forbidden.png",
-        "dark": "dark/edit_club_forbidden.png"
-      },
-      "whatItIs": "Edit Club Forbidden",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_text_scale_2",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_text_scale_2.png",
-        "dark": "dark/edit_club_text_scale_2.png"
-      },
-      "whatItIs": "Edit Club Text Scale 2",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_reduced_motion",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_reduced_motion.png",
-        "dark": "dark/edit_club_reduced_motion.png"
-      },
-      "whatItIs": "Edit Club Reduced Motion",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "edit_club_light_dark",
-      "routes": [
-        "hostEditClubScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/edit_club_light_dark.png",
-        "dark": "dark/edit_club_light_dark.png"
-      },
-      "whatItIs": "Edit Club Light Dark",
       "keepChangeNotes": ""
     },
     {

@@ -205,8 +205,8 @@ void main() {
       nextStart.add(const Duration(minutes: 75)),
     );
     expect(request.nextEvent.meetingPoint, 'New gate');
-    expect(request.nextEvent.meetingLocation.address, 'Bandstand');
-    expect(request.nextEvent.meetingLocation.placeId, 'place-1');
+    expect(request.nextEvent.meetingLocation?.address, 'Bandstand');
+    expect(request.nextEvent.meetingLocation?.placeId, 'place-1');
     expect(request.nextEvent.locationDetails, 'Blue gate');
     expect(request.nextEvent.distanceKm, 7.5);
     expect(request.nextEvent.pace, PaceLevel.fast);

@@ -907,7 +907,11 @@ service cloud.firestore {
           'unitSize',
           'unitCount',
           'rotationIntervalMinutes',
-          'revealCountdownSeconds'
+          'revealCountdownSeconds',
+          'rotationRepeatStrategy',
+          'maxPairMeetings',
+          'balanceActivityAttributes',
+          'clusterActivityAttributes'
         ])
         && data.keys().hasAll(['unitKind', 'unitSize', 'revealCountdownSeconds'])
         && data.unitKind in ['wholeGroup', 'pods', 'pairs', 'teams', 'tables']
@@ -931,7 +935,9 @@ service cloud.firestore {
         )
         && data.revealCountdownSeconds is number
         && data.revealCountdownSeconds >= 0
-        && data.revealCountdownSeconds <= 60;
+        && data.revealCountdownSeconds <= 60
+        && optionalString(data, 'rotationRepeatStrategy')
+        && optionalNumber(data, 'maxPairMeetings');
     }
 
     function isValidEventSuccessQuestionnaireConfig(data) {

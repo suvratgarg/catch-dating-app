@@ -46,8 +46,40 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
         ),
       );
 
-  Future<void> savePlan(EventSuccessPlan plan) => withBackendErrorContext(
-    () => _planRef(plan.eventId).set(plan.copyWith(updatedAt: DateTime.now())),
+  Future<void> savePlan(
+    EventSuccessPlan plan, {
+    required DateTime expectedUpdatedAt,
+  }) => withBackendErrorContext(
+    () async {
+      final ref = _planRef(plan.eventId);
+      await _db.runTransaction((tx) async {
+        final snapshot = await tx.get(ref);
+        final current = snapshot.data();
+        if (!snapshot.exists || current == null) {
+          throw StateError('The live event guide no longer exists.');
+        }
+        if (current.status != EventSuccessPlanStatus.setup ||
+            current.frozenAt != null) {
+          throw StateError('The live event guide is already locked.');
+        }
+        if (!current.updatedAt.isAtSameMomentAs(expectedUpdatedAt)) {
+          throw StateError('The live event guide changed on another device.');
+        }
+        tx.update(ref, {
+          'playbookId': plan.playbookId,
+          'selectedModuleIds': plan.selectedModuleIds,
+          'targetAttendeeCount': plan.targetAttendeeCount,
+          'structureConfig': plan.structureConfig.toJson(),
+          'hostGoal': plan.hostGoal,
+          'wingmanRequestsEnabled': plan.wingmanRequestsEnabled,
+          'contextualOpenersEnabled': plan.contextualOpenersEnabled,
+          'compatibilityAffectsRanking': plan.compatibilityAffectsRanking,
+          'questionnaireConfig': plan.questionnaireConfig.toJson(),
+          'attendeePrompt': plan.attendeePrompt,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      });
+    },
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'save live event guide',

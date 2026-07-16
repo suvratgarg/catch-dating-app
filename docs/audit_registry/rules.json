@@ -52,6 +52,12 @@
           "stage": "scanner-ratchet",
           "docAnchor": "docs/app_architecture.md#screen-definition",
           "baseline": "tool/architecture/dependency_direction_baseline.json"
+        },
+        {
+          "tool": "audit:widget-cleanup",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/audit_registry/README.md#workflow",
+          "baseline": "tool/audit/widget_cleanup_baseline.json"
         }
       ]
     },
@@ -68,7 +74,7 @@
         "PROJECT_CONTEXT.md",
         "README.md"
       ],
-      "instruction": "Update an existing source-of-truth doc or registry entry before creating a new doc. Mark stale snapshots historical instead of letting conflicting instructions accumulate.",
+      "instruction": "Update an existing source-of-truth doc or registry entry before creating a new doc. Mark stale snapshots historical instead of letting conflicting instructions accumulate. Governed document versions may increase or remain stable but must never decrease or silently lose their catalog identity/path.",
       "sunset_when": [
         "Docs index and doc_versions remain current for five broad passes"
       ],
@@ -78,6 +84,11 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "docs:version-monotonic",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/audit_registry/README.md#workflow"
+        },
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
@@ -154,6 +165,11 @@
           "tool": "agent:readiness",
           "stage": "scanner-gate",
           "docAnchor": "docs/agent_operating_model.md#done-criteria-for-this-harness"
+        },
+        {
+          "tool": "git:audit-merge-drops",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/agent_operating_model.md#git-preservation-and-reconciliation-contract"
         }
       ]
     },
@@ -272,6 +288,39 @@
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "WEB-DEPENDENCY-TOPOLOGY-001": {
+      "title": "Keep React dependency topology deterministic and surface-safe",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "web_surface_architecture",
+        "version": "0.7.151"
+      },
+      "applies_to": [
+        "website/src/**",
+        "admin/src/**",
+        "packages/web-ui/src/**",
+        "tool/web/react_dependency_graph.mjs",
+        "docs/generated/react_dependency_graph/**",
+        ".github/workflows/react-surface-validation.yml"
+      ],
+      "instruction": "Keep the checked React dependency graph current. Repo-local imports must resolve, website and admin may share through governed packages rather than importing each other directly, and current strongly connected components remain visible debt rather than hidden by an allowlist. Run node tool/web/react_dependency_graph.mjs --check whenever React imports or workspace exports move.",
+      "sunset_when": [
+        "Never; deterministic dependency topology is a permanent architecture contract"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "web:react-dependency-graph",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/web_surface_architecture.md#react-dependency-topology"
         }
       ]
     },
@@ -663,6 +712,11 @@
           "docAnchor": "docs/widget_catalog.md"
         },
         {
+          "tool": "design:flutter-field-surface-inventory",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md"
+        },
+        {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
         }
@@ -986,7 +1040,7 @@
         "tool/design/check_screen_top_bar_contracts.mjs",
         "tool/design/screen_top_bar_contracts.json"
       ],
-      "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchScreenTopBar, compact detail/edit/utility navigation uses CatchTopBar, and identity navigation uses CatchTopBar.identity. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract.",
+      "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchScreenTopBar, compact detail/edit/utility navigation uses CatchTopBar, and identity navigation uses CatchTopBar.identity. Pushed routes that require an exit declare leading back and must configure an explicit back affordance. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract.",
       "sunset_when": [
         "Every remaining legacy manual-header entry has migrated to its canonical screen, step-flow, workspace, or content owner",
         "The analyzer can enforce exact app-bar role and route-presentation ownership without a manifest"
@@ -1175,6 +1229,11 @@
           "tool": "audit:dependency-direction",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#dependency-direction"
+        },
+        {
+          "tool": "audit:provider-graph",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#provider-topology-graph"
         }
       ]
     },
@@ -1239,6 +1298,11 @@
         {
           "stage": "manual",
           "docAnchor": "docs/app_architecture.md#screen-composition-contract"
+        },
+        {
+          "tool": "audit:provider-graph",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#provider-topology-graph"
         }
       ]
     },
@@ -1949,6 +2013,12 @@
           "stage": "scanner-ratchet",
           "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary",
           "baseline": "tool/copy/mobile_copy_baseline.json"
+        },
+        {
+          "tool": "copy:l10n-key-usage",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary",
+          "baseline": "tool/copy/l10n_orphan_baseline.json"
         },
         {
           "tool": "copy:native-sync",

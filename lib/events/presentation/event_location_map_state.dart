@@ -6,6 +6,8 @@ class EventLocationMapState {
   const EventLocationMapState._({
     required this.event,
     required this.enableNetworkTiles,
+    required this.startingPoint,
+    required this.directionsUri,
   });
 
   factory EventLocationMapState.fromEvent(
@@ -15,18 +17,21 @@ class EventLocationMapState {
     return EventLocationMapState._(
       event: event,
       enableNetworkTiles: enableNetworkTiles,
+      startingPoint: LocationCoordinate.fromNullable(
+        latitude: event.effectiveStartingPointLat,
+        longitude: event.effectiveStartingPointLng,
+      ),
+      directionsUri: directionsUriForEvent(event),
     );
   }
 
   final Event event;
   final bool enableNetworkTiles;
 
-  LocationCoordinate get startingPoint => LocationCoordinate(
-    event.effectiveStartingPointLat,
-    event.effectiveStartingPointLng,
-  );
+  final LocationCoordinate? startingPoint;
+  final Uri directionsUri;
 
-  Uri get directionsUri => directionsUriForEvent(event);
+  bool get hasExactStartingPoint => startingPoint != null;
 
   String get locationName => event.locationName;
 

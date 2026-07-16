@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-16T07:01:49.176Z",
-  "baseRef": "origin/main",
+  "generatedAt": "2026-07-16T16:32:03.285Z",
+  "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
   "current": "working tree",
@@ -10,16 +10,16 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 1,
-    "addedPublicWidgetClasses": 1,
+    "addedWidgetClasses": 2,
+    "addedPublicWidgetClasses": 2,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
     "movedWidgetClasses": 0,
     "movedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 1,
+    "coveredNewWidgets": 2,
     "unresolved": 0,
     "widgetsByStatus": {
-      "covered": 1
+      "covered": 2
     },
     "helpersByStatus": {},
     "issues": {}
@@ -28,11 +28,23 @@
   "movedWidgetHelpers": [],
   "addedWidgets": [
     {
-      "name": "UserAnalyticsDataCoveragePanel",
+      "name": "CreateClubStepHeader",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 409,
-      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "line": 4,
+      "file": "lib/hosts/presentation/club_management/create/widgets/create_club_step_header.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubProfileCard",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",

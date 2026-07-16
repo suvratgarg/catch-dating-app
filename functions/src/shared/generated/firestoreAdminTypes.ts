@@ -247,6 +247,7 @@ export interface EventSuccessDefaults {
    * @maxItems 24
    */
   selectedModuleIds?: string[];
+  moduleSelectionConfigured?: boolean;
   structureConfig?: EventSuccessStructureConfig;
   hostGoal?: string;
   wingmanRequestsEnabled?: boolean;

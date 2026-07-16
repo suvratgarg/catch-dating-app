@@ -107,16 +107,10 @@
         {
           "path": "lib/user_profile/presentation/profile_screen.dart",
           "requires": [
-            {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 1},
-            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
-            {"text": "includeTerminalPadding: true", "minimumOccurrences": 1}
-          ]
-        },
-        {
-          "path": "lib/core/widgets/catch_tabbed_screen.dart",
-          "requires": [
             {"text": "bottom: false", "minimumOccurrences": 1},
-            {"text": "if (widget.includeTerminalPadding)", "minimumOccurrences": 1},
+            {"text": "NestedScrollView", "minimumOccurrences": 1},
+            {"text": "ProfileTabScrollView", "minimumOccurrences": 1},
+            {"text": "managesFieldVisibility: true", "minimumOccurrences": 1},
             {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
           ]
         },

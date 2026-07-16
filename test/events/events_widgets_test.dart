@@ -414,8 +414,8 @@ void main() {
 
       expect(state.event, event);
       expect(state.enableNetworkTiles, isFalse);
-      expect(state.startingPoint.latitude, 22.7196);
-      expect(state.startingPoint.longitude, 75.8577);
+      expect(state.startingPoint?.latitude, 22.7196);
+      expect(state.startingPoint?.longitude, 75.8577);
       expect(state.locationName, 'Race Course Road main gate');
       expect(
         state.locationNotes,

@@ -5,6 +5,9 @@ import 'package:catch_dating_app/event_success/domain/event_success_defaults.dar
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:flutter/material.dart';
 
+typedef EventSuccessDefaultsUpdate =
+    EventSuccessDefaults Function(EventSuccessDefaults current);
+
 /// Create-event panel that lets the host enable the live event guide and tune
 /// the saved defaults inline. The configuration UI is shared with the Host
 /// Manage Setup tab via [EventSuccessSetupBody].
@@ -14,15 +17,17 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     required this.defaults,
     required this.activityKind,
     required this.onChanged,
+    required this.title,
+    required this.subtitle,
+    this.onImmediateChanged,
     this.eventFormat,
     this.targetAttendeeCount,
-    this.title = 'Live event guide',
-    this.subtitle = 'Choose whether new events should get a saved live plan.',
   });
 
   final EventSuccessDefaults defaults;
   final ActivityKind activityKind;
   final ValueChanged<EventSuccessDefaults> onChanged;
+  final ValueChanged<EventSuccessDefaultsUpdate>? onImmediateChanged;
   final EventFormatSnapshot? eventFormat;
   final int? targetAttendeeCount;
   final String title;
@@ -38,6 +43,15 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     );
     final draft = normalized.toDraft(targetAttendeeCount: targetAttendeeCount);
 
+    void emitImmediate(EventSuccessDefaultsUpdate update) {
+      final callback = onImmediateChanged;
+      if (callback != null) {
+        callback(update);
+        return;
+      }
+      onChanged(update(normalized));
+    }
+
     return CatchSectionList(
       children: [
         CatchSection.fieldRows(
@@ -48,7 +62,7 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
             bodyMaxLines: 5,
             value: normalized.enabled,
             onChanged: (value) =>
-                onChanged(normalized.copyWith(enabled: value)),
+                emitImmediate((current) => current.copyWith(enabled: value)),
           ),
         ),
         if (normalized.enabled)
@@ -82,6 +96,23 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
                 ),
               );
             },
+            onImmediateDraftChanged: (updateDraft) => emitImmediate((current) {
+              final currentNormalized = current.normalizedForFormat(
+                format,
+                targetAttendeeCount: targetAttendeeCount,
+              );
+              final currentDraft = currentNormalized.toDraft(
+                targetAttendeeCount: targetAttendeeCount,
+              );
+              return EventSuccessDefaults.fromDraft(
+                updateDraft(currentDraft),
+                enabled: currentNormalized.enabled,
+                attendeePrompt: currentNormalized.attendeePrompt,
+              ).normalizedForFormat(
+                format,
+                targetAttendeeCount: targetAttendeeCount,
+              );
+            }),
             onAttendeePromptChanged: (value) {
               final trimmed = value.trim();
               onChanged(

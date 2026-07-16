@@ -1133,10 +1133,8 @@ abstract final class CatchOpacity {
   static const double photoDragGhost = 0.35;
   static const double profileInfoDivider = 0.62;
 
-  /// Legacy low-contrast inset divider treatment used outside the canonical
-  /// FieldSection contract. CatchDividerRole.fieldSection uses the full
-  /// `line` token; CatchDividerRole.fieldRow keeps this muted compatibility
-  /// treatment for existing non-FieldSection rows.
+  /// Low-contrast inset treatment for boundaries between sibling field/list
+  /// rows. Outer section rules keep the full `line` token.
   static const double fieldRowDivider = 0.38;
   static const double profileProgressTrack = 0.70;
   static const double profileShadowDark = 0.34;

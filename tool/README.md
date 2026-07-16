@@ -128,6 +128,47 @@ Architecture candidates are exhaustively reviewed in
 cycles, unresolved provider-internal references, new unreviewed relationships,
 and obsolete review entries.
 
+## Repository Hygiene
+
+`tool/repository_root_manifest.json` is the exact ownership contract for every
+repository-root entry. The gate rejects unclassified or multiply classified
+entries, prohibited roots, unsafe cleanup targets, and machine-local Markdown
+links. The cleaner is dry-run by default and refuses tracked, protected,
+symlinked, or path-escaping targets; mutation additionally requires an explicit
+scope.
+
+```sh
+node tool/check_repository_root_hygiene.mjs
+node --test tool/check_repository_root_hygiene.test.mjs
+node tool/repository_hygiene.mjs --scope evidence --json
+# Apply only after reviewing the dry-run output:
+node tool/repository_hygiene.mjs --scope evidence --apply --json
+```
+
+## Git Reconciliation And Document-Version Gates
+
+Large reconciliation merges use an exact four-tree classifier. It distinguishes
+discarded sides from equivalent resolutions and requires a reasoned receipt for
+every exact discard in strict mode:
+
+```sh
+node tool/git/audit_merge_drops.mjs \
+  --base <merge-base> --ours <pre-merge-ours> \
+  --theirs <integrated-tip> --merged <result> \
+  --receipt <receipt.json> --strict --json
+node --test tool/git/audit_merge_drops.test.mjs
+```
+
+Governed document versions may increase or remain unchanged, but may not
+decrease or silently lose their catalog entry/path metadata. The target defaults
+to the working tree:
+
+```sh
+node tool/docs/check_doc_version_monotonic.mjs --base origin/main
+node tool/docs/check_doc_version_monotonic.mjs --self-test
+node --test tool/docs/check_doc_version_monotonic.test.mjs
+```
+
 ## Remote Ops Manifest
 
 `tool/remote_ops_manifest.json` is the remote-operations index. It does not
@@ -295,9 +336,17 @@ node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:react-query-state
 node tool/run.mjs check web:shared-ui-adoption
 node tool/run.mjs check web:react-controller-test-targets
+node tool/run.mjs check web:react-dependency-graph
 npm run web:ui:test
 npm run web:ui:typecheck
 ```
+
+`web:react-dependency-graph` generates the reviewable website/admin/web-ui
+topology under `docs/generated/react_dependency_graph/`. It blocks unresolved
+repo-local imports, direct website-to-admin dependencies, and stale generated
+artifacts while keeping current strongly connected components visible as
+report-only debt. Refresh deliberately with
+`node tool/web/react_dependency_graph.mjs --write`.
 
 `web:shared-ui-adoption` reconciles the cross-surface decision tracker with
 website/admin runtime exports and `@catch/web-ui`. Adopted entries must be used
@@ -448,6 +497,16 @@ Short Flutter UI copy is owned by `lib/l10n/app_en.arb`. Structured content
 that must remain usable by synchronous domain models is owned by locale JSON
 under `copy/` and generates deterministic Dart. For Event Success
 questionnaires:
+
+```sh
+node tool/copy/check_l10n_key_usage.mjs --write-inventory
+node tool/run.mjs check copy:l10n-key-usage
+node --test tool/copy/check_l10n_key_usage.test.mjs
+```
+
+The key-usage inventory records exact handwritten Dart references, excludes
+generated Dart/comments/string contents, and fails on any new orphan or stale
+checked evidence. Baseline reductions pass; baseline growth is rejected.
 
 ```sh
 node tool/copy/sync_event_success_questionnaires.mjs --write

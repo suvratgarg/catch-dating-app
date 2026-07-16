@@ -1094,8 +1094,7 @@ void main() {
       of: aboutSection,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider &&
-            widget.role == CatchDividerRole.fieldSection,
+            widget is CatchDivider && widget.role == CatchDividerRole.fieldRow,
       ),
     );
     expect(dividers, findsWidgets);

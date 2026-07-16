@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
-  "version": 1,
-  "updated": "2026-07-16",
+  "version": 2,
+  "updated": "2026-07-17",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -1541,6 +1541,13 @@
             "dartType": "IconData?"
           },
           {
+            "name": "leading",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Caller-owned semantic leading content for read, content, navigation, and action rows. Mutually exclusive with icon."
+          },
+          {
             "name": "control",
             "type": "widget",
             "required": false,
@@ -1723,6 +1730,7 @@
         "states": [
           "row-value",
           "row-title",
+          "custom-leading",
           "content-row-2-3-clamp",
           "value-line",
           "chevron",
@@ -1768,6 +1776,11 @@
           "add"
         ],
         "slots": [
+          {
+            "name": "leading",
+            "kind": "optional-leading-widget",
+            "notes": "Use for semantic data blocks that cannot be expressed by a single icon."
+          },
           {
             "name": "control",
             "kind": "optional-expanded-widget",
@@ -2399,6 +2412,7 @@
           "CatchField",
           "CatchFieldTokens",
           "CatchDividerRole.fieldSection",
+          "CatchDividerRole.fieldRow",
           "CatchKicker",
           "CatchSectionHeader",
           "CatchSectionLabel",
@@ -2513,7 +2527,7 @@
           "Use divided sections for top-level information groups when nested rounded rectangles would add visual clutter.",
           "Use containedFieldRows for the handoff field surface: it owns a clipped 14 px radius, neutral line border, explicit section-focus/error border, inset internal rules, and no generic elevation. Descendant field focus remains child-owned; the section publishes a one-hairline active-overlay overlap so child chrome and the outer perimeter share identical left/right geometry, then paints the section edge last. Its optional title, right-aligned count, and trailing slot use 14 px / 16 px / 2 px in-card header padding; its optional footer stays inside the border with 2 px / 16 px / 12 px padding. Divided fieldRows footers render outside the rows with 8 px top padding and the field-caption style. Headerless prompt cards begin directly with their first field row. Use contained for non-field carded content that needs one bounded surface.",
           "Use plain sections for compact titled blocks without a container or divider.",
-          "The section owns the outer grouping and internal dividers. Divided field sections use the full line token so an active field's 10 px bleed can cover the shared boundary. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
+          "The section owns the outer grouping and internal dividers. Outer section rules use the full line token; boundaries between sibling field rows use the muted fieldRow tone and remain coverable by an active field's 10 px bleed. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
           "Divided and contained field-row headers accept title, count, and trailing content. Contained footers use 2 px top padding; divided footers use 8 px. Field-section kickers use the exact 11 px, 600-weight, 1.43 px tracking treatment.",
           "Section headers, section labels, day headers, vertical sections, and horizontal rails are public members of this grouping family, not separate section systems."
         ]
@@ -4272,164 +4286,6 @@
       }
     },
     {
-      "id": "catch.segmented_control",
-      "name": "CatchSegmentedControl",
-      "status": "active",
-      "kind": "primitive",
-      "summary": "Pill-style segmented selector for two or more peer modes.",
-      "dart": {
-        "symbol": "CatchSegmentedControl",
-        "file": "lib/core/widgets/catch_segmented_control.dart",
-        "constructors": [
-          "CatchSegmentedControl",
-          "CatchSegment"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/SegmentedControl",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "SegmentedControl",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "segments",
-            "type": "generic-list",
-            "required": true,
-            "dartType": "List<CatchSegment<T>>"
-          },
-          {
-            "name": "selected",
-            "type": "object",
-            "required": true,
-            "dartType": "T"
-          },
-          {
-            "name": "onChanged",
-            "type": "callback",
-            "required": true,
-            "dartType": "ValueChanged<T>"
-          },
-          {
-            "name": "expanded",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "style",
-            "type": "enum",
-            "required": false,
-            "default": "filled",
-            "dartType": "CatchSegmentedControlStyle",
-            "values": [
-              "filled",
-              "surface"
-            ]
-          },
-          {
-            "name": "size",
-            "type": "enum",
-            "required": false,
-            "default": "regular",
-            "dartType": "CatchSegmentedControlSize",
-            "values": [
-              "compact",
-              "regular"
-            ]
-          },
-          {
-            "name": "labelStyle",
-            "type": "enum",
-            "required": false,
-            "default": "standard",
-            "dartType": "CatchSegmentedControlLabelStyle",
-            "values": [
-              "standard",
-              "mono"
-            ]
-          }
-        ],
-        "states": [
-          "default",
-          "selected",
-          "expanded",
-          "with-icons",
-          "surface-style",
-          "compact-mono"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s1",
-          "space.s2",
-          "space.s3",
-          "space.micro6",
-          "theme.light.color.raised",
-          "theme.light.color.ink",
-          "theme.light.color.ink2",
-          "theme.light.color.surface",
-          "theme.light.color.line"
-        ],
-        "dartRoles": [
-          "CatchRadius.segmentedOuter",
-          "CatchRadius.segmentedInner",
-          "CatchMotion.micro",
-          "CatchMotion.easeInOutCurve",
-          "CatchElevation.segmentedSelected",
-          "CatchTextStyles.sectionTitle",
-          "CatchTextStyles.monoLabel",
-          "CatchIcon.control"
-        ],
-        "goldens": [],
-        "members": [
-          {
-            "id": "catch.segmented_control.button",
-            "symbol": "CatchSegmentButton",
-            "file": "lib/core/widgets/catch_segmented_control.dart",
-            "summary": "Direct segmented-control button renderer used for each selectable segment.",
-            "states": [
-              "selected",
-              "unselected",
-              "expanded-surface"
-            ]
-          }
-        ]
-      },
-      "handoff": {
-        "allowedChildren": [],
-        "notes": [
-          "Use only for peer mode switching, not for multi-select filters."
-        ]
-      },
-      "governance": {
-        "role": "atom",
-        "canonicalFamily": "catch.segmented_control",
-        "publicApi": true,
-        "stateOwnership": "local-ui-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "internal-only",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
-      },
-      "surfaces": {
-        "flutter": "CatchSegmentedControl",
-        "admin": "SegmentedControl"
-      }
-    },
-    {
       "id": "catch.surface",
       "name": "CatchSurface",
       "status": "active",
@@ -6119,7 +5975,19 @@
           "CatchLayout.distanceRingStrokeWidth",
           "CatchTextStyles.monoLabelS"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.distance_ring.label",
+            "symbol": "CatchDistanceRingLabel",
+            "summary": "Tappable mono edge label shared by static and native geographic distance rings.",
+            "states": [
+              "label",
+              "tappable"
+            ],
+            "file": "lib/core/widgets/catch_distance_ring.dart"
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
@@ -6439,7 +6307,7 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Keep separate from CatchSegmentedControl: this is an underline scope row, not a filled segmented control."
+          "Use as the canonical single-select scope and mode row across Flutter surfaces, including lifecycle, audience, granularity, and workspace section switching."
         ]
       },
       "governance": {
@@ -6454,7 +6322,8 @@
         "reviewPolicy": "contract-page-canonical"
       },
       "surfaces": {
-        "flutter": "CatchOptionGroup"
+        "flutter": "CatchOptionGroup",
+        "admin": "SegmentedControl"
       }
     },
     {
@@ -6531,7 +6400,20 @@
           "CatchOption",
           "CatchLayout.tabRailHeight"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.tab_rail.controller_rail",
+            "symbol": "CatchTabControllerRail",
+            "file": "lib/core/widgets/catch_tab_rail.dart",
+            "summary": "Binds a route-owned TabController to the canonical CatchTabRail, including pager interpolation.",
+            "states": [
+              "first-selected",
+              "second-selected",
+              "swipe-interpolated"
+            ]
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [
@@ -7330,13 +7212,12 @@
       "name": "CatchBottomDock",
       "status": "active",
       "kind": "composite",
-      "summary": "Anchored bottom utility and CTA dock for chat inputs, filter actions, booking footers, and compact controls above the device safe area.",
+      "summary": "Anchored bottom utility surface for chat inputs, filter actions, and compact controls above the device safe area.",
       "dart": {
         "symbol": "CatchBottomDock",
         "file": "lib/core/widgets/catch_bottom_dock.dart",
         "constructors": [
-          "CatchBottomDock",
-          "CatchBottomDock.cta"
+          "CatchBottomDock"
         ]
       },
       "design": {
@@ -7360,8 +7241,8 @@
           {
             "name": "child",
             "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
+            "required": true,
+            "dartType": "Widget"
           },
           {
             "name": "padding",
@@ -7375,54 +7256,11 @@
             "required": false,
             "default": true,
             "dartType": "bool"
-          },
-          {
-            "name": "label",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "onPressed",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
-          },
-          {
-            "name": "leadingContent",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
-          },
-          {
-            "name": "isLoading",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "catchLine",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "footnote",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
           }
         ],
         "states": [
           "custom",
-          "custom-no-safe-area",
-          "cta",
-          "cta-leading-content",
-          "cta-catch-line",
-          "cta-footnote",
-          "loading",
-          "disabled"
+          "custom-no-safe-area"
         ],
         "slots": [
           {
@@ -7433,56 +7271,26 @@
               "catch.search_field",
               "catch.icon_button"
             ]
-          },
-          {
-            "name": "leadingContent",
-            "kind": "cta-leading-content",
-            "allowedComponents": [
-              "catch.badge",
-              "catch.metric_strip"
-            ]
           }
         ],
         "tokens": [
-          "space.s2",
           "space.s3",
           "space.s4",
-          "theme.light.color.ink2",
-          "theme.light.color.ink3",
           "theme.light.color.line",
           "theme.light.color.surface"
         ],
-        "dartRoles": [
-          "CatchBottomDockVariant",
-          "CatchButton",
-          "CatchIcons.sparkle",
-          "CatchTextStyles.monoLabel"
-        ],
+        "dartRoles": [],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.bottom_dock.cta",
-            "symbol": "CatchBottomDockCta",
-            "summary": "Direct sticky CTA footer renderer used by CatchBottomDock.cta.",
-            "states": [
-              "default",
-              "leading-content",
-              "catch-line-footnote"
-            ],
-            "file": "lib/core/widgets/catch_bottom_dock.dart"
-          }
-        ]
+        "members": []
       },
       "handoff": {
         "allowedChildren": [
           "catch.button",
           "catch.search_field",
-          "catch.icon_button",
-          "catch.badge",
-          "catch.metric_strip"
+          "catch.icon_button"
         ],
         "notes": [
-          "Use CatchBottomDock for anchored utility chrome and sticky CTA footers.",
+          "Use CatchBottomDock only for generic anchored utility chrome. Primary screen CTAs route through CatchBottomAction.",
           "Use CatchTabBar for bottom navigation; do not merge tab navigation behavior into this utility dock."
         ]
       },
@@ -7493,7 +7301,7 @@
         "stateOwnership": "slot-state-only",
         "asyncOwnership": "none",
         "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
+        "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
       },
@@ -7761,6 +7569,12 @@
             "dartType": "String"
           },
           {
+            "name": "value",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
             "name": "count",
             "type": "number",
             "required": false,
@@ -7783,6 +7597,7 @@
         "states": [
           "label",
           "label-with-icon",
+          "label-with-value",
           "with-count",
           "semantic-label",
           "text-scale-truncation"
@@ -9166,6 +8981,20 @@
             ]
           },
           {
+            "id": "catch.event_card.date_rail",
+            "symbol": "EventDateRailCard",
+            "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+            "summary": "Compact list and map DateTicket with an activity rail, organizer and event identity hierarchy, one optional context block, and a trailing price decision row.",
+            "states": [
+              "single-free",
+              "single-paid",
+              "strip-first",
+              "strip-middle",
+              "strip-last",
+              "text-scale"
+            ]
+          },
+          {
             "id": "catch.event_card.event_thumbnail.activity_fallback",
             "symbol": "CatchEventThumbnailActivityFallback",
             "file": "lib/core/widgets/catch_event_thumbnail.dart",
@@ -9778,10 +9607,10 @@
             ]
           },
           {
-            "id": "catch.event_detail_sections.policy_summary",
-            "symbol": "EventDetailPolicySummary",
-            "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-            "summary": "Good-to-know policy summary for requirements, expectations, booking, cancellation, and settlement rows.",
+            "id": "catch.event_detail_sections.good_to_know",
+            "symbol": "EventDetailGoodToKnowList",
+            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "summary": "Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows.",
             "states": [
               "requirements",
               "expectations",

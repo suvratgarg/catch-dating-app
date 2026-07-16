@@ -4306,6 +4306,9 @@ export const clubDocumentSchema = {
                 "maxLength": 120
               }
             },
+            "moduleSelectionConfigured": {
+              "type": "boolean"
+            },
             "structureConfig": {
               "type": "object",
               "additionalProperties": false,
@@ -4507,6 +4510,9 @@ export const clubDocumentSchema = {
                   "minLength": 1,
                   "maxLength": 120
                 }
+              },
+              "moduleSelectionConfigured": {
+                "type": "boolean"
               },
               "structureConfig": {
                 "type": "object",
@@ -16869,6 +16875,9 @@ export const createClubCallablePayloadSchema = {
                 "maxLength": 120
               }
             },
+            "moduleSelectionConfigured": {
+              "type": "boolean"
+            },
             "structureConfig": {
               "type": "object",
               "additionalProperties": false,
@@ -17070,6 +17079,9 @@ export const createClubCallablePayloadSchema = {
                   "minLength": 1,
                   "maxLength": 120
                 }
+              },
+              "moduleSelectionConfigured": {
+                "type": "boolean"
               },
               "structureConfig": {
                 "type": "object",
@@ -18031,6 +18043,9 @@ export const updateClubCallablePayloadSchema = {
                     "maxLength": 120
                   }
                 },
+                "moduleSelectionConfigured": {
+                  "type": "boolean"
+                },
                 "structureConfig": {
                   "type": "object",
                   "additionalProperties": false,
@@ -18232,6 +18247,9 @@ export const updateClubCallablePayloadSchema = {
                       "minLength": 1,
                       "maxLength": 120
                     }
+                  },
+                  "moduleSelectionConfigured": {
+                    "type": "boolean"
                   },
                   "structureConfig": {
                     "type": "object",
@@ -22518,6 +22536,9 @@ export const createEventCallablePayloadSchema = {
             "minLength": 1,
             "maxLength": 120
           }
+        },
+        "moduleSelectionConfigured": {
+          "type": "boolean"
         },
         "structureConfig": {
           "type": "object",

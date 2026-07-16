@@ -59,8 +59,8 @@ class CreateEventPrefill {
         paceName: event.pace.name,
         meetingPoint: event.locationName,
         locationDetails: event.locationNotes,
-        meetingLocationAddress: location.address,
-        meetingLocationPlaceId: location.placeId,
+        meetingLocationAddress: location?.address,
+        meetingLocationPlaceId: location?.placeId,
         startingPointLat: event.effectiveStartingPointLat,
         startingPointLng: event.effectiveStartingPointLng,
         // A repeat is a new scheduling decision. Preserve the familiar time

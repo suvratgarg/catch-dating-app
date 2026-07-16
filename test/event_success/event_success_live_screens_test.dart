@@ -152,10 +152,10 @@ void main() {
     expect(find.text('Setup'), findsWidgets);
     expect(find.byType(CatchOptionGroup<EventSuccessHostTab>), findsOneWidget);
     expect(find.text('Target attendees'), findsOneWidget);
-    expect(find.text('Group flow'), findsWidgets);
-    expect(find.text('Host goal'), findsOneWidget);
+    expect(find.text('How the room is grouped'), findsWidgets);
+    expect(find.text('Your goal for the event'), findsOneWidget);
     expect(find.text('Add attendee prompt · Optional'), findsOneWidget);
-    expect(find.text('Recommended setup'), findsOneWidget);
+    expect(find.text('Your plan'), findsOneWidget);
     expect(find.text('WHEN PEOPLE ARRIVE'), findsOneWidget);
     expect(find.text('DURING THE EVENT'), findsOneWidget);
     expect(find.text('AFTER THE EVENT'), findsOneWidget);

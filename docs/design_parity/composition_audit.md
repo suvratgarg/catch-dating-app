@@ -1,6 +1,6 @@
 ---
 doc_id: composition_audit
-version: 0.1.7
+version: 0.1.8
 updated: 2026-07-16
 owner: design_parity_review
 status: active
@@ -303,7 +303,8 @@ copy uses `CatchTextStyles.proseL` instead of overriding `bodyLead`'s weight.
 ### C4. `CatchClubDock` — wrong shell, wrong name `[done f32bfd2ee]`
 
 341 lines hand-rolling its own SafeArea/ColoredBox dock shell while the
-event side rides `CatchBottomDock.cta`. Rebuild on `CatchBottomDock` (keep
+event side then used the now-retired `CatchBottomDock.cta`. Rebuild the club
+utility surface on `CatchBottomDock` (keep
 DockCount/DockBell content). LEXICON: `Catch*` is reserved for core
 primitives; this is a clubs feature widget — rename to `ClubDetailDock`
 (with the usual deprecated typedef for one release if usages are wide).
@@ -314,6 +315,9 @@ bottom safe-area handling to `CatchBottomDock`, keeps `DockCount` and
 `DockBell` as feature content, and carries deprecated `CatchClubDock` /
 `CatchClubDockState` typedefs for one release. Its full state matrix now lives
 under `[Club Detail]/Dock` in Widgetbook instead of Core primitives.
+Primary screen CTAs separately route through `CatchBottomAction`; the duplicate
+`CatchBottomDock.cta`/`CatchBottomDockCta` geometry family was retired during
+the 2026-07-16 reconciliation pass.
 
 ### C5. Schedule empty state over-tuning `[done ea3f105ef]`
 

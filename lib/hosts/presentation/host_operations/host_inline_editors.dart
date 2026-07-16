@@ -2,8 +2,16 @@ part of '../host_operations_screen.dart';
 
 mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
     on ConsumerState<T> {
+  bool _ownsClubMutation = false;
+
   bool get isSaving =>
       ref.read(HostClubEditController.updateClubMutation).isPending;
+
+  bool get ownsClubMutation => _ownsClubMutation;
+
+  void clearClubMutationOwnership() {
+    _ownsClubMutation = false;
+  }
 
   Future<bool> saveClubPatch({
     required String clubId,
@@ -12,6 +20,7 @@ mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
     if (isSaving) return false;
     if (patch.isEmpty) return true;
 
+    _ownsClubMutation = true;
     try {
       await HostClubEditController.updateClubMutation.run(
         ref,
@@ -19,6 +28,7 @@ mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
             .get(hostClubEditControllerProvider)
             .updateClub(clubId: clubId, patch: patch),
       );
+      _ownsClubMutation = false;
       return true;
     } catch (_) {
       return false;
@@ -100,6 +110,10 @@ class _HostInlineTextEntryEditorState
     if (oldWidget.fieldName != widget.fieldName ||
         oldWidget.currentValue != widget.currentValue) {
       _controller.text = widget.currentValue;
+      clearClubMutationOwnership();
+    }
+    if (oldWidget.isExpanded && !widget.isExpanded) {
+      clearClubMutationOwnership();
     }
   }
 
@@ -111,12 +125,16 @@ class _HostInlineTextEntryEditorState
   }
 
   void _clearValidationError() {
-    if (_validationError == null) return;
-    setState(() => _validationError = null);
+    if (_validationError == null && !ownsClubMutation) return;
+    setState(() {
+      _validationError = null;
+      clearClubMutationOwnership();
+    });
   }
 
   void _cancel() {
     _controller.text = widget.currentValue;
+    clearClubMutationOwnership();
     widget.onCancel();
   }
 
@@ -179,11 +197,13 @@ class _HostInlineTextEntryEditorState
       enabled: !saving,
       error:
           _validationError ??
-          mutationErrorMessage(
-            saveMutation,
-            l10n: context.l10n,
-            context: AppErrorContext.club,
-          ),
+          (ownsClubMutation
+              ? mutationErrorMessage(
+                  saveMutation,
+                  l10n: context.l10n,
+                  context: AppErrorContext.club,
+                )
+              : null),
       keyboardType: widget.keyboardType,
       textInputAction: widget.maxLines == 1
           ? TextInputAction.done
@@ -271,11 +291,18 @@ class _HostInlineOptionEditorState<T>
     if (oldWidget.fieldName != widget.fieldName ||
         oldWidget.currentValue != widget.currentValue) {
       _selected = widget.currentValue;
+      clearClubMutationOwnership();
+    }
+    if (oldWidget.isExpanded && !widget.isExpanded) {
+      clearClubMutationOwnership();
     }
   }
 
   void _cancel() {
-    setState(() => _selected = widget.currentValue);
+    setState(() {
+      _selected = widget.currentValue;
+      clearClubMutationOwnership();
+    });
     widget.onCancel();
   }
 
@@ -310,11 +337,13 @@ class _HostInlineOptionEditorState<T>
         if (expanded != widget.isExpanded) widget.onTap();
       },
       isLoading: saving,
-      error: mutationErrorMessage(
-        saveMutation,
-        l10n: context.l10n,
-        context: AppErrorContext.club,
-      ),
+      error: ownsClubMutation
+          ? mutationErrorMessage(
+              saveMutation,
+              l10n: context.l10n,
+              context: AppErrorContext.club,
+            )
+          : null,
       control: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -335,7 +364,10 @@ class _HostInlineOptionEditorState<T>
                   selected: _selected == option.value,
                   accent: option.accentColor,
                   enabled: !saving,
-                  onChanged: (_) => setState(() => _selected = option.value),
+                  onChanged: (_) => setState(() {
+                    _selected = option.value;
+                    clearClubMutationOwnership();
+                  }),
                 ),
             ],
           ),
@@ -415,6 +447,10 @@ class _HostInlineAgeRangeEditorState
         oldWidget.hostDefaults.eventPolicy.maxAge != _policy.maxAge) {
       _minAgeController.text = _optionalMinAgeText(_policy.minAge);
       _maxAgeController.text = _optionalMaxAgeText(_policy.maxAge);
+      clearClubMutationOwnership();
+    }
+    if (oldWidget.isExpanded && !widget.isExpanded) {
+      clearClubMutationOwnership();
     }
   }
 
@@ -428,13 +464,17 @@ class _HostInlineAgeRangeEditorState
   }
 
   void _clearValidationError() {
-    if (_validationError == null) return;
-    setState(() => _validationError = null);
+    if (_validationError == null && !ownsClubMutation) return;
+    setState(() {
+      _validationError = null;
+      clearClubMutationOwnership();
+    });
   }
 
   void _cancel() {
     _minAgeController.text = _optionalMinAgeText(_policy.minAge);
     _maxAgeController.text = _optionalMaxAgeText(_policy.maxAge);
+    clearClubMutationOwnership();
     widget.onCancel();
   }
 
@@ -483,11 +523,13 @@ class _HostInlineAgeRangeEditorState
       isLoading: saving,
       error:
           _validationError ??
-          mutationErrorMessage(
-            saveMutation,
-            l10n: context.l10n,
-            context: AppErrorContext.club,
-          ),
+          (ownsClubMutation
+              ? mutationErrorMessage(
+                  saveMutation,
+                  l10n: context.l10n,
+                  context: AppErrorContext.club,
+                )
+              : null),
       control: Row(
         children: [
           Expanded(

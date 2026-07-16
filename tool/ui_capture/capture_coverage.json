@@ -167,10 +167,11 @@
         "event_location_map_loading",
         "event_location_map_error",
         "event_location_map_not_found",
+        "event_location_map_no_coordinate",
         "event_location_map_text_scale_2",
         "event_location_map_reduced_motion"
       ],
-      "reason": "Event location map captures cover the required pinned map, route loading, route error, event not found, text scale, reduced motion, and paired light/dark output with network tiles disabled."
+      "reason": "Event location map captures cover the required pinned map, route loading, route error, event not found, missing exact coordinates, text scale, reduced motion, and paired light/dark output with network tiles disabled."
     },
     {
       "routeId": "dashboardScreen",
@@ -710,25 +711,10 @@
     },
     {
       "routeId": "hostEditClubScreen",
-      "status": "captured",
+      "status": "alias",
       "priority": "P2",
-      "captureIds": [
-        "edit_club_basics",
-        "edit_club_validation_error",
-        "edit_club_media_replacement",
-        "edit_club_submit_pending",
-        "edit_club_submit_error",
-        "edit_club_route_loading",
-        "edit_club_route_error",
-        "edit_club_route_offline",
-        "edit_club_not_found",
-        "edit_club_cohost_media",
-        "edit_club_forbidden",
-        "edit_club_text_scale_2",
-        "edit_club_reduced_motion",
-        "edit_club_light_dark"
-      ],
-      "reason": "Host app edit-club route now has deterministic captures for owner edit, validation errors, media replacement, submit pending/error, route loading/error/offline/not-found, co-host media-only mode, forbidden identity, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
+      "canonicalRouteId": "hostOrganizerScreen",
+      "reason": "The retired edit-club location redirects to the selected organizer Edit tab, which is the canonical club editor and owns identity, contact, media, advanced policy, and Event Success defaults."
     },
     {
       "routeId": "hostCreateEventScreen",
@@ -959,7 +945,7 @@
         "host_settings_clubs_loading",
         "host_settings_clubs_error",
         "host_settings_clubs_offline",
-        "host_settings_profile_editor_sheet",
+        "host_settings_inline_profile_edit",
         "host_settings_save_profile_pending",
         "host_settings_save_profile_error",
         "host_settings_save_profile_offline",

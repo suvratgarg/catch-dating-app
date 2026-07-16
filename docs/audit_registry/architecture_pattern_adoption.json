@@ -1,5 +1,5 @@
 {
-  "version": "1.5.35",
+  "version": "1.5.36",
   "updated": "2026-07-16",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -1245,7 +1245,7 @@
           "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "path": "lib/hosts/presentation/host_operations/host_route_providers.dart",
           "role": "host Clubs uses per-club, per-page keyed scroll owners and terminals, including the embedded consumer Club Detail preview",
           "status": "aligned",
           "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
@@ -1358,6 +1358,63 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "notes": "The app root may activate feature startup work. It must not make core own a feature repository or profile stream."
+    },
+    {
+      "id": "ARCH-PROVIDER-CODEGEN-001",
+      "name": "Generated auto-dispose provider family",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-provider-codegen-001-generated-auto-dispose-provider-family",
+      "prototypeFiles": [
+        "lib/clubs/data/club_name_lookup.dart",
+        "lib/clubs/data/club_name_lookup.g.dart",
+        "test/architecture/generated_provider_family_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/clubs/data/club_name_lookup.dart",
+          "role": "reference generated Future provider family keyed by a value-equality club-id query",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        },
+        {
+          "path": "lib/event_success/event_success_companion_clock.dart",
+          "role": "generated auto-dispose Stream provider for the Event Success companion clock",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        },
+        {
+          "path": "lib/explore/data/explore_recommendations_repository.dart",
+          "role": "generated Future provider family keyed by a value-equality Explore recommendation query",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        },
+        {
+          "path": "lib/public_profile/data/public_profiles_lookup.dart",
+          "role": "generated Future provider family keyed by a value-equality batched public-profile query",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        },
+        {
+          "path": "test/architecture/generated_provider_family_test.dart",
+          "role": "ProviderContainer proof that equivalent query keys and generated override contracts remain stable across all four adopters",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        }
+      ],
+      "exceptions": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "reason": "_hostClubsForUserProvider remains the reviewed private part-file adapter exception recorded in provider_graph_reviews.json."
+        }
+      ],
+      "requiredBackPropagation": "When a handwritten feature-owned async provider family is migrated, preserve its provider name, family call shape, value-equality key semantics, lifecycle, .future access, and override contracts; regenerate adjacent output and remove the matching planned manual-provider review decision.",
+      "requiredChecks": [
+        "flutter test test/architecture/generated_provider_family_test.dart",
+        "flutter analyze --no-fatal-infos lib/clubs/data/club_name_lookup.dart lib/event_success/event_success_companion_clock.dart lib/explore/data/explore_recommendations_repository.dart lib/public_profile/data/public_profiles_lookup.dart test/architecture/generated_provider_family_test.dart",
+        "dart run tool/architecture/provider_graph.dart --check",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "Generated function providers are auto-dispose by default. KeepAlive remains an explicit reviewed lifecycle decision with a rationale marker."
     }
   ]
 }

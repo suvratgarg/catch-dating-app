@@ -309,6 +309,39 @@ void main() {
       expect(defaults.contextualOpenersEnabled, isFalse);
     });
 
+    test('explicit empty defaults stay empty and omit platform primitives', () {
+      const empty = EventSuccessDefaults(
+        enabled: true,
+        moduleSelectionConfigured: true,
+      );
+      final normalized = empty.normalizedForActivity(ActivityKind.socialRun);
+
+      expect(normalized.selectedModuleIds, isEmpty);
+
+      final recommended = EventSuccessDefaults.recommendedForActivity(
+        ActivityKind.socialRun,
+        enabled: true,
+      );
+      expect(recommended.selectedModuleIds, isNot(contains('qr_check_in')));
+      expect(recommended.selectedModuleIds, isNot(contains('safety_controls')));
+      expect(recommended.selectedModuleIds, isNot(contains('crowd_balance')));
+    });
+
+    test('guided rotations normalize to the supported pair topology', () {
+      final draft = EventSuccessHostDraft.fromActivity(
+        ActivityKind.singlesMixer,
+      ).copyWith(
+        structureConfig: const EventSuccessStructureConfig(
+          unitKind: EventSuccessUnitKind.teams,
+          unitSize: 6,
+        ),
+      ).withModuleSelection(EventSuccessModuleCatalog.guidedRotations.id, true);
+
+      expect(draft.structureConfig.unitKind, EventSuccessUnitKind.pairs);
+      expect(draft.structureConfig.unitSize, 2);
+      expect(draft.structureConfig.rotationIntervalMinutes, 15);
+    });
+
     test('activity profiles keep impossible toggles out of defaults', () {
       final racket = EventSuccessActivityProfile.forActivity(
         ActivityKind.pickleball,

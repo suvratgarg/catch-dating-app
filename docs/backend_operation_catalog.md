@@ -181,6 +181,7 @@ promotion command creates only a blocked review receipt; it does not create an
 | `ChatRepository.sendMessage` | `matches/{matchId}/messages/{id}` | Create text message. | Match participant create only. | Yes. Match preview/unread/moderation are trigger-owned. |
 | `ChatController.sendImage` / `ChatRepository.sendImageMessage` | Storage `matches/{matchId}/images/*`, then `matches/{matchId}/messages/{id}` | Shared `ImageUploadRepository` picks/compresses/uploads the chat image; repository writes the image message. | Storage rules prove match participation from `user1Id`/`user2Id` with legacy `participantIds` fallback; message create rules prove active match participation before Firestore write. | Yes. Media picking/compression is centralized with profile/onboarding/event-club image upload policy. |
 | `MatchRepository.resetUnread` | `matches/{matchId}.unreadCounts.{uid}` | Reset own unread count to zero. | Participant narrow update. | Yes. |
+| `EventSuccessRepository.savePlan` | `eventSuccessPlans/{eventId}` | Revision-checked partial update of setup-owned plan fields before the event is live. | Host-only setup update; participant activity, event start, live status, or `frozenAt` freezes setup fields. | Yes. The transaction rejects stale/frozen plans and never overwrites live-control fields. |
 
 ## Backend-Owned Collections And Fields
 

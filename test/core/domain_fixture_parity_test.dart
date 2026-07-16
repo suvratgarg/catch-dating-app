@@ -73,9 +73,9 @@ void main() {
       final json = _loadFixture('event_doc.json', injectIdField: 'id');
       final event = Event.fromJson(json);
       final location = event.meetingLocation;
-      expect(location.name, 'Race Course Road gate');
-      expect(location.latitude, 22.7196);
-      expect(location.longitude, 75.8577);
+      expect(location?.name, 'Race Course Road gate');
+      expect(location?.latitude, 22.7196);
+      expect(location?.longitude, 75.8577);
     });
 
     test(

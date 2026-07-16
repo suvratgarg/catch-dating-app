@@ -114,14 +114,6 @@ function validateRequiredSourceContracts() {
       path: "admin/src/styles.css",
       includes: [".search-control:focus-within", ".marketing-title-input:focus-visible"],
     },
-    {
-      path: ".github/workflows/marketing-website.yml",
-      includes: ["packages/web-ui/**", "npm run web:ui:test && npm run web:ui:typecheck"],
-    },
-    {
-      path: ".github/workflows/admin-website.yml",
-      includes: ["packages/web-ui/**", "npm run web:ui:test && npm run web:ui:typecheck"],
-    },
   ];
   const findings = [];
   for (const contract of contracts) {
@@ -132,7 +124,54 @@ function validateRequiredSourceContracts() {
       }
     }
   }
+  findings.push(...validateWorkflowContracts());
   return findings;
+}
+
+function validateWorkflowContracts(readSource = readRepoSource) {
+  const reusableWorkflow = ".github/workflows/react-surface-validation.yml";
+  const contracts = [
+    {
+      path: reusableWorkflow,
+      includes: [
+        "workflow_call:",
+        "npm run web:shared-ui-adoption:check",
+        "npm run web:ui:test && npm run web:ui:typecheck",
+      ],
+    },
+    {
+      path: ".github/workflows/marketing-website.yml",
+      includes: [
+        "packages/web-ui/**",
+        reusableWorkflow,
+        `uses: ./${reusableWorkflow}`,
+        "surface: marketing",
+      ],
+    },
+    {
+      path: ".github/workflows/admin-website.yml",
+      includes: [
+        "packages/web-ui/**",
+        reusableWorkflow,
+        `uses: ./${reusableWorkflow}`,
+        "surface: admin",
+      ],
+    },
+  ];
+  const findings = [];
+  for (const contract of contracts) {
+    const source = readSource(contract.path);
+    for (const expected of contract.includes) {
+      if (!source.includes(expected)) {
+        findings.push(`${contract.path}: missing shared web contract marker ${expected}`);
+      }
+    }
+  }
+  return findings;
+}
+
+function readRepoSource(relativePath) {
+  return fs.readFileSync(fromRepo(relativePath), "utf8");
 }
 
 function validateAdoptedSurfaceImport({candidate, record, surface}) {
@@ -217,6 +256,30 @@ function runSelfTest() {
   });
   if (!packageFindings.some((finding) => finding.includes("UnknownControl"))) {
     throw new Error("self-test failed to reject an unclassified package export");
+  }
+  const workflowSources = new Map([
+    [
+      ".github/workflows/react-surface-validation.yml",
+      "workflow_call:\nrun: npm run web:shared-ui-adoption:check\n",
+    ],
+    [
+      ".github/workflows/marketing-website.yml",
+      "packages/web-ui/**\n.github/workflows/react-surface-validation.yml\nuses: ./.github/workflows/react-surface-validation.yml\nsurface: marketing\n",
+    ],
+    [
+      ".github/workflows/admin-website.yml",
+      "packages/web-ui/**\n.github/workflows/react-surface-validation.yml\nuses: ./.github/workflows/react-surface-validation.yml\nsurface: admin\n",
+    ],
+  ]);
+  const workflowFindings = validateWorkflowContracts(
+    (relativePath) => workflowSources.get(relativePath) ?? "",
+  );
+  if (
+    !workflowFindings.some((finding) =>
+      finding.includes("npm run web:ui:test && npm run web:ui:typecheck"),
+    )
+  ) {
+    throw new Error("self-test failed to reject a reusable workflow missing shared UI validation");
   }
   const tempRoot = fs.mkdtempSync(path.join(process.cwd(), ".shared-web-ui-self-test-"));
   const tempSource = path.join(tempRoot, "adapter.tsx");

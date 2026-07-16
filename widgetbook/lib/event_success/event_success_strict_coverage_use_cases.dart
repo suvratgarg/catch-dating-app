@@ -29,6 +29,7 @@ import "package:catch_dating_app/event_success/presentation/event_success_skelet
 import "package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart";
 import "package:catch_dating_app/events/domain/event_participation_roster.dart";
 import "package:catch_dating_app/labs/design_fixtures/event_success_companion_fixtures.dart";
+import "package:catch_dating_app/l10n/l10n.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:widgetbook_annotation/widgetbook_annotation.dart" as widgetbook;
@@ -2425,20 +2426,6 @@ Widget eventSuccessStrictCustomQuestionnaireFields(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "CustomQuestionnaireSheet",
-  type: CustomQuestionnaireSheet,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states",
-)
-Widget eventSuccessStrictCustomQuestionnaireSheet(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.questionnaire,
-    componentName: "CustomQuestionnaireSheet",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventSuccessQuestionnaireConfigEditor",
   type: EventSuccessQuestionnaireConfigEditor,
   path:
@@ -2455,34 +2442,6 @@ Widget eventSuccessStrictEventSuccessQuestionnaireConfigEditor(
 }
 
 @widgetbook.UseCase(
-  name: "QuestionnairePreview",
-  type: QuestionnairePreview,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states",
-)
-Widget eventSuccessStrictQuestionnairePreview(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.questionnaire,
-    componentName: "QuestionnairePreview",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "AttendeePromptPreview",
-  type: AttendeePromptPreview,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictAttendeePromptPreview(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "AttendeePromptPreview",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventSuccessSetupBody",
   type: EventSuccessSetupBody,
   path:
@@ -2493,90 +2452,6 @@ Widget eventSuccessStrictEventSuccessSetupBody(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.setup,
     componentName: "EventSuccessSetupBody",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "FoundationLine",
-  type: FoundationLine,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictFoundationLine(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "FoundationLine",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "PresetReviewCard",
-  type: PresetReviewCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictPresetReviewCard(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "PresetReviewCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "QuestionnaireBlock",
-  type: QuestionnaireBlock,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictQuestionnaireBlock(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "QuestionnaireBlock",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "RecommendationSwitch",
-  type: RecommendationSwitch,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictRecommendationSwitch(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "RecommendationSwitch",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "SafetyFooter",
-  type: SafetyFooter,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictSafetyFooter(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "SafetyFooter",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "StageCard",
-  type: StageCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictStageCard(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "StageCard",
   );
 }
 
@@ -2631,6 +2506,8 @@ Widget _eventSuccessStrictPreview(
         activityKind: ActivityKind.socialRun,
         targetAttendeeCount: 24,
         onChanged: (_) {},
+        title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
+        subtitle: context.l10n.hostsEventSuccessStepSubtitleSaveASimplePlan,
       ),
     ),
     _EventSuccessStrictSurface.eventPreview => _StrictCoverageScaffold(

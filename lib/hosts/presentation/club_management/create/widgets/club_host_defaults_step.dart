@@ -13,6 +13,9 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+typedef EventPolicyDefaultsUpdate =
+    EventPolicyDefaults Function(EventPolicyDefaults current);
+
 class ClubHostDefaultsStep extends StatelessWidget {
   const ClubHostDefaultsStep({
     super.key,
@@ -101,11 +104,15 @@ class ClubPolicyDefaultsCard extends StatefulWidget {
     required this.defaults,
     required this.currencyCode,
     required this.onChanged,
+    this.onImmediateChanged,
+    this.advancedOnly = false,
   });
 
   final EventPolicyDefaults defaults;
   final String currencyCode;
   final ValueChanged<EventPolicyDefaults> onChanged;
+  final ValueChanged<EventPolicyDefaultsUpdate>? onImmediateChanged;
+  final bool advancedOnly;
 
   @override
   State<ClubPolicyDefaultsCard> createState() => _PolicyDefaultsCardState();
@@ -224,29 +231,32 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         ),
       ),
       children: [
-        CatchField.choices<EventAdmissionDefaultPreset>(
-          title: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
-          body: cohortCapsEnabled
-              ? context.l10n.hostsClubHostDefaultsStepTextAnyoneEligibleCanBook
-              : selectedAdmissionPreset.description(context.l10n),
-          values: visibleAdmissionPresets,
-          itemLabel: (preset) => preset.label(context.l10n),
-          selected: {selectedAdmissionPreset},
-          onSelectionChanged: (selection) {
-            final preset = selection.single;
-            _emit(
-              defaults.copyWith(
-                admissionPreset: preset,
-                dynamicPricingEnabled:
-                    preset == EventAdmissionDefaultPreset.balancedSingles
-                    ? defaults.dynamicPricingEnabled
-                    : false,
-              ),
-            );
-          },
-          initiallyOpen: true,
-          icon: CatchIcons.howToRegOutlined,
-        ),
+        if (!widget.advancedOnly)
+          CatchField.choices<EventAdmissionDefaultPreset>(
+            title: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
+            body: cohortCapsEnabled
+                ? context
+                      .l10n
+                      .hostsClubHostDefaultsStepTextAnyoneEligibleCanBook
+                : selectedAdmissionPreset.description(context.l10n),
+            values: visibleAdmissionPresets,
+            itemLabel: (preset) => preset.label(context.l10n),
+            selected: {selectedAdmissionPreset},
+            onSelectionChanged: (selection) {
+              final preset = selection.single;
+              _emit(
+                defaults.copyWith(
+                  admissionPreset: preset,
+                  dynamicPricingEnabled:
+                      preset == EventAdmissionDefaultPreset.balancedSingles
+                      ? defaults.dynamicPricingEnabled
+                      : false,
+                ),
+              );
+            },
+            initiallyOpen: true,
+            icon: CatchIcons.howToRegOutlined,
+          ),
         if (selectedAdmissionPreset == EventAdmissionDefaultPreset.openCapacity)
           CatchField.toggle(
             title: context.l10n.hostsClubHostDefaultsStepTitleCohortCaps,
@@ -254,8 +264,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 .l10n
                 .hostsClubHostDefaultsStepBodyOptionallyPrefillStraightMen,
             value: cohortCapsEnabled,
-            onChanged: (value) => _emit(
-              defaults.copyWith(
+            onChanged: (value) => _emitImmediate(
+              (current) => current.copyWith(
                 admissionPreset: value
                     ? EventAdmissionDefaultPreset.fixedCohortCaps
                     : EventAdmissionDefaultPreset.openCapacity,
@@ -265,27 +275,38 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         if (cohortCapsEnabled)
           CatchSection.containedFieldRows(
             children: [
-              CatchField.input(
-                title:
-                    context.l10n.hostsClubHostDefaultsStepTitleMaxStraightMen,
-                isOptional: true,
-                controller: _maxMenController,
-                icon: CatchIcons.maleOutlined,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: positiveOptionalValidator,
-                onChanged: (_) => _emitFromControllers(),
-              ),
-              CatchField.input(
-                title:
-                    context.l10n.hostsClubHostDefaultsStepTitleMaxStraightWomen,
-                isOptional: true,
-                controller: _maxWomenController,
-                icon: CatchIcons.femaleOutlined,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: positiveOptionalValidator,
-                onChanged: (_) => _emitFromControllers(),
+              Row(
+                children: [
+                  Expanded(
+                    child: CatchField.input(
+                      title: context
+                          .l10n
+                          .hostsClubHostDefaultsStepTitleMaxStraightMen,
+                      isOptional: true,
+                      controller: _maxMenController,
+                      icon: CatchIcons.maleOutlined,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: positiveOptionalValidator,
+                      onChanged: (_) => _emitFromControllers(),
+                    ),
+                  ),
+                  gapW12,
+                  Expanded(
+                    child: CatchField.input(
+                      title: context
+                          .l10n
+                          .hostsClubHostDefaultsStepTitleMaxStraightWomen,
+                      isOptional: true,
+                      controller: _maxWomenController,
+                      icon: CatchIcons.femaleOutlined,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: positiveOptionalValidator,
+                      onChanged: (_) => _emitFromControllers(),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -297,14 +318,14 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 .l10n
                 .hostsClubHostDefaultsStepBodyPrefillDynamicPricingControls,
             value: defaults.dynamicPricingEnabled,
-            onChanged: (value) => _emit(
-              defaults.copyWith(
+            onChanged: (value) => _emitImmediate(
+              (current) => current.copyWith(
                 dynamicPricingEnabled: value,
                 dynamicPricingStepInPaise: value
-                    ? defaults.dynamicPricingStepInPaise ?? 25000
+                    ? current.dynamicPricingStepInPaise ?? 25000
                     : null,
                 dynamicPricingMaxInPaise: value
-                    ? defaults.dynamicPricingMaxInPaise ?? 150000
+                    ? current.dynamicPricingMaxInPaise ?? 150000
                     : null,
               ),
             ),
@@ -312,66 +333,83 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           if (defaults.dynamicPricingEnabled)
             CatchSection.containedFieldRows(
               children: [
-                CatchField.input(
-                  title: context.l10n.hostsClubHostDefaultsStepTitleStep,
-                  controller: _pricingStepController,
-                  icon: CatchIcons.trendingUpRounded,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: positiveRequiredValidator,
-                  onChanged: (_) => _emitFromControllers(),
-                ),
-                CatchField.input(
-                  title: context.l10n.hostsClubHostDefaultsStepTitleMax,
-                  controller: _pricingMaxController,
-                  icon: CatchIcons.priceChangeOutlined,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: positiveRequiredValidator,
-                  onChanged: (_) => _emitFromControllers(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CatchField.input(
+                        title: context.l10n.hostsClubHostDefaultsStepTitleStep,
+                        controller: _pricingStepController,
+                        icon: CatchIcons.trendingUpRounded,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        validator: positiveRequiredValidator,
+                        onChanged: (_) => _emitFromControllers(),
+                      ),
+                    ),
+                    gapW12,
+                    Expanded(
+                      child: CatchField.input(
+                        title: context.l10n.hostsClubHostDefaultsStepTitleMax,
+                        controller: _pricingMaxController,
+                        icon: CatchIcons.priceChangeOutlined,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        validator: positiveRequiredValidator,
+                        onChanged: (_) => _emitFromControllers(),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
         ],
-        CatchField.input(
-          title: context.l10n.hostsClubHostDefaultsStepTitleMinAge,
-          isOptional: true,
-          controller: _minAgeController,
-          icon: CatchIcons.cakeOutlined,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          validator: (value) => validateAge(
-            value,
-            siblingController: _maxAgeController,
-            isMinimum: true,
+        if (!widget.advancedOnly) ...[
+          CatchField.input(
+            title: context.l10n.hostsClubHostDefaultsStepTitleMinAge,
+            isOptional: true,
+            controller: _minAgeController,
+            icon: CatchIcons.cakeOutlined,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            validator: (value) => validateAge(
+              value,
+              siblingController: _maxAgeController,
+              isMinimum: true,
+            ),
+            onChanged: (_) => _emitFromControllers(),
           ),
-          onChanged: (_) => _emitFromControllers(),
-        ),
-        CatchField.input(
-          title: context.l10n.hostsClubHostDefaultsStepTitleMaxAge,
-          isOptional: true,
-          controller: _maxAgeController,
-          icon: CatchIcons.cakeOutlined,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          validator: (value) => validateAge(
-            value,
-            siblingController: _minAgeController,
-            isMinimum: false,
+          CatchField.input(
+            title: context.l10n.hostsClubHostDefaultsStepTitleMaxAge,
+            isOptional: true,
+            controller: _maxAgeController,
+            icon: CatchIcons.cakeOutlined,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            validator: (value) => validateAge(
+              value,
+              siblingController: _minAgeController,
+              isMinimum: false,
+            ),
+            onChanged: (_) => _emitFromControllers(),
           ),
-          onChanged: (_) => _emitFromControllers(),
-        ),
-        CatchField.choices<EventCancellationPolicyId>(
-          title: context.l10n.hostsClubHostDefaultsStepLabelCancellationPolicy,
-          body: policyFor(defaults.cancellationPolicyId).attendeeSummary,
-          values: EventCancellationPolicyId.values,
-          itemLabel: (policyId) => policyFor(policyId).title.toUpperCase(),
-          selected: {defaults.cancellationPolicyId},
-          onSelectionChanged: (selection) =>
-              _emit(defaults.copyWith(cancellationPolicyId: selection.single)),
-          initiallyOpen: true,
-          icon: CatchIcons.ruleOutlined,
-        ),
+          CatchField.choices<EventCancellationPolicyId>(
+            title:
+                context.l10n.hostsClubHostDefaultsStepLabelCancellationPolicy,
+            body: policyFor(defaults.cancellationPolicyId).attendeeSummary,
+            values: EventCancellationPolicyId.values,
+            itemLabel: (policyId) => policyFor(policyId).title.toUpperCase(),
+            selected: {defaults.cancellationPolicyId},
+            onSelectionChanged: (selection) => _emit(
+              defaults.copyWith(cancellationPolicyId: selection.single),
+            ),
+            initiallyOpen: true,
+            icon: CatchIcons.ruleOutlined,
+          ),
+        ],
       ],
     );
   }
@@ -396,6 +434,15 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
   }
 
   void _emit(EventPolicyDefaults defaults) => widget.onChanged(defaults);
+
+  void _emitImmediate(EventPolicyDefaultsUpdate update) {
+    final callback = widget.onImmediateChanged;
+    if (callback != null) {
+      callback(update);
+      return;
+    }
+    _emit(update(widget.defaults));
+  }
 }
 
 extension on EventAdmissionDefaultPreset {

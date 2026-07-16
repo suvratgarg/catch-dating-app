@@ -20,7 +20,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -696,18 +696,17 @@ class HostManageSectionPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSegmentedControl<HostEventManageSection>(
-      expanded: true,
-      style: CatchSegmentedControlStyle.surface,
-      segments: [
+    return CatchOptionGroup<HostEventManageSection>(
+      options: [
         for (final section in HostEventManageSection.values)
-          CatchSegment(
+          CatchOption(
             value: section,
             label: section.label(context.l10n).toUpperCase(),
           ),
       ],
       selected: selectedSection,
       onChanged: onChanged,
+      variant: CatchOptionGroupVariant.mono,
     );
   }
 }

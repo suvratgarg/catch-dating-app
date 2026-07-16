@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.catchdates.app.dev</string>
+	<string>com.catchdates.host.dev</string>
 	<key>PROJECT_ID</key>
 	<string>catchdates-dev</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:619661127800:ios:e9456edea3f2427f077d8d</string>
+	<string>1:619661127800:ios:730bbfd6550efac0077d8d</string>
 </dict>
 </plist>

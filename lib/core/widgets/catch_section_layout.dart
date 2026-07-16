@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
@@ -365,7 +363,7 @@ class CatchSection extends StatelessWidget {
          dividerColor: dividerColor,
          dividerIndent: dividerInset ?? double.nan,
          dividerRole: dividerRole,
-         internalDividerRole: CatchDividerRole.fieldSection,
+         internalDividerRole: CatchDividerRole.fieldRow,
          titleColor: titleColor,
          bodyGap: bodyGap,
          showInternalDividers: showInternalDividers,
@@ -410,7 +408,7 @@ class CatchSection extends StatelessWidget {
          focused: focused,
          hasError: hasError,
          dividerIndent: dividerInset ?? double.nan,
-         internalDividerRole: CatchDividerRole.fieldSection,
+         internalDividerRole: CatchDividerRole.fieldRow,
          fieldRows: true,
          children: children,
          child: child,
@@ -857,7 +855,11 @@ class CatchSection extends StatelessWidget {
     // into an explicit zero inset.
     final canInferEveryRow = directFields.length == sectionChildren.length;
     final hasLeadingIcon = directFields.any(
-      (field) => !field.add && (field.icon != null || field.prefixIcon != null),
+      (field) =>
+          !field.add &&
+          (field.leading != null ||
+              field.icon != null ||
+              field.prefixIcon != null),
     );
     final rowEdgeInset = _variant == _CatchSectionVariant.contained
         ? CatchFieldTokens.rowHorizontalPadding

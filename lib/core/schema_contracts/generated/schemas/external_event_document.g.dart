@@ -8,15 +8,13 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/external_events.schema.json',
   'title': 'ExternalEventDocument',
-  'description':
-      'Read-only external event document stored at externalEvents/{eventId}. These records are sourced from reviewed organizer intake candidates and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.',
+  'description': 'Read-only external event document stored at externalEvents/{eventId}. These records are sourced from reviewed organizer intake candidates and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'externalEvents',
   'x-firestore-path': 'externalEvents/{eventId}',
   'x-document-id-field': 'eventId',
-  'x-owner':
-      'organizer intake import tooling after admin review; external source corrections and takedowns are admin-owned',
+  'x-owner': 'organizer intake import tooling after admin review; external source corrections and takedowns are admin-owned',
   'required': <Object?>[
     'schemaVersion',
     'eventId',
@@ -44,7 +42,10 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
     'updatedAt',
   ],
   'properties': <String, Object?>{
-    'schemaVersion': <String, Object?>{'type': 'integer', 'const': 1},
+    'schemaVersion': <String, Object?>{
+      'type': 'integer',
+      'const': 1,
+    },
     'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
@@ -75,9 +76,14 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
       'description': 'Serialized Firestore Timestamp fixture shape.',
       'x-firestore-type': 'timestamp',
       'additionalProperties': false,
-      'required': <Object?>['_seconds', '_nanoseconds'],
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
       'properties': <String, Object?>{
-        '_seconds': <String, Object?>{'type': 'integer'},
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
         '_nanoseconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -92,9 +98,14 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
           'description': 'Serialized Firestore Timestamp fixture shape.',
           'x-firestore-type': 'timestamp',
           'additionalProperties': false,
-          'required': <Object?>['_seconds', '_nanoseconds'],
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
           'properties': <String, Object?>{
-            '_seconds': <String, Object?>{'type': 'integer'},
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
             '_nanoseconds': <String, Object?>{
               'type': 'integer',
               'minimum': 0,
@@ -102,11 +113,16 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
             },
           },
         },
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
     },
     'timezone': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 80,
     },
     'meetingPoint': <String, Object?>{
@@ -132,38 +148,62 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
           'maxLength': 240,
         },
         'address': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 500,
         },
         'placeId': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'minLength': 1,
           'maxLength': 256,
         },
         'latitude': <String, Object?>{
-          'type': <Object?>['number', 'null'],
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
           'minimum': -90,
           'maximum': 90,
         },
         'longitude': <String, Object?>{
-          'type': <Object?>['number', 'null'],
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
           'minimum': -180,
           'maximum': 180,
         },
         'notes': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 1000,
         },
       },
     },
     'locationDetails': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 1000,
     },
     'photoUrl': <String, Object?>{
       'anyOf': <Object?>[
-        <String, Object?>{'type': 'string', 'format': 'uri', 'maxLength': 2048},
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'string',
+          'format': 'uri',
+          'maxLength': 2048,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
     },
     'activity': <String, Object?>{
@@ -176,7 +216,10 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
         'source',
       ],
       'properties': <String, Object?>{
-        'version': <String, Object?>{'type': 'integer', 'const': 1},
+        'version': <String, Object?>{
+          'type': 'integer',
+          'const': 1,
+        },
         'activityKind': <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
@@ -212,21 +255,35 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
         },
         'source': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['heuristic', 'admin', 'source'],
+          'enum': <Object?>[
+            'heuristic',
+            'admin',
+            'source',
+          ],
         },
       },
     },
     'price': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'required': <Object?>['displayText', 'parsedPriceInPaise', 'currency'],
+      'required': <Object?>[
+        'displayText',
+        'parsedPriceInPaise',
+        'currency',
+      ],
       'properties': <String, Object?>{
         'displayText': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 120,
         },
         'parsedPriceInPaise': <String, Object?>{
-          'type': <Object?>['integer', 'null'],
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
           'minimum': 0,
           'maximum': 100000000,
         },
@@ -238,11 +295,19 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
     },
     'status': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>['active', 'cancelled'],
+      'enum': <Object?>[
+        'active',
+        'cancelled',
+      ],
     },
     'publicationStatus': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>['draft', 'public', 'archived', 'removed'],
+      'enum': <Object?>[
+        'draft',
+        'public',
+        'archived',
+        'removed',
+      ],
     },
     'booking': <String, Object?>{
       'type': 'object',
@@ -309,7 +374,10 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
               },
               'linkType': <String, Object?>{
                 'type': 'string',
-                'enum': <Object?>['booking_or_event_page', 'source_surface'],
+                'enum': <Object?>[
+                  'booking_or_event_page',
+                  'source_surface',
+                ],
               },
               'sourceEventKey': <String, Object?>{
                 'type': 'string',
@@ -321,7 +389,9 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
                 'minLength': 1,
                 'maxLength': 240,
               },
-              'primary': <String, Object?>{'type': 'boolean'},
+              'primary': <String, Object?>{
+                'type': 'boolean',
+              },
             },
           },
         },
@@ -340,16 +410,24 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
         'citySlug': <String, Object?>{
           'anyOf': <Object?>[
             <String, Object?>{
-              'type': <Object?>['string', 'null'],
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
               'minLength': 1,
               'maxLength': 80,
               'pattern': '^[a-z0-9-]+\$',
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
         'countryCode': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'minLength': 2,
           'maxLength': 2,
         },
@@ -443,7 +521,9 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
               'format': 'uri',
               'maxLength': 2048,
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
         'sourceUrl': <String, Object?>{
@@ -453,7 +533,9 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
               'format': 'uri',
               'maxLength': 2048,
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
       },
@@ -471,23 +553,39 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
       ],
       'properties': <String, Object?>{
         'eventReviewBatchId': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 180,
         },
         'reviewer': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 180,
         },
         'decidedAt': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'pattern': '^\\d{4}-\\d{2}-\\d{2}\$',
         },
         'note': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 1000,
         },
-        'importPolicyAcknowledged': <String, Object?>{'type': 'boolean'},
-        'ownerSafeCopyReviewed': <String, Object?>{'type': 'boolean'},
+        'importPolicyAcknowledged': <String, Object?>{
+          'type': 'boolean',
+        },
+        'ownerSafeCopyReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
       },
     },
     'createdAt': <String, Object?>{
@@ -495,9 +593,14 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
       'description': 'Serialized Firestore Timestamp fixture shape.',
       'x-firestore-type': 'timestamp',
       'additionalProperties': false,
-      'required': <Object?>['_seconds', '_nanoseconds'],
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
       'properties': <String, Object?>{
-        '_seconds': <String, Object?>{'type': 'integer'},
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
         '_nanoseconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -510,9 +613,14 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
       'description': 'Serialized Firestore Timestamp fixture shape.',
       'x-firestore-type': 'timestamp',
       'additionalProperties': false,
-      'required': <Object?>['_seconds', '_nanoseconds'],
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
       'properties': <String, Object?>{
-        '_seconds': <String, Object?>{'type': 'integer'},
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
         '_nanoseconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,

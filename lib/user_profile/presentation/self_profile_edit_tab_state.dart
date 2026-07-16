@@ -70,10 +70,7 @@ class SelfProfileEditTabState {
             definition: definition,
             answer: answer,
             usedPromptIds: usedPromptIds,
-            fieldName: l10n
-                .userProfileSelfProfileEditTabStateVisiblecopyProfilepromptIndex(
-                  index: index,
-                ),
+            fieldName: 'profilePrompt-$index',
             availablePromptIds: _availableProfilePromptIds(
               usedPromptIds: usedPromptIds,
               currentPromptId: currentPromptId,

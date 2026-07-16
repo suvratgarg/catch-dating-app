@@ -1,5 +1,5 @@
 {
-  "version": "2.7.159",
+  "version": "2.7.161",
   "updated": "2026-07-16",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
@@ -44,6 +44,35 @@
     ]
   },
   "pending": [
+    {
+      "id": "HOST-SHELL-TERMINAL-001",
+      "title": "Classify and migrate shell-aware terminal spacing across Host routes",
+      "status": "active",
+      "owner": "agent",
+      "area": "flutter,host,layout,screen-chrome",
+      "priority": "high",
+      "summary": "The four Host tab roots now own AppShellActiveTab-aware terminal clearance, including all three Organizer workspace pages through CatchTabbedPageScrollView. The wider Host route audit still finds utility/detail/editor routes using fixed page bottom padding or no terminal primitive: dedicated Insights, Club detail, Create/Edit club, Create event, Event detail, Manage/Attendance/Success, Edit event, Settings, and Professional profile. Host Chat is intentionally composer-owned and /host/clubs is redirect-only.",
+      "acceptance": [
+        "classify every AppRouteAudience.host route as shell-aware terminal, fixed bottom-owner exception, redirect, or non-scroll",
+        "migrate every scrollable Host route without a fixed bottom owner to CatchScrollTerminalPadding, CatchSliverTerminalPadding, CatchTabbedPageScrollView, or a shared body primitive that delegates to AppShellActiveTab.scrollTerminalClearanceOf",
+        "extend a checked route/scroll contract so a new Host screen cannot omit terminal-clearance ownership",
+        "keep Chat composer and any sticky wizard/footer geometry as exact reviewed exceptions rather than implicit omissions"
+      ],
+      "paths": [
+        "lib/routing/go_router.dart",
+        "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+        "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+        "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+        "lib/hosts/presentation/event_management/create/create_event_screen.dart",
+        "lib/events/presentation/widgets/event_detail_body.dart",
+        "lib/hosts/presentation/host_event_manage_screen.dart",
+        "lib/hosts/presentation/edit_hosted_event_screen.dart",
+        "lib/hosts/presentation/host_operations/host_account_screen.dart",
+        "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "source": "2026-07-16-host-terminal-spacing-audit"
+    },
     {
       "id": "SCREEN-CHROME-LEGACY-001",
       "title": "Migrate the remaining feature-owned route headers to canonical screen chrome",
@@ -231,32 +260,23 @@
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "ARCH-PROVIDER-CODEGEN-001",
-      "title": "Migrate reviewed manual Riverpod families to code generation",
-      "status": "active",
-      "owner": "agent",
-      "area": "flutter,architecture,riverpod,tooling",
-      "priority": "low",
-      "summary": "The generated provider graph found four existing handwritten auto-dispose providers outside core that the older dependency scanner did not classify because their declarations use chained autoDispose/family constructors. They are reviewed, acyclic, and behaviorally valid; migrate them in owning-feature passes rather than combining override API churn across Clubs, Event Success, Explore, and Public Profile.",
-      "acceptance": [
-        "clubNameLookupProvider, eventSuccessCompanionClockProvider, exploreRecommendedEventsProvider, and publicProfilesByIdsProvider use Riverpod code generation with equivalent family and auto-dispose behavior",
-        "focused provider and override-heavy caller tests pass for each owning feature",
-        "the matching planned decisions disappear from provider_graph_reviews.json and provider graph --check remains clean"
-      ],
-      "paths": [
-        "lib/clubs/data/club_name_lookup.dart",
-        "lib/event_success/event_success_companion_clock.dart",
-        "lib/explore/data/explore_recommendations_repository.dart",
-        "lib/public_profile/data/public_profiles_lookup.dart",
-        "tool/architecture/provider_graph_reviews.json"
-      ],
-      "source": "2026-07-13-provider-graph-architecture"
     }
   ],
   "next_up": [],
   "completed": [
+    {
+      "id": "ARCH-PROVIDER-CODEGEN-001-DONE",
+      "title": "Migrate reviewed manual Riverpod families to code generation",
+      "completed": "2026-07-16",
+      "rules": [
+        "CODEGEN-001",
+        "PROVIDER-TOPOLOGY-001",
+        "PROVIDER-SEAM-001",
+        "AUDIT-REGISTRY-001"
+      ],
+      "summary": "Closed all four planned manual-provider decisions by migrating clubNameLookupProvider, eventSuccessCompanionClockProvider, exploreRecommendedEventsProvider, and publicProfilesByIdsProvider to generated auto-dispose providers. Provider names, family/query equality, lifecycle, .future access, and override contracts remain stable under a focused ProviderContainer test; generated outputs are checked in and the provider graph review no longer carries those planned decisions.",
+      "source": "2026-07-16-generated-provider-families"
+    },
     {
       "id": "APP-COPY-MIGRATION-001-DONE",
       "title": "Migrate Flutter product prose into governed copy catalogs",

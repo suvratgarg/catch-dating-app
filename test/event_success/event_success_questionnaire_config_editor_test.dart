@@ -20,7 +20,6 @@ void main() {
               builder: (context, setState) {
                 return EventSuccessQuestionnaireConfigEditor(
                   value: value,
-                  useBottomSheetForCustom: true,
                   onChanged: (next) => setState(() => value = next),
                 );
               },
@@ -30,6 +29,10 @@ void main() {
       ),
     );
 
+    expect(_choice('Balanced', selected: true), findsNothing);
+    expect(find.text('4 questions'), findsOneWidget);
+    expect(find.text("Tonight I'm most up for"), findsNothing);
+    await _openQuestionSetField(tester);
     expect(_choice('Balanced', selected: true), findsOneWidget);
     expect(_choice('Custom', selected: false), findsOneWidget);
 
@@ -37,9 +40,9 @@ void main() {
     await tester.pump();
 
     expect(value.usesCustom, isTrue);
+    expect(find.text('Prompt'), findsWidgets);
     await _openQuestionSetField(tester);
     expect(_choice('Custom', selected: true), findsOneWidget);
-    expect(find.text('Edit custom questions'), findsOneWidget);
 
     _invokeChoice(tester, 'Flirty');
     await tester.pump();
@@ -48,6 +51,7 @@ void main() {
     await _openQuestionSetField(tester);
     expect(_choice('Flirty', selected: true), findsOneWidget);
     expect(_choice('Custom', selected: false), findsOneWidget);
+    expect(find.text("Tonight I'm most up for"), findsNothing);
   });
 }
 

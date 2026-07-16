@@ -64,6 +64,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
@@ -103,8 +104,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_empty_action_ca
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -618,6 +617,18 @@ Widget hostClubsRouteStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'co-host read-only team workspace',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            hostedClubs: [HostOperationsFixtures.coHostedClub],
+            ownedClubs: const [],
+            child: const HostClubsScreen(
+              initialClubId: 'design-host-cohost-club',
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'insights report',
         child: _DeviceFrame(
           child: _HostShellScope(
@@ -642,6 +653,19 @@ Widget hostClubsRouteStates(BuildContext context) {
           child: _HostShellScope(
             themeMode: ThemeMode.dark,
             child: HostClubsScreen(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'co-host read-only team workspace / dark',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            hostedClubs: [HostOperationsFixtures.coHostedClub],
+            ownedClubs: const [],
+            themeMode: ThemeMode.dark,
+            child: const HostClubsScreen(
+              initialClubId: 'design-host-cohost-club',
+            ),
           ),
         ),
       ),
@@ -786,6 +810,40 @@ Widget hostHomeEventSectionStates(BuildContext context) {
             clubs: [_club],
             showClubPicker: false,
             selectedFilter: HostEventsLifecycleFilter.upcoming,
+            onSwitchClubIndex: (_) {},
+            onFilterChanged: (_) {},
+            onCreateEvent: (_) {},
+            onRepeatEvent: (_, _) {},
+            onManageEvent: (_, _) {},
+            now: HostOperationsFixtures.now,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'past events grouped into divided month fields',
+        child: _HostHomeSectionFrame(
+          clubEventStreams: {
+            _club.id: Stream<List<Event>>.value([
+              HostOperationsFixtures.event(
+                id: 'design-host-past-june',
+                club: _club,
+                start: DateTime(2026, 6, 14, 9),
+                bookedCount: 8,
+              ),
+              HostOperationsFixtures.event(
+                id: 'design-host-past-may',
+                club: _club,
+                start: DateTime(2026, 5, 27, 18, 30),
+                bookedCount: 2,
+              ),
+            ]),
+          },
+          child: HostEventsClubCard(
+            club: _club,
+            currentUid: _hostUid,
+            clubs: [_club],
+            showClubPicker: false,
+            selectedFilter: HostEventsLifecycleFilter.past,
             onSwitchClubIndex: (_) {},
             onFilterChanged: (_) {},
             onCreateEvent: (_) {},
@@ -1480,27 +1538,16 @@ Widget _hostClubPreviewFor(String focus) {
     'HostClubInsightsPane' => HostClubInsightsPane(club: club),
     'HostClubOrganizerOverview' => HostClubOrganizerOverview(
       club: club,
-      currentUid: _hostUid,
-      isOwner: true,
       eventsLoaded: true,
       eventCount: events.length,
       activeEventCount: events.where((event) => !event.isCancelled).length,
-      onOpenEditor: () {},
-      onOpenSettings: () {},
     ),
     'HostClubOrganizerOverviewController' =>
-      HostClubOrganizerOverviewController(
-        club: club,
-        currentUid: _hostUid,
-        isOwner: true,
-        onOpenEditor: () {},
-        onOpenSettings: () {},
-      ),
+      HostClubOrganizerOverviewController(club: club),
     'HostClubProfileCard' => HostClubProfileCard(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
-      onPreviewClub: () {},
     ),
     'HostEventsClubCard' => HostEventsClubCard(
       club: club,
@@ -1520,21 +1567,18 @@ Widget _hostClubPreviewFor(String focus) {
       currentUid: _hostUid,
       isOwner: true,
       initialExpandedField: 'ageRange',
-      onPreviewClub: () {},
     ),
     'HostInlineOptionEditor' => HostClubProfileCard(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
       initialExpandedField: 'primaryActivityKind',
-      onPreviewClub: () {},
     ),
     'HostInlineTextEntryEditor' => HostClubProfileCard(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
       initialExpandedField: 'name',
-      onPreviewClub: () {},
     ),
     'HostOrganizerMetricGrid' => HostOrganizerMetricGrid(
       club: club,
@@ -1543,24 +1587,6 @@ Widget _hostClubPreviewFor(String focus) {
       activeEventCount: events.where((event) => !event.isCancelled).length,
     ),
     'HostOrganizerMetricRow' => HostOrganizerMetricRow(items: metricItems),
-    'HostOrganizerPayoutPrompt' => HostOrganizerPayoutPrompt(
-      state: const HostOrganizerPayoutPromptState.setupRequired(),
-      onManagePayouts: () {},
-    ),
-    'HostOrganizerPayoutPromptController' =>
-      HostOrganizerPayoutPromptController(
-        uid: _hostUid,
-        onManagePayouts: () {},
-      ),
-    'HostOrganizerTeamCard' => HostOrganizerTeamCard(
-      profiles: team,
-      currentUid: _hostUid,
-    ),
-    'HostOrganizerTeamRow' => HostOrganizerTeamRow(
-      profile: team.first,
-      currentUid: _hostUid,
-      divider: false,
-    ),
     'HostPaymentAccountCard' => HostPaymentAccountCard(
       club: club,
       account: payment,
@@ -1584,6 +1610,7 @@ Widget _hostClubPreviewFor(String focus) {
     'HostTeamManagementSection' => HostTeamManagementSection(
       club: club,
       currentUid: _hostUid,
+      canManage: true,
     ),
     'HostTeamOwnerHostRow' => HostTeamOwnerHostRow(
       host: team.first,
@@ -1877,38 +1904,6 @@ Widget _hostEventManagePreviewFor(String focus) {
   };
 }
 
-Widget _hostSettingsExactCatalog(BuildContext context, String focus) {
-  return _HostCatalog(
-    title: focus,
-    contractId: 'component.host.settings.${_hostComponentSlug(focus)}',
-    children: [
-      _StateCard(
-        label: 'exact component',
-        child: _hostSettingsPreviewFor(focus),
-      ),
-    ],
-  );
-}
-
-Widget _hostSettingsPreviewFor(String focus) {
-  final profile = _hostProfileVariant(HostProfileStatus.active);
-  return switch (focus) {
-    'HostProfileEditorSheet' => _HostComponentFrame(
-      child: HostProfileEditorSheet(profile: profile),
-    ),
-    'HostSettingsClubRows' => const _DeviceFrame(
-      child: _HostSettingsClubsFrame(),
-    ),
-    'HostSettingsClubsEmpty' => const _DeviceFrame(
-      child: _HostSettingsClubsFrame(clubs: []),
-    ),
-    'HostSettingsProfileRows' => _DeviceFrame(
-      child: _HostSettingsProfileFrame(profile: profile),
-    ),
-    _ => Text('No exact preview registered for $focus.'),
-  };
-}
-
 AttendanceSheetViewModel _hostAttendanceViewModel() {
   final value = buildAttendanceSheetViewModel(
     eventAsync: AsyncData<Event?>(HostOperationsFixtures.privateEvent),
@@ -1964,16 +1959,6 @@ String _hostComponentSlug(String name) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
-  type: HostOrganizerPayoutPrompt,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizerPayoutPromptController,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
   type: HostOrganizerMetricGrid,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -1983,15 +1968,80 @@ String _hostComponentSlug(String name) {
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizerTeamCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
+  name: 'Owner and co-host section states',
+  type: HostTeamManagementSection,
+  path: '[P1 product surfaces]/Host operations/Sections',
 )
+Widget hostTeamManagementSectionStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostTeamManagementSection',
+    contractId: 'section.host.clubs_host_team',
+    children: [
+      const _StateCard(
+        label: 'owner management / light',
+        child: _DeviceFrame(
+          child: _HostShellScope(child: _HostTeamSectionPreview()),
+        ),
+      ),
+      const _StateCard(
+        label: 'co-host read-only / light',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            child: _HostTeamSectionPreview(canManage: false),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'owner management / dark',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            themeMode: ThemeMode.dark,
+            child: _HostTeamSectionPreview(),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'co-host read-only / dark',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            themeMode: ThemeMode.dark,
+            child: _HostTeamSectionPreview(canManage: false),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 @widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizerTeamRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
+  name: 'Canonical payout section states',
+  type: HostPaymentAccountCard,
+  path: '[P1 product surfaces]/Host operations/Sections',
 )
+Widget hostPaymentAccountSectionStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostPaymentAccountCard',
+    contractId: 'section.host.clubs_payouts',
+    children: const [
+      _StateCard(
+        label: 'loading / error / setup / ready / light',
+        child: _DeviceFrame(
+          child: _HostShellScope(child: _HostPaymentSectionStates()),
+        ),
+      ),
+      _StateCard(
+        label: 'loading / error / setup / ready / dark',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            themeMode: ThemeMode.dark,
+            child: _HostPaymentSectionStates(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 @widgetbook.UseCase(
   name: 'Add host sheet states',
   type: HostTeamAddHostSheet,
@@ -2079,16 +2129,6 @@ Widget hostTeamHostActionDialogStates(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Covered by host settings route states',
   type: HostSettingsProfileRows,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host settings route states',
-  type: HostSettingsClubRows,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host settings route states',
-  type: HostProfileEditorSheet,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -2961,194 +3001,6 @@ class _HostCreateClubMutationPreviewState
 }
 
 @widgetbook.UseCase(
-  name: 'Route and mode states',
-  type: HostEditClubRouteScreen,
-  path: '[P1 product surfaces]/Host operations',
-)
-Widget hostEditClubRouteAndModeStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostEditClubRouteScreen',
-    contractId: 'screen.host.club.edit',
-    children: [
-      _StateCard(
-        label: 'route loading',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            clubValue: const AsyncLoading<Club?>(),
-            child: HostEditClubRouteScreen(clubId: _club.id),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'route error',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            clubValue: AsyncError<Club?>(
-              StateError('Club fetch failed'),
-              StackTrace.empty,
-            ),
-            child: HostEditClubRouteScreen(clubId: _club.id),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'route offline',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            clubValue: AsyncError<Club?>(
-              obviousOfflineException(),
-              StackTrace.empty,
-            ),
-            child: HostEditClubRouteScreen(clubId: _club.id),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'missing club',
-        child: const _DeviceFrame(
-          child: _HostCreateClubScope(
-            clubValue: AsyncData<Club?>(null),
-            child: HostEditClubRouteScreen(clubId: 'design-host-sea-face'),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'owner full edit',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            child: CreateClubScreen(
-              initialClub: _club,
-              restoreSavedDraft: false,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'owner validation',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            child: CreateClubScreen(
-              initialClub: _club.copyWith(
-                name: '',
-                area: '',
-                description: '',
-                location: '',
-              ),
-              restoreSavedDraft: false,
-              formAutovalidateMode: AutovalidateMode.always,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'media replacement',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            child: CreateClubScreen(
-              initialClub: _club,
-              restoreSavedDraft: false,
-              initialPickedClubPhotos: _createClubPickedPhotos(),
-              initialProfileImage: _createClubProfileImage(),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'submit pending',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            child: _HostCreateClubMutationPreview(
-              mode: _HostCreateClubMutationPreviewMode.submitPending,
-              child: CreateClubScreen(
-                initialClub: _club,
-                restoreSavedDraft: false,
-              ),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'submit error',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            child: _HostCreateClubMutationPreview(
-              mode: _HostCreateClubMutationPreviewMode.submitError,
-              child: CreateClubScreen(
-                initialClub: _club,
-                restoreSavedDraft: false,
-              ),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'co-host media-only edit',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            child: CreateClubScreen(
-              initialClub: HostOperationsFixtures.coHostedClub,
-              restoreSavedDraft: false,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'forbidden identity',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            uid: HostOperationsFixtures.guestUid,
-            child: HostEditClubRouteScreen(
-              clubId: _club.id,
-              initialClub: _club,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'text scale 2.0',
-        child: _DeviceFrame(
-          child: _MediaOverride(
-            textScaler: const TextScaler.linear(2),
-            child: _HostCreateClubScope(
-              child: CreateClubScreen(
-                initialClub: _club,
-                restoreSavedDraft: false,
-              ),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'reduced motion',
-        child: _DeviceFrame(
-          child: _MediaOverride(
-            disableAnimations: true,
-            child: _HostCreateClubScope(
-              child: CreateClubScreen(
-                initialClub: HostOperationsFixtures.coHostedClub,
-                restoreSavedDraft: false,
-              ),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'dark theme',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            themeMode: ThemeMode.dark,
-            child: CreateClubScreen(
-              initialClub: _club,
-              restoreSavedDraft: false,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Route and wizard states',
   type: HostCreateEventRouteScreen,
   path: '[P1 product surfaces]/Host operations',
@@ -3710,17 +3562,6 @@ Widget createClubScreenCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
-        label: 'edit mode',
-        child: _DeviceFrame(
-          child: _HostCreateClubScope(
-            child: CreateClubScreen(
-              initialClub: _club,
-              restoreSavedDraft: false,
-            ),
-          ),
-        ),
-      ),
     ],
   );
 }
@@ -4032,6 +3873,32 @@ Widget createEventSuccessScreenCatalogStates(BuildContext context) {
             inviteCode: 'SEAFACE',
             onManageEvent: () {},
             onDone: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Header states',
+  type: CreateClubStepHeader,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget createClubStepHeaderCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'CreateClubStepHeader',
+    contractId: 'component.host.club.step_header',
+    children: [
+      _StateCard(
+        label: 'step 1',
+        child: _DeviceFrame(
+          child: CreateClubStepHeader(
+            title: 'Club basics',
+            subtitle: 'Add your club identity and media',
+            currentStep: 0,
+            totalSteps: 4,
+            onBack: () {},
           ),
         ),
       ),
@@ -5580,7 +5447,7 @@ class _EditableHostedEventPolicyCardFrameState
   }
 }
 
-class _HostSettingsProfileFrame extends StatelessWidget {
+class _HostSettingsProfileFrame extends StatefulWidget {
   const _HostSettingsProfileFrame({
     this.profile,
     this.state,
@@ -5592,6 +5459,35 @@ class _HostSettingsProfileFrame extends StatelessWidget {
   final HostSettingsProfileState? state;
   final bool editMode;
   final bool creatingProfile;
+
+  @override
+  State<_HostSettingsProfileFrame> createState() =>
+      _HostSettingsProfileFrameState();
+}
+
+class _HostSettingsProfileFrameState extends State<_HostSettingsProfileFrame> {
+  final _formKey = GlobalKey<FormState>();
+  final _displayNameController = TextEditingController();
+  final _roleTitleController = TextEditingController();
+  final _bioController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final profile = widget.profile;
+    if (profile == null) return;
+    _displayNameController.text = profile.displayName;
+    _roleTitleController.text = profile.roleTitle ?? '';
+    _bioController.text = profile.bio ?? '';
+  }
+
+  @override
+  void dispose() {
+    _displayNameController.dispose();
+    _roleTitleController.dispose();
+    _bioController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -5606,12 +5502,19 @@ class _HostSettingsProfileFrame extends StatelessWidget {
               padding: CatchInsets.pageBodyUnderHeader,
               children: [
                 HostSettingsProfileSection(
-                  state: state ?? HostSettingsProfileContent(profile: profile!),
-                  editMode: editMode,
-                  creatingProfile: creatingProfile,
+                  state:
+                      widget.state ??
+                      HostSettingsProfileContent(profile: widget.profile!),
+                  editMode: widget.editMode,
+                  creatingProfile: widget.creatingProfile,
                   onRetry: () {},
                   onCreateProfile: () {},
-                  onEditProfile: () {},
+                  formKey: _formKey,
+                  displayNameController: _displayNameController,
+                  roleTitleController: _roleTitleController,
+                  bioController: _bioController,
+                  savingProfile: false,
+                  onSaveProfile: () {},
                 ),
               ],
             ),
@@ -5648,7 +5551,15 @@ class _HostSettingsClubsFrame extends StatelessWidget {
               padding: CatchInsets.pageBodyUnderHeader,
               children: [
                 HostSettingsClubsSection(
-                  uid: _hostUid,
+                  actions: HostSettingsActionState.from(
+                    uid: _hostUid,
+                    editMode: editMode,
+                    creatingProfile: false,
+                    signOutPending: false,
+                    profile: HostSettingsProfileContent(
+                      profile: HostOperationsFixtures.hostProfile,
+                    ),
+                  ),
                   state: error != null
                       ? HostSettingsClubsError(error: error!)
                       : loading
@@ -5659,7 +5570,6 @@ class _HostSettingsClubsFrame extends StatelessWidget {
                           ),
                         ),
                   onRetry: error == null ? null : () {},
-                  editMode: editMode,
                   onOpenClub: (_) {},
                 ),
               ],
@@ -6178,7 +6088,9 @@ class _HostClubsMutationPreviewState
 }
 
 class _HostTeamSectionPreview extends StatelessWidget {
-  const _HostTeamSectionPreview();
+  const _HostTeamSectionPreview({this.canManage = true});
+
+  final bool canManage;
 
   @override
   Widget build(BuildContext context) {
@@ -6187,6 +6099,33 @@ class _HostTeamSectionPreview extends StatelessWidget {
       child: HostTeamManagementSection(
         club: HostOperationsFixtures.primaryClub,
         currentUid: HostOperationsFixtures.hostUid,
+        canManage: canManage,
+      ),
+    );
+  }
+}
+
+class _HostPaymentSectionStates extends StatelessWidget {
+  const _HostPaymentSectionStates();
+
+  @override
+  Widget build(BuildContext context) {
+    final club = HostOperationsFixtures.primaryClub;
+    return SingleChildScrollView(
+      padding: CatchInsets.pageBody,
+      child: Column(
+        children: [
+          HostPaymentAccountCard(club: club, loading: true),
+          HostPaymentAccountCard(
+            club: club,
+            error: StateError('Widgetbook payout status failed'),
+          ),
+          HostPaymentAccountCard(club: club),
+          HostPaymentAccountCard(
+            club: club,
+            account: HostOperationsFixtures.readyPaymentAccount,
+          ),
+        ],
       ),
     );
   }
@@ -6262,6 +6201,21 @@ final class _NoopHostClubEditActions implements HostClubEditActions {
   Future<void> updateClub({
     required String clubId,
     required UpdateClubPatch patch,
+  }) async {}
+
+  @override
+  Future<List<HostPickedClubPhoto>> pickClubPhotos({
+    required int limit,
+  }) async => const [];
+
+  @override
+  Future<HostPickedClubLogo?> pickClubLogo() async => null;
+
+  @override
+  Future<void> updateClubMedia({
+    required Club club,
+    List<HostClubMediaInput>? photoInputs,
+    HostPickedClubLogo? logo,
   }) async {}
 }
 

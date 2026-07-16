@@ -1,7 +1,7 @@
 ---
 doc_id: claude_widgetbook_inventory
-version: 0.1.12
-updated: 2026-07-07
+version: 0.1.13
+updated: 2026-07-16
 owner: product_design_parity
 status: active
 ---
@@ -567,7 +567,7 @@ Selection:
 
 - `CatchChip`
 - `CatchOptionCard`
-- `CatchSegmentedControl`
+- `CatchOptionGroup`
 
 Status:
 
@@ -587,7 +587,7 @@ Current formal contract registry entries:
 - `CatchField`
 - `CatchIconButton`
 - `CatchOptionCard`
-- `CatchSegmentedControl`
+- `CatchOptionGroup`
 - `CatchSurface`
 - `CatchField`
 - `CatchTopBar`
@@ -600,7 +600,7 @@ Claude handoff names in the formal contract registry:
 - `Field`
 - `IconButton`
 - `OptionCard`
-- `SegmentedControl`
+- `OptionGroup`
 - `Surface`
 - `TextField`
 - `TopBar`
@@ -643,7 +643,7 @@ state-by-state review before we call it aligned.
 | `SearchField` | `CatchSearchField` | direct prefix |
 | `Section` | `CatchSection` | alias |
 | `SectionLabel` | `CatchSectionLabel` | direct prefix |
-| `SegPill` | `CatchSegmentedControl` | alias |
+| `SegPill` | `CatchOptionGroup` | absorbed alias; pill shell retired |
 | `SelectChip` | `CatchSelectChip` | direct prefix |
 | `Sheet` | `CatchBottomSheetScaffold` | alias |
 | `SoftBand` | `CatchSurface.tinted` | direct prefix |
@@ -821,7 +821,7 @@ model as separate primitives.
    behind the Claude primitive vocabulary.
 5. Several likely aliases need confirmation before implementation:
    `AppBar` vs `CatchTopBar`, `Sheet` vs `CatchBottomSheetScaffold`,
-   `SegPill` vs `CatchSegmentedControl`, `Stepper` vs `CatchNumberStepper`,
+   `Stepper` vs `CatchNumberStepper`,
    `FacePile`/`AvatarStack` vs `CatchPersonAvatarStack`, and `Section` vs
    `CatchSection`.
 

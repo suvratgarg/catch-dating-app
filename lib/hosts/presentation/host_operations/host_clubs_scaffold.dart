@@ -27,10 +27,10 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
   late HostClubsScreenState _state;
   late final TabController _tabController;
   final GlobalKey _profileSectionsKey = GlobalKey();
-  final Map<HostClubTab, GlobalKey<CatchTabbedPageScrollViewState>>
-  _pageScrollKeys = {
+  final Map<HostClubTab, CatchTabbedPageScrollController>
+  _pageScrollControllers = {
     for (final tab in HostClubTab.values)
-      tab: GlobalKey<CatchTabbedPageScrollViewState>(),
+      tab: CatchTabbedPageScrollController(),
   };
   final Map<HostClubTab, double> _pageScrollOffsets = {};
   bool _didRevealInitialEditor = false;
@@ -122,6 +122,15 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
     return CatchTabbedScreenScaffold(
       title: selectedClub.name,
       actions: [
+        Semantics(
+          label: context.l10n.hostsHostClubsScaffoldTooltipSettings,
+          button: true,
+          child: CatchIconAction(
+            tooltip: context.l10n.hostsHostClubsScaffoldTooltipSettings,
+            icon: CatchIcons.settingsOutlined,
+            onPressed: _openHostSettings,
+          ),
+        ),
         if (_state.showClubPicker)
           CatchTopBarMenuAction<int>(
             tooltip: context.l10n.hostsHostClubsScaffoldTooltipSwitchClub,
@@ -154,48 +163,41 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
         controller: _tabController,
         children: [
           CatchTabbedPageScrollView(
-            key: _pageScrollKeys[HostClubTab.edit],
+            scrollStateController: _pageScrollControllers[HostClubTab.edit],
             scrollKey: PageStorageKey(
               'host-club-${selectedClub.id}-edit-scroll',
             ),
             slivers: [
               SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    HostClubOrganizerOverviewController(
-                      key: ValueKey(
-                        'host-club-${selectedClub.id}-edit-summary',
+                child: Padding(
+                  padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: CatchLayout.maxContentWidth,
                       ),
-                      club: selectedClub,
-                      currentUid: _state.currentUid,
-                      isOwner: _state.selectedClubIsOwner,
-                      onOpenEditor: _openEditorSections,
-                      onOpenSettings: _openHostSettings,
-                    ),
-                    Padding(
-                      padding: CatchInsets.pageBodyUnderHeader.copyWith(
-                        bottom: 0,
-                      ),
-                      child: KeyedSubtree(
-                        key: _profileSectionsKey,
-                        child: HostClubProfileCard(
-                          key: ValueKey('host-club-${selectedClub.id}-edit'),
-                          club: selectedClub,
-                          currentUid: _state.currentUid,
-                          isOwner: _state.selectedClubIsOwner,
-                          initialExpandedField: widget.initialExpandedEditField,
-                          onPreviewClub: () => _selectTab(HostClubTab.preview),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: KeyedSubtree(
+                          key: _profileSectionsKey,
+                          child: HostClubProfileCard(
+                            key: ValueKey('host-club-${selectedClub.id}-edit'),
+                            club: selectedClub,
+                            currentUid: _state.currentUid,
+                            isOwner: _state.selectedClubIsOwner,
+                            initialExpandedField:
+                                widget.initialExpandedEditField,
+                          ),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ],
           ),
           CatchTabbedPageScrollView(
-            key: _pageScrollKeys[HostClubTab.insights],
+            scrollStateController: _pageScrollControllers[HostClubTab.insights],
             scrollKey: PageStorageKey(
               'host-club-${selectedClub.id}-insights-scroll',
             ),
@@ -203,9 +205,21 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
               SliverPadding(
                 padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
                 sliver: SliverToBoxAdapter(
-                  child: HostClubInsightsPane(
-                    key: ValueKey('host-club-${selectedClub.id}-insights'),
-                    club: selectedClub,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: CatchLayout.maxContentWidth,
+                      ),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: HostClubInsightsPane(
+                          key: ValueKey(
+                            'host-club-${selectedClub.id}-insights',
+                          ),
+                          club: selectedClub,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -214,7 +228,8 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
           ColoredBox(
             color: t.surface,
             child: CatchTabbedPageScrollView(
-              key: _pageScrollKeys[HostClubTab.preview],
+              scrollStateController:
+                  _pageScrollControllers[HostClubTab.preview],
               scrollKey: PageStorageKey(
                 'host-club-${selectedClub.id}-preview-scroll',
               ),
@@ -236,12 +251,6 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
       ? widget.initialTab
       : HostClubTab.edit;
 
-  void _selectTab(HostClubTab tab) {
-    final index = HostClubTab.values.indexOf(tab);
-    if (_tabController.index == index) return;
-    _tabController.animateTo(index);
-  }
-
   void _selectClubIndex(int index) {
     setState(() {
       _state = _state.selectClubIndex(index);
@@ -254,7 +263,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
     if (!mounted) return;
     if (tab != _state.selectedTab) {
       final previousTab = _state.selectedTab;
-      final previousOffset = _pageScrollKeys[previousTab]?.currentState
+      final previousOffset = _pageScrollControllers[previousTab]
           ?.captureOffset();
       if (previousOffset != null) {
         _pageScrollOffsets[previousTab] = previousOffset;
@@ -264,30 +273,13 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
     if (!_tabController.indexIsChanging && _tabController.offset == 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        _pageScrollKeys[tab]?.currentState?.restoreOffset(
-          _pageScrollOffsets[tab],
-        );
+        _pageScrollControllers[tab]?.restoreOffset(_pageScrollOffsets[tab]);
       });
     }
   }
 
   void _openHostSettings() {
     context.pushNamed(Routes.hostSettingsScreen.name);
-  }
-
-  void _openEditorSections() {
-    final editorContext = _profileSectionsKey.currentContext;
-    if (editorContext == null) return;
-    unawaited(
-      Scrollable.ensureVisible(
-        editorContext,
-        alignment: _editorRevealAlignment,
-        duration: MediaQuery.maybeOf(context)?.disableAnimations == true
-            ? Duration.zero
-            : CatchMotion.pageStep,
-        curve: CatchMotion.standardCurve,
-      ),
-    );
   }
 
   void _scheduleInitialEditorReveal() {
@@ -306,7 +298,6 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
         Scrollable.ensureVisible(
           editorContext,
           alignment: _editorRevealAlignment,
-          duration: Duration.zero,
         ),
       );
     });

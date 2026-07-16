@@ -1,6 +1,6 @@
 ---
 doc_id: widget_consolidation_receipts
-version: 0.2.1
+version: 0.2.3
 updated: 2026-07-16
 owner: widget_consolidation
 status: active
@@ -2583,6 +2583,121 @@ Known blockers / inherited debt:
 - `node tool/design/check_screen_contracts.mjs --check` still fails on inherited
   missing-symbol drift for Calendar, Saved Events, host create/edit footers,
   Host settings adapter ownership, Event edit footer, and Reviews History.
+
+## 2026-07-16 - OptionGroup consolidation and Host Events Past fields
+
+Summary:
+
+- Absorbed the four production `CatchSegmentedControl` adopters into the
+  Organizer-tab `CatchOptionGroup`: Host Events lifecycle, Host Inbox audience,
+  Host Analytics granularity, and Host Event Manage sections.
+- Deleted `CatchSegmentedControl` and `CatchSegmentButton`, removed their formal
+  contract and Widgetbook previews, and remapped the admin conceptual lexicon to
+  `catch.option_group`.
+- Rendered Host Events Past as month-owned `CatchSection.divided` sections with
+  `CatchField.nav` event rows. `CatchField` now supports a semantic custom
+  leading slot, used for the event date block.
+- Repaired inherited Widgetbook drift from the Event Detail information/host-row
+  refactor so the generator completed instead of dropping the Core catalog on a
+  partial run.
+
+Verification:
+
+- Focused Host Events, Host Inbox, Host Event Manage, and CatchField tests pass.
+- Focused Dart analysis reports no issues on the changed app and test files.
+- Widgetbook `dart run build_runner build` completes successfully and generated
+  navigation contains no retired segmented-control symbols.
+- Component contracts pass for 64 components.
+- Widget classification regenerated with 1,107 entries; variant inventory with
+  855 use cases, 1,776 state cards, and 44 review candidates; fingerprints with
+  985 widgets and 0 failures; similarity with 43 clusters and 7 absorb
+  candidates.
+- The `host-prod` scheme built and launched as `com.catchdates.host` on the
+  iPhone 17 Pro Max simulator. The existing signed-in session persisted, and
+  the live Past screen exposed the OptionGroup plus accessible month/field rows.
+
+Known inherited blockers:
+
+- Focused Widgetbook analysis still reports the pre-existing typed-API and
+  missing-helper backlog in `widgetbook/lib/hosts/host_operations_use_cases.dart`;
+  the new Past-events state is not among the reported issues.
+- The cross-surface component lexicon still reports the broader registry-v2
+  surfaces migration backlog and one website OptionCard symbol mismatch.
+- Widgetbook contract references still report pre-existing formal-preview gaps
+  for ChatInputBar, CatchTabbedScreenScaffold, CatchBottomAction, CatchHostRow,
+  and CatchMapPreview plus two stale Host Operations preview ids.
+
+## 2026-07-16 - Host Clubs Edit ownership consolidation
+
+Scope:
+
+- `HOST-CLUB-EDIT-CONSOLIDATION-001` in the Host Clubs Edit workspace.
+- Payout, team-roster, event-default, and Settings section ownership.
+- Removed organizer payout/team summary widgets and their localization,
+  Widgetbook, catalog, decision-ledger, and provider-graph references.
+- Section-header enforcement for feature-local card shells.
+
+Outcome:
+
+- Reduced `HostClubOrganizerOverview` to format badges and metrics.
+- Kept one owner-only payout provider/presentation path and moved every payout
+  state onto a direct titled `CatchSection.contained` composition.
+- Kept one canonical Host team section for owners and co-hosts, with explicit
+  management capability and no co-host mutation affordances.
+- Moved the unique Settings navigation into one semantic top-bar action.
+- Deleted `HostOrganizerPayoutPrompt`, `HostOrganizerTeamCard`, and
+  `HostOrganizerTeamRow` ownership, including the two payout prompt source
+  files and obsolete copy/use cases.
+- Reconciled removed-symbol decisions as executed deletes and retained the
+  valid payout controller/display separation.
+- Added `SECTION-HEADER-005` as a medium advisory with known-bad and known-good
+  fixtures for feature-local card shells.
+
+Commands:
+
+- `flutter gen-l10n`
+- `flutter test --concurrency=1 test/hosts/host_operations_screen_test.dart test/hosts/host_team_management_section_test.dart`
+- focused root `flutter analyze --no-fatal-infos`
+- `node --test tool/design/check_section_headers.test.mjs`
+- `node tool/design/check_section_headers.mjs --summary --max 100 --include-low`
+- `node tool/run.mjs check copy:mobile-catalog`
+- `node tool/run.mjs check --manifest-only`
+- widget classification, similarity, dedupe-probe, and provider-graph refreshes
+- `bash tool/widget_cleanup_scan.sh --summary`
+
+Verification:
+
+- All 52 focused Host tests passed, covering exact owner/co-host section counts,
+  payout presentation branches, Settings navigation/semantics, read-only
+  co-host roster behavior, and owner add/remove/transfer mutations.
+- Focused root analysis completed with no errors or warnings.
+- Section-header fixtures passed 12/12. The Host organizer finding is gone;
+  zero medium findings remain.
+- Active Dart scans contain no removed payout-prompt or organizer-team symbols,
+  and mobile copy validates with 2,851 typed English messages.
+- Widget similarity passed with 987 widgets, 43 clusters, 200 ranked pairs,
+  202 name families, and 7 absorb candidates; dedupe probes and the tool
+  manifest also passed.
+- Generated Widgetbook directories include owner/co-host and payout-state
+  coverage and contain no references to the removed widgets.
+- A fresh `host-prod` build launched on iPhone 17 Pro Max in the existing
+  authenticated session. Runtime inspection confirmed one Event defaults
+  group, one Payouts section, one Host team section, and one semantic Settings
+  action; tapping Settings opened the Host Settings workspace.
+
+Known blockers / inherited debt:
+
+- Section-header enforcement retains one explicitly out-of-scope high finding
+  for `CatchAnalyticsSection` and six low header-flag inventory items.
+- Widgetbook regeneration wrote the relevant generated directory changes but
+  exits non-zero on unrelated `core_catalog_use_cases.dart` generator drift;
+  the broader Host Operations use-case file also retains unrelated API drift.
+- Widget classification/coverage retain the repository's existing review queue
+  and unrelated missing Widgetbook/private-class findings.
+- Enforcement integrity retains unrelated documentation-anchor and reverse-tool
+  binding failures.
+- Provider-graph tests pass, while the architecture review gate retains four
+  unrelated Explore authentication-to-filter/search/city candidates.
 
 ## 2026-07-16 Analytics section drift correction
 

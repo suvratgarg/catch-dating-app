@@ -4307,6 +4307,9 @@ export const clubDocumentSchema: Record<string, unknown> = {
                 "maxLength": 120
               }
             },
+            "moduleSelectionConfigured": {
+              "type": "boolean"
+            },
             "structureConfig": {
               "type": "object",
               "additionalProperties": false,
@@ -4508,6 +4511,9 @@ export const clubDocumentSchema: Record<string, unknown> = {
                   "minLength": 1,
                   "maxLength": 120
                 }
+              },
+              "moduleSelectionConfigured": {
+                "type": "boolean"
               },
               "structureConfig": {
                 "type": "object",
@@ -16870,6 +16876,9 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
                 "maxLength": 120
               }
             },
+            "moduleSelectionConfigured": {
+              "type": "boolean"
+            },
             "structureConfig": {
               "type": "object",
               "additionalProperties": false,
@@ -17071,6 +17080,9 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
                   "minLength": 1,
                   "maxLength": 120
                 }
+              },
+              "moduleSelectionConfigured": {
+                "type": "boolean"
               },
               "structureConfig": {
                 "type": "object",
@@ -18032,6 +18044,9 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                     "maxLength": 120
                   }
                 },
+                "moduleSelectionConfigured": {
+                  "type": "boolean"
+                },
                 "structureConfig": {
                   "type": "object",
                   "additionalProperties": false,
@@ -18233,6 +18248,9 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 120
                     }
+                  },
+                  "moduleSelectionConfigured": {
+                    "type": "boolean"
                   },
                   "structureConfig": {
                     "type": "object",
@@ -22519,6 +22537,9 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
             "minLength": 1,
             "maxLength": 120
           }
+        },
+        "moduleSelectionConfigured": {
+          "type": "boolean"
         },
         "structureConfig": {
           "type": "object",

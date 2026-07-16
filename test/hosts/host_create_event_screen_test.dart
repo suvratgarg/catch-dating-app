@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -203,7 +204,7 @@ void main() {
         await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '30');
         await _pumpTestAnimation(tester);
         expect(find.text('Live event guide'), findsNothing);
-        expect(find.text('Host goal'), findsNothing);
+        expect(find.text('Your goal for the event'), findsNothing);
         expect(find.text('Schedule event'), findsNothing);
 
         await _tapPrimaryButton(tester, 'Next');
@@ -358,10 +359,13 @@ void main() {
       );
 
       expect(
-        find.text('Team reveal countdown', skipOffstage: false),
+        find.text('Reveal countdown', skipOffstage: false),
         findsOneWidget,
       );
-      expect(find.text('Rotation cadence', skipOffstage: false), findsNothing);
+      expect(
+        find.text('Switch partners every', skipOffstage: false),
+        findsNothing,
+      );
     });
 
     testWidgets('custom event format persists label and structure', (
@@ -849,6 +853,10 @@ void main() {
       expect(find.text('GUESTS'), findsOneWidget);
       expect(find.text('LIVE'), findsOneWidget);
       expect(find.text('REPORT'), findsOneWidget);
+      expect(
+        find.byType(CatchOptionGroup<HostEventManageSection>),
+        findsOneWidget,
+      );
       expect(find.text('Event success'), findsNothing);
       expect(find.text('Open event success'), findsNothing);
     });

@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.10.2
+version: 1.10.3
 updated: 2026-07-16
 owner: recursive_audit_loop
 status: active
@@ -154,6 +154,14 @@ Before staging or opening a PR:
 Do not trust stale local `main` for this check. Use `origin/main` as the source
 of truth, and close any superseded conflicted PR after the replacement branch is
 published.
+
+Push a new branch as soon as it is created; local-only branches and stashes are
+not preservation. Before a rebase, reset, amend, or conflict-heavy merge, create
+and push a dated `backup/` ref. Do not rewrite a branch with a shared upstream.
+For reconciliation merges touching more than 50 paths, run
+`node tool/git/audit_merge_drops.mjs` with the base, both sides, and merged result
+and require explicit discard receipts. After a squash merge is verified on
+`origin/main`, delete the single-use branch and prune tracking refs.
 
 ## GitHub Environments And Auth
 

@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -806,67 +807,13 @@ void main() {
       expect(fakeRepository.lastCreateCall!.clubId, fakeRepository.generatedId);
     });
 
-    test('updates an existing club without requiring profile state', () async {
-      final existingClub = buildClub(
-        name: 'Old Name',
-        description: 'Old description',
+    test('co-host media edits update only media fields', () async {
+      final club = buildClub(
+        hostUserId: 'owner-1',
+        ownerUserId: 'owner-1',
+        hostUserIds: const ['owner-1', 'cohost-1'],
         imageUrl: 'https://example.com/old.jpg',
-        instagramHandle: '@oldclub',
-        phoneNumber: '+91 99999 99999',
-        email: 'old@example.com',
-        memberCount: 2,
-        rating: 4.5,
-        reviewCount: 8,
-        nextEventLabel: 'Sat 6:30 AM',
       );
-      final fakeRepository = FakeClubsRepository();
-      final fakeImageUploadRepository = FakeImageUploadRepository();
-      final container = ProviderContainer(
-        overrides: [
-          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
-          imageUploadRepositoryProvider.overrideWith(
-            (ref) => fakeImageUploadRepository,
-          ),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-        ],
-      );
-      addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
-
-      await container
-          .read(createClubControllerProvider.notifier)
-          .submit(
-            name: 'New Name',
-            location: 'in-mp-indore',
-            area: 'Vijay Nagar',
-            description: 'Updated description',
-            existingClub: existingClub,
-          );
-
-      expect(fakeRepository.lastUpdatedClubId, existingClub.id);
-      final fields = fakeRepository.lastUpdatedFields;
-      expect(fields, isNotNull);
-      expect(fields!['name'], 'New Name');
-      expect(fields['location'], 'in-mp-indore');
-      expect(fields['area'], 'Vijay Nagar');
-      expect(fields['description'], 'Updated description');
-      // When no new club photo is uploaded, imageUrl stays as the existing one.
-      expect(fields['imageUrl'], existingClub.imageUrl);
-      expect(fields['instagramHandle'], isNull);
-      expect(fields['phoneNumber'], isNull);
-      expect(fields['email'], isNull);
-      expect(fakeImageUploadRepository.lastUploadClubId, isNull);
-    });
-
-    test('uploads a replacement club photo when editing', () async {
-      final existingClub = buildClub(imageUrl: 'https://example.com/old.jpg');
       final fakeRepository = FakeClubsRepository();
       final fakeImageUploadRepository = FakeImageUploadRepository(
         pickedImage: XFile('/tmp/club-photo.jpg'),
@@ -878,7 +825,7 @@ void main() {
           imageUploadRepositoryProvider.overrideWith(
             (ref) => fakeImageUploadRepository,
           ),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          uidProvider.overrideWith((ref) => Stream.value('cohost-1')),
         ],
       );
       addTearDown(container.dispose);
@@ -891,82 +838,22 @@ void main() {
       await container.pump();
 
       await container
-          .read(createClubControllerProvider.notifier)
-          .submit(
-            name: existingClub.name,
-            location: existingClub.location,
-            area: existingClub.area,
-            description: existingClub.description,
-            existingClub: existingClub,
-            clubPhotoInputs: [
-              NewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
+          .read(hostClubEditControllerProvider)
+          .updateClubMedia(
+            club: club,
+            photoInputs: [
+              HostNewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
             ],
           );
 
-      expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
-      expect(fakeImageUploadRepository.lastUploadUid, 'host-1');
-      expect(
-        fakeRepository.lastUpdatedFields!['imageUrl'],
-        'https://example.com/new.jpg',
-      );
+      expect(fakeImageUploadRepository.lastUploadUid, 'cohost-1');
+      expect(fakeRepository.lastUpdatedClubId, club.id);
+      final fields = fakeRepository.lastUpdatedFields!;
+      expect(fields.keys, unorderedEquals(['imageUrl', 'clubPhotos']));
+      expect(fields['imageUrl'], 'https://example.com/new.jpg');
     });
 
-    test(
-      'lets a co-host update club media without changing owner fields',
-      () async {
-        final existingClub = buildClub(
-          hostUserId: 'owner-1',
-          ownerUserId: 'owner-1',
-          hostUserIds: const ['owner-1', 'cohost-1'],
-          imageUrl: 'https://example.com/old.jpg',
-        );
-        final fakeRepository = FakeClubsRepository();
-        final fakeImageUploadRepository = FakeImageUploadRepository(
-          pickedImage: XFile('/tmp/club-photo.jpg'),
-          uploadResult: 'https://example.com/new.jpg',
-        );
-        final container = ProviderContainer(
-          overrides: [
-            clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
-            imageUploadRepositoryProvider.overrideWith(
-              (ref) => fakeImageUploadRepository,
-            ),
-            uidProvider.overrideWith((ref) => Stream.value('cohost-1')),
-          ],
-        );
-        addTearDown(container.dispose);
-        final uidSubscription = container.listen(
-          uidProvider,
-          (_, _) {},
-          fireImmediately: true,
-        );
-        addTearDown(uidSubscription.close);
-        await container.pump();
-
-        await container
-            .read(createClubControllerProvider.notifier)
-            .submit(
-              name: 'Ignored Name',
-              location: 'in-mp-indore',
-              area: 'Ignored Area',
-              description: 'Ignored description',
-              existingClub: existingClub,
-              clubPhotoInputs: [
-                NewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
-              ],
-            );
-
-        expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
-        expect(fakeImageUploadRepository.lastUploadUid, 'cohost-1');
-        expect(fakeRepository.lastUpdatedClubId, 'club-1');
-        final fields = fakeRepository.lastUpdatedFields!;
-        expect(fields.keys, unorderedEquals(['imageUrl', 'clubPhotos']));
-        expect(fields['imageUrl'], 'https://example.com/new.jpg');
-        expect(fields['clubPhotos'], isA<List<Object?>>());
-      },
-    );
-
-    test('rejects editing by a non-host user', () async {
+    test('club media edits reject non-host users', () async {
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
@@ -983,13 +870,10 @@ void main() {
 
       expect(
         () => container
-            .read(createClubControllerProvider.notifier)
-            .submit(
-              name: 'New Name',
-              location: 'in-mh-mumbai',
-              area: 'Bandra',
-              description: 'Updated description',
-              existingClub: buildClub(),
+            .read(hostClubEditControllerProvider)
+            .updateClubMedia(
+              club: buildClub(),
+              photoInputs: const <HostClubMediaInput>[],
             ),
         throwsA(isA<BackendOperationException>()),
       );

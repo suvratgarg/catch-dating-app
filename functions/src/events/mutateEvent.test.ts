@@ -661,8 +661,6 @@ test("createEventHandler uses event-success primitives for custom formats",
       "host_script",
       "live_reveal",
       "micro_pods",
-      "qr_check_in",
-      "safety_controls",
       "social_missions",
       "wingman_requests",
     ]);

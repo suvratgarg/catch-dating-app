@@ -70,17 +70,22 @@ void main() {
       },
     );
 
-    test('pins every upcoming event because exact location is required', () {
+    test('filters map pins without dropping unpinned event rows', () {
       final pinned = buildEvent(
         id: 'pinned',
         startTime: DateTime(2026, 1, 2, 7),
         startingPointLat: 19.0,
         startingPointLng: 72.8,
       );
-      final unpinned = buildEvent(
-        id: 'unpinned',
-        startTime: DateTime(2026, 1, 3, 7),
-      );
+      final unpinned =
+          buildEvent(
+            id: 'unpinned',
+            startTime: DateTime(2026, 1, 3, 7),
+          ).copyWith(
+            meetingLocation: null,
+            startingPointLat: null,
+            startingPointLng: null,
+          );
 
       final viewModel = buildEventMapViewModel(
         signedUpEvents: [unpinned],
@@ -89,11 +94,28 @@ void main() {
       );
 
       expect(viewModel.events.map((event) => event.id), ['pinned', 'unpinned']);
-      expect(viewModel.pinnedEvents.map((event) => event.id), [
+      expect(viewModel.pinnedEvents.map((event) => event.id), ['pinned']);
+      expect(viewModel.effectivePinnedItems.map((item) => item.event.id), [
         'pinned',
-        'unpinned',
       ]);
+      expect(
+        viewModel.effectivePinnedItems.single.coordinate,
+        const LocationCoordinate(19.0, 72.8),
+      );
       expect(viewModel.selectedEvent('unpinned'), unpinned);
+      expect(viewModel.selectedItem('unpinned'), isNull);
+      expect(
+        () => EventMapItem(event: unpinned, status: EventTileStatus.open),
+        throwsArgumentError,
+      );
+
+      final fallbackViewModel = EventMapViewModel(
+        events: [unpinned],
+        pinnedEvents: const [],
+      );
+      expect(fallbackViewModel.effectiveItems, isEmpty);
+      expect(fallbackViewModel.effectivePinnedItems, isEmpty);
+      expect(fallbackViewModel.hasPinnedEvents, isFalse);
     });
 
     test('filters past and cancelled events out of the map surface', () {

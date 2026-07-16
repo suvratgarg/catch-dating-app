@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -18,6 +19,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     var attendeePrompt = '';
+    var immediateDraftChanges = 0;
+    var stagedDraftChanges = 0;
     var draft =
         EventSuccessHostDraft.fromActivity(
               ActivityKind.pickleball,
@@ -54,7 +57,14 @@ void main() {
                   ),
                   targetAttendeeCount: 16,
                   attendeePrompt: attendeePrompt,
-                  onDraftChanged: (next) => setState(() => draft = next),
+                  onDraftChanged: (next) {
+                    stagedDraftChanges += 1;
+                    setState(() => draft = next);
+                  },
+                  onImmediateDraftChanged: (update) {
+                    immediateDraftChanges += 1;
+                    setState(() => draft = update(draft));
+                  },
                   onAttendeePromptChanged: (next) =>
                       setState(() => attendeePrompt = next),
                 );
@@ -65,7 +75,13 @@ void main() {
       ),
     );
 
+    expect(
+      tester.widget<CatchField>(_field('Switch partners every')).initiallyOpen,
+      isFalse,
+    );
+    await _openField(tester, 'Switch partners every');
     expect(_choice('15 min', selected: true), findsOneWidget);
+    await _openField(tester, 'Reveal countdown');
     expect(_choice('10s', selected: true), findsOneWidget);
     expect(
       _fieldToggle(EventSuccessModuleCatalog.liveReveal.title),
@@ -86,17 +102,36 @@ void main() {
       draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id),
       isTrue,
     );
+    expect(immediateDraftChanges, 2);
+    expect(stagedDraftChanges, 0);
 
+    await _openField(tester, 'Switch partners every');
     await _tapChoice(tester, '20 min');
     await tester.pump();
     expect(draft.structureConfig.rotationIntervalMinutes, 20);
     expect(_choice('20 min', selected: true), findsOneWidget);
 
+    await _openField(tester, 'Reveal countdown');
     await _tapChoice(tester, '15s');
     await tester.pump();
     expect(draft.structureConfig.revealCountdownSeconds, 15);
     expect(_choice('15s', selected: true), findsOneWidget);
 
+    expect(_field('How the room is grouped'), findsNothing);
+    expect(_field('Group people into'), findsOneWidget);
+    expect(_field('Match clue questions'), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: _field('Match clue questions'),
+        matching: find.byType(CatchSection),
+      ),
+      findsOneWidget,
+    );
+    final flowFieldBounds = tester.getRect(_field('Group people into'));
+    final matchClueBounds = tester.getRect(_field('Match clue questions'));
+    expect(matchClueBounds.left, flowFieldBounds.left);
+    expect(matchClueBounds.right, flowFieldBounds.right);
+    await _openField(tester, 'Match clue questions');
     expect(_choice('Clues only', selected: true), findsOneWidget);
 
     _invokeChoice(tester, 'Clues + soft pairing');
@@ -132,6 +167,16 @@ Future<void> _tapChoice(WidgetTester tester, String label) async {
 
 void _invokeChoice(WidgetTester tester, String label) {
   tester.widgetList<CatchFieldChoiceChip>(_choice(label)).last.onPressed();
+}
+
+Future<void> _openField(WidgetTester tester, String title) async {
+  final field = find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == title,
+  );
+  await tester.ensureVisible(field.last);
+  await tester.tap(field.last);
+  await tester.pump(kThemeAnimationDuration);
+  await tester.pump();
 }
 
 Future<void> _tapToggle(WidgetTester tester, String label) async {

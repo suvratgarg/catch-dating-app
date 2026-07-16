@@ -4,21 +4,21 @@
     "lib"
   ],
   "summary": {
-    "dartSourceFiles": 771,
+    "dartSourceFiles": 765,
     "providerNodes": 211,
-    "generatedProviderNodes": 203,
-    "manualProviderNodes": 8,
+    "generatedProviderNodes": 207,
+    "manualProviderNodes": 4,
     "aliasProviderNodes": 0,
     "keepAliveNodes": 61,
     "familyNodes": 82,
-    "mutationNodes": 82,
+    "mutationNodes": 83,
     "consumerNodes": 244,
-    "providerToProviderCallsites": 407,
-    "uniqueProviderToProviderPairs": 320,
-    "uniqueCrossFeatureProviderPairs": 163,
-    "consumerToStateCallsites": 674,
-    "mutationReferenceCallsites": 194,
-    "unresolvedRefOperations": 11,
+    "providerToProviderCallsites": 409,
+    "uniqueProviderToProviderPairs": 324,
+    "uniqueCrossFeatureProviderPairs": 167,
+    "consumerToStateCallsites": 672,
+    "mutationReferenceCallsites": 196,
+    "unresolvedRefOperations": 13,
     "unresolvedInsideProviders": 0,
     "duplicateProviderNames": 0,
     "danglingProviderTargets": 0,
@@ -79,14 +79,14 @@
   },
   "providerEdgesByOperation": {
     "watch": 250,
-    "read": 150,
-    "listen": 5,
-    "invalidate": 2
+    "read": 148,
+    "invalidate": 6,
+    "listen": 5
   },
   "consumerEdgesByOperation": {
-    "watch": 257,
+    "watch": 256,
     "read": 168,
-    "invalidate": 119,
+    "invalidate": 118,
     "mutation-run": 89,
     "listen": 21,
     "override": 20
@@ -107,6 +107,7 @@
     "explore -> core": 5,
     "reviews -> reviews": 5,
     "user_profile -> user_profile": 5,
+    "auth -> explore": 4,
     "explore -> auth": 4,
     "explore -> user_profile": 4,
     "hosts -> clubs": 4,
@@ -200,7 +201,7 @@
     "presentation -> data": 115,
     "data -> data": 96,
     "data -> core": 44,
-    "presentation -> presentation": 26,
+    "presentation -> presentation": 30,
     "presentation -> core": 10,
     "core -> core": 6,
     "shared -> data": 5,
@@ -223,6 +224,10 @@
     {
       "name": "chatRouteStateProvider",
       "degree": 8
+    },
+    {
+      "name": "authSessionControllerProvider",
+      "degree": 7
     },
     {
       "name": "clubDetailViewModelProvider",
@@ -285,10 +290,6 @@
       "degree": 4
     },
     {
-      "name": "authSessionControllerProvider",
-      "degree": 3
-    },
-    {
       "name": "chatControllerProvider",
       "degree": 3
     },
@@ -347,11 +348,19 @@
       "degree": 5
     },
     {
+      "name": "exploreSearchQueryProvider",
+      "degree": 5
+    },
+    {
       "name": "reviewsRepositoryProvider",
       "degree": 5
     },
     {
       "name": "safetyRepositoryProvider",
+      "degree": 5
+    },
+    {
+      "name": "selectedExploreCityProvider",
       "degree": 5
     },
     {
@@ -363,19 +372,11 @@
       "degree": 4
     },
     {
-      "name": "exploreSearchQueryProvider",
+      "name": "exploreFiltersProvider",
       "degree": 4
     },
     {
       "name": "imageUploadRepositoryProvider",
-      "degree": 4
-    },
-    {
-      "name": "savedEventRepositoryProvider",
-      "degree": 4
-    },
-    {
-      "name": "selectedExploreCityProvider",
       "degree": 4
     }
   ],
@@ -403,7 +404,7 @@
         "id": "clubs",
         "providers": 23,
         "mutations": 4,
-        "consumers": 6
+        "consumers": 7
       },
       {
         "id": "core",
@@ -456,8 +457,8 @@
       {
         "id": "hosts",
         "providers": 15,
-        "mutations": 29,
-        "consumers": 75
+        "mutations": 30,
+        "consumers": 74
       },
       {
         "id": "image_uploads",
@@ -554,6 +555,11 @@
         "source": "auth",
         "target": "core",
         "uniqueProviderPairs": 1
+      },
+      {
+        "source": "auth",
+        "target": "explore",
+        "uniqueProviderPairs": 4
       },
       {
         "source": "auth",
@@ -1066,6 +1072,36 @@
     "reviewPath": "tool/architecture/provider_graph_reviews.json",
     "candidates": [
       {
+        "id": "cross-feature-presentation:authSessionControllerProvider->exploreFiltersProvider",
+        "kind": "cross-feature-presentation",
+        "severity": "review",
+        "subject": "authSessionControllerProvider -> exploreFiltersProvider",
+        "reason": "A presentation provider reaches another feature presentation provider.",
+        "recommendation": "Keep only sanctioned public controller/read-model seams; otherwise move the contract below presentation.",
+        "source": "authSessionControllerProvider",
+        "target": "exploreFiltersProvider",
+        "review": {
+          "id": "cross-feature-presentation:authSessionControllerProvider->exploreFiltersProvider",
+          "status": "accepted",
+          "rationale": "Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's filters. The focused AuthSessionController test proves reset behavior."
+        }
+      },
+      {
+        "id": "cross-feature-presentation:authSessionControllerProvider->exploreSearchQueryProvider",
+        "kind": "cross-feature-presentation",
+        "severity": "review",
+        "subject": "authSessionControllerProvider -> exploreSearchQueryProvider",
+        "reason": "A presentation provider reaches another feature presentation provider.",
+        "recommendation": "Keep only sanctioned public controller/read-model seams; otherwise move the contract below presentation.",
+        "source": "authSessionControllerProvider",
+        "target": "exploreSearchQueryProvider",
+        "review": {
+          "id": "cross-feature-presentation:authSessionControllerProvider->exploreSearchQueryProvider",
+          "status": "accepted",
+          "rationale": "Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's search query. The focused AuthSessionController test proves reset behavior."
+        }
+      },
+      {
         "id": "cross-feature-presentation:authSessionControllerProvider->onboardingControllerProvider",
         "kind": "cross-feature-presentation",
         "severity": "review",
@@ -1078,6 +1114,36 @@
           "id": "cross-feature-presentation:authSessionControllerProvider->onboardingControllerProvider",
           "status": "accepted",
           "rationale": "Sign-out is the app-session boundary and must reset the public onboarding controller plus its Mutations. This is the documented controller-to-controller command seam, not a read-model or widget dependency."
+        }
+      },
+      {
+        "id": "cross-feature-presentation:authSessionControllerProvider->selectedExploreCityProvider",
+        "kind": "cross-feature-presentation",
+        "severity": "review",
+        "subject": "authSessionControllerProvider -> selectedExploreCityProvider",
+        "reason": "A presentation provider reaches another feature presentation provider.",
+        "recommendation": "Keep only sanctioned public controller/read-model seams; otherwise move the contract below presentation.",
+        "source": "authSessionControllerProvider",
+        "target": "selectedExploreCityProvider",
+        "review": {
+          "id": "cross-feature-presentation:authSessionControllerProvider->selectedExploreCityProvider",
+          "status": "accepted",
+          "rationale": "Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's selected city. The focused AuthSessionController test proves reset behavior."
+        }
+      },
+      {
+        "id": "cross-feature-presentation:authSessionControllerProvider->selectedExploreCityWasUserSelectedProvider",
+        "kind": "cross-feature-presentation",
+        "severity": "review",
+        "subject": "authSessionControllerProvider -> selectedExploreCityWasUserSelectedProvider",
+        "reason": "A presentation provider reaches another feature presentation provider.",
+        "recommendation": "Keep only sanctioned public controller/read-model seams; otherwise move the contract below presentation.",
+        "source": "authSessionControllerProvider",
+        "target": "selectedExploreCityWasUserSelectedProvider",
+        "review": {
+          "id": "cross-feature-presentation:authSessionControllerProvider->selectedExploreCityWasUserSelectedProvider",
+          "status": "accepted",
+          "rationale": "Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's manual city-selection guard. The focused AuthSessionController test proves reset behavior."
         }
       },
       {
@@ -1134,62 +1200,6 @@
           "id": "manual-provider:_hostClubsForUserProvider",
           "status": "accepted-exception",
           "rationale": "This is a private auto-dispose adapter in a part file that narrows a Host route provider result. Moving it only to satisfy code generation would add a public generated symbol and another ownership file without changing the dependency boundary."
-        }
-      },
-      {
-        "id": "manual-provider:clubNameLookupProvider",
-        "kind": "manual-provider",
-        "severity": "watch",
-        "subject": "clubNameLookupProvider",
-        "reason": "A handwritten provider outside core bypasses Riverpod code generation and the uniform declaration contract.",
-        "recommendation": "Migrate when the owning feature is next edited, unless the manual family API has a documented compatibility reason.",
-        "review": {
-          "id": "manual-provider:clubNameLookupProvider",
-          "status": "planned",
-          "debtId": "ARCH-PROVIDER-CODEGEN-001",
-          "rationale": "Existing manual auto-dispose family. Migrate with the next Clubs data-provider change so the family remains behaviorally identical and its override-heavy callers can be updated in one focused pass."
-        }
-      },
-      {
-        "id": "manual-provider:eventSuccessCompanionClockProvider",
-        "kind": "manual-provider",
-        "severity": "watch",
-        "subject": "eventSuccessCompanionClockProvider",
-        "reason": "A handwritten provider outside core bypasses Riverpod code generation and the uniform declaration contract.",
-        "recommendation": "Migrate when the owning feature is next edited, unless the manual family API has a documented compatibility reason.",
-        "review": {
-          "id": "manual-provider:eventSuccessCompanionClockProvider",
-          "status": "planned",
-          "debtId": "ARCH-PROVIDER-CODEGEN-001",
-          "rationale": "Existing manual auto-dispose clock provider. It is a straightforward codegen candidate but unrelated to current topology ownership fixes."
-        }
-      },
-      {
-        "id": "manual-provider:exploreRecommendedEventsProvider",
-        "kind": "manual-provider",
-        "severity": "watch",
-        "subject": "exploreRecommendedEventsProvider",
-        "reason": "A handwritten provider outside core bypasses Riverpod code generation and the uniform declaration contract.",
-        "recommendation": "Migrate when the owning feature is next edited, unless the manual family API has a documented compatibility reason.",
-        "review": {
-          "id": "manual-provider:exploreRecommendedEventsProvider",
-          "status": "planned",
-          "debtId": "ARCH-PROVIDER-CODEGEN-001",
-          "rationale": "Existing manual auto-dispose recommendation family with many test overrides. Migrate in a dedicated Explore data pass rather than mixing generated-provider API churn into this graph-tooling pass."
-        }
-      },
-      {
-        "id": "manual-provider:publicProfilesByIdsProvider",
-        "kind": "manual-provider",
-        "severity": "watch",
-        "subject": "publicProfilesByIdsProvider",
-        "reason": "A handwritten provider outside core bypasses Riverpod code generation and the uniform declaration contract.",
-        "recommendation": "Migrate when the owning feature is next edited, unless the manual family API has a documented compatibility reason.",
-        "review": {
-          "id": "manual-provider:publicProfilesByIdsProvider",
-          "status": "planned",
-          "debtId": "ARCH-PROVIDER-CODEGEN-001",
-          "rationale": "Existing manual auto-dispose batched lookup family. Migrate with the next public-profile data pass and preserve per-query disposal and parallel lookup behavior."
         }
       },
       {
@@ -1286,7 +1296,7 @@
       "name": "appShellFcmInitializationProvider",
       "kind": "generated-function",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 38,
+      "line": 37,
       "feature": "core",
       "layer": "presentation",
       "keepAlive": false,
@@ -1370,7 +1380,7 @@
       "name": "authSessionControllerProvider",
       "kind": "generated-class",
       "path": "lib/auth/presentation/auth_session_controller.dart",
-      "line": 9,
+      "line": 10,
       "feature": "auth",
       "layer": "presentation",
       "keepAlive": false,
@@ -1606,13 +1616,14 @@
     {
       "id": "provider:clubNameLookupProvider",
       "name": "clubNameLookupProvider",
-      "kind": "manual",
+      "kind": "generated-function",
       "path": "lib/clubs/data/club_name_lookup.dart",
-      "line": 22,
+      "line": 24,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
-      "family": true
+      "family": true,
+      "returnType": "Future<Map<String, String>>"
     },
     {
       "id": "provider:clubPostsRepositoryProvider",
@@ -1655,7 +1666,7 @@
       "name": "createClubControllerProvider",
       "kind": "generated-class",
       "path": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-      "line": 48,
+      "line": 46,
       "feature": "hosts",
       "layer": "presentation",
       "keepAlive": false,
@@ -1918,7 +1929,7 @@
       "name": "eventMapViewModelProvider",
       "kind": "generated-function",
       "path": "lib/events/presentation/event_map_view_model.dart",
-      "line": 214,
+      "line": 255,
       "feature": "events",
       "layer": "presentation",
       "keepAlive": false,
@@ -1976,13 +1987,14 @@
     {
       "id": "provider:eventSuccessCompanionClockProvider",
       "name": "eventSuccessCompanionClockProvider",
-      "kind": "manual",
+      "kind": "generated-function",
       "path": "lib/event_success/event_success_companion_clock.dart",
-      "line": 5,
+      "line": 7,
       "feature": "event_success",
       "layer": "event_success",
       "keepAlive": false,
-      "family": false
+      "family": false,
+      "returnType": "Stream<DateTime>"
     },
     {
       "id": "provider:eventSuccessCompanionLaunchRegistryProvider",
@@ -2095,13 +2107,14 @@
     {
       "id": "provider:exploreRecommendedEventsProvider",
       "name": "exploreRecommendedEventsProvider",
-      "kind": "manual",
+      "kind": "generated-function",
       "path": "lib/explore/data/explore_recommendations_repository.dart",
-      "line": 48,
+      "line": 50,
       "feature": "explore",
       "layer": "data",
       "keepAlive": false,
-      "family": true
+      "family": true,
+      "returnType": "Future<List<ExploreEventRecommendationCandidate>>"
     },
     {
       "id": "provider:exploreSearchQueryProvider",
@@ -2408,7 +2421,7 @@
       "name": "hostClubEditControllerProvider",
       "kind": "generated-function",
       "path": "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
-      "line": 9,
+      "line": 16,
       "feature": "hosts",
       "layer": "presentation",
       "keepAlive": false,
@@ -2684,7 +2697,7 @@
       "name": "paymentRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 500,
+      "line": 502,
       "feature": "payments",
       "layer": "data",
       "keepAlive": true,
@@ -2778,13 +2791,14 @@
     {
       "id": "provider:publicProfilesByIdsProvider",
       "name": "publicProfilesByIdsProvider",
-      "kind": "manual",
+      "kind": "generated-function",
       "path": "lib/public_profile/data/public_profiles_lookup.dart",
-      "line": 22,
+      "line": 24,
       "feature": "public_profile",
       "layer": "data",
       "keepAlive": false,
-      "family": true
+      "family": true,
+      "returnType": "Future<Map<String, PublicProfile>>"
     },
     {
       "id": "provider:recommendedEventsProvider",
@@ -3764,7 +3778,7 @@
       "id": "mutation:AuthSessionController.signOutMutation",
       "name": "AuthSessionController.signOutMutation",
       "path": "lib/auth/presentation/auth_session_controller.dart",
-      "line": 16,
+      "line": 17,
       "feature": "auth",
       "layer": "presentation"
     },
@@ -3836,7 +3850,7 @@
       "id": "mutation:CreateClubController.submitMutation",
       "name": "CreateClubController.submitMutation",
       "path": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-      "line": 55,
+      "line": 53,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -4108,7 +4122,15 @@
       "id": "mutation:HostClubEditController.updateClubMutation",
       "name": "HostClubEditController.updateClubMutation",
       "path": "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
-      "line": 23,
+      "line": 70,
+      "feature": "hosts",
+      "layer": "presentation"
+    },
+    {
+      "id": "mutation:HostClubEditController.updateMediaMutation",
+      "name": "HostClubEditController.updateMediaMutation",
+      "path": "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
+      "line": 71,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -4587,6 +4609,14 @@
       "layer": "presentation"
     },
     {
+      "id": "consumer:lib/clubs/presentation/detail/club_detail_read_only_preview.dart#ClubDetailReadOnlyPreviewSliver.build",
+      "owner": "ClubDetailReadOnlyPreviewSliver.build",
+      "path": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+      "line": 25,
+      "feature": "clubs",
+      "layer": "presentation"
+    },
+    {
       "id": "consumer:lib/clubs/presentation/detail/club_detail_screen.dart#ClubDetailScreen.build",
       "owner": "ClubDetailScreen.build",
       "path": "lib/clubs/presentation/detail/club_detail_screen.dart",
@@ -4614,7 +4644,7 @@
       "id": "consumer:lib/clubs/presentation/detail/widgets/club_detail_dock.dart#ClubMembershipDock.build",
       "owner": "ClubMembershipDock.build",
       "path": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "line": 288,
+      "line": 291,
       "feature": "clubs",
       "layer": "presentation"
     },
@@ -4622,7 +4652,7 @@
       "id": "consumer:lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart#MembershipTrailingController.build",
       "owner": "MembershipTrailingController.build",
       "path": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "line": 116,
+      "line": 115,
       "feature": "clubs",
       "layer": "presentation"
     },
@@ -4630,7 +4660,7 @@
       "id": "consumer:lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart#joinClub",
       "owner": "joinClub",
       "path": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "line": 130,
+      "line": 129,
       "feature": "clubs",
       "layer": "presentation"
     },
@@ -4646,7 +4676,7 @@
       "id": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
       "owner": "AppShell.build",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 51,
+      "line": 50,
       "feature": "core",
       "layer": "presentation"
     },
@@ -4694,7 +4724,7 @@
       "id": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState._markAllRead",
       "owner": "_ActivityScreenState._markAllRead",
       "path": "lib/dashboard/presentation/activity_screen.dart",
-      "line": 103,
+      "line": 104,
       "feature": "dashboard",
       "layer": "presentation"
     },
@@ -4710,7 +4740,7 @@
       "id": "consumer:lib/dashboard/presentation/dashboard_screen.dart#NotificationsAction.build",
       "owner": "NotificationsAction.build",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 157,
+      "line": 156,
       "feature": "dashboard",
       "layer": "presentation"
     },
@@ -4718,7 +4748,7 @@
       "id": "consumer:lib/dashboard/presentation/dashboard_screen.dart#_DashboardScreenState._logHomeAnalytics",
       "owner": "_DashboardScreenState._logHomeAnalytics",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 108,
+      "line": 107,
       "feature": "dashboard",
       "layer": "presentation"
     },
@@ -4726,7 +4756,7 @@
       "id": "consumer:lib/dashboard/presentation/dashboard_screen.dart#_DashboardScreenState.build",
       "owner": "_DashboardScreenState.build",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 42,
+      "line": 41,
       "feature": "dashboard",
       "layer": "presentation"
     },
@@ -4926,7 +4956,7 @@
       "id": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
       "owner": "_ManualQaFixtures.hostManageProviderOverrides",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1432,
+      "line": 1430,
       "feature": "event_success",
       "layer": "presentation"
     },
@@ -5054,7 +5084,7 @@
       "id": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState._activateOrCycleDistance",
       "owner": "_ExploreMapScreenState._activateOrCycleDistance",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 335,
+      "line": 343,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5062,7 +5092,7 @@
       "id": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState._applyDistanceFilter",
       "owner": "_ExploreMapScreenState._applyDistanceFilter",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 341,
+      "line": 349,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5070,7 +5100,7 @@
       "id": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState._openExternalEvent",
       "owner": "_ExploreMapScreenState._openExternalEvent",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 428,
+      "line": 436,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5078,7 +5108,7 @@
       "id": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState.build",
       "owner": "_ExploreMapScreenState.build",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 72,
+      "line": 78,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5086,7 +5116,7 @@
       "id": "consumer:lib/explore/presentation/explore_map_screen.dart#cycleDistanceFilter",
       "owner": "cycleDistanceFilter",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 126,
+      "line": 132,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5094,7 +5124,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._applyDistanceFilter",
       "owner": "_ExploreScreenState._applyDistanceFilter",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 376,
+      "line": 380,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5102,7 +5132,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._showLocationFailure",
       "owner": "_ExploreScreenState._showLocationFailure",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 384,
+      "line": 388,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5171,18 +5201,10 @@
       "layer": "presentation"
     },
     {
-      "id": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._activeSteps",
-      "owner": "_CreateClubScreenState._activeSteps",
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 177,
-      "feature": "hosts",
-      "layer": "presentation"
-    },
-    {
       "id": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._pickClubPhotos",
       "owner": "_CreateClubScreenState._pickClubPhotos",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 330,
+      "line": 249,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5190,7 +5212,7 @@
       "id": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._pickProfileImage",
       "owner": "_CreateClubScreenState._pickProfileImage",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 374,
+      "line": 293,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5198,7 +5220,7 @@
       "id": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._restoreSavedDraft",
       "owner": "_CreateClubScreenState._restoreSavedDraft",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 270,
+      "line": 189,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5206,7 +5228,7 @@
       "id": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._saveDraft",
       "owner": "_CreateClubScreenState._saveDraft",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 527,
+      "line": 385,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5214,7 +5236,7 @@
       "id": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._submit",
       "owner": "_CreateClubScreenState._submit",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 558,
+      "line": 414,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5222,31 +5244,7 @@
       "id": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
       "owner": "_CreateClubScreenState.build",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 620,
-      "feature": "hosts",
-      "layer": "presentation"
-    },
-    {
-      "id": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.initState",
-      "owner": "_CreateClubScreenState.initState",
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 212,
-      "feature": "hosts",
-      "layer": "presentation"
-    },
-    {
-      "id": "consumer:lib/hosts/presentation/club_management/host_edit_club_route_screen.dart#HostClubEditorStateView.build",
-      "owner": "HostClubEditorStateView.build",
-      "path": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
-      "line": 55,
-      "feature": "hosts",
-      "layer": "presentation"
-    },
-    {
-      "id": "consumer:lib/hosts/presentation/club_management/host_edit_club_route_screen.dart#HostEditClubRouteScreen.build",
-      "owner": "HostEditClubRouteScreen.build",
-      "path": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
-      "line": 24,
+      "line": 473,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5262,7 +5260,7 @@
       "id": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._pickLocation",
       "owner": "_EditHostedEventScreenState._pickLocation",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 695,
+      "line": 708,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5270,7 +5268,7 @@
       "id": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
       "owner": "_EditHostedEventScreenState._saveChanges",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 793,
+      "line": 806,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5278,7 +5276,7 @@
       "id": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
       "owner": "_EditHostedEventScreenState.build",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 317,
+      "line": 312,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5430,7 +5428,15 @@
       "id": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState._createHostProfile",
       "owner": "_HostAccountScreenState._createHostProfile",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 142,
+      "line": 185,
+      "feature": "hosts",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState._saveProfile",
+      "owner": "_HostAccountScreenState._saveProfile",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 161,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5438,7 +5444,7 @@
       "id": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState._signOut",
       "owner": "_HostAccountScreenState._signOut",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 170,
+      "line": 221,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5446,23 +5452,7 @@
       "id": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
       "owner": "_HostAccountScreenState.build",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 13,
-      "feature": "hosts",
-      "layer": "presentation"
-    },
-    {
-      "id": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostProfileEditorSheetState._saveProfile",
-      "owner": "_HostProfileEditorSheetState._saveProfile",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 453,
-      "feature": "hosts",
-      "layer": "presentation"
-    },
-    {
-      "id": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostProfileEditorSheetState.build",
-      "owner": "_HostProfileEditorSheetState.build",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 424,
+      "line": 26,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5470,7 +5460,47 @@
       "id": "consumer:lib/hosts/presentation/host_operations/host_analytics.dart#_HostClubInsightsPaneState.build",
       "owner": "_HostClubInsightsPaneState.build",
       "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 37,
+      "line": 35,
+      "feature": "hosts",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState._pickLogo",
+      "owner": "_HostClubProfileCardState._pickLogo",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 80,
+      "feature": "hosts",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState._pickPhotos",
+      "owner": "_HostClubProfileCardState._pickPhotos",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 86,
+      "feature": "hosts",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState._saveDefaults",
+      "owner": "_HostClubProfileCardState._saveDefaults",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 165,
+      "feature": "hosts",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState._saveMedia",
+      "owner": "_HostClubProfileCardState._saveMedia",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 129,
+      "feature": "hosts",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState.build",
+      "owner": "_HostClubProfileCardState.build",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 185,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5550,7 +5580,7 @@
       "id": "consumer:lib/hosts/presentation/host_operations/host_organizer.dart#HostClubOrganizerOverviewController.build",
       "owner": "HostClubOrganizerOverviewController.build",
       "path": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "line": 27,
+      "line": 8,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5622,7 +5652,7 @@
       "id": "consumer:lib/hosts/presentation/inbox/host_inbox_screen.dart#_HostInboxScreenState._retry",
       "owner": "_HostInboxScreenState._retry",
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "line": 201,
+      "line": 200,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5739,18 +5769,10 @@
       "layer": "presentation"
     },
     {
-      "id": "consumer:lib/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart#HostOrganizerPayoutPromptController.build",
-      "owner": "HostOrganizerPayoutPromptController.build",
-      "path": "lib/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart",
-      "line": 17,
-      "feature": "hosts",
-      "layer": "presentation"
-    },
-    {
       "id": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#HostTeamManagementSection.build",
       "owner": "HostTeamManagementSection.build",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 39,
+      "line": 38,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5758,7 +5780,7 @@
       "id": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#confirmHostAction",
       "owner": "confirmHostAction",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 106,
+      "line": 105,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5766,7 +5788,7 @@
       "id": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#showAddHostSheet",
       "owner": "showAddHostSheet",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 60,
+      "line": 59,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5774,7 +5796,7 @@
       "id": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState._deletePhoto",
       "owner": "_ProfilePhotoEditorScreenState._deletePhoto",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 153,
+      "line": 152,
       "feature": "image_uploads",
       "layer": "shared"
     },
@@ -5782,7 +5804,7 @@
       "id": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState._pickReplacementImage",
       "owner": "_ProfilePhotoEditorScreenState._pickReplacementImage",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 94,
+      "line": 97,
       "feature": "image_uploads",
       "layer": "shared"
     },
@@ -5790,7 +5812,7 @@
       "id": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState._save",
       "owner": "_ProfilePhotoEditorScreenState._save",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 123,
+      "line": 126,
       "feature": "image_uploads",
       "layer": "shared"
     },
@@ -5798,7 +5820,7 @@
       "id": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState.build",
       "owner": "_ProfilePhotoEditorScreenState.build",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 181,
+      "line": 180,
       "feature": "image_uploads",
       "layer": "shared"
     },
@@ -5886,7 +5908,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/gender_interest_page.dart#_GenderInterestPageState._submit",
       "owner": "_GenderInterestPageState._submit",
       "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 35,
+      "line": 36,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5894,7 +5916,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/gender_interest_page.dart#_GenderInterestPageState.build",
       "owner": "_GenderInterestPageState.build",
       "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 66,
+      "line": 67,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5902,7 +5924,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/gender_interest_page.dart#_GenderInterestPageState.initState",
       "owner": "_GenderInterestPageState.initState",
       "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 27,
+      "line": 28,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5910,7 +5932,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/instagram_page.dart#_InstagramPageState._continue",
       "owner": "_InstagramPageState._continue",
       "path": "lib/onboarding/presentation/pages/instagram_page.dart",
-      "line": 38,
+      "line": 39,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5918,7 +5940,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/instagram_page.dart#_InstagramPageState._skip",
       "owner": "_InstagramPageState._skip",
       "path": "lib/onboarding/presentation/pages/instagram_page.dart",
-      "line": 47,
+      "line": 48,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5926,7 +5948,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/instagram_page.dart#_InstagramPageState.initState",
       "owner": "_InstagramPageState.initState",
       "path": "lib/onboarding/presentation/pages/instagram_page.dart",
-      "line": 22,
+      "line": 23,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5934,7 +5956,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/name_dob_page.dart#_NameDobPageState._submit",
       "owner": "_NameDobPageState._submit",
       "path": "lib/onboarding/presentation/pages/name_dob_page.dart",
-      "line": 83,
+      "line": 84,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5942,7 +5964,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/name_dob_page.dart#_NameDobPageState.build",
       "owner": "_NameDobPageState.build",
       "path": "lib/onboarding/presentation/pages/name_dob_page.dart",
-      "line": 105,
+      "line": 106,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5950,7 +5972,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/name_dob_page.dart#_NameDobPageState.initState",
       "owner": "_NameDobPageState.initState",
       "path": "lib/onboarding/presentation/pages/name_dob_page.dart",
-      "line": 28,
+      "line": 29,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5966,7 +5988,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/profile_prompts_page.dart#_ProfilePromptsPageState._continue",
       "owner": "_ProfilePromptsPageState._continue",
       "path": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 92,
+      "line": 90,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5974,7 +5996,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/profile_prompts_page.dart#_ProfilePromptsPageState._seedPrompts",
       "owner": "_ProfilePromptsPageState._seedPrompts",
       "path": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 65,
+      "line": 63,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5982,7 +6004,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/profile_prompts_page.dart#_ProfilePromptsPageState.build",
       "owner": "_ProfilePromptsPageState.build",
       "path": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 102,
+      "line": 100,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5990,7 +6012,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/running_prefs_page.dart#_RunningPrefsPageState._seedFromProfile",
       "owner": "_RunningPrefsPageState._seedFromProfile",
       "path": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 56,
+      "line": 50,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -5998,7 +6020,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/running_prefs_page.dart#_RunningPrefsPageState._submit",
       "owner": "_RunningPrefsPageState._submit",
       "path": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 91,
+      "line": 85,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -6006,7 +6028,7 @@
       "id": "consumer:lib/onboarding/presentation/pages/running_prefs_page.dart#_RunningPrefsPageState.build",
       "owner": "_RunningPrefsPageState.build",
       "path": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 106,
+      "line": 100,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -6070,7 +6092,7 @@
       "id": "consumer:lib/payments/presentation/payment_history_screen.dart#PaymentHistoryListController.build",
       "owner": "PaymentHistoryListController.build",
       "path": "lib/payments/presentation/payment_history_screen.dart",
-      "line": 73,
+      "line": 74,
       "feature": "payments",
       "layer": "presentation"
     },
@@ -6310,7 +6332,7 @@
       "id": "consumer:lib/user_profile/presentation/profile_screen.dart#_ProfileScreenState._handleRetry",
       "owner": "_ProfileScreenState._handleRetry",
       "path": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 159,
+      "line": 158,
       "feature": "user_profile",
       "layer": "presentation"
     },
@@ -6318,7 +6340,7 @@
       "id": "consumer:lib/user_profile/presentation/profile_screen.dart#_ProfileScreenState.build",
       "owner": "_ProfileScreenState.build",
       "path": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 93,
+      "line": 92,
       "feature": "user_profile",
       "layer": "presentation"
     },
@@ -6342,7 +6364,7 @@
       "id": "consumer:lib/user_profile/presentation/widgets/profile_tab.dart#_ProfileTabContentState.build",
       "owner": "_ProfileTabContentState.build",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "line": 144,
+      "line": 148,
       "feature": "user_profile",
       "layer": "presentation"
     }
@@ -6382,7 +6404,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 40
+      "line": 39
     },
     {
       "source": "appShellFcmInitializationProvider",
@@ -6391,7 +6413,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 43
+      "line": 42
     },
     {
       "source": "appVersionConfigProvider",
@@ -6490,7 +6512,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/auth/presentation/auth_session_controller.dart",
-      "line": 32
+      "line": 33
     },
     {
       "source": "authSessionControllerProvider",
@@ -6499,7 +6521,25 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/auth/presentation/auth_session_controller.dart",
-      "line": 23
+      "line": 24
+    },
+    {
+      "source": "authSessionControllerProvider",
+      "sourceKind": "provider",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/auth/presentation/auth_session_controller.dart",
+      "line": 42
+    },
+    {
+      "source": "authSessionControllerProvider",
+      "sourceKind": "provider",
+      "target": "exploreSearchQueryProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/auth/presentation/auth_session_controller.dart",
+      "line": 41
     },
     {
       "source": "authSessionControllerProvider",
@@ -6508,7 +6548,25 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/auth/presentation/auth_session_controller.dart",
-      "line": 33
+      "line": 34
+    },
+    {
+      "source": "authSessionControllerProvider",
+      "sourceKind": "provider",
+      "target": "selectedExploreCityProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/auth/presentation/auth_session_controller.dart",
+      "line": 39
+    },
+    {
+      "source": "authSessionControllerProvider",
+      "sourceKind": "provider",
+      "target": "selectedExploreCityWasUserSelectedProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/auth/presentation/auth_session_controller.dart",
+      "line": 40
     },
     {
       "source": "authStateChangesProvider",
@@ -6868,7 +6926,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_name_lookup.dart",
-      "line": 26
+      "line": 31
     },
     {
       "source": "clubPostsRepositoryProvider",
@@ -6931,16 +6989,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-      "line": 156
-    },
-    {
-      "source": "createClubControllerProvider",
-      "sourceKind": "provider",
-      "target": "clubsRepositoryProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-      "line": 208
+      "line": 108
     },
     {
       "source": "createClubControllerProvider",
@@ -6949,7 +6998,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-      "line": 64
+      "line": 62
     },
     {
       "source": "createClubControllerProvider",
@@ -6958,7 +7007,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-      "line": 80
+      "line": 78
     },
     {
       "source": "createClubControllerProvider",
@@ -6967,7 +7016,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-      "line": 140
+      "line": 139
     },
     {
       "source": "createClubControllerProvider",
@@ -6976,16 +7025,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-      "line": 239
-    },
-    {
-      "source": "createClubControllerProvider",
-      "sourceKind": "provider",
-      "target": "imageUploadRepositoryProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-      "line": 282
+      "line": 182
     },
     {
       "source": "createClubDraftControllerProvider",
@@ -7444,7 +7484,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_map_view_model.dart",
-      "line": 290
+      "line": 331
     },
     {
       "source": "eventMapViewModelProvider",
@@ -7453,7 +7493,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_map_view_model.dart",
-      "line": 248
+      "line": 289
     },
     {
       "source": "eventMapViewModelProvider",
@@ -7462,7 +7502,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_map_view_model.dart",
-      "line": 240
+      "line": 281
     },
     {
       "source": "eventMapViewModelProvider",
@@ -7471,7 +7511,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_map_view_model.dart",
-      "line": 239
+      "line": 280
     },
     {
       "source": "eventMapViewModelProvider",
@@ -7480,7 +7520,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_map_view_model.dart",
-      "line": 238
+      "line": 279
     },
     {
       "source": "eventMapViewModelProvider",
@@ -7489,7 +7529,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_map_view_model.dart",
-      "line": 221
+      "line": 262
     },
     {
       "source": "eventParticipationRepositoryProvider",
@@ -8110,7 +8150,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/data/explore_recommendations_repository.dart",
-      "line": 58
+      "line": 60
     },
     {
       "source": "exploreRecommendedEventsProvider",
@@ -8119,7 +8159,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/data/explore_recommendations_repository.dart",
-      "line": 53
+      "line": 55
     },
     {
       "source": "exploreSearchRepositoryProvider",
@@ -8848,7 +8888,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 504
+      "line": 506
     },
     {
       "source": "paymentRepositoryProvider",
@@ -8857,7 +8897,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 503
+      "line": 505
     },
     {
       "source": "photoUploadControllerProvider",
@@ -9073,7 +9113,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/public_profile/data/public_profiles_lookup.dart",
-      "line": 31
+      "line": 36
     },
     {
       "source": "recommendedEventsProvider",
@@ -10479,7 +10519,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "line": 64
+      "line": 65
     },
     {
       "source": "consumer:lib/chats/presentation/inbox/chat_inbox_screen.dart#_ChatsListScreenState.build",
@@ -10552,6 +10592,24 @@
       "operation": "listen",
       "path": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 41
+    },
+    {
+      "source": "consumer:lib/clubs/presentation/detail/club_detail_read_only_preview.dart#ClubDetailReadOnlyPreviewSliver.build",
+      "sourceKind": "consumer",
+      "target": "clubDetailViewModelProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+      "line": 47
+    },
+    {
+      "source": "consumer:lib/clubs/presentation/detail/club_detail_read_only_preview.dart#ClubDetailReadOnlyPreviewSliver.build",
+      "sourceKind": "consumer",
+      "target": "clubDetailViewModelProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+      "line": 27
     },
     {
       "source": "consumer:lib/clubs/presentation/detail/club_detail_screen.dart#ClubDetailScreen.build",
@@ -10686,7 +10744,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "line": 319
+      "line": 322
     },
     {
       "source": "consumer:lib/clubs/presentation/detail/widgets/club_detail_dock.dart#ClubMembershipDock.build",
@@ -10695,7 +10753,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "line": 324
+      "line": 327
     },
     {
       "source": "consumer:lib/clubs/presentation/detail/widgets/club_detail_dock.dart#ClubMembershipDock.build",
@@ -10704,7 +10762,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "line": 331
+      "line": 334
     },
     {
       "source": "consumer:lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart#MembershipTrailingController.build",
@@ -10713,7 +10771,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "line": 157
+      "line": 156
     },
     {
       "source": "consumer:lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart#joinClub",
@@ -10722,7 +10780,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "line": 139
+      "line": 138
     },
     {
       "source": "consumer:lib/core/celebration/catch_celebration_screen.dart#_CatchCelebrationScreenState.initState",
@@ -10740,7 +10798,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 69
+      "line": 68
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10749,7 +10807,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 61
+      "line": 60
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10758,7 +10816,7 @@
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 73
+      "line": 72
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10767,7 +10825,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 72
+      "line": 71
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10776,7 +10834,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 68
+      "line": 67
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10785,7 +10843,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 87
+      "line": 86
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10794,7 +10852,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 120
+      "line": 119
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10803,7 +10861,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 123
+      "line": 122
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10812,7 +10870,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 59
+      "line": 58
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10821,7 +10879,7 @@
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 112
+      "line": 111
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10830,7 +10888,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 53
+      "line": 52
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10839,7 +10897,7 @@
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 84
+      "line": 83
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -10848,7 +10906,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 124
+      "line": 123
     },
     {
       "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
@@ -10974,7 +11032,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/dashboard/presentation/activity_screen.dart",
-      "line": 112
+      "line": 113
     },
     {
       "source": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState._markAllRead",
@@ -10983,7 +11041,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/dashboard/presentation/activity_screen.dart",
-      "line": 119
+      "line": 120
     },
     {
       "source": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState.build",
@@ -11010,7 +11068,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/dashboard/presentation/activity_screen.dart",
-      "line": 83
+      "line": 84
     },
     {
       "source": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState.build",
@@ -11019,7 +11077,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/dashboard/presentation/activity_screen.dart",
-      "line": 91
+      "line": 92
     },
     {
       "source": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState.build",
@@ -11037,7 +11095,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 171
+      "line": 175
     },
     {
       "source": "consumer:lib/dashboard/presentation/dashboard_screen.dart#NotificationsAction.build",
@@ -11046,7 +11104,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 159
+      "line": 158
     },
     {
       "source": "consumer:lib/dashboard/presentation/dashboard_screen.dart#_DashboardScreenState._logHomeAnalytics",
@@ -11055,7 +11113,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 117
+      "line": 116
     },
     {
       "source": "consumer:lib/dashboard/presentation/dashboard_screen.dart#_DashboardScreenState.build",
@@ -11064,7 +11122,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 84
+      "line": 83
     },
     {
       "source": "consumer:lib/dashboard/presentation/dashboard_screen.dart#_DashboardScreenState.build",
@@ -11073,7 +11131,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 45
+      "line": 44
     },
     {
       "source": "consumer:lib/dashboard/presentation/dashboard_screen.dart#_DashboardScreenState.build",
@@ -11082,7 +11140,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 44
+      "line": 43
     },
     {
       "source": "consumer:lib/dashboard/presentation/dashboard_screen.dart#_DashboardScreenState.build",
@@ -11091,7 +11149,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 60
+      "line": 59
     },
     {
       "source": "consumer:lib/dashboard/presentation/dashboard_screen.dart#_DashboardScreenState.build",
@@ -11100,7 +11158,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 65
+      "line": 64
     },
     {
       "source": "consumer:lib/dashboard/presentation/dashboard_screen.dart#_DashboardScreenState.build",
@@ -11109,7 +11167,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 56
+      "line": 55
     },
     {
       "source": "consumer:lib/dashboard/presentation/widgets/activity_section.dart#ActivitySection.build",
@@ -12099,7 +12157,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1466
+      "line": 1464
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12108,7 +12166,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1469
+      "line": 1467
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12117,7 +12175,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1450
+      "line": 1448
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12126,7 +12184,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1485
+      "line": 1483
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12135,7 +12193,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1493
+      "line": 1491
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12144,7 +12202,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1505
+      "line": 1503
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12153,7 +12211,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1456
+      "line": 1454
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12162,7 +12220,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1449
+      "line": 1447
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12171,7 +12229,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1472
+      "line": 1470
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12180,7 +12238,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1463
+      "line": 1461
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12189,7 +12247,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1460
+      "line": 1458
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12198,7 +12256,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1459
+      "line": 1457
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12207,7 +12265,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1481
+      "line": 1479
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12216,7 +12274,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1475
+      "line": 1473
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12225,7 +12283,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1496
+      "line": 1494
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12234,7 +12292,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1488
+      "line": 1486
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12243,7 +12301,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1478
+      "line": 1476
     },
     {
       "source": "consumer:lib/event_success/presentation/event_success_manual_qa_screen.dart#_ManualQaFixtures.hostManageProviderOverrides",
@@ -12252,7 +12310,7 @@
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "line": 1499
+      "line": 1497
     },
     {
       "source": "consumer:lib/events/presentation/calendar/calendar_screen.dart#_CalendarScreenState.build",
@@ -12774,7 +12832,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 337
+      "line": 345
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState._applyDistanceFilter",
@@ -12783,7 +12841,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 358
+      "line": 366
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState._applyDistanceFilter",
@@ -12792,7 +12850,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 342
+      "line": 350
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState._openExternalEvent",
@@ -12801,7 +12859,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 432
+      "line": 440
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState._openExternalEvent",
@@ -12810,7 +12868,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 450
+      "line": 458
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState.build",
@@ -12819,7 +12877,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 83
+      "line": 89
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState.build",
@@ -12828,7 +12886,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 233
+      "line": 239
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState.build",
@@ -12837,7 +12895,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 75
+      "line": 81
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState.build",
@@ -12846,7 +12904,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 206
+      "line": 212
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState.build",
@@ -12855,7 +12913,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 82
+      "line": 88
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState.build",
@@ -12864,7 +12922,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 76
+      "line": 82
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#cycleDistanceFilter",
@@ -12873,7 +12931,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 128
+      "line": 134
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._applyDistanceFilter",
@@ -12882,7 +12940,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 377
+      "line": 381
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._showLocationFailure",
@@ -12891,7 +12949,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 405
+      "line": 409
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13398,22 +13456,13 @@
       "line": 28
     },
     {
-      "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._activeSteps",
-      "sourceKind": "consumer",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 178
-    },
-    {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._pickClubPhotos",
       "sourceKind": "consumer",
       "target": "createClubControllerProvider",
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 333
+      "line": 252
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._pickProfileImage",
@@ -13422,7 +13471,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 375
+      "line": 294
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._restoreSavedDraft",
@@ -13431,7 +13480,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 272
+      "line": 191
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._restoreSavedDraft",
@@ -13440,7 +13489,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 291
+      "line": 210
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._saveDraft",
@@ -13449,7 +13498,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 541
+      "line": 397
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._submit",
@@ -13458,7 +13507,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 560
+      "line": 419
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._submit",
@@ -13467,7 +13516,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 598
+      "line": 453
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
@@ -13476,7 +13525,7 @@
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 674
+      "line": 510
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
@@ -13485,7 +13534,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 637
+      "line": 477
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
@@ -13494,7 +13543,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 641
+      "line": 481
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
@@ -13503,61 +13552,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 638
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
-      "sourceKind": "consumer",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 631
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
-      "sourceKind": "consumer",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 623
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.initState",
-      "sourceKind": "consumer",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 215
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/club_management/host_edit_club_route_screen.dart#HostClubEditorStateView.build",
-      "sourceKind": "consumer",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
-      "line": 57
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/club_management/host_edit_club_route_screen.dart#HostEditClubRouteScreen.build",
-      "sourceKind": "consumer",
-      "target": "fetchClubProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
-      "line": 37
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/club_management/host_edit_club_route_screen.dart#HostEditClubRouteScreen.build",
-      "sourceKind": "consumer",
-      "target": "fetchClubProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
-      "line": 30
+      "line": 478
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_route_screen.dart#EditHostedEventRouteScreen.build",
@@ -13611,7 +13606,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 696
+      "line": 709
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -13620,7 +13615,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 847
+      "line": 860
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -13629,7 +13624,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 856
+      "line": 869
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -13638,7 +13633,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 855
+      "line": 868
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
@@ -13647,7 +13642,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 320
+      "line": 315
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
@@ -13656,7 +13651,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 364
+      "line": 359
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._checkForDrafts",
@@ -13998,7 +13993,16 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 144
+      "line": 187
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState._saveProfile",
+      "sourceKind": "consumer",
+      "target": "HostProfileController.saveProfileMutation",
+      "targetKind": "mutation",
+      "operation": "mutation-run",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 164
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState._signOut",
@@ -14007,7 +14011,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 174
+      "line": 225
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState._signOut",
@@ -14016,7 +14020,7 @@
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 171
+      "line": 222
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
@@ -14025,7 +14029,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 41
+      "line": 55
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
@@ -14034,97 +14038,124 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 51
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "sourceKind": "consumer",
+      "target": "HostProfileController.saveProfileMutation",
+      "targetKind": "mutation",
+      "operation": "watch",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 54
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "sourceKind": "consumer",
+      "target": "_hostClubsForUserProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 136
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "sourceKind": "consumer",
+      "target": "_hostClubsForUserProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 50
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "sourceKind": "consumer",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 40
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "sourceKind": "consumer",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 29
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "sourceKind": "consumer",
+      "target": "watchHostProfileProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 118
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "sourceKind": "consumer",
+      "target": "watchHostProfileProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 47
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_analytics.dart#_HostClubInsightsPaneState.build",
+      "sourceKind": "consumer",
+      "target": "hostAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "line": 78
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_analytics.dart#_HostClubInsightsPaneState.build",
+      "sourceKind": "consumer",
+      "target": "hostAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
       "line": 38
     },
     {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "source": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState._pickLogo",
       "sourceKind": "consumer",
-      "target": "_hostClubsForUserProvider",
+      "target": "hostClubEditControllerProvider",
       "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 119
+      "operation": "read",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 81
     },
     {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "source": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState._pickPhotos",
       "sourceKind": "consumer",
-      "target": "_hostClubsForUserProvider",
+      "target": "hostClubEditControllerProvider",
       "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 37
+      "operation": "read",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 89
     },
     {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
+      "source": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState.build",
       "sourceKind": "consumer",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 27
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
-      "sourceKind": "consumer",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 16
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
-      "sourceKind": "consumer",
-      "target": "watchHostProfileProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 101
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
-      "sourceKind": "consumer",
-      "target": "watchHostProfileProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 34
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostProfileEditorSheetState._saveProfile",
-      "sourceKind": "consumer",
-      "target": "HostProfileController.saveProfileMutation",
-      "targetKind": "mutation",
-      "operation": "mutation-run",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 456
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostProfileEditorSheetState.build",
-      "sourceKind": "consumer",
-      "target": "HostProfileController.saveProfileMutation",
+      "target": "HostClubEditController.updateClubMutation",
       "targetKind": "mutation",
       "operation": "watch",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 426
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 190
     },
     {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_analytics.dart#_HostClubInsightsPaneState.build",
+      "source": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState.build",
       "sourceKind": "consumer",
-      "target": "hostAnalyticsProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 85
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_analytics.dart#_HostClubInsightsPaneState.build",
-      "sourceKind": "consumer",
-      "target": "hostAnalyticsProvider",
-      "targetKind": "provider",
+      "target": "HostClubEditController.updateMediaMutation",
+      "targetKind": "mutation",
       "operation": "watch",
-      "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 40
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 189
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_clubs_screen.dart#HostClubsScreen.build",
@@ -14304,7 +14335,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "line": 29
+      "line": 10
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_profile_screen.dart#_HostProfileScreenState._buildProfileBody",
@@ -14430,7 +14461,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "line": 203
+      "line": 202
     },
     {
       "source": "consumer:lib/hosts/presentation/inbox/host_inbox_screen.dart#_HostInboxScreenState._retry",
@@ -14439,7 +14470,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "line": 205
+      "line": 204
     },
     {
       "source": "consumer:lib/hosts/presentation/inbox/host_inbox_screen.dart#_HostInboxScreenState._retry",
@@ -14448,7 +14479,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "line": 202
+      "line": 201
     },
     {
       "source": "consumer:lib/hosts/presentation/inbox/host_inbox_screen.dart#_HostInboxScreenState._retry",
@@ -14457,7 +14488,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "line": 204
+      "line": 203
     },
     {
       "source": "consumer:lib/hosts/presentation/inbox/host_inbox_screen.dart#_HostInboxScreenState.build",
@@ -14628,7 +14659,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/widgets/host_club_tools.dart",
-      "line": 187
+      "line": 185
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_club_tools.dart#HostClubManagementPanel.build",
@@ -14637,7 +14668,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/widgets/host_club_tools.dart",
-      "line": 184
+      "line": 182
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_club_tools.dart#HostClubManagementPanel.build",
@@ -14646,7 +14677,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/hosts/presentation/widgets/host_club_tools.dart",
-      "line": 166
+      "line": 164
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_event_attendance_panel.dart#_HostEventParticipantsPanelState._shareOpsReport",
@@ -14766,18 +14797,18 @@
       "line": 108
     },
     {
-      "source": "consumer:lib/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart#HostOrganizerPayoutPromptController.build",
+      "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#HostTeamManagementSection.build",
       "sourceKind": "consumer",
-      "target": "watchHostPaymentAccountProvider",
-      "targetKind": "provider",
+      "target": "HostTeamManagementController.addHostMutation",
+      "targetKind": "mutation",
       "operation": "watch",
-      "path": "lib/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart",
-      "line": 19
+      "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
+      "line": 42
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#HostTeamManagementSection.build",
       "sourceKind": "consumer",
-      "target": "HostTeamManagementController.addHostMutation",
+      "target": "HostTeamManagementController.removeHostMutation",
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
@@ -14786,20 +14817,11 @@
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#HostTeamManagementSection.build",
       "sourceKind": "consumer",
-      "target": "HostTeamManagementController.removeHostMutation",
-      "targetKind": "mutation",
-      "operation": "watch",
-      "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 44
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#HostTeamManagementSection.build",
-      "sourceKind": "consumer",
       "target": "HostTeamManagementController.transferOwnershipMutation",
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 47
+      "line": 46
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#confirmHostAction",
@@ -14808,7 +14830,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 123
+      "line": 122
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#confirmHostAction",
@@ -14817,7 +14839,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 130
+      "line": 129
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#confirmHostAction",
@@ -14826,7 +14848,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 138
+      "line": 137
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#showAddHostSheet",
@@ -14835,7 +14857,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 77
+      "line": 76
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#showAddHostSheet",
@@ -14844,7 +14866,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 84
+      "line": 83
     },
     {
       "source": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState._deletePhoto",
@@ -14853,7 +14875,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 170
+      "line": 169
     },
     {
       "source": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState._pickReplacementImage",
@@ -14862,7 +14884,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 97
+      "line": 100
     },
     {
       "source": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState._save",
@@ -14871,7 +14893,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 138
+      "line": 137
     },
     {
       "source": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState.build",
@@ -14880,7 +14902,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 186
+      "line": 185
     },
     {
       "source": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#openProfilePhotoEditor",
@@ -15114,7 +15136,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 49
+      "line": 50
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/gender_interest_page.dart#_GenderInterestPageState._submit",
@@ -15123,7 +15145,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 42
+      "line": 43
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/gender_interest_page.dart#_GenderInterestPageState.build",
@@ -15132,7 +15154,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 68
+      "line": 69
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/gender_interest_page.dart#_GenderInterestPageState.initState",
@@ -15141,7 +15163,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 30
+      "line": 31
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/instagram_page.dart#_InstagramPageState._continue",
@@ -15150,7 +15172,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/instagram_page.dart",
-      "line": 42
+      "line": 43
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/instagram_page.dart#_InstagramPageState._skip",
@@ -15159,7 +15181,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/instagram_page.dart",
-      "line": 51
+      "line": 52
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/instagram_page.dart#_InstagramPageState.initState",
@@ -15168,7 +15190,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/instagram_page.dart",
-      "line": 25
+      "line": 26
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/name_dob_page.dart#_NameDobPageState._submit",
@@ -15177,7 +15199,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/name_dob_page.dart",
-      "line": 84
+      "line": 85
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/name_dob_page.dart#_NameDobPageState._submit",
@@ -15186,7 +15208,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/name_dob_page.dart",
-      "line": 94
+      "line": 95
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/name_dob_page.dart#_NameDobPageState.build",
@@ -15195,7 +15217,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/onboarding/presentation/pages/name_dob_page.dart",
-      "line": 107
+      "line": 108
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/name_dob_page.dart#_NameDobPageState.initState",
@@ -15204,7 +15226,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/name_dob_page.dart",
-      "line": 31
+      "line": 32
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/photos_page.dart#PhotosPage.build",
@@ -15267,7 +15289,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 95
+      "line": 93
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/profile_prompts_page.dart#_ProfilePromptsPageState._seedPrompts",
@@ -15276,7 +15298,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 66
+      "line": 64
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/profile_prompts_page.dart#_ProfilePromptsPageState._seedPrompts",
@@ -15285,7 +15307,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 68
+      "line": 66
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/profile_prompts_page.dart#_ProfilePromptsPageState.build",
@@ -15294,7 +15316,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 104
+      "line": 102
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/running_prefs_page.dart#_RunningPrefsPageState._seedFromProfile",
@@ -15303,7 +15325,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 57
+      "line": 51
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/running_prefs_page.dart#_RunningPrefsPageState._submit",
@@ -15312,7 +15334,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 93
+      "line": 87
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/running_prefs_page.dart#_RunningPrefsPageState.build",
@@ -15321,7 +15343,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 108
+      "line": 102
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/welcome_page.dart#_WelcomePageState._logCta",
@@ -15429,7 +15451,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/presentation/payment_history_screen.dart",
-      "line": 75
+      "line": 76
     },
     {
       "source": "consumer:lib/payments/presentation/payment_history_screen.dart#PaymentHistoryListController.build",
@@ -15438,7 +15460,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/payments/presentation/payment_history_screen.dart",
-      "line": 83
+      "line": 84
     },
     {
       "source": "consumer:lib/payments/presentation/payment_history_screen.dart#PaymentHistoryScreen.build",
@@ -15447,7 +15469,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/payments/presentation/payment_history_screen.dart",
-      "line": 43
+      "line": 44
     },
     {
       "source": "consumer:lib/payments/presentation/payment_history_screen.dart#PaymentHistoryScreen.build",
@@ -15780,7 +15802,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 400
+      "line": 401
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -15798,7 +15820,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 203
+      "line": 204
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -16023,7 +16045,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 162
+      "line": 161
     },
     {
       "source": "consumer:lib/user_profile/presentation/profile_screen.dart#_ProfileScreenState.build",
@@ -16032,7 +16054,7 @@
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 99
+      "line": 98
     },
     {
       "source": "consumer:lib/user_profile/presentation/profile_screen.dart#_ProfileScreenState.build",
@@ -16041,7 +16063,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 97
+      "line": 96
     },
     {
       "source": "consumer:lib/user_profile/presentation/widgets/inline_editor_save.dart#<extension>.saveFields",
@@ -16068,7 +16090,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "line": 192
+      "line": 199
     },
     {
       "source": "consumer:lib/user_profile/presentation/widgets/profile_tab.dart#_ProfileTabContentState.build",
@@ -16077,7 +16099,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "line": 205
+      "line": 212
     }
   ],
   "mutationEdges": [
@@ -16349,7 +16371,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "line": 319
+      "line": 322
     },
     {
       "source": "consumer:lib/clubs/presentation/detail/widgets/club_detail_dock.dart#ClubMembershipDock.build",
@@ -16358,7 +16380,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "line": 324
+      "line": 327
     },
     {
       "source": "consumer:lib/clubs/presentation/detail/widgets/club_detail_dock.dart#ClubMembershipDock.build",
@@ -16367,7 +16389,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "line": 331
+      "line": 334
     },
     {
       "source": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState._markAllRead",
@@ -16376,7 +16398,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/dashboard/presentation/activity_screen.dart",
-      "line": 112
+      "line": 113
     },
     {
       "source": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState.build",
@@ -16871,7 +16893,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 272
+      "line": 191
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._saveDraft",
@@ -16880,7 +16902,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 541
+      "line": 397
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState._submit",
@@ -16889,7 +16911,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 560
+      "line": 419
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
@@ -16898,7 +16920,7 @@
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 674
+      "line": 510
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
@@ -16907,7 +16929,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 637
+      "line": 477
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
@@ -16916,7 +16938,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 641
+      "line": 481
     },
     {
       "source": "consumer:lib/hosts/presentation/club_management/create/create_club_screen.dart#_CreateClubScreenState.build",
@@ -16925,7 +16947,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "line": 638
+      "line": 478
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -16934,7 +16956,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 847
+      "line": 860
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
@@ -16943,7 +16965,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 320
+      "line": 315
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._deleteDraft",
@@ -17105,7 +17127,16 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 144
+      "line": 187
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState._saveProfile",
+      "sourceKind": "consumer",
+      "target": "HostProfileController.saveProfileMutation",
+      "targetKind": "mutation",
+      "operation": "mutation-run",
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 164
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState._signOut",
@@ -17114,7 +17145,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 174
+      "line": 225
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState._signOut",
@@ -17123,7 +17154,7 @@
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 171
+      "line": 222
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
@@ -17132,7 +17163,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 41
+      "line": 55
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
@@ -17141,25 +17172,34 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 38
+      "line": 51
     },
     {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostProfileEditorSheetState._saveProfile",
-      "sourceKind": "consumer",
-      "target": "HostProfileController.saveProfileMutation",
-      "targetKind": "mutation",
-      "operation": "mutation-run",
-      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 456
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostProfileEditorSheetState.build",
+      "source": "consumer:lib/hosts/presentation/host_operations/host_account_screen.dart#_HostAccountScreenState.build",
       "sourceKind": "consumer",
       "target": "HostProfileController.saveProfileMutation",
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 426
+      "line": 54
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState.build",
+      "sourceKind": "consumer",
+      "target": "HostClubEditController.updateClubMutation",
+      "targetKind": "mutation",
+      "operation": "watch",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 190
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState.build",
+      "sourceKind": "consumer",
+      "target": "HostClubEditController.updateMediaMutation",
+      "targetKind": "mutation",
+      "operation": "watch",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 189
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_inline_editors.dart#<extension>.isSaving",
@@ -17366,25 +17406,25 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
+      "line": 42
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#HostTeamManagementSection.build",
+      "sourceKind": "consumer",
+      "target": "HostTeamManagementController.removeHostMutation",
+      "targetKind": "mutation",
+      "operation": "watch",
+      "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
       "line": 43
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#HostTeamManagementSection.build",
       "sourceKind": "consumer",
-      "target": "HostTeamManagementController.removeHostMutation",
-      "targetKind": "mutation",
-      "operation": "watch",
-      "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 44
-    },
-    {
-      "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#HostTeamManagementSection.build",
-      "sourceKind": "consumer",
       "target": "HostTeamManagementController.transferOwnershipMutation",
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 47
+      "line": 46
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#confirmHostAction",
@@ -17393,7 +17433,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 123
+      "line": 122
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#confirmHostAction",
@@ -17402,7 +17442,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 130
+      "line": 129
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_team_management_section.dart#showAddHostSheet",
@@ -17411,7 +17451,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 77
+      "line": 76
     },
     {
       "source": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState._deletePhoto",
@@ -17420,7 +17460,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 170
+      "line": 169
     },
     {
       "source": "consumer:lib/image_uploads/shared/profile_photo_editor_screen.dart#_ProfilePhotoEditorScreenState._save",
@@ -17429,7 +17469,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 138
+      "line": 137
     },
     {
       "source": "consumer:lib/launch_access/presentation/launch_access_application_screen.dart#_LaunchAccessApplicationFormState._submit",
@@ -17456,7 +17496,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 49
+      "line": 50
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/gender_interest_page.dart#_GenderInterestPageState.build",
@@ -17465,7 +17505,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 68
+      "line": 69
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/photos_page.dart#PhotosPage.build",
@@ -17492,7 +17532,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 95
+      "line": 93
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/profile_prompts_page.dart#_ProfilePromptsPageState.build",
@@ -17501,7 +17541,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 104
+      "line": 102
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/running_prefs_page.dart#_RunningPrefsPageState._submit",
@@ -17510,7 +17550,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 93
+      "line": 87
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/running_prefs_page.dart#_RunningPrefsPageState.build",
@@ -17519,7 +17559,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 108
+      "line": 102
     },
     {
       "source": "consumer:lib/public_profile/presentation/public_profile_screen.dart#PublicProfileScreen.build",
@@ -17780,7 +17820,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "line": 192
+      "line": 199
     },
     {
       "source": "consumer:lib/user_profile/presentation/widgets/profile_tab.dart#_ProfileTabContentState.build",
@@ -17789,7 +17829,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "line": 205
+      "line": 212
     },
     {
       "source": "publicProfileScreenStateProvider",
@@ -17835,7 +17875,7 @@
       "operation": "watch",
       "reference": "mutation",
       "path": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "line": 129
+      "line": 128
     },
     {
       "source": "consumer:lib/core/widgets/catch_mutation_error_listener.dart#CatchMutationErrorListener.build",
@@ -17868,6 +17908,22 @@
       "reference": "mutation",
       "path": "lib/event_success/presentation/event_success_host_screen.dart",
       "line": 215
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState._saveMedia",
+      "sourceKind": "consumer",
+      "operation": "read",
+      "reference": "mutation",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 131
+    },
+    {
+      "source": "consumer:lib/hosts/presentation/host_operations/host_club_profile.dart#_HostClubProfileCardState._saveDefaults",
+      "sourceKind": "consumer",
+      "operation": "read",
+      "reference": "mutation",
+      "path": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "line": 167
     },
     {
       "source": "consumer:lib/hosts/presentation/widgets/host_event_attendance_panel.dart#_HostEventParticipantsPanelState._toggleAttendance",

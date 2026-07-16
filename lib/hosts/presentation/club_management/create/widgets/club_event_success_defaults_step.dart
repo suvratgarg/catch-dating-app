@@ -32,12 +32,10 @@ class ClubEventSuccessDefaultsStep extends StatelessWidget {
           defaults: eventSuccess,
         ),
       ),
-      title: context
-          .l10n
-          .hostsClubEventSuccessDefaultsStepTitleDefaultEventSuccess,
+      title: context.l10n.hostsClubEventSuccessDefaultsStepTitleLiveEventGuide,
       subtitle: context
           .l10n
-          .hostsClubEventSuccessDefaultsStepSubtitleApplyActivityAwareRun,
+          .hostsClubEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity,
     );
 
     return Form(

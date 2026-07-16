@@ -95,11 +95,15 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       selectedModuleIds: _stableModuleIds(draft.selectedModuleIds),
       targetAttendeeCount: draft.targetAttendeeCount,
       structureConfig: draft.structureConfig,
-      hostGoal: draft.hostGoal,
-      wingmanRequestsEnabled: draft.wingmanRequestsEnabled,
-      contextualOpenersEnabled: draft.contextualOpenersEnabled,
+      hostGoal: _persistedHostGoal(draft),
+      wingmanRequestsEnabled: draft.isModuleSelected(
+        EventSuccessModuleCatalog.wingmanRequests.id,
+      ),
+      contextualOpenersEnabled: draft.isModuleSelected(
+        EventSuccessModuleCatalog.contextualOpeners.id,
+      ),
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
-      questionnaireConfig: draft.questionnaireConfig,
+      questionnaireConfig: draft.questionnaireConfig.normalized(),
       activeStepIndex: activeStepIndex,
       status: status,
       attendeePrompt: attendeePrompt,
@@ -207,11 +211,15 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       selectedModuleIds: _stableModuleIds(draft.selectedModuleIds),
       targetAttendeeCount: draft.targetAttendeeCount,
       structureConfig: draft.structureConfig,
-      hostGoal: draft.hostGoal,
-      wingmanRequestsEnabled: draft.wingmanRequestsEnabled,
-      contextualOpenersEnabled: draft.contextualOpenersEnabled,
+      hostGoal: _persistedHostGoal(draft),
+      wingmanRequestsEnabled: draft.isModuleSelected(
+        EventSuccessModuleCatalog.wingmanRequests.id,
+      ),
+      contextualOpenersEnabled: draft.isModuleSelected(
+        EventSuccessModuleCatalog.contextualOpeners.id,
+      ),
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
-      questionnaireConfig: draft.questionnaireConfig,
+      questionnaireConfig: draft.questionnaireConfig.normalized(),
       updatedAt: updatedAt,
     );
   }
@@ -270,6 +278,15 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       ),
     );
   }
+}
+
+String _persistedHostGoal(EventSuccessHostDraft draft) {
+  final normalized = draft.hostGoal.trim();
+  if (normalized.isNotEmpty) return normalized;
+  return EventSuccessHostDraft.fromPlaybook(
+    draft.playbook,
+    targetAttendeeCount: draft.targetAttendeeCount,
+  ).hostGoal;
 }
 
 Set<String> _assignmentParticipantUids(

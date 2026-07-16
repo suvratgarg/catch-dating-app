@@ -95,6 +95,7 @@ class CatchTabbedPageScrollView extends StatefulWidget {
     required this.slivers,
     this.includeTerminalPadding = true,
     this.controller,
+    this.scrollStateController,
     this.physics,
   });
 
@@ -102,26 +103,74 @@ class CatchTabbedPageScrollView extends StatefulWidget {
   final List<Widget> slivers;
   final bool includeTerminalPadding;
   final ScrollController? controller;
+  final CatchTabbedPageScrollController? scrollStateController;
   final ScrollPhysics? physics;
 
   @override
-  CatchTabbedPageScrollViewState createState() =>
-      CatchTabbedPageScrollViewState();
+  State<CatchTabbedPageScrollView> createState() =>
+      _CatchTabbedPageScrollViewState();
 }
 
-class CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
+/// Imperative offset access for a [CatchTabbedPageScrollView].
+///
+/// The page owns its widget state; consumers that need to preserve an offset
+/// across a tab transition use this controller instead of a public `State`
+/// subclass or `GlobalKey`.
+class CatchTabbedPageScrollController {
+  _CatchTabbedPageScrollViewState? _state;
+
+  double? captureOffset() => _state?._captureOffset();
+
+  void restoreOffset(double? savedPixels) =>
+      _state?._restoreOffset(savedPixels);
+
+  void _attach(_CatchTabbedPageScrollViewState state) {
+    assert(_state == null || identical(_state, state));
+    _state = state;
+  }
+
+  void _detach(_CatchTabbedPageScrollViewState state) {
+    if (identical(_state, state)) _state = null;
+  }
+}
+
+class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
     with AutomaticKeepAliveClientMixin<CatchTabbedPageScrollView> {
   ScrollController? _effectiveController;
 
   @override
+  void initState() {
+    super.initState();
+    widget.scrollStateController?._attach(this);
+  }
+
+  @override
+  void didUpdateWidget(CatchTabbedPageScrollView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(
+      oldWidget.scrollStateController,
+      widget.scrollStateController,
+    )) {
+      oldWidget.scrollStateController?._detach(this);
+      widget.scrollStateController?._attach(this);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.scrollStateController?._detach(this);
+    super.dispose();
+  }
+
+  @override
   bool get wantKeepAlive => true;
 
-  double? captureOffset() {
+  double? _captureOffset() {
     final position = _ownPosition;
     return position?.hasPixels == true ? position!.pixels : null;
   }
 
-  void restoreOffset(double? savedPixels) {
+  void _restoreOffset(double? savedPixels) {
     final position = _ownPosition;
     if (position?.hasPixels != true || savedPixels == null) return;
     position!.jumpTo(

@@ -113,6 +113,18 @@ void main() {
   });
 
   group('legacy Host clubs redirect', () {
+    test('organizer route forwards stable edit field query keys', () {
+      final screen = hostOrganizerScreenForUri(
+        Uri.parse(
+          '/host/organizer?clubId=club-1&tab=insights&editField=description',
+        ),
+      );
+
+      expect(screen.initialClubId, 'club-1');
+      expect(screen.initialExpandedEditField, 'description');
+      expect(screen.initialTab.name, 'insights');
+    });
+
     test('redirects only the exact legacy clubs location', () {
       expect(
         hostClubsLegacyRedirect(Uri.parse('/host/clubs')),
@@ -139,6 +151,16 @@ void main() {
         );
       }
     });
+
+    test(
+      'sends the retired club editor to the selected organizer Edit tab',
+      () {
+        expect(
+          hostEditClubLegacyRedirect('club-1'),
+          '/host/organizer?clubId=club-1&tab=edit',
+        );
+      },
+    );
 
     testWidgets('GoRouter keeps the create-event child route', (tester) async {
       final router = GoRouter(

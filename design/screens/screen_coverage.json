@@ -259,8 +259,8 @@
       "routeId": "hostEditClubScreen",
       "status": "contracted",
       "priority": "P2",
-      "reason": "Covered by screen.host.club.edit as the host edit-club route.",
-      "screenId": "screen.host.club.edit"
+      "reason": "Covered by screen.host.clubs as the organizer-owned host edit-club route.",
+      "screenId": "screen.host.clubs"
     },
     {
       "routeId": "hostCreateEventScreen",

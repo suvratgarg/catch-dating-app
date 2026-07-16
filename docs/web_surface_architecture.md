@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.150
-updated: 2026-07-14
+version: 0.7.151
+updated: 2026-07-16
 owner: web_platform
 status: active
 ---
@@ -100,6 +100,34 @@ React + TypeScript stack where practical.
 Design-token CSS and web font copies are generated into
 `packages/web-config/generated/` by `dart run tool/design_tokens.dart`, then
 bundled by Vite through `packages/web-config/styles/catch-web.css`.
+
+## React Dependency Topology
+
+`tool/web/react_dependency_graph.mjs` is the deterministic import-topology
+owner for `website/src`, `admin/src`, and `packages/web-ui/src`. Its checked
+artifacts live under `docs/generated/react_dependency_graph/` as reviewable
+JSON, Mermaid, and a concise README. The graph resolves relative imports,
+TypeScript aliases, workspace exports, index modules, dynamic imports,
+re-exports, and type-only edges.
+
+The blocking health contract is deliberately narrow and non-vacuous:
+
+- every repo-local import must resolve;
+- website and admin must not import each other directly; shared behavior routes
+  through a governed package;
+- generated artifacts must match source; and
+- the seeded test suite must prove unresolved imports, direct cross-surface
+  edges, and stale artifacts fail.
+
+Current strongly connected components remain visible report-only debt in the
+generated graph. Do not hide them behind an allowlist or make them blocking
+without first repairing the current cycles. Run:
+
+```sh
+node tool/web/react_dependency_graph.mjs --write
+node tool/web/react_dependency_graph.mjs --check
+node --test tool/web/react_dependency_graph.test.mjs
+```
 
 ## React Surface Governance
 

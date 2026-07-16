@@ -188,6 +188,13 @@ void main() {
     );
     expect(field('Max straight men'), findsOneWidget);
     expect(field('Max straight women'), findsOneWidget);
+    final cohortPair = find
+        .ancestor(of: field('Max straight men'), matching: find.byType(Row))
+        .first;
+    expect(
+      find.descendant(of: cohortPair, matching: field('Max straight women')),
+      findsOneWidget,
+    );
 
     expect(formKey.currentState!.validate(), isTrue);
   });
@@ -249,6 +256,13 @@ void main() {
     expect(defaults.eventPolicy.dynamicPricingMaxInPaise, 150000);
     expect(field('Step'), findsOneWidget);
     expect(field('Max'), findsOneWidget);
+    final pricingPair = find
+        .ancestor(of: field('Step'), matching: find.byType(Row))
+        .first;
+    expect(
+      find.descendant(of: pricingPair, matching: field('Max')),
+      findsOneWidget,
+    );
     expect(formKey.currentState!.validate(), isTrue);
   });
 }

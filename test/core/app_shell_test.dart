@@ -294,7 +294,6 @@ void main() {
             height: CatchLayout.appShellNavigationBadgeHeight,
             child: CatchCountBadge(
               count: 3,
-              alignment: Alignment.topRight,
               offset: const Offset(-1, 2),
               child: Align(
                 alignment: Alignment.bottomCenter,

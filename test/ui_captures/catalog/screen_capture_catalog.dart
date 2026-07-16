@@ -113,7 +113,6 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/creat
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
@@ -287,6 +286,12 @@ final _eventDetailEvent = buildEvent(
   capacityLimit: 24,
   description:
       'A conversational coastal loop with regroup points, coffee after, and a host who keeps the pace social.',
+);
+final _eventDetailNoCoordinateEvent = _eventDetailEvent.copyWith(
+  id: 'event-detail-no-coordinate',
+  meetingLocation: null,
+  startingPointLat: null,
+  startingPointLng: null,
 );
 final _eventDetailUser = buildUser(
   name: 'Aanya Shah',
@@ -2858,6 +2863,7 @@ class _HostTeamSectionCapture extends StatelessWidget {
             child: HostTeamManagementSection(
               club: HostOperationsFixtures.primaryClub,
               currentUid: HostOperationsFixtures.hostUid,
+              canManage: true,
             ),
           ),
         ),
@@ -3005,6 +3011,21 @@ final class _CaptureNoopHostClubEditActions implements HostClubEditActions {
   Future<void> updateClub({
     required String clubId,
     required UpdateClubPatch patch,
+  }) async {}
+
+  @override
+  Future<List<HostPickedClubPhoto>> pickClubPhotos({
+    required int limit,
+  }) async => const [];
+
+  @override
+  Future<HostPickedClubLogo?> pickClubLogo() async => null;
+
+  @override
+  Future<void> updateClubMedia({
+    required Club club,
+    List<HostClubMediaInput>? photoInputs,
+    HostPickedClubLogo? logo,
   }) async {}
 }
 
@@ -3312,28 +3333,6 @@ class _InlineDialogCapture extends StatelessWidget {
   }
 }
 
-List<Object> _hostEditClubProviderOverrides({
-  String? uid,
-  AsyncValue<Club?>? clubValue,
-  Club? fallbackClub,
-}) {
-  final club = fallbackClub ?? _dashboardHostClub;
-  final effectiveUid =
-      uid ?? club.ownerOrPrimaryHostUserId ?? _captureViewerUid;
-  return [
-    uidProvider.overrideWithValue(AsyncData<String?>(effectiveUid)),
-    watchUserProfileProvider.overrideWith(
-      (ref) => Stream.value(
-        effectiveUid == HostOperationsFixtures.hostUid
-            ? HostOperationsFixtures.owner
-            : _captureViewer,
-      ),
-    ),
-    if (clubValue != null)
-      fetchClubProvider(club.id).overrideWithValue(clubValue),
-  ];
-}
-
 List<Object> _hostCreateEventProviderOverrides({
   AsyncValue<Club?>? clubValue,
   List<EventDraft> drafts = const <EventDraft>[],
@@ -3404,7 +3403,6 @@ enum _HostProfileMutationCaptureMode {
   createPending,
   createError,
   createOffline,
-  editorSheet,
   savePending,
   saveError,
   saveOffline,
@@ -3413,15 +3411,10 @@ enum _HostProfileMutationCaptureMode {
 }
 
 class _HostProfileMutationCapture extends ConsumerStatefulWidget {
-  const _HostProfileMutationCapture({
-    required this.mode,
-    required this.child,
-    this.showEditorSheet = false,
-  });
+  const _HostProfileMutationCapture({required this.mode, required this.child});
 
   final _HostProfileMutationCaptureMode mode;
   final Widget child;
-  final bool showEditorSheet;
 
   @override
   ConsumerState<_HostProfileMutationCapture> createState() =>
@@ -3466,31 +3459,19 @@ class _HostProfileMutationCaptureState
           obviousOfflineException(),
         );
         break;
-      case _HostProfileMutationCaptureMode.editorSheet:
-        _openEditorSheet();
-        break;
       case _HostProfileMutationCaptureMode.savePending:
-        _openEditorSheet();
-        _runAfterNextFrame(
-          () => _runPending(HostProfileController.saveProfileMutation),
-        );
+        _runPending(HostProfileController.saveProfileMutation);
         break;
       case _HostProfileMutationCaptureMode.saveError:
-        _openEditorSheet();
-        _runAfterNextFrame(
-          () => _runError(
-            HostProfileController.saveProfileMutation,
-            StateError('Capture host profile save failed'),
-          ),
+        _runError(
+          HostProfileController.saveProfileMutation,
+          StateError('Capture host profile save failed'),
         );
         break;
       case _HostProfileMutationCaptureMode.saveOffline:
-        _openEditorSheet();
-        _runAfterNextFrame(
-          () => _runError(
-            HostProfileController.saveProfileMutation,
-            obviousOfflineException(),
-          ),
+        _runError(
+          HostProfileController.saveProfileMutation,
+          obviousOfflineException(),
         );
         break;
       case _HostProfileMutationCaptureMode.signOutError:
@@ -3506,25 +3487,6 @@ class _HostProfileMutationCaptureState
         );
         break;
     }
-  }
-
-  void _openEditorSheet() {
-    if (!widget.showEditorSheet) return;
-    unawaited(
-      showModalBottomSheet<bool>(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        builder: (_) =>
-            HostProfileEditorSheet(profile: HostOperationsFixtures.hostProfile),
-      ),
-    );
-  }
-
-  void _runAfterNextFrame(VoidCallback callback) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) callback();
-    });
   }
 
   void _runPending(Mutation<void> mutation) {
@@ -5777,7 +5739,7 @@ final _hostHomeLongNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   id: 'host-home-long-name-event',
   clubId: _hostHomeLongNameOwnerClub.id,
   meetingPoint: 'Bandra West Promenade amphitheatre',
-  meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation
+  meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation!
       .copyWith(name: 'Bandra West Promenade amphitheatre'),
 );
 final _hostManageFullReferenceEvent = _hostManageReferenceEvent.copyWith(
@@ -5837,20 +5799,6 @@ final _hostClubDetailReferenceClub = HostOperationsFixtures.primaryClub.copyWith
   hostDefaults: const ClubHostDefaults(
     supportedActivityKinds: [ActivityKind.running, ActivityKind.walking],
   ),
-);
-final _hostEditClubReferenceClub = _hostClubDetailReferenceClub.copyWith(
-  id: 'host-edit-club-reference',
-  description: 'Dawn runs along the Bandra seafront every Sunday, then coffee.',
-  ownerUserId: HostOperationsFixtures.hostUid,
-  hostUserId: HostOperationsFixtures.hostUid,
-  hostUserIds: const [HostOperationsFixtures.hostUid],
-  instagramHandle: 'sundayseaface',
-  clubPhotos: [
-    _hostClubDetailPhoto('host-edit-club-1', 0),
-    _hostClubDetailPhoto('host-edit-club-2', 1),
-    _hostClubDetailPhoto('host-edit-club-3', 2),
-    _hostClubDetailPhoto('host-edit-club-4', 3),
-  ],
 );
 final _hostClubDetailReferenceEvents = [
   _hostEvent.copyWith(
@@ -9354,18 +9302,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_profile_editor_sheet',
+    id: 'host_settings_inline_profile_edit',
     routeIds: const <String>['hostSettingsScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.editorSheet,
-        showEditorSheet: true,
-        child: HostAccountScreen(),
-      ),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_settings_save_profile_pending',
@@ -9376,7 +9318,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.savePending,
-        showEditorSheet: true,
         child: HostAccountScreen(),
       ),
     ),
@@ -9390,7 +9331,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.saveError,
-        showEditorSheet: true,
         child: HostAccountScreen(),
       ),
     ),
@@ -9404,7 +9344,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.saveOffline,
-        showEditorSheet: true,
         child: HostAccountScreen(),
       ),
     ),
@@ -10312,6 +10251,18 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'event_location_map_no_coordinate',
+    routeIds: const <String>['eventLocationMapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventDetailCaptureProviderOverrides(
+      event: _eventDetailNoCoordinateEvent,
+    ),
+    builder: (context) => EventLocationMapRouteScreen(
+      eventId: _eventDetailNoCoordinateEvent.id,
+      enableNetworkTiles: false,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'event_location_map_text_scale_2',
     routeIds: const <String>['eventLocationMapScreen'],
     device: CaptureDevice.reviewPhone,
@@ -10714,183 +10665,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostCreateClubProviderOverrides(),
     builder: (context) => _createClubCapture(initialStep: 3, useDraft: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_basics',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      fallbackClub: _hostEditClubReferenceClub,
-    ),
-    builder: (context) => CreateClubScreen(
-      initialClub: _hostEditClubReferenceClub,
-      restoreSavedDraft: false,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_validation_error',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      fallbackClub: _hostEditClubReferenceClub,
-    ),
-    builder: (context) => CreateClubScreen(
-      initialClub: _hostEditClubReferenceClub.copyWith(
-        name: '',
-        area: '',
-        description: '',
-        location: '',
-      ),
-      restoreSavedDraft: false,
-      formAutovalidateMode: AutovalidateMode.always,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_media_replacement',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      fallbackClub: _hostEditClubReferenceClub,
-    ),
-    builder: (context) => CreateClubScreen(
-      initialClub: _hostEditClubReferenceClub,
-      restoreSavedDraft: false,
-      initialPickedClubPhotos: _createClubPickedPhotos(),
-      initialProfileImage: _createClubProfileImage(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_submit_pending',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      fallbackClub: _hostEditClubReferenceClub,
-    ),
-    builder: (context) => _HostCreateClubMutationCapture(
-      mode: _HostCreateClubMutationCaptureMode.submitPending,
-      child: CreateClubScreen(
-        initialClub: _hostEditClubReferenceClub,
-        restoreSavedDraft: false,
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_submit_error',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      fallbackClub: _hostEditClubReferenceClub,
-    ),
-    builder: (context) => _HostCreateClubMutationCapture(
-      mode: _HostCreateClubMutationCaptureMode.submitError,
-      child: CreateClubScreen(
-        initialClub: _hostEditClubReferenceClub,
-        restoreSavedDraft: false,
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_route_loading',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      clubValue: const AsyncLoading<Club?>(),
-    ),
-    builder: (context) =>
-        HostEditClubRouteScreen(clubId: _dashboardHostClub.id),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_route_error',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      clubValue: AsyncError<Club?>(
-        StateError('Capture Host Edit Club fetch failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) =>
-        HostEditClubRouteScreen(clubId: _dashboardHostClub.id),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_route_offline',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      clubValue: AsyncError<Club?>(obviousOfflineException(), StackTrace.empty),
-    ),
-    builder: (context) =>
-        HostEditClubRouteScreen(clubId: _dashboardHostClub.id),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_not_found',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      clubValue: const AsyncData<Club?>(null),
-    ),
-    builder: (context) =>
-        HostEditClubRouteScreen(clubId: _dashboardHostClub.id),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_cohost_media',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      uid: HostOperationsFixtures.hostUid,
-      fallbackClub: HostOperationsFixtures.coHostedClub,
-    ),
-    builder: (context) => CreateClubScreen(
-      initialClub: HostOperationsFixtures.coHostedClub,
-      restoreSavedDraft: false,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_forbidden',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(
-      uid: HostOperationsFixtures.guestUid,
-    ),
-    builder: (context) => HostEditClubRouteScreen(
-      clubId: _dashboardHostClub.id,
-      initialClub: _dashboardHostClub,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_text_scale_2',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    textScale: 2,
-    providerOverrides: _hostEditClubProviderOverrides(),
-    builder: (context) => CreateClubScreen(
-      initialClub: _dashboardHostClub,
-      restoreSavedDraft: false,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_reduced_motion',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    disableAnimations: true,
-    providerOverrides: _hostEditClubProviderOverrides(
-      uid: HostOperationsFixtures.hostUid,
-      fallbackClub: HostOperationsFixtures.coHostedClub,
-    ),
-    builder: (context) => CreateClubScreen(
-      initialClub: HostOperationsFixtures.coHostedClub,
-      restoreSavedDraft: false,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'edit_club_light_dark',
-    routeIds: const <String>['hostEditClubScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostEditClubProviderOverrides(),
-    builder: (context) => CreateClubScreen(
-      initialClub: _dashboardHostClub,
-      restoreSavedDraft: false,
-    ),
   ),
   ScreenCaptureEntry(
     id: 'host_create_route_loading',

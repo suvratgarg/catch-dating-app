@@ -52,6 +52,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Check React dependency topology
+        run: node tool/web/react_dependency_graph.mjs --check
+
       - name: Check design tokens
         if: ${{ inputs.surface == 'marketing' }}
         run: npm run web:tokens:check
@@ -90,6 +93,10 @@ jobs:
       - name: Check named React controller test targets
         run: npm run web:controller-tests:check
 
+      - name: Run marketing unit tests
+        if: ${{ inputs.surface == 'marketing' }}
+        run: npm --workspace catch-marketing run test:unit
+
       - name: Check shared web UI adoption
         run: npm run web:shared-ui-adoption:check
 
@@ -100,6 +107,11 @@ jobs:
         if: ${{ inputs.surface == 'admin' }}
         continue-on-error: true
         run: npm --workspace catch-admin run test:coverage
+
+      - name: Report marketing unit-test coverage
+        if: ${{ inputs.surface == 'marketing' }}
+        continue-on-error: true
+        run: npm --workspace catch-marketing run test:unit:coverage
 
       - name: Build marketing website
         if: ${{ inputs.surface == 'marketing' }}

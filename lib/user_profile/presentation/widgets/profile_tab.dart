@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
@@ -130,19 +131,25 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
   static const _promptCardPadding = EdgeInsets.only(top: CatchSpacing.micro10);
   static const _promptAddPadding = EdgeInsets.only(top: CatchSpacing.s1);
 
-  String? _expandedField;
+  late final CatchFieldAccordion _fieldAccordion;
 
-  bool _isExpanded(String fieldName) => _expandedField == fieldName;
-
-  void _toggleField(String fieldName) {
-    setState(() {
-      _expandedField = _expandedField == fieldName ? null : fieldName;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _fieldAccordion = CatchFieldAccordion()
+      ..addListener(_handleAccordionChanged);
   }
 
-  void _collapseField() {
-    if (_expandedField == null) return;
-    setState(() => _expandedField = null);
+  void _handleAccordionChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _fieldAccordion
+      ..removeListener(_handleAccordionChanged)
+      ..dispose();
+    super.dispose();
   }
 
   @override
@@ -164,10 +171,10 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         ProfilePromptEntry(
           user: user,
           slot: slot,
-          isExpanded: _isExpanded(slot.fieldName),
-          onTap: () => _toggleField(slot.fieldName),
-          onSaved: _collapseField,
-          onCancel: _collapseField,
+          isExpanded: _fieldAccordion.isExpanded(slot.fieldName),
+          onTap: () => _fieldAccordion.toggle(slot.fieldName),
+          onSaved: _fieldAccordion.collapse,
+          onCancel: _fieldAccordion.collapse,
         ),
     ];
 
@@ -247,10 +254,10 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               for (final row in editState.aboutSectionRows)
                 ProfileFieldRow(
                   descriptor: row,
-                  isExpanded: _isExpanded,
-                  onToggle: _toggleField,
-                  onSaved: _collapseField,
-                  onCancel: _collapseField,
+                  isExpanded: _fieldAccordion.isExpanded,
+                  onToggle: _fieldAccordion.toggle,
+                  onSaved: _fieldAccordion.collapse,
+                  onCancel: _fieldAccordion.collapse,
                 ),
             ],
           ),
@@ -261,10 +268,10 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               for (final row in editState.runningRows)
                 ProfileFieldRow(
                   descriptor: row,
-                  isExpanded: _isExpanded,
-                  onToggle: _toggleField,
-                  onSaved: _collapseField,
-                  onCancel: _collapseField,
+                  isExpanded: _fieldAccordion.isExpanded,
+                  onToggle: _fieldAccordion.toggle,
+                  onSaved: _fieldAccordion.collapse,
+                  onCancel: _fieldAccordion.collapse,
                 ),
             ],
           ),
@@ -275,10 +282,10 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               for (final row in editState.lifestyleRows)
                 ProfileFieldRow(
                   descriptor: row,
-                  isExpanded: _isExpanded,
-                  onToggle: _toggleField,
-                  onSaved: _collapseField,
-                  onCancel: _collapseField,
+                  isExpanded: _fieldAccordion.isExpanded,
+                  onToggle: _fieldAccordion.toggle,
+                  onSaved: _fieldAccordion.collapse,
+                  onCancel: _fieldAccordion.collapse,
                 ),
             ],
           ),

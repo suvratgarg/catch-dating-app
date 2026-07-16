@@ -1,9 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
@@ -21,7 +18,6 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.enabled = true,
-    this.useBottomSheetForCustom = false,
   });
 
   final EventSuccessQuestionnaireConfig value;
@@ -31,21 +27,18 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
   /// When true, the custom-question builder opens in a modal bottom sheet
   /// instead of rendering inline. Keeps the host setup screen short while the
   /// host edits long custom question sets.
-  final bool useBottomSheetForCustom;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final normalized = value.normalized();
-    final pack = normalized.pack;
+    final pack = value.pack;
     final templates = EventSuccessQuestionnairePackLibrary.allTemplates;
     final questionSetIds = [
       ...templates.map((template) => template.id),
       _customQuestionSetId,
     ];
-    final selectedQuestionSetId = normalized.usesCustom
+    final selectedQuestionSetId = value.usesCustom
         ? _customQuestionSetId
-        : normalized.templateId;
+        : value.templateId;
 
     return CatchSectionList(
       gap: CatchGaps.formField,
@@ -65,175 +58,36 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
               : templates.firstWhere((template) => template.id == id).title,
           selected: {selectedQuestionSetId},
           enabled: enabled,
-          initiallyOpen: true,
           onSelectionChanged: enabled
               ? (selection) {
                   final id = selection.single;
                   onChanged(
                     id == _customQuestionSetId
-                        ? (normalized.usesCustom
-                              ? normalized
+                        ? (value.usesCustom
+                              ? value
                               : const EventSuccessQuestionnaireConfig.customTemplate())
                         : EventSuccessQuestionnaireConfig(templateId: id),
                   );
                 }
               : null,
         ),
-        CatchSection.plain(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  CatchBadge(
-                    label: pack.title,
-                    icon: pack.custom
-                        ? CatchIcons.editNoteRounded
-                        : CatchIcons.styleOutlined,
-                  ),
-                  CatchBadge(
-                    label: context.l10n
-                        .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
-                          length: pack.questions.length,
-                        ),
-                    icon: CatchIcons.quizOutlined,
-                  ),
-                ],
+        CatchField.read(
+          title: pack.title,
+          body: pack.subtitle,
+          valueText: context.l10n
+              .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
+                length: pack.questions.length,
               ),
-              gapH6,
-              Text(
-                pack.subtitle,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          ),
+          icon: pack.custom
+              ? CatchIcons.editNoteRounded
+              : CatchIcons.styleOutlined,
         ),
-        if (normalized.usesCustom)
-          if (useBottomSheetForCustom)
-            CatchField.action(
-              title: context
-                  .l10n
-                  .eventSuccessEventSuccessQuestionnaireConfigEditorLabelEditCustomQuestions,
-              icon: CatchIcons.editNoteRounded,
-              onTap: enabled
-                  ? () => _openCustomQuestionnaireSheet(
-                      context,
-                      initial: normalized,
-                      onChanged: onChanged,
-                    )
-                  : null,
-            )
-          else
-            CustomQuestionnaireFields(
-              value: normalized,
-              enabled: enabled,
-              onChanged: onChanged,
-            )
-        else
-          CatchSection.plain(
-            child: QuestionnairePreview(questions: pack.questions),
+        if (value.usesCustom)
+          CustomQuestionnaireFields(
+            value: value,
+            enabled: enabled,
+            onChanged: onChanged,
           ),
-      ],
-    );
-  }
-}
-
-Future<void> _openCustomQuestionnaireSheet(
-  BuildContext context, {
-  required EventSuccessQuestionnaireConfig initial,
-  required ValueChanged<EventSuccessQuestionnaireConfig> onChanged,
-}) {
-  return showCatchBottomSheet<void>(
-    context: context,
-    builder: (sheetContext) =>
-        CustomQuestionnaireSheet(initialValue: initial, onChanged: onChanged),
-  );
-}
-
-class CustomQuestionnaireSheet extends StatefulWidget {
-  const CustomQuestionnaireSheet({
-    required this.initialValue,
-    required this.onChanged,
-  });
-
-  final EventSuccessQuestionnaireConfig initialValue;
-  final ValueChanged<EventSuccessQuestionnaireConfig> onChanged;
-
-  @override
-  State<CustomQuestionnaireSheet> createState() =>
-      _CustomQuestionnaireSheetState();
-}
-
-class _CustomQuestionnaireSheetState extends State<CustomQuestionnaireSheet> {
-  late EventSuccessQuestionnaireConfig _value = widget.initialValue;
-
-  void _emit(EventSuccessQuestionnaireConfig next) {
-    setState(() => _value = next);
-    widget.onChanged(next);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final maxHeight = MediaQuery.sizeOf(context).height * 0.78;
-    return CatchBottomSheetScaffold(
-      title: context
-          .l10n
-          .eventSuccessEventSuccessQuestionnaireConfigEditorTitleCustomQuestions,
-      subtitle: context
-          .l10n
-          .eventSuccessEventSuccessQuestionnaireConfigEditorSubtitleEditYourEventS,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        child: SingleChildScrollView(
-          padding: CatchInsets.contentHorizontal,
-          child: CustomQuestionnaireFields(
-            value: _value,
-            enabled: true,
-            onChanged: _emit,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class QuestionnairePreview extends StatelessWidget {
-  const QuestionnairePreview({required this.questions});
-
-  final List<EventSuccessCompatibilityQuestion> questions;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final question in questions.take(3)) ...[
-          Text(question.prompt, style: CatchTextStyles.labelL(context)),
-          gapH6,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final option in question.options)
-                CatchBadge(label: option.label),
-            ],
-          ),
-          if (question != questions.take(3).last) gapH12,
-        ],
-        if (questions.length > 3) ...[
-          gapH8,
-          Text(
-            context.l10n
-                .eventSuccessEventSuccessQuestionnaireConfigEditorTextValue1More(
-                  value1: questions.length - 3,
-                ),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-        ],
       ],
     );
   }
@@ -241,6 +95,7 @@ class QuestionnairePreview extends StatelessWidget {
 
 class CustomQuestionnaireFields extends StatelessWidget {
   const CustomQuestionnaireFields({
+    super.key,
     required this.value,
     required this.enabled,
     required this.onChanged,
@@ -310,7 +165,7 @@ class CustomQuestionnaireFields extends StatelessWidget {
                           value.copyWith(
                             customQuestions: [
                               ...questions,
-                              _blankQuestion(questions.length, context.l10n),
+                              _blankQuestion(questions, context.l10n),
                             ],
                           ),
                         )
@@ -342,6 +197,7 @@ class CustomQuestionnaireFields extends StatelessWidget {
 
 class CustomQuestionFields extends StatelessWidget {
   const CustomQuestionFields({
+    super.key,
     required this.question,
     required this.index,
     required this.enabled,
@@ -421,10 +277,14 @@ class CustomQuestionFields extends StatelessWidget {
 }
 
 EventSuccessCompatibilityQuestion _blankQuestion(
-  int index,
+  List<EventSuccessCompatibilityQuestion> questions,
   AppLocalizations l10n,
 ) {
-  final questionNumber = index + 1;
+  final usedIds = questions.map((question) => question.id).toSet();
+  var questionNumber = 1;
+  while (usedIds.contains('custom_question_$questionNumber')) {
+    questionNumber++;
+  }
   return EventSuccessCompatibilityQuestion(
     id: 'custom_question_$questionNumber',
     prompt: l10n

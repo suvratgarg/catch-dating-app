@@ -52,18 +52,12 @@
     },
     {
       "path": "lib/events/presentation/calendar/calendar_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
     },
     {
       "path": "lib/events/presentation/saved_events_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
-    },
-    {
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar"
@@ -96,14 +90,15 @@
       "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "owner": "CatchTopBar",
+      "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-      "role": "workspace",
-      "expression": "organizerMode",
-      "owner": "HostOperationsTopBar",
-      "reason": "Host Clubs conditionally suppresses its reviewed workspace bar for the organizer tab while edit, insights, and preview share the host tab rail."
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar",
+      "reason": "Host Clubs uses the canonical screen title bar directly for the empty branch and delegates populated workspace chrome to CatchTabbedScreenScaffold."
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
@@ -131,9 +126,9 @@
     },
     {
       "path": "lib/payments/presentation/payment_history_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
     },
     {
       "path": "lib/public_profile/presentation/public_profile_screen.dart",
@@ -143,9 +138,9 @@
     },
     {
       "path": "lib/reviews/presentation/reviews_history_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
     },
     {
       "path": "lib/safety/presentation/settings_screen.dart",
@@ -189,6 +184,13 @@
     }
   ],
   "manualHeaders": [
+    {
+      "path": "lib/hosts/presentation/club_management/create/widgets/create_club_step_header.dart",
+      "symbol": "CreateClubStepHeader",
+      "role": "step-flow",
+      "owner": "CatchStepHeader",
+      "reason": "Create Club is a create-only wizard and delegates progress plus back navigation to the canonical step header."
+    },
     {
       "path": "lib/chats/presentation/widgets/chat_share_card.dart",
       "symbol": "ShareCardHeader",
@@ -239,18 +241,11 @@
       "reason": "Host Insights still owns a body-level back and title row; migrate it through canonical route chrome in a reviewed Host pass."
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
-      "symbol": "HostOperationsTopBar",
-      "role": "workspace",
-      "owner": "CatchTopBar",
-      "reason": "The Host workspace wrapper composes CatchTopBar with a club kicker and tab rail; retain only as an exact reviewed exception."
-    },
-    {
       "path": "lib/hosts/presentation/host_operations/host_today.dart",
       "symbol": "HostTodayHeader",
-      "role": "legacy",
-      "owner": "CatchTextStyles.headlineS",
-      "reason": "Host Today still styles its root greeting directly; migrate it to CatchScreenHeaderTitle in a reviewed Host pass."
+      "role": "screen",
+      "owner": "CatchScreenHeaderTitle.block",
+      "reason": "Host Today owns a body-level identity header and delegates its greeting, daypart, and action geometry to the canonical screen title block."
     },
     {
       "path": "lib/onboarding/presentation/onboarding_screen.dart",

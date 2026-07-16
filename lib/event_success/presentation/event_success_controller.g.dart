@@ -42,7 +42,7 @@ final class EventSuccessControllerProvider
 }
 
 String _$eventSuccessControllerHash() =>
-    r'5e0414c1de9029053d447260ec536d56769b8a0b';
+    r'bc3fabef298d64646fd041814bfd4cff686e7bdc';
 
 abstract class _$EventSuccessController extends $Notifier<void> {
   void build();

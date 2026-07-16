@@ -48,7 +48,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const firstHelloCheckIn = EventSuccessModule(
     id: 'first_hello_check_in',
-    title: 'First Hello check-in',
+    title: 'Arrival icebreaker',
     type: EventSuccessModuleType.firstHelloCheckIn,
     productLayer: EventSuccessProductLayer.rosterAttendance,
     stage: EventSuccessStage.arrival,
@@ -236,7 +236,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const decomposedFeedback = EventSuccessModule(
     id: 'decomposed_feedback',
-    title: 'After-event attendee feedback',
+    title: 'Attendee feedback',
     type: EventSuccessModuleType.decomposedFeedback,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.after,

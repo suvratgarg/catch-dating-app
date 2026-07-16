@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
@@ -25,6 +26,19 @@ class EventLocationMapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
+    if (!state.hasExactStartingPoint) {
+      return SafeArea(
+        child: CatchErrorState(
+          title: context
+              .l10n
+              .eventsEventLocationMapBodyScreenTitleLocationUnavailable,
+          message: context
+              .l10n
+              .eventsEventLocationMapBodyScreenMessageThisEventDoesNot,
+        ),
+      );
+    }
+
     return Stack(
       children: [
         Positioned.fill(
@@ -32,7 +46,7 @@ class EventLocationMapScreen extends StatelessWidget {
             items: [
               EventMapItem(event: state.event, status: EventTileStatus.open),
             ],
-            initialCenter: state.startingPoint,
+            initialCenter: state.startingPoint!,
             initialZoom: 15.5,
             selectedEventId: state.event.id,
             enableNetworkTiles: state.enableNetworkTiles,

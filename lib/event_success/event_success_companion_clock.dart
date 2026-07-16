@@ -1,13 +1,14 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'event_success_companion_clock.g.dart';
 
 const eventSuccessCompanionClockInterval = Duration(seconds: 30);
 
-final eventSuccessCompanionClockProvider = StreamProvider.autoDispose<DateTime>(
-  (ref) async* {
-    yield DateTime.now();
-    yield* Stream<DateTime>.periodic(
-      eventSuccessCompanionClockInterval,
-      (_) => DateTime.now(),
-    );
-  },
-);
+@riverpod
+Stream<DateTime> eventSuccessCompanionClock(Ref ref) async* {
+  yield DateTime.now();
+  yield* Stream<DateTime>.periodic(
+    eventSuccessCompanionClockInterval,
+    (_) => DateTime.now(),
+  );
+}

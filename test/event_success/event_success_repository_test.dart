@@ -33,7 +33,8 @@ void main() {
       expect(plan.clubId, event.clubId);
       expect(plan.targetAttendeeCount, 28);
       expect(plan.playbookId, EventSuccessPlaybookLibrary.socialRun.id);
-      expect(plan.selectedModuleIds, contains('qr_check_in'));
+      expect(plan.selectedModuleIds, isNot(contains('qr_check_in')));
+      expect(plan.selectedModuleIds, isNot(contains('safety_controls')));
       expect(samePlan.createdAt, plan.createdAt);
     });
 
@@ -57,6 +58,7 @@ void main() {
 
       await repository.savePlan(
         plan.copyWithDraft(draft, updatedAt: plan.updatedAt),
+        expectedUpdatedAt: plan.updatedAt,
       );
       await repository.updateActiveStep(eventId: event.id, activeStepIndex: 2);
 

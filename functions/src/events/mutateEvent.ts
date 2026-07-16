@@ -1010,14 +1010,12 @@ function defaultEventSuccessModuleIdsFor(
   primitives: ResolvedEventSuccessPrimitives
 ): string[] {
   const base = [
-    "qr_check_in",
     "host_script",
     "social_missions",
     "wingman_requests",
     "contextual_openers",
     "decomposed_feedback",
     "host_analytics",
-    "safety_controls",
   ];
   switch (interactionModel) {
   case "pacePods":

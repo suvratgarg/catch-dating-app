@@ -17,10 +17,8 @@ import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
-import 'package:catch_dating_app/core/location_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
-import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
@@ -53,6 +51,7 @@ import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/data/profile_location_initializer.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -288,7 +287,9 @@ List<Object> appShellTestOverrides({
     forceUpdateRefreshProvider.overrideWithValue(
       (ref, {required invalidatePackageInfo, shouldInvalidate}) async {},
     ),
-    locationInitializerProvider.overrideWith(_NoopLocationInitializer.new),
+    profileLocationInitializerProvider.overrideWith(
+      _NoopProfileLocationInitializer.new,
+    ),
     appAnalyticsProvider.overrideWithValue(
       analytics ??
           AppAnalytics(
@@ -441,21 +442,6 @@ List<Object> appShellTestOverrides({
       watchAttendedEventsProvider(
         uid,
       ).overrideWithValue(AsyncData<List<Event>>(attendedEvents)),
-      dashboardRecommendedEventsProvider(
-        DashboardRecommendationsQuery(
-          userId: uid,
-          followedClubIds: joinedClubIds.toList(growable: false),
-        ),
-      ).overrideWithValue(
-        AsyncData<List<DashboardEventRecommendationCandidate>>([
-          for (final event in recommendedEvents)
-            DashboardEventRecommendationCandidate(
-              event: event,
-              clubName: clubsById[event.clubId]?.name ?? 'Event club',
-              clubLocation: clubsById[event.clubId]?.location,
-            ),
-        ]),
-      ),
       watchActivityNotificationsProvider(
         uid,
       ).overrideWithValue(const AsyncData([])),
@@ -546,7 +532,7 @@ Club? _clubById(List<Club> clubs, String id) {
   return null;
 }
 
-class _NoopLocationInitializer extends LocationInitializer {
+class _NoopProfileLocationInitializer extends ProfileLocationInitializer {
   @override
   Future<void> build() async {}
 }

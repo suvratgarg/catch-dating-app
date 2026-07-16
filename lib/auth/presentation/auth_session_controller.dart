@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

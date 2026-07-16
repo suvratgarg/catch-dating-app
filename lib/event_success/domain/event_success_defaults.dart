@@ -21,6 +21,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     @Default(false) bool enabled,
     @Default('social_run_light') String playbookId,
     @Default(<String>[]) List<String> selectedModuleIds,
+    @Default(false) bool moduleSelectionConfigured,
     @Default(EventSuccessStructureConfig.legacyDefault())
     EventSuccessStructureConfig structureConfig,
     @Default('Help attendees meet at least two new people.') String hostGoal,
@@ -44,6 +45,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
       enabled: enabled,
       playbookId: draft.playbook.id,
       selectedModuleIds: draft.selectedModuleIds.toList()..sort(),
+      moduleSelectionConfigured: true,
       structureConfig: draft.structureConfig,
       hostGoal: draft.hostGoal,
       wingmanRequestsEnabled: draft.isModuleSelected(
@@ -95,9 +97,11 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     final selectedIds = selectedModuleIds
         .where(playbook.moduleIds.contains)
         .toSet();
-    final resolvedSelectedIds = selectedIds.isEmpty
-        ? defaultDraft.selectedModuleIds
-        : selectedIds;
+    final hasExplicitSelection =
+        moduleSelectionConfigured || selectedModuleIds.isNotEmpty;
+    final resolvedSelectedIds = hasExplicitSelection
+        ? selectedIds
+        : defaultDraft.selectedModuleIds;
     return defaultDraft.copyWith(
       selectedModuleIds: resolvedSelectedIds,
       structureConfig: structureConfig.isLegacyDefault
@@ -148,7 +152,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
         .where(profile.isSelectable)
         .toSet();
     final useCurrentSelectedIds =
-        currentSelectedIds.isNotEmpty &&
+        (moduleSelectionConfigured || selectedModuleIds.isNotEmpty) &&
         currentPlaybook.id == profile.playbook.id;
     final playbookChanged = currentPlaybook.id != profile.playbook.id;
     final selectedIds = useCurrentSelectedIds

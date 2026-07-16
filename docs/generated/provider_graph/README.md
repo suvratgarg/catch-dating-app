@@ -8,27 +8,27 @@ Open [provider_graph.html](provider_graph.html) for the interactive feature/prov
 
 | Measure | Count |
 |---|---:|
-| Handwritten Dart files | 771 |
+| Handwritten Dart files | 765 |
 | Providers | 211 |
-| Mutations | 82 |
-| Unique provider relationships | 320 |
-| Cross-feature relationships | 163 |
-| Consumer callsites | 674 |
+| Mutations | 83 |
+| Unique provider relationships | 324 |
+| Cross-feature relationships | 167 |
+| Consumer callsites | 672 |
 | Reactive cycles | 0 |
 
 ## Architecture review
 
 | Candidate | Decision | Rationale |
 |---|---|---|
+| cross-feature-presentation:authSessionControllerProvider->exploreFiltersProvider | accepted | Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's filters. The focused AuthSessionController test proves reset behavior. |
+| cross-feature-presentation:authSessionControllerProvider->exploreSearchQueryProvider | accepted | Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's search query. The focused AuthSessionController test proves reset behavior. |
 | cross-feature-presentation:authSessionControllerProvider->onboardingControllerProvider | accepted | Sign-out is the app-session boundary and must reset the public onboarding controller plus its Mutations. This is the documented controller-to-controller command seam, not a read-model or widget dependency. |
+| cross-feature-presentation:authSessionControllerProvider->selectedExploreCityProvider | accepted | Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's selected city. The focused AuthSessionController test proves reset behavior. |
+| cross-feature-presentation:authSessionControllerProvider->selectedExploreCityWasUserSelectedProvider | accepted | Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's manual city-selection guard. The focused AuthSessionController test proves reset behavior. |
 | cross-feature-presentation:settingsControllerProvider->authSessionControllerProvider | accepted | Account deletion completes through the public auth-session command seam so auth and onboarding flow state are cleared centrally. Moving that cleanup into Safety would duplicate session ownership. |
 | high-fan-out:chatRouteStateProvider | accepted | The eight dependencies form one route projection: conversation, match and host-inquiry context, event/profile enrichment, share capability, and action pending state. The provider has no cycles and prevents the screen from assembling those waves itself. |
 | high-fan-out:exploreFeedViewModelProvider | watch | The eighteen dependencies are a cohesive discovery aggregate spanning filters, viewer eligibility, memberships, participations, saves, internal and external supply, search, and club names. Splitting now would duplicate partial-loading and precedence logic; revisit if a second route needs a stable subset or fan-out rises above twenty. |
 | manual-provider:_hostClubsForUserProvider | accepted-exception | This is a private auto-dispose adapter in a part file that narrows a Host route provider result. Moving it only to satisfy code generation would add a public generated symbol and another ownership file without changing the dependency boundary. |
-| manual-provider:clubNameLookupProvider | planned | Existing manual auto-dispose family. Migrate with the next Clubs data-provider change so the family remains behaviorally identical and its override-heavy callers can be updated in one focused pass. |
-| manual-provider:eventSuccessCompanionClockProvider | planned | Existing manual auto-dispose clock provider. It is a straightforward codegen candidate but unrelated to current topology ownership fixes. |
-| manual-provider:exploreRecommendedEventsProvider | planned | Existing manual auto-dispose recommendation family with many test overrides. Migrate in a dedicated Explore data pass rather than mixing generated-provider API churn into this graph-tooling pass. |
-| manual-provider:publicProfilesByIdsProvider | planned | Existing manual auto-dispose batched lookup family. Migrate with the next public-profile data pass and preserve per-query disposal and parallel lookup behavior. |
 | routing-to-presentation:goRouterProvider->authControllerProvider | accepted | GoRouter is the app integration root and listens only to the auth verification gate needed to refresh redirects. It does not import auth widgets or perform auth mutations. |
 
 ## Refresh and check

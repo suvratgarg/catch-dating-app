@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.293
-updated: 2026-07-15
+version: 0.2.294
+updated: 2026-07-16
 owner: product_design_parity
 status: active
 ---
@@ -95,12 +95,10 @@ ledgers as the source of truth when counts differ:
   using the Bandra Social trivia fixture, while Events remains explicit through
   `HostHomeTab.events`. Final advisory metrics are Today `17.48% / 15.54` and
   Events `6.76% / 12.26`, both within threshold.
-- Host Edit Club owner edit now uses a reference-specific Sunday sea-face
-  fixture, compact logo/photo-strip media variants, grouped `CatchField`
-  identity/contact sections, and a fixed `CatchField` edit-label layout. The
-  registered owner-edit advisory comparison moved from `15.31% / 19.08` to
-  `7.92% / 8.64`, within threshold. Remaining work is adapter ownership for
-  field/media/mutation callbacks and future state-specific references.
+- The former Host Edit Club visual reference is retained as historical evidence.
+  The standalone route and screen are retired; `/host/clubs/:clubId/edit` now
+  redirects to the selected organizer Edit tab, which owns identity, contact,
+  logo/photos, policy defaults, and Event Success defaults.
 - Host Edit Event owner edit was refreshed against the registered Claude
   reference and now compares within threshold at `9.25% / 10.93`. Remaining
   work is state-specific reference exports and adapter ownership for private
@@ -1061,7 +1059,7 @@ tests, captures, Widgetbook, and audit receipts.
   - `catch.roster_tiles`
   - `catch.screen_body`
   - `catch.section_stack`
-  - `catch.segmented_control`
+  - `catch.option_group`
   - `catch.surface`
   - `catch.field`
   - `catch.top_bar`
@@ -1552,14 +1550,6 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - previewed: route entry, basics validation, picked media, restored draft, basics, details, host defaults, Event Success defaults, save-draft pending/error, submit pending/error, offline submit failure, text scale, reduced motion, and dark theme.
   - DP-HOST-CLUB-CREATE-001: Closed for app code. Widgetbook and deterministic captures now cover route entry, validation, picked media, restored draft, all wizard steps, save-draft pending/error, submit pending/error, offline submit failure, text-scale, reduced-motion, and dark theme. Remaining variants are reference-specific pixel states blocked on additional exports.
   - DP-HOST-CLUB-CREATE-002: Closed for app code. Host Create Club basics reference and masks are exported and registered. `HostClubCreateState` now owns header/footer display state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents while `HostClubCreateRouteIntent` owns route callback dispatch and `HostClubCreateDraftRequest` and `HostClubCreateSubmitRequest` own draft/submit request construction.
-- [ ] `host.club.edit` (17 state follow-ups, 0 open gaps)
-  - planned: None
-  - implemented: `initial_club_extra`
-  - tested: `host_club_edit_state_adapter`, `forbidden_route_access`, `optional_contact_clearing`, `success_pop`
-  - captured: `prefilled_owner_edit`, `club_fetch_loading`, `club_fetch_error`, `offline`, `club_not_found`, `media_only_cohost_edit`, `image_replacement`, `validation_error`, `submit_pending`, `submit_error`, `unauthorized_host_or_owner`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - previewed: route loading/error/offline/not-found, owner full edit, owner validation, media replacement, submit pending/error, co-host media-only edit, forbidden identity, text scale, reduced motion, and dark theme.
-  - DP-HOST-CLUB-EDIT-001: Closed. Widgetbook and deterministic captures now cover route loading/error/offline/not-found, owner edit, validation, media replacement, submit pending/error, co-host media-only mode, forbidden identity, text-scale, reduced-motion, and light/dark. The owner edit capture uses the Sunday sea-face reference fixture and compact edit media variants; additional state-specific pixel references are reopen-only if design exports them.
-  - DP-HOST-CLUB-EDIT-002: Closed. Host Edit Club owner-edit reference and masks are exported, registered, and compared within threshold at `7.92% / 8.64` after the grouped-field/media pass. `HostClubEditState` owns route identity/access mode and blocks non-host deep links, while the shared Host Club Create/Edit adapter state owns field/media display values, validation, submit request data, route callback intents, and submit-success close policy.
 - [ ] `host.event.edit` (21 state follow-ups, 0 open gaps)
   - planned: None
   - implemented: None
@@ -1573,7 +1563,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - tested: `fallback_profile_from_club`, `active_profile`, `create_profile_pending`, `create_profile_error`, `save_profile_error`, `sign_out_error`
   - captured: `profile_offline`, `create_profile_mutation`, `save_profile_mutation`, `profile_editor_sheet`, `clubs_offline`, `sign_out_action`, `text_scale_2`, `reduced_motion`, `light_dark`
   - previewed: route auth/profile/clubs states, profile summary rows including create-pending, clubs loading/error/empty/populated rows, Edit/Preview tab rail, text scale, reduced motion, and dark theme.
-  - DP-HOST-SETTINGS-001: Closed for app code. Deterministic captures now cover editor sheet, create/save mutation pending/error/offline, sign-out error/offline, and profile/club offline provider states. Direct HostAccount.dc.html source is found, but the 2026-06-25 stable temp bundle, current runtime, CDP, and original-source Chrome attempts either produced placeholder boxes or hung before a valid PNG. Remaining reference work is blocked on source/runtime repair or an alternate export path, masks, and pixel comparison.
+  - DP-HOST-SETTINGS-001: Closed for app code. Deterministic captures now cover inline profile editing, create/save mutation pending/error/offline, sign-out error/offline, and profile/club offline provider states. Direct HostAccount.dc.html source is found, but the 2026-06-25 stable temp bundle, current runtime, CDP, and original-source Chrome attempts either produced placeholder boxes or hung before a valid PNG. Remaining reference work is blocked on source/runtime repair or an alternate export path, masks, and pixel comparison.
   - DP-HOST-SETTINGS-002: Closed for app code. `HostSettingsState`, `HostSettingsProfileState`, and `HostSettingsClubsState` now adapt profile/club provider waves, club-backed fallback identity, loading, error, missing, empty, and content branches before `HostSettingsProfileSection` and `HostSettingsClubsSection` render. `HostProfileController` owns profile create/save mutations shared with Host Profile. Remaining payout/admin ownership is a product IA decision before code changes.
 - [ ] `host.profile` (15 state follow-ups, 2 open gaps)
   - implemented: `uid_missing`, `profile_loading`, `profile_error`, `profile_edit_state_adapter`, `profile_controller_mutations`, `missing_profile`, `populated_profile`, `validation_error`, `save_success`, `status_variants`
@@ -1581,7 +1571,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `profile_offline`, `validation_error`, `create_profile_mutation`, `save_pending`, `save_error`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - previewed: route loading/error/auth/missing/populated, provider-free form status variants, validation, save pending, missing/create pending, text scale, reduced motion, and dark theme.
   - DP-HOST-PROFILE-001: Deterministic captures now cover validation, create/save mutation pending/error/offline, profile offline, text-scale, reduced-motion, and light/dark states. Remaining: canonical reference export and pixel comparison.
-  - DP-HOST-PROFILE-002: `HostProfileEditState` now adapts direct Host Profile auth/loading/error/missing/content provider state before `HostProfileForm` and `HostProfileMissingState` render, `HostProfileController` owns create/save orchestration shared with the Host Settings editor sheet, and the route exposes a default-disabled validation mode for deterministic captures. Remaining: any host-specific offline copy decision and reference-backed comparison.
+  - DP-HOST-PROFILE-002: `HostProfileEditState` now adapts direct Host Profile auth/loading/error/missing/content provider state before `HostProfileForm` and `HostProfileMissingState` render, `HostProfileController` owns create/save orchestration shared with the Host Settings inline form, and the route exposes a default-disabled validation mode for deterministic captures. Remaining: any host-specific offline copy decision and reference-backed comparison.
 - [ ] Feature-level drift/previews
   - DP-HOST-SECONDARY-LINT-001: Promote stable host form composition invariants into scanner/lint rules after create/edit/profile adapter boundaries exist.
   - [x] DP-HOST-SECONDARY-PREVIEW-001: Widgetbook entries now exist for host club create/edit, host event edit, Host Settings route/sections, and Host Profile route/form/field/missing states.

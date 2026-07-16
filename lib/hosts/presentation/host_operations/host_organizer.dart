@@ -1,20 +1,9 @@
 part of '../host_operations_screen.dart';
 
 class HostClubOrganizerOverviewController extends ConsumerWidget {
-  const HostClubOrganizerOverviewController({
-    super.key,
-    required this.club,
-    required this.currentUid,
-    required this.isOwner,
-    required this.onOpenEditor,
-    required this.onOpenSettings,
-  });
+  const HostClubOrganizerOverviewController({super.key, required this.club});
 
   final Club club;
-  final String currentUid;
-  final bool isOwner;
-  final VoidCallback onOpenEditor;
-  final VoidCallback onOpenSettings;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,13 +13,9 @@ class HostClubOrganizerOverviewController extends ConsumerWidget {
 
     return HostClubOrganizerOverview(
       club: club,
-      currentUid: currentUid,
-      isOwner: isOwner,
       eventsLoaded: eventsAsync.hasValue,
       eventCount: events.length,
       activeEventCount: activeEventCount,
-      onOpenEditor: onOpenEditor,
-      onOpenSettings: onOpenSettings,
     );
   }
 }
@@ -39,117 +24,24 @@ class HostClubOrganizerOverview extends StatelessWidget {
   const HostClubOrganizerOverview({
     super.key,
     required this.club,
-    required this.currentUid,
-    required this.isOwner,
     required this.eventsLoaded,
     required this.eventCount,
     required this.activeEventCount,
-    required this.onOpenEditor,
-    required this.onOpenSettings,
   });
 
   final Club club;
-  final String currentUid;
-  final bool isOwner;
   final bool eventsLoaded;
   final int eventCount;
   final int activeEventCount;
-  final VoidCallback onOpenEditor;
-  final VoidCallback onOpenSettings;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final formats = _organizerFormats(club);
-
-    return Column(
-      key: const ValueKey('host-club-edit-summary'),
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (formats.isNotEmpty) ...[
-                Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s2,
-                  children: [
-                    for (final format in formats)
-                      CatchBadge.functional(label: format),
-                  ],
-                ),
-                gapH12,
-              ],
-              if (isOwner) ...[
-                HostOrganizerPayoutPromptController(
-                  uid: currentUid,
-                  onManagePayouts: onOpenEditor,
-                ),
-              ],
-              gapH16,
-              HostOrganizerMetricGrid(
-                club: club,
-                eventsLoaded: eventsLoaded,
-                eventCount: eventCount,
-                activeEventCount: activeEventCount,
-              ),
-              gapH24,
-              CatchSectionHeader(
-                title: context.l10n.hostsHostOrganizerTitleTeamLength(
-                  length: club.displayHostProfiles.length,
-                ),
-                padding: EdgeInsets.zero,
-                titleStyle: CatchTextStyles.monoLabel(context, color: t.ink2),
-                trailing: isOwner
-                    ? CatchTextButton(
-                        label: context.l10n.hostsHostOrganizerLabelManage,
-                        onPressed: onOpenEditor,
-                        tone: CatchTextButtonTone.neutral,
-                        minimumSize: const Size(0, CatchSpacing.s8),
-                      )
-                    : null,
-              ),
-              gapH10,
-              HostOrganizerTeamCard(
-                profiles: club.displayHostProfiles,
-                currentUid: currentUid,
-              ),
-              gapH24,
-              CatchSectionHeader(
-                title: context.l10n.hostsHostOrganizerTitleManage,
-                padding: EdgeInsets.zero,
-                titleStyle: CatchTextStyles.monoLabel(context, color: t.ink2),
-              ),
-              gapH10,
-              CatchSection.contained(
-                children: [
-                  CatchField.nav(
-                    icon: CatchIcons.paymentsOutlined,
-                    title: context.l10n.hostsHostOrganizerTitlePayouts,
-                    body: isOwner
-                        ? context.l10n.hostsHostOrganizerBodyManage
-                        : context.l10n.hostsHostOrganizerBodyOwnerOnly,
-                    onTap: isOwner ? onOpenEditor : null,
-                  ),
-                  CatchField.nav(
-                    icon: CatchIcons.tuneRounded,
-                    title: context.l10n.hostsHostOrganizerTitleEventDefaults,
-                    body: context.l10n.hostsHostOrganizerBodyPrefillNewEvents,
-                    onTap: isOwner ? onOpenEditor : null,
-                  ),
-                  CatchField.nav(
-                    icon: CatchIcons.settingsOutlined,
-                    title: context.l10n.hostsHostOrganizerTitleSettings,
-                    onTap: onOpenSettings,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
+    return HostOrganizerMetricGrid(
+      key: const ValueKey('host-club-insights-summary'),
+      club: club,
+      eventsLoaded: eventsLoaded,
+      eventCount: eventCount,
+      activeEventCount: activeEventCount,
     );
   }
 }
@@ -256,137 +148,6 @@ class HostOrganizerMetricRow extends StatelessWidget {
       ),
     );
   }
-}
-
-class HostOrganizerTeamCard extends StatelessWidget {
-  const HostOrganizerTeamCard({
-    super.key,
-    required this.profiles,
-    required this.currentUid,
-  });
-
-  final List<ClubHostProfile> profiles;
-  final String currentUid;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    if (profiles.isEmpty) {
-      return Text(
-        context.l10n.hostsHostOrganizerTextNoHostTeamMembers,
-        style: CatchTextStyles.supporting(context, color: t.ink2),
-      );
-    }
-
-    final visibleProfiles = profiles.take(3).toList(growable: false);
-    return CatchSurface(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
-      borderColor: t.line,
-      child: Column(
-        children: [
-          for (var index = 0; index < visibleProfiles.length; index++)
-            HostOrganizerTeamRow(
-              profile: visibleProfiles[index],
-              currentUid: currentUid,
-              divider: index > 0,
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class HostOrganizerTeamRow extends StatelessWidget {
-  const HostOrganizerTeamRow({
-    super.key,
-    required this.profile,
-    required this.currentUid,
-    required this.divider,
-  });
-
-  final ClubHostProfile profile;
-  final String currentUid;
-  final bool divider;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final isCurrentUser = profile.uid == currentUid;
-    final roleLabel = profile.role == ClubHostRole.owner
-        ? context.l10n.hostsHostOrganizerVisiblecopyOwner
-        : context.l10n.hostsHostOrganizerVisiblecopyHost;
-    return Stack(
-      children: [
-        if (divider)
-          const Positioned(
-            top: 0,
-            left: CatchLayout.hostOrganizerTeamDividerInset,
-            right: 0,
-            child: CatchDivider(),
-          ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
-          child: Row(
-            children: [
-              CatchPersonAvatar(
-                size: CatchLayout.avatarRowExtent,
-                name: profile.displayName,
-                imageUrl: profile.avatarUrl,
-              ),
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      profile.displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.fieldRowTitle(
-                        context,
-                        color: t.ink,
-                      ),
-                    ),
-                    gapH2,
-                    Text(
-                      isCurrentUser
-                          ? context.l10n.hostsHostOrganizerTextYouRolelabel(
-                              roleLabel: roleLabel,
-                            )
-                          : roleLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  ],
-                ),
-              ),
-              if (profile.role == ClubHostRole.owner)
-                CatchBadge.solidStatus(
-                  label: context.l10n.hostsHostOrganizerLabelOwner,
-                )
-              else
-                Icon(
-                  CatchIcons.chevronRightRounded,
-                  size: CatchIcon.control,
-                  color: t.ink3,
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-List<String> _organizerFormats(Club club) {
-  final tags = club.tags
-      .map((tag) => tag.trim())
-      .where((tag) => tag.isNotEmpty)
-      .take(4)
-      .toList(growable: false);
-  if (tags.isNotEmpty) return tags;
-  return [club.hostDefaults.primaryActivityKind.label];
 }
 
 String _compactCount(int count) {

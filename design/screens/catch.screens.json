@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
-  "version": 1,
-  "updated": "2026-07-15",
+  "version": 2,
+  "updated": "2026-07-16",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -725,11 +725,11 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-              "symbol": "EventDetailPolicySummary"
+              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "symbol": "EventDetailGoodToKnowList"
             },
             "currentOwner": "EventDetailOverviewSection",
-            "targetOwner": "registered event policy summary section",
+            "targetOwner": "registered good-to-know fact-list section",
             "dependencies": [
               "catch.surface"
             ],
@@ -742,7 +742,7 @@
             "previewIds": [
               "EventDetailOverviewSection/Overview states"
             ],
-            "migration": "Promote policy and expectation rows into explicit view-data sections and keep requirements as a lower-level compound."
+            "migration": "Implemented through EventDetailInformationState row data and the provider-free EventDetailGoodToKnowList."
           },
           {
             "id": "section.event.hosts",
@@ -771,7 +771,7 @@
               "unverified"
             ],
             "previewIds": [
-              "EventDetailHostCard/Catalog states"
+              "CatchHostRow/Catalog states"
             ],
             "migration": "Club lookup is route-owned and mapped through EventDetailHostState; remaining work is formal host-card component registration and broader section-state hardening."
           },
@@ -2007,6 +2007,19 @@
             "ExploreMapScreen/Map route states"
           ],
           "nextAction": "Keep no-exact-pin route coverage aligned with EventMapView; add a screenshot capture only if map empty-state parity needs pixel review."
+        },
+        {
+          "id": "zero_radius_results",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "ExploreMapScreen preserves the same-market canvas and distance ring when an active radius returns zero events, then offers the next wider radius or Show all.",
+          "previewIds": [
+            "ExploreMapScreen/Map route states"
+          ],
+          "tests": [
+            "test/explore/explore_widgets_test.dart"
+          ],
+          "nextAction": "Keep zero-radius recovery aligned with the distance filter catalogue and retained-canvas policy."
         },
         {
           "id": "map_loading",
@@ -5592,7 +5605,7 @@
             "targetOwner": "provider-free chats list header section",
             "dependencies": [
               "catch.field",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.top_bar"
             ],
             "states": [
@@ -7060,7 +7073,7 @@
             "targetOwner": "SelfProfileScreenState provider/controller adapter",
             "dependencies": [
               "catch.top_bar",
-              "catch.segmented_control"
+              "catch.option_group"
             ],
             "states": [
               "loading",
@@ -7092,7 +7105,7 @@
             "targetOwner": "provider-free self-profile header section",
             "dependencies": [
               "catch.icon_button",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.top_bar"
             ],
             "states": [
@@ -8346,22 +8359,23 @@
           },
           {
             "id": "section.host.home_top_bar",
-            "name": "Host operations top bar",
+            "name": "Host Today identity header",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostOperationsTopBar",
-              "ClubSwitcher"
+              "HostTodayHeader",
+              "HostTodayClubPill"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
-              "symbol": "HostOperationsTopBar"
+              "file": "lib/hosts/presentation/host_operations/host_today.dart",
+              "symbol": "HostTodayHeader"
             },
-            "currentOwner": "_HostEventsScaffold",
-            "targetOwner": "provider-free host operations top bar section",
+            "currentOwner": "HostTodayDashboardSection",
+            "targetOwner": "provider-free Host Today identity header",
             "dependencies": [
               "catch.top_bar",
-              "catch.icon_button"
+              "catch.person_avatar",
+              "catch.surface"
             ],
             "states": [
               "single_club",
@@ -8370,43 +8384,10 @@
               "owner",
               "host_team"
             ],
-            "migration": "Selected club title, kicker, switcher actions, and host role menu labels render through public HostOperationsTopBar with section-level Widgetbook states. Route-state selection policy now lives in HostHomeRouteState.",
+            "migration": "HostTodayHeader delegates the greeting and daypart hierarchy to CatchScreenHeaderTitle.block. HostTodayClubPill owns passive single-club identity and whole-surface multi-club switching; route-state selection remains in HostHomeRouteState.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostOperationsTopBar/Top bar states"
-            ]
-          },
-          {
-            "id": "section.host.home_club_meta",
-            "name": "Host selected club metadata row",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostClubMetaRow",
-              "HostRoleBadge",
-              "ActivityChip"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
-              "symbol": "HostMetaRow"
-            },
-            "currentOwner": "HostEventsClubCard",
-            "targetOwner": "provider-free host club metadata section",
-            "dependencies": [
-              "catch.badge",
-              "catch.chip"
-            ],
-            "states": [
-              "owner",
-              "host_team",
-              "with_area",
-              "without_area",
-              "activity_variants"
-            ],
-            "migration": "HostMetaRow is public and has section-level Widgetbook states for owner, host-team, and missing-area metadata. Keep activity/role display data in the adapter and reuse with Host Clubs and Host Club Detail if the same header language persists.",
-            "previewIds": [
-              "hostHomeRouteStates",
-              "HostMetaRow/Meta row states"
+              "HostTodayClubPill/Identity switcher states"
             ]
           },
           {
@@ -8580,6 +8561,11 @@
           "id": "hostClubsScreen",
           "path": "/host/clubs",
           "role": "alias"
+        },
+        {
+          "id": "hostEditClubScreen",
+          "path": "/host/clubs/:clubId/edit",
+          "role": "alias"
         }
       ],
       "source": {
@@ -8587,7 +8573,7 @@
         "symbol": "HostClubsScreen"
       },
       "stateController": {
-        "primary": "uidProvider + _hostClubsForUserProvider + HostClubsScreenState + HostClubEditController + HostPaymentAccountController + watchHostPaymentAccountProvider + hostAnalyticsProvider",
+        "primary": "uidProvider + _hostClubsForUserProvider + HostClubsScreenState + HostClubEditController (identity, contact, media, policy defaults, and Event Success defaults) + HostPaymentAccountController + watchHostPaymentAccountProvider + hostAnalyticsProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
@@ -8920,6 +8906,40 @@
           "captureIds": [
             "host_clubs_management"
           ]
+        },
+        {
+          "id": "club_media_edit",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "The organizer Edit surface owns ordered club-photo and logo editing through HostClubEditController's media-only patch.",
+          "tests": [
+            "test/clubs/clubs_controllers_test.dart",
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "previewIds": [
+            "HostClubsScreen/Route states"
+          ],
+          "captureIds": [
+            "host_clubs_management",
+            "host_clubs_cohost_edit"
+          ],
+          "nextAction": "Keep owner/co-host media capability coverage aligned with HostClubEditController authorization."
+        },
+        {
+          "id": "advanced_club_defaults_edit",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "Owner-only Advanced defaults expose cohort caps, demand pricing, and activity-aware Event Success defaults in the organizer Edit surface.",
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "previewIds": [
+            "HostClubsScreen/Route states"
+          ],
+          "captureIds": [
+            "host_clubs_management"
+          ],
+          "nextAction": "Keep advanced defaults owner-only and synchronized with the event-default contract."
         },
         {
           "id": "cohost_club_edit_limited",
@@ -9270,42 +9290,26 @@
           },
           {
             "id": "section.host.clubs_organizer_overview",
-            "name": "Host clubs organizer overview",
+            "name": "Host clubs insights summary",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "OrganizerHeader",
-              "Callout",
-              "MetricGrid",
-              "FieldRow",
-              "HostTeamSummary",
-              "TrendStrip",
-              "FieldGroup"
+              "MetricGrid"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
               "symbol": "HostClubOrganizerOverview"
             },
-            "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "provider-free host organizer overview section",
+            "currentOwner": "HostClubInsightsPane",
+            "targetOwner": "provider-free host insights metric summary",
             "dependencies": [
-              "catch.badge",
-              "catch.button",
-              "catch.surface",
-              "catch.top_bar"
+              "catch.surface"
             ],
             "states": [
-              "owner",
-              "cohost",
-              "payout_prompt",
-              "payout_ready",
-              "payout_status_error",
-              "metrics_loading",
-              "team_summary",
-              "trends",
-              "manage_rows"
+              "metrics_loaded",
+              "metrics_loading"
             ],
-            "migration": "The default Host Clubs surface now matches the Claude organizer-summary structure and routes public preview, payouts/edit, insights, settings, and club switching through _HostClubsScaffold callbacks. Next extraction is a provider-free overview state model so payout/event async waves do not live inside the private section.",
+            "migration": "The member, rating, events-hosted, and upcoming metric grid now opens the Insights body before analytics controls. Edit owns editable profile/default/payout/team fields, Preview owns the public rendering, and default activity is no longer duplicated as a summary badge.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -9562,7 +9566,7 @@
             "dependencies": [
               "catch.badge",
               "catch.button",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.surface"
             ],
             "states": [
@@ -9680,7 +9684,7 @@
         {
           "id": "DS-HOST-CLUBS-002",
           "status": "closed",
-          "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostClubsScreenState. _HostClubsScaffold defaults to the Organizer overview and routes its public preview, payout/edit, insights, settings, and club-switch actions through typed callbacks. Inline edit and payout actions now have controller mutations; Host Team sheet/dialog states are public; HostClubInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
+          "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostClubsScreenState. The organizer Edit tab is the only club editor and owns identity, contact, logo/photos, policy defaults, Event Success defaults, payouts, and host team. The former /host/clubs/:clubId/edit location is a redirect alias into the selected organizer Edit tab. Inline edit, media, defaults, and payout actions have controller mutations; Host Team sheet/dialog states are public; HostClubInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
         },
         {
           "id": "DS-HOST-CLUBS-003",
@@ -12064,7 +12068,7 @@
           "id": "section_picker",
           "kind": "populated",
           "status": "captured",
-          "source": "HostEventManageScreen renders Setup / Guests / Live / Report through CatchSegmentedControl and accepts initialSection from route aliases or query state.",
+          "source": "HostEventManageScreen renders Setup / Guests / Live / Report through CatchOptionGroup and accepts initialSection from route aliases or query state.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
@@ -13026,7 +13030,7 @@
             "targetOwner": "provider-free host manage chrome section",
             "dependencies": [
               "catch.top_bar",
-              "catch.segmented_control"
+              "catch.option_group"
             ],
             "states": [
               "setup",
@@ -13223,7 +13227,7 @@
             "dependencies": [
               "catch.button",
               "catch.option_card",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.surface",
               "catch.field"
             ],
@@ -14154,7 +14158,7 @@
             "currentOwner": "HostInboxScreen + HostInboxViewModel",
             "targetOwner": "Host-owned typed Event/General scope selector plus Booked/Prospective rail",
             "dependencies": [
-              "catch.segmented_control"
+              "catch.option_group"
             ],
             "states": [
               "selected_event",
@@ -14305,7 +14309,7 @@
             "dependencies": [
               "catch.button",
               "catch.field",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.surface"
             ],
             "states": [
@@ -18318,10 +18322,6 @@
             "symbol": "CreateClubScreen"
           },
           {
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-            "symbol": "HostClubEditScaffold"
-          },
-          {
             "file": "lib/core/widgets/catch_bottom_dock.dart",
             "symbol": "CatchBottomDock"
           },
@@ -18372,7 +18372,7 @@
             "symbol": "ImageUploadRepository"
           }
         ],
-        "notes": "HostCreateClubScreen is the route-facing wrapper for CreateClubScreen. CreateClubScreen owns PageController step state, form controllers, draft restoration/saving, cover/profile photo picking, host defaults, Event Success defaults, submit mutation execution, and the actual Navigator pop side effect. HostClubCreateState owns the visible step title, footer labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns the submit-success close-route decision."
+        "notes": "HostCreateClubScreen is the route-facing wrapper for the create-only CreateClubScreen. CreateClubScreen owns PageController step state, form controllers, draft restoration/saving, cover/profile photo picking, host defaults, Event Success defaults, submit mutation execution, and the actual Navigator pop side effect. HostClubCreateState owns the visible step title, footer labels/enabled state, media enabled state, media display values, field/city display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns the submit-success close-route decision."
       },
       "designRefs": [
         {
@@ -18665,7 +18665,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostCreateClubScreen delegates to CreateClubScreen, where route-level form state, draft persistence, form validation, media value ownership, and Navigator side effects still live beside visual sections; HostClubCreateState owns step title, footer action state, media/edit-scaffold enabled state, mutation error copy, and primary/save-draft intents. HostClubSubmitOutcomeState owns the submit-success close-route decision.",
+        "currentLayout": "HostCreateClubScreen delegates to the create-only CreateClubScreen, where route-level form state, draft persistence, form validation, media value ownership, and Navigator side effects still live beside visual sections; HostClubCreateState owns step title, footer action state, media enabled state, mutation error copy, and primary/save-draft intents. HostClubSubmitOutcomeState owns the submit-success close-route decision.",
         "targetLayout": "Host Create Club has route, wizard, mutation, accessibility, and theme coverage. Continue only state-specific reference export/pixel work unless product changes the wizard behavior.",
         "sections": [
           {
@@ -18691,7 +18691,7 @@
               "submit_pending",
               "submit_error"
             ],
-            "migration": "HostClubCreateState now owns current-step title, submit/save loading, mutation error copy, media/edit-scaffold enabled state, media display values, edit validation display state, draft-load retry state, footer labels, and primary/save-draft/draft-restore action intents. HostClubCreateRouteIntent owns route callback dispatch. HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction. HostClubSubmitOutcomeState owns the submit-success close-route decision."
+            "migration": "HostClubCreateState now owns current-step title, submit/save loading, mutation error copy, media enabled state, media display values, draft-load retry state, footer labels, and primary/save-draft/draft-restore action intents. HostClubCreateRouteIntent owns route callback dispatch. HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction. HostClubSubmitOutcomeState owns the submit-success close-route decision."
           },
           {
             "id": "section.host.club_create.step_header",
@@ -18832,551 +18832,12 @@
         {
           "id": "DS-HOST-CLUB-CREATE-003",
           "status": "closed",
-          "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns submit-success close-route policy."
+          "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media enabled state, media display values, field/city display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns submit-success close-route policy."
         },
         {
           "id": "DS-HOST-CLUB-CREATE-004",
           "status": "blocked",
           "nextAction": "Blocked: Host Create Club basics reference is exported and wired. Additional wizard, mutation, accessibility, and theme pixel comparisons need canonical state-specific Claude/Figma references before app-code work resumes."
-        }
-      ]
-    },
-    {
-      "id": "screen.host.club.edit",
-      "name": "Host Edit Club",
-      "owner": "hosts",
-      "priority": "P2",
-      "status": "in_progress",
-      "routes": [
-        {
-          "id": "hostEditClubScreen",
-          "path": "/host/clubs/:clubId/edit",
-          "role": "primary"
-        }
-      ],
-      "source": {
-        "file": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
-        "symbol": "HostEditClubRouteScreen"
-      },
-      "stateController": {
-        "primary": "HostEditClubRouteScreen + fetchClubProvider + HostClubEditorStateView + CreateClubScreen(initialClub) + CreateClubController",
-        "files": [
-          {
-            "file": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
-            "symbol": "HostEditClubRouteScreen"
-          },
-          {
-            "file": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
-            "symbol": "HostClubEditorStateView"
-          },
-          {
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-            "symbol": "CreateClubScreen"
-          },
-          {
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-            "symbol": "HostClubSubmitOutcomeState"
-          },
-          {
-            "file": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-            "symbol": "CreateClubController"
-          },
-          {
-            "file": "lib/clubs/data/clubs_repository.dart",
-            "symbol": "fetchClub"
-          },
-          {
-            "file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-            "symbol": "CreateClubPhotosPicker"
-          },
-          {
-            "file": "lib/core/widgets/catch_section_layout.dart",
-            "symbol": "CatchSection"
-          }
-        ],
-        "mutationOwners": [
-          {
-            "file": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-            "symbol": "CreateClubController"
-          },
-          {
-            "file": "lib/clubs/data/clubs_repository.dart",
-            "symbol": "ClubsRepository"
-          },
-          {
-            "file": "lib/image_uploads/data/image_upload_repository.dart",
-            "symbol": "ImageUploadRepository"
-          }
-        ],
-        "notes": "HostEditClubRouteScreen resolves the club by route id unless an initial Club extra is supplied and handles loading/error/not-found states. HostClubEditorStateView renders loaded club branches by resolving uid/access mode through HostClubEditState, then composes CreateClubScreen(initialClub) for owner full edit or co-host media-only editing. CreateClubScreen delegates owner long-form edit composition to HostClubEditScaffold, HostClubEditSection, HostClubEditCityField, and HostClubEditFooter using compact logo/photo-strip media variants and grouped CatchField identity/contact rows. CreateClubController enforces owner-only full edits and allows non-owner hosts to update media only. HostClubSubmitOutcomeState owns submit-success close-route policy shared with create; remaining work is field/media display data, validation, mutation request data, and typed callbacks."
-      },
-      "designRefs": [
-        {
-          "id": "repo.create-club-widget-tests",
-          "kind": "repo",
-          "status": "available",
-          "path": "test/explore/explore_widgets_test.dart",
-          "notes": "CreateClubScreen tests cover edit prefill, optional contact clearing, image picking, validation, and mutation errors."
-        },
-        {
-          "id": "repo.create-club-controller-tests",
-          "kind": "repo",
-          "status": "available",
-          "path": "test/clubs/clubs_controllers_test.dart",
-          "notes": "CreateClubController tests cover owner and host edit permissions plus media upload/update behavior."
-        },
-        {
-          "id": "claude.host-club-edit",
-          "kind": "claude",
-          "status": "available",
-          "notes": "Canonical Host Edit Club owner edit reference exported, masked, manifest-registered, and wired to the edit_club_basics capture for advisory comparison. The 2026-06-25 grouped-field/media pass compares within threshold at 7.92% mismatch / 8.64 meanDelta. Co-host, loading/error, mutation, and accessibility variants still need references if design exports them.",
-          "path": "design/source_packs/host-v2/templates/hosts-edit-club/HostEditClub.dc.html"
-        },
-        {
-          "id": "generated.host-club-edit-reference",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/reference_screens/screen.host.club.edit/prefilled_owner_edit.png",
-          "notes": "390x812 Host Edit Club prefilled_owner_edit PNG reference exported from the Claude template."
-        },
-        {
-          "id": "generated.host-club-edit-reference-manifest",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/reference_screens/manifest.json",
-          "notes": "Reference-screen manifest wiring Host Edit Club prefilled_owner_edit to edit_club_basics for advisory pixel comparison; latest owner-edit pass is within threshold at 7.92% mismatch / 8.64 meanDelta."
-        }
-      ],
-      "captures": [
-        {
-          "id": "edit_club_basics",
-          "status": "captured",
-          "notes": "Deterministic capture renders the owner edit-club long form with the Sunday sea-face reference fixture, compact logo/photo-strip media variants, and grouped CatchField identity/contact rows."
-        },
-        {
-          "id": "edit_club_validation_error",
-          "status": "captured",
-          "notes": "Deterministic capture renders owner edit required-field validation errors."
-        },
-        {
-          "id": "edit_club_media_replacement",
-          "status": "captured",
-          "notes": "Deterministic capture renders replacement profile and club cover media before save."
-        },
-        {
-          "id": "edit_club_submit_pending",
-          "status": "captured",
-          "notes": "Deterministic capture renders owner edit submit pending footer/loading behavior."
-        },
-        {
-          "id": "edit_club_submit_error",
-          "status": "captured",
-          "notes": "Deterministic capture renders owner edit submit failure feedback through CatchErrorBanner."
-        },
-        {
-          "id": "edit_club_route_loading",
-          "status": "captured",
-          "notes": "Deterministic capture renders the edit-club route fetch loading state."
-        },
-        {
-          "id": "edit_club_route_error",
-          "status": "captured",
-          "notes": "Deterministic capture renders the edit-club route fetch error state."
-        },
-        {
-          "id": "edit_club_route_offline",
-          "status": "captured",
-          "notes": "Deterministic capture renders retryable offline route-load copy for Host Edit Club."
-        },
-        {
-          "id": "edit_club_not_found",
-          "status": "captured",
-          "notes": "Deterministic capture renders the edit-club missing-club state."
-        },
-        {
-          "id": "edit_club_cohost_media",
-          "status": "captured",
-          "notes": "Deterministic capture renders co-host media-only edit mode."
-        },
-        {
-          "id": "edit_club_forbidden",
-          "status": "captured",
-          "notes": "Deterministic capture renders forbidden edit access for a non-host identity."
-        },
-        {
-          "id": "edit_club_text_scale_2",
-          "status": "captured",
-          "notes": "Deterministic capture renders owner edit at text scale 2.0."
-        },
-        {
-          "id": "edit_club_reduced_motion",
-          "status": "captured",
-          "notes": "Deterministic capture renders co-host media-only edit with reduced motion enabled."
-        },
-        {
-          "id": "edit_club_light_dark",
-          "status": "captured",
-          "notes": "Deterministic capture emits paired light/dark owner edit output."
-        }
-      ],
-      "states": [
-        {
-          "id": "initial_club_extra",
-          "kind": "populated",
-          "status": "implemented",
-          "source": "HostEditClubRouteScreen bypasses fetch when navigation supplies an initial Club.",
-          "nextAction": "Add route test proving Host Clubs passes the selected club extra when opening edit."
-        },
-        {
-          "id": "club_fetch_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "Without initial data, fetchClubProvider loading renders CatchStartupLoadingScreen.",
-          "captureIds": [
-            "edit_club_route_loading"
-          ],
-          "nextAction": "Compare route loading capture against the canonical loading reference once exported."
-        },
-        {
-          "id": "club_fetch_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "fetchClubProvider errors render CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation.",
-          "captureIds": [
-            "edit_club_route_error"
-          ],
-          "nextAction": "Generic fetch error and offline fetch error captures are split; compare both against state references once exported."
-        },
-        {
-          "id": "club_not_found",
-          "kind": "empty",
-          "status": "captured",
-          "source": "A null fetched club renders Club not found copy.",
-          "captureIds": [
-            "edit_club_not_found"
-          ],
-          "nextAction": "Compare missing-club capture against reference copy if design exports one."
-        },
-        {
-          "id": "prefilled_owner_edit",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Owner edit pre-fills identity, contact, media, host defaults, and Event Success defaults in the long edit form; reference-backed captures use the Sunday sea-face fixture plus compact logo/photo-strip media variants.",
-          "captureIds": [
-            "edit_club_basics"
-          ],
-          "tests": [
-            "test/explore/explore_widgets_test.dart"
-          ],
-          "nextAction": "Host Edit Club owner edit now has a manifest-registered design reference, deterministic default/validation/media/mutation captures, and an advisory comparison within threshold at 7.92% / 8.64. Shared Host Club Create/Edit adapter state owns field/media display values, validation, submit request data, route callback intents, and submit-success close policy."
-        },
-        {
-          "id": "media_only_cohost_edit",
-          "kind": "permission",
-          "status": "captured",
-          "source": "If the current uid hosts but does not own the club, CreateClubScreen narrows active steps to Club photos only.",
-          "captureIds": [
-            "edit_club_cohost_media"
-          ],
-          "nextAction": "Compare co-host media-only capture against a canonical reference once exported."
-        },
-        {
-          "id": "optional_contact_clearing",
-          "kind": "mutation",
-          "status": "tested",
-          "source": "Clearing Instagram, phone, and email in edit mode submits null patch values.",
-          "tests": [
-            "test/explore/explore_widgets_test.dart"
-          ],
-          "nextAction": "Add capture or preview showing optional contact empty state."
-        },
-        {
-          "id": "image_replacement",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Picked club/profile images flow through CreateClubController and upload repository before patching club media fields.",
-          "tests": [
-            "test/explore/explore_widgets_test.dart",
-            "test/clubs/clubs_controllers_test.dart"
-          ],
-          "nextAction": "Compare captured replacement media preview against canonical design references once exported.",
-          "captureIds": [
-            "edit_club_media_replacement"
-          ]
-        },
-        {
-          "id": "validation_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "Required owner edit fields validate through shared CatchField/CatchField validators plus the edit city FormField adapter.",
-          "tests": [
-            "test/explore/explore_widgets_test.dart"
-          ],
-          "nextAction": "Compare captured edit validation feedback against canonical design references once exported.",
-          "captureIds": [
-            "edit_club_validation_error"
-          ]
-        },
-        {
-          "id": "submit_pending",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "CreateClubController.submitMutation disables pickers and Save changes while pending.",
-          "nextAction": "Compare captured edit submit pending state against canonical design references once exported.",
-          "captureIds": [
-            "edit_club_submit_pending"
-          ]
-        },
-        {
-          "id": "submit_error",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Submit mutation errors render CatchErrorBanner above the footer.",
-          "tests": [
-            "test/explore/explore_widgets_test.dart"
-          ],
-          "nextAction": "Compare captured edit submit error feedback against canonical design references once exported.",
-          "captureIds": [
-            "edit_club_submit_error"
-          ]
-        },
-        {
-          "id": "success_pop",
-          "kind": "mutation",
-          "status": "tested",
-          "source": "Successful edit pops through the shared submit mutation listener after HostClubSubmitOutcomeState maps the pending-to-success transition to close-route.",
-          "tests": [
-            "test/explore/explore_widgets_test.dart"
-          ],
-          "nextAction": "Close-route policy is adapter-owned; add route test for return to Host Clubs after save."
-        },
-        {
-          "id": "unauthorized_host_or_owner",
-          "kind": "permission",
-          "status": "captured",
-          "source": "HostClubEditState blocks non-host identities before rendering the editor, and CreateClubController still rejects unauthorized submit attempts.",
-          "captureIds": [
-            "edit_club_forbidden"
-          ],
-          "tests": [
-            "test/hosts/host_club_edit_state_test.dart"
-          ],
-          "nextAction": "Add offline/auth-error identity variants if uidProvider can fail distinctly."
-        },
-        {
-          "id": "offline",
-          "kind": "offline",
-          "status": "captured",
-          "source": "Network-looking fetch, media, or update failures currently surface through error scaffold/banner copy.",
-          "nextAction": "Offline route-load capture is covered; decide separately whether save-mutation offline failures need distinct copy beyond shared mutation error feedback.",
-          "captureIds": [
-            "edit_club_route_offline"
-          ]
-        },
-        {
-          "id": "text_scale_2",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "Long edit form needs text-scale review for media pickers, sections, fields, and footer.",
-          "captureIds": [
-            "edit_club_text_scale_2"
-          ],
-          "nextAction": "Compare text-scale capture after reference export; field optional badges collapse visually at large scale while retaining semantic optional labels."
-        },
-        {
-          "id": "reduced_motion",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "Media picker/reorder interactions and route transitions need reduced-motion review.",
-          "captureIds": [
-            "edit_club_reduced_motion"
-          ],
-          "nextAction": "Compare reduced-motion capture against reference once exported."
-        },
-        {
-          "id": "light_dark",
-          "kind": "theme",
-          "status": "captured",
-          "source": "Edit club uses tokenized surfaces and inputs.",
-          "captureIds": [
-            "edit_club_light_dark"
-          ],
-          "nextAction": "Compare paired light/dark capture against reference variants once exported."
-        }
-      ],
-      "composition": {
-        "currentLayout": "HostEditClubRouteScreen owns route club loading and delegates loaded uid/access-mode rendering to HostClubEditorStateView over HostClubEditState. CreateClubScreen owns edit mode, compact media variants, grouped CatchField identity/contact rows, validation, mutation state, and footer rendering.",
-        "targetLayout": "Host Edit Club should keep route fetch/access in HostClubEditState, share HostClubSubmitOutcomeState for submit-success close policy, and continue moving field/media display data, validation, mutation request data, and typed callbacks before composing provider-free edit sections.",
-        "sections": [
-          {
-            "id": "section.host.club_edit.route_adapter",
-            "name": "Host edit club route adapter",
-            "status": "implemented_local",
-            "layer": "screen-adapter",
-            "claudeComponents": [
-              "HostClubEditState"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
-              "symbol": "HostEditClubRouteScreen"
-            },
-            "currentOwner": "HostEditClubRouteScreen + HostClubEditorStateView + HostClubEditState",
-            "targetOwner": "HostClubEditState adapter",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "club_fetch_loading",
-              "club_fetch_error",
-              "club_not_found",
-              "prefilled_owner_edit"
-            ],
-            "migration": "HostEditClubRouteScreen owns club fetch branches while HostClubEditorStateView resolves uid/access through HostClubEditState; continue moving loaded field/media/edit callbacks out of CreateClubScreen."
-          },
-          {
-            "id": "section.host.club_edit.edit_scaffold",
-            "name": "Edit club scaffold",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "EditClubScaffold"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-              "symbol": "HostClubEditScaffold"
-            },
-            "currentOwner": "HostClubEditScaffold + CreateClubScreen callbacks",
-            "targetOwner": "provider-free edit-club section shell",
-            "dependencies": [
-              "catch.top_bar",
-              "catch.surface"
-            ],
-            "states": [
-              "prefilled_owner_edit",
-              "media_only_cohost_edit",
-              "text_scale_2"
-            ],
-            "migration": "HostClubEditScaffold now owns the named owner long-form shell; continue moving display data and typed field/media callbacks out of CreateClubScreen."
-          },
-          {
-            "id": "section.host.club_edit.media",
-            "name": "Edit club media section",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "ClubMediaEditor"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-              "symbol": "CreateClubPhotosPicker"
-            },
-            "currentOwner": "CreateClubScreen",
-            "targetOwner": "provider-free club media editor",
-            "dependencies": [
-              "catch.button"
-            ],
-            "states": [
-              "prefilled_owner_edit",
-              "media_only_cohost_edit",
-              "image_replacement"
-            ],
-            "migration": "Compact edit media variants now cover the owner reference state. Feed existing/picked/reordered media previews and disabled state from adapter display data before promoting the section."
-          },
-          {
-            "id": "section.host.club_edit.identity_contact",
-            "name": "Edit club identity and contact sections",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "ClubIdentityEditor",
-              "ClubContactEditor"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-              "symbol": "HostClubEditSection"
-            },
-            "currentOwner": "HostClubEditScaffold + HostClubEditSection + HostClubEditCityField",
-            "targetOwner": "provider-free identity/contact sections",
-            "dependencies": [
-              "catch.field"
-            ],
-            "states": [
-              "prefilled_owner_edit",
-              "optional_contact_clearing",
-              "validation_error"
-            ],
-            "migration": "Owner edit uses named grouped CatchField identity/contact sections with deterministic reference fixture coverage. Keep moving field display data, validation flags, and callbacks into adapter-owned inputs."
-          },
-          {
-            "id": "section.host.club_edit.defaults",
-            "name": "Edit club event defaults section",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "ClubEventDefaultsEditor"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-              "symbol": "ClubHostDefaultsStep"
-            },
-            "currentOwner": "HostClubEditScaffold + defaults step widgets",
-            "targetOwner": "provider-free defaults sections",
-            "dependencies": [
-              "catch.chip",
-              "catch.field"
-            ],
-            "states": [
-              "prefilled_owner_edit",
-              "submit_pending"
-            ],
-            "migration": "Share host/event-success defaults state shape with Create Club and Create Event before consolidating controls."
-          },
-          {
-            "id": "section.host.club_edit.footer",
-            "name": "Edit club footer",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "EditClubFooter"
-            ],
-            "flutter": {
-              "file": "lib/core/widgets/catch_bottom_dock.dart",
-              "symbol": "CatchBottomDock"
-            },
-            "currentOwner": "HostClubEditFooter + HostClubCreateFooterState",
-            "targetOwner": "provider-free edit footer",
-            "dependencies": [
-              "catch.button"
-            ],
-            "states": [
-              "submit_pending",
-              "submit_error",
-              "success_pop"
-            ],
-            "migration": "HostClubEditFooter renders save enabled/loading state from HostClubCreateFooterState, and HostClubSubmitOutcomeState owns close-after-submit-success policy. Continue moving save request construction and typed callbacks out of CreateClubScreen."
-          }
-        ]
-      },
-      "openGaps": [
-        {
-          "id": "DS-HOST-CLUB-EDIT-001",
-          "status": "closed",
-          "nextAction": "Closed: Widgetbook covers route loading/error/offline/not-found, owner edit, validation, media replacement, submit pending/error, co-host media-only mode, forbidden identity, text scale, reduced motion, and dark theme. Additional variants are reference-specific only."
-        },
-        {
-          "id": "DS-HOST-CLUB-EDIT-002",
-          "status": "closed",
-          "nextAction": "Closed: deterministic captures cover owner edit, validation, media replacement, submit pending/error, route loading/error/offline/not-found, co-host media-only mode, forbidden identity, text scale, reduced motion, and light/dark. Owner-edit pixel comparison is already within threshold."
-        },
-        {
-          "id": "DS-HOST-CLUB-EDIT-003",
-          "status": "closed",
-          "nextAction": "Closed. HostClubEditState owns route identity/access mode, while shared Host Club Create/Edit adapter state owns field/media display values, validation, submit request data, route callback intents, and submit-success close policy."
-        },
-        {
-          "id": "DS-HOST-CLUB-EDIT-004",
-          "status": "closed",
-          "nextAction": "Closed for owner-edit reference: edit_club_basics compares within threshold at 7.92% / 8.64 after the grouped-field/media pass. Add more references only for state-specific design variants."
         }
       ]
     },
@@ -20027,7 +19488,7 @@
             "symbol": "AuthSessionController"
           }
         ],
-        "notes": "hostSettingsScreen is backed by HostAccountScreen. The screen watches uidProvider, watchHostProfileProvider, and _hostClubsForUserProvider, adapts profile/clubs branches plus tab/account/club navigation policy through HostSettingsState, falls back to club host profile data while the dedicated host profile loads, opens HostProfileEditorSheet for inline profile edits, creates/saves host profiles through HostProfileController mutations, renders provider-free HostSettingsProfileSection and HostSettingsClubsSection rows, and signs out through AuthSessionController. Remaining non-code work is reference export/pixel parity, with payout/admin placement blocked on product IA ownership."
+        "notes": "hostSettingsScreen is backed by HostAccountScreen. The screen watches uidProvider, watchHostProfileProvider, and _hostClubsForUserProvider, adapts profile/clubs branches plus tab/account/club navigation policy through HostSettingsState, falls back to club host profile data while the dedicated host profile loads, edits and saves professional profile fields inline through HostProfileController mutations, renders provider-free HostSettingsProfileSection and HostSettingsClubsSection rows, exposes enforced back navigation, and signs out through AuthSessionController. Remaining non-code work is reference export/pixel parity, with payout/admin placement blocked on product IA ownership."
       },
       "designRefs": [
         {
@@ -20035,7 +19496,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/hosts/host_operations_screen_test.dart",
-          "notes": "Host operations tests cover host account profile fallback, active profile editing through the account sheet, and host profile sub-route navigation."
+          "notes": "Host operations tests cover host account profile fallback, inline profile editing, section-owned club dividers, and back navigation."
         },
         {
           "id": "claude.host-settings",
@@ -20107,24 +19568,24 @@
           "notes": "Deterministic Host Settings capture for hosted/owned clubs offline-looking load failure."
         },
         {
-          "id": "host_settings_profile_editor_sheet",
+          "id": "host_settings_inline_profile_edit",
           "status": "captured",
-          "notes": "Deterministic Host Settings capture with the professional profile editor sheet open."
+          "notes": "Deterministic Host Settings capture with editable professional profile fields inline."
         },
         {
           "id": "host_settings_save_profile_pending",
           "status": "captured",
-          "notes": "Deterministic Host Settings capture for save-profile pending inside the editor sheet."
+          "notes": "Deterministic Host Settings capture for inline save-profile pending state."
         },
         {
           "id": "host_settings_save_profile_error",
           "status": "captured",
-          "notes": "Deterministic Host Settings capture for failed save-profile snackbar feedback while the editor sheet stays open."
+          "notes": "Deterministic Host Settings capture for failed save-profile snackbar feedback while inline fields remain available."
         },
         {
           "id": "host_settings_save_profile_offline",
           "status": "captured",
-          "notes": "Deterministic Host Settings capture for offline-looking save-profile feedback while the editor sheet stays open."
+          "notes": "Deterministic Host Settings capture for offline-looking save-profile feedback while inline fields remain available."
         },
         {
           "id": "host_settings_sign_out_error",
@@ -20234,16 +19695,16 @@
           ]
         },
         {
-          "id": "profile_editor_sheet",
+          "id": "inline_profile_editor",
           "kind": "mutation",
           "status": "captured",
-          "source": "Profile rows open HostProfileEditorSheet, save through HostProfileController without navigating away, keep the editor open while surfacing snackbar copy when save fails, and show shared Catch snackbar success feedback after the sheet closes on save.",
+          "source": "Edit mode renders display name, role title, status, and bio in one Profile section, saves through HostProfileController without opening a modal, keeps the fields available when save fails, and shows shared Catch snackbar success feedback.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Compare editor sheet hierarchy and mutation feedback against the canonical Host Settings reference once exported.",
+          "nextAction": "Compare inline field hierarchy and mutation feedback against the canonical Host Settings reference once exported.",
           "captureIds": [
-            "host_settings_profile_editor_sheet",
+            "host_settings_inline_profile_edit",
             "host_settings_save_profile_pending",
             "host_settings_save_profile_error",
             "host_settings_save_profile_offline"
@@ -20274,11 +19735,11 @@
           "id": "save_profile_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "Account sheet saves display name, role title, and bio through HostProfileController.saveProfileMutation, surfaces snackbar copy on failure, and lets HostAccountScreen show shared Catch snackbar success feedback after the sheet closes.",
+          "source": "The inline Profile section saves display name, role title, and bio through HostProfileController.saveProfileMutation, surfaces snackbar copy on failure, and lets HostAccountScreen show shared Catch snackbar success feedback without modal state.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Compare save-pending and failed-save sheet treatment against the canonical Host Settings reference once exported.",
+          "nextAction": "Compare inline save-pending and failed-save treatment against the canonical Host Settings reference once exported.",
           "captureIds": [
             "host_settings_save_profile_pending",
             "host_settings_save_profile_error",
@@ -20362,7 +19823,7 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "Settings rows, tab rail, and editor sheet need text-scale coverage.",
+          "source": "Settings rows, inline profile fields, and tab rail have text-scale coverage.",
           "nextAction": "Review route, profile rows, club rows, and tab rail against the canonical Host Settings design reference once exported.",
           "captureIds": [
             "host_settings_text_scale_2"
@@ -20378,8 +19839,8 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "Bottom-sheet editor and tab switching need reduced-motion review.",
-          "nextAction": "Add editor-sheet reduced-motion proof when mutation sheet captures are added.",
+          "source": "Inline profile fields and tab switching have reduced-motion coverage.",
+          "nextAction": "Review tab switching and inline field focus motion against the canonical Host Settings reference once exported.",
           "captureIds": [
             "host_settings_reduced_motion"
           ],
@@ -20402,7 +19863,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostAccountScreen owns uid/profile/club provider watches, adapts provider waves plus tab/account/club navigation policy through HostSettingsState, routes profile create/save through HostProfileController mutations, owns the profile editor bottom sheet and sign-out side effect, then composes provider-free HostSettingsProfileSection, HostSettingsClubsSection, shared CatchTabRail tabs, and HostSettingsSection rows.",
+        "currentLayout": "HostAccountScreen owns uid/profile/club provider watches, adapts provider waves plus tab/account/club navigation policy through HostSettingsState, routes inline profile create/save through HostProfileController mutations, owns explicit back/sign-out side effects, then composes provider-free HostSettingsProfileSection, HostSettingsClubsSection, shared CatchTabRail tabs, and section-owned field rows.",
         "targetLayout": "Host Settings has no remaining provider-free extraction target until product/design resolves payout/admin ownership and a valid reference export is available for pixel parity.",
         "sections": [
           {
@@ -20456,7 +19917,7 @@
               "sign_out_action",
               "text_scale_2"
             ],
-            "migration": "Host Settings tab rail now uses shared CatchTabRail; remaining work is deciding whether tab/action state belongs in HostSettingsState or stays route-local until broader account-action policy is settled.",
+            "migration": "Host Settings tab rail uses shared CatchTabRail, and the pushed route uses explicit CatchTopBar back navigation enforced by screen_top_bar_contracts.json. Remaining work is deciding whether tab/action state belongs in HostSettingsState or stays route-local until broader account-action policy is settled.",
             "previewIds": [
               "HostAccountScreen/Route states",
               "CatchTabRail/Contract states"
@@ -20491,28 +19952,28 @@
           },
           {
             "id": "section.host.settings.profile_editor",
-            "name": "Host settings profile editor sheet",
+            "name": "Host settings inline profile editor",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostProfileEditorSheet"
+              "HostSettingsProfileRows"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-              "symbol": "HostProfileEditorSheet"
+              "symbol": "HostSettingsProfileRows"
             },
-            "currentOwner": "HostAccountScreen private bottom sheet",
+            "currentOwner": "HostSettingsProfileRows inline form",
             "targetOwner": "provider-free host profile editor form",
             "dependencies": [
               "catch.field",
               "catch.button"
             ],
             "states": [
-              "profile_editor_sheet",
+              "inline_profile_editor",
               "save_profile_mutation",
               "create_profile_mutation"
             ],
-            "migration": "The private editor sheet now reuses HostProfileFields from the shared profile form. Remaining work is an explicit editor-sheet preview/capture for open sheet, save pending, and save failure states.",
+            "migration": "HostSettingsProfileRows renders display name, role title, status, and bio inside one CatchSection.fieldRows form and exposes the save mutation inline; captures cover ready, pending, failed, and offline save states.",
             "previewIds": [
               "HostProfileFields/Field states"
             ]
@@ -20583,7 +20044,7 @@
         "host_settings_clubs_loading",
         "host_settings_clubs_error",
         "host_settings_clubs_offline",
-        "host_settings_profile_editor_sheet",
+        "host_settings_inline_profile_edit",
         "host_settings_save_profile_pending",
         "host_settings_save_profile_error",
         "host_settings_save_profile_offline",
@@ -20923,7 +20384,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostProfileScreen owns controller synchronization, validation, and shared Catch snackbar success feedback at the route edge, adapts uid/profile provider waves through HostProfileEditState, routes create/save through HostProfileController, then composes provider-free HostProfileForm plus HostEmptyActionCard for the missing-profile branch. Host Settings editor sheet reuses HostProfileFields and the same save mutation.",
+        "currentLayout": "HostProfileScreen owns controller synchronization, validation, and shared Catch snackbar success feedback at the route edge, adapts uid/profile provider waves through HostProfileEditState, routes create/save through HostProfileController, then composes provider-free HostProfileForm plus HostEmptyActionCard for the missing-profile branch. Host Settings uses its own inline section composition with the same controller mutation seam.",
         "targetLayout": "Host Profile should continue sharing HostProfileEditState and HostProfileController with Host Settings so provider-free profile form sections render populated, missing, validation, and mutation states consistently.",
         "sections": [
           {
@@ -21007,7 +20468,7 @@
               "save_success",
               "status_variants"
             ],
-            "migration": "Provider-free HostProfileForm and HostProfileFields now back the direct profile route and Host Settings editor sheet, with save/create state shared through HostProfileController. Validation, save-error, and offline states now have deterministic capture proof.",
+            "migration": "Provider-free HostProfileForm and HostProfileFields back the direct profile route, while Host Settings uses inline section fields with save/create state shared through HostProfileController. Validation, save-error, and offline states have deterministic capture proof.",
             "previewIds": [
               "HostProfileForm/Form states",
               "HostProfileFields/Field states"

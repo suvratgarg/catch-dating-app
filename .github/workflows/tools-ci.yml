@@ -6,7 +6,8 @@ on:
       - ".github/actions/**"
       - "design/**"
       - "design_context_pack/**"
-      - "docs/design_parity/**"
+      - "docs/**"
+      - "**/*.md"
       - "package-lock.json"
       - "package.json"
       - "pubspec.lock"
@@ -24,7 +25,8 @@ on:
       - ".github/actions/**"
       - "design/**"
       - "design_context_pack/**"
-      - "docs/design_parity/**"
+      - "docs/**"
+      - "**/*.md"
       - "package-lock.json"
       - "package.json"
       - "pubspec.lock"
@@ -90,6 +92,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain

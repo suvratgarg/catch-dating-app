@@ -718,7 +718,7 @@
       "description": "Event Success modules copy for checkIn.riskControls."
     },
     "modules.firstHelloCheckIn.title.1": {
-      "value": "First Hello check-in",
+      "value": "Arrival icebreaker",
       "description": "Event Success modules copy for firstHelloCheckIn.title."
     },
     "modules.firstHelloCheckIn.attendeePromise.1": {
@@ -978,7 +978,7 @@
       "description": "Event Success modules copy for contextualOpeners.riskControls."
     },
     "modules.decomposedFeedback.title.1": {
-      "value": "After-event attendee feedback",
+      "value": "Attendee feedback",
       "description": "Event Success modules copy for decomposedFeedback.title."
     },
     "modules.decomposedFeedback.attendeePromise.1": {

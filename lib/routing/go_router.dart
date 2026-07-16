@@ -181,6 +181,18 @@ HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
   };
 }
 
+@visibleForTesting
+HostClubsScreen hostOrganizerScreenForUri(Uri uri) {
+  return HostClubsScreen(
+    initialClubId: uri.queryParameters['clubId'],
+    initialExpandedEditField: uri.queryParameters['editField'],
+    initialTab: HostClubTab.values.firstWhere(
+      (tab) => tab.name == uri.queryParameters['tab'],
+      orElse: () => HostClubTab.edit,
+    ),
+  );
+}
+
 Event? _eventDetailInitialEvent(GoRouterState state) {
   return switch (state.extra) {
     EventDetailRouteExtra(:final initialEvent) => initialEvent,
@@ -684,13 +696,8 @@ List<RouteBase> _hostUtilityRoutes() {
             GoRoute(
               path: 'edit',
               name: Routes.hostEditClubScreen.name,
-              builder: (context, state) => HostEditClubRouteScreen(
-                clubId: state.pathParameters['clubId']!,
-                initialClub: switch (state.extra) {
-                  final Club club => club,
-                  _ => null,
-                },
-              ),
+              redirect: (context, state) =>
+                  hostEditClubLegacyRedirect(state.pathParameters['clubId']!),
             ),
             GoRoute(
               path: 'create-event',
@@ -797,6 +804,12 @@ String? hostClubsLegacyRedirect(Uri uri) {
       : null;
 }
 
+@visibleForTesting
+String hostEditClubLegacyRedirect(String clubId) => Uri(
+  path: Routes.hostOrganizerScreen.path,
+  queryParameters: {'clubId': clubId, 'tab': HostClubTab.edit.name},
+).toString();
+
 StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
   return StatefulShellRoute.indexedStack(
     builder: (context, state, navigationShell) =>
@@ -868,7 +881,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
           GoRoute(
             path: Routes.hostOrganizerScreen.path,
             name: Routes.hostOrganizerScreen.name,
-            builder: (context, state) => const HostClubsScreen(),
+            builder: (context, state) => hostOrganizerScreenForUri(state.uri),
           ),
         ],
       ),

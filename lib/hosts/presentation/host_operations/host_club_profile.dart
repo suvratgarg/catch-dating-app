@@ -1,62 +1,342 @@
 part of '../host_operations_screen.dart';
 
-class HostClubProfileCard extends StatefulWidget {
+typedef _ClubHostDefaultsUpdate =
+    ClubHostDefaults Function(ClubHostDefaults current);
+
+abstract final class HostClubEditFieldKeys {
+  static const name = 'name';
+  static const location = 'location';
+  static const area = 'area';
+  static const description = 'description';
+  static const instagramHandle = 'instagramHandle';
+  static const phoneNumber = 'phoneNumber';
+  static const email = 'email';
+  static const primaryActivityKind = 'primaryActivityKind';
+  static const admissionPreset = 'admissionPreset';
+  static const ageRange = 'ageRange';
+  static const cancellationPolicyId = 'cancellationPolicyId';
+}
+
+class HostClubProfileCard extends ConsumerStatefulWidget {
   const HostClubProfileCard({
     super.key,
     required this.club,
     required this.currentUid,
     required this.isOwner,
-    required this.onPreviewClub,
     this.initialExpandedField,
   });
 
   final Club club;
   final String currentUid;
   final bool isOwner;
-  final HostClubPreviewCallback onPreviewClub;
   final String? initialExpandedField;
 
   @override
-  State<HostClubProfileCard> createState() => _HostClubProfileCardState();
+  ConsumerState<HostClubProfileCard> createState() =>
+      _HostClubProfileCardState();
 }
 
-class _HostClubProfileCardState extends State<HostClubProfileCard> {
-  String? _expandedField;
+class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
+  late final CatchFieldAccordion _fieldAccordion;
+  late List<_HostClubMediaDraft> _mediaDrafts;
+  HostPickedClubLogo? _pickedLogo;
+  bool _clubPhotosTouched = false;
+  bool _ownsMediaMutation = false;
+  late ClubHostDefaults _defaultsDraft;
+  late ClubHostDefaults _defaultsConfirmed;
+  late ClubHostDefaults _defaultsOptimistic;
+  ClubHostDefaults? _queuedImmediateDefaults;
+  bool _flushingImmediateDefaults = false;
+  bool _defaultsDirty = false;
+  bool _ownsDefaultsMutation = false;
+
+  bool get _mediaDirty => _clubPhotosTouched || _pickedLogo != null;
 
   @override
   void initState() {
     super.initState();
-    _expandedField = widget.initialExpandedField;
+    _fieldAccordion = CatchFieldAccordion(
+      initialExpanded: widget.initialExpandedField,
+    )..addListener(_handleAccordionChanged);
+    _resetDrafts();
   }
 
-  bool _isExpanded(String fieldName) => _expandedField == fieldName;
-
-  void _toggleField(String fieldName) {
-    setState(() {
-      _expandedField = _expandedField == fieldName ? null : fieldName;
-    });
+  void _handleAccordionChanged() {
+    if (mounted) setState(() {});
   }
 
-  void _collapseField() {
-    if (_expandedField == null) return;
-    setState(() => _expandedField = null);
+  void _setExpandedField(String? fieldName) {
+    if (fieldName == null) {
+      _fieldAccordion.collapse();
+    } else if (_fieldAccordion.expanded != fieldName) {
+      _fieldAccordion.toggle(fieldName);
+    }
   }
 
   @override
   void didUpdateWidget(covariant HostClubProfileCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
-      _expandedField = widget.initialExpandedField;
+      _setExpandedField(widget.initialExpandedField);
+      _resetDrafts();
     } else if (oldWidget.initialExpandedField != widget.initialExpandedField) {
-      _expandedField = widget.initialExpandedField;
+      _setExpandedField(widget.initialExpandedField);
     }
+    if (oldWidget.club.hostDefaults != widget.club.hostDefaults &&
+        !_flushingImmediateDefaults &&
+        _queuedImmediateDefaults == null) {
+      final hadStagedChanges = _defaultsDirty;
+      _defaultsConfirmed = widget.club.hostDefaults;
+      _defaultsOptimistic = widget.club.hostDefaults;
+      if (!hadStagedChanges) {
+        _defaultsDraft = widget.club.hostDefaults;
+      }
+      _defaultsDirty = _defaultsDraft != _defaultsOptimistic;
+    }
+  }
+
+  @override
+  void dispose() {
+    _fieldAccordion
+      ..removeListener(_handleAccordionChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _resetDrafts() {
+    _resetMediaDraft();
+    _defaultsDraft = widget.club.hostDefaults;
+    _defaultsConfirmed = widget.club.hostDefaults;
+    _defaultsOptimistic = widget.club.hostDefaults;
+    _queuedImmediateDefaults = null;
+    _flushingImmediateDefaults = false;
+    _defaultsDirty = false;
+    _ownsDefaultsMutation = false;
+  }
+
+  void _resetMediaDraft() {
+    _mediaDrafts = [
+      for (final photo in [
+        ...widget.club.clubPhotos,
+      ]..sort((a, b) => a.position.compareTo(b.position)))
+        _HostExistingClubMediaDraft(photo),
+    ];
+    _pickedLogo = null;
+    _clubPhotosTouched = false;
+    _ownsMediaMutation = false;
+  }
+
+  void _cancelMedia() => setState(_resetMediaDraft);
+
+  void _cancelDefaults() {
+    setState(() {
+      _defaultsDraft = _defaultsOptimistic;
+      _defaultsDirty = false;
+      _ownsDefaultsMutation = false;
+    });
+  }
+
+  Future<void> _pickLogo() async {
+    final logo = await ref.read(hostClubEditControllerProvider).pickClubLogo();
+    if (!mounted || logo == null) return;
+    setState(() => _pickedLogo = logo);
+  }
+
+  Future<void> _pickPhotos() async {
+    final remaining = maxClubPhotos - _mediaDrafts.length;
+    if (remaining <= 0) return;
+    final photos = await ref
+        .read(hostClubEditControllerProvider)
+        .pickClubPhotos(limit: remaining);
+    if (!mounted || photos.isEmpty) return;
+    setState(() {
+      _mediaDrafts.addAll(
+        photos.map(
+          (photo) => _HostPickedClubMediaDraft(
+            '${DateTime.now().microsecondsSinceEpoch}-${photo.image.name}',
+            photo,
+          ),
+        ),
+      );
+      _clubPhotosTouched = true;
+    });
+  }
+
+  void _removePhoto(int index) {
+    if (index < 0 || index >= _mediaDrafts.length) return;
+    setState(() {
+      _mediaDrafts.removeAt(index);
+      _clubPhotosTouched = true;
+    });
+  }
+
+  void _reorderPhoto(int fromIndex, int toIndex) {
+    if (fromIndex == toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= _mediaDrafts.length ||
+        toIndex >= _mediaDrafts.length) {
+      return;
+    }
+    setState(() {
+      final moved = _mediaDrafts.removeAt(fromIndex);
+      _mediaDrafts.insert(toIndex, moved);
+      _clubPhotosTouched = true;
+    });
+  }
+
+  Future<void> _saveMedia() async {
+    final mutation = HostClubEditController.updateMediaMutation;
+    if (ref.read(mutation).isPending ||
+        (!_clubPhotosTouched && _pickedLogo == null)) {
+      return;
+    }
+    setState(() => _ownsMediaMutation = true);
+    try {
+      await mutation.run(
+        ref,
+        (tx) => tx
+            .get(hostClubEditControllerProvider)
+            .updateClubMedia(
+              club: widget.club,
+              photoInputs: _clubPhotosTouched
+                  ? [for (final draft in _mediaDrafts) draft.input]
+                  : null,
+              logo: _pickedLogo,
+            ),
+      );
+    } catch (_) {
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      _clubPhotosTouched = false;
+      _pickedLogo = null;
+      _ownsMediaMutation = false;
+    });
+  }
+
+  void _updateDefaults(ClubHostDefaults defaults) {
+    setState(() {
+      _defaultsDraft = defaults;
+      _defaultsDirty = defaults != _defaultsOptimistic;
+      _ownsDefaultsMutation = false;
+    });
+  }
+
+  void _updateDefaultsImmediately(_ClubHostDefaultsUpdate update) {
+    final nextDraft = update(_defaultsDraft);
+    final nextOptimistic = update(_defaultsOptimistic);
+    if (nextDraft == _defaultsDraft && nextOptimistic == _defaultsOptimistic) {
+      return;
+    }
+    setState(() {
+      _defaultsDraft = nextDraft;
+      _defaultsOptimistic = nextOptimistic;
+      _queuedImmediateDefaults = nextOptimistic;
+      _defaultsDirty = nextDraft != nextOptimistic;
+      _ownsDefaultsMutation = true;
+    });
+    unawaited(_flushImmediateDefaults());
+  }
+
+  Future<void> _flushImmediateDefaults() async {
+    if (_flushingImmediateDefaults) return;
+    _flushingImmediateDefaults = true;
+    try {
+      while (mounted) {
+        final target = _queuedImmediateDefaults;
+        if (target == null) break;
+        _queuedImmediateDefaults = null;
+        try {
+          await HostClubEditController.updateClubMutation.run(
+            ref,
+            (tx) => tx
+                .get(hostClubEditControllerProvider)
+                .updateClub(
+                  clubId: widget.club.id,
+                  patch: UpdateClubPatch(hostDefaults: target),
+                ),
+          );
+        } catch (_) {
+          if (!mounted) return;
+          if (_queuedImmediateDefaults == null) {
+            setState(() {
+              _defaultsOptimistic = _defaultsConfirmed;
+              _defaultsDirty = _defaultsDraft != _defaultsOptimistic;
+              _ownsDefaultsMutation = true;
+            });
+          }
+          continue;
+        }
+        if (!mounted) return;
+        setState(() {
+          _defaultsConfirmed = target;
+          if (_queuedImmediateDefaults == null) {
+            _defaultsOptimistic = target;
+          }
+          _defaultsDirty = _defaultsDraft != _defaultsOptimistic;
+          _ownsDefaultsMutation = false;
+        });
+      }
+    } finally {
+      _flushingImmediateDefaults = false;
+    }
+  }
+
+  Future<void> _saveDefaults() async {
+    final mutation = HostClubEditController.updateClubMutation;
+    if (_flushingImmediateDefaults ||
+        ref.read(mutation).isPending ||
+        !_defaultsDirty) {
+      return;
+    }
+    setState(() => _ownsDefaultsMutation = true);
+    try {
+      await mutation.run(
+        ref,
+        (tx) => tx
+            .get(hostClubEditControllerProvider)
+            .updateClub(
+              clubId: widget.club.id,
+              patch: UpdateClubPatch(hostDefaults: _defaultsDraft),
+            ),
+      );
+    } catch (_) {
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      _defaultsConfirmed = _defaultsDraft;
+      _defaultsOptimistic = _defaultsDraft;
+      _defaultsDirty = false;
+      _ownsDefaultsMutation = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final club = widget.club;
     final isOwner = widget.isOwner;
-    final cityFieldName = context.l10n.hostsHostClubProfileVisiblecopyLocation;
+    final mediaMutation = ref.watch(HostClubEditController.updateMediaMutation);
+    final defaultsMutation = ref.watch(
+      HostClubEditController.updateClubMutation,
+    );
+    final mediaError = _ownsMediaMutation && mediaMutation.hasError
+        ? mutationErrorMessage(
+            mediaMutation,
+            l10n: context.l10n,
+            context: AppErrorContext.club,
+          )
+        : null;
+    final defaultsError = _ownsDefaultsMutation && defaultsMutation.hasError
+        ? mutationErrorMessage(
+            defaultsMutation,
+            l10n: context.l10n,
+            context: AppErrorContext.club,
+          )
+        : null;
+    const cityFieldName = HostClubEditFieldKeys.location;
     final cityOptions = <HostInlineOption<String>>[
       for (final city in defaultCityOptions.where((city) => city.hostCreatable))
         HostInlineOption(value: city.effectiveMarketId, label: city.label),
@@ -79,24 +359,72 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
             value: cityLabel(club.location),
             currentValue: club.location,
             fieldName: cityFieldName,
-            isExpanded: _isExpanded(cityFieldName),
+            isExpanded: _fieldAccordion.isExpanded(cityFieldName),
             options: cityOptions,
             patchForValue: (value) => UpdateClubPatch(location: value),
-            onTap: () => _toggleField(cityFieldName),
-            onSaved: _collapseField,
-            onCancel: _collapseField,
+            onTap: () => _fieldAccordion.toggle(cityFieldName),
+            onSaved: _fieldAccordion.collapse,
+            onCancel: _fieldAccordion.collapse,
           );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchSection.fieldRows(
+          title: context.l10n.hostsHostClubProfileTitleMedia,
+          count: context.l10n
+              .hostsHostClubProfileVisiblecopyCompletedcountOfMaximumclubphotocountAdded(
+                completedCount: _mediaDrafts.length,
+                maximumClubPhotoCount: maxClubPhotos,
+              ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CreateClubProfileImagePicker(
+                imageBytes: _pickedLogo?.bytes,
+                existingImageUrl: club.profileImageUrl,
+                onTap: mediaMutation.isPending ? null : _pickLogo,
+                variant: CreateClubProfileImagePickerVariant.editLogo,
+              ),
+              gapH20,
+              CreateClubPhotosPicker(
+                photos: [for (final draft in _mediaDrafts) draft.preview],
+                existingImageUrl: _clubPhotosTouched ? null : club.imageUrl,
+                onAddPhotos:
+                    mediaMutation.isPending ||
+                        _mediaDrafts.length >= maxClubPhotos
+                    ? null
+                    : _pickPhotos,
+                onRemovePhoto: mediaMutation.isPending ? null : _removePhoto,
+                onReorderPhoto: mediaMutation.isPending ? null : _reorderPhoto,
+                variant: CreateClubPhotosPickerVariant.editStrip,
+              ),
+              if (_mediaDirty) ...[
+                gapH12,
+                if (mediaError != null) ...[
+                  CatchFieldSupportRow(
+                    text: mediaError,
+                    color: CatchTokens.of(context).danger,
+                    showErrorIcon: true,
+                  ),
+                  gapH12,
+                ],
+                CatchFieldActionBar(
+                  key: const ValueKey('host-media-action-bar'),
+                  loading: mediaMutation.isPending,
+                  onCancel: _cancelMedia,
+                  onSubmit: _saveMedia,
+                ),
+              ],
+            ],
+          ),
+        ),
+        CatchSection.fieldRows(
           title: context.l10n.hostsHostClubProfileTitleIdentity,
-          first: true,
           children: [
             _textEntry(
               club: club,
-              fieldName: context.l10n.hostsHostClubProfileVisiblecopyName,
+              fieldName: HostClubEditFieldKeys.name,
               label: context.l10n.hostsHostClubProfileLabelClubName,
               value: club.name,
               currentValue: club.name,
@@ -110,7 +438,7 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
             cityEntry,
             _textEntry(
               club: club,
-              fieldName: context.l10n.hostsHostClubProfileVisiblecopyArea,
+              fieldName: HostClubEditFieldKeys.area,
               label: context.l10n.hostsHostClubProfileLabelAreaNeighbourhood,
               value: _valueOrDash(club.area),
               currentValue: club.area,
@@ -123,8 +451,7 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
             ),
             _textEntry(
               club: club,
-              fieldName:
-                  context.l10n.hostsHostClubProfileVisiblecopyDescription,
+              fieldName: HostClubEditFieldKeys.description,
               label: context.l10n.hostsHostClubProfileLabelDescription,
               value: _valueOrDash(club.description),
               currentValue: club.description,
@@ -148,8 +475,7 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
           children: [
             _textEntry(
               club: club,
-              fieldName:
-                  context.l10n.hostsHostClubProfileVisiblecopyInstagramhandle,
+              fieldName: HostClubEditFieldKeys.instagramHandle,
               label: context.l10n.hostsHostClubProfileLabelInstagram,
               value: _valueOrDash(club.instagramHandle),
               placeholder: context.l10n.hostsHostClubProfilePlaceholderYourclub,
@@ -163,8 +489,7 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
             ),
             _textEntry(
               club: club,
-              fieldName:
-                  context.l10n.hostsHostClubProfileVisiblecopyPhonenumber,
+              fieldName: HostClubEditFieldKeys.phoneNumber,
               label: context.l10n.hostsHostClubProfileLabelPhone,
               value: _valueOrDash(club.phoneNumber),
               placeholder: '98765 43210',
@@ -178,7 +503,7 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
             ),
             _textEntry(
               club: club,
-              fieldName: context.l10n.hostsHostClubProfileVisiblecopyEmail,
+              fieldName: HostClubEditFieldKeys.email,
               label: context.l10n.hostsHostClubProfileLabelEmail,
               value: _valueOrDash(club.email),
               placeholder:
@@ -203,28 +528,80 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
             _cancellationDefaultEntry(club),
           ],
         ),
-        CatchSection.fieldRows(
-          title: context.l10n.hostsHostClubProfileTitlePublicProfile,
-          children: [
-            CatchField.nav(
-              title: context.l10n.hostsHostClubProfileTitlePreviewClubPage,
-              valueText: context.l10n.hostsHostClubProfileVisiblecopyPreview,
-              icon: CatchIcons.visibilityOutlined,
-              onTap: widget.onPreviewClub,
+        if (isOwner)
+          CatchSection.plain(
+            title: context.l10n.hostsHostClubProfileTitleAdvancedEventDefaults,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ClubPolicyDefaultsCard(
+                  defaults: _defaultsDraft.eventPolicy,
+                  currencyCode: currencyCodeForCityName(club.location),
+                  advancedOnly: true,
+                  onChanged: (policy) => _updateDefaults(
+                    _defaultsDraft.copyWith(eventPolicy: policy),
+                  ),
+                  onImmediateChanged: (update) => _updateDefaultsImmediately(
+                    (defaults) => defaults.copyWith(
+                      eventPolicy: update(defaults.eventPolicy),
+                    ),
+                  ),
+                ),
+                gapH16,
+                EventSuccessDefaultsPanel(
+                  defaults: _defaultsDraft.eventSuccessForActivity(
+                    _defaultsDraft.primaryActivityKind,
+                  ),
+                  activityKind: _defaultsDraft.primaryActivityKind,
+                  onChanged: (eventSuccess) => _updateDefaults(
+                    _defaultsDraft.copyWithEventSuccessForActivity(
+                      activityKind: _defaultsDraft.primaryActivityKind,
+                      defaults: eventSuccess,
+                    ),
+                  ),
+                  onImmediateChanged: (update) =>
+                      _updateDefaultsImmediately((defaults) {
+                        final activityKind = defaults.primaryActivityKind;
+                        return defaults.copyWithEventSuccessForActivity(
+                          activityKind: activityKind,
+                          defaults: update(
+                            defaults.eventSuccessForActivity(activityKind),
+                          ),
+                        );
+                      }),
+                  title: context
+                      .l10n
+                      .hostsClubEventSuccessDefaultsStepTitleLiveEventGuide,
+                  subtitle: context
+                      .l10n
+                      .hostsClubEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity,
+                ),
+                if (_defaultsDirty) ...[
+                  gapH12,
+                  if (defaultsError != null) ...[
+                    CatchFieldSupportRow(
+                      text: defaultsError,
+                      color: CatchTokens.of(context).danger,
+                      showErrorIcon: true,
+                    ),
+                    gapH12,
+                  ],
+                  CatchFieldActionBar(
+                    key: const ValueKey('host-defaults-action-bar'),
+                    loading: defaultsMutation.isPending,
+                    onCancel: _cancelDefaults,
+                    onSubmit: _saveDefaults,
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
+        if (isOwner) ...[HostPaymentAccountControllerCard(club: club)],
+        HostTeamManagementSection(
+          club: club,
+          currentUid: widget.currentUid,
+          canManage: isOwner,
         ),
-        if (isOwner) ...[
-          CatchSection.divided(
-            child: HostPaymentAccountControllerCard(club: club),
-          ),
-          CatchSection.divided(
-            child: HostTeamManagementSection(
-              club: club,
-              currentUid: widget.currentUid,
-            ),
-          ),
-        ],
       ],
     );
   }
@@ -262,7 +639,7 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
       currentValue: currentValue,
       currentFieldValue: currentFieldValue ?? currentValue,
       fieldName: fieldName,
-      isExpanded: _isExpanded(fieldName),
+      isExpanded: _fieldAccordion.isExpanded(fieldName),
       placeholder: placeholder,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,
@@ -274,15 +651,14 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
       validator: validator,
       toFieldValue: toFieldValue,
       patchForValue: patchForValue,
-      onTap: () => _toggleField(fieldName),
-      onSaved: _collapseField,
-      onCancel: _collapseField,
+      onTap: () => _fieldAccordion.toggle(fieldName),
+      onSaved: _fieldAccordion.collapse,
+      onCancel: _fieldAccordion.collapse,
     );
   }
 
   Widget _activityDefaultEntry(Club club) {
-    final fieldName =
-        context.l10n.hostsHostClubProfileVisiblecopyPrimaryactivitykind;
+    const fieldName = HostClubEditFieldKeys.primaryActivityKind;
     final selected = club.hostDefaults.primaryActivityKind;
     if (!widget.isOwner) {
       return CatchField.read(
@@ -300,7 +676,7 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
       value: selected.label,
       currentValue: selected,
       fieldName: fieldName,
-      isExpanded: _isExpanded(fieldName),
+      isExpanded: _fieldAccordion.isExpanded(fieldName),
       options: [
         for (final activityKind in ActivityKind.eventCreationDefaults)
           HostInlineOption(
@@ -315,15 +691,14 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
           activityKind,
         ),
       ),
-      onTap: () => _toggleField(fieldName),
-      onSaved: _collapseField,
-      onCancel: _collapseField,
+      onTap: () => _fieldAccordion.toggle(fieldName),
+      onSaved: _fieldAccordion.collapse,
+      onCancel: _fieldAccordion.collapse,
     );
   }
 
   Widget _admissionDefaultEntry(Club club) {
-    final fieldName =
-        context.l10n.hostsHostClubProfileVisiblecopyAdmissionpreset;
+    const fieldName = HostClubEditFieldKeys.admissionPreset;
     final selected = club.hostDefaults.eventPolicy.admissionPreset;
     if (!widget.isOwner) {
       return CatchField.read(
@@ -341,7 +716,7 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
       value: _admissionDefaultLabel(selected),
       currentValue: selected,
       fieldName: fieldName,
-      isExpanded: _isExpanded(fieldName),
+      isExpanded: _fieldAccordion.isExpanded(fieldName),
       helperText: _admissionDefaultDescription(selected),
       options: [
         for (final preset in EventAdmissionDefaultPreset.values)
@@ -364,14 +739,14 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
           ),
         );
       },
-      onTap: () => _toggleField(fieldName),
-      onSaved: _collapseField,
-      onCancel: _collapseField,
+      onTap: () => _fieldAccordion.toggle(fieldName),
+      onSaved: _fieldAccordion.collapse,
+      onCancel: _fieldAccordion.collapse,
     );
   }
 
   Widget _ageRangeDefaultEntry(Club club) {
-    final fieldName = context.l10n.hostsHostClubProfileVisiblecopyAgerange;
+    const fieldName = HostClubEditFieldKeys.ageRange;
     final policy = club.hostDefaults.eventPolicy;
     final value = context.l10n.hostsHostClubProfileVisiblecopyMinageMaxage(
       minAge: policy.minAge,
@@ -393,16 +768,15 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
       value: value,
       fieldName: fieldName,
       hostDefaults: club.hostDefaults,
-      isExpanded: _isExpanded(fieldName),
-      onTap: () => _toggleField(fieldName),
-      onSaved: _collapseField,
-      onCancel: _collapseField,
+      isExpanded: _fieldAccordion.isExpanded(fieldName),
+      onTap: () => _fieldAccordion.toggle(fieldName),
+      onSaved: _fieldAccordion.collapse,
+      onCancel: _fieldAccordion.collapse,
     );
   }
 
   Widget _cancellationDefaultEntry(Club club) {
-    final fieldName =
-        context.l10n.hostsHostClubProfileVisiblecopyCancellationpolicyid;
+    const fieldName = HostClubEditFieldKeys.cancellationPolicyId;
     final selected = club.hostDefaults.eventPolicy.cancellationPolicyId;
     final selectedPolicy = club.hostDefaults.eventPolicy.cancellationPolicy;
     if (!widget.isOwner) {
@@ -421,7 +795,7 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
       value: selectedPolicy.title,
       currentValue: selected,
       fieldName: fieldName,
-      isExpanded: _isExpanded(fieldName),
+      isExpanded: _fieldAccordion.isExpanded(fieldName),
       helperText: selectedPolicy.attendeeSummary,
       options: [
         for (final policyId in EventCancellationPolicyId.values)
@@ -438,9 +812,45 @@ class _HostClubProfileCardState extends State<HostClubProfileCard> {
           ),
         );
       },
-      onTap: () => _toggleField(fieldName),
-      onSaved: _collapseField,
-      onCancel: _collapseField,
+      onTap: () => _fieldAccordion.toggle(fieldName),
+      onSaved: _fieldAccordion.collapse,
+      onCancel: _fieldAccordion.collapse,
     );
   }
+}
+
+sealed class _HostClubMediaDraft {
+  const _HostClubMediaDraft();
+
+  OrderedPhotoPreview get preview;
+  HostClubMediaInput get input;
+}
+
+final class _HostExistingClubMediaDraft extends _HostClubMediaDraft {
+  const _HostExistingClubMediaDraft(this.photo);
+
+  final UploadedPhoto photo;
+
+  @override
+  OrderedPhotoPreview get preview => OrderedPhotoPreview(
+    id: 'existing-${photo.id}',
+    imageUrl: photo.thumbnailOrUrl,
+  );
+
+  @override
+  HostClubMediaInput get input => HostExistingClubPhotoInput(photo);
+}
+
+final class _HostPickedClubMediaDraft extends _HostClubMediaDraft {
+  const _HostPickedClubMediaDraft(this.id, this.photo);
+
+  final String id;
+  final HostPickedClubPhoto photo;
+
+  @override
+  OrderedPhotoPreview get preview =>
+      OrderedPhotoPreview(id: id, bytes: photo.bytes);
+
+  @override
+  HostClubMediaInput get input => HostNewClubPhotoInput(photo.image);
 }

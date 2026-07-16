@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.5.1
-updated: 2026-07-14
+version: 1.5.4
+updated: 2026-07-16
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -231,6 +231,29 @@ Additional rules:
 
 The audited application of this doctrine lives in
 `docs/design_parity/containment_audit.md`.
+
+### 7.2 Geometry is owned by the primitive
+
+When a component family has shared placement geometry, the canonical primitive
+owns that geometry along with safe-area, platform, focus, and disabled/loading
+behavior. Callers provide semantic state, content slots, and callbacks; they do
+not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
+
+- Primary screen CTA placement routes through `CatchBottomAction`. It owns
+  floating Cupertino versus anchored Material geometry. `CatchBottomDock` is a
+  required-child utility plane for chat inputs and compact action strips, not a
+  second CTA family.
+- Top-bar action grouping routes through `CatchTopBarActionGroup`; callers do
+  not compose parallel header rows.
+- Section titles and trailing actions route through `CatchSection` or the
+  reviewed contained/content owner. A feature-local header-plus-card shell is
+  scanner-visible debt.
+
+The API boundary is the first enforcement layer: duplicate placement variants
+are deleted rather than kept as aliases. Component contracts, Widgetbook
+states, and the section/top-bar scanners provide the review and regression
+layers.
+
 - **Sizing:** constraints over constant heights/widths; min/max constraints, intrinsics,
   `Flexible`/`Expanded`, `AspectRatio`, content max-width clamp. Resilient to **Dynamic
   Type** (validate at text scale 1.0/1.5/2.0).
@@ -252,13 +275,12 @@ Flutter, website, admin, and the shared web UI package. Implementation remains
 stack-native; the registry shares identity and contract ownership, not widget
 or component code.
 
-The `surfaces` map is incremental: every declared symbol must exist in its
-owning source tree, while unmapped families remain valid until they gain a
-second implementation. Entries in `design/website/components.json`,
+Each component declares a `surfaces` map. Every declared symbol must exist in
+its owning source tree. Entries in `design/website/components.json`,
 `design/admin/components.json`, and `design/web-ui/components.json` opt into the
 binding with `lexicon: true` plus a `lexiconId`; the symbol must exactly match
-the corresponding surface link. New or moved cross-stack components add the
-link in the same change.
+the corresponding surface link. New or moved design-system components must add
+the link in the same change.
 
 Run `node tool/run.mjs check design:component-lexicon`. The checker remains a
 repo-level JavaScript gate, including for Flutter symbol existence; do not move

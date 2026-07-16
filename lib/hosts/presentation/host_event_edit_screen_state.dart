@@ -165,9 +165,9 @@ class HostEventEditFieldDisplayState {
     required bool scheduleLocked,
     String? scheduleErrorText,
   }) {
-    final startingPoint = LocationCoordinate(
-      event.effectiveStartingPointLat,
-      event.effectiveStartingPointLng,
+    final startingPoint = LocationCoordinate.fromNullable(
+      latitude: event.effectiveStartingPointLat,
+      longitude: event.effectiveStartingPointLng,
     );
     final policy = event.effectiveEventPolicy;
     return HostEventEditFieldDisplayState(

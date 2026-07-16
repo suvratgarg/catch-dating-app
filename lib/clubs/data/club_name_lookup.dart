@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'club_name_lookup.g.dart';
 
 class ClubNameLookupQuery {
   ClubNameLookupQuery(Iterable<String> clubIds)
@@ -19,15 +21,18 @@ class ClubNameLookupQuery {
 
 // autoDispose so each distinct id-set query is reclaimed when no screen is
 // watching it, instead of accumulating one cached provider per query forever.
-final clubNameLookupProvider = FutureProvider.autoDispose
-    .family<Map<String, String>, ClubNameLookupQuery>((ref, query) async {
-      if (query.clubIds.isEmpty) return const <String, String>{};
+@riverpod
+Future<Map<String, String>> clubNameLookup(
+  Ref ref,
+  ClubNameLookupQuery query,
+) async {
+  if (query.clubIds.isEmpty) return const <String, String>{};
 
-      final repository = ref.watch(clubsRepositoryProvider);
-      final clubs = await Future.wait(query.clubIds.map(repository.fetchClub));
+  final repository = ref.watch(clubsRepositoryProvider);
+  final clubs = await Future.wait(query.clubIds.map(repository.fetchClub));
 
-      return {
-        for (final club in clubs)
-          if (club != null) club.id: club.name,
-      };
-    });
+  return {
+    for (final club in clubs)
+      if (club != null) club.id: club.name,
+  };
+}

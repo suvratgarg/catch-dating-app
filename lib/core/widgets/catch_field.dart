@@ -61,6 +61,7 @@ class CatchField extends StatefulWidget {
     this.variant = CatchFieldVariant.row,
     this.icon,
     this.iconColor,
+    this.leading,
     this.leadingUnit,
     this.valueText,
     this.valueMaxLines = 1,
@@ -143,6 +144,10 @@ class CatchField extends StatefulWidget {
        assert(
          controller == null || initialValue == null,
          'CatchField.input cannot include both controller and initialValue.',
+       ),
+       assert(
+         leading == null || icon == null,
+         'Use either CatchField.leading or CatchField.icon, not both.',
        );
 
   const CatchField.read({
@@ -156,6 +161,7 @@ class CatchField extends StatefulWidget {
     CatchFieldTone tone = CatchFieldTone.normal,
     IconData? icon,
     Color? iconColor,
+    Widget? leading,
     String? valueText,
     int valueMaxLines = 1,
     String? placeholder,
@@ -174,6 +180,7 @@ class CatchField extends StatefulWidget {
          tone: tone,
          icon: icon,
          iconColor: iconColor,
+         leading: leading,
          valueText: valueText,
          valueMaxLines: valueMaxLines,
          placeholder: placeholder,
@@ -200,6 +207,7 @@ class CatchField extends StatefulWidget {
     CatchFieldTone tone = CatchFieldTone.normal,
     IconData? icon,
     Color? iconColor,
+    Widget? leading,
     String? valueText,
     int valueMaxLines = 1,
     bool? showChevron,
@@ -220,6 +228,7 @@ class CatchField extends StatefulWidget {
          tone: tone,
          icon: icon,
          iconColor: iconColor,
+         leading: leading,
          valueText: valueText,
          valueMaxLines: valueMaxLines,
          showChevron: showChevron,
@@ -242,6 +251,7 @@ class CatchField extends StatefulWidget {
     CatchFieldTone tone = CatchFieldTone.normal,
     IconData? icon,
     Color? iconColor,
+    Widget? leading,
     String? valueText,
     int valueMaxLines = 1,
     bool? showChevron,
@@ -263,6 +273,7 @@ class CatchField extends StatefulWidget {
          tone: tone,
          icon: icon,
          iconColor: iconColor,
+         leading: leading,
          valueText: valueText,
          valueMaxLines: valueMaxLines,
          showChevron: showChevron,
@@ -289,6 +300,7 @@ class CatchField extends StatefulWidget {
     CatchFieldTone tone = CatchFieldTone.normal,
     IconData? icon,
     Color? iconColor,
+    Widget? leading,
     String? valueText,
     int valueMaxLines = 1,
     String? placeholder,
@@ -309,6 +321,7 @@ class CatchField extends StatefulWidget {
          tone: tone,
          icon: icon,
          iconColor: iconColor,
+         leading: leading,
          valueText: valueText,
          valueMaxLines: valueMaxLines,
          placeholder: placeholder,
@@ -944,6 +957,11 @@ class CatchField extends StatefulWidget {
   final CatchFieldVariant variant;
   final IconData? icon;
   final Color? iconColor;
+
+  /// Optional caller-owned leading content for read, content, navigation, and
+  /// action rows. Use this for semantic data blocks that cannot be expressed
+  /// by a single [icon]; it remains inside CatchField's canonical row geometry.
+  final Widget? leading;
   final String? leadingUnit;
   final bool? showChevron;
 
@@ -1601,7 +1619,8 @@ class _CatchFieldState extends State<CatchField>
       !_isSaving &&
       widget.status == CatchFieldStatus.idle &&
       !(widget.valid && !_hasError);
-  bool get _hasLeadingSlot => widget.icon != null || _usesRowPrefixIcon;
+  bool get _hasLeadingSlot =>
+      widget.leading != null || widget.icon != null || _usesRowPrefixIcon;
   String? get _title => widget.title;
   String? get _body => widget.body;
   Widget? get _action => widget.action;
@@ -2069,6 +2088,8 @@ class _CatchFieldState extends State<CatchField>
   }
 
   Widget? _buildLeadingSlot(CatchTokens t) {
+    if (widget.leading != null) return widget.leading;
+
     if (widget.icon != null) {
       return Icon(
         widget.icon,
@@ -3423,8 +3444,11 @@ class CatchFieldContentRow extends StatelessWidget {
             key: const ValueKey('catch-field-content-body'),
             maxLines: bodyMaxLines,
             overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.bodyS(context, color: bodyColor ?? t.ink2)
-                .copyWith(
+            style:
+                CatchTextStyles.supporting(
+                  context,
+                  color: bodyColor ?? t.ink2,
+                ).copyWith(
                   fontSize: CatchFieldTokens.contentBodyFontSize,
                   fontWeight: FontWeight.w400,
                   height: CatchFieldTokens.contentBodyLineHeight,

@@ -83,7 +83,6 @@ class HostEventsClubSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final repeatSource = state.repeatSource;
 
     return CustomScrollView(
@@ -133,14 +132,12 @@ class HostEventsClubSection extends StatelessWidget {
                   ],
                 ),
                 gapH16,
-                CatchSegmentedControl<HostEventsLifecycleFilter>(
-                  expanded: true,
-                  style: CatchSegmentedControlStyle.surface,
+                CatchOptionGroup<HostEventsLifecycleFilter>(
                   selected: state.selectedFilter,
                   onChanged: onFilterChanged,
-                  segments: [
+                  options: [
                     for (final filter in HostEventsLifecycleFilter.values)
-                      CatchSegment(value: filter, label: filter.label),
+                      CatchOption(value: filter, label: filter.label),
                   ],
                 ),
                 gapH14,
@@ -186,25 +183,61 @@ class HostEventsClubSection extends StatelessWidget {
             padding: CatchInsets.pageHorizontal,
             sliver: SliverList.list(
               children: [
-                for (final section in state.sections) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: CatchSpacing.s1,
-                      bottom: CatchSpacing.micro10,
+                for (
+                  var sectionIndex = 0;
+                  sectionIndex < state.sections.length;
+                  sectionIndex += 1
+                )
+                  if (state.selectedFilter == HostEventsLifecycleFilter.past)
+                    CatchSection.fieldRows(
+                      key: ValueKey<String>(
+                        'host-events-month-${state.sections[sectionIndex].key}',
+                      ),
+                      title: state.sections[sectionIndex].label,
+                      first: sectionIndex == 0,
+                      children: [
+                        for (final row in state.sections[sectionIndex].rows)
+                          CatchField.nav(
+                            key: ValueKey<String>(
+                              'host-event-field-${row.event.id}',
+                            ),
+                            leading: HostEventLifecycleDateBlock(
+                              data: row,
+                              accent: ActivityPalette.resolve(
+                                context,
+                                row.event.activityKind,
+                              ).accent,
+                            ),
+                            title: row.event.title,
+                            body: row.metaLabel,
+                            emphasis: CatchFieldEmphasis.title,
+                            bodyMaxLines: 1,
+                            onTap: () => onManageEvent(club, row.event),
+                          ),
+                      ],
+                    )
+                  else ...[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: CatchSpacing.s1,
+                        bottom: CatchSpacing.micro10,
+                      ),
+                      child: Text(
+                        state.sections[sectionIndex].label.toUpperCase(),
+                        style: CatchTextStyles.monoLabel(
+                          context,
+                          color: CatchTokens.of(context).ink3,
+                        ),
+                      ),
                     ),
-                    child: Text(
-                      section.label.toUpperCase(),
-                      style: CatchTextStyles.monoLabel(context, color: t.ink3),
-                    ),
-                  ),
-                  for (final row in section.rows) ...[
-                    HostEventLifecycleRow(
-                      data: row,
-                      onPressed: () => onManageEvent(club, row.event),
-                    ),
-                    gapH10,
+                    for (final row in state.sections[sectionIndex].rows) ...[
+                      HostEventLifecycleRow(
+                        data: row,
+                        onPressed: () => onManageEvent(club, row.event),
+                      ),
+                      gapH10,
+                    ],
                   ],
-                ],
               ],
             ),
           ),
@@ -336,39 +369,48 @@ class HostEventLifecycleDateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return SizedBox(
-      width: CatchSpacing.s12,
-      child: data.isLive || data.isToday
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(CatchIcons.eventLive, color: accent, size: CatchIcon.sm),
-                gapH3,
-                Text(
-                  data.isLive
-                      ? context.l10n.hostsHostEventsListTextLive
-                      : context.l10n.hostsHostEventsListTextToday,
-                  style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-                ),
-              ],
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  data.dateLabel,
-                  style: CatchTextStyles.titleL(
-                    context,
-                    color: data.isPast ? t.ink3 : t.ink,
+    final semanticLabel = data.isLive || data.isToday
+        ? (data.isLive
+              ? context.l10n.hostsHostEventsListTextLive
+              : context.l10n.hostsHostEventsListTextToday)
+        : '${data.dateLabel} ${data.monthLabel}';
+    return Semantics(
+      label: semanticLabel,
+      excludeSemantics: true,
+      child: SizedBox(
+        width: CatchSpacing.s12,
+        child: data.isLive || data.isToday
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(CatchIcons.eventLive, color: accent, size: CatchIcon.sm),
+                  gapH3,
+                  Text(
+                    data.isLive
+                        ? context.l10n.hostsHostEventsListTextLive
+                        : context.l10n.hostsHostEventsListTextToday,
+                    style: CatchTextStyles.monoLabelS(context, color: t.ink3),
                   ),
-                ),
-                gapH3,
-                Text(
-                  data.monthLabel,
-                  style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-                ),
-              ],
-            ),
+                ],
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    data.dateLabel,
+                    style: CatchTextStyles.titleL(
+                      context,
+                      color: data.isPast ? t.ink3 : t.ink,
+                    ),
+                  ),
+                  gapH3,
+                  Text(
+                    data.monthLabel,
+                    style: CatchTextStyles.monoLabelS(context, color: t.ink3),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }
