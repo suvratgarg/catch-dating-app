@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 2,
+  "logicalName": "catch-screen-top-bar-ownership",
+  "contracts": [
+    {
+      "path": "lib/chats/presentation/chat_screen.dart",
+      "role": "identity",
+      "expression": "CatchTopBar.identity",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/dashboard/presentation/activity_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
+    },
+    {
+      "path": "lib/event_policies/presentation/event_policy_lab_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_event_preview_body_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_event_preview_loading_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_lab_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/events/presentation/calendar/calendar_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/events/presentation/saved_events_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_manage_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+      "role": "workspace",
+      "expression": "organizerMode",
+      "owner": "HostOperationsTopBar",
+      "reason": "Host Clubs conditionally suppresses its reviewed workspace bar for the organizer tab while edit, insights, and preview share the host tab rail."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/payments/presentation/payment_history_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/public_profile/presentation/public_profile_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/reviews/presentation/reviews_history_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/safety/presentation/settings_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar"
+    },
+    {
+      "path": "lib/swipes/presentation/event_recap_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
+      "path": "lib/swipes/presentation/filters_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    }
+  ],
+  "rawChromeExceptions": [
+    {
+      "path": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+      "expression": "SliverAppBar",
+      "occurrences": 1,
+      "reason": "Club detail media hero owns collapsing photo chrome, not a route title bar."
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "expression": "SliverAppBar",
+      "occurrences": 1,
+      "reason": "Event detail media hero owns collapsing photo chrome, not a route title bar."
+    }
+  ],
+  "routePresentations": [
+    {
+      "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
+      "symbol": "openProfilePhotoEditor",
+      "navigator": "root",
+      "reason": "The full-screen photo editor must cover the consumer and onboarding shell chrome."
+    }
+  ],
+  "manualHeaders": [
+    {
+      "path": "lib/chats/presentation/widgets/chat_share_card.dart",
+      "symbol": "ShareCardHeader",
+      "role": "content",
+      "owner": "CatchTextStyles.titleL",
+      "reason": "Share-card identity copy is content inside a message card, not route navigation chrome."
+    },
+    {
+      "path": "lib/event_policies/presentation/event_policy_lab_screen.dart",
+      "symbol": "EventPolicyLabHeader",
+      "role": "content",
+      "owner": "CatchTextStyles.titleL",
+      "reason": "The policy lab header labels an internal review module below the canonical compact app bar."
+    },
+    {
+      "path": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+      "symbol": "PaperTicketHeader",
+      "role": "content",
+      "owner": "CatchTextStyles.titleL",
+      "reason": "Paper-ticket copy is theatrical event content inside the companion route."
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_feature_blocks.dart",
+      "symbol": "BlockHeader",
+      "role": "content",
+      "owner": "CatchTextStyles.titleL",
+      "reason": "Event Success block headings label content modules and do not own navigation."
+    },
+    {
+      "path": "lib/explore/presentation/widgets/explore_header.dart",
+      "symbol": "_ExploreDiscoveryTopBar",
+      "role": "screen",
+      "owner": "CatchScreenTopBar",
+      "reason": "Explore discovery delegates its body-owned floating screen chrome to the canonical screen top bar."
+    },
+    {
+      "path": "lib/hosts/presentation/event_management/widgets/create_event_step_header.dart",
+      "symbol": "CreateEventStepHeader",
+      "role": "step-flow",
+      "owner": "CatchStepHeader",
+      "reason": "Create Event delegates wizard progress and navigation chrome to the canonical step header."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+      "symbol": "HostInsightsHeader",
+      "role": "legacy",
+      "owner": "CatchTextStyles.titleL",
+      "reason": "Host Insights still owns a body-level back and title row; migrate it through canonical route chrome in a reviewed Host pass."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
+      "symbol": "HostOperationsTopBar",
+      "role": "workspace",
+      "owner": "CatchTopBar",
+      "reason": "The Host workspace wrapper composes CatchTopBar with a club kicker and tab rail; retain only as an exact reviewed exception."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_today.dart",
+      "symbol": "HostTodayHeader",
+      "role": "legacy",
+      "owner": "CatchTextStyles.headlineS",
+      "reason": "Host Today still styles its root greeting directly; migrate it to CatchScreenHeaderTitle in a reviewed Host pass."
+    },
+    {
+      "path": "lib/onboarding/presentation/onboarding_screen.dart",
+      "symbol": "OnboardingTopBar",
+      "role": "step-flow",
+      "owner": "CatchStepHeader",
+      "reason": "Onboarding delegates progress and navigation chrome to the canonical step header."
+    },
+    {
+      "path": "lib/swipes/presentation/swipe_hub_screen.dart",
+      "symbol": "CatchesHubHeader",
+      "role": "legacy",
+      "owner": "CatchTextStyles.headline",
+      "reason": "Catches Hub still styles a root title directly; migrate it to CatchScreenHeaderTitle in a reviewed Catches pass."
+    }
+  ]
+}

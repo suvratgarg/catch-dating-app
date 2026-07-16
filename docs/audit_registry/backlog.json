@@ -1,6 +1,6 @@
 {
-  "version": "2.7.158",
-  "updated": "2026-07-12",
+  "version": "2.7.159",
+  "updated": "2026-07-16",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -44,6 +44,28 @@
     ]
   },
   "pending": [
+    {
+      "id": "SCREEN-CHROME-LEGACY-001",
+      "title": "Migrate the remaining feature-owned route headers to canonical screen chrome",
+      "status": "active",
+      "owner": "agent",
+      "area": "flutter,design-system,screen-chrome",
+      "priority": "medium",
+      "summary": "The exhaustive SCREEN-CHROME-001 inventory found three body-owned route/root headers that still style navigation-title typography directly: HostInsightsHeader, HostTodayHeader, and CatchesHubHeader. They are exact legacy manifest entries so future drift fails, but they are not promoted as canonical implementations.",
+      "acceptance": [
+        "Host Insights delegates its back/title anatomy to the reviewed canonical route chrome without changing Host workspace behavior",
+        "Host Today delegates its root greeting/title typography to CatchScreenHeaderTitle or the reviewed Host workspace owner",
+        "Catches Hub is migrated to CatchScreenHeaderTitle or deleted through the planned Home+Catches absorption",
+        "node tool/run.mjs check design:screen-top-bar-contracts reports 0 legacy manual headers"
+      ],
+      "paths": [
+        "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+        "lib/hosts/presentation/host_operations/host_today.dart",
+        "lib/swipes/presentation/swipe_hub_screen.dart",
+        "tool/design/screen_top_bar_contracts.json"
+      ],
+      "source": "2026-07-16-screen-chrome-inventory"
+    },
     {
       "id": "EVENT-INTAKE-LIVE-SOURCE-001",
       "title": "Replace the stale sample Event Intake bridge before live publish",

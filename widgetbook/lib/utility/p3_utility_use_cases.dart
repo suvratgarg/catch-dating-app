@@ -34,6 +34,7 @@ import 'package:catch_dating_app/force_update/data/app_version_config_provider.d
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -73,6 +74,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 const _viewerUid = UtilitySurfaceFixtures.viewerUid;
@@ -755,15 +757,13 @@ Widget profilePhotoEditorScreenStates(BuildContext context) {
     contractId: 'screen.image_uploads.profile_photo_editor',
     children: [
       _StateCard(
-        label: 'existing photo editor',
+        label: 'interactive existing photo editor',
         child: _DeviceFrame(
-          child: IgnorePointer(
-            child: _ProfilePhotoEditorScope(
-              child: ProfilePhotoEditorScreen(
-                index: 0,
-                photo: _profilePhotos.first,
-                canDelete: true,
-              ),
+          child: _ProfilePhotoEditorScope(
+            child: ProfilePhotoEditorScreen(
+              index: 0,
+              photo: _profilePhotos.first,
+              canDelete: true,
             ),
           ),
         ),
@@ -1854,7 +1854,6 @@ Widget notificationRowStates(BuildContext context) {
           title: 'You are booked',
           time: '5h',
           body: 'Your spot is confirmed for Wednesday evening.',
-          divider: true,
           onTap: _noop,
         ),
       ),
@@ -1867,7 +1866,6 @@ Widget notificationRowStates(BuildContext context) {
           body:
               'The host posted pacing notes, regroup points, and cafe timing for members returning after a break.',
           unread: true,
-          divider: true,
           onTap: _noop,
         ),
       ),
@@ -1878,7 +1876,6 @@ Widget notificationRowStates(BuildContext context) {
           title: 'Morning run was cancelled',
           time: 'mon',
           body: 'Heavy rain moved the session to next week.',
-          divider: true,
         ),
       ),
     ],
@@ -3558,15 +3555,38 @@ class _ProfilePhotoEditorScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       overrides: [
+        uidProvider.overrideWith((ref) => Stream<String?>.value(_viewerUid)),
         watchUserProfileProvider.overrideWith(
           (ref) => Stream<UserProfile?>.value(
             _viewer.copyWith(profilePhotos: _profilePhotos),
           ),
         ),
+        userProfileRepositoryProvider.overrideWithValue(
+          ProfileFixtureUserProfileRepository(
+            profile: _viewer.copyWith(profilePhotos: _profilePhotos),
+          ),
+        ),
+        imageUploadRepositoryProvider.overrideWithValue(
+          const _ProfilePhotoEditorPreviewImageRepository(),
+        ),
       ],
-      child: child,
+      child: PopScope(canPop: false, child: child),
     );
   }
+}
+
+class _ProfilePhotoEditorPreviewImageRepository
+    implements ImageUploadRepository {
+  const _ProfilePhotoEditorPreviewImageRepository();
+
+  @override
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) async => null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _CalendarScope extends StatelessWidget {

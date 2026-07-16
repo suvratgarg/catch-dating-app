@@ -59,7 +59,7 @@ Future<bool?> openProfilePhotoEditor({
   }
 
   if (!context.mounted) return false;
-  return Navigator.of(context).push<bool>(
+  return Navigator.of(context, rootNavigator: true).push<bool>(
     MaterialPageRoute(
       builder: (_) => ProfilePhotoEditorScreen(
         index: index,
@@ -75,6 +75,8 @@ class _ProfilePhotoEditorScreenState
     extends ConsumerState<ProfilePhotoEditorScreen> {
   final _cropKey = GlobalKey();
   String? _promptId;
+  String? _draftPromptId;
+  bool _promptOpen = false;
   Uint8List? _imageBytes;
   bool _loadingImage = false;
   bool _saving = false;
@@ -85,6 +87,7 @@ class _ProfilePhotoEditorScreenState
     super.initState();
     final existingPrompt = widget.photo?.prompt;
     _promptId = existingPrompt?.promptId;
+    _draftPromptId = _promptId;
     final initialImageBytes = widget.initialImageBytes;
     if (initialImageBytes != null) {
       _imageBytes = initialImageBytes;
@@ -121,19 +124,15 @@ class _ProfilePhotoEditorScreenState
   }
 
   Future<void> _save() async {
-    if (_saving || _deleting || _loadingImage) return;
+    if (_promptOpen || _saving || _deleting || _loadingImage) {
+      return;
+    }
     final hasExistingPhoto = widget.photo != null;
     if (!hasExistingPhoto && _imageBytes == null) return;
 
     setState(() => _saving = true);
     try {
-      final selectedDefinition = _selectedDefinition;
-      final prompt = selectedDefinition == null
-          ? null
-          : photoPromptAnswerFor(
-              photoIndex: widget.index,
-              definition: selectedDefinition,
-            );
+      final prompt = _selectedPromptAnswer;
       final croppedImageBytes = await _croppedImageBytes();
       await PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
         await tx
@@ -195,6 +194,7 @@ class _ProfilePhotoEditorScreenState
           photo.prompt!.promptId,
     };
     final canSave =
+        !_promptOpen &&
         !_saving &&
         !_deleting &&
         !_loadingImage &&
@@ -203,9 +203,10 @@ class _ProfilePhotoEditorScreenState
       l10n: context.l10n,
       usedPromptIds: usedPromptIds,
       currentPromptId: _promptId,
+      currentPromptLabel: widget.photo?.prompt?.displayPrompt,
     );
     final selectedPromptChoice = promptChoices.firstWhere(
-      (choice) => choice.id == _promptId,
+      (choice) => choice.id == _draftPromptId,
       orElse: () => promptChoices.first,
     );
     final canDelete = widget.photo != null && widget.canDelete;
@@ -244,17 +245,45 @@ class _ProfilePhotoEditorScreenState
                       ),
                     ),
                     gapH16,
-                    CatchField.select<_PhotoPromptChoice>(
+                    CatchField.choices<_PhotoPromptChoice>(
+                      key: const ValueKey('profile-photo-prompt-field'),
                       title: context
                           .l10n
                           .imageUploadsProfilePhotoEditorScreenTitlePhotoPrompt,
                       values: promptChoices,
-                      value: selectedPromptChoice,
                       itemLabel: (choice) => choice.label,
-                      prefixIcon: Icon(CatchIcons.autoAwesomeOutlined),
-                      onChanged: _saving || _deleting
+                      selected: {selectedPromptChoice},
+                      onSelectionChanged: _saving || _deleting
                           ? null
-                          : (choice) => setState(() => _promptId = choice?.id),
+                          : (selection) {
+                              if (selection.isEmpty) return;
+                              setState(
+                                () => _draftPromptId = selection.single.id,
+                              );
+                            },
+                      open: _promptOpen,
+                      onOpenChanged: _saving || _deleting
+                          ? null
+                          : (open) {
+                              setState(() {
+                                _promptOpen = open;
+                                _draftPromptId = _promptId;
+                              });
+                            },
+                      onCancel: () {
+                        setState(() {
+                          _draftPromptId = _promptId;
+                          _promptOpen = false;
+                        });
+                      },
+                      onSubmit: () {
+                        setState(() {
+                          _promptId = _draftPromptId;
+                          _promptOpen = false;
+                        });
+                      },
+                      enabled: !_saving && !_deleting,
+                      icon: CatchIcons.autoAwesomeOutlined,
                     ),
                     gapH20,
                     CatchButton(
@@ -332,10 +361,17 @@ class _ProfilePhotoEditorScreenState
     );
   }
 
-  PhotoPromptDefinition? get _selectedDefinition {
+  PhotoPromptAnswer? get _selectedPromptAnswer {
     final id = _promptId;
     if (id == null) return null;
-    return photoPromptDefinition(id);
+    final existingPrompt = widget.photo?.prompt;
+    if (existingPrompt?.promptId == id) {
+      return existingPrompt!.copyWith(photoIndex: widget.index);
+    }
+    return photoPromptAnswerFor(
+      photoIndex: widget.index,
+      definition: photoPromptDefinition(id),
+    );
   }
 }
 
@@ -406,11 +442,20 @@ final class _PhotoPromptChoice {
     required AppLocalizations l10n,
     Set<String> usedPromptIds = const {},
     String? currentPromptId,
+    String? currentPromptLabel,
   }) => [
     _PhotoPromptChoice(
       id: null,
       label: l10n.imageUploadsProfilePhotoEditorScreenLabelNoPrompt,
     ),
+    if (currentPromptId != null &&
+        !photoPromptCatalog.any(
+          (definition) => definition.id == currentPromptId,
+        ))
+      _PhotoPromptChoice(
+        id: currentPromptId,
+        label: currentPromptLabel ?? currentPromptId,
+      ),
     for (final definition in photoPromptCatalog)
       if (!usedPromptIds.contains(definition.id) ||
           definition.id == currentPromptId)

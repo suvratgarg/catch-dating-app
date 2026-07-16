@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-14",
+  "updated": "2026-07-16",
   "tools": [
     {
       "id": "tool:runner",
@@ -3242,6 +3242,36 @@
       "role": "finder"
     },
     {
+      "id": "design:screen-top-bar-contracts",
+      "category": "design",
+      "path": "tool/design/check_screen_top_bar_contracts.mjs",
+      "command": "node tool/design/check_screen_top_bar_contracts.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Gates every Flutter Scaffold app bar, raw navigation-bar implementation, shell-covering editor presentation, and feature-owned header against an exact reviewed screen-chrome role.",
+      "checks": [
+        "node --check tool/design/check_screen_top_bar_contracts.mjs",
+        "node --test tool/design/check_screen_top_bar_contracts.test.mjs",
+        "node tool/design/check_screen_top_bar_contracts.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "SCREEN-CHROME-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_screen_top_bar_contracts.test.mjs",
+        "contains": [
+          "flags the known-bad screen fixture when compact chrome replaces the screen title voice",
+          "flags a new app bar until its screen-chrome role is registered",
+          "flags a raw Material app bar even when a manifest entry tries to bless it",
+          "flags a shell-covering editor pushed on a branch navigator",
+          "flags an unregistered body-owned manual screen header",
+          "flags raw sliver chrome until a durable hero exception is registered"
+        ]
+      }
+    },
+    {
       "id": "design:screen-gutters",
       "category": "design",
       "path": "tool/design/check_screen_gutters.mjs",
@@ -3303,7 +3333,7 @@
       "command": "node tool/design/check_section_headers.mjs --summary",
       "safety": "local",
       "status": "active",
-      "description": "Reports duplicate CatchSection titles and feature-local titled section/card shells so section header ownership routes through CatchSection or an explicit content primitive.",
+      "description": "Reports duplicate CatchSection titles, parallel label-plus-child kicker shells, and feature-local titled section/card shells so section header ownership routes through CatchSection or an explicit content primitive.",
       "checks": [
         "node --check tool/design/check_section_headers.mjs",
         "node --test tool/design/check_section_headers.test.mjs",

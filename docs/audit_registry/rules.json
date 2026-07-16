@@ -848,6 +848,41 @@
         }
       ]
     },
+    "SCREEN-CHROME-001": {
+      "title": "Every screen declares one reviewed navigation-chrome owner",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.26"
+      },
+      "applies_to": [
+        "lib/**/*.dart",
+        "tool/design/check_screen_top_bar_contracts.mjs",
+        "tool/design/screen_top_bar_contracts.json"
+      ],
+      "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchScreenTopBar, compact detail/edit/utility navigation uses CatchTopBar, and identity navigation uses CatchTopBar.identity. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract.",
+      "sunset_when": [
+        "Every remaining legacy manual-header entry has migrated to its canonical screen, step-flow, workspace, or content owner",
+        "The analyzer can enforce exact app-bar role and route-presentation ownership without a manifest"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:screen-top-bar-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#screen-chrome-contracts"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-screen-chrome-001-root-screen-header-chrome"
+        }
+      ]
+    },
     "SCREEN-GUTTER-001": {
       "title": "Screen gutters use semantic body and section ownership",
       "status": "active",

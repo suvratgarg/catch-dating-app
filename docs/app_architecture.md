@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.25
-updated: 2026-07-15
+version: 1.4.27
+updated: 2026-07-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -1562,6 +1562,37 @@ changes enforcement, update `docs/audit_registry/rules.json`,
 `tool/tools_manifest.json`, the owner-doc anchor, and the known-bad proof or
 baseline receipt together. Manual enforcement is explicit with `stage: manual`;
 absence of an enforcement entry is drift.
+
+### Screen chrome contracts
+
+Every handwritten `Scaffold.appBar` is registered by exact file, role,
+expression, and canonical owner in
+`tool/design/screen_top_bar_contracts.json`. Root and root-like destinations
+use `CatchScreenTopBar`, compact detail/edit/utility routes use `CatchTopBar`,
+and identity routes use `CatchTopBar.identity`. A canonical call elsewhere in
+the file cannot bless helper-owned or raw chrome inside the actual `appBar`
+value.
+
+`node tool/run.mjs check design:screen-top-bar-contracts` walks all
+handwritten `lib/**/*.dart`, not only `presentation/` or `*_screen.dart`. It
+also inventories raw Material/Cupertino navigation bars, exact media-hero
+exceptions, and feature classes ending in `Screen`, `Scaffold`, `Header`,
+`TopBar`, or `HeaderContent` that own screen typography. Stateful-widget
+owners include their matching `State<T>` body. Aligned
+`ARCH-SCREEN-CHROME-001` adopter paths are checked surface by surface so one
+canonical header cannot hide a second noncanonical implementation in the same
+file. Other feature headers must name their content, screen, step-flow,
+workspace, or temporary legacy role by symbol and owner. Role-to-owner policy
+is enforced; raw Material app bars cannot be relabeled as workspace or hero
+exceptions. Legacy entries are visible migration debt, not generic
+exceptions.
+
+Full-screen editors that must cover persistent shell navigation declare their
+launcher in the same contract and push through
+`Navigator.of(context, rootNavigator: true)`. This route ownership is separate
+from title typography: Edit Photo remains correct compact `CatchTopBar`
+navigation while the root presentation prevents the tab bar from leaking over
+its body.
 
 ### Analyzer plugin rules
 
