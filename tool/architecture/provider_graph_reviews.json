@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-13",
+  "updated": "2026-07-16",
   "owner": "app_architecture",
   "candidatePolicy": {
     "highFanOutUniqueDependencies": 8,
@@ -17,6 +17,26 @@
       "id": "cross-feature-presentation:authSessionControllerProvider->onboardingControllerProvider",
       "status": "accepted",
       "rationale": "Sign-out is the app-session boundary and must reset the public onboarding controller plus its Mutations. This is the documented controller-to-controller command seam, not a read-model or widget dependency."
+    },
+    {
+      "id": "cross-feature-presentation:authSessionControllerProvider->exploreFiltersProvider",
+      "status": "accepted",
+      "rationale": "Explore filters are keep-alive browse preferences scoped to the signed-in account. The app-session controller invalidates this public state root during sign-out so the next account cannot inherit the previous account's filters."
+    },
+    {
+      "id": "cross-feature-presentation:authSessionControllerProvider->exploreSearchQueryProvider",
+      "status": "accepted",
+      "rationale": "The Explore search query survives tab switches but not account changes. Resetting it at the auth-session command boundary centralizes identity cleanup without moving Explore read-model ownership into Auth."
+    },
+    {
+      "id": "cross-feature-presentation:authSessionControllerProvider->selectedExploreCityProvider",
+      "status": "accepted",
+      "rationale": "Selected Explore city is session-scoped keep-alive UI state. AuthSessionController invalidates the public root at sign-out to prevent cross-account city leakage while Explore retains all selection behavior."
+    },
+    {
+      "id": "cross-feature-presentation:authSessionControllerProvider->selectedExploreCityWasUserSelectedProvider",
+      "status": "accepted",
+      "rationale": "The manual-city-selection guard must reset with selected city at the app-session boundary; otherwise a newly signed-in account can suppress automatic city selection based on the previous account's action."
     },
     {
       "id": "cross-feature-presentation:settingsControllerProvider->authSessionControllerProvider",

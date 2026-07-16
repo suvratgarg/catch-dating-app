@@ -46,6 +46,57 @@
       }
     },
     {
+      "id": "git:audit-merge-drops",
+      "category": "audit",
+      "path": "tool/git/audit_merge_drops.mjs",
+      "command": "node tool/git/audit_merge_drops.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Classifies exact four-tree merge outcomes and requires reasoned receipts for every discarded side in strict mode.",
+      "checks": [
+        "node --check tool/git/audit_merge_drops.mjs",
+        "node --test tool/git/audit_merge_drops.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/git/audit_merge_drops.test.mjs",
+        "contains": [
+          "classifyMergeTrees reports exact discards, divergence, equivalence, add, and delete",
+          "CLI audits temporary Git refs and strict mode rejects then accepts a receipt"
+        ]
+      }
+    },
+    {
+      "id": "docs:version-monotonic",
+      "category": "audit",
+      "path": "tool/docs/check_doc_version_monotonic.mjs",
+      "command": "node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Rejects semantic version decreases and removal inconsistencies in the governed document-version catalog.",
+      "checks": [
+        "node --check tool/docs/check_doc_version_monotonic.mjs",
+        "node --test tool/docs/check_doc_version_monotonic.test.mjs",
+        "node tool/docs/check_doc_version_monotonic.mjs --self-test"
+      ],
+      "role": "gate",
+      "rules": [
+        "DOC-HYGIENE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/docs/check_doc_version_monotonic.test.mjs",
+        "contains": [
+          "catalog comparator fails only semantic decreases and removal inconsistencies",
+          "known-bad self-test proves decrease and removal detection"
+        ]
+      }
+    },
+    {
       "id": "agent:context-pack",
       "category": "agent",
       "path": "tool/agent/context_pack.mjs",
@@ -386,11 +437,24 @@
       "command": "bash tool/widget_cleanup_scan.sh",
       "safety": "local",
       "status": "active",
-      "description": "Scans widget/design-system cleanup candidates.",
+      "description": "Ratchets live widget/design-system cleanup candidates against checked maximum counts.",
       "checks": [
-        "bash -n tool/widget_cleanup_scan.sh"
+        "bash -n tool/widget_cleanup_scan.sh",
+        "node --test tool/lib/widget_cleanup_ratchet.test.mjs",
+        "bash tool/widget_cleanup_scan.sh --check"
       ],
-      "role": "finder"
+      "role": "ratchet",
+      "rules": [
+        "AUDIT-REGISTRY-001"
+      ],
+      "baseline": "tool/audit/widget_cleanup_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/lib/widget_cleanup_ratchet.test.mjs",
+        "contains": [
+          "ratchet flags increases, missing categories, and new categories"
+        ]
+      }
     },
     {
       "id": "remote-ops:manifest",
@@ -419,6 +483,33 @@
         "node tool/admin/check_import_boundaries.mjs"
       ],
       "role": "finder"
+    },
+    {
+      "id": "web:react-dependency-graph",
+      "category": "audit",
+      "path": "tool/web/react_dependency_graph.mjs",
+      "command": "node tool/web/react_dependency_graph.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates and checks the deterministic website/admin/web-ui TypeScript dependency topology, unresolved local imports, and direct cross-surface boundaries.",
+      "checks": [
+        "node --check tool/web/react_dependency_graph.mjs",
+        "node --test tool/web/react_dependency_graph.test.mjs",
+        "node tool/web/react_dependency_graph.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-DEPENDENCY-TOPOLOGY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/web/react_dependency_graph.test.mjs",
+        "contains": [
+          "known-bad unresolved repo-local import makes graph health fail",
+          "direct website-to-admin dependency is rejected",
+          "known-bad stale artifact is reported deterministically"
+        ]
+      }
     },
     {
       "id": "web:website-copy-ownership",
@@ -484,6 +575,33 @@
       "vacuityProof": {
         "type": "self-test",
         "command": "dart run tool/copy/check_mobile_copy_ownership.dart --self-test"
+      }
+    },
+    {
+      "id": "copy:l10n-key-usage",
+      "category": "lint",
+      "path": "tool/copy/check_l10n_key_usage.mjs",
+      "command": "node tool/copy/check_l10n_key_usage.mjs --check --check-inventory",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Inventories exact handwritten Flutter localization-key usage and fails on stale evidence or any new zero-use catalog key.",
+      "checks": [
+        "node --check tool/copy/check_l10n_key_usage.mjs",
+        "node --test tool/copy/check_l10n_key_usage.test.mjs",
+        "node tool/copy/check_l10n_key_usage.mjs --check --check-inventory"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "APP-COPY-001"
+      ],
+      "baseline": "tool/copy/l10n_orphan_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/copy/check_l10n_key_usage.test.mjs",
+        "contains": [
+          "known-bad fixture reports only the newly orphaned key",
+          "inventory generation is deterministic and exact-file checkable"
+        ]
       }
     },
     {
@@ -796,6 +914,7 @@
       "description": "Reports migrated Catch UI lint drift counts from dart analyze output, including optional JSON count artifacts.",
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
+        "bash tool/check_catch_ui_lint_drift.sh --self-test",
         "bash tool/check_catch_ui_lint_drift.sh --count"
       ],
       "role": "finder"
@@ -3275,7 +3394,7 @@
       "command": "node tool/design/check_screen_top_bar_contracts.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Gates every Flutter Scaffold app bar, raw navigation-bar implementation, shell-covering editor presentation, and feature-owned header against an exact reviewed screen-chrome role.",
+      "description": "Gates every Flutter Scaffold app bar, required pushed-route back affordance, raw navigation-bar implementation, shell-covering editor presentation, and feature-owned header against an exact reviewed screen-chrome role.",
       "checks": [
         "node --check tool/design/check_screen_top_bar_contracts.mjs",
         "node --test tool/design/check_screen_top_bar_contracts.test.mjs",
@@ -3292,6 +3411,7 @@
           "flags the known-bad screen fixture when compact chrome replaces the screen title voice",
           "flags a new app bar until its screen-chrome role is registered",
           "flags a raw Material app bar even when a manifest entry tries to bless it",
+          "flags a pushed compact route that suppresses its required back action",
           "flags a shell-covering editor pushed on a branch navigator",
           "flags an unregistered body-owned manual screen header",
           "flags raw sliver chrome until a durable hero exception is registered"
@@ -3331,7 +3451,7 @@
       "command": "node tool/design/check_section_dividers.mjs --summary",
       "safety": "local",
       "status": "active",
-      "description": "Reports raw Divider inventory, high-confidence CatchSection row-divider misuse, and thin feature-local CatchSection wrappers so row and section hairlines route through CatchDivider roles.",
+      "description": "Reports raw Divider inventory, high-confidence CatchSection row-divider misuse, feature row groups that assign sibling divider flags, and thin feature-local CatchSection wrappers so row and section hairlines route through CatchDivider roles.",
       "checks": [
         "node --check tool/design/check_section_dividers.mjs",
         "node --test tool/design/check_section_dividers.test.mjs",
@@ -3349,7 +3469,8 @@
         "contains": [
           "flags caller-owned internalDividerColor on divided sections",
           "flags raw dividers using old row divider opacities",
-          "flags thin feature wrappers around CatchSection field rows"
+          "flags thin feature wrappers around CatchSection field rows",
+          "flags feature row groups that manually assign sibling field dividers"
         ]
       }
     },
@@ -3360,7 +3481,7 @@
       "command": "node tool/design/check_section_headers.mjs --summary",
       "safety": "local",
       "status": "active",
-      "description": "Reports duplicate CatchSection titles, parallel label-plus-child kicker shells, and feature-local titled section/card shells so section header ownership routes through CatchSection or an explicit content primitive.",
+      "description": "Reports duplicate CatchSection titles, standalone header-plus-section shells, parallel label-plus-child kicker shells, and feature-local titled section/card shells so section header ownership routes through CatchSection or an explicit content primitive.",
       "checks": [
         "node --check tool/design/check_section_headers.mjs",
         "node --test tool/design/check_section_headers.test.mjs",
@@ -3376,8 +3497,10 @@
         "path": "tool/design/check_section_headers.test.mjs",
         "contains": [
           "flags a CatchSection title duplicated by a nested component header",
+          "flags standalone section headers followed by untitled CatchSection shells",
           "honors explicit showHeader false on nested preview components",
-          "flags titled feature-local surface sections for review"
+          "flags titled feature-local surface sections for review",
+          "flags feature-local card shells with a section header and actions"
         ]
       }
     },

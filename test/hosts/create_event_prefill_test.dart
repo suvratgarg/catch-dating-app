@@ -66,6 +66,32 @@ void main() {
     expect(values.eventSuccessDefaults.enabled, isFalse);
   });
 
+  test('repeat prefill preserves a coordinate-less legacy location', () {
+    final createdAt = DateTime(2026, 7, 10, 12);
+    final event =
+        buildEvent(
+          id: 'legacy-location-event',
+          meetingPoint: 'Legacy community hall',
+          locationDetails: 'Use the east entrance.',
+        ).copyWith(
+          meetingLocation: null,
+          startingPointLat: null,
+          startingPointLng: null,
+        );
+
+    final values = CreateEventPrefill.repeat(
+      event: event,
+      createdAt: createdAt,
+    ).values;
+
+    expect(values.meetingPoint, 'Legacy community hall');
+    expect(values.locationDetails, 'Use the east entrance.');
+    expect(values.meetingLocationAddress, isNull);
+    expect(values.meetingLocationPlaceId, isNull);
+    expect(values.startingPointLat, isNull);
+    expect(values.startingPointLng, isNull);
+  });
+
   test('members-only source is not exposed as repeatable', () {
     final event = buildEvent(
       eventPolicy: const EventPolicyBundle(

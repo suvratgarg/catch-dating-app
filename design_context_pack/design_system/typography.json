@@ -463,6 +463,23 @@
       },
       "casePolicy": "mixed"
     },
+    "sectionCount": {
+      "role": "data",
+      "family": "IBM Plex Mono",
+      "size": 9.5,
+      "weight": 600,
+      "lineHeight": 1.15,
+      "tracking": 0.76,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#9C958A",
+        "dark": "#7E776D"
+      },
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
+      ],
+      "casePolicy": "mixed"
+    },
     "titleS": {
       "role": "function",
       "family": "Roboto",
@@ -902,23 +919,6 @@
       ],
       "casePolicy": "uppercase"
     },
-    "kickerLg": {
-      "role": "data",
-      "family": "IBM Plex Mono",
-      "size": 12.0,
-      "weight": 700,
-      "lineHeight": 1.1,
-      "tracking": 2.16,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "fontFeatures": [
-        "FontFeature('tnum', 1)"
-      ],
-      "casePolicy": "uppercase"
-    },
     "fieldSectionKicker": {
       "role": "data",
       "family": "IBM Plex Mono",
@@ -936,6 +936,23 @@
       ],
       "casePolicy": "uppercase"
     },
+    "kickerLg": {
+      "role": "data",
+      "family": "IBM Plex Mono",
+      "size": 12.0,
+      "weight": 700,
+      "lineHeight": 1.1,
+      "tracking": 2.16,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
+      ],
+      "casePolicy": "uppercase"
+    },
     "monoLabel": {
       "role": "data",
       "family": "IBM Plex Mono",
@@ -947,23 +964,6 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      },
-      "fontFeatures": [
-        "FontFeature('tnum', 1)"
-      ],
-      "casePolicy": "mixed"
-    },
-    "sectionCount": {
-      "role": "data",
-      "family": "IBM Plex Mono",
-      "size": 9.5,
-      "weight": 600,
-      "lineHeight": 1.15,
-      "tracking": 0.76,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#9C958A",
-        "dark": "#7E776D"
       },
       "fontFeatures": [
         "FontFeature('tnum', 1)"

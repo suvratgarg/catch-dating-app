@@ -288,6 +288,12 @@ final _eventDetailEvent = buildEvent(
   description:
       'A conversational coastal loop with regroup points, coffee after, and a host who keeps the pace social.',
 );
+final _eventDetailNoCoordinateEvent = _eventDetailEvent.copyWith(
+  id: 'event-detail-no-coordinate',
+  meetingLocation: null,
+  startingPointLat: null,
+  startingPointLng: null,
+);
 final _eventDetailUser = buildUser(
   name: 'Aanya Shah',
   email: 'aanya@example.com',
@@ -5777,7 +5783,7 @@ final _hostHomeLongNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   id: 'host-home-long-name-event',
   clubId: _hostHomeLongNameOwnerClub.id,
   meetingPoint: 'Bandra West Promenade amphitheatre',
-  meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation
+  meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation!
       .copyWith(name: 'Bandra West Promenade amphitheatre'),
 );
 final _hostManageFullReferenceEvent = _hostManageReferenceEvent.copyWith(
@@ -10308,6 +10314,18 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => EventLocationMapRouteScreen(
       eventId: _eventDetailEvent.id,
+      enableNetworkTiles: false,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_location_map_no_coordinate',
+    routeIds: const <String>['eventLocationMapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventDetailCaptureProviderOverrides(
+      event: _eventDetailNoCoordinateEvent,
+    ),
+    builder: (context) => EventLocationMapRouteScreen(
+      eventId: _eventDetailNoCoordinateEvent.id,
       enableNetworkTiles: false,
     ),
   ),

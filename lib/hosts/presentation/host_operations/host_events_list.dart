@@ -133,14 +133,12 @@ class HostEventsClubSection extends StatelessWidget {
                   ],
                 ),
                 gapH16,
-                CatchSegmentedControl<HostEventsLifecycleFilter>(
-                  expanded: true,
-                  style: CatchSegmentedControlStyle.surface,
+                CatchOptionGroup<HostEventsLifecycleFilter>(
                   selected: state.selectedFilter,
                   onChanged: onFilterChanged,
-                  segments: [
+                  options: [
                     for (final filter in HostEventsLifecycleFilter.values)
-                      CatchSegment(value: filter, label: filter.label),
+                      CatchOption(value: filter, label: filter.label),
                   ],
                 ),
                 gapH14,

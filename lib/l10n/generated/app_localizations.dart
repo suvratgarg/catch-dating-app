@@ -6151,12 +6151,6 @@ abstract class AppLocalizations {
   /// **'Payouts'**
   String get hostsHostPaymentAccountCardTitlePayouts;
 
-  /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Restricted'**
-  String get hostsHostPaymentAccountCardLabelRestricted;
-
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
   ///
   /// In en, this message translates to:
@@ -18246,15 +18240,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Organizer'**
   String get hostsHostClubsScaffoldLabelOrganizer;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_operations_top_bar.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{kicker}. {title}'**
-  String hostsHostOperationsTopBarTextKickerTitle({
-    required Object kicker,
-    required Object title,
-  });
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (title).
   ///

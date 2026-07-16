@@ -205,8 +205,8 @@ void main() {
       nextStart.add(const Duration(minutes: 75)),
     );
     expect(request.nextEvent.meetingPoint, 'New gate');
-    expect(request.nextEvent.meetingLocation.address, 'Bandstand');
-    expect(request.nextEvent.meetingLocation.placeId, 'place-1');
+    expect(request.nextEvent.meetingLocation?.address, 'Bandstand');
+    expect(request.nextEvent.meetingLocation?.placeId, 'place-1');
     expect(request.nextEvent.locationDetails, 'Blue gate');
     expect(request.nextEvent.distanceKm, 7.5);
     expect(request.nextEvent.pace, PaceLevel.fast);
@@ -542,6 +542,52 @@ void main() {
     expect(repository.updatedEvent!.startingPointLat, 19.076);
     expect(repository.updatedEvent!.startingPointLng, 72.8777);
   });
+
+  testWidgets(
+    'initializes a coordinate-less legacy event with an empty map selection',
+    (tester) async {
+      _setTallViewport(tester);
+
+      final start = DateTime(2026, 5, 22, 7);
+      final event =
+          buildEvent(
+            id: 'legacy-location-event',
+            startTime: start,
+            endTime: start.add(const Duration(hours: 1)),
+            meetingPoint: 'Legacy community hall',
+            locationDetails: 'Use the east entrance.',
+          ).copyWith(
+            meetingLocation: null,
+            startingPointLat: null,
+            startingPointLng: null,
+          );
+
+      await pumpEventsTestApp(
+        tester,
+        EditHostedEventScreen(
+          club: buildClub(id: event.clubId),
+          event: event,
+          now: () => DateTime(2026, 5, 21, 9),
+        ),
+        signedInUid: 'host-1',
+      );
+
+      expect(tester.takeException(), isNull);
+      final mapPicker = tester.widget<CatchField>(
+        find.byKey(CreateEventFormKeys.mapPicker, skipOffstage: false),
+      );
+      expect(mapPicker.body, 'Choose on map');
+      expect(mapPicker.onTap, isNotNull);
+      expect(
+        find.text('Legacy community hall', skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Use the east entrance.', skipOffstage: false),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('locks schedule controls when the event has activity', (
     tester,

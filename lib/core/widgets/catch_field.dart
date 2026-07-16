@@ -3423,8 +3423,11 @@ class CatchFieldContentRow extends StatelessWidget {
             key: const ValueKey('catch-field-content-body'),
             maxLines: bodyMaxLines,
             overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.bodyS(context, color: bodyColor ?? t.ink2)
-                .copyWith(
+            style:
+                CatchTextStyles.supporting(
+                  context,
+                  color: bodyColor ?? t.ink2,
+                ).copyWith(
                   fontSize: CatchFieldTokens.contentBodyFontSize,
                   fontWeight: FontWeight.w400,
                   height: CatchFieldTokens.contentBodyLineHeight,

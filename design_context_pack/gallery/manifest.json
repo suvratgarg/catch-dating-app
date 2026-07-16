@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 51,
-    "captures": 631,
+    "captures": 633,
     "statusCounts": {
       "excluded": 6,
       "captured": 39,
@@ -133,6 +133,23 @@
         "dark": "dark/profile_self_preview_tab.png"
       },
       "whatItIs": "Profile Self Preview Tab",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_insights_tab",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_insights_tab.png",
+        "dark": "dark/profile_self_insights_tab.png"
+      },
+      "whatItIs": "Profile Self Insights Tab",
       "keepChangeNotes": ""
     },
     {
@@ -2164,7 +2181,7 @@
     {
       "id": "host_clubs_insights_report",
       "routes": [
-        "hostInsightsScreen"
+        "hostClubsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2181,7 +2198,7 @@
     {
       "id": "host_clubs_insights_loading",
       "routes": [
-        "hostInsightsScreen"
+        "hostClubsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2198,7 +2215,7 @@
     {
       "id": "host_clubs_insights_error",
       "routes": [
-        "hostInsightsScreen"
+        "hostClubsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2215,7 +2232,7 @@
     {
       "id": "host_clubs_insights_offline",
       "routes": [
-        "hostInsightsScreen"
+        "hostClubsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -4182,6 +4199,23 @@
         "dark": "dark/event_location_map_not_found.png"
       },
       "whatItIs": "Event Location Map Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_location_map_no_coordinate",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_no_coordinate.png",
+        "dark": "dark/event_location_map_no_coordinate.png"
+      },
+      "whatItIs": "Event Location Map No Coordinate",
       "keepChangeNotes": ""
     },
     {

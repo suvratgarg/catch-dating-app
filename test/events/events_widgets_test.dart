@@ -296,6 +296,39 @@ void main() {
     });
 
     testWidgets(
+      'event location map reports unavailable when exact coordinates are absent',
+      (tester) async {
+        final event = buildEvent(meetingPoint: 'Legacy community hall')
+            .copyWith(
+              meetingLocation: null,
+              startingPointLat: null,
+              startingPointLng: null,
+            );
+
+        await pumpEventsTestApp(
+          tester,
+          EventLocationMapScreen(
+            state: EventLocationMapState.fromEvent(
+              event,
+              enableNetworkTiles: false,
+            ),
+            onGetDirections: () {},
+          ),
+        );
+
+        expect(find.text('Location unavailable'), findsOneWidget);
+        expect(
+          find.text(
+            'This event does not have an exact pinned starting point yet.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('Get directions'), findsNothing);
+        expect(find.text('Legacy community hall'), findsNothing);
+      },
+    );
+
+    testWidgets(
       'event location route shows map-shaped skeleton while loading',
       (tester) async {
         await pumpEventsTestApp(
@@ -414,8 +447,8 @@ void main() {
 
       expect(state.event, event);
       expect(state.enableNetworkTiles, isFalse);
-      expect(state.startingPoint.latitude, 22.7196);
-      expect(state.startingPoint.longitude, 75.8577);
+      expect(state.startingPoint?.latitude, 22.7196);
+      expect(state.startingPoint?.longitude, 75.8577);
       expect(state.locationName, 'Race Course Road main gate');
       expect(
         state.locationNotes,
@@ -426,6 +459,30 @@ void main() {
         'https://www.google.com/maps/dir/?api=1&destination=22.7196%2C75.8577&travelmode=walking',
       );
     });
+
+    test(
+      'event location links fall back to maps search without coordinates',
+      () {
+        final event = buildEvent(meetingPoint: 'Legacy community hall')
+            .copyWith(
+              meetingLocation: null,
+              startingPointLat: null,
+              startingPointLng: null,
+            );
+
+        final state = EventLocationMapState.fromEvent(event);
+
+        expect(state.hasExactStartingPoint, isFalse);
+        expect(state.startingPoint, isNull);
+        expect(
+          state.directionsUri,
+          Uri.https('www.google.com', '/maps/search/', {
+            'api': '1',
+            'query': 'Legacy community hall',
+          }),
+        );
+      },
+    );
 
     testWidgets('requirements row hides itself when there are no constraints', (
       tester,

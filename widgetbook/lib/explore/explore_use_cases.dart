@@ -33,6 +33,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_events_sec
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -56,6 +57,8 @@ const _delhi = CityData(
   latitude: 28.7041,
   longitude: 77.1025,
 );
+
+const _mapCenter = LocationCoordinate(19.076, 72.8777);
 
 ExploreCityPickerState _cityPickerState({
   CityData? selectedCity,
@@ -1400,7 +1403,11 @@ Widget exploreClubTagsStates(BuildContext context) {
       _StateCard(
         label: 'visible tags',
         child: ExploreClubTags(
-          state: ExploreClubCardState.from(_clubs[0], isSynthetic: false),
+          state: ExploreClubCardState.from(
+            _clubs[0],
+            isSynthetic: false,
+            l10n: context.l10n,
+          ),
         ),
       ),
       _StateCard(
@@ -1409,6 +1416,7 @@ Widget exploreClubTagsStates(BuildContext context) {
           state: ExploreClubCardState.from(
             _clubs[0].copyWith(tags: []),
             isSynthetic: false,
+            l10n: context.l10n,
           ),
         ),
       ),
@@ -1621,6 +1629,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
                 state: ExploreEventsEmptyState.from(
                   filters: const ExploreFilterSelection(),
                   searchQuery: 'pickleball supper',
+                  l10n: context.l10n,
                 ),
                 onClearSearch: _noop,
                 onClearFilters: _noop,
@@ -1641,6 +1650,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
                     timeFilter: ExploreTimeFilter.tonight,
                   ),
                   searchQuery: '',
+                  l10n: context.l10n,
                 ),
                 onSetTimeFilter: (_) {},
               ),
@@ -2017,6 +2027,7 @@ Widget exploreMapRouteStates(BuildContext context) {
             seedFilters: const _FilterSeed(
               distance: ExploreDistanceFilter.threeKm,
             ),
+            deviceLocation: _mapCenter,
             child: const ExploreMapScreen(enableNetworkTiles: false),
           ),
         ),
@@ -2034,6 +2045,7 @@ class _ExploreScope extends StatelessWidget {
     this.viewModel,
     this.feed,
     this.uid = _viewerUid,
+    this.deviceLocation,
   });
 
   final Widget child;
@@ -2043,6 +2055,7 @@ class _ExploreScope extends StatelessWidget {
   final AsyncValue<ExploreViewModel>? viewModel;
   final AsyncValue<ExploreFeedViewModel>? feed;
   final String? uid;
+  final LocationCoordinate? deviceLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -2066,7 +2079,9 @@ class _ExploreScope extends StatelessWidget {
           (ref) => Stream<UserProfile?>.value(uid == null ? null : _viewer),
         ),
         cityListProvider.overrideWith((ref) async => const [_mumbai, _delhi]),
-        deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+        deviceLocationProvider.overrideWith(
+          () => _PreviewDeviceLocation(deviceLocation),
+        ),
         exploreSourceClubsProvider.overrideWithValue(effectiveSourceClubs),
         exploreClubsViewModelProvider.overrideWithValue(effectiveViewModel),
         exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
@@ -2141,9 +2156,13 @@ class _FilterSeed {
   }
 }
 
-class _NoDeviceLocation extends DeviceLocation {
+class _PreviewDeviceLocation extends DeviceLocation {
+  _PreviewDeviceLocation(this.value);
+
+  final LocationCoordinate? value;
+
   @override
-  Future<LocationCoordinate?> build() async => null;
+  Future<LocationCoordinate?> build() async => value;
 }
 
 class _ExploreBodySliverPreview extends ConsumerWidget {
@@ -2190,6 +2209,7 @@ class _ExploreEventsSliverPreview extends ConsumerWidget {
     return CustomScrollView(
       slivers: buildExploreEventsSlivers(
         ref.watch(exploreFeedViewModelProvider),
+        l10n: context.l10n,
         filters: filters,
         searchQuery: ref.watch(exploreSearchQueryProvider).trim(),
         onRetry: () => ref.invalidate(exploreFeedViewModelProvider),

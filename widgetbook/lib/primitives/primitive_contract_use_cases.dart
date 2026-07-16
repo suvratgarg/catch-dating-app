@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -9,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -27,6 +29,7 @@ import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
@@ -54,7 +57,6 @@ import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
@@ -62,6 +64,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -72,6 +75,8 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -3267,153 +3272,6 @@ Widget catchOptionCardContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchSegmentedControl,
-  path: '[Core primitives]/Selection',
-)
-Widget catchSegmentedControlContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchSegmentedControl',
-    contractId: 'catch.segmented_control',
-    states: const [
-      'default',
-      'selected',
-      'expanded',
-      'with-icons',
-      'surface-style',
-      'compact-mono',
-    ],
-    children: [
-      _StateCard(
-        label: 'default / selected',
-        child: _SegmentedControlDemo<String>(
-          initialValue: 'day',
-          segments: const [
-            CatchSegment(value: 'day', label: 'Day'),
-            CatchSegment(value: 'agenda', label: 'Agenda'),
-            CatchSegment(value: 'list', label: 'List'),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'expanded',
-        child: const _SegmentedWidth(
-          child: _SegmentedControlDemo<String>(
-            initialValue: 'hosts',
-            expanded: true,
-            segments: [
-              CatchSegment(value: 'hosts', label: 'Hosts'),
-              CatchSegment(value: 'guests', label: 'Guests'),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'with-icons',
-        child: _SegmentedControlDemo<String>(
-          initialValue: 'grid',
-          segments: [
-            CatchSegment(
-              value: 'grid',
-              label: 'Grid',
-              icon: CatchIcons.gridViewRounded,
-            ),
-            CatchSegment(
-              value: 'list',
-              label: 'List',
-              icon: CatchIcons.listRounded,
-            ),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'surface-style',
-        child: const _SegmentedControlDemo<String>(
-          initialValue: 'now',
-          style: CatchSegmentedControlStyle.surface,
-          segments: [
-            CatchSegment(value: 'now', label: 'Now'),
-            CatchSegment(value: 'later', label: 'Later'),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'compact-mono',
-        child: const _SegmentedWidth(
-          child: _SegmentedControlDemo<String>(
-            initialValue: 'booked',
-            expanded: true,
-            style: CatchSegmentedControlStyle.surface,
-            size: CatchSegmentedControlSize.compact,
-            labelStyle: CatchSegmentedControlLabelStyle.mono,
-            segments: [
-              CatchSegment(value: 'booked', label: 'BOOKED · 24'),
-              CatchSegment(value: 'prospective', label: 'PROSPECTIVE · 9'),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchSegmentButton,
-  path: '[Core primitives]/Selection',
-)
-Widget catchSegmentButtonContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchSegmentButton',
-    contractId: 'catch.segmented_control.button',
-    states: const ['selected', 'unselected', 'expanded-surface'],
-    children: [
-      _StateCard(
-        label: 'selected',
-        child: CatchSegmentButton<String>(
-          segment: const CatchSegment(value: 'day', label: 'Day'),
-          selected: true,
-          expanded: false,
-          style: CatchSegmentedControlStyle.filled,
-          onTap: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'unselected',
-        child: CatchSegmentButton<String>(
-          segment: const CatchSegment(value: 'agenda', label: 'Agenda'),
-          selected: false,
-          expanded: false,
-          style: CatchSegmentedControlStyle.filled,
-          onTap: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'expanded-surface',
-        child: SizedBox(
-          width: 260,
-          child: Row(
-            children: [
-              CatchSegmentButton<String>(
-                segment: CatchSegment(
-                  value: 'grid',
-                  label: 'Grid',
-                  icon: CatchIcons.gridViewRounded,
-                ),
-                selected: true,
-                expanded: true,
-                style: CatchSegmentedControlStyle.surface,
-                onTap: _noop,
-              ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchSurface,
   path: '[Core primitives]/Surfaces',
 )
@@ -6090,6 +5948,7 @@ Widget catchCountPillContractStates(BuildContext context) {
     states: const [
       'label',
       'label-with-icon',
+      'label-with-value',
       'with-count',
       'semantic-label',
       'text-scale-truncation',
@@ -6104,6 +5963,15 @@ Widget catchCountPillContractStates(BuildContext context) {
         child: CatchCountPill.label(
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'label-with-value',
+        child: CatchCountPill.label(
+          icon: CatchIcons.map,
+          label: 'Map',
+          value: '12 events',
           onPressed: _noop,
         ),
       ),
@@ -6189,6 +6057,245 @@ Widget catchPageDotsContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: ChatInputBar,
+  path: '[Core primitives]/Product composites',
+)
+Widget chatInputBarContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'ChatInputBar',
+    contractId: 'catch.chat_composer',
+    states: [
+      'empty-unfocused',
+      'empty-focused',
+      'draft-unfocused',
+      'draft-focused',
+      'multiline',
+      'sending-text',
+      'uploading-image',
+      'disabled',
+      'text-only',
+    ],
+    children: [
+      _StateCard(
+        label: 'empty-unfocused',
+        child: _ChatComposerContractPreview(),
+      ),
+      _StateCard(
+        label: 'draft-unfocused',
+        child: _ChatComposerContractPreview(
+          initialText: 'That last loop was fun.',
+        ),
+      ),
+      _StateCard(
+        label: 'multiline',
+        child: _ChatComposerContractPreview(
+          initialText: 'A message that can wrap onto more than one line.',
+        ),
+      ),
+      _StateCard(
+        label: 'sending-text',
+        child: _ChatComposerContractPreview(
+          initialText: 'Sending this now...',
+          sending: true,
+        ),
+      ),
+      _StateCard(
+        label: 'uploading-image',
+        child: _ChatComposerContractPreview(sendingImage: true),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _ChatComposerContractPreview(
+          disabledReason: 'This chat is closed.',
+        ),
+      ),
+      _StateCard(
+        label: 'text-only',
+        child: _ChatComposerContractPreview(showImageButton: false),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Focused empty',
+  type: ChatInputBar,
+  path: '[Core primitives]/Product composites',
+)
+Widget chatInputBarFocusedEmpty(BuildContext context) {
+  return const Scaffold(
+    body: Align(
+      alignment: Alignment.bottomCenter,
+      child: _ChatComposerContractPreview(autofocus: true),
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Focused draft',
+  type: ChatInputBar,
+  path: '[Core primitives]/Product composites',
+)
+Widget chatInputBarFocusedDraft(BuildContext context) {
+  return const Scaffold(
+    body: Align(
+      alignment: Alignment.bottomCenter,
+      child: _ChatComposerContractPreview(
+        initialText: 'That last loop was fun.',
+        autofocus: true,
+      ),
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchTabbedScreenScaffold,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchTabbedScreenContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+@widgetbook.UseCase(
+  name: 'Shared tabbed page',
+  type: CatchTabbedPageScrollView,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchTabbedPageContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+@widgetbook.UseCase(
+  name: 'Controller-backed rail',
+  type: CatchTabControllerRail,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchTabControllerRailContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+class _TabbedScreenContractUseCase extends StatelessWidget {
+  const _TabbedScreenContractUseCase();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _ContractScreen(
+      title: 'CatchTabbedScreenScaffold',
+      contractId: 'catch.tabbed_screen',
+      states: [
+        'title-expanded',
+        'title-collapsed',
+        'tab-rail-pinned',
+        'tab-page-restored',
+      ],
+      children: [
+        _StateCard(
+          label: 'shared shell',
+          child: AspectRatio(
+            aspectRatio: 9 / 16,
+            child: _TabbedScreenContractDemo(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchHostRow,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchHostRowContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchHostRow',
+    contractId: 'catch.host_row',
+    states: [
+      'identity-only',
+      'navigable',
+      'message-enabled',
+      'verified',
+      'divider',
+      'long-copy',
+    ],
+    children: [
+      _StateCard(
+        label: 'identity-only',
+        child: CatchHostRow(
+          activityKind: ActivityKind.socialRun,
+          name: 'Sunday sea-face crew',
+          meta: 'HOSTING SINCE FEB 2026',
+        ),
+      ),
+      _StateCard(
+        label: 'navigable / message / verified / divider',
+        child: CatchHostRow(
+          activityKind: ActivityKind.dinner,
+          name: 'Catch supper club',
+          meta: 'HOSTING SINCE MAR 2026 · REPLIES FAST',
+          verified: true,
+          divider: true,
+          messageTooltip: 'Message host',
+          onMessage: _noop,
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'long-copy',
+        child: CatchHostRow(
+          activityKind: ActivityKind.openActivity,
+          name: 'A deliberately long organizer identity for text-scale review',
+          meta: 'LONG LOCATION AND RESPONSE METADATA',
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchMapPreview,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchMapPreviewContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchMapPreview',
+    contractId: 'catch.map_preview',
+    states: [
+      'exact-location',
+      'missing-coordinate',
+      'network-disabled',
+      'android-lite-mode',
+    ],
+    children: [
+      _StateCard(
+        label: 'exact-location / network-disabled',
+        child: SizedBox(
+          height: 180,
+          child: CatchMapPreview(
+            coordinate: LocationCoordinate(19.076, 72.8777),
+            fallbackLabel: 'Bandra meeting point',
+            enableNetworkTiles: false,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'missing-coordinate',
+        child: SizedBox(
+          height: 180,
+          child: CatchMapPreview(
+            coordinate: null,
+            fallbackLabel: 'Location unavailable',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchBottomDock,
   path: '[Core primitives]/Product composites',
 )
@@ -6196,16 +6303,7 @@ Widget catchBottomDockContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchBottomDock',
     contractId: 'catch.bottom_dock',
-    states: const [
-      'custom',
-      'custom-no-safe-area',
-      'cta',
-      'cta-leading-content',
-      'cta-catch-line',
-      'cta-footnote',
-      'loading',
-      'disabled',
-    ],
+    states: const ['custom', 'custom-no-safe-area'],
     children: [
       _StateCard(
         label: 'custom',
@@ -6224,83 +6322,39 @@ Widget catchBottomDockContractStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
-        label: 'cta',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(label: 'Book your spot', onPressed: _noop),
-        ),
-      ),
-      _StateCard(
-        label: 'cta-leading-content',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(
-            label: 'Join waitlist',
-            leadingContent: const CatchBadge(label: '4 left'),
-            onPressed: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'cta-catch-line',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(
-            label: 'Book free',
-            catchLine: 'FREE TO JOIN',
-            onPressed: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'cta-footnote',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(
-            label: 'Confirm',
-            footnote: 'No charge until the host approves.',
-            onPressed: _noop,
-          ),
-        ),
-      ),
-      const _StateCard(
-        label: 'loading',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(
-            label: 'Saving',
-            isLoading: true,
-            onPressed: null,
-          ),
-        ),
-      ),
-      const _StateCard(
-        label: 'disabled',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(label: 'Sold out', onPressed: null),
-        ),
-      ),
     ],
   );
 }
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchBottomDockCta,
+  type: CatchBottomAction,
   path: '[Core primitives]/Product composites',
 )
-Widget catchBottomDockCtaContractStates(BuildContext context) {
+Widget catchBottomActionContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchBottomDockCta',
-    contractId: 'catch.bottom_dock.cta',
-    states: const ['default', 'leading-content', 'catch-line-footnote'],
+    title: 'CatchBottomAction',
+    contractId: 'catch.bottom_action',
+    states: const [
+      'ios-floating',
+      'android-anchored',
+      'leading-content',
+      'catch-line',
+      'footnote',
+      'loading',
+      'disabled',
+    ],
     children: [
       _StateCard(
         label: 'default',
         child: _DockFrame(
-          child: CatchBottomDockCta(label: 'Book your spot', onPressed: _noop),
+          child: CatchBottomAction(label: 'Book your spot', onPressed: _noop),
         ),
       ),
       _StateCard(
         label: 'leading-content',
         child: _DockFrame(
-          child: CatchBottomDockCta(
+          child: CatchBottomAction(
             label: 'Join waitlist',
             leadingContent: const CatchBadge(label: '4 left'),
             onPressed: _noop,
@@ -6310,12 +6364,28 @@ Widget catchBottomDockCtaContractStates(BuildContext context) {
       _StateCard(
         label: 'catch-line-footnote',
         child: _DockFrame(
-          child: CatchBottomDockCta(
+          child: CatchBottomAction(
             label: 'Confirm',
             catchLine: 'FREE TO JOIN',
             footnote: 'No charge until the host approves.',
             onPressed: _noop,
           ),
+        ),
+      ),
+      const _StateCard(
+        label: 'loading',
+        child: _DockFrame(
+          child: CatchBottomAction(
+            label: 'Saving',
+            isLoading: true,
+            onPressed: null,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'disabled',
+        child: _DockFrame(
+          child: CatchBottomAction(label: 'Sold out', onPressed: null),
         ),
       ),
     ],
@@ -8163,17 +8233,6 @@ class _OptionWidth extends StatelessWidget {
   }
 }
 
-class _SegmentedWidth extends StatelessWidget {
-  const _SegmentedWidth({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(width: 420, child: child);
-  }
-}
-
 class _TopBarFrame extends StatelessWidget {
   const _TopBarFrame({required this.child});
 
@@ -8297,59 +8356,6 @@ class _BodySpec extends StatelessWidget {
       borderColor: t.line,
       padding: CatchInsets.content,
       child: Text(label, style: CatchTextStyles.bodyS(context)),
-    );
-  }
-}
-
-class _SegmentedControlDemo<T> extends StatefulWidget {
-  const _SegmentedControlDemo({
-    required this.initialValue,
-    required this.segments,
-    this.expanded = false,
-    this.style = CatchSegmentedControlStyle.filled,
-    this.size = CatchSegmentedControlSize.regular,
-    this.labelStyle = CatchSegmentedControlLabelStyle.standard,
-  });
-
-  final T initialValue;
-  final List<CatchSegment<T>> segments;
-  final bool expanded;
-  final CatchSegmentedControlStyle style;
-  final CatchSegmentedControlSize size;
-  final CatchSegmentedControlLabelStyle labelStyle;
-
-  @override
-  State<_SegmentedControlDemo<T>> createState() =>
-      _SegmentedControlDemoState<T>();
-}
-
-class _SegmentedControlDemoState<T> extends State<_SegmentedControlDemo<T>> {
-  late T _value;
-
-  @override
-  void initState() {
-    super.initState();
-    _value = widget.initialValue;
-  }
-
-  @override
-  void didUpdateWidget(covariant _SegmentedControlDemo<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialValue != widget.initialValue) {
-      _value = widget.initialValue;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSegmentedControl<T>(
-      segments: widget.segments,
-      selected: _value,
-      expanded: widget.expanded,
-      style: widget.style,
-      size: widget.size,
-      labelStyle: widget.labelStyle,
-      onChanged: (value) => setState(() => _value = value),
     );
   }
 }
@@ -8592,6 +8598,122 @@ class _SelectErrorFieldDemoState extends State<_SelectErrorFieldDemo> {
         prefixIcon: Icon(CatchIcons.eventOutlined),
         validator: (value) => value == null ? 'Choose an activity.' : null,
         onChanged: (_) {},
+      ),
+    );
+  }
+}
+
+class _ChatComposerContractPreview extends StatefulWidget {
+  const _ChatComposerContractPreview({
+    this.initialText = '',
+    this.sending = false,
+    this.sendingImage = false,
+    this.disabledReason,
+    this.showImageButton = true,
+    this.autofocus = false,
+  });
+
+  final String initialText;
+  final bool sending;
+  final bool sendingImage;
+  final String? disabledReason;
+  final bool showImageButton;
+  final bool autofocus;
+
+  @override
+  State<_ChatComposerContractPreview> createState() =>
+      _ChatComposerContractPreviewState();
+}
+
+class _ChatComposerContractPreviewState
+    extends State<_ChatComposerContractPreview> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialText);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChatInputBar(
+      controller: _controller,
+      sending: widget.sending,
+      sendingImage: widget.sendingImage,
+      disabledReason: widget.disabledReason,
+      showImageButton: widget.showImageButton,
+      autofocus: widget.autofocus,
+      onSend: widget.disabledReason == null ? _noop : null,
+      onSendImage: widget.disabledReason == null ? _noop : null,
+    );
+  }
+}
+
+class _TabbedScreenContractDemo extends StatefulWidget {
+  const _TabbedScreenContractDemo();
+
+  @override
+  State<_TabbedScreenContractDemo> createState() =>
+      _TabbedScreenContractDemoState();
+}
+
+class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
+    with SingleTickerProviderStateMixin {
+  late final TabController _controller = TabController(length: 2, vsync: this);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchTabbedScreenScaffold(
+      eyebrow: 'YOUR SPACE',
+      title: 'Tabbed workspace',
+      subtitle: 'Independent page scroll state',
+      semanticsLabel: 'Tabbed screen contract preview',
+      tabRail: CatchTabControllerRail<String>(
+        controller: _controller,
+        options: const [
+          CatchOption(value: 'edit', label: 'Edit'),
+          CatchOption(value: 'preview', label: 'Preview'),
+        ],
+      ),
+      body: TabBarView(
+        controller: _controller,
+        children: const [
+          CatchTabbedPageScrollView(
+            scrollKey: PageStorageKey<String>('contract-tab-edit'),
+            slivers: [
+              SliverPadding(
+                padding: CatchInsets.pageBody,
+                sliver: SliverToBoxAdapter(
+                  child: Text('Edit owns this scroll position.'),
+                ),
+              ),
+            ],
+          ),
+          CatchTabbedPageScrollView(
+            scrollKey: PageStorageKey<String>('contract-tab-preview'),
+            slivers: [
+              SliverPadding(
+                padding: CatchInsets.pageBody,
+                sliver: SliverToBoxAdapter(
+                  child: Text('Preview owns a separate scroll position.'),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -21,8 +21,8 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -419,17 +419,17 @@ class HostInboxAudienceRail extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: CatchInsets.pageHorizontal,
-        child: CatchSegmentedControl<HostInboxAudienceSegment>(
+        child: CatchOptionGroup<HostInboxAudienceSegment>(
           selected: workspace.selectedSegment,
-          segments: [
-            CatchSegment(
+          options: [
+            CatchOption(
               value: HostInboxAudienceSegment.booked,
               label: context.l10n
                   .hostsHostInboxScreenLabelBookedBookedthreadcount(
                     bookedThreadCount: workspace.bookedThreadCount,
                   ),
             ),
-            CatchSegment(
+            CatchOption(
               value: HostInboxAudienceSegment.prospective,
               label: context.l10n
                   .hostsHostInboxScreenLabelProspectiveProspectivethreadcount(
@@ -437,10 +437,7 @@ class HostInboxAudienceRail extends StatelessWidget {
                   ),
             ),
           ],
-          expanded: true,
-          style: CatchSegmentedControlStyle.surface,
-          size: CatchSegmentedControlSize.compact,
-          labelStyle: CatchSegmentedControlLabelStyle.mono,
+          variant: CatchOptionGroupVariant.mono,
           onChanged: onChanged,
         ),
       ),

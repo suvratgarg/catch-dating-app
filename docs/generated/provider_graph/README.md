@@ -8,19 +8,23 @@ Open [provider_graph.html](provider_graph.html) for the interactive feature/prov
 
 | Measure | Count |
 |---|---:|
-| Handwritten Dart files | 771 |
+| Handwritten Dart files | 769 |
 | Providers | 211 |
 | Mutations | 82 |
-| Unique provider relationships | 320 |
-| Cross-feature relationships | 163 |
-| Consumer callsites | 674 |
+| Unique provider relationships | 324 |
+| Cross-feature relationships | 167 |
+| Consumer callsites | 676 |
 | Reactive cycles | 0 |
 
 ## Architecture review
 
 | Candidate | Decision | Rationale |
 |---|---|---|
+| cross-feature-presentation:authSessionControllerProvider->exploreFiltersProvider | accepted | Explore filters are keep-alive browse preferences scoped to the signed-in account. The app-session controller invalidates this public state root during sign-out so the next account cannot inherit the previous account's filters. |
+| cross-feature-presentation:authSessionControllerProvider->exploreSearchQueryProvider | accepted | The Explore search query survives tab switches but not account changes. Resetting it at the auth-session command boundary centralizes identity cleanup without moving Explore read-model ownership into Auth. |
 | cross-feature-presentation:authSessionControllerProvider->onboardingControllerProvider | accepted | Sign-out is the app-session boundary and must reset the public onboarding controller plus its Mutations. This is the documented controller-to-controller command seam, not a read-model or widget dependency. |
+| cross-feature-presentation:authSessionControllerProvider->selectedExploreCityProvider | accepted | Selected Explore city is session-scoped keep-alive UI state. AuthSessionController invalidates the public root at sign-out to prevent cross-account city leakage while Explore retains all selection behavior. |
+| cross-feature-presentation:authSessionControllerProvider->selectedExploreCityWasUserSelectedProvider | accepted | The manual-city-selection guard must reset with selected city at the app-session boundary; otherwise a newly signed-in account can suppress automatic city selection based on the previous account's action. |
 | cross-feature-presentation:settingsControllerProvider->authSessionControllerProvider | accepted | Account deletion completes through the public auth-session command seam so auth and onboarding flow state are cleared centrally. Moving that cleanup into Safety would duplicate session ownership. |
 | high-fan-out:chatRouteStateProvider | accepted | The eight dependencies form one route projection: conversation, match and host-inquiry context, event/profile enrichment, share capability, and action pending state. The provider has no cycles and prevents the screen from assembling those waves itself. |
 | high-fan-out:exploreFeedViewModelProvider | watch | The eighteen dependencies are a cohesive discovery aggregate spanning filters, viewer eligibility, memberships, participations, saves, internal and external supply, search, and club names. Splitting now would duplicate partial-loading and precedence logic; revisit if a second route needs a stable subset or fan-out rises above twenty. |

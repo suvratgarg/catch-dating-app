@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 5,
+  "version": 6,
   "updated": "2026-07-14",
   "owner": "web_surface_architecture",
   "statuses": {
@@ -86,19 +86,23 @@
     },
     {
       "source": "website/src/features/claims/useClaimFlowController.ts",
-      "status": "planned"
+      "test": "website/src/features/claims/useClaimFlowController.test.tsx",
+      "status": "required"
     },
     {
       "source": "website/src/features/claims/useClaimRequestMutation.ts",
-      "status": "planned"
+      "test": "website/src/features/claims/useClaimRequestMutation.test.tsx",
+      "status": "required"
     },
     {
       "source": "website/src/features/claims/useListingClaimController.ts",
-      "status": "planned"
+      "test": "website/src/features/claims/useClaimRequestMutation.test.tsx",
+      "status": "required"
     },
     {
       "source": "website/src/features/host/application/useHostApplicationController.ts",
-      "status": "planned"
+      "test": "website/src/features/host/application/useHostApplicationController.test.tsx",
+      "status": "required"
     },
     {
       "source": "website/src/features/host/useHostApplicationController.ts",
@@ -107,19 +111,23 @@
     },
     {
       "source": "website/src/features/organizers/useHostListingPageController.ts",
-      "status": "planned"
+      "test": "website/src/features/organizers/useHostListingPageController.test.tsx",
+      "status": "required"
     },
     {
       "source": "website/src/features/organizers/useOrganizerDirectoryController.ts",
-      "status": "planned"
+      "test": "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
+      "status": "required"
     },
     {
       "source": "website/src/features/reviews/useListingReviewsController.ts",
-      "status": "planned"
+      "test": "website/src/features/reviews/useListingReviewsController.test.tsx",
+      "status": "required"
     },
     {
       "source": "website/src/features/waitlist/useWaitlistFormController.ts",
-      "status": "planned"
+      "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
+      "status": "required"
     }
   ]
 }

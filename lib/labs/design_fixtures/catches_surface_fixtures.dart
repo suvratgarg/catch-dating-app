@@ -66,7 +66,7 @@ final class CatchesSurfaceFixtures {
       startTime: end.subtract(const Duration(hours: 1)),
       endTime: end,
       meetingPoint: 'Joggers Park gate',
-      meetingLocation: event.meetingLocation.copyWith(
+      meetingLocation: event.meetingLocation!.copyWith(
         name: 'Joggers Park gate',
       ),
       checkedInCount: 11,

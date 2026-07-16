@@ -25,11 +25,8 @@ sealed class EventMapPinItem {
 }
 
 class EventMapItem extends EventMapPinItem {
-  const EventMapItem({
-    required this.event,
-    required this.status,
-    this.clubName,
-  });
+  EventMapItem({required this.event, required this.status, this.clubName})
+    : coordinate = _eventCoordinate(event);
 
   final Event event;
   final EventTileStatus status;
@@ -39,10 +36,7 @@ class EventMapItem extends EventMapPinItem {
   String get mapId => event.id;
 
   @override
-  LocationCoordinate get coordinate => LocationCoordinate(
-    event.effectiveStartingPointLat,
-    event.effectiveStartingPointLng,
-  );
+  final LocationCoordinate coordinate;
 
   @override
   ActivityKind get activityKind => event.activityKind;
@@ -67,13 +61,13 @@ class EventMapItem extends EventMapPinItem {
 }
 
 class ExternalEventMapItem extends EventMapPinItem {
-  const ExternalEventMapItem({required this.event});
+  ExternalEventMapItem({required this.event})
+    : coordinate = _externalEventCoordinate(event);
 
   final ExternalEvent event;
 
   @override
-  LocationCoordinate get coordinate =>
-      LocationCoordinate(event.latitude, event.longitude);
+  final LocationCoordinate coordinate;
 
   @override
   String get mapId => 'external:${event.id}';
@@ -108,23 +102,33 @@ class EventMapViewModel {
   final List<EventMapItem> pinnedItems;
   final List<ExternalEventMapItem> externalPinnedItems;
 
-  bool get isEmpty => events.isEmpty && externalPinnedItems.isEmpty;
-  bool get hasPinnedEvents => !isEmpty;
+  bool get isEmpty => effectivePinItems.isEmpty;
+  bool get hasPinnedEvents => effectivePinItems.isNotEmpty;
   List<EventMapItem> get effectiveItems => items.isEmpty && events.isNotEmpty
       ? [
           for (final event in events)
-            EventMapItem(event: event, status: EventTileStatus.open),
+            if (hasEventMapPin(event))
+              EventMapItem(event: event, status: EventTileStatus.open),
         ]
       : items;
   List<EventMapItem> get effectivePinnedItems {
-    if (pinnedItems.isNotEmpty) return pinnedItems;
+    if (pinnedItems.isNotEmpty) {
+      return [
+        for (final item in pinnedItems)
+          if (hasEventMapPin(item.event)) item,
+      ];
+    }
     if (pinnedEvents.isNotEmpty) {
       return [
         for (final event in pinnedEvents)
-          EventMapItem(event: event, status: EventTileStatus.open),
+          if (hasEventMapPin(event))
+            EventMapItem(event: event, status: EventTileStatus.open),
       ];
     }
-    return effectiveItems;
+    return [
+      for (final item in effectiveItems)
+        if (hasEventMapPin(item.event)) item,
+    ];
   }
 
   List<EventMapPinItem> get effectivePinItems =>
@@ -171,15 +175,13 @@ EventMapViewModel buildEventMapViewModel({
   DateTime? now,
 }) {
   final effectiveNow = now ?? DateTime.now();
-  final byId = <String, EventMapItem>{};
+  final eventsById = <String, Event>{};
+  final statusById = <String, EventTileStatus>{};
 
   void addRun(Event event, EventTileStatus status) {
     if (!isUpcomingMapRun(event, effectiveNow)) return;
-    byId[event.id] = EventMapItem(
-      event: event,
-      status: status,
-      clubName: clubNamesById[event.clubId],
-    );
+    eventsById[event.id] = event;
+    statusById[event.id] = status;
   }
 
   for (final event in recommendedEvents) {
@@ -192,10 +194,18 @@ EventMapViewModel buildEventMapViewModel({
     addRun(event, EventTileStatus.joined);
   }
 
-  final items = byId.values.toList()
-    ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
+  final events = eventsById.values.toList()
+    ..sort((a, b) => a.startTime.compareTo(b.startTime));
+  final items = [
+    for (final event in events)
+      if (hasEventMapPin(event))
+        EventMapItem(
+          event: event,
+          status: statusById[event.id]!,
+          clubName: clubNamesById[event.clubId],
+        ),
+  ];
   final pinnedItems = List<EventMapItem>.unmodifiable(items);
-  final events = items.map((item) => item.event).toList(growable: false);
   final pinnedEvents = pinnedItems
       .map((item) => item.event)
       .toList(growable: false);
@@ -206,6 +216,37 @@ EventMapViewModel buildEventMapViewModel({
     items: List.unmodifiable(items),
     pinnedItems: List.unmodifiable(pinnedItems),
   );
+}
+
+bool hasEventMapPin(Event event) =>
+    event.effectiveStartingPointLat != null &&
+    event.effectiveStartingPointLng != null;
+
+bool hasExternalEventMapPin(ExternalEvent event) =>
+    event.latitude != null && event.longitude != null;
+
+LocationCoordinate _eventCoordinate(Event event) {
+  return LocationCoordinate.fromNullable(
+        latitude: event.effectiveStartingPointLat,
+        longitude: event.effectiveStartingPointLng,
+      ) ??
+      (throw ArgumentError.value(
+        event.id,
+        'event',
+        'Map items require an exact starting point.',
+      ));
+}
+
+LocationCoordinate _externalEventCoordinate(ExternalEvent event) {
+  return LocationCoordinate.fromNullable(
+        latitude: event.latitude,
+        longitude: event.longitude,
+      ) ??
+      (throw ArgumentError.value(
+        event.id,
+        'event',
+        'External map items require an exact starting point.',
+      ));
 }
 
 bool isUpcomingMapRun(Event event, DateTime now) =>

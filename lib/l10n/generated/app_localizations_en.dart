@@ -3507,9 +3507,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostPaymentAccountCardTitlePayouts => 'Payouts';
 
   @override
-  String get hostsHostPaymentAccountCardLabelRestricted => 'Restricted';
-
-  @override
   String get hostsHostClubToolsLabelHostTools => 'Host tools';
 
   @override
@@ -11770,14 +11767,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubsScaffoldLabelOrganizer => 'Organizer';
-
-  @override
-  String hostsHostOperationsTopBarTextKickerTitle({
-    required Object kicker,
-    required Object title,
-  }) {
-    return '$kicker. $title';
-  }
 
   @override
   String get hostsHostOrganizerTitleHowGuestsSeeYou => 'How guests see you';

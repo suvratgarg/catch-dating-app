@@ -7099,13 +7099,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.payments.host_payment_account_card"
   },
-  "hostsHostPaymentAccountCardLabelRestricted": "Restricted",
-  "@hostsHostPaymentAccountCardLabelRestricted": {
-    "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.payments.host_payment_account_card"
-  },
   "hostsHostClubToolsLabelHostTools": "Host tools",
   "@hostsHostClubToolsLabelHostTools": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).",
@@ -21420,17 +21413,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  },
-  "hostsHostOperationsTopBarTextKickerTitle": "{kicker}. {title}",
-  "@hostsHostOperationsTopBarTextKickerTitle": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_operations_top_bar.dart (Text).",
-    "placeholders": {
-      "kicker": {},
-      "title": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_operations_top_bar"
   },
   "hostsHostOrganizerTitleHowGuestsSeeYou": "How guests see you",
   "@hostsHostOrganizerTitleHowGuestsSeeYou": {

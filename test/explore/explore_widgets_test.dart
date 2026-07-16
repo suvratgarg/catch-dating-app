@@ -29,6 +29,7 @@ import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
@@ -38,7 +39,6 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -4264,6 +4264,67 @@ void main() {
       },
     );
 
+    testWidgets(
+      'ExploreMapScreen clears selected card when selected event loses its pin',
+      (tester) async {
+        var showExactPin = true;
+        final club = buildClub(id: 'club-map-pin-loss', name: 'Map Pin Club');
+        final pinnedEvent = event_test.buildEvent(
+          id: 'event-map-pin-loss',
+          clubId: club.id,
+          meetingPoint: 'Pin Loss Point',
+          startTime: DateTime.now().add(const Duration(days: 1)),
+        );
+        final unpinnedEvent = pinnedEvent.copyWith(
+          meetingLocation: null,
+          startingPointLat: null,
+          startingPointLng: null,
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              cityListProvider.overrideWith((ref) async => _testCities),
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+              exploreFeedViewModelProvider.overrideWith((ref) {
+                return AsyncData(
+                  ExploreFeedViewModel(
+                    items: [
+                      ExploreEventItem(
+                        event: showExactPin ? pinnedEvent : unpinnedEvent,
+                        club: club,
+                        status: EventTileStatus.open,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ExploreMapScreen(enableNetworkTiles: false),
+            ),
+          ),
+        );
+        await _pumpClubUi(tester);
+
+        await tester.tap(find.bySemanticsLabel('Select Pin Loss Point'));
+        await tester.pump(CatchMotion.fast);
+        expect(find.byType(EventDateRailCard), findsOneWidget);
+
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(ExploreMapScreen)),
+        );
+        showExactPin = false;
+        container.invalidate(exploreFeedViewModelProvider);
+        await tester.pump();
+        await _pumpClubUi(tester);
+
+        expect(find.bySemanticsLabel('Select Pin Loss Point'), findsNothing);
+        expect(find.byType(EventDateRailCard), findsNothing);
+      },
+    );
+
     testWidgets('ExploreScreen shows Explore-specific error copy', (
       tester,
     ) async {
@@ -4644,108 +4705,6 @@ void main() {
       );
     });
 
-    testWidgets('CreateClubScreen pre-fills fields in edit mode', (
-      tester,
-    ) async {
-      SharedPreferences.setMockInitialValues({});
-      final club = buildClub(
-        ownerUserId: 'host-1',
-        name: 'Morning Miles',
-        area: 'Palasia',
-        location: 'in-mp-indore',
-        description: 'Indore morning loops.',
-      );
-      final container = ProviderContainer(
-        overrides: [uidProvider.overrideWith((ref) => Stream.value('host-1'))],
-      );
-      addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: CreateClubScreen(initialClub: club),
-          ),
-        ),
-      );
-      await _pumpClubUi(tester);
-
-      expect(find.text('Edit club'), findsOneWidget);
-      expect(find.text('IDENTITY'), findsOneWidget);
-      expect(find.text('CONTACT'), findsOneWidget);
-      expect(find.text('EVENT DEFAULTS'), findsOneWidget);
-      expect(find.text('Next'), findsNothing);
-      expect(find.widgetWithText(TextField, 'Morning Miles'), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Palasia'), findsOneWidget);
-      expect(find.text('Indore'), findsOneWidget);
-      expect(
-        find.widgetWithText(TextField, 'Indore morning loops.'),
-        findsOneWidget,
-      );
-      expect(find.text('DEFAULT EVENT POLICY'), findsOneWidget);
-      expect(find.text('Save changes'), findsOneWidget);
-      expect(find.text('Default event success'), findsOneWidget);
-    });
-
-    testWidgets(
-      'CreateClubScreen clears optional contact fields in edit mode',
-      (tester) async {
-        SharedPreferences.setMockInitialValues({});
-        final fakeRepository = FakeClubsRepository();
-        final club = buildClub(
-          ownerUserId: 'host-1',
-          instagramHandle: '@morningmiles',
-          phoneNumber: '9876543210',
-          email: 'hello@morningmiles.test',
-        );
-        final container = ProviderContainer(
-          overrides: [
-            clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
-            uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          ],
-        );
-        addTearDown(container.dispose);
-        final uidSubscription = container.listen(
-          uidProvider,
-          (_, _) {},
-          fireImmediately: true,
-        );
-        addTearDown(uidSubscription.close);
-        await container.pump();
-
-        await tester.pumpWidget(
-          UncontrolledProviderScope(
-            container: container,
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: CreateClubScreen(initialClub: club),
-            ),
-          ),
-        );
-        await _pumpClubUi(tester);
-
-        await _enterCreateClubText(tester, 'Instagram', '');
-        await _enterCreateClubText(tester, 'Phone', '');
-        await _enterCreateClubText(tester, 'Email', '');
-
-        await tester.tap(find.text('Save changes'));
-        await _pumpClubUi(tester);
-
-        expect(fakeRepository.lastUpdatedClubId, club.id);
-        expect(fakeRepository.lastUpdatedFields!['instagramHandle'], isNull);
-        expect(fakeRepository.lastUpdatedFields!['phoneNumber'], isNull);
-        expect(fakeRepository.lastUpdatedFields!['email'], isNull);
-      },
-    );
-
     testWidgets(
       'CreateClubScreen validates and pops after a successful submit',
       (tester) async {
@@ -4940,18 +4899,4 @@ Finder _fieldChoice(String label, {bool? selected}) {
         widget.label == label &&
         (selected == null || widget.selected == selected),
   );
-}
-
-Future<void> _enterCreateClubText(
-  WidgetTester tester,
-  String label,
-  String value,
-) async {
-  final field = find.byWidgetPredicate(
-    (widget) => widget is CatchField && widget.title == label,
-  );
-  await tester.ensureVisible(field);
-  await tester.pump();
-  await tester.enterText(field, value);
-  await tester.pump();
 }

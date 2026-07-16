@@ -179,11 +179,11 @@ class EventDetailMapCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final canOpen = onTap != null;
-    final coordinate = LocationCoordinate(
-      event.effectiveStartingPointLat,
-      event.effectiveStartingPointLng,
+    final coordinate = LocationCoordinate.fromNullable(
+      latitude: event.effectiveStartingPointLat,
+      longitude: event.effectiveStartingPointLng,
     );
+    final canOpen = coordinate != null && onTap != null;
     final trailingLabel =
         context.l10n.eventsEventDetailDesignPrimitivesActionViewMap;
 

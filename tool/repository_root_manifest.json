@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "updated": "2026-07-12",
   "ownerVocabulary": [
     "agent_operating_model",
@@ -18,7 +18,7 @@
     {"names": [".editorconfig", ".env.example", ".github", "AGENTS.md", "analysis_options.yaml", "build.yaml", "dart_test.yaml", "l10n.yaml", "package-lock.json", "package.json", "pubspec.lock", "pubspec.yaml"], "kind": "config", "expectation": "tracked", "owner": "repository_tooling", "recovery": "Restore from Git."},
     {"names": [".firebaserc", "firebase.json", "firestore.indexes.json", "firestore.rules", "storage.rules"], "kind": "config", "expectation": "tracked", "owner": "backend_platform", "recovery": "Restore from Git."},
     {"names": [".gitignore", ".metadata"], "kind": "config", "expectation": "tracked", "owner": "app_platform", "recovery": "Restore from Git."},
-    {"names": ["CLAUDE.md", "PROJECT_CONTEXT.md", "README.md", "TESTS.md"], "kind": "documentation", "expectation": "tracked", "owner": "documentation", "recovery": "Restore from Git."},
+    {"names": ["CLAUDE.md", "PROJECT_CONTEXT.md", "README.md", "TESTS.md", "design-qa.md"], "kind": "documentation", "expectation": "tracked", "owner": "documentation", "recovery": "Restore from Git."},
     {"names": ["admin", "website", "packages"], "kind": "source", "expectation": "tracked", "owner": "web_platform", "recovery": "Restore from Git and reinstall dependencies."},
     {"names": ["functions", "firebase", "contracts", "analytics"], "kind": "source", "expectation": "tracked", "owner": "backend_platform", "recovery": "Restore from Git and regenerate contract outputs when required."},
     {"names": ["operations"], "kind": "source", "expectation": "tracked", "owner": "operations_platform", "consumer": "docs/operations_platform.md", "recovery": "Restore from Git and run npm --prefix operations test."},

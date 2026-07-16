@@ -33,6 +33,9 @@ jobs:
 
       - run: flutter pub get
 
+      - name: Localization catalog and getter usage ratchet
+        run: node tool/copy/check_l10n_key_usage.mjs --check --check-inventory
+
       - name: Design parity gate
         run: npm run design:parity:check
 

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_consolidation_receipts
-version: 0.2.1
+version: 0.2.3
 updated: 2026-07-16
 owner: widget_consolidation
 status: active
@@ -2583,6 +2583,69 @@ Known blockers / inherited debt:
 - `node tool/design/check_screen_contracts.mjs --check` still fails on inherited
   missing-symbol drift for Calendar, Saved Events, host create/edit footers,
   Host settings adapter ownership, Event edit footer, and Reviews History.
+
+## 2026-07-16 CatchOptionGroup peer-selector consolidation
+
+Decision:
+
+- Classified `CatchSegmentedControl` versus `CatchOptionGroup` as drift under
+  `drift: CatchSegmentedControl/CatchOptionGroup`.
+- Migrated Host Events lifecycle, Host Inbox audience, Host Analytics range and
+  granularity, and Host Event Manage workspace mode to `CatchOptionGroup`.
+- Deleted the parallel segmented-control implementation, its contract entry,
+  and its generated Widgetbook ownership.
+
+Commands:
+
+- `rg -n 'CatchSegmentedControl|CatchSegmentedOption' lib test widgetbook/lib design`
+- `flutter analyze --no-fatal-infos`
+- `flutter test --concurrency=1 test/core/catch_primitives_test.dart test/hosts/host_inbox_screen_test.dart test/hosts/host_operations_screen_test.dart test/hosts/host_create_event_screen_test.dart`
+- `node tool/design/check_component_contracts.mjs`
+- `node tool/design/check_component_lexicon.mjs`
+- `node tool/design/check_screen_contracts.mjs --check`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- Widgetbook directory, classification, variant, coverage, and similarity
+  regeneration plus their matching freshness checks.
+
+Verification:
+
+- The retired selector symbols have no live source, test, Widgetbook, screen,
+  or component-contract references.
+- Component contracts, the cross-stack lexicon (64 contracts / 85 surface
+  links), screen contracts (35 screens / 239 implementation symbols), and
+  Widgetbook references pass.
+- Focused Host tests preserve each migrated selector's interaction behavior.
+
+## 2026-07-16 CatchBottomAction CTA ownership correction
+
+Decision:
+
+- Classified `CatchBottomDock` CTA versus `CatchBottomAction` as drift under
+  `drift: CatchBottomDock CTA/CatchBottomAction`.
+- Deleted `CatchBottomDock.cta`, `CatchBottomDockCta`, the CTA renderer, and
+  `CatchBottomDockVariant`; retained the required-child `CatchBottomDock`
+  utility for custom positioned content.
+- Assigned primary route CTA copy, hierarchy, pending state, catch line, and
+  footnote ownership exclusively to `CatchBottomAction`.
+
+Commands:
+
+- `rg -n '\b(CatchBottomDockCta|CatchBottomDockVariant)\b|CatchBottomDock\.cta' lib test widgetbook/lib design/components/catch.components.json design/screens/catch.screens.json`
+- `flutter analyze --no-fatal-infos`
+- `flutter test --concurrency=1 test/core/catch_primitives_test.dart test/events/events_widgets_test.dart test/events/event_detail_widgets_test.dart`
+- `node tool/design/check_component_contracts.mjs`
+- `node tool/design/check_component_lexicon.mjs`
+- `node tool/design/check_screen_contracts.mjs --check`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+
+Verification:
+
+- The retired CTA constructor, renderer, and enum have no live references.
+- Primitive and Event tests pass, including primary-action rendering and
+  screen-bottom ownership.
+- Component, screen, lexicon, and Widgetbook contracts identify
+  `CatchBottomAction` as the primary CTA owner and keep `CatchBottomDock`
+  utility-only.
 
 ## 2026-07-16 Analytics section drift correction
 

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.27
+version: 1.4.31
 updated: 2026-07-16
 owner: recursive_audit_loop
 status: active
@@ -238,6 +238,30 @@ Hard rules:
 
 Temporary exceptions require an override comment described in
 `Enforcement And Overrides`.
+
+## Provider Topology Graph
+
+Riverpod topology is a checked source contract, not an inferred diagram kept by
+hand. `tool/architecture/provider_graph.dart` parses handwritten Dart sources
+and generates the complete provider, family, consumer, override, alias,
+Mutation, and dependency inventory under `docs/generated/provider_graph/`.
+
+Use these commands after adding, removing, renaming, or changing dependencies
+of a provider:
+
+```sh
+dart run tool/architecture/provider_graph.dart --write
+dart run tool/architecture/provider_graph.dart --check
+```
+
+`tool/architecture/provider_graph_reviews.json` owns explicit decisions for
+cross-feature edges, high-fan-out providers, aliases, and intentional manual
+provider exceptions. The check rejects stale generated artifacts, dangling or
+duplicate provider nodes, unresolved internal references, reactive cycles,
+unreviewed candidates, and stale review decisions. Feature-owned async
+providers should follow the generated family reference in
+`ARCH-PROVIDER-CODEGEN-001`; manual providers require an exact reviewed
+exception rather than an implicit allowlist.
 
 ## Screen Definition
 
@@ -1068,6 +1092,45 @@ View models should return immutable state shaped for the UI. They should avoid
 side effects. A view model can expose precomputed display booleans, labels, and
 section models when that removes business logic from widgets.
 
+### Exhibit ARCH-PROVIDER-CODEGEN-001: Generated Auto-Dispose Provider Family
+
+<!-- exhibit-freshness: ARCH-PROVIDER-CODEGEN-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/clubs/data/club_name_lookup.dart`
+- `lib/clubs/data/club_name_lookup.g.dart`
+- `test/architecture/generated_provider_family_test.dart`
+
+Use generated function providers for feature-owned async families. Keep the
+family argument as a value-equality query object when callers need a canonical
+cache key independent of input order or duplicates. `@riverpod` remains
+auto-dispose by default, the generated provider keeps the existing public name,
+and the adjacent generated output stays checked in.
+
+```dart
+@riverpod
+Future<Map<String, String>> clubNameLookup(
+  Ref ref,
+  ClubNameLookupQuery query,
+) async {
+  if (query.clubIds.isEmpty) return const <String, String>{};
+
+  final repository = ref.watch(clubsRepositoryProvider);
+  final clubs = await Future.wait(query.clubIds.map(repository.fetchClub));
+
+  return {
+    for (final club in clubs)
+      if (club != null) club.id: club.name,
+  };
+}
+```
+
+Provider migrations must preserve the generated provider name, family call
+shape, query equality, auto-dispose lifecycle, `.future` access where used, and
+`overrideWith` / `overrideWithValue` test seams. Lock those contracts with a
+`ProviderContainer` test before treating a mechanical conversion as complete.
+
 ### Realtime Stream Lifecycle
 
 Firestore snapshot streams are long-lived realtime listeners. Silence after the
@@ -1179,6 +1242,35 @@ Repository rules:
   one batched provider can resolve it.
 - Use `keepAlive` only with documented lifecycle rationale.
 - Do not expose raw Firebase exceptions to presentation.
+
+### Legacy-mirror normalization and cutover
+
+When a Firestore model is migrating from legacy scalar mirrors to one
+structured canonical field, normalize at the repository/domain read boundary;
+do not scatter `newField ?? oldField` fallbacks through presentation code.
+
+The migration shape is:
+
+1. Prefer a valid canonical object.
+2. Otherwise promote a complete, internally consistent legacy field set into
+   the canonical in-memory shape.
+3. Treat partial, non-finite, or contradictory mirrors as invalid; any
+   operation that requires the invariant must fail closed.
+4. Dual-write the canonical field and supported mirrors while released clients
+   still consume those mirrors.
+5. Keep the canonical domain field nullable only while a measured production
+   blocker set remains. Remove that compatibility state after the repair tool,
+   read-only validation, and rollout receipt all report zero blockers.
+
+Event meeting locations are the reference migration. New and edited events are
+strict, while Dart reads remain compatibility-nullable because the 2026-07-16
+production dry run still has nine coordinate-less historical records. The
+exact cutover state and proof live in
+`contracts/migrations/event_meeting_location.json`; do not copy the strict
+branch implementation into production reads until that contract advances.
+`RunClub` next-event projections and `Payment` legacy fields are candidates for
+this pattern only after their own source-of-truth, repair, and cutover contracts
+exist.
 
 ## Widget Ownership
 
@@ -1347,6 +1439,8 @@ Reference implementation:
 - `lib/core/app_error_message.dart` — semantic exception-code localization at
   widget build time; and
 - `tool/copy/check_mobile_copy_ownership.dart` — zero-debt ownership gate.
+- `tool/copy/check_l10n_key_usage.mjs` — exact handwritten-key inventory and
+  zero-orphan ratchet with generated evidence under the audit registry.
 
 Required checks:
 
@@ -1354,16 +1448,19 @@ Required checks:
 flutter gen-l10n
 node tool/run.mjs check copy:mobile-catalog
 node tool/run.mjs check copy:mobile-ownership
+node tool/run.mjs check copy:l10n-key-usage
 node tool/run.mjs check copy:native-sync
 node tool/run.mjs check copy:notification-sync
 node tool/run.mjs check copy:event-success-questionnaires
 node tool/run.mjs check copy:structured-domain-content
 ```
 
-The baseline in `tool/copy/mobile_copy_baseline.json` must remain empty. New
-inline findings fail immediately. An allowlist entry is only appropriate
-for a technical identifier, test/demo fixture, or user-authored value and must
-contain a narrow reason.
+The baselines in `tool/copy/mobile_copy_baseline.json` and
+`tool/copy/l10n_orphan_baseline.json` must remain empty. New inline findings or
+zero-use ARB keys fail immediately, and the checked key-usage inventory must
+match the current catalog and handwritten Dart sources. An allowlist entry is
+only appropriate for a technical identifier, test/demo fixture, or
+user-authored value and must contain a narrow reason.
 
 Presentation models may contain resolved `String` fields, but any factory that
 creates user-visible prose must accept `AppLocalizations` explicitly. Widgets
@@ -1572,6 +1669,13 @@ use `CatchScreenTopBar`, compact detail/edit/utility routes use `CatchTopBar`,
 and identity routes use `CatchTopBar.identity`. A canonical call elsewhere in
 the file cannot bless helper-owned or raw chrome inside the actual `appBar`
 value.
+
+Pushed routes that must always expose an exit declare `leading: "back"` in
+the same manifest entry. The gate then requires an explicit
+`CatchTopBarLeading.back` (or `showBackButton: true`) configuration, so a
+correct primitive name cannot hide a navigation dead end. Screens that can be
+entered as a root deep link should also provide an `onBack` fallback to their
+owning root destination.
 
 `node tool/run.mjs check design:screen-top-bar-contracts` walks all
 handwritten `lib/**/*.dart`, not only `presentation/` or `*_screen.dart`. It

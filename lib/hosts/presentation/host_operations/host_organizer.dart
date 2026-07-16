@@ -117,13 +117,9 @@ class HostClubOrganizerOverview extends StatelessWidget {
                 currentUid: currentUid,
               ),
               gapH24,
-              CatchSectionHeader(
-                title: context.l10n.hostsHostOrganizerTitleManage,
-                padding: EdgeInsets.zero,
-                titleStyle: CatchTextStyles.monoLabel(context, color: t.ink2),
-              ),
-              gapH10,
               CatchSection.contained(
+                title: context.l10n.hostsHostOrganizerTitleManage,
+                titleColor: t.ink2,
                 children: [
                   CatchField.nav(
                     icon: CatchIcons.paymentsOutlined,

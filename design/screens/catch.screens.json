@@ -726,7 +726,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-              "symbol": "EventDetailPolicySummary"
+              "symbol": "EventDetailOverviewSection"
             },
             "currentOwner": "EventDetailOverviewSection",
             "targetOwner": "registered event policy summary section",
@@ -771,7 +771,7 @@
               "unverified"
             ],
             "previewIds": [
-              "EventDetailHostCard/Catalog states"
+              "CatchHostRow/Catalog states"
             ],
             "migration": "Club lookup is route-owned and mapped through EventDetailHostState; remaining work is formal host-card component registration and broader section-state hardening."
           },
@@ -2009,6 +2009,19 @@
           "nextAction": "Keep no-exact-pin route coverage aligned with EventMapView; add a screenshot capture only if map empty-state parity needs pixel review."
         },
         {
+          "id": "zero_radius_results",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "ExploreMapScreen preserves the same-market canvas and distance ring when an active radius returns zero events, then offers the next wider radius or Show all.",
+          "previewIds": [
+            "ExploreMapScreen/Map route states"
+          ],
+          "tests": [
+            "test/explore/explore_widgets_test.dart"
+          ],
+          "nextAction": "Keep zero-radius recovery aligned with the distance filter catalogue and retained-canvas policy."
+        },
+        {
           "id": "map_loading",
           "kind": "loading",
           "status": "captured",
@@ -2392,8 +2405,8 @@
             "symbol": "dashboardFullViewModel"
           },
           {
-            "file": "lib/dashboard/data/dashboard_recommendations_repository.dart",
-            "symbol": "dashboardRecommendedEventsProvider"
+            "file": "lib/explore/data/explore_recommendations_repository.dart",
+            "symbol": "exploreRecommendedEventsProvider"
           },
           {
             "file": "lib/dashboard/presentation/dashboard_screen.dart",
@@ -2727,7 +2740,7 @@
           "id": "recommendations_ready",
           "kind": "populated",
           "status": "captured",
-          "source": "dashboardRecommendedEventsProvider candidates are ranked into DashboardEventRecommendation rows and rendered by Recommendations.",
+          "source": "exploreRecommendedEventsProvider candidates are ranked into ExploreEventRecommendation rows and rendered by the compatibility Dashboard recommendation section.",
           "captureIds": [
             "dashboard_home"
           ],
@@ -5592,7 +5605,7 @@
             "targetOwner": "provider-free chats list header section",
             "dependencies": [
               "catch.field",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.top_bar"
             ],
             "states": [
@@ -7060,7 +7073,7 @@
             "targetOwner": "SelfProfileScreenState provider/controller adapter",
             "dependencies": [
               "catch.top_bar",
-              "catch.segmented_control"
+              "catch.option_group"
             ],
             "states": [
               "loading",
@@ -7092,7 +7105,7 @@
             "targetOwner": "provider-free self-profile header section",
             "dependencies": [
               "catch.icon_button",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.top_bar"
             ],
             "states": [
@@ -8354,8 +8367,8 @@
               "ClubSwitcher"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
-              "symbol": "HostOperationsTopBar"
+              "file": "lib/hosts/presentation/host_operations/host_today.dart",
+              "symbol": "HostTodayHeader"
             },
             "currentOwner": "_HostEventsScaffold",
             "targetOwner": "provider-free host operations top bar section",
@@ -8373,7 +8386,7 @@
             "migration": "Selected club title, kicker, switcher actions, and host role menu labels render through public HostOperationsTopBar with section-level Widgetbook states. Route-state selection policy now lives in HostHomeRouteState.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostOperationsTopBar/Top bar states"
+              "HostTodayClubPill/Identity switcher states"
             ]
           },
           {
@@ -8388,7 +8401,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
-              "symbol": "HostMetaRow"
+              "symbol": "HostEventsClubSection"
             },
             "currentOwner": "HostEventsClubCard",
             "targetOwner": "provider-free host club metadata section",
@@ -8406,7 +8419,7 @@
             "migration": "HostMetaRow is public and has section-level Widgetbook states for owner, host-team, and missing-area metadata. Keep activity/role display data in the adapter and reuse with Host Clubs and Host Club Detail if the same header language persists.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostMetaRow/Meta row states"
+              "HostEventsClubSection/Covered by host event section states"
             ]
           },
           {
@@ -9320,8 +9333,8 @@
               "ClubSwitcher"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
-              "symbol": "HostOperationsTopBar"
+              "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+              "symbol": "HostClubsScaffold"
             },
             "currentOwner": "_HostClubsScaffold",
             "targetOwner": "provider-free host operations top bar section",
@@ -9562,7 +9575,7 @@
             "dependencies": [
               "catch.badge",
               "catch.button",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.surface"
             ],
             "states": [
@@ -9593,8 +9606,8 @@
               "HostClubPreviewPane"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_club_preview.dart",
-              "symbol": "HostClubPreviewPane"
+              "file": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+              "symbol": "ClubDetailReadOnlyPreviewSliver"
             },
             "currentOwner": "_HostClubsScaffold",
             "targetOwner": "provider-free host club preview section",
@@ -11821,7 +11834,7 @@
             "symbol": "EventSuccessController"
           }
         ],
-        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState now owns selected Setup / Guests / Live / Report section state, section labels, host manage event title copy, and collapsed-header semantics. HostEventActionDisplayState owns known-activity policy, cancel/delete pending copy, delete visibility, cancelled-event action rows, and shared host roster count helpers. HostPrivateLinkActionState owns share-private-link invite code/link derivation, loading/error/count detail copy, and share-enabled policy. HostPrivateAccessDisplayState owns private-access card missing-code/listed-copy policy and code/link row visibility. HostInviteLinksListDisplayState owns named invite-link mutation mode, create-loading flag, disabled-action policy, and empty copy. HostInviteLinkRowDisplayState owns named invite-link row URL derivation, stat copy, disabled badge visibility, disable-action visibility, and actions-disabled policy. HostRosterDisplayState owns setup/live/report roster filter specs, active-filter fallback, searched row ids, empty-state copy, and waitlist bulk-offer eligibility. HostSetupRosterRowDisplayState, HostLiveRosterRowDisplayState, and HostReportRosterRowDisplayState own setup/live/report row meta, signal, tone, payment copy, and row action policy flags. HostParticipantsMutationDisplayState owns attendance, approval/decline, waitlist-offer, ops-export, and revenue-export pending/error display policy. HostParticipantLifecycleActions owns profile, approval, decline, attendance, waitlist-offer, ops-export, and revenue-export callback injection for HostParticipationLifecycleBoard. HostReportSummaryDisplayState owns gross estimate, checked/no-show/waitlist counts, and report summary copy. HostParticipantProfilesLookupState owns attendee-profile lookup empty, loading, ready, error, and retry-target policy. HostEventManageScreen uses the shared CatchSegmentedControl in the top-bar bottom slot, renders setup as capacity metrics plus compact host action rows before deeper private-access/details/Event Success setup content, and owns host edit/cancel/delete routing, dialogs, mutation execution, snackbars, and callbacks. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface instead of separate contracts. Continue loaded-workspace adapters for Event Success host state and section retry intents without moving solved route loading/access gates out of HostEventManageRouteScreen. HostEventManageActionEffect owns edit/cancel/delete action destinations, edit route parameters, and event payload so HostEventManageScreen only executes Navigator/dialog/controller side effects. HostEventActionsSection receives HostPrivateLinkActionState and a typed share callback from the screen edge instead of watching private-link providers directly. HostParticipationLifecycleBoard receives HostParticipantLifecycleActions instead of reading Riverpod mutations/routes directly."
+        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState now owns selected Setup / Guests / Live / Report section state, section labels, host manage event title copy, and collapsed-header semantics. HostEventActionDisplayState owns known-activity policy, cancel/delete pending copy, delete visibility, cancelled-event action rows, and shared host roster count helpers. HostPrivateLinkActionState owns share-private-link invite code/link derivation, loading/error/count detail copy, and share-enabled policy. HostPrivateAccessDisplayState owns private-access card missing-code/listed-copy policy and code/link row visibility. HostInviteLinksListDisplayState owns named invite-link mutation mode, create-loading flag, disabled-action policy, and empty copy. HostInviteLinkRowDisplayState owns named invite-link row URL derivation, stat copy, disabled badge visibility, disable-action visibility, and actions-disabled policy. HostRosterDisplayState owns setup/live/report roster filter specs, active-filter fallback, searched row ids, empty-state copy, and waitlist bulk-offer eligibility. HostSetupRosterRowDisplayState, HostLiveRosterRowDisplayState, and HostReportRosterRowDisplayState own setup/live/report row meta, signal, tone, payment copy, and row action policy flags. HostParticipantsMutationDisplayState owns attendance, approval/decline, waitlist-offer, ops-export, and revenue-export pending/error display policy. HostParticipantLifecycleActions owns profile, approval, decline, attendance, waitlist-offer, ops-export, and revenue-export callback injection for HostParticipationLifecycleBoard. HostReportSummaryDisplayState owns gross estimate, checked/no-show/waitlist counts, and report summary copy. HostParticipantProfilesLookupState owns attendee-profile lookup empty, loading, ready, error, and retry-target policy. HostEventManageScreen uses the shared CatchOptionGroup in the top-bar bottom slot, renders setup as capacity metrics plus compact host action rows before deeper private-access/details/Event Success setup content, and owns host edit/cancel/delete routing, dialogs, mutation execution, snackbars, and callbacks. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface instead of separate contracts. Continue loaded-workspace adapters for Event Success host state and section retry intents without moving solved route loading/access gates out of HostEventManageRouteScreen. HostEventManageActionEffect owns edit/cancel/delete action destinations, edit route parameters, and event payload so HostEventManageScreen only executes Navigator/dialog/controller side effects. HostEventActionsSection receives HostPrivateLinkActionState and a typed share callback from the screen edge instead of watching private-link providers directly. HostParticipationLifecycleBoard receives HostParticipantLifecycleActions instead of reading Riverpod mutations/routes directly."
       },
       "designRefs": [
         {
@@ -12064,7 +12077,7 @@
           "id": "section_picker",
           "kind": "populated",
           "status": "captured",
-          "source": "HostEventManageScreen renders Setup / Guests / Live / Report through CatchSegmentedControl and accepts initialSection from route aliases or query state.",
+          "source": "HostEventManageScreen renders Setup / Guests / Live / Report through CatchOptionGroup and accepts initialSection from route aliases or query state.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
@@ -13026,7 +13039,7 @@
             "targetOwner": "provider-free host manage chrome section",
             "dependencies": [
               "catch.top_bar",
-              "catch.segmented_control"
+              "catch.option_group"
             ],
             "states": [
               "setup",
@@ -13223,7 +13236,7 @@
             "dependencies": [
               "catch.button",
               "catch.option_card",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.surface",
               "catch.field"
             ],
@@ -14154,7 +14167,7 @@
             "currentOwner": "HostInboxScreen + HostInboxViewModel",
             "targetOwner": "Host-owned typed Event/General scope selector plus Booked/Prospective rail",
             "dependencies": [
-              "catch.segmented_control"
+              "catch.option_group"
             ],
             "states": [
               "selected_event",
@@ -14305,7 +14318,7 @@
             "dependencies": [
               "catch.button",
               "catch.field",
-              "catch.segmented_control",
+              "catch.option_group",
               "catch.surface"
             ],
             "states": [
@@ -19293,7 +19306,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-              "symbol": "HostClubEditSection"
+              "symbol": "HostClubEditScaffold"
             },
             "currentOwner": "HostClubEditScaffold + HostClubEditSection + HostClubEditCityField",
             "targetOwner": "provider-free identity/contact sections",

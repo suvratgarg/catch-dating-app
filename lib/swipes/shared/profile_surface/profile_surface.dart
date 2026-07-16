@@ -12,7 +12,6 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapper.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 enum ProfileSurfaceMode { catches, preview, publicProfile }
 

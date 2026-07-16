@@ -246,12 +246,12 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     _selectedDate = DateUtils.dateOnly(event.startTime);
     _selectedStartTime = TimeOfDay.fromDateTime(event.startTime);
     _durationMinutes = event.endTime.difference(event.startTime).inMinutes;
-    _startingPoint = LocationCoordinate(
-      event.effectiveStartingPointLat,
-      event.effectiveStartingPointLng,
+    _startingPoint = LocationCoordinate.fromNullable(
+      latitude: event.effectiveStartingPointLat,
+      longitude: event.effectiveStartingPointLng,
     );
-    _meetingLocationAddress = meetingLocation.address;
-    _meetingLocationPlaceId = meetingLocation.placeId;
+    _meetingLocationAddress = meetingLocation?.address;
+    _meetingLocationPlaceId = meetingLocation?.placeId;
     _selectedPace = event.pace;
 
     _meetingPointController.text = event.locationName;

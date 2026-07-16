@@ -63,7 +63,8 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
           backgroundColor: t.bg,
           appBar: CatchTopBar(
             title: context.l10n.hostsHostAccountScreenTitleHostProfile,
-            showBackButton: false,
+            leadingType: CatchTopBarLeading.back,
+            onBack: _leaveAccount,
             border: true,
             actions: [
               CatchIconAction(
@@ -180,6 +181,14 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
       return;
     }
     if (mounted) context.go(Routes.startScreen.path);
+  }
+
+  void _leaveAccount() {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    context.go(Routes.hostOrganizerScreen.path);
   }
 }
 
@@ -327,63 +336,42 @@ class HostSettingsClubsSection extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSection.fieldRows(
       title: context.l10n.hostsHostAccountScreenTitleClubsYouHost,
-      children: [
-        switch (state) {
-          HostSettingsClubsLoading() => const CatchSkeletonRows(
+      children: switch (state) {
+        HostSettingsClubsLoading() => [
+          const CatchSkeletonRows(
             leading: CatchSkeletonRowLeading.icon,
             count: 2,
             divided: true,
           ),
-          HostSettingsClubsError(:final error) => CatchErrorState.fromError(
+        ],
+        HostSettingsClubsError(:final error) => [
+          CatchErrorState.fromError(
             error,
             context: AppErrorContext.club,
             onRetry: onRetry,
           ),
-          HostSettingsClubsEmpty() => Text(
+        ],
+        HostSettingsClubsEmpty() => [
+          Text(
             context.l10n.hostsHostAccountScreenTextNoHostClubsYet,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
-          HostSettingsClubsContent(:final clubs) => HostSettingsClubRows(
-            actions: actions,
-            clubs: clubs,
-            onOpenClub: onOpenClub,
-          ),
-        },
-      ],
-    );
-  }
-}
-
-class HostSettingsClubRows extends StatelessWidget {
-  const HostSettingsClubRows({
-    super.key,
-    required this.actions,
-    required this.clubs,
-    required this.onOpenClub,
-  });
-
-  final HostSettingsActionState actions;
-  final List<Club> clubs;
-  final ValueChanged<HostSettingsClubNavigationState> onOpenClub;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (final club in clubs)
-          Builder(
-            builder: (context) {
-              final navigation = actions.clubNavigationFor(club);
-              return CatchField.nav(
-                title: navigation.roleLabel,
-                valueText: club.name,
-                icon: CatchIcons.groupOutlined,
-                divider: club != clubs.first,
-                onTap: () => onOpenClub(navigation),
-              );
-            },
-          ),
-      ],
+        ],
+        HostSettingsClubsContent(:final clubs) => [
+          for (final club in clubs)
+            Builder(
+              builder: (context) {
+                final navigation = actions.clubNavigationFor(club);
+                return CatchField.nav(
+                  title: navigation.roleLabel,
+                  valueText: club.name,
+                  icon: CatchIcons.groupOutlined,
+                  onTap: () => onOpenClub(navigation),
+                );
+              },
+            ),
+        ],
+      },
     );
   }
 }

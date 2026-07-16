@@ -632,16 +632,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchDistanceRing',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchDistanceRingCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchDistanceRingLabel',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -948,41 +938,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchSliverErrorStateCatalogStates,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
-        name: 'Fields',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldCommitButton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchFieldCommitButtonCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldRepeatButton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchFieldRepeatButtonCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldToggle',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchFieldToggleCatalogStates,
               ),
             ],
           ),
@@ -2364,22 +2319,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
-        name: 'Location',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchMapPreview',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchMapPreviewContractStates,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
         name: 'Media',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -2553,6 +2492,39 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchTabControllerRail',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Controller-backed rail',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchTabControllerRailContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTabbedPageScrollView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared tabbed page',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchTabbedPageContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTabbedScreenScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchTabbedScreenContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchTopBar',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2576,17 +2548,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchActivityInitialsPlaceholderContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchHostRow',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchHostRowContractStates,
               ),
             ],
           ),
@@ -2706,6 +2667,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchHostRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchHostRowContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchMapPreview',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchMapPreviewContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchPersonChatLayout',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2778,19 +2761,19 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .chatComposerContractStates,
+                        .chatInputBarContractStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Focused draft',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .chatComposerFocusedDraft,
+                        .chatInputBarFocusedDraft,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Focused empty',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .chatComposerFocusedEmpty,
+                        .chatInputBarFocusedEmpty,
               ),
             ],
           ),
@@ -2970,39 +2953,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSegmentButton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSegmentButtonContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSegmentedControl',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSegmentedControlContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTabControllerRail',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Controller-backed rail',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabControllerRailContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchTabRail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3010,28 +2960,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchTabRailContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTabbedPageScrollView',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Shared tabbed page',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabbedPageContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTabbedScreenScaffold',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Shared tabbed screen',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabbedScreenContractStates,
               ),
             ],
           ),

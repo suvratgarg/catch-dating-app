@@ -1,6 +1,6 @@
 ---
 doc_id: agent_entrypoint
-version: 1.4.8
+version: 1.4.9
 updated: 2026-07-16
 owner: agent_operating_model
 status: active
@@ -68,6 +68,13 @@ the right verification loop.
   explore or produce isolated branch commits, but the parent agent is the only
   default writer for canonical docs, generated registries, audit receipts, and
   final verification.
+- Push a new working branch immediately. Before ending a dirty agent session,
+  make and push a bounded `chore(wip)` snapshot on that session branch; never
+  rely on one machine's working tree as the only copy.
+- Before rebase, reset, amend, or a conflict-heavy merge, create a dated
+  `backup/` ref. Never rewrite a branch with a shared upstream. Reconciliation
+  merges touching more than 50 paths require `git:audit-merge-drops` output and
+  explicit discard receipts before handoff.
 - React website/admin UI shells must route through shared primitives. When a
   repeated component family matters, add or update the React component-governance
   scanner plus the matching source-of-truth docs, component registry, and audit

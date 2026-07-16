@@ -1693,6 +1693,7 @@ void main() {
         ],
       );
 
+      expect(find.byTooltip('Back'), findsOneWidget);
       expect(find.byType(CatchLoadingIndicator), findsNothing);
       expect(find.text('Display name'), findsOneWidget);
       expect(find.text('Suvrat'), findsOneWidget);

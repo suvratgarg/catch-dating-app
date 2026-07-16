@@ -13,6 +13,7 @@ analyzer:
     - widgetbook/**
     # Scanner fixtures are deliberately non-compliant seed files, not app code.
     - tool/design/fixtures/**
+    - tool/copy/fixtures/**
     - '**/*.g.dart'
     - '**/*.freezed.dart'
 

@@ -283,6 +283,34 @@ test("accepts an app-bar-only ownership manifest", () => {
   assert.equal(result.rootHeaderCount, 0);
 });
 
+test("flags a pushed compact route that suppresses its required back action", () => {
+  const root = fixtureRoot({
+    source:
+      "Scaffold(appBar: CatchTopBar(title: 'Host profile', showBackButton: false));",
+    contract: compactContract({leading: "back"}),
+    includeRootContracts: false,
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "missing-required-back-navigation"));
+});
+
+test("accepts an explicit back action on a pushed compact route", () => {
+  const root = fixtureRoot({
+    source: `Scaffold(appBar: CatchTopBar(
+      title: 'Host profile',
+      leadingType: CatchTopBarLeading.back,
+    ));`,
+    contract: compactContract({leading: "back"}),
+    includeRootContracts: false,
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.deepEqual(result.findings, []);
+});
+
 test("flags a shell-covering editor pushed on a branch navigator", () => {
   const root = fixtureRoot({
     source: `
@@ -536,12 +564,13 @@ function screenContract({
   };
 }
 
-function compactContract({expression = "CatchTopBar"} = {}) {
+function compactContract({expression = "CatchTopBar", leading} = {}) {
   return {
     path: "lib/calendar/calendar_screen.dart",
     role: "compact",
     expression,
     owner: "CatchTopBar",
+    ...(leading == null ? {} : {leading}),
   };
 }
 

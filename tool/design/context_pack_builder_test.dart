@@ -949,6 +949,12 @@ final _styleRegistry = <_StyleEntry>[
     casePolicy: 'uppercase',
   ),
   _StyleEntry.single(
+    'fieldSectionKicker',
+    'data',
+    CatchTextStyles.fieldSectionKicker,
+    casePolicy: 'uppercase',
+  ),
+  _StyleEntry.single(
     'kickerLg',
     'data',
     CatchTextStyles.kickerLg,

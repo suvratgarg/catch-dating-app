@@ -54,7 +54,7 @@ void main() {
       child: const CalendarScreen(),
     );
 
-    expect(find.text('Calendar'), findsWidgets);
+    expect(find.byType(CalendarScreen), findsOneWidget);
     expect(find.byTooltip('Back'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Back'));

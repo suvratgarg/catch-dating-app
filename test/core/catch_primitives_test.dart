@@ -13,7 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -53,7 +53,6 @@ import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
@@ -238,13 +237,13 @@ void main() {
   });
 
   testWidgets(
-    'CatchBottomDock.cta forwards activity accent to the primary button',
+    'CatchBottomAction forwards activity accent to the primary button',
     (tester) async {
       const accent = Color(0xFF116466);
 
       await tester.pumpWidget(
         _wrap(
-          CatchBottomDock.cta(
+          CatchBottomAction(
             label: 'Join event',
             onPressed: () {},
             buttonAccentColor: accent,
@@ -252,7 +251,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(CatchBottomDockCta), findsOneWidget);
+      expect(find.byType(CatchBottomAction), findsOneWidget);
       final button = tester.widget<CatchButton>(
         find.widgetWithText(CatchButton, 'Join event'),
       );
@@ -260,12 +259,12 @@ void main() {
     },
   );
 
-  testWidgets('CatchBottomDockCta renders catch line and footnote', (
+  testWidgets('CatchBottomAction renders catch line and footnote', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchBottomDockCta(
+        CatchBottomAction(
           label: 'Confirm',
           onPressed: () {},
           catchLine: 'free to join',
@@ -1353,115 +1352,6 @@ void main() {
     expect(find.text('Optional'), findsOneWidget);
   });
 
-  testWidgets('CatchSegmentedControl supports expanded icon and label tabs', (
-    tester,
-  ) async {
-    var selected = 'setup';
-
-    await tester.pumpWidget(
-      _wrap(
-        StatefulBuilder(
-          builder: (context, setState) => SizedBox(
-            width: 360,
-            child: CatchSegmentedControl<String>(
-              selected: selected,
-              expanded: true,
-              style: CatchSegmentedControlStyle.surface,
-              onChanged: (value) => setState(() => selected = value),
-              segments: [
-                CatchSegment(
-                  value: 'setup',
-                  label: 'Setup',
-                  icon: CatchIcons.tuneRounded,
-                ),
-                CatchSegment(
-                  value: 'live',
-                  label: 'Live',
-                  icon: CatchIcons.playCircleOutlineRounded,
-                ),
-                CatchSegment(
-                  value: 'report',
-                  label: 'Report',
-                  icon: CatchIcons.insightsOutlined,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-
-    expect(
-      tester.getSize(find.byType(CatchSegmentedControl<String>)).width,
-      360,
-    );
-    expect(find.byType(CatchSegmentButton<String>), findsNWidgets(3));
-    expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
-    expect(find.text('Setup'), findsOneWidget);
-
-    await tester.tap(find.text('Live'));
-    await tester.pump();
-    expect(selected, 'live');
-  });
-
-  testWidgets('CatchSegmentButton renders selected label and tap', (
-    tester,
-  ) async {
-    var tapped = false;
-
-    await tester.pumpWidget(
-      _wrap(
-        CatchSegmentButton<String>(
-          segment: const CatchSegment(value: 'agenda', label: 'Agenda'),
-          selected: true,
-          expanded: false,
-          style: CatchSegmentedControlStyle.filled,
-          onTap: () => tapped = true,
-        ),
-      ),
-    );
-
-    expect(find.text('Agenda'), findsOneWidget);
-    await tester.tap(find.text('Agenda'));
-    expect(tapped, isTrue);
-  });
-
-  testWidgets('CatchSegmentedControl exposes compact mono SegPill density', (
-    tester,
-  ) async {
-    var selected = 'booked';
-
-    await tester.pumpWidget(
-      _wrap(
-        StatefulBuilder(
-          builder: (context, setState) => SizedBox(
-            width: 350,
-            child: CatchSegmentedControl<String>(
-              selected: selected,
-              expanded: true,
-              style: CatchSegmentedControlStyle.surface,
-              size: CatchSegmentedControlSize.compact,
-              labelStyle: CatchSegmentedControlLabelStyle.mono,
-              onChanged: (value) => setState(() => selected = value),
-              segments: const [
-                CatchSegment(value: 'booked', label: 'BOOKED · 2'),
-                CatchSegment(value: 'prospective', label: 'PROSPECTIVE · 2'),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-
-    expect(
-      tester.getSize(find.byType(CatchSegmentedControl<String>)).height,
-      lessThan(40),
-    );
-    await tester.tap(find.text('PROSPECTIVE · 2'));
-    await tester.pump();
-    expect(selected, 'prospective');
-  });
-
   testWidgets('CatchOptionGroup composes public option items', (tester) async {
     var selected = 'all';
 
@@ -1908,6 +1798,24 @@ void main() {
     await tester.tap(find.text('WITHIN 3 KM'));
     await tester.pump();
 
+    expect(taps, 1);
+  });
+
+  testWidgets('CatchDistanceRingLabel is reusable over native maps', (
+    tester,
+  ) async {
+    var taps = 0;
+    await tester.pumpWidget(
+      _wrap(
+        CatchDistanceRingLabel(
+          label: 'Within 5 km · tap to change',
+          onTap: () => taps += 1,
+        ),
+      ),
+    );
+
+    expect(find.text('WITHIN 5 KM · TAP TO CHANGE'), findsOneWidget);
+    await tester.tap(find.text('WITHIN 5 KM · TAP TO CHANGE'));
     expect(taps, 1);
   });
 

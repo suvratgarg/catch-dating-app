@@ -14,7 +14,13 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/events.dart'
-    show EventMapItem, EventMapView, EventMapViewModel, ExternalEventMapItem;
+    show
+        EventMapItem,
+        EventMapView,
+        EventMapViewModel,
+        ExternalEventMapItem,
+        hasEventMapPin,
+        hasExternalEventMapPin;
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -382,7 +388,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
     final selectedEventId = _selectedEventId;
     if (selectedEventId == null || feed == null) return null;
     for (final item in feed.items) {
-      if (item.event.id == selectedEventId) {
+      if (item.event.id == selectedEventId && hasEventMapPin(item.event)) {
         return item;
       }
     }
@@ -395,7 +401,10 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
     final selectedEventId = _selectedEventId;
     if (selectedEventId == null || feed == null) return null;
     for (final item in feed.externalItems) {
-      if ('external:${item.event.id}' == selectedEventId) return item;
+      if ('external:${item.event.id}' == selectedEventId &&
+          hasExternalEventMapPin(item.event)) {
+        return item;
+      }
     }
     return null;
   }
@@ -527,21 +536,25 @@ Duration _mapCardMotionDuration(BuildContext context) {
 
 /// Builds the [EventMapViewModel] (pins + ordering) from the Explore feed.
 EventMapViewModel exploreMapViewModelFromFeed(ExploreFeedViewModel feed) {
+  final events = feed.items.map((item) => item.event).toList()
+    ..sort((a, b) => a.startTime.compareTo(b.startTime));
   final items = [
     for (final item in feed.items)
-      EventMapItem(
-        event: item.event,
-        status: item.status,
-        clubName: item.club.name,
-      ),
+      if (hasEventMapPin(item.event))
+        EventMapItem(
+          event: item.event,
+          status: item.status,
+          clubName: item.club.name,
+        ),
   ]..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
   final externalPinnedItems = [
     for (final item in feed.externalItems)
-      ExternalEventMapItem(event: item.event),
+      if (hasExternalEventMapPin(item.event))
+        ExternalEventMapItem(event: item.event),
   ]..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
 
   return EventMapViewModel(
-    events: List.unmodifiable(items.map((item) => item.event)),
+    events: List.unmodifiable(events),
     pinnedEvents: List.unmodifiable(items.map((item) => item.event)),
     items: List.unmodifiable(items),
     pinnedItems: List.unmodifiable(items),

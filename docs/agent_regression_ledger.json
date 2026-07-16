@@ -1,8 +1,34 @@
 {
-  "version": 16,
+  "version": 22,
   "updated": "2026-07-16",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-HOST-CLUB-EDITOR-001",
+      "title": "Club editing fragments across organizer and standalone screens",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "lib/hosts/presentation/host_operations/**",
+        "lib/hosts/presentation/club_management/**",
+        "test/hosts/host_operations_screen_test.dart",
+        "test/routing/router_redirect_test.dart",
+        "tool/ui_capture/capture_coverage.json",
+        "design/screens/catch.screens.json"
+      ],
+      "symptom": "Club identity, contact, media, policy, or Event Success defaults acquire a second edit route or create-wizard edit mode, so capabilities, navigation, top-bar behavior, and capture contracts drift between two editors.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/clubs/clubs_controllers_test.dart test/hosts/host_operations_screen_test.dart test/routing/router_redirect_test.dart && node tool/run.mjs check ui:capture-coverage",
+        "guardEvidence": "focused tests cover owner and co-host organizer capabilities, media-only controller authorization, advanced defaults, and the legacy edit-route redirect while capture policy classifies the retired route as an organizer alias"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/host_tooling_consolidation_tracker.md",
+        "design/screens/catch.screens.json"
+      ],
+      "notes": "The organizer Edit tab is the only canonical club editor. Keep /host/clubs/:clubId/edit only as a compatibility redirect unless product explicitly replaces the canonical surface."
+    },
     {
       "id": "REG-IOS-CI-SIGNING-001",
       "title": "Ephemeral iOS release runners leak Apple Development certificates",
@@ -559,24 +585,25 @@
     },
     {
       "id": "REG-MAP-001",
-      "title": "Explore map blanks when native Google Maps key validation fails",
+      "title": "Explore silently falls back to fake geography or blank native tiles",
       "status": "active",
       "applies_to": [
         "lib/explore/presentation/explore_map_screen.dart",
         "lib/events/presentation/widgets/event_pins_map.dart",
+        "lib/locations/shared/catch_google_map.dart",
         "test/explore/explore_widgets_test.dart",
         "tool/firebase/validate_google_maps_config.mjs"
       ],
-      "symptom": "The Explore map route opens but renders a blank native Google map canvas when the iOS SDK rejects the configured API key at runtime, even though static local config validation passes.",
+      "symptom": "The Explore map route either renders painted fake geography or a blank native Google map canvas, masking an iOS SDK key/runtime failure.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/explore/explore_widgets_test.dart --plain-name 'ExploreMapScreen default uses resilient Catch pin map'"
+        "command": "flutter test test/explore/explore_widgets_test.dart --plain-name 'ExploreMapScreen defaults to the native Google map' && node tool/firebase/validate_google_maps_config.mjs --env prod --platform ios"
       },
       "owner_docs": [
         "docs/widget_catalog.md",
         "docs/location_stack_plan.md"
       ],
-      "notes": "Keep Explore's primary event-pin selection path on the resilient Catch placeholder map unless native Maps key acceptance is verified in a runtime device loop."
+      "notes": "Production defaults to real Google tiles. Runtime proof on 2026-07-13 used an iPhone 17 simulator on iOS 26.5 and confirmed muted native tiles, custom pins, selection, the geographic distance circle, its projected Catch label, and accessible event marker descriptions. Tests, Widgetbook, and captures may explicitly select the neutral no-network pin/ring fixture; it must never paint substitute map geography."
     },
     {
       "id": "REG-APP-TARGET-001",
@@ -1171,17 +1198,17 @@
         "tool/design/check_screen_top_bar_contracts.mjs",
         "tool/design/screen_top_bar_contracts.json"
       ],
-      "symptom": "A screen introduces a raw, helper-owned, or wrong-role app bar; a feature Screen, Scaffold, Header, TopBar, HeaderContent, or delegated State silently owns route-title typography; a media hero is blessed by a broad allowlist; or a full-screen editor is pushed on a branch navigator and leaves persistent shell navigation covering its body.",
+      "symptom": "A screen introduces a raw, helper-owned, or wrong-role app bar; a pushed route uses the correct primitive but suppresses its only back affordance; a feature Screen, Scaffold, Header, TopBar, HeaderContent, or delegated State silently owns route-title typography; a media hero is blessed by a broad allowlist; or a full-screen editor is pushed on a branch navigator and leaves persistent shell navigation covering its body.",
       "guard": {
         "type": "command",
         "command": "node tool/run.mjs check design:screen-top-bar-contracts",
-        "guardEvidence": "the exhaustive handwritten-Dart inventory requires every Scaffold appBar, raw navigation bar, shell-covering route launcher, aligned root-chrome surface, and feature-owned header symbol to match a reviewed role and canonical owner; known-bad fixtures prove wrong roles, raw Material and sliver chrome, workspace/hero escape hatches, state-delegated drift, multiple surfaces hidden behind one aligned adopter, unregistered app bars/manual headers, and branch-navigator editors fail"
+        "guardEvidence": "the exhaustive handwritten-Dart inventory requires every Scaffold appBar, route-specific required back affordance, raw navigation bar, shell-covering route launcher, aligned root-chrome surface, and feature-owned header symbol to match a reviewed role and canonical owner; known-bad fixtures prove wrong roles, suppressed pushed-route back actions, raw Material and sliver chrome, workspace/hero escape hatches, state-delegated drift, multiple surfaces hidden behind one aligned adopter, unregistered app bars/manual headers, and branch-navigator editors fail"
       },
       "owner_docs": [
         "docs/app_architecture.md",
         "docs/widget_catalog.md"
       ],
-      "notes": "Compact edit/detail navigation remains a canonical CatchTopBar use. Root presentation is independently enforced for editors that must cover tab-shell chrome. Exact legacy manual-header classifications are migration debt and must not be widened into feature or file allowlists."
+      "notes": "Compact edit/detail navigation remains a canonical CatchTopBar use, but pushed routes may declare leading back so the correct primitive cannot hide a navigation dead end. Root presentation is independently enforced for editors that must cover tab-shell chrome. Exact legacy manual-header classifications are migration debt and must not be widened into feature or file allowlists."
     },
     {
       "id": "REG-FIELD-001",
@@ -1268,6 +1295,29 @@
       "notes": "The Flutter canonical primitives implement the implementation-safe tranche of handoff revision field-sys-20260714-195933-640b9906. CatchField.content maps React title/supporting-copy semantics without changing legacy Flutter body-as-value rows. Disclosure drawers are full-row siblings below the header; contained-section ordinary focus remains child-owned, while explicit section focus/error alone may change the outer perimeter. CatchFieldInsetScope independently publishes content flushing and active-overlay bleed; CatchSectionFocusSurface field-row mode owns the one-hairline overlap so both canonical and direct compositions reclaim the section's layout inset, child and section chrome paint one shared edge, and the section foreground remains the final perimeter owner. Existing semantic colors already matched and were not changed. DP-PROFILE-SELF-005 is closed for the approved primitive tranche. The direct-input empty-label portion of DP-PROFILE-SELF-006 was explicitly approved on 2026-07-16 and is now root-owned as the single-line Add presentation. DP-PROFILE-SELF-006 remains the sole owner/product/schema boundary for single-choice persistence, clearability, deselection, and save behavior; DOB helper/mono formatting; pace visibility; lifestyle footer; enum workout control; production three prompts/300 characters versus six/140; and profile icon/order changes, which must not be silently promoted."
     },
     {
+      "id": "REG-SECTION-OWNERSHIP-001",
+      "title": "Section titles drift into standalone header-plus-body shells",
+      "status": "active",
+      "applies_to": [
+        "lib/hosts/presentation/host_operations/host_organizer.dart",
+        "lib/core/widgets/catch_section_header.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "tool/design/check_section_headers.mjs",
+        "tool/design/check_section_headers.test.mjs"
+      ],
+      "symptom": "A screen composes CatchSectionHeader, caller-owned vertical spacing, and an untitled CatchSection as separate siblings, or a feature-local card rebuilds CatchSurface plus CatchSectionHeader around section-like body/actions, even though CatchSection can own the title and body contract directly.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:section-headers",
+        "guardEvidence": "SECTION-HEADER-004 rejects a standalone CatchSectionHeader followed only by vertical spacing and an untitled CatchSection; SECTION-HEADER-005 advises on feature-local Card shells that combine CatchSurface, CatchSectionHeader, and section-like body/actions. Known-bad fixtures cover both shapes."
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "The Host Organizer Manage block and HostPaymentAccountContentCard exposed the missing enforcement shapes on 2026-07-16. The scanner classifies the standalone shell as high and the broader card shell as a medium advisory without auto-rewriting title styling or trailing actions, which remain normal CatchSection constructor inputs."
+    },
+    {
       "id": "REG-ANALYTICS-SECTION-001",
       "title": "Analytics groups drift into a parallel section and row system",
       "status": "active",
@@ -1317,7 +1367,7 @@
       "guard": {
         "type": "command",
         "command": "flutter test test/events/event_domain_test.dart test/events/event_map_screen_test.dart test/explore/explore_widgets_test.dart",
-        "guardEvidence": "rejects an event without an exact meeting location"
+        "guardEvidence": "keeps a coordinate-less legacy event readable until repair"
       },
       "owner_docs": [
         "docs/data_contracts.md",
@@ -1581,6 +1631,83 @@
         "docs/marketing_website_architecture.md"
       ],
       "notes": "For future non-trivial merges, audit unique source commits with range-diff and patch identity, inspect remerge conflict resolutions, classify exact/equivalent/partial/missing intent, and retain a reconciliation receipt. Ancestry is necessary but not sufficient proof."
+    },
+    {
+      "id": "REG-SELECTION-CONTROL-001",
+      "title": "Peer mode selectors drift back into parallel pill and underline architectures",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_option_group.dart",
+        "lib/hosts/presentation/host_operations/host_events_list.dart",
+        "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+        "lib/hosts/presentation/host_operations/host_analytics.dart",
+        "lib/hosts/presentation/host_event_manage_screen.dart",
+        "design/components/catch.components.json",
+        "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
+      ],
+      "symptom": "A lifecycle, audience, granularity, or workspace-mode selector recreates a filled segmented pill, imports a second shared selector, or documents a separate conceptual contract instead of using the Organizer-tab CatchOptionGroup.",
+      "guard": {
+        "type": "command",
+        "command": "dart analyze lib/core/widgets/catch_option_group.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/inbox/host_inbox_screen.dart lib/hosts/presentation/host_event_manage_screen.dart && node tool/design/check_component_contracts.mjs",
+        "guardEvidence": "the retired segmented-control library is deleted, all four production adopter surfaces compile against CatchOptionGroup, and the formal component registry exposes one canonical scope/mode selector"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json",
+        "docs/design_parity/widget_consolidation/decisions.json"
+      ],
+      "notes": "The 2026-07-16 user-reviewed decision supersedes the earlier separate-concepts comparison. New selector behavior should extend CatchOptionGroup or escalate a real interaction-contract mismatch instead of restoring CatchSegmentedControl."
+    },
+    {
+      "id": "REG-BOTTOM-ACTION-001",
+      "title": "Primary screen CTAs drift back into CatchBottomDock variants",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_bottom_action.dart",
+        "lib/core/widgets/catch_bottom_dock.dart",
+        "lib/events/presentation/widgets/event_detail_cta.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/events/events_widgets_test.dart",
+        "widgetbook/lib/**",
+        "design/components/catch.components.json",
+        "design/screens/catch.screens.json",
+        "docs/design_parity/widget_consolidation/decisions.json"
+      ],
+      "symptom": "A primary route recreates CatchBottomDock.cta, CatchBottomDockCta, or CatchBottomDockVariant and splits CTA ownership between a utility positioning shell and CatchBottomAction.",
+      "guard": {
+        "type": "command",
+        "command": "! rg -n '\\b(CatchBottomDockCta|CatchBottomDockVariant)\\b|CatchBottomDock\\.cta' lib test widgetbook/lib design/components/catch.components.json design/screens/catch.screens.json && flutter test --concurrency=1 test/core/catch_primitives_test.dart test/events/events_widgets_test.dart && node tool/design/check_component_contracts.mjs",
+        "guardEvidence": "the retired CTA constructor, renderer, and variant enum have no live references; focused primitive and Event tests pass; the component contract assigns primary CTA ownership to CatchBottomAction"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json",
+        "docs/design_parity/widget_consolidation/decisions.json"
+      ],
+      "notes": "CatchBottomDock remains a required-child utility for positioning custom bottom content. CatchBottomAction exclusively owns primary screen CTA copy, hierarchy, pending state, catch line, and footnote composition."
+    },
+    {
+      "id": "REG-ANALYZER-FIXTURE-SCOPE-001",
+      "title": "Known-bad scanner fixtures leak into normal analyzer scope",
+      "status": "active",
+      "applies_to": [
+        "analysis_options.yaml",
+        "tool/design/fixtures/**",
+        "tool/copy/fixtures/**",
+        "tool/design/*.test.mjs",
+        "tool/copy/*.test.mjs"
+      ],
+      "symptom": "Deliberately invalid anti-vacuity fixtures are treated as production Dart during repository analysis, or an over-broad exclusion hides real application or tool errors.",
+      "guard": {
+        "type": "command",
+        "command": "flutter analyze --no-fatal-infos && node --test tool/copy/check_l10n_key_usage.test.mjs && bash tool/check_catch_ui_lints.sh",
+        "guardEvidence": "repository analysis passes at the enforced threshold while the copy and UI scanners still prove their known-bad fixtures fail for the intended reason"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "tool/README.md"
+      ],
+      "notes": "Analyzer exclusions must stay directory-specific to tool/design/fixtures and tool/copy/fixtures. Never broaden the exemption to tool/** or application code."
     }
   ]
 }
