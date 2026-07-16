@@ -61,6 +61,13 @@ Use `--summary` for review-friendly output, `--count` for cheap automated
 checks that only need a numeric debt signal, and
 `tool/check_catch_ui_lint_drift.sh --all --json <path>` when a cleanup pass
 needs a reusable drift snapshot artifact with analyzer completion status.
+The drift helper parses the machine analyzer diagnostic-code field; it must not
+count `catch_*` text from filenames, symbol names, or diagnostic messages.
+
+`bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup ratchet.
+Its baseline stores current maximum counts rather than claiming that the repo is
+globally clean; new categories and count increases fail until they are fixed or
+reviewed in an explicit baseline update.
 
 ## Analyzer Plugin Lints
 
@@ -100,6 +107,26 @@ standalone scanners:
 
 New scanners must ship with a manifest `role`, `rules`, `vacuityProof`, and a
 test containing a known-bad fixture.
+
+## Riverpod Provider Graph
+
+`tool/architecture/provider_graph.dart` parses every handwritten Dart AST under
+`lib/` and generates the durable provider topology under
+`docs/generated/provider_graph/`. The JSON includes generated and handwritten
+providers, aliases, families, consumers, provider operations, overrides, and
+Riverpod experimental Mutations. The HTML supports feature exploration and
+one-hop provider inspection; the Mermaid file is the aggregated feature map.
+
+```sh
+dart run tool/architecture/provider_graph.dart --write
+dart run tool/architecture/provider_graph.dart --check
+dart run tool/architecture/provider_graph.dart --summary
+```
+
+Architecture candidates are exhaustively reviewed in
+`tool/architecture/provider_graph_reviews.json`. The gate rejects stale output,
+cycles, unresolved provider-internal references, new unreviewed relationships,
+and obsolete review entries.
 
 ## Remote Ops Manifest
 
@@ -193,6 +220,14 @@ node tool/firebase/check_client_callable_dependencies.mjs \
 Do not enable a production callable-backed client flag in the same release step
 that first creates the backend. Deploy and prove the backend while the flag is
 dark, then enable the client in a later merge.
+
+Storage rules that read Firestore have a separate live IAM dependency. Check it
+with `node tool/firebase/storage_rules_firestore_iam.mjs --all`; owner-operated
+repair uses `--apply --allow-prod`. The safe deploy wrapper runs check-only mode
+before its Storage phase. `tool/firebase/probe_chat_storage_rules.mjs` is the
+guarded authenticated upload/delete canary; it requires an explicit active
+match/uid, `--apply`, App Check credentials from the environment, and
+`--allow-prod` for production.
 
 ## App Check Debug Tokens
 
@@ -378,6 +413,52 @@ node tool/run.mjs check --category agent
 When using parallel agents, keep subagent work in disposable Git worktrees and
 record the parent-reviewed result with
 `tool/agent/record_delegation_outcome.mjs`.
+Durable worktrees belong under the ignored `.claude/worktrees/` directory.
+Never create an active worktree under `/tmp` or `/private/tmp`, where operating
+system cleanup can invalidate Git metadata.
+
+## Repository Hygiene
+
+`tool/repository_root_manifest.json` classifies every allowed project-root
+entry by kind, Git expectation, owner, and recovery path. The CI-safe scanner
+fails on unknown or prohibited root entries, ambiguous classifications,
+tracked-and-ignored files, missing curated-artifact consumers, unsafe cleanup
+targets, and machine-specific Markdown links:
+
+```sh
+node tool/check_repository_root_hygiene.mjs
+node --test tool/check_repository_root_hygiene.test.mjs
+```
+
+The cleanup executor is dry-run by default and reports exact paths, byte counts,
+and reasons. Mutation requires both `--apply` and an explicit scope:
+
+```sh
+node tool/repository_hygiene.mjs --json
+node tool/repository_hygiene.mjs --apply --scope flutter
+```
+
+Supported scopes are `flutter`, `native`, `node`, `evidence`, `logs`, `ide`, and
+`all-regenerable`. The executor uses only manifest allowlists; it refuses Git-
+tracked files, protected paths, symlinks, worktrees, and path escapes. It never
+runs `git clean`. Evidence retention is documented in `artifacts/README.md`.
+
+`tool/test_inventory.mjs` generates
+`docs/audit_registry/test_inventory.json` from Git-visible source files. Run
+with `--check` in CI to catch stale test documentation.
+
+## Firebase Function Commands
+
+Bare Functions deploy and log scripts are prohibited. The package scripts
+require an explicit environment and route through `firebase_with_env.sh`:
+
+```sh
+npm --prefix functions run deploy -- dev
+npm --prefix functions run logs -- prod --limit 50
+```
+
+The root Firebase default is development as a local safety net; it does not
+replace explicit environment selection.
 
 ## Design Tokens
 
@@ -438,6 +519,17 @@ node tool/run.mjs check copy:structured-domain-content
 
 Edit the JSON source, never the generated Dart file. The check validates stable
 ids, non-empty text, and exact generated output.
+
+## Tab-Root Scroll Clearance
+
+`tool/design/tab_root_scroll_contracts.json` is the versioned inventory of
+consumer and host `StatefulShellBranch` scroll owners. The matching gate fails
+when a new branch is not registered or an existing root loses its semantic
+terminal padding:
+
+```sh
+node tool/design/check_tab_root_scroll_contracts.mjs --check
+```
 
 ## Adding Or Moving A Tool
 

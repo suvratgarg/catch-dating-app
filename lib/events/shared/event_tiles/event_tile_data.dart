@@ -72,5 +72,4 @@ class EventTileData {
           event.priceInPaise,
           currencyCode: event.currency,
         );
-  bool get hasExactStartingPoint => event.hasExactStartingPoint;
 }

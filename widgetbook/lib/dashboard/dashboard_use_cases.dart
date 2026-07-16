@@ -1183,12 +1183,14 @@ Event _recommendationVariant({
     startTime: start,
     endTime: start.add(const Duration(hours: 1, minutes: 20)),
     meetingPoint: meetingPoint,
-    meetingLocation: EventMeetingLocation.legacy(
+    meetingLocation: EventMeetingLocation(
       name: meetingPoint,
       latitude: 18.993,
       longitude: 72.824,
       notes: 'Widgetbook review fixture',
     ),
+    startingPointLat: 18.993,
+    startingPointLng: 72.824,
     eventFormat: EventFormatSnapshot.fromActivityKind(activityKind),
     distanceKm: distanceKm,
     pace: pace,

@@ -1,6 +1,6 @@
 # Marketing Website Copy v2 — Implementation Spec (for Codex)
 
-Status: ready for implementation · 2026-07-11
+Status: implemented locally; owner-gated destinations/entitlements remain dormant · 2026-07-12
 Copy source of truth: [`docs/plans/website_copy_deck.md`](website_copy_deck.md) ("the deck")
 Surface: `website/` (Vite + React, Firebase Hosting target `marketing`, catchdates.com)
 
@@ -1118,3 +1118,22 @@ Rulings:
 
 With §13 + §14 in place the spec is closed for open decisions except the
 five owner items in §13.3. Codex may begin PR 1.
+
+## 15. Local implementation receipt — 2026-07-12
+
+- PR 1–2 foundations are active: validated metadata, market pack, event
+  eligibility, analytics versioning, owner-gated content tests, and the
+  blocking copy-ownership scanner.
+- PR 3 retired the Host Preview route, added contract-backed 301 redirects for
+  both exact and nested preview paths, merged offer/trust/FAQ into `/host/`,
+  and removed duplicate page/section/story/registry owners.
+- PR 4 added the canonical Playbook stage rail and all 14 semantic accordion
+  modules with stable anchors, hash scrolling, expansion analytics, privacy
+  guardrails, and ready Storybook states.
+- PR 5 dissolved `features/marketing/content.ts`, moved authored content under
+  `website/src/content/`, reduced the copy migration baseline to zero, applied
+  the directory/listing/claim/404 public copy contracts, and removed public
+  “Event Success” wording in favor of Playbook/event-report language.
+- Legal/support destinations, store destinations, and Founding Host operational
+  entitlement promises remain governed by the existing owner-gated checks;
+  this implementation does not invent routes or production readiness.

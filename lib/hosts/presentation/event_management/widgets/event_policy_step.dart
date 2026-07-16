@@ -1,12 +1,9 @@
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -70,193 +67,137 @@ class EventPolicyStep extends StatelessWidget {
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [
-          CatchSurface(
-            padding: CatchInsets.contentDense,
-            tone: CatchSurfaceTone.primarySoft,
-            radius: CatchRadius.md,
-            borderWidth: 0,
-            child: Text(
-              context.l10n.hostsEventPolicyStepTextConfigureWhoCanBook,
-              style: CatchTextStyles.supporting(context, color: t.primary),
-            ),
-          ),
-          gapH20,
-          Row(
+          CatchSectionList(
+            gap: 0,
             children: [
-              Expanded(
-                child: CatchField.input(
-                  key: CreateEventFormKeys.capacity,
-                  title: context.l10n.hostsEventPolicyStepTitleMaxAttendees,
-                  controller: capacityController,
-                  placeholder: '20',
-                  prefixIcon: Icon(CatchIcons.peopleOutline),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  textInputAction: TextInputAction.next,
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty)
-                      return context
-                          .l10n
-                          .hostsEventPolicyStepVisiblecopyRequired;
-                    final n = int.tryParse(v.trim());
-                    if (n == null || n < 1)
-                      return context.l10n.hostsEventPolicyStepVisiblecopyMin1;
-                    return null;
-                  },
+              CatchSection.plain(
+                child: Text(
+                  context.l10n.hostsEventPolicyStepTextConfigureWhoCanBook,
+                  style: CatchTextStyles.supporting(context, color: t.primary),
                 ),
               ),
-              gapW12,
-              Expanded(
-                child: CatchField.input(
-                  key: CreateEventFormKeys.price,
-                  title: context.l10n
-                      .hostsEventPolicyStepTitleBasePriceCurrencycode(
-                        currencyCode: currencyCode,
-                      ),
-                  controller: priceController,
-                  placeholder: '0',
-                  prefixIcon: Icon(CatchIcons.paymentsOutlined),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(context.l10n.hostsEventPolicyStepVisiblecopyDD),
-                    ),
-                  ],
-                  textInputAction: TextInputAction.next,
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty)
-                      return context
-                          .l10n
-                          .hostsEventPolicyStepVisiblecopyRequired;
-                    final amount = parseMajorCurrencyAmountToMinorUnits(
-                      v,
-                      currencyCode: currencyCode,
-                    );
-                    if (amount == null)
-                      return context
-                          .l10n
-                          .hostsEventPolicyStepVisiblecopyInvalid;
-                    return null;
-                  },
-                ),
-              ),
-            ],
-          ),
-          gapH20,
-          CatchFormFieldLabel(
-            label: context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
-            large: true,
-          ),
-          gapH8,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final preset in EventAdmissionPreset.values)
-                CatchSelectChip(
-                  key: CreateEventFormKeys.admissionPreset(preset.name),
-                  label: preset.label(context.l10n),
-                  active: admissionPreset == preset,
-                  semanticsLabel: preset.title(context.l10n),
-                  onTap: () => onAdmissionPresetChanged(preset),
-                ),
-            ],
-          ),
-          gapH8,
-          Text(
-            admissionPreset.description(context.l10n),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
-            gapH20,
-            CatchSurface(
-              padding: CatchInsets.contentDense,
-              radius: CatchRadius.md,
-              borderColor: t.line,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              CatchSection.fieldRows(
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        CatchIcons.keyOutlined,
-                        color: t.primary,
-                        size: CatchIcon.md,
-                      ),
-                      gapW8,
-                      Expanded(
-                        child: Text(
-                          context.l10n.hostsEventPolicyStepTextTheCodeIsStored,
-                          style: CatchTextStyles.supporting(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  gapH12,
                   CatchField.input(
-                    key: CreateEventFormKeys.inviteCode,
-                    title: context.l10n.hostsEventPolicyStepTitleInviteCode,
-                    controller: inviteCodeController,
-                    placeholder:
-                        context.l10n.hostsEventPolicyStepPlaceholderCatchDelhi,
-                    prefixIcon: Icon(CatchIcons.lockOutlineRounded),
+                    key: CreateEventFormKeys.capacity,
+                    title: context.l10n.hostsEventPolicyStepTitleMaxAttendees,
+                    controller: capacityController,
+                    inputHint: '20',
+                    icon: CatchIcons.peopleOutline,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return context
+                            .l10n
+                            .hostsEventPolicyStepVisiblecopyRequired;
+                      }
+                      final capacity = int.tryParse(value.trim());
+                      if (capacity == null || capacity < 1) {
+                        return context.l10n.hostsEventPolicyStepVisiblecopyMin1;
+                      }
+                      return null;
+                    },
+                  ),
+                  CatchField.input(
+                    key: CreateEventFormKeys.price,
+                    title: context.l10n
+                        .hostsEventPolicyStepTitleBasePriceCurrencycode(
+                          currencyCode: currencyCode,
+                        ),
+                    controller: priceController,
+                    inputHint: '0',
+                    icon: CatchIcons.paymentsOutlined,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
-                        RegExp(
-                          context.l10n.hostsEventPolicyStepVisiblecopyAZaZ09,
-                        ),
+                        RegExp(context.l10n.hostsEventPolicyStepVisiblecopyDD),
                       ),
                     ],
-                    validator:
-                        admissionPreset == EventAdmissionPreset.inviteOnly
-                        ? inviteCodeValidator
-                        : null,
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return context
+                            .l10n
+                            .hostsEventPolicyStepVisiblecopyRequired;
+                      }
+                      final amount = parseMajorCurrencyAmountToMinorUnits(
+                        value,
+                        currencyCode: currencyCode,
+                      );
+                      if (amount == null) {
+                        return context
+                            .l10n
+                            .hostsEventPolicyStepVisiblecopyInvalid;
+                      }
+                      return null;
+                    },
                   ),
-                ],
-              ),
-            ),
-          ],
-          if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
-            gapH20,
-            CatchSurface(
-              padding: CatchInsets.contentDense,
-              radius: CatchRadius.md,
-              borderColor: t.line,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CatchField.toggle(
-                    key: CreateEventFormKeys.cohortCapsToggle,
-                    title: context.l10n.hostsEventPolicyStepTitleCohortCaps,
-                    body: context
-                        .l10n
-                        .hostsEventPolicyStepBodyOptionallyCapStraightMen,
-                    value: cohortCapsEnabled,
-                    onChanged: onCohortCapsEnabledChanged,
+                  CatchField.choices<EventAdmissionPreset>(
+                    title:
+                        context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
+                    body: admissionPreset.description(context.l10n),
+                    values: EventAdmissionPreset.values,
+                    itemLabel: (preset) => preset.label(context.l10n),
+                    selected: <EventAdmissionPreset>{admissionPreset},
+                    onSelectionChanged: (selection) {
+                      onAdmissionPresetChanged(selection.single);
+                    },
+                    initiallyOpen: true,
+                    icon: CatchIcons.howToRegOutlined,
                   ),
-                  if (cohortCapsEnabled) ...[
-                    gapH12,
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CatchField.input(
+                  if (admissionPreset == EventAdmissionPreset.inviteOnly)
+                    CatchField.input(
+                      key: CreateEventFormKeys.inviteCode,
+                      title: context.l10n.hostsEventPolicyStepTitleInviteCode,
+                      controller: inviteCodeController,
+                      inputHint: context
+                          .l10n
+                          .hostsEventPolicyStepPlaceholderCatchDelhi,
+                      helperText:
+                          context.l10n.hostsEventPolicyStepTextTheCodeIsStored,
+                      icon: CatchIcons.lockOutlineRounded,
+                      textInputAction: TextInputAction.next,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(
+                            context.l10n.hostsEventPolicyStepVisiblecopyAZaZ09,
+                          ),
+                        ),
+                      ],
+                      validator:
+                          admissionPreset == EventAdmissionPreset.inviteOnly
+                          ? inviteCodeValidator
+                          : null,
+                    ),
+                  if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
+                    CatchField.toggle(
+                      key: CreateEventFormKeys.cohortCapsToggle,
+                      title: context.l10n.hostsEventPolicyStepTitleCohortCaps,
+                      body: context
+                          .l10n
+                          .hostsEventPolicyStepBodyOptionallyCapStraightMen,
+                      bodyMaxLines: 5,
+                      value: cohortCapsEnabled,
+                      onChanged: onCohortCapsEnabledChanged,
+                    ),
+                    if (cohortCapsEnabled)
+                      CatchSection.containedFieldRows(
+                        children: [
+                          CatchField.input(
                             key: CreateEventFormKeys.maxMen,
                             title: context
                                 .l10n
                                 .hostsEventPolicyStepTitleMaxStraightMen,
                             isOptional: true,
                             controller: maxMenController,
-                            placeholder: context
+                            inputHint: context
                                 .l10n
                                 .hostsEventPolicyStepPlaceholderMaxMen,
-                            prefixIcon: Icon(CatchIcons.maleOutlined),
+                            icon: CatchIcons.maleOutlined,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -266,20 +207,17 @@ class EventPolicyStep extends StatelessWidget {
                                 ? positiveOptionalValidator
                                 : null,
                           ),
-                        ),
-                        gapW12,
-                        Expanded(
-                          child: CatchField.input(
+                          CatchField.input(
                             key: CreateEventFormKeys.maxWomen,
                             title: context
                                 .l10n
                                 .hostsEventPolicyStepTitleMaxStraightWomen,
                             isOptional: true,
                             controller: maxWomenController,
-                            placeholder: context
+                            inputHint: context
                                 .l10n
                                 .hostsEventPolicyStepPlaceholderMaxWomen,
-                            prefixIcon: Icon(CatchIcons.femaleOutlined),
+                            icon: CatchIcons.femaleOutlined,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -289,71 +227,42 @@ class EventPolicyStep extends StatelessWidget {
                                 ? positiveOptionalValidator
                                 : null,
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
                   ],
-                ],
-              ),
-            ),
-          ],
-          if (admissionPreset == EventAdmissionPreset.requestToJoin) ...[
-            gapH20,
-            CatchSurface(
-              padding: CatchInsets.contentDense,
-              radius: CatchRadius.md,
-              borderColor: t.line,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    CatchIcons.howToRegOutlined,
-                    color: t.primary,
-                    size: CatchIcon.md,
-                  ),
-                  gapW8,
-                  Expanded(
-                    child: Text(
-                      context.l10n.hostsEventPolicyStepTextRequestsAppearInHost,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                  if (admissionPreset == EventAdmissionPreset.requestToJoin)
+                    CatchField.read(
+                      title: admissionPreset.title(context.l10n),
+                      body: context
+                          .l10n
+                          .hostsEventPolicyStepTextRequestsAppearInHost,
+                      bodyMaxLines: 3,
+                      icon: CatchIcons.howToRegOutlined,
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
-            gapH20,
-            CatchSurface(
-              padding: CatchInsets.contentDense,
-              radius: CatchRadius.md,
-              borderColor: t.line,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CatchField.toggle(
-                    key: CreateEventFormKeys.dynamicPricingToggle,
-                    title: context.l10n.hostsEventPolicyStepTitleDemandPricing,
-                    body: context
-                        .l10n
-                        .hostsEventPolicyStepBodyIncreaseTheStraightMen,
-                    value: dynamicPricingEnabled,
-                    onChanged: onDynamicPricingChanged,
-                  ),
-                  if (dynamicPricingEnabled) ...[
-                    gapH12,
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CatchField.input(
+                  if (admissionPreset ==
+                      EventAdmissionPreset.balancedSingles) ...[
+                    CatchField.toggle(
+                      key: CreateEventFormKeys.dynamicPricingToggle,
+                      title:
+                          context.l10n.hostsEventPolicyStepTitleDemandPricing,
+                      body: context
+                          .l10n
+                          .hostsEventPolicyStepBodyIncreaseTheStraightMen,
+                      value: dynamicPricingEnabled,
+                      onChanged: onDynamicPricingChanged,
+                    ),
+                    if (dynamicPricingEnabled)
+                      CatchSection.containedFieldRows(
+                        children: [
+                          CatchField.input(
                             key: CreateEventFormKeys.dynamicPricingStep,
                             title: context.l10n
                                 .hostsEventPolicyStepTitleStepCurrencycode(
                                   currencyCode: currencyCode,
                                 ),
                             controller: dynamicPricingStepController,
-                            placeholder: '250',
-                            prefixIcon: Icon(CatchIcons.trendingUpRounded),
+                            inputHint: '250',
+                            icon: CatchIcons.trendingUpRounded,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -363,18 +272,15 @@ class EventPolicyStep extends StatelessWidget {
                                 ? positiveRequiredValidator
                                 : null,
                           ),
-                        ),
-                        gapW12,
-                        Expanded(
-                          child: CatchField.input(
+                          CatchField.input(
                             key: CreateEventFormKeys.dynamicPricingMax,
                             title: context.l10n
                                 .hostsEventPolicyStepTitleMaxCurrencycode(
                                   currencyCode: currencyCode,
                                 ),
                             controller: dynamicPricingMaxController,
-                            placeholder: '1500',
-                            prefixIcon: Icon(CatchIcons.priceChangeOutlined),
+                            inputHint: '1500',
+                            icon: CatchIcons.priceChangeOutlined,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -384,93 +290,64 @@ class EventPolicyStep extends StatelessWidget {
                                 ? positiveRequiredValidator
                                 : null,
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
                   ],
+                  CatchField.input(
+                    key: CreateEventFormKeys.minAge,
+                    title: context.l10n.hostsEventPolicyStepTitleMinAge,
+                    isOptional: true,
+                    controller: minAgeController,
+                    inputHint: context.l10n.hostsEventPolicyStepPlaceholderMin,
+                    icon: CatchIcons.cakeOutlined,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    textInputAction: TextInputAction.next,
+                    validator: (value) => validateAge(
+                      value,
+                      siblingController: maxAgeController,
+                      isMinimum: true,
+                    ),
+                  ),
+                  CatchField.input(
+                    key: CreateEventFormKeys.maxAge,
+                    title: context.l10n.hostsEventPolicyStepTitleMaxAge,
+                    isOptional: true,
+                    controller: maxAgeController,
+                    inputHint: context.l10n.hostsEventPolicyStepPlaceholderMax,
+                    icon: CatchIcons.cakeOutlined,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    textInputAction: TextInputAction.next,
+                    validator: (value) => validateAge(
+                      value,
+                      siblingController: minAgeController,
+                      isMinimum: false,
+                    ),
+                  ),
+                  CatchField.choices<EventCancellationPolicyId>(
+                    title: context
+                        .l10n
+                        .hostsEventPolicyStepLabelCancellationPolicy,
+                    body: policyFor(cancellationPolicyId).attendeeSummary,
+                    values: EventCancellationPolicyId.values,
+                    itemLabel: (policyId) =>
+                        policyFor(policyId).title.toUpperCase(),
+                    selected: <EventCancellationPolicyId>{cancellationPolicyId},
+                    onSelectionChanged: (selection) {
+                      onCancellationPolicyChanged(selection.single);
+                    },
+                    icon: CatchIcons.ruleOutlined,
+                  ),
                 ],
               ),
-            ),
-          ],
-          gapH20,
-          CatchFormFieldLabel(
-            label: context.l10n.hostsEventPolicyStepLabelAgeRange,
-            large: true,
-          ),
-          gapH8,
-          Row(
-            children: [
-              Expanded(
-                child: CatchField.input(
-                  key: CreateEventFormKeys.minAge,
-                  title: context.l10n.hostsEventPolicyStepTitleMinAge,
-                  isOptional: true,
-                  controller: minAgeController,
-                  placeholder: context.l10n.hostsEventPolicyStepPlaceholderMin,
-                  prefixIcon: Icon(CatchIcons.cakeOutlined),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  textInputAction: TextInputAction.next,
-                  validator: (value) => validateAge(
-                    value,
-                    siblingController: maxAgeController,
-                    isMinimum: true,
-                  ),
-                ),
-              ),
-              gapW12,
-              Expanded(
-                child: CatchField.input(
-                  key: CreateEventFormKeys.maxAge,
-                  title: context.l10n.hostsEventPolicyStepTitleMaxAge,
-                  isOptional: true,
-                  controller: maxAgeController,
-                  placeholder: context.l10n.hostsEventPolicyStepPlaceholderMax,
-                  prefixIcon: Icon(CatchIcons.cakeOutlined),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  textInputAction: TextInputAction.next,
-                  validator: (value) => validateAge(
-                    value,
-                    siblingController: minAgeController,
-                    isMinimum: false,
-                  ),
+              CatchSection.divided(
+                child: Text(
+                  context.l10n.hostsEventPolicyStepTextHostPayoutIsReleased,
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ),
             ],
-          ),
-          gapH20,
-          CatchFormFieldLabel(
-            label: context.l10n.hostsEventPolicyStepLabelCancellationPolicy,
-            large: true,
-          ),
-          gapH8,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final policyId in EventCancellationPolicyId.values)
-                CatchSelectChip(
-                  label: policyFor(policyId).title.toUpperCase(),
-                  active: cancellationPolicyId == policyId,
-                  semanticsLabel: policyFor(policyId).title,
-                  onTap: () => onCancellationPolicyChanged(policyId),
-                ),
-            ],
-          ),
-          gapH8,
-          Text(
-            policyFor(cancellationPolicyId).attendeeSummary,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          gapH12,
-          CatchSurface(
-            padding: CatchInsets.contentDense,
-            radius: CatchRadius.md,
-            child: Text(
-              context.l10n.hostsEventPolicyStepTextHostPayoutIsReleased,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
           ),
         ],
       ),

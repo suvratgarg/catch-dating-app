@@ -726,6 +726,14 @@ abstract final class CatchInsets {
     vertical: CatchSpacing.s3,
   );
 
+  /// Compact DateTicket body from the canonical handoff.
+  static const EdgeInsets eventTicketBody = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.micro14,
+    CatchSpacing.s4,
+    CatchSpacing.micro14,
+  );
+
   /// Content block padding with slightly stronger bottom separation.
   static const EdgeInsets contentBlock = EdgeInsets.fromLTRB(
     CatchSpacing.s4,
@@ -938,6 +946,9 @@ abstract final class CatchOpacity {
   static const double none = 0.0;
   static const double onFillMuted = 0.76;
   static const double ticketPerforationLine = 0.22;
+
+  /// Decorative activity glyph behind DateTicket rail data.
+  static const double eventDateRailGlyph = 0.14;
 
   /// Filled-surface scrim for text/icons that need contrast on colored
   /// backgrounds — activity stamps, active date-marker text.
@@ -1832,6 +1843,7 @@ abstract final class CatchLayout {
   static const double personUnreadBadgeHorizontalPadding =
       CatchSpacing.micro6 + CatchStroke.hairline;
   static const double countPillIconSize = CatchIcon.sm + CatchSpacing.micro2;
+  static const double countPillMinExtent = CatchSpacing.s11;
   static const double countPillLabelVerticalPadding =
       CatchSpacing.micro10 + CatchStroke.hairline;
   static const double settingsRowVerticalPadding =
@@ -2084,6 +2096,8 @@ abstract final class CatchLayout {
   static const double eventCompactDatePillWidth = 52.0;
   static const double eventCompactDatePillHeight = 58.0;
   static const double eventDateRailWidth = 66.0;
+  static const double eventDateRailGlyphSize = 50.0;
+  static const double eventTicketDecisionInlineMinWidth = 220.0;
   static const double clubAvatarRailColumnWidth = 76.0;
   static const double clubDirectorySkeletonTitleWidth = 180.0;
   static const double clubDirectorySkeletonSubtitleWidth = 132.0;

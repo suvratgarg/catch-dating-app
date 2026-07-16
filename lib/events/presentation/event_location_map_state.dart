@@ -3,34 +3,31 @@ import 'package:catch_dating_app/events/domain/event_location_links.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 
 class EventLocationMapState {
-  const EventLocationMapState({
+  const EventLocationMapState._({
     required this.event,
     required this.enableNetworkTiles,
-    required this.startingPoint,
-    required this.directionsUri,
   });
 
   factory EventLocationMapState.fromEvent(
     Event event, {
     bool enableNetworkTiles = true,
   }) {
-    return EventLocationMapState(
+    return EventLocationMapState._(
       event: event,
       enableNetworkTiles: enableNetworkTiles,
-      startingPoint: LocationCoordinate.fromNullable(
-        latitude: event.effectiveStartingPointLat,
-        longitude: event.effectiveStartingPointLng,
-      ),
-      directionsUri: directionsUriForEvent(event),
     );
   }
 
   final Event event;
   final bool enableNetworkTiles;
-  final LocationCoordinate? startingPoint;
-  final Uri directionsUri;
 
-  bool get hasExactStartingPoint => startingPoint != null;
+  LocationCoordinate get startingPoint => LocationCoordinate(
+    event.effectiveStartingPointLat,
+    event.effectiveStartingPointLng,
+  );
+
+  Uri get directionsUri => directionsUriForEvent(event);
+
   String get locationName => event.locationName;
 
   String? get locationNotes {

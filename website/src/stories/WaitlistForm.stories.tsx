@@ -26,7 +26,7 @@ export const MemberWaitlistForm: Story = {
   parameters: {
     catchComponent: {
       id: "waitlist_form_adapter",
-      routeIds: ["home", "host", "host_preview"],
+      routeIds: ["home", "host"],
       states: ["member"],
     },
   },
@@ -42,7 +42,7 @@ export const HostWaitlistForm: Story = {
   parameters: {
     catchComponent: {
       id: "waitlist_form_adapter",
-      routeIds: ["home", "host", "host_preview"],
+      routeIds: ["home", "host"],
       states: ["host"],
     },
   },

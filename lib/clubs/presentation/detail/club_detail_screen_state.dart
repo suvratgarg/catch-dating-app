@@ -104,6 +104,17 @@ class ClubDetailBodyState {
     bool isClubPushMutating = false,
     bool isMessageHostPending = false,
   }) {
+    if (content.publicPreviewMode) {
+      return ClubDetailBodyState.publicPreview(
+        club: content.club,
+        upcomingEvents: content.upcomingEvents,
+        reviews: content.reviews,
+        userProfile: content.userProfile,
+        uid: content.uid,
+        isAuthenticated: content.isAuthenticated,
+        appRole: appRole,
+      );
+    }
     return ClubDetailBodyState.fromDomain(
       club: content.club,
       upcomingEvents: content.upcomingEvents,
@@ -119,6 +130,29 @@ class ClubDetailBodyState {
       isClubPushMutating: isClubPushMutating,
       isMessageHostPending: isMessageHostPending,
       showMembershipDock: content.showMembershipDock,
+    );
+  }
+
+  /// Consumer-facing club presentation with every mutation and membership
+  /// affordance disabled for an owner preview.
+  factory ClubDetailBodyState.publicPreview({
+    required Club club,
+    List<Event> upcomingEvents = const [],
+    List<Review> reviews = const [],
+    UserProfile? userProfile,
+    String? uid,
+    bool isAuthenticated = true,
+    AppRole appRole = AppRole.consumer,
+  }) {
+    return ClubDetailBodyState.fromDomain(
+      club: club,
+      upcomingEvents: upcomingEvents,
+      reviews: reviews,
+      userProfile: userProfile,
+      uid: uid,
+      isAuthenticated: isAuthenticated,
+      appRole: appRole,
+      showMembershipDock: false,
     );
   }
 

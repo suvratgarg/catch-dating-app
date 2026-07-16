@@ -15,6 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -546,7 +547,7 @@ void main() {
 
     Finder activeTabWrapper(PageStorageKey<String> key) => find.ancestor(
       of: find.byKey(key),
-      matching: find.byType(ProfileTabScrollView),
+      matching: find.byType(CatchTabbedPageScrollView),
     );
 
     final editWrapper = activeTabWrapper(
@@ -554,7 +555,9 @@ void main() {
     );
     expect(editWrapper, findsOneWidget);
     expect(
-      tester.widget<ProfileTabScrollView>(editWrapper).managesFieldVisibility,
+      tester
+          .widget<CatchTabbedPageScrollView>(editWrapper)
+          .managesFieldVisibility,
       isTrue,
     );
     expect(
@@ -575,7 +578,7 @@ void main() {
     expect(previewWrapper, findsOneWidget);
     expect(
       tester
-          .widget<ProfileTabScrollView>(previewWrapper)
+          .widget<CatchTabbedPageScrollView>(previewWrapper)
           .managesFieldVisibility,
       isFalse,
     );
@@ -599,7 +602,7 @@ void main() {
     expect(insightsWrapper, findsOneWidget);
     expect(
       tester
-          .widget<ProfileTabScrollView>(insightsWrapper)
+          .widget<CatchTabbedPageScrollView>(insightsWrapper)
           .managesFieldVisibility,
       isFalse,
     );

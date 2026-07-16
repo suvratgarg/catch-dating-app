@@ -234,7 +234,6 @@ class HostSettingsProfileSection extends StatelessWidget {
                   )
                 : null,
             onTap: creatingProfile ? null : onCreateProfile,
-            showChevron: !creatingProfile,
           ),
         ],
       ),
@@ -274,7 +273,6 @@ class HostSettingsProfileRows extends StatelessWidget {
               valueText: profile.displayName,
               icon: CatchIcons.personOutlineRounded,
               onTap: canEdit ? onEditProfile : null,
-              showChevron: canEdit,
             ),
             CatchField.nav(
               title: context.l10n.hostsHostAccountScreenTitleRoleTitle,
@@ -283,13 +281,11 @@ class HostSettingsProfileRows extends StatelessWidget {
                   : context.l10n.hostsHostAccountScreenVisiblecopyAddRoleTitle,
               icon: CatchIcons.cardMembershipOutlined,
               onTap: canEdit ? onEditProfile : null,
-              showChevron: canEdit,
             ),
-            CatchField.nav(
+            CatchField.read(
               title: context.l10n.hostsHostAccountScreenTitleStatus,
               valueText: hostProfileStatusLabel(profile.status),
               icon: CatchIcons.checkCircleOutlineRounded,
-              showChevron: false,
             ),
           ],
         ),
@@ -304,7 +300,6 @@ class HostSettingsProfileRows extends StatelessWidget {
               icon: CatchIcons.chatBubbleOutlineRounded,
               valueMaxLines: 2,
               onTap: canEdit ? onEditProfile : null,
-              showChevron: canEdit,
             ),
           ],
         ),

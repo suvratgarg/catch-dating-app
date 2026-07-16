@@ -34,6 +34,7 @@ class CatchIconButton extends StatelessWidget {
     this.size = defaultSize,
     this.borderRadius,
     this.tooltip,
+    this.liveRegion = false,
   });
 
   factory CatchIconButton.icon({
@@ -50,6 +51,7 @@ class CatchIconButton extends StatelessWidget {
     double size = defaultSize,
     double? borderRadius,
     String? tooltip,
+    bool liveRegion = false,
   }) {
     return CatchIconButton(
       key: key,
@@ -64,6 +66,7 @@ class CatchIconButton extends StatelessWidget {
       size: size,
       borderRadius: borderRadius,
       tooltip: tooltip,
+      liveRegion: liveRegion,
       child: Icon(icon),
     );
   }
@@ -93,6 +96,10 @@ class CatchIconButton extends StatelessWidget {
 
   /// Accessible label and hover affordance for icon-only actions.
   final String? tooltip;
+
+  /// Announces a changed semantic label without creating a second semantics
+  /// node. Use for in-place busy states such as upload/send progress.
+  final bool liveRegion;
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +154,7 @@ class CatchIconButton extends StatelessWidget {
       button: true,
       enabled: enabled,
       label: message,
+      liveRegion: liveRegion,
       child: Tooltip(
         message: message,
         excludeFromSemantics: true,

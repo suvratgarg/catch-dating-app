@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -17,8 +17,6 @@ import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-const EdgeInsets _promptAnswerCardPadding = EdgeInsets.all(CatchSpacing.s3);
 
 class ProfilePromptsPage extends ConsumerStatefulWidget {
   const ProfilePromptsPage({super.key, this.profileCompletionOnly = false});
@@ -160,22 +158,26 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
         ],
       ),
       children: [
-        for (var index = 0; index < maxProfilePromptAnswers; index += 1) ...[
-          PromptField(
-            definition: state.definitionForSlot(index),
-            controller: controllers.answers[index],
-            availablePromptIds: state.availablePromptIds(index),
-            selectedPromptId: state.selectedPromptIdForSlot(index),
-            onPromptChanged: (promptId) {
-              callbacks.onPromptChanged(index, promptId);
-            },
-          ),
-          if (index < maxProfilePromptAnswers - 1) gapH12,
-        ],
-        if (state.hasCompleteError) ...[
-          gapH16,
-          CatchErrorBanner(message: state.completeErrorMessage!),
-        ],
+        CatchSectionList(
+          gap: CatchSpacing.s3,
+          children: [
+            for (var index = 0; index < maxProfilePromptAnswers; index += 1)
+              PromptField(
+                index: index,
+                definition: state.definitionForSlot(index),
+                controller: controllers.answers[index],
+                availablePromptIds: state.availablePromptIds(index),
+                selectedPromptId: state.selectedPromptIdForSlot(index),
+                onPromptChanged: (promptId) {
+                  callbacks.onPromptChanged(index, promptId);
+                },
+              ),
+            if (state.hasCompleteError)
+              CatchSection.plain(
+                child: CatchErrorBanner(message: state.completeErrorMessage!),
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -184,6 +186,7 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
 class PromptField extends StatelessWidget {
   const PromptField({
     super.key,
+    required this.index,
     required this.definition,
     required this.controller,
     required this.availablePromptIds,
@@ -191,6 +194,7 @@ class PromptField extends StatelessWidget {
     required this.onPromptChanged,
   });
 
+  final int index;
   final ProfilePromptDefinition definition;
   final TextEditingController controller;
   final List<String> availablePromptIds;
@@ -199,53 +203,43 @@ class PromptField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      radius: CatchRadius.md,
-      borderColor: t.line,
-      backgroundColor: t.surface,
-      padding: _promptAnswerCardPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchField.select<String>(
-            title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
-            values: availablePromptIds,
-            value: selectedPromptId,
-            itemLabel: (promptId) => profilePromptDefinition(promptId).title,
-            prefixIcon: Icon(CatchIcons.formatQuoteRounded),
-            showLabel: false,
-            onChanged: (promptId) {
-              if (promptId == null) return;
-              onPromptChanged(promptId);
-            },
-          ),
-          gapH10,
-          CatchField.input(
-            title: definition.title,
-            showLabel: false,
-            controller: controller,
-            placeholder: definition.placeholder,
-            helperText: context.l10n
-                .onboardingProfilePromptsPageHelpertextLengthMaximumprofilepromptanswerlength(
-                  length: controller.text.length,
-                  maximumProfilePromptAnswerLength:
-                      maximumProfilePromptAnswerLength,
-                ),
-            keyboardType: TextInputType.multiline,
-            textInputAction: TextInputAction.newline,
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 4,
-            minLines: 3,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(
-                maximumProfilePromptAnswerLength,
+    return CatchSection.containedFieldRows(
+      key: ValueKey('onboarding-prompt-card-$index'),
+      children: [
+        CatchField.choices<String>(
+          key: ValueKey('onboarding-prompt-question-$index'),
+          icon: CatchIcons.formatQuoteRounded,
+          title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
+          body: definition.title,
+          values: availablePromptIds,
+          itemLabel: (promptId) => profilePromptDefinition(promptId).title,
+          selected: {selectedPromptId},
+          onSelectionChanged: (selection) {
+            if (selection.isEmpty) return;
+            onPromptChanged(selection.single);
+          },
+        ),
+        CatchField.input(
+          key: ValueKey('onboarding-prompt-answer-$index'),
+          title: context.l10n.onboardingProfilePromptsPageTitleAnswer,
+          controller: controller,
+          inputHint: definition.placeholder,
+          helperText: context.l10n
+              .onboardingProfilePromptsPageHelpertextLengthMaximumprofilepromptanswerlength(
+                length: controller.text.length,
+                maximumProfilePromptAnswerLength:
+                    maximumProfilePromptAnswerLength,
               ),
-            ],
-          ),
-        ],
-      ),
+          keyboardType: TextInputType.multiline,
+          textInputAction: TextInputAction.newline,
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 4,
+          minLines: 3,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(maximumProfilePromptAnswerLength),
+          ],
+        ),
+      ],
     );
   }
 }

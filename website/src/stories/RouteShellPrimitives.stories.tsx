@@ -111,7 +111,7 @@ export const PageShellStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_page_shell",
-      routeIds: ["home", "host", "host_preview", "claim", "claim_lookup", "not_found", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
+      routeIds: ["home", "host", "claim", "claim_lookup", "not_found", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
       states: ["page-shell", "website-main"],
     },
   },
@@ -167,13 +167,13 @@ export const ClaimFlowShellStory: Story = {
                 <p>Profile evidence and source links are ready for staff review.</p>
               </SelectedListingCard>
             </ClaimListingResults>
-            <VerificationMethodGrid aria-labelledby="public-proof-label business-contact-label">
+            <VerificationMethodGrid aria-label="Verification evidence">
               <article>
-                <UiLabel id="public-proof-label">Public proof</UiLabel>
+                <UiLabel>Public proof</UiLabel>
                 <p>Link to event pages or social profiles that show ownership.</p>
               </article>
               <article>
-                <UiLabel id="business-contact-label">Business contact</UiLabel>
+                <UiLabel>Business contact</UiLabel>
                 <p>Add a reachable email or phone number for the review packet.</p>
               </article>
             </VerificationMethodGrid>
@@ -299,7 +299,7 @@ export const HostApplicationShellStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_host_application_shell",
-      routeIds: ["host", "host_preview"],
+      routeIds: ["host"],
       states: ["form", "panel", "stage", "submitted", "review", "summary"],
     },
   },
@@ -351,7 +351,7 @@ export const HostFeatureSectionShellStory: Story = {
     a11y: {test: "todo"},
     catchComponent: {
       id: "shared_host_feature_section_shell",
-      routeIds: ["host", "host_preview"],
+      routeIds: ["host"],
       states: ["create-flow", "event-success", "comparison", "rail", "guardrail"],
     },
   },
@@ -390,7 +390,7 @@ export const HostFeatureSectionShellStory: Story = {
         <HostFeatureGrid variant="event-success">
           <HostFeatureRail
             activeId="checkin"
-            label="Event Success stages"
+            label="Playbook stages"
             variant="event-success"
             items={[
               {id: "checkin", label: "Check-in", body: "Validate arrivals."},
@@ -410,7 +410,7 @@ export const HostPreviewShellStory: Story = {
     a11y: {test: "todo"},
     catchComponent: {
       id: "shared_host_preview_shell",
-      routeIds: ["host_preview"],
+      routeIds: ["host"],
       states: ["main", "hero", "offer", "sections", "apply", "live", "trust", "faq"],
     },
   },

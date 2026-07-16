@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import type {FormVariant} from "../../shared/forms/types";
 import {activeWaitlistCityOptions} from "@content/markets";
 import {
@@ -24,25 +25,25 @@ export function WaitlistForm({variant}: {variant: FormVariant}) {
 
   return (
     <WaitlistFormShell onFocus={handleFormStart} onSubmit={handleSubmit}>
-      <TextField id={`${variant}-waitlist-full-name`} label="Full name" name="fullName" autoComplete="name" required />
-      <TextField id={`${variant}-waitlist-email`} label="Email" name="email" type="email" autoComplete="email" required />
+      <TextField id={`${variant}-waitlist-full-name`} label={websiteCopy["waitlistform_0515"]} name="fullName" autoComplete="name" required />
+      <TextField id={`${variant}-waitlist-email`} label={websiteCopy["waitlistform_0514"]} name="email" type="email" autoComplete="email" required />
       <SelectField
         id={`${variant}-waitlist-city`}
-        label="City"
+        label={websiteCopy["waitlistform_0513"]}
         name="city"
         required
         onChange={(event) => {
           handleCityChange(event.currentTarget.value);
         }}
       >
-        <option value="">Choose city</option>
+        <option value="">{websiteCopy["waitlistform_0512"]}</option>
         {activeWaitlistCityOptions.map((city) => (
           <option key={city}>{city}</option>
         ))}
       </SelectField>
       <TextField
         id={`${variant}-waitlist-custom-city`}
-        label="Your city"
+        label={websiteCopy["waitlistform_0517"]}
         name="customCity"
         autoComplete="address-level2"
         hidden={!showCustomCity}
@@ -50,7 +51,7 @@ export function WaitlistForm({variant}: {variant: FormVariant}) {
       />
       <SelectField
         id={`${variant}-waitlist-role`}
-        label="Joining as"
+        label={websiteCopy["waitlistform_0516"]}
         name="role"
         required
         defaultValue={variant === "host" ? "host" : ""}

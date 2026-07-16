@@ -2,7 +2,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-enum HostClubTab { organizer, edit, insights, preview }
+enum HostClubTab { edit, insights, preview }
 
 enum HostClubInsightsRangePreset {
   sevenDays('7 days'),
@@ -40,7 +40,7 @@ class HostClubsScreenState {
     required String currentUid,
     int selectedClubIndex = 0,
     String? selectedClubId,
-    HostClubTab selectedTab = HostClubTab.organizer,
+    HostClubTab selectedTab = HostClubTab.edit,
   }) {
     return HostClubsScreenState._(
       clubs: List<Club>.unmodifiable(clubs),

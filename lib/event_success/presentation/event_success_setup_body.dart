@@ -7,8 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
@@ -22,24 +21,11 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-const EdgeInsets _foundationLineIconInset = EdgeInsets.only(
-  top: CatchSpacing.micro2,
-);
-const EdgeInsets _setupNestedControlPadding = EdgeInsets.only(
-  left: CatchSpacing.s4,
-  bottom: CatchSpacing.s2,
-);
 const EdgeInsets _attendeePromptPreviewPadding = EdgeInsets.only(
   top: CatchSpacing.s2,
 );
 const EdgeInsets _attendeePromptPreviewIconInset = EdgeInsets.only(
   top: CatchSpacing.micro2,
-);
-const EdgeInsets _disclosureChildrenPadding = EdgeInsets.only(
-  top: CatchSpacing.s2,
-);
-const EdgeInsets _disclosureSubtitlePadding = EdgeInsets.only(
-  top: CatchSpacing.s1,
 );
 
 /// Shared event-success setup body used by both the create-event last step
@@ -114,8 +100,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
       targetAttendeeCount: draft.targetAttendeeCount,
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return CatchSectionList(
       children: [
         PresetReviewCard(
           profile: profile,
@@ -124,58 +109,57 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           showReset: widget.showResetToRecommended,
           onReset: widget.onResetToRecommended,
         ),
-        gapH8,
-        SetupDisclosureSection(
+        CatchField.control(
           title: context.l10n.eventSuccessEventSuccessSetupBodyTitleGuideNotes,
-          subtitle: _guideNotesSubtitle(draft, widget.attendeePrompt),
-          initiallyExpanded: true,
-          children: [
-            CatchField.input(
-              title:
-                  context.l10n.eventSuccessEventSuccessSetupBodyTitleHostGoal,
-              controller: _hostGoalController,
-              enabled: widget.editable,
-              placeholder: draft.hostGoal,
-              inputFormatters: [LengthLimitingTextInputFormatter(300)],
-              minLines: 2,
-              maxLines: 4,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.newline,
-              onChanged: (value) {
-                widget.onDraftChanged(
-                  draft.copyWith(
-                    hostGoal: _normalizedRequired(
-                      value,
-                      fallback: draft.hostGoal,
+          body: _guideNotesSubtitle(draft, widget.attendeePrompt),
+          initiallyOpen: true,
+          control: CatchSection.containedFieldRows(
+            children: [
+              CatchField.input(
+                title:
+                    context.l10n.eventSuccessEventSuccessSetupBodyTitleHostGoal,
+                controller: _hostGoalController,
+                enabled: widget.editable,
+                inputHint: draft.hostGoal,
+                inputFormatters: [LengthLimitingTextInputFormatter(300)],
+                minLines: 2,
+                maxLines: 4,
+                textCapitalization: TextCapitalization.sentences,
+                textInputAction: TextInputAction.newline,
+                onChanged: (value) {
+                  widget.onDraftChanged(
+                    draft.copyWith(
+                      hostGoal: _normalizedRequired(
+                        value,
+                        fallback: draft.hostGoal,
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
-            gapH12,
-            CatchField.input(
-              title: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodyTitleAttendeePrompt,
-              isOptional: true,
-              controller: _attendeePromptController,
-              enabled: widget.editable,
-              placeholder: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodyPlaceholderPromptAttendeesBeforeOr,
-              inputFormatters: [LengthLimitingTextInputFormatter(300)],
-              minLines: 2,
-              maxLines: 4,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.newline,
-              onChanged: widget.onAttendeePromptChanged,
-            ),
-            AttendeePromptPreview(
-              text: _attendeePromptPreview(profile, widget.attendeePrompt),
-            ),
-          ],
+                  );
+                },
+              ),
+              CatchField.input(
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyTitleAttendeePrompt,
+                isOptional: true,
+                controller: _attendeePromptController,
+                enabled: widget.editable,
+                inputHint: context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyPlaceholderPromptAttendeesBeforeOr,
+                inputFormatters: [LengthLimitingTextInputFormatter(300)],
+                minLines: 2,
+                maxLines: 4,
+                textCapitalization: TextCapitalization.sentences,
+                textInputAction: TextInputAction.newline,
+                onChanged: widget.onAttendeePromptChanged,
+              ),
+              AttendeePromptPreview(
+                text: _attendeePromptPreview(profile, widget.attendeePrompt),
+              ),
+            ],
+          ),
         ),
-        gapH8,
         StageCard(
           title: context
               .l10n
@@ -213,7 +197,6 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               ),
           ],
         ),
-        gapH8,
         StageCard(
           title:
               context.l10n.eventSuccessEventSuccessSetupBodyTitleDuringTheEvent,
@@ -237,102 +220,77 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   draft.isModuleSelected(
                     EventSuccessModuleCatalog.guidedRotations.id,
                   ))
-                SetupChoiceChips<int?>(
-                  label: context
+                CatchField.choices<int?>(
+                  title: context
                       .l10n
                       .eventSuccessEventSuccessSetupBodyLabelRotationCadence,
-                  options: [
-                    CatchOption<int?>(
-                      value: null,
-                      label: context
+                  values: const <int?>[null, 10, 15, 20, 30],
+                  itemLabel: (value) => switch (value) {
+                    null =>
+                      context
                           .l10n
                           .eventSuccessEventSuccessSetupBodyLabelNoTimedRotation,
-                    ),
-                    CatchOption(
-                      value: 10,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel10Min,
-                    ),
-                    CatchOption(
-                      value: 15,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel15Min,
-                    ),
-                    CatchOption(
-                      value: 20,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel20Min,
-                    ),
-                    CatchOption(
-                      value: 30,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel30Min,
-                    ),
-                  ],
-                  value: draft.structureConfig.rotationIntervalMinutes,
-                  enabled: widget.editable,
-                  onChanged: (interval) {
-                    widget.onDraftChanged(
-                      draft.copyWith(
-                        structureConfig: draft.structureConfig.copyWith(
-                          rotationIntervalMinutes: interval,
-                        ),
-                      ),
-                    );
+                    10 =>
+                      context.l10n.eventSuccessEventSuccessSetupBodyLabel10Min,
+                    15 =>
+                      context.l10n.eventSuccessEventSuccessSetupBodyLabel15Min,
+                    20 =>
+                      context.l10n.eventSuccessEventSuccessSetupBodyLabel20Min,
+                    _ =>
+                      context.l10n.eventSuccessEventSuccessSetupBodyLabel30Min,
                   },
+                  selected: <int?>{
+                    draft.structureConfig.rotationIntervalMinutes,
+                  },
+                  enabled: widget.editable,
+                  initiallyOpen: true,
+                  onSelectionChanged: widget.editable
+                      ? (selection) {
+                          final interval = selection.single;
+                          widget.onDraftChanged(
+                            draft.copyWith(
+                              structureConfig: draft.structureConfig.copyWith(
+                                rotationIntervalMinutes: interval,
+                              ),
+                            ),
+                          );
+                        }
+                      : null,
                 ),
               if (recommendation.module.id ==
                       EventSuccessModuleCatalog.liveReveal.id &&
                   draft.isModuleSelected(
                     EventSuccessModuleCatalog.liveReveal.id,
                   ))
-                SetupChoiceChips<int>(
-                  label: _revealCountdownLabel(draft),
-                  options: [
-                    CatchOption(
-                      value: 0,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabelOff,
-                    ),
-                    CatchOption(
-                      value: 5,
-                      label:
-                          context.l10n.eventSuccessEventSuccessSetupBodyLabel5s,
-                    ),
-                    CatchOption(
-                      value: 10,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel10s,
-                    ),
-                    CatchOption(
-                      value: 15,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel15s,
-                    ),
-                  ],
-                  value: draft.structureConfig.revealCountdownSeconds,
-                  enabled: widget.editable,
-                  onChanged: (seconds) {
-                    widget.onDraftChanged(
-                      draft.copyWith(
-                        structureConfig: draft.structureConfig.copyWith(
-                          revealCountdownSeconds: seconds,
-                        ),
-                      ),
-                    );
+                CatchField.choices<int>(
+                  title: _revealCountdownLabel(draft),
+                  values: const [0, 5, 10, 15],
+                  itemLabel: (value) => switch (value) {
+                    0 => context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
+                    5 => context.l10n.eventSuccessEventSuccessSetupBodyLabel5s,
+                    10 =>
+                      context.l10n.eventSuccessEventSuccessSetupBodyLabel10s,
+                    _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel15s,
                   },
+                  selected: {draft.structureConfig.revealCountdownSeconds},
+                  enabled: widget.editable,
+                  initiallyOpen: true,
+                  onSelectionChanged: widget.editable
+                      ? (selection) {
+                          final seconds = selection.single;
+                          widget.onDraftChanged(
+                            draft.copyWith(
+                              structureConfig: draft.structureConfig.copyWith(
+                                revealCountdownSeconds: seconds,
+                              ),
+                            ),
+                          );
+                        }
+                      : null,
                 ),
             ],
           ],
         ),
-        gapH8,
         StageCard(
           title:
               context.l10n.eventSuccessEventSuccessSetupBodyTitleAfterTheEvent,
@@ -369,12 +327,11 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
             ),
           ],
         ),
-        gapH8,
-        SetupDisclosureSection(
+        CatchField.control(
           title: _structureSectionTitle(draft),
-          subtitle: _structureSectionSubtitle(draft),
-          children: [
-            EventSuccessStructureConfigEditor(
+          body: _structureSectionSubtitle(draft),
+          control: CatchSection.containedFieldRows(
+            child: EventSuccessStructureConfigEditor(
               value: draft.structureConfig,
               targetAttendeeCount: draft.targetAttendeeCount,
               enabled: widget.editable,
@@ -382,14 +339,13 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                 widget.onDraftChanged(draft.copyWith(structureConfig: value));
               },
             ),
-          ],
+          ),
         ),
-        gapH8,
-        SetupDisclosureSection(
+        CatchField.control(
           title: context.l10n.eventSuccessEventSuccessSetupBodyTitleAdvanced,
-          subtitle: _advancedSubtitle(draft),
-          children: [
-            QuestionnaireBlock(
+          body: _advancedSubtitle(draft),
+          control: CatchSection.containedFieldRows(
+            child: QuestionnaireBlock(
               active: draft.isModuleSelected(
                 EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
               ),
@@ -416,9 +372,8 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                 );
               },
             ),
-          ],
+          ),
         ),
-        gapH8,
         const SafetyFooter(),
       ],
     );
@@ -515,24 +470,19 @@ class StageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.contentDense,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: CatchTextStyles.labelL(context)),
-          if (subtitle != null) ...[
-            gapH4,
-            Text(
-              subtitle!,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+    return CatchSection.fieldRows(
+      title: title,
+      first: true,
+      footer: subtitle == null
+          ? null
+          : Padding(
+              padding: CatchInsets.inlineHorizontal,
+              child: Text(
+                subtitle!,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
             ),
-          ],
-          gapH6,
-          ...children,
-        ],
-      ),
+      children: children,
     );
   }
 }
@@ -546,82 +496,11 @@ class FoundationLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Padding(
-      padding: CatchInsets.controlVerticalTight,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: _foundationLineIconInset,
-            child: Icon(
-              CatchIcons.checkRounded,
-              size: CatchIcon.md,
-              color: t.primary,
-            ),
-          ),
-          gapW8,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: CatchTextStyles.labelL(context)),
-                if (subtitle != null) ...[
-                  gapH2,
-                  Text(
-                    subtitle!,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Inline setup chips rendered beneath setup toggles in the During stage card.
-class SetupChoiceChips<T> extends StatelessWidget {
-  const SetupChoiceChips({
-    super.key,
-    required this.label,
-    required this.options,
-    required this.value,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final String label;
-  final List<CatchOption<T>> options;
-  final T value;
-  final bool enabled;
-  final ValueChanged<T> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: _setupNestedControlPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: CatchTextStyles.labelM(context)),
-          gapH6,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final option in options)
-                CatchSelectChip(
-                  label: option.label,
-                  active: value == option.value,
-                  enabled: enabled,
-                  onTap: enabled ? () => onChanged(option.value) : null,
-                ),
-            ],
-          ),
-        ],
-      ),
+    return CatchField.read(
+      title: title,
+      body: subtitle,
+      icon: CatchIcons.checkRounded,
+      iconColor: t.primary,
     );
   }
 }
@@ -816,43 +695,31 @@ class QuestionnaireBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final mode = _mode;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return CatchSectionList(
+      gap: CatchGaps.formField,
       children: [
-        Text(
-          context.l10n.eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
-          style: CatchTextStyles.labelL(context),
+        CatchField.choices<_QuestionnaireMode>(
+          title: context
+              .l10n
+              .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
+          body: _questionnaireModeSubtitle(mode),
+          values: _QuestionnaireMode.values,
+          itemLabel: _questionnaireModeLabel,
+          selected: {mode},
+          enabled: editable,
+          initiallyOpen: true,
+          onSelectionChanged: editable
+              ? (selection) => onModeChanged(selection.single)
+              : null,
         ),
-        gapH4,
-        Text(
-          _questionnaireModeSubtitle(mode),
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-        gapH8,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (final option in _QuestionnaireMode.values)
-              CatchSelectChip(
-                label: _questionnaireModeLabel(option),
-                active: mode == option,
-                enabled: editable,
-                onTap: editable ? () => onModeChanged(option) : null,
-              ),
-          ],
-        ),
-        if (active) ...[
-          gapH12,
+        if (active)
           EventSuccessQuestionnaireConfigEditor(
             value: questionnaireConfig,
             enabled: editable,
             onChanged: onQuestionnaireChanged,
             useBottomSheetForCustom: true,
           ),
-        ],
       ],
     );
   }
@@ -877,99 +744,6 @@ String _questionnaireModeSubtitle(_QuestionnaireMode mode) {
       return 'Answers create reveal clues. Pairing suggestions ignore them.';
     case _QuestionnaireMode.cluesAndPairing:
       return 'Answers create reveal clues and softly inform pairing suggestions.';
-  }
-}
-
-class SetupDisclosureSection extends StatefulWidget {
-  const SetupDisclosureSection({
-    required this.title,
-    required this.subtitle,
-    required this.children,
-    this.initiallyExpanded = false,
-  });
-
-  final String title;
-  final String subtitle;
-  final List<Widget> children;
-  final bool initiallyExpanded;
-
-  @override
-  State<SetupDisclosureSection> createState() => _SetupDisclosureSectionState();
-}
-
-class _SetupDisclosureSectionState extends State<SetupDisclosureSection> {
-  late bool _expanded = widget.initiallyExpanded;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Semantics(
-          button: true,
-          expanded: _expanded,
-          child: CatchSurface(
-            tone: CatchSurfaceTone.transparent,
-            radius: 0,
-            borderWidth: 0,
-            onTap: () => setState(() => _expanded = !_expanded),
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                      Padding(
-                        padding: _disclosureSubtitlePadding,
-                        child: Text(
-                          widget.subtitle,
-                          style: CatchTextStyles.supporting(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                gapW12,
-                AnimatedRotation(
-                  turns: _expanded ? 0.25 : 0,
-                  duration: CatchMotion.fast,
-                  curve: CatchMotion.standardCurve,
-                  child: Icon(
-                    CatchIcons.chevronRightRounded,
-                    color: _expanded ? t.primary : t.ink2,
-                    size: CatchIcon.sm,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        AnimatedSize(
-          duration: CatchMotion.fast,
-          curve: CatchMotion.standardCurve,
-          alignment: Alignment.topCenter,
-          child: _expanded
-              ? Padding(
-                  padding: _disclosureChildrenPadding,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: widget.children,
-                  ),
-                )
-              : const SizedBox.shrink(),
-        ),
-      ],
-    );
   }
 }
 

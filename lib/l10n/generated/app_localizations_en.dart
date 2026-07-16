@@ -11575,4 +11575,232 @@ class AppLocalizationsEn extends AppLocalizations {
   String coreCatchFieldVisiblecopyAddFieldLabel({required Object fieldLabel}) {
     return 'Add $fieldLabel';
   }
+
+  @override
+  String get chatsChatInputBarLabelUploadingImage => 'Uploading image';
+
+  @override
+  String get chatsChatInputBarLabelSendingMessage => 'Sending message';
+
+  @override
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticDecreasePeoplePerUnit =>
+      'Decrease people per unit';
+
+  @override
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticIncreasePeoplePerUnit =>
+      'Increase people per unit';
+
+  @override
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticDecreaseUnitCount =>
+      'Decrease unit count';
+
+  @override
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseUnitCount =>
+      'Increase unit count';
+
+  @override
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticDecreaseMeetingsPerPair =>
+      'Decrease meetings per pair';
+
+  @override
+  String
+  get eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseMeetingsPerPair =>
+      'Increase meetings per pair';
+
+  @override
+  String get eventsEventDetailBodyTitleHostedBy => 'Hosted by';
+
+  @override
+  String get eventsEventDetailBodyTooltipMessageHost => 'Message host';
+
+  @override
+  String get onboardingProfilePromptsPageTitleAnswer => 'Answer';
+
+  @override
+  String onboardingRunningPrefsPageBodyPaceRange({
+    required String minPace,
+    required String maxPace,
+  }) {
+    return '$minPace - $maxPace';
+  }
+
+  @override
+  String get reviewsReviewsSectionMessageBeTheFirstToReviewThisEvent =>
+      'Be the first to review this event.';
+
+  @override
+  String get eventsEventDateRailCardSemanticsOpensEventDetails =>
+      'Opens event details';
+
+  @override
+  String get hostsHostClubsScaffoldLabelClubWorkspaceTabs =>
+      'Club workspace tabs';
+
+  @override
+  String get hostsHostClubsScaffoldBodyDragLeftOrRight =>
+      'Drag left or right to switch between Edit, Insights, and Preview.';
+
+  @override
+  String exploreExploreScreenStateSemanticsMapEventCount({
+    required int mappableEventCount,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      mappableEventCount,
+      locale: localeName,
+      other: '$mappableEventCount events',
+      one: '1 event',
+    );
+    return 'Map, $_temp0';
+  }
+
+  @override
+  String get eventsEventDetailDesignPrimitivesActionViewMap => 'View map';
+
+  @override
+  String get eventsEventDetailInformationStateTitleIfItFillsSpotsReopen =>
+      'If it fills, spots reopen';
+
+  @override
+  String get eventsEventDetailInformationStateBodyEligiblePeopleAreNotified =>
+      'Eligible people are notified together; the first completed booking gets the spot.';
+
+  @override
+  String get eventsEventDetailInformationStateTitleHostManagedWaitlist =>
+      'Host-managed waitlist';
+
+  @override
+  String
+  get eventsEventDetailInformationStateBodyTheHostReviewsWaitingRequests =>
+      'The host reviews waiting requests when capacity opens.';
+
+  @override
+  String get eventsEventDetailInformationStateTitleVariablePricing =>
+      'Variable pricing';
+
+  @override
+  String get eventsEventDetailInformationStateTitlePlansChange =>
+      'Plans change?';
+
+  @override
+  String get eventsEventDetailInformationStateBodyReleaseYourSpotEarly =>
+      'Release your spot early so the waitlist can move.';
+
+  @override
+  String eventsEventDetailScreenStateVisiblecopyClubReviewSummary({
+    required Object rating,
+    required Object reviewCount,
+  }) {
+    return '$rating FROM $reviewCount CLUB REVIEWS';
+  }
+
+  @override
+  String get eventsEventDateRailCardVisiblecopyFree => 'Free';
+
+  @override
+  String exploreExploreMapScreenLabelWithinDistance({required int distanceKm}) {
+    return 'Within $distanceKm km';
+  }
+
+  @override
+  String get exploreExploreMapScreenLabelDistance => 'Distance';
+
+  @override
+  String get exploreExploreMapScreenValueAnyDistance => 'Any';
+
+  @override
+  String exploreExploreMapScreenValueDistanceKm({required int distanceKm}) {
+    return '$distanceKm km';
+  }
+
+  @override
+  String get exploreExploreMapScreenActionUseMyLocation => 'Use my location';
+
+  @override
+  String get exploreExploreMapScreenActionLocating => 'Locating';
+
+  @override
+  String get exploreExploreMapScreenSemanticsLocating =>
+      'Finding your location';
+
+  @override
+  String exploreExploreMapScreenSemanticsDistanceValue({
+    required Object distance,
+  }) {
+    return 'Distance, $distance. Tap to change';
+  }
+
+  @override
+  String get exploreExploreMapScreenSemanticsUseMyLocation =>
+      'Use my location to set a distance';
+
+  @override
+  String get exploreExploreMapScreenHintChangeDistance =>
+      'Changes the distance filter';
+
+  @override
+  String get exploreExploreMapScreenMessageLocationUnavailable =>
+      'Location is unavailable. You can still browse the map.';
+
+  @override
+  String get exploreExploreMapScreenMessageLocationServicesDisabled =>
+      'Location Services are off. Turn them on in Settings to use a distance ring.';
+
+  @override
+  String get exploreExploreMapScreenMessageLocationPermissionDeniedForever =>
+      'Location access is off for Catch. You can enable it in Settings.';
+
+  @override
+  String get exploreExploreMapScreenActionOpenSettings => 'Open settings';
+
+  @override
+  String eventsEventPinsMapSemanticsEventCluster({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events',
+      one: '1 event',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventsEventPinsMapTooltipShowAllEventsAndDistance =>
+      'Show all events and distance';
+
+  @override
+  String exploreExploreMapScreenTitleNoEventsWithinDistance({
+    required int distanceKm,
+  }) {
+    return 'No events within $distanceKm km';
+  }
+
+  @override
+  String exploreExploreMapScreenMessageTryWiderOrShowCity({
+    required String cityLabel,
+  }) {
+    return 'Try a wider distance, or show every event in $cityLabel.';
+  }
+
+  @override
+  String exploreExploreMapScreenActionExpandToDistance({
+    required int distanceKm,
+  }) {
+    return 'Expand to $distanceKm km';
+  }
+
+  @override
+  String get exploreExploreMapScreenActionShowAll => 'Show all';
+
+  @override
+  String get exploreExploreMapScreenTitleNoEventsMatchMap =>
+      'No events match this map';
+
+  @override
+  String get exploreExploreMapScreenMessageChangeFiltersToBringEventsBack =>
+      'Change your filters to bring events back into view.';
 }

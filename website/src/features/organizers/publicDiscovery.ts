@@ -1,9 +1,10 @@
+import {websiteCopy} from "@content/generated";
 import type {
   EventActionCardModel,
   PublicEventCardModel,
   PublicSearchSuggestion,
 } from "../../shared/ui/primitives";
-import {activityMeta, type ActivityMeta} from "../marketing/content";
+import {activityMeta, type ActivityMeta} from "@content/marketing";
 import {eligibleHomeCatchEvents} from "./homeEventEligibility";
 import {isFutureCatchEvent} from "./selectors";
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
@@ -267,7 +268,7 @@ export function eventActionCardForListing(
   if (event.scorecard) {
     actions.push({
       href: "#event-success",
-      label: "See outcomes",
+      label: websiteCopy["publicdiscovery_0361"],
       variant: "secondary",
       trackingLabel: "listing_event_success",
     });
@@ -287,15 +288,15 @@ export function eventActionCardForListing(
     body: event.summary,
     activityToken: activity.token,
     meta: [
-      {label: "Date", value: event.date},
-      {label: "Location", value: event.location},
-      {label: "Price", value: event.priceLabel},
-      {label: "Capacity", value: `${event.capacityLimit} spots`},
+      {label: websiteCopy["publicdiscovery_0357"], value: event.date},
+      {label: websiteCopy["publicdiscovery_0358"], value: event.location},
+      {label: websiteCopy["publicdiscovery_0360"], value: event.priceLabel},
+      {label: websiteCopy["publicdiscovery_0354"], value: `${event.capacityLimit} spots`},
     ],
     counts: [
-      {label: "booked", value: event.bookedCount},
-      {label: "checked in", value: event.checkedInCount},
-      {label: "waitlisted", value: event.waitlistedCount},
+      {label: websiteCopy["publicdiscovery_0353"], value: event.bookedCount},
+      {label: websiteCopy["publicdiscovery_0355"], value: event.checkedInCount},
+      {label: websiteCopy["publicdiscovery_0363"], value: event.waitlistedCount},
     ],
     actions,
   };
@@ -314,10 +315,10 @@ export function externalEventActionCardForListing(
     body: event.summary,
     activityToken: activity.token,
     meta: [
-      {label: "Date", value: event.date},
-      {label: "Location", value: event.location},
-      {label: "Price", value: event.priceLabel},
-      {label: "Source", value: event.sourceLabel},
+      {label: websiteCopy["publicdiscovery_0357"], value: event.date},
+      {label: websiteCopy["publicdiscovery_0358"], value: event.location},
+      {label: websiteCopy["publicdiscovery_0360"], value: event.priceLabel},
+      {label: websiteCopy["publicdiscovery_0362"], value: event.sourceLabel},
     ],
     counts: [
       {
@@ -328,14 +329,14 @@ export function externalEventActionCardForListing(
     actions: [
       {
         href: event.sourceHref,
-        label: "Open source page",
+        label: websiteCopy["publicdiscovery_0359"],
         target: "_blank",
         rel: "noreferrer",
         trackingLabel: "external_event_source",
       },
       {
         href: "#claim",
-        label: "Claim or correct this listing",
+        label: websiteCopy["publicdiscovery_0356"],
         variant: "secondary",
         trackingLabel: "external_event_claim",
       },

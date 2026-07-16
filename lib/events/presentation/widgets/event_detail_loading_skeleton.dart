@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -405,12 +406,12 @@ class EventDetailHostsSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
-      title: context.l10n.eventsEventDetailLoadingSkeletonTitleYourHosts,
+      title: context.l10n.eventsEventDetailBodyTitleHostedBy,
       dividerColor: surfaceStyle?.dividerColor,
       titleColor: surfaceStyle?.headingColor,
       child: Row(
         children: [
-          CatchSkeleton.circle(size: CatchIcon.avatarLg),
+          CatchSkeleton.circle(size: CatchSpacing.s10),
           gapW12,
           Expanded(
             child: Column(
@@ -433,19 +434,10 @@ class EventDetailLoadingCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return ColoredBox(
-      color: t.surface,
-      child: SafeArea(
-        top: false,
-        minimum: CatchInsets.detailLoadingCtaSafeArea,
-        child: CatchSkeleton.box(
-          width: double.infinity,
-          height: CatchLayout.buttonLgHeight,
-          radius: CatchRadius.pill,
-        ),
-      ),
+    return CatchBottomAction(
+      label: context.l10n.eventsEventDetailScreenStateLabelBookEvent,
+      onPressed: null,
+      isLoading: true,
     );
   }
 }

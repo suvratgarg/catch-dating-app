@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 1.2.2
-updated: 2026-07-02
+version: 1.3.0
+updated: 2026-07-12
 owner: agent_operating_model
 status: active
 ---
@@ -119,7 +119,10 @@ single file set and later reviews the result.
 
 ### Git Protocol
 
-Use Git worktrees as the isolation boundary:
+Use Git worktrees as the isolation boundary. Create durable local worktrees
+under the repository's ignored `.claude/worktrees/` directory; never use
+`/tmp` or `/private/tmp`, because system cleanup can leave stale Git
+registrations or destroy active work.
 
 1. Parent records the current branch and HEAD before delegation.
 2. Parent creates or asks for a disposable subagent branch from that HEAD.

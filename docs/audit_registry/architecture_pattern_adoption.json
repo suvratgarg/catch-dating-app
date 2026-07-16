@@ -1,6 +1,6 @@
 {
-  "version": "1.5.34",
-  "updated": "2026-07-12",
+  "version": "1.5.40",
+  "updated": "2026-07-16",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -332,51 +332,94 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-screen-chrome-001-root-screen-header-chrome",
       "prototypeFiles": [
         "lib/core/widgets/catch_top_bar.dart",
+        "lib/core/widgets/catch_tabbed_screen.dart",
         "test/core/catch_top_bar_test.dart",
         "widgetbook/lib/primitives/core_catalog_use_cases.dart"
       ],
       "adopters": [
         {
           "path": "lib/core/widgets/catch_top_bar.dart",
-          "role": "reference CatchScreenHeaderTitle and CatchScreenTopBar implementation for root-screen title typography, root app-bar wrapper configuration, search slots, leading slots, and action slots",
+          "role": "reference CatchScreenHeaderTitle and CatchScreenTopBar implementation for root-screen title typography, explicit zero post-safe-area inset, adaptive text-scale height, search, leading, multi-line title, and action slots",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
         },
         {
           "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
-          "role": "Home tab sliver title uses CatchScreenHeaderTitle.block with compact root-screen padding and notification action slot",
+          "role": "Home tab title uses CatchScreenHeaderTitle.block with canonical zero-inset root padding and notification action slot",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
         },
         {
           "path": "lib/dashboard/presentation/activity_screen.dart",
           "role": "Activity root-like route uses CatchScreenTopBar so the title matches main tab screen typography while preserving the Mark all read action slot",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
         },
         {
           "path": "lib/explore/presentation/widgets/explore_header.dart",
-          "role": "Explore browse and no-cover discovery headers use CatchScreenHeaderTitle/CatchScreenTopBar with city picker leading slot and shared expanding search",
+          "role": "Explore browse and no-cover discovery headers use canonical zero-inset CatchScreenHeaderTitle/CatchScreenTopBar with primitive-derived height, city picker leading slot, and shared expanding search",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
         },
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-          "role": "Chats/Host Inbox pinned browse header uses CatchScreenTopBar with root title, subtitle, expanding search, and optional host filter row",
+          "role": "Consumer Chats and Host Inbox pinned browse header uses CatchScreenTopBar with the same 32px headline role, inherited text scaling, primitive-derived height, expanding search, and optional host subtitle/filter row",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
         },
         {
           "path": "lib/user_profile/presentation/profile_screen.dart",
-          "role": "Profile tab sliver title uses CatchScreenHeaderTitle.block with the settings icon in the action slot before the pinned tab rail",
+          "role": "Profile delegates its title, settings action, pinned rail, overlap, and page shell to CatchTabbedScreenScaffold",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
         },
         {
           "path": "lib/safety/presentation/settings_screen.dart",
           "role": "Settings root-like route uses CatchScreenTopBar so it matches Profile and the main tab screen typography",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
+        },
+        {
+          "path": "lib/events/presentation/calendar/calendar_screen.dart",
+          "role": "Calendar root-like route uses CatchScreenTopBar for the selected-month Archivo title and Today action while the pinned date header owns only week/month selection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
+        },
+        {
+          "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
+          "role": "Photo Editor uses CatchScreenTopBar for Add photo and Edit photo screen-title chrome instead of compact route-title chrome",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
+        },
+        {
+          "path": "lib/payments/presentation/payment_history_screen.dart",
+          "role": "Payment History uses CatchScreenTopBar for canonical root-like history title geometry",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
+        },
+        {
+          "path": "lib/reviews/presentation/reviews_history_screen.dart",
+          "role": "Review History uses CatchScreenTopBar for canonical root-like history title geometry while retaining its divider",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_today.dart",
+          "role": "Host Today delegates its eyebrow, reviewed two-line greeting, and club action to CatchScreenHeaderTitle.block",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
+          "role": "Host Events delegates its root title to CatchScreenHeaderTitle.block across content and empty states",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-15-screen-chrome-enforcement"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "role": "Host Clubs delegates avatar, eyebrow, reviewed two-line club title, meta subtitle, club switcher, pinned rail, overlap, and page shell to CatchTabbedScreenScaffold",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
         },
         {
           "path": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
@@ -401,20 +444,35 @@
           "symbol": "ProfileTitle",
           "path": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
           "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeaderTitle."
+        },
+        {
+          "symbol": "HostOperationsTopBar",
+          "path": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
+          "reason": "Feature-local workspace chrome duplicated the shared root title and tabbed-screen shell."
+        },
+        {
+          "symbol": "HostOrganizerHeader",
+          "path": "lib/hosts/presentation/host_operations/host_organizer.dart",
+          "reason": "Organizer-only identity chrome made the shared Host Clubs header disappear when switching pages."
         }
       ],
-      "requiredBackPropagation": "When root-screen header typography, padding, action slots, or search composition changes, inspect every adopter above and keep Settings/Activity aligned with the five main tab surfaces. Compact/detail CatchTopBar(title: ...) screens remain outside this pattern unless product promotes them to root-like destinations.",
+      "requiredBackPropagation": "When screen-title typography, zero-inset padding, adaptive height, action slots, or search composition changes, inspect every adopter above and keep consumer roots, Host roots, Photo Editor, Payment History, Review History, Settings, Activity, and Calendar aligned. Compact/detail CatchTopBar(title: ...) screens remain outside this pattern unless product promotes them to screen-title destinations.",
       "requiredChecks": [
         "flutter test test/core/catch_top_bar_test.dart",
         "flutter test test/explore/explore_widgets_test.dart --plain-name 'Explore header'",
         "flutter test test/chats/chat_inbox_screen_test.dart",
+        "flutter test test/payments/payment_history_screen_test.dart test/reviews/reviews_widgets_test.dart",
+        "flutter test test/hosts/host_operations_screen_test.dart",
         "flutter test test/profile/profile_widgets_test.dart --plain-name 'Profile header'",
-        "flutter analyze --no-fatal-infos lib/core/widgets/catch_top_bar.dart lib/dashboard/presentation/dashboard_home_screen.dart lib/dashboard/presentation/activity_screen.dart lib/explore/presentation/widgets/explore_header.dart lib/chats/presentation/inbox/widgets/chats_sliver_header.dart lib/user_profile/presentation/profile_screen.dart lib/safety/presentation/settings_screen.dart test/core/catch_top_bar_test.dart test/explore/explore_widgets_test.dart test/chats/chat_inbox_screen_test.dart test/profile/profile_widgets_test.dart widgetbook/lib/dashboard/dashboard_use_cases.dart widgetbook/lib/profiles/profile_use_cases.dart",
+        "flutter test test/calendar/calendar_screen_test.dart",
+        "node --test tool/design/check_screen_top_bar_contracts.test.mjs",
+        "node tool/design/check_screen_top_bar_contracts.mjs --check",
+        "flutter analyze --no-fatal-infos lib/core/widgets/catch_top_bar.dart lib/core/widgets/catch_tabbed_screen.dart lib/core/widgets/catch_text_button.dart lib/dashboard/presentation/dashboard_home_screen.dart lib/dashboard/presentation/activity_screen.dart lib/explore/presentation/widgets/explore_header.dart lib/chats/presentation/inbox/chat_inbox_screen.dart lib/chats/presentation/inbox/widgets/chats_sliver_header.dart lib/user_profile/presentation/profile_screen.dart lib/safety/presentation/settings_screen.dart lib/events/presentation/calendar/calendar_screen.dart lib/image_uploads/shared/profile_photo_editor_screen.dart lib/payments/presentation/payment_history_screen.dart lib/reviews/presentation/reviews_history_screen.dart lib/hosts/presentation/host_operations/host_today.dart lib/hosts/presentation/host_operations/host_events_list.dart lib/hosts/presentation/host_operations/host_events_scaffold.dart lib/hosts/presentation/host_operations/host_clubs_scaffold.dart test/core/catch_top_bar_test.dart test/explore/explore_widgets_test.dart test/chats/chat_inbox_screen_test.dart test/hosts/host_operations_screen_test.dart",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "bash tool/widget_cleanup_scan.sh",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "This pattern separates root screen voice chrome from compact navigation chrome. CatchScreenHeaderTitle owns Archivo headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots."
+      "notes": "This pattern separates screen-title voice chrome from compact navigation chrome. CatchScreenHeaderTitle owns Archivo headline typography, the canonical 20/0/20/12 root padding, optional mono eyebrow, subtitle, reviewed multi-line title, leading, action, and material slots. CatchScreenTopBar owns the same geometry and derives preferred height from MediaQuery text scaling instead of letting routes set height or clamp text. Do not recreate feature-local title widgets or wrappers; pass feature data and actions into the shared slots. tool/design/screen_top_bar_contracts.json classifies every Scaffold.appBar, cross-checks all consumer/Host tab branches, registers root-header classes, and limits raw SliverAppBar to reviewed media heroes."
     },
     {
       "id": "ARCH-UI-STATE-001",
@@ -465,6 +523,13 @@
           "providerFree": true,
           "status": "aligned",
           "lastReviewedPass": "2026-07-02-event-detail-display-state-ownership"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_information_state.dart",
+          "role": "provider-free Event Detail information contract that maps domain policy plus injected localization into non-overlapping sign-up and good-to-know facts",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-13-provider-graph-architecture"
         },
         {
           "path": "test/events/event_detail_screen_state_test.dart",
@@ -594,11 +659,10 @@
         },
         {
           "path": "lib/hosts/presentation/host_event_edit_screen_state.dart",
-          "role": "needs-update Host event edit state adapters for loaded editability, schedule/policy locks, save footer enabled/loading state, save error exposure, feedback copy, pop-on-success policy, and private-access AsyncValue handling that still imports Riverpod",
-          "providerFree": false,
-          "status": "needs_update",
-          "debtId": "ARCH-UI-STATE-HOST-EDIT-ASYNCVALUE",
-          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+          "role": "provider-free Host Edit Event adapter family for route resolution, loaded editability, schedule/policy locks, field display and validation state, private-access CatchAsyncState projection, save request construction, footer/error/outcome policy, and typed intents",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-edit-event-field-section-adoption"
         },
         {
           "path": "test/hosts/edit_hosted_event_screen_test.dart",
@@ -794,13 +858,6 @@
       "variantPatterns": [],
       "candidateQueue": [
         {
-          "id": "ARCH-UI-STATE-HOST-EDIT-ASYNCVALUE",
-          "path": "lib/hosts/presentation/host_event_edit_screen_state.dart",
-          "reason": "HostEventEditPrivateAccessState still stores Riverpod AsyncValue<EventPrivateAccess?> in a state adapter. Replace it with CatchAsyncState or split the provider-owned private-access wrapper before marking this file providerFree again.",
-          "detectedBy": "node tool/architecture/check_adopted_architecture_boundaries.mjs",
-          "addedPass": "2026-07-03-explore-screen-boundary"
-        },
-        {
           "id": "ARCH-UI-STATE-001-CHATS-PRESENTATION-INBOX-WIDGETS-CHATS-EMPTY-STATE",
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
           "reason": "File name matches *_state.dart but lives under widgets; register it for explicit review, then either confirm provider-free display-state ownership or rename if it is only a render widget.",
@@ -938,6 +995,7 @@
       "requiredChecks": [
         "flutter test test/calendar/calendar_screen_state_test.dart",
         "flutter test test/events/event_detail_screen_state_test.dart",
+        "flutter test test/events/event_detail_information_state_test.dart",
         "flutter test test/swipes/catches_event_screen_state_test.dart",
         "flutter test test/swipes/swipe_screen_test.dart",
         "flutter test test/clubs/clubs_controllers_test.dart --plain-name 'HostClubDetailScreenState'",
@@ -1044,6 +1102,186 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "notes": "The target contract is authoritative for product identity. The Flutter package and Apple Runner target may remain shared only while role-specific composition and capabilities are explicit and checked."
+    },
+    {
+      "id": "ARCH-SHELL-SCROLL-001",
+      "name": "Adaptive tab-root scroll clearance",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-shell-scroll-001-adaptive-tab-root-scroll-clearance",
+      "prototypeFiles": [
+        "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
+        "lib/core/presentation/app_shell_active_tab.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/core/widgets/catch_tab_bar.dart",
+        "lib/core/widgets/catch_tabbed_screen.dart",
+        "test/core/app_shell_test.dart",
+        "test/core/semantic_layout_contracts_test.dart",
+        "tool/design/tab_root_scroll_contracts.json",
+        "tool/design/check_tab_root_scroll_contracts.mjs"
+      ],
+      "adopters": [
+        {
+          "path": "lib/core/presentation/app_shell.dart",
+          "role": "consumer shell delegates adaptive placement and raw exclusion publication",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "role": "host shell delegates the same adaptive placement contract",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
+          "role": "consumer Home populated root terminal",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/explore/presentation/explore_screen.dart",
+          "role": "consumer Explore feed terminal while map overlay keeps SafeArea-relative clearance",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+          "role": "consumer Chats root terminal",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "consumer Profile delegates per-tab page owners and terminals to the shared tabbed shell while retaining its feature-specific Preview scroll bridge",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "role": "host Today and Events ListView terminals",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+          "role": "host Inbox sliver terminal",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "role": "host Clubs uses per-club, per-page keyed scroll owners and terminals, including the embedded consumer Club Detail preview",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When shell placement, tab geometry, root routes, or terminal primitives change, update both shells, every manifest owner, the architecture exhibit, Widgetbook platform states, and the known-bad scanner fixtures in one pass.",
+      "requiredChecks": [
+        "node tool/design/check_tab_root_scroll_contracts.mjs --check",
+        "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "flutter test test/core/semantic_layout_contracts_test.dart test/core/app_shell_test.dart test/routing/app_shell_guest_cta_test.dart test/routing/host_shell_navigation_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "The shell publishes placement; root scroll primitives consume it. Android anchored chrome is already in layout, iOS floating chrome is a raw exclusion, and transient no-bar shells fall back to device safe area."
+    },
+    {
+      "id": "ARCH-TABBED-SCREEN-001",
+      "name": "Route-owned nested tab screen shell",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-tabbed-screen-001-route-owned-nested-tab-screen-shell",
+      "prototypeFiles": [
+        "lib/core/widgets/catch_tabbed_screen.dart",
+        "lib/core/widgets/catch_tab_rail.dart",
+        "lib/user_profile/presentation/profile_screen.dart",
+        "test/profile/profile_widgets_test.dart",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "adopters": [
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "reference three-page adopter with a route-owned typed controller, native paging, shared page scroll owners, and a feature-owned two-way Preview scroll bridge",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "role": "aligned four-page adopter with independent per-club offsets and a direct embedded read-only Club Detail preview",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        },
+        {
+          "path": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+          "role": "sliver-native consumer Club Detail adapter that keeps route chrome and interactions outside the embedded Host Preview page",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        }
+      ],
+      "retiredSymbols": [
+        {
+          "symbol": "ProfileTabScrollView",
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "reason": "The feature-local overlap and focus wrapper is now the shared CatchTabbedPageScrollView."
+        },
+        {
+          "symbol": "HostClubPreviewPane",
+          "path": "lib/hosts/presentation/host_operations/host_club_preview.dart",
+          "reason": "The second-click preview adapter was replaced by direct composition of the canonical consumer Club Detail slivers."
+        }
+      ],
+      "requiredBackPropagation": "When nested title, pinned rail, paging, overlap, focus, restoration, terminal, or embedded-preview policy changes, inspect Profile and Host Clubs together, keep typed controllers route-owned, and update the component and scroll contracts in the same pass.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/clubs/clubs_controllers_test.dart test/clubs/club_hero_app_bar_test.dart test/clubs/club_detail_read_only_preview_test.dart",
+        "flutter analyze --no-fatal-infos lib/core/widgets/catch_tabbed_screen.dart lib/core/widgets/catch_tab_rail.dart lib/user_profile/presentation/profile_screen.dart lib/hosts/presentation/host_operations/host_clubs_scaffold.dart lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+        "node tool/design/check_component_contracts.mjs",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "The shared shell owns composition mechanics only. Feature state, async policy, callbacks, and specialized inner-scroll behavior remain feature-owned. Embedded detail previews reuse canonical slivers and disable actions at one boundary instead of cloning the public screen."
+    },
+    {
+      "id": "ARCH-PROVIDER-001",
+      "name": "Feature-owned startup orchestration",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-provider-001-feature-owned-startup-orchestration",
+      "prototypeFiles": [
+        "lib/user_profile/data/profile_location_initializer.dart",
+        "lib/user_profile/data/profile_location_initializer.g.dart",
+        "lib/app.dart",
+        "test/user_profile/profile_location_initializer_test.dart",
+        "tool/architecture/provider_graph.dart",
+        "tool/architecture/provider_graph_reviews.json"
+      ],
+      "adopters": [
+        {
+          "path": "lib/user_profile/data/profile_location_initializer.dart",
+          "role": "reference feature-owned keepAlive startup provider that combines current-profile state with feature-neutral device-location and city services before writing through the owning repository",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-13-provider-graph-architecture"
+        },
+        {
+          "path": "lib/app.dart",
+          "role": "composition root that activates the public feature-owned initializer without owning profile persistence or location policy",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-13-provider-graph-architecture"
+        },
+        {
+          "path": "test/user_profile/profile_location_initializer_test.dart",
+          "role": "provider-container proof that app-lifetime orchestration resolves passive location and persists it through the feature repository",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-13-provider-graph-architecture"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When a core provider begins watching feature data, move the orchestration to the owning feature or introduce a feature-neutral inversion contract; update the provider graph review, exhibit, and focused provider-container test in the same pass.",
+      "requiredChecks": [
+        "flutter test test/user_profile/profile_location_initializer_test.dart",
+        "dart run tool/architecture/provider_graph.dart --check",
+        "node tool/architecture/check_dependency_direction.mjs",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The app root may activate feature startup work. It must not make core own a feature repository or profile stream."
     },
     {
       "id": "ARCH-COPY-001",

@@ -7,7 +7,7 @@ repo_root="$(cd "$script_dir/../.." && pwd)"
 # shellcheck source=/dev/null
 source "$repo_root/tool/ci/toolchain.env"
 
-for name in FLUTTER_VERSION NODE_VERSION JAVA_VERSION FIREBASE_TOOLS_VERSION; do
+for name in FLUTTER_VERSION NODE_VERSION JAVA_VERSION FIREBASE_TOOLS_VERSION COCOAPODS_VERSION; do
   if [[ -z "${!name:-}" ]]; then
     echo "Missing $name in tool/ci/toolchain.env"
     exit 1

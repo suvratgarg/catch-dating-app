@@ -230,6 +230,28 @@ void main() {
         },
       );
     }
+
+    test('chat images persist immutable uploader ownership metadata', () async {
+      final storage = TestFirebaseStorage();
+      final repository = ImageUploadRepository(storage);
+      final image = _xFile(
+        bytes: Uint8List.fromList([1, 2, 3]),
+        name: 'photo.jpg',
+        mimeType: 'image/jpeg',
+      );
+
+      await repository.uploadChatImage(
+        matchId: 'match-1',
+        messageId: 'message-1',
+        uploaderUid: 'user-1',
+        image: image,
+      );
+
+      expect(
+        storage.refs.values.single.putDataCalls.single.metadata?.customMetadata,
+        {'uploaderUid': 'user-1'},
+      );
+    });
   });
 }
 
@@ -289,6 +311,7 @@ final _uploadCases = <UploadCase>[
     invoke: (repository, image) => repository.uploadChatImage(
       matchId: 'match-1',
       messageId: 'message-1',
+      uploaderUid: 'user-1',
       image: image,
     ),
   ),

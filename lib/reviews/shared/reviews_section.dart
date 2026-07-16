@@ -23,6 +23,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+enum ReviewsEmptyPresentation { hidden, inline, contained, standalone }
+
 /// Read-only club review aggregate.
 ///
 /// Reviews are event-scoped, so club pages must never expose review creation.
@@ -44,7 +46,7 @@ class ClubReviewsSection extends StatelessWidget {
       reviews: reviews,
       currentUid: currentUid,
       maxVisibleReviews: maxVisibleReviews,
-      compactEmptyState: true,
+      emptyPresentation: ReviewsEmptyPresentation.contained,
       showHeader: false,
       emptyMessage: 'Reviews appear after members attend an event.',
     );
@@ -60,8 +62,8 @@ class EventReviewsSection extends StatelessWidget {
     required this.reviews,
     required this.currentUid,
     required this.userProfile,
-    this.isHost = false,
-    this.hasAttended = false,
+    this.canWrite = false,
+    this.canRespond = false,
   });
 
   final String clubId;
@@ -70,15 +72,12 @@ class EventReviewsSection extends StatelessWidget {
   final String? currentUid;
   final UserProfile? userProfile;
 
-  /// True when the current user is the host — hides the write-review CTA.
-  final bool isHost;
-
-  /// True when the current user attended the event — gates event-level reviews.
-  final bool hasAttended;
+  final bool canWrite;
+  final bool canRespond;
 
   @override
   Widget build(BuildContext context) {
-    final canWriteEventReview = userProfile != null && !isHost && hasAttended;
+    final canWriteEventReview = userProfile != null && canWrite;
     final existingReview = canWriteEventReview && currentUid != null
         ? reviews.where((r) => r.reviewerUserId == currentUid).firstOrNull
         : null;
@@ -90,9 +89,26 @@ class EventReviewsSection extends StatelessWidget {
           reviews: reviews,
           currentUid: currentUid,
           showAllAction: reviews.length > 3,
-          compactEmptyState: true,
+          emptyPresentation: canWriteEventReview
+              ? ReviewsEmptyPresentation.inline
+              : ReviewsEmptyPresentation.hidden,
           showHeader: false,
-          emptyMessage: 'Reviews appear after attendees complete the event.',
+          emptyMessage: context
+              .l10n
+              .reviewsReviewsSectionMessageBeTheFirstToReviewThisEvent,
+          emptyAction: canWriteEventReview
+              ? CatchTextButton(
+                  key: ReviewKeys.writeReviewButton,
+                  label: context.l10n.reviewsReviewsSectionLabelWriteAReview,
+                  onPressed: () => showWriteReviewSheet(
+                    context: context,
+                    clubId: clubId,
+                    eventId: eventId,
+                    reviewer: userProfile!,
+                    existingReview: existingReview,
+                  ),
+                )
+              : null,
           onEditReview: canWriteEventReview
               ? (review) => showWriteReviewSheet(
                   context: context,
@@ -102,14 +118,14 @@ class EventReviewsSection extends StatelessWidget {
                   existingReview: review,
                 )
               : null,
-          onRespondToReview: isHost
+          onRespondToReview: canRespond
               ? (review) =>
                     showReviewResponseSheet(context: context, review: review)
               : null,
         ),
 
         // Review writes are event-scoped so one user can review each event once.
-        if (canWriteEventReview) ...[
+        if (canWriteEventReview && reviews.isNotEmpty) ...[
           gapH12,
           CatchButton(
             key: ReviewKeys.writeReviewButton,
@@ -139,9 +155,10 @@ class ReviewsPreviewSection extends StatelessWidget {
     required this.currentUid,
     this.maxVisibleReviews = 3,
     this.showAllAction = false,
-    this.compactEmptyState = false,
+    this.emptyPresentation = ReviewsEmptyPresentation.standalone,
     this.showHeader = true,
     this.emptyMessage,
+    this.emptyAction,
     this.onEditReview,
     this.onRespondToReview,
   });
@@ -150,9 +167,10 @@ class ReviewsPreviewSection extends StatelessWidget {
   final String? currentUid;
   final int maxVisibleReviews;
   final bool showAllAction;
-  final bool compactEmptyState;
+  final ReviewsEmptyPresentation emptyPresentation;
   final bool showHeader;
   final String? emptyMessage;
+  final Widget? emptyAction;
   final ValueChanged<Review>? onEditReview;
   final ValueChanged<Review>? onRespondToReview;
 
@@ -190,6 +208,11 @@ class ReviewsPreviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (reviews.isEmpty &&
+        emptyPresentation == ReviewsEmptyPresentation.hidden) {
+      return const SizedBox.shrink();
+    }
+
     final t = CatchTokens.of(context);
     final avgRating = reviews.isEmpty
         ? null
@@ -229,28 +252,36 @@ class ReviewsPreviewSection extends StatelessWidget {
         if (reviews.isEmpty)
           CatchEmptyState(
             icon: CatchIcons.rateReviewOutlined,
-            title: context.l10n.reviewsReviewsSectionTitleNoReviewsYet,
+            title: emptyPresentation == ReviewsEmptyPresentation.inline
+                ? null
+                : context.l10n.reviewsReviewsSectionTitleNoReviewsYet,
             message:
                 emptyMessage ??
-                (compactEmptyState
+                (emptyPresentation == ReviewsEmptyPresentation.contained
                     ? context
                           .l10n
                           .reviewsReviewsSectionMessageReviewsAppearAfterMembers
                     : context
                           .l10n
                           .reviewsReviewsSectionMessageReviewsFromAttendeesWill),
-            surface: compactEmptyState,
-            layout: compactEmptyState
-                ? CatchEmptyStateLayout.inline
-                : CatchEmptyStateLayout.stacked,
-            iconSize: compactEmptyState ? CatchIcon.row : CatchIcon.tile,
-            iconContainerSize: compactEmptyState ? 44 : null,
-            padding: compactEmptyState
+            action: emptyAction,
+            surface: emptyPresentation == ReviewsEmptyPresentation.contained,
+            layout: emptyPresentation == ReviewsEmptyPresentation.standalone
+                ? CatchEmptyStateLayout.stacked
+                : CatchEmptyStateLayout.inline,
+            iconSize: emptyPresentation == ReviewsEmptyPresentation.standalone
+                ? CatchIcon.tile
+                : CatchIcon.row,
+            iconContainerSize:
+                emptyPresentation == ReviewsEmptyPresentation.standalone
+                ? null
+                : 44,
+            padding: emptyPresentation == ReviewsEmptyPresentation.inline
+                ? EdgeInsets.zero
+                : emptyPresentation == ReviewsEmptyPresentation.contained
                 ? CatchInsets.content
                 : CatchInsets.contentVertical,
-            titleStyle: compactEmptyState
-                ? CatchTextStyles.sectionTitle(context)
-                : CatchTextStyles.sectionTitle(context),
+            titleStyle: CatchTextStyles.sectionTitle(context),
             messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
           )
         else ...[

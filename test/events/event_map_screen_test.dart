@@ -1,11 +1,14 @@
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
@@ -21,6 +24,64 @@ import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'events_test_helpers.dart';
 
 void main() {
+  test('distance-ring geography projects a northern radius edge', () {
+    final north = eventMapCoordinateNorthOf(
+      const LocationCoordinate(22.72, 75.86),
+      distanceMeters: 1000,
+    );
+
+    expect(north.latitude, closeTo(22.728993, 0.00001));
+    expect(north.longitude, 75.86);
+  });
+
+  test('distance-ring geography exposes all camera-fit bounds', () {
+    final bounds = eventMapRingBoundsCoordinates(
+      const LocationCoordinate(22.72, 75.86),
+      distanceMeters: 3000,
+    );
+
+    expect(bounds, hasLength(4));
+    expect(bounds[0].latitude, greaterThan(22.72));
+    expect(bounds[1].longitude, greaterThan(75.86));
+    expect(bounds[2].latitude, lessThan(22.72));
+    expect(bounds[3].longitude, lessThan(75.86));
+  });
+
+  test('selected native pins keep the resting bitmap while art resolves', () {
+    final restingBitmap = CatchMapMarkerBitmap(
+      bytes: Uint8List.fromList(<int>[1, 2, 3]),
+      logicalSize: const Size(38, 58),
+      imagePixelRatio: 2,
+    );
+
+    final pending = eventMapPinBitmapState(
+      selectedBitmap: null,
+      restingBitmap: restingBitmap,
+      rasterFailed: false,
+    );
+    final failed = eventMapPinBitmapState(
+      selectedBitmap: null,
+      restingBitmap: null,
+      rasterFailed: true,
+    );
+
+    expect(pending.publish, isTrue);
+    expect(pending.bitmap, same(restingBitmap));
+    expect(failed.publish, isTrue);
+    expect(failed.bitmap, isNull);
+  });
+
+  test('fixture distance ring follows handoff sizes within its viewport', () {
+    expect(
+      eventMapFixtureRingSize(radiusKm: 1, viewport: const Size(390, 800)),
+      150,
+    );
+    expect(
+      eventMapFixtureRingSize(radiusKm: 5, viewport: const Size(390, 800)),
+      351,
+    );
+  });
+
   testWidgets('shows a map-shaped skeleton while map events load', (
     tester,
   ) async {
@@ -62,33 +123,32 @@ void main() {
     expect(find.text('Nearby events'), findsNothing);
   });
 
-  testWidgets('shows no-pinned state without a nearby-events sheet', (
+  testWidgets('preserveCanvasWhenEmpty keeps map and distance ring visible', (
     tester,
   ) async {
-    final unpinned = buildEvent(
-      id: 'unpinned',
-      meetingPoint: 'Race Course Road main gate',
-      startTime: DateTime.now().add(const Duration(days: 1)),
-    );
-
     await pumpEventsTestApp(
       tester,
-      const EventMapView(enableNetworkTiles: false),
+      const EventMapView(
+        enableNetworkTiles: false,
+        preserveCanvasWhenEmpty: true,
+        distanceRingRadiusKm: 3,
+        distanceRingLabel: 'WITHIN 3 KM',
+      ),
       overrides: [
         eventMapViewModelProvider.overrideWith(
-          (ref) => AsyncData(
-            EventMapViewModel(events: [unpinned], pinnedEvents: const []),
-          ),
+          (ref) =>
+              const AsyncData(EventMapViewModel(events: [], pinnedEvents: [])),
         ),
-        deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
+        deviceLocationProvider.overrideWith(
+          () => _FakeDeviceLocation(const LocationCoordinate(22.72, 75.86)),
+        ),
         selectedExploreCityProvider.overrideWithValue(_mumbai),
       ],
     );
 
-    expect(find.text('No exact pins yet'), findsOneWidget);
-    expect(find.text('Nearby events'), findsNothing);
-    expect(find.text('Race Course Road main gate'), findsNothing);
-    expect(find.text('No pin'), findsNothing);
+    expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
+    expect(find.byType(CatchDistanceRing), findsOneWidget);
+    expect(find.text('No mapped events yet'), findsNothing);
   });
 
   testWidgets('selecting a map marker makes its pin the camera target', (
@@ -137,6 +197,58 @@ void main() {
     final map = tester.widget<EventPinsMap>(find.byType(EventPinsMap));
     expect(map.selectedEventId, 'second-event');
     expect(map.selectedEventCenter, const LocationCoordinate(22.75, 75.9));
+  });
+
+  testWidgets('external event pins select with their exact map coordinate', (
+    tester,
+  ) async {
+    final startTime = DateTime(2026, 7, 18, 19);
+    final externalEvent = ExternalEvent(
+      id: 'bandra-mixer',
+      canonicalHostId: 'host-bandra',
+      compatibilityClubId: 'club-bandra',
+      title: 'Bandra Singles Mixer',
+      description: 'A reviewed external event.',
+      startTime: startTime,
+      endTime: startTime.add(const Duration(hours: 2)),
+      meetingPoint: 'Bandra Amphitheatre',
+      latitude: 19.0435,
+      longitude: 72.8204,
+      activityKind: ActivityKind.singlesMixer,
+      interactionModel: EventInteractionModel.freeFormMixer,
+      status: 'active',
+      publicationStatus: 'public',
+      citySlug: 'mumbai',
+      externalLinks: const [],
+    );
+    ExternalEvent? selected;
+
+    await pumpEventsTestApp(
+      tester,
+      EventMapView(
+        enableNetworkTiles: false,
+        viewModel: AsyncData(
+          EventMapViewModel(
+            events: const [],
+            pinnedEvents: const [],
+            externalPinnedItems: [ExternalEventMapItem(event: externalEvent)],
+          ),
+        ),
+        onExternalEventSelected: (event) => selected = event,
+      ),
+      overrides: [
+        deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
+        selectedExploreCityProvider.overrideWithValue(_mumbai),
+      ],
+    );
+
+    await tester.tap(find.bySemanticsLabel('Select Bandra Amphitheatre'));
+    await tester.pump();
+
+    expect(selected, same(externalEvent));
+    final map = tester.widget<EventPinsMap>(find.byType(EventPinsMap));
+    expect(map.selectedEventId, 'external:bandra-mixer');
+    expect(map.selectedEventCenter, const LocationCoordinate(19.0435, 72.8204));
   });
 
   testWidgets('background tap clears selected map marker', (tester) async {
@@ -233,6 +345,31 @@ void main() {
     expect(find.text('SOCIAL RUN · 6:45 PM'), findsOneWidget);
   });
 
+  testWidgets('explicit fixture is neutral and composes the distance ring', (
+    tester,
+  ) async {
+    var ringTaps = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: EventPinsMap(
+          enableNetworkTiles: false,
+          items: const <EventMapItem>[],
+          initialCenter: const LocationCoordinate(22.72, 75.86),
+          userLocation: const LocationCoordinate(22.72, 75.86),
+          distanceRingRadiusKm: 3,
+          distanceRingLabel: 'Within 3 km · tap to change',
+          onDistanceRingTapped: () => ringTaps += 1,
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchDistanceRing), findsOneWidget);
+    expect(find.text('WITHIN 3 KM · TAP TO CHANGE'), findsOneWidget);
+    await tester.tap(find.text('WITHIN 3 KM · TAP TO CHANGE'));
+    expect(ringTaps, 1);
+  });
+
   testWidgets('native map wrapper supports byte-backed marker icons', (
     tester,
   ) async {
@@ -252,6 +389,8 @@ void main() {
                 imagePixelRatio: 2,
               ),
               zIndex: 2,
+              infoTitle: 'Saturday social run',
+              consumeTapEvents: true,
             ),
           },
         ),
@@ -272,9 +411,14 @@ void main() {
     expect(iconPayload['byteData'], isNotEmpty);
     expect(marker.anchor, const Offset(0.5, 1));
     expect(marker.zIndexInt, 2);
+    expect(marker.infoWindow.title, 'Saturday social run');
+    expect(marker.infoWindow.snippet, isNull);
+    expect(marker.consumeTapEvents, isTrue);
   });
 
-  testWidgets('event pin maps use Google default map styling', (tester) async {
+  testWidgets('event pin maps use the shared muted Catch map styling', (
+    tester,
+  ) async {
     final event = buildEvent(
       id: 'styled-event',
       meetingPoint: 'Race Course Road main gate',
@@ -299,38 +443,26 @@ void main() {
       find.byType(gmaps.GoogleMap),
     );
 
-    expect(googleMap.style, isNull);
+    expect(googleMap.style, CatchGoogleMapStyle.dark);
   });
 
-  testWidgets('event pin maps expose native marker info windows', (
+  testWidgets('event pin clusters rasterize app-owned ink count markers', (
     tester,
   ) async {
-    final event = buildEvent(
-      id: 'info-event',
-      meetingPoint: 'Race Course Road main gate',
-      startTime: DateTime(2026, 5, 27, 17, 42),
-      startingPointLat: 22.72,
-      startingPointLng: 75.86,
-    );
+    late CatchMapMarkerBitmap bitmap;
+    await tester.runAsync(() async {
+      bitmap = await buildEventMapClusterPinBitmap(
+        count: 6,
+        fillColor: Colors.black,
+        borderColor: Colors.white,
+        pixelRatio: 2,
+        textStyle: const TextStyle(fontSize: 12, color: Colors.white),
+      );
+    });
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: EventPinsMap(
-          items: [EventMapItem(event: event, status: EventTileStatus.full)],
-          initialCenter: const LocationCoordinate(22.72, 75.86),
-        ),
-      ),
-    );
-    await tester.pump();
-
-    final googleMap = tester.widget<gmaps.GoogleMap>(
-      find.byType(gmaps.GoogleMap),
-    );
-    final marker = googleMap.markers.single;
-
-    expect(marker.infoWindow.title, '5:42 PM · Wednesday Evening Run');
-    expect(marker.infoWindow.snippet, 'Race Course Road main gate');
+    expect(bitmap.bytes, isNotEmpty);
+    expect(bitmap.logicalSize, const Size.square(CatchSpacing.s10));
+    expect(bitmap.imagePixelRatio, 2);
   });
 
   testWidgets('event pin maps expose user dot and distance ring circles', (
@@ -345,6 +477,7 @@ void main() {
           initialCenter: const LocationCoordinate(22.72, 75.86),
           userLocation: const LocationCoordinate(22.72, 75.86),
           distanceRingRadiusKm: 3,
+          distanceRingLabel: 'WITHIN 3 KM · TAP TO CHANGE',
           onDistanceRingTapped: () => ringTaps += 1,
         ),
       ),
@@ -358,6 +491,8 @@ void main() {
 
     expect(circleIds, contains('event-map-user-location'));
     expect(circleIds, contains('event-map-distance-ring'));
+    expect(googleMap.rotateGesturesEnabled, isFalse);
+    expect(googleMap.tiltGesturesEnabled, isFalse);
 
     googleMap.circles
         .singleWhere(
@@ -397,7 +532,7 @@ void main() {
     expect(centers.last, const LocationCoordinate(22.75, 75.9));
   });
 
-  testWidgets('event pin maps cluster dense pins at low zoom', (tester) async {
+  test('event pin maps cluster dense pins at low zoom', () {
     final events = [
       for (var i = 0; i < 8; i += 1)
         buildEvent(
@@ -408,27 +543,12 @@ void main() {
         ),
     ];
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: EventPinsMap(
-          items: [
-            for (final event in events)
-              EventMapItem(event: event, status: EventTileStatus.open),
-          ],
-          initialCenter: const LocationCoordinate(22.72, 75.86),
-          initialZoom: 12,
-        ),
-      ),
-    );
-    await tester.pump();
+    final groupSizes = eventMapMarkerGroupSizes([
+      for (final event in events)
+        EventMapItem(event: event, status: EventTileStatus.open),
+    ], cameraZoom: 12);
 
-    final googleMap = tester.widget<gmaps.GoogleMap>(
-      find.byType(gmaps.GoogleMap),
-    );
-
-    expect(googleMap.markers, hasLength(1));
-    expect(googleMap.markers.single.markerId.value, startsWith('cluster-'));
+    expect(groupSizes, [8]);
   });
 }
 

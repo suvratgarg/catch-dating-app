@@ -2574,20 +2574,6 @@ Widget eventSuccessStrictRecommendationSwitch(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "SetupChoiceChips",
-  type: SetupChoiceChips,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictSetupChoiceChips(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "SetupChoiceChips",
-  );
-}
-
-@widgetbook.UseCase(
   name: "SafetyFooter",
   type: SafetyFooter,
   path:
@@ -2598,20 +2584,6 @@ Widget eventSuccessStrictSafetyFooter(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.setup,
     componentName: "SafetyFooter",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "SetupDisclosureSection",
-  type: SetupDisclosureSection,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictSetupDisclosureSection(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "SetupDisclosureSection",
   );
 }
 
@@ -2630,20 +2602,6 @@ Widget eventSuccessStrictStageCard(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "ActivityAttributeGoalChips",
-  type: ActivityAttributeGoalChips,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Structure editor folded states",
-)
-Widget eventSuccessStrictActivityAttributeGoalChips(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.structure,
-    componentName: "ActivityAttributeGoalChips",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventSuccessStructureConfigEditor",
   type: EventSuccessStructureConfigEditor,
   path:
@@ -2656,20 +2614,6 @@ Widget eventSuccessStrictEventSuccessStructureConfigEditor(
     context,
     surface: _EventSuccessStrictSurface.structure,
     componentName: "EventSuccessStructureConfigEditor",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "StructureNumberField",
-  type: StructureNumberField,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Structure editor folded states",
-)
-Widget eventSuccessStrictStructureNumberField(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.structure,
-    componentName: "StructureNumberField",
   );
 }
 

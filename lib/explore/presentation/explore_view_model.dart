@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -357,6 +358,31 @@ class ExploreFilters extends _$ExploreFilters {
     state = state.copyWith(distanceFilter: filter);
   }
 
+  /// Applies a user-selected radius only after an exact device location exists.
+  ///
+  /// Passive Explore reads never prompt for permission. Every production UI
+  /// entry point for a non-ANY radius routes through this method so a missing
+  /// location cannot silently turn the feed into an empty result set.
+  Future<DeviceLocationFailure?> applyDistanceFilter(
+    ExploreDistanceFilter filter,
+  ) async {
+    if (filter == ExploreDistanceFilter.any) {
+      setDistanceFilter(filter);
+      return null;
+    }
+
+    final locationController = ref.read(deviceLocationProvider.notifier);
+    var location = ref.read(deviceLocationProvider).asData?.value;
+    location ??= await locationController.request();
+    if (location == null) {
+      return locationController.lastFailure ??
+          DeviceLocationFailure.unavailable;
+    }
+
+    setDistanceFilter(filter);
+    return null;
+  }
+
   void toggleDistanceFilter(ExploreDistanceFilter filter) {
     final next = state.distanceFilter == filter
         ? ExploreDistanceFilter.any
@@ -391,8 +417,16 @@ class ExploreFilters extends _$ExploreFilters {
   }
 
   void clearLocalScope() {
-    if (state.activityTag == null && state.area == null) return;
-    state = state.copyWith(activityTag: null, area: null);
+    if (state.activityTag == null &&
+        state.area == null &&
+        state.distanceFilter == ExploreDistanceFilter.any) {
+      return;
+    }
+    state = state.copyWith(
+      activityTag: null,
+      area: null,
+      distanceFilter: ExploreDistanceFilter.any,
+    );
   }
 
   void clear() {

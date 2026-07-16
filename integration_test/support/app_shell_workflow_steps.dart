@@ -62,7 +62,7 @@ Future<void> selectClubCity(WidgetTester tester, String label) async {
 
 Future<void> fillCreateEventBasicsStep(WidgetTester tester) async {
   await enterCreateEventText(tester, CreateEventFormKeys.distance, '7.5');
-  await tester.tap(find.text('MODERATE'));
+  await tester.tap(find.text('Moderate'));
   await enterCreateEventText(
     tester,
     CreateEventFormKeys.description,

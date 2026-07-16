@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_view_model.dart';
@@ -20,7 +21,6 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 class ReviewsHistoryScreen extends ConsumerWidget {
   const ReviewsHistoryScreen({super.key});
@@ -68,7 +68,7 @@ class ReviewsHistoryScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: CatchTopBar(
+      appBar: CatchScreenTopBar(
         title: context.l10n.reviewsReviewsHistoryScreenTitleReviewHistory,
         border: true,
       ),

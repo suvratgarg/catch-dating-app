@@ -167,11 +167,10 @@
         "event_location_map_loading",
         "event_location_map_error",
         "event_location_map_not_found",
-        "event_location_map_no_coordinate",
         "event_location_map_text_scale_2",
         "event_location_map_reduced_motion"
       ],
-      "reason": "Event location map captures now cover pinned map, route loading, route error, event not found, no-coordinate empty state, text scale, reduced motion, and paired light/dark output with network tiles disabled."
+      "reason": "Event location map captures cover the required pinned map, route loading, route error, event not found, text scale, reduced motion, and paired light/dark output with network tiles disabled."
     },
     {
       "routeId": "dashboardScreen",
@@ -465,6 +464,7 @@
         "profile_self_unavailable",
         "profile_self_edit_tab",
         "profile_self_preview_tab",
+        "profile_self_insights_tab",
         "profile_self_photo_upload_pending",
         "profile_self_photo_upload_error",
         "profile_self_inline_save_pending",
@@ -473,7 +473,7 @@
         "profile_self_reduced_motion",
         "profile_self_light_dark"
       ],
-      "reason": "Self-profile captures now cover flagship profile surface plus deterministic full-route loading, error, offline, unavailable, edit tab, preview tab, upload-pending, upload-failure snackbar, inline save pending/error drawers, text scale, reduced motion, and paired light/dark variants."
+      "reason": "Self-profile captures now cover flagship profile surface plus deterministic full-route loading, error, offline, unavailable, Edit, Preview, and Insights tabs, upload-pending, upload-failure snackbar, inline save pending/error drawers, text scale, reduced motion, and paired light/dark variants."
     },
     {
       "routeId": "reviewsHistoryScreen",
@@ -622,13 +622,9 @@
       "status": "captured",
       "priority": "P2",
       "captureIds": [
-        "host_clubs_insights_reference",
-        "host_clubs_insights_report",
-        "host_clubs_insights_loading",
-        "host_clubs_insights_error",
-        "host_clubs_insights_offline"
+        "host_clubs_insights_reference"
       ],
-      "reason": "The dedicated Organizer Insights utility route has a routed 390x812 primary capture plus deterministic tall report, loading, generic error, and offline captures."
+      "reason": "The dedicated Organizer Insights utility route retains a routed 390x812 deep-link capture; ordinary report/loading/error/offline coverage now mounts Insights inside HostClubsScreen so the shared Organizer chrome is part of the evidence."
     },
     {
       "routeId": "hostClubsScreen",
@@ -640,6 +636,10 @@
         "host_clubs_offline",
         "host_clubs_empty",
         "host_clubs_cohost_edit",
+        "host_clubs_insights_report",
+        "host_clubs_insights_loading",
+        "host_clubs_insights_error",
+        "host_clubs_insights_offline",
         "host_clubs_preview_tab",
         "host_clubs_text_scale_2",
         "host_clubs_reduced_motion",

@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {ProcessStatusPanel} from "../../shared/ui/primitives";
 
@@ -7,49 +8,49 @@ export function NotFoundPage() {
       <SiteHeader
         brandHref="/"
         nav={[
-          {href: "/organizers/", label: "Organizers"},
-          {href: "/host/", label: "For hosts"},
-          {href: "/", label: "Member site"},
+          {href: "/organizers/", label: websiteCopy["notfoundpage_0339"]},
+          {href: "/host/", label: websiteCopy["notfoundpage_0334"]},
+          {href: "/", label: websiteCopy["notfoundpage_0337"]},
         ]}
         ctaHref="/organizers/"
-        ctaLabel="Search organizers"
+        ctaLabel={websiteCopy["notfoundpage_0342"]}
       />
 
       <WebsitePageMain id="top">
         <ProcessStatusPanel
           mark="404"
-          eyebrow="Page not found"
-          title="This Catch page is not available."
-          body="The link may have moved, or the organizer profile may not exist yet."
+          eyebrow={websiteCopy["notfoundpage_0340"]}
+          title={websiteCopy["notfoundpage_0345"]}
+          body={websiteCopy["notfoundpage_0344"]}
           items={[
             {
-              title: "Search the organizer directory",
-              body: "Look up public profiles by city, format, organizer name, or review signal.",
+              title: websiteCopy["notfoundpage_0343"],
+              body: websiteCopy["notfoundpage_0336"],
             },
             {
-              title: "Browse the member site",
-              body: "Return to the public homepage for the current Catch event flow.",
+              title: websiteCopy["notfoundpage_0331"],
+              body: websiteCopy["notfoundpage_0341"],
             },
             {
-              title: "Open host tools",
-              body: "If you own the page you expected, start from the host route or claim search.",
+              title: websiteCopy["notfoundpage_0338"],
+              body: websiteCopy["notfoundpage_0335"],
             },
           ]}
           actions={[
-            {href: "/organizers/", label: "Search organizers", variant: "primary"},
-            {href: "/", label: "Member site", variant: "secondary"},
-            {href: "/host/", label: "For hosts", variant: "secondary"},
+            {href: "/organizers/", label: websiteCopy["notfoundpage_0342"], variant: "primary"},
+            {href: "/", label: websiteCopy["notfoundpage_0337"], variant: "secondary"},
+            {href: "/host/", label: websiteCopy["notfoundpage_0334"], variant: "secondary"},
           ]}
         />
       </WebsitePageMain>
 
       <SiteFooter
         brandHref="/"
-        body="Curated singles events. Real context. Better conversations."
+        body={websiteCopy["notfoundpage_0333"]}
         links={[
-          {href: "/organizers/", label: "Organizers"},
-          {href: "/host/", label: "For hosts"},
-          {href: "/claim/", label: "Claim a listing"},
+          {href: "/organizers/", label: websiteCopy["notfoundpage_0339"]},
+          {href: "/host/", label: websiteCopy["notfoundpage_0334"]},
+          {href: "/claim/", label: websiteCopy["notfoundpage_0332"]},
         ]}
       />
     </>

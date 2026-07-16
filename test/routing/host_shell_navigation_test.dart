@@ -15,6 +15,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../test_pump_helpers.dart';
+
 const _uid = 'host-user';
 
 void main() {
@@ -58,7 +60,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       final navigationBar = tester.widget<AppShellNavigationBar>(
         find.byType(AppShellNavigationBar),
@@ -75,15 +77,15 @@ void main() {
       expect(find.text('TODAY BODY'), findsOneWidget);
 
       await tester.tap(find.bySemanticsLabel(RegExp('Events')));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('EVENTS BODY'), findsOneWidget);
 
       await tester.tap(find.bySemanticsLabel(RegExp('Inbox')));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('INBOX BODY'), findsOneWidget);
 
       await tester.tap(find.bySemanticsLabel(RegExp('Organizer')));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('ORGANIZER BODY'), findsOneWidget);
       final tabBarFloats = CatchTabBar.floatsFor(
         tester.element(find.byType(HostAppShell)),

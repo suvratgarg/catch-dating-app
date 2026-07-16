@@ -54,6 +54,13 @@ void main() {
         startTime: DateTime.now().add(const Duration(hours: 1)),
         endTime: DateTime.now().add(const Duration(hours: 2)),
         meetingPoint: 'Carter Road',
+        meetingLocation: const EventMeetingLocation(
+          name: 'Carter Road',
+          latitude: 19.0608,
+          longitude: 72.8365,
+        ),
+        startingPointLat: 19.0608,
+        startingPointLng: 72.8365,
         distanceKm: 5,
         pace: PaceLevel.easy,
         capacityLimit: 2,
@@ -67,5 +74,4 @@ void main() {
       expect(event.hasRequirements, isTrue);
     });
   });
-
 }

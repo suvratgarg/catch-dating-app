@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('setup body uses CatchSelectChip for live guide choices', (
+  testWidgets('setup body uses CatchField choices for live guide choices', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -66,8 +65,8 @@ void main() {
       ),
     );
 
-    expect(_selectChip('15 min', active: true), findsOneWidget);
-    expect(_selectChip('10s', active: true), findsOneWidget);
+    expect(_choice('15 min', selected: true), findsOneWidget);
+    expect(_choice('10s', selected: true), findsOneWidget);
     expect(
       _fieldToggle(EventSuccessModuleCatalog.liveReveal.title),
       findsOneWidget,
@@ -88,23 +87,19 @@ void main() {
       isTrue,
     );
 
-    await _tapSelectChip(tester, '20 min');
+    await _tapChoice(tester, '20 min');
     await tester.pump();
     expect(draft.structureConfig.rotationIntervalMinutes, 20);
-    expect(_selectChip('20 min', active: true), findsOneWidget);
+    expect(_choice('20 min', selected: true), findsOneWidget);
 
-    await _tapSelectChip(tester, '15s');
+    await _tapChoice(tester, '15s');
     await tester.pump();
     expect(draft.structureConfig.revealCountdownSeconds, 15);
-    expect(_selectChip('15s', active: true), findsOneWidget);
+    expect(_choice('15s', selected: true), findsOneWidget);
 
-    await tester.tap(find.text('Advanced'));
-    await tester.pump(kThemeAnimationDuration);
-    await tester.pump();
+    expect(_choice('Clues only', selected: true), findsOneWidget);
 
-    expect(_selectChip('Clues only', active: true), findsOneWidget);
-
-    _invokeSelectChip(tester, 'Clues + soft pairing');
+    _invokeChoice(tester, 'Clues + soft pairing');
     await tester.pump();
     expect(
       draft.isModuleSelected(
@@ -113,9 +108,9 @@ void main() {
       isTrue,
     );
     expect(draft.compatibilityAffectsRanking, isTrue);
-    expect(_selectChip('Clues + soft pairing', active: true), findsOneWidget);
+    expect(_choice('Clues + soft pairing', selected: true), findsOneWidget);
 
-    _invokeSelectChip(tester, 'Off');
+    _invokeChoice(tester, 'Off');
     await tester.pump();
     expect(
       draft.isModuleSelected(
@@ -124,19 +119,19 @@ void main() {
       isFalse,
     );
     expect(draft.compatibilityAffectsRanking, isFalse);
-    expect(_selectChip('Off', active: true), findsOneWidget);
+    expect(_choice('Off', selected: true), findsOneWidget);
   });
 }
 
-Future<void> _tapSelectChip(WidgetTester tester, String label) async {
-  final finder = _selectChip(label);
+Future<void> _tapChoice(WidgetTester tester, String label) async {
+  final finder = _choice(label);
   await tester.ensureVisible(finder);
   await tester.pump();
-  await tester.tap(find.descendant(of: finder, matching: find.text(label)));
+  tester.widgetList<CatchFieldChoiceChip>(finder).last.onPressed();
 }
 
-void _invokeSelectChip(WidgetTester tester, String label) {
-  tester.widgetList<CatchSelectChip>(_selectChip(label)).last.onTap!();
+void _invokeChoice(WidgetTester tester, String label) {
+  tester.widgetList<CatchFieldChoiceChip>(_choice(label)).last.onPressed();
 }
 
 Future<void> _tapToggle(WidgetTester tester, String label) async {
@@ -147,16 +142,21 @@ Future<void> _tapToggle(WidgetTester tester, String label) async {
 }
 
 Finder _fieldToggle(String label) {
+  return _field(label);
+}
+
+Finder _field(String label) {
   return find.byWidgetPredicate(
     (widget) => widget is CatchField && widget.title == label,
   );
 }
 
-Finder _selectChip(String label, {bool? active}) {
+Finder _choice(String label, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchSelectChip &&
+        widget is CatchFieldChoiceChip &&
         widget.label == label &&
-        (active == null || widget.active == active),
+        (selected == null || widget.selected == selected),
+    skipOffstage: false,
   );
 }

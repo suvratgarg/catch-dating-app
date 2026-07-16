@@ -38,12 +38,12 @@ export function SiteHeader({
 
   return (
     <header className={`site-header ${isScrolled ? "is-scrolled" : ""}`}>
-      <PlainLink className="brand" href={brandHref} aria-label="Catch home">
-        <span className="brand__mark" aria-hidden="true">C</span>
-        <span className="brand__word">Catch</span>
+      <PlainLink className="brand" href={brandHref} aria-label={"Catch home"}>
+        <span className="brand__mark" aria-hidden="true">{"C"}</span>
+        <span className="brand__word">{"Catch"}</span>
       </PlainLink>
 
-      <nav className="site-nav" aria-label="Primary">
+      <nav className="site-nav" aria-label={"Primary"}>
         {nav.map((item) => (
           <PlainLink
             href={item.href}

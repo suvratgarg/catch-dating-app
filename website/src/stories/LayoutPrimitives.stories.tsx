@@ -60,7 +60,7 @@ export const UiLabelShellStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_ui_label_shell",
-      routeIds: ["home", "host", "host_preview", "claim", "claim_lookup", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
+      routeIds: ["home", "host", "claim", "claim_lookup", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
       states: ["eyebrow", "metadata-label"],
     },
   },
@@ -85,7 +85,7 @@ export const SectionHeaderStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_section_header",
-      routeIds: ["home", "host", "host_preview", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
+      routeIds: ["home", "host", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
       states: ["default", "wide", "h1"],
     },
   },
@@ -112,7 +112,7 @@ export const ActionGroupStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_action_group",
-      routeIds: ["home", "host", "host_preview", "claim", "organizer_listing_canonical", "organizer_listing_legacy"],
+      routeIds: ["home", "host", "claim", "organizer_listing_canonical", "organizer_listing_legacy"],
       states: ["flow", "hero", "host-create-flow"],
     },
   },
@@ -139,7 +139,7 @@ export const FieldGridStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_field_grid",
-      routeIds: ["host", "host_preview", "claim"],
+      routeIds: ["host", "claim"],
       states: ["two-column", "span-field", "select-field"],
     },
   },
@@ -174,16 +174,28 @@ export const StepRailStory: Story = {
   render: () => <StepRailDemo />,
 };
 
-export const ChoiceControlsStory: Story = {
-  name: "Choice controls",
+export const ChoiceChipControlsStory: Story = {
+  name: "Choice chip controls",
   parameters: {
     catchComponent: {
-      id: "shared_choice_controls",
+      id: "shared_choice_chip_controls",
       routeIds: ["host", "claim"],
-      states: ["chip-grid", "choice-card", "selected"],
+      states: ["chip-grid", "selected"],
     },
   },
-  render: () => <ChoiceControlsDemo />,
+  render: () => <ChoiceChipControlsDemo />,
+};
+
+export const ChoiceCardControlsStory: Story = {
+  name: "Choice card controls",
+  parameters: {
+    catchComponent: {
+      id: "shared_choice_card_controls",
+      routeIds: ["host", "claim"],
+      states: ["choice-card", "selected"],
+    },
+  },
+  render: () => <ChoiceCardControlsDemo />,
 };
 
 export const WaitlistSectionStory: Story = {
@@ -191,7 +203,7 @@ export const WaitlistSectionStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_waitlist_section",
-      routeIds: ["home", "host", "host_preview"],
+      routeIds: ["home", "host"],
       states: ["member", "host"],
     },
   },
@@ -294,7 +306,7 @@ export const ProductShellStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_product_shell",
-      routeIds: ["home", "host", "host_preview"],
+      routeIds: ["home", "host"],
       states: ["product-board", "host-console", "module-stack", "host-create-mock"],
     },
   },
@@ -338,7 +350,7 @@ export const ProductShellStory: Story = {
       </ProductShell>
       <ModuleStack
         items={[
-          {label: "Event Success", title: "QR check-in", body: "Attendance and host notes stay tied to the event."},
+          {label: "Playbook", title: "QR check-in", body: "Attendance and host notes stay tied to the event."},
           {label: "Safety", title: "Guest list controls", body: "Host controls are surfaced before launch."},
         ]}
       />
@@ -493,10 +505,30 @@ function StepRailDemo() {
   );
 }
 
-function ChoiceControlsDemo() {
+function ChoiceChipControlsDemo() {
   const [format, setFormat] = useState("Dinner");
-  const [method, setMethod] = useState("domain");
   const formats = ["Dinner", "Run club", "Venue mixer"];
+
+  return (
+    <div>
+      <UiLabel>Host formats</UiLabel>
+      <ChoiceChipGrid aria-label="Host formats">
+        {formats.map((item) => (
+          <ChoiceChip
+            key={item}
+            onClick={() => setFormat(item)}
+            selected={format === item}
+          >
+            {item}
+          </ChoiceChip>
+        ))}
+      </ChoiceChipGrid>
+    </div>
+  );
+}
+
+function ChoiceCardControlsDemo() {
+  const [method, setMethod] = useState("domain");
   const methods = [
     {
       id: "domain",
@@ -511,35 +543,19 @@ function ChoiceControlsDemo() {
   ];
 
   return (
-    <ContentGrid variant="claim-review">
-      <div>
-        <UiLabel id="storybook-host-formats-label">Host formats</UiLabel>
-        <ChoiceChipGrid aria-labelledby="storybook-host-formats-label">
-          {formats.map((item) => (
-            <ChoiceChip
-              key={item}
-              onClick={() => setFormat(item)}
-              selected={format === item}
-            >
-              {item}
-            </ChoiceChip>
-          ))}
-        </ChoiceChipGrid>
-      </div>
-      <div>
-        <UiLabel id="storybook-verification-methods-label">Verification</UiLabel>
-        <VerificationMethodGrid aria-labelledby="storybook-verification-methods-label">
-          {methods.map((item) => (
-            <ChoiceCard
-              body={item.body}
-              key={item.id}
-              onClick={() => setMethod(item.id)}
-              selected={method === item.id}
-              title={item.title}
-            />
-          ))}
-        </VerificationMethodGrid>
-      </div>
-    </ContentGrid>
+    <div>
+      <UiLabel>Verification</UiLabel>
+      <VerificationMethodGrid aria-label="Verification methods">
+        {methods.map((item) => (
+          <ChoiceCard
+            body={item.body}
+            key={item.id}
+            onClick={() => setMethod(item.id)}
+            selected={method === item.id}
+            title={item.title}
+          />
+        ))}
+      </VerificationMethodGrid>
+    </div>
   );
 }

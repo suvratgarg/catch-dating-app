@@ -89,6 +89,13 @@ Event _event({required ActivityKind activityKind}) {
     startTime: DateTime(2026, 5, 29, 19),
     endTime: DateTime(2026, 5, 29, 21),
     meetingPoint: 'Gallery',
+    meetingLocation: const EventMeetingLocation(
+      name: 'Gallery',
+      latitude: 19.0596,
+      longitude: 72.8295,
+    ),
+    startingPointLat: 19.0596,
+    startingPointLng: 72.8295,
     eventFormat: EventFormatSnapshot.fromActivityKind(activityKind),
     distanceKm: 0,
     pace: PaceLevel.easy,

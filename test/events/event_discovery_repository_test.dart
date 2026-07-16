@@ -232,9 +232,10 @@ Future<void> _seedDiscoverableEvent(
     'discoveryCityName': cityName,
     'discoveryMarketId': marketId,
     'discoveryActivityKind': event.activityKind.name,
-    'discoveryGeoCell': latitude == null || longitude == null
-        ? null
-        : eventDiscoveryGeoCellFor(latitude: latitude, longitude: longitude),
+    'discoveryGeoCell': eventDiscoveryGeoCellFor(
+      latitude: latitude,
+      longitude: longitude,
+    ),
     'discoveryHasOpenSpots': hasOpenSpots,
     'discoveryAvailability': availability,
     'discoveryOpenCohorts': openCohorts,

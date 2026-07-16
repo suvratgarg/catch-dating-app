@@ -7,6 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/entities/reorderable_animation_config.dart';
 import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
 
+/// Shared embedded layout contract for ready and loading profile photo grids.
+///
+/// The surrounding page owns system safe-area padding, so the nested grid must
+/// not inherit [MediaQuery.padding] through [GridView]'s default behavior.
+abstract final class ProfilePhotoGridLayout {
+  static const EdgeInsets padding = EdgeInsets.zero;
+
+  static const SliverGridDelegateWithFixedCrossAxisCount delegate =
+      SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: CatchSpacing.s2,
+        crossAxisSpacing: CatchSpacing.s2,
+        childAspectRatio: CatchAspectRatio.portrait3x4,
+      );
+}
+
 /// A 3×2 grid of photo slots for displaying and editing a user's profile photos.
 ///
 /// Slots are filled densely: filled slots are tappable to replace, the next
@@ -31,8 +47,6 @@ class PhotoGrid extends StatefulWidget {
   final void Function(int fromIndex, int toIndex)? onReorderPhoto;
   final bool canDeletePhotos;
   final String mainLabel;
-
-  static const _crossAxisCount = 3;
 
   @override
   State<PhotoGrid> createState() => _PhotoGridState();
@@ -78,12 +92,8 @@ class _PhotoGridState extends State<PhotoGrid> {
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: PhotoGrid._crossAxisCount,
-            mainAxisSpacing: CatchSpacing.s2,
-            crossAxisSpacing: CatchSpacing.s2,
-            childAspectRatio: CatchAspectRatio.portrait3x4,
-          ),
+          padding: ProfilePhotoGridLayout.padding,
+          gridDelegate: ProfilePhotoGridLayout.delegate,
           itemCount: maximumProfilePhotoCount,
           itemBuilder: (context, index) {
             final photo = photosByPosition[index];

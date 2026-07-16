@@ -308,8 +308,8 @@ Event _run({
   int bookedCount = 0,
   int checkedInCount = 0,
   int waitlistedCount = 0,
-  double? startingPointLat,
-  double? startingPointLng,
+  double startingPointLat = 19.0676,
+  double startingPointLng = 72.8221,
 }) {
   return Event(
     id: id,
@@ -317,6 +317,11 @@ Event _run({
     startTime: startTime,
     endTime: endTime ?? startTime.add(const Duration(hours: 1)),
     meetingPoint: 'Carter Road Amphitheatre',
+    meetingLocation: EventMeetingLocation(
+      name: 'Carter Road Amphitheatre',
+      latitude: startingPointLat,
+      longitude: startingPointLng,
+    ),
     startingPointLat: startingPointLat,
     startingPointLng: startingPointLng,
     distanceKm: distanceKm,

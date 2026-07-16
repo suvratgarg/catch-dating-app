@@ -20,7 +20,10 @@ class DashboardEmptySliverBody extends StatelessWidget {
                 maxWidth: CatchLayout.maxContentWidth,
               ),
               child: CatchSectionStack(
-                padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s5),
+                padding: CatchInsets.pageBody.copyWith(
+                  top: CatchSpacing.s5,
+                  bottom: 0,
+                ),
                 children: [
                   CatchSection.divided(
                     title:

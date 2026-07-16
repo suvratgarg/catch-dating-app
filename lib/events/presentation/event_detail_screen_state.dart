@@ -484,9 +484,8 @@ EventDetailHostState eventDetailHostStateFrom({
         hostUid: hostUid,
         hostName: club.displayHostName,
         photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
-        meta: _hostMeta(club),
-        verified: club.ownerOrPrimaryHostUserId != null,
-        stats: _hostStats(club, l10n),
+        meta: _hostMeta(club, l10n),
+        verified: false,
         canMessage: canMessage,
       );
     }(),
@@ -495,57 +494,17 @@ EventDetailHostState eventDetailHostStateFrom({
   };
 }
 
-const List<String> _monthAbbrevs = <String>[
-  'JAN',
-  'FEB',
-  'MAR',
-  'APR',
-  'MAY',
-  'JUN',
-  'JUL',
-  'AUG',
-  'SEP',
-  'OCT',
-  'NOV',
-  'DEC',
-];
-
-String _hostMeta(Club club) {
-  final month = _monthAbbrevs[(club.createdAt.month - 1).clamp(0, 11)];
-  final parts = <String>['HOSTING SINCE $month ${club.createdAt.year}'];
+String? _hostMeta(Club club, AppLocalizations l10n) {
+  final parts = <String>[];
   final area = club.area.trim();
   if (area.isNotEmpty) parts.add(area.toUpperCase());
-  return parts.join(' · ');
-}
-
-List<EventDetailHostStat> _hostStats(Club club, AppLocalizations l10n) {
-  final stats = <EventDetailHostStat>[];
-  if (club.memberCount > 0) {
-    stats.add(
-      EventDetailHostStat(
-        value: l10n.eventsEventDetailScreenStateVisiblecopyMembercount(
-          memberCount: club.memberCount,
-        ),
-        label: l10n.eventsEventDetailScreenStateLabelMembers,
+  if (club.reviewCount > 0) {
+    parts.add(
+      l10n.eventsEventDetailScreenStateVisiblecopyClubReviewSummary(
+        rating: club.rating.toStringAsFixed(1),
+        reviewCount: club.reviewCount,
       ),
     );
   }
-  if (club.reviewCount > 0) {
-    stats
-      ..add(
-        EventDetailHostStat(
-          value: club.rating.toStringAsFixed(1),
-          label: l10n.eventsEventDetailScreenStateLabelRating,
-        ),
-      )
-      ..add(
-        EventDetailHostStat(
-          value: l10n.eventsEventDetailScreenStateVisiblecopyReviewcount(
-            reviewCount: club.reviewCount,
-          ),
-          label: l10n.eventsEventDetailScreenStateLabelReviews,
-        ),
-      );
-  }
-  return stats;
+  return parts.isEmpty ? null : parts.join(' · ');
 }

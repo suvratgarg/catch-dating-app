@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
@@ -99,6 +100,18 @@ Widget profileScreenSelfRouteStates(BuildContext context) {
       _StateCard(
         label: 'edit tab default',
         child: const _DeviceFrame(child: _SelfProfileRouteScope()),
+      ),
+      _StateCard(
+        label: 'preview tab default',
+        child: const _DeviceFrame(
+          child: _SelfProfileRouteScope(initialTab: SelfProfileTab.preview),
+        ),
+      ),
+      _StateCard(
+        label: 'insights tab default',
+        child: const _DeviceFrame(
+          child: _SelfProfileRouteScope(initialTab: SelfProfileTab.insights),
+        ),
       ),
       _StateCard(
         label: 'upload pending in photo grid',
@@ -243,9 +256,15 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
           height: 360,
           child: Column(
             children: const [
-              Expanded(child: _ProfileHeaderPreview(initialIndex: 0)),
+              Expanded(
+                child: _ProfileHeaderPreview(initialTab: SelfProfileTab.edit),
+              ),
               CatchDivider.section(),
-              Expanded(child: _ProfileHeaderPreview(initialIndex: 1)),
+              Expanded(
+                child: _ProfileHeaderPreview(
+                  initialTab: SelfProfileTab.preview,
+                ),
+              ),
             ],
           ),
         ),
@@ -353,21 +372,21 @@ Widget profileTabBarStates(BuildContext context) {
         label: 'edit selected',
         child: const _SectionFrame(
           height: 96,
-          child: _ProfileTabBarPreview(initialIndex: 0),
+          child: _ProfileTabBarPreview(initialTab: SelfProfileTab.edit),
         ),
       ),
       _StateCard(
         label: 'preview selected',
         child: const _SectionFrame(
           height: 96,
-          child: _ProfileTabBarPreview(initialIndex: 1),
+          child: _ProfileTabBarPreview(initialTab: SelfProfileTab.preview),
         ),
       ),
       _StateCard(
         label: 'insights selected',
         child: const _SectionFrame(
           height: 96,
-          child: _ProfileTabBarPreview(initialIndex: 2),
+          child: _ProfileTabBarPreview(initialTab: SelfProfileTab.insights),
         ),
       ),
     ],
@@ -641,8 +660,12 @@ Widget profileFieldRowSectionStates(BuildContext context) {
             children: [
               CatchSection.fieldRows(
                 title: 'Privacy & safety',
-                footer: const Text(
-                  'Footer content stays below the field-row section.',
+                footer: Padding(
+                  padding: const EdgeInsets.only(top: CatchSpacing.s3),
+                  child: Text(
+                    'Footer content stays below the field-row section.',
+                    style: CatchTextStyles.supporting(context),
+                  ),
                 ),
                 children: [
                   CatchField.read(
@@ -1855,11 +1878,13 @@ class _SelfProfileRouteScope extends StatelessWidget {
     this.profileStream,
     this.uploadLoadingIndices = const {},
     this.themeMode = ThemeMode.light,
+    this.initialTab = SelfProfileTab.edit,
   });
 
   final Stream<UserProfile?>? profileStream;
   final Set<int> uploadLoadingIndices;
   final ThemeMode themeMode;
+  final SelfProfileTab initialTab;
 
   @override
   Widget build(BuildContext context) {
@@ -1882,7 +1907,7 @@ class _SelfProfileRouteScope extends StatelessWidget {
           ),
         ),
       ],
-      child: _ProfileRouter(themeMode: themeMode),
+      child: _ProfileRouter(themeMode: themeMode, initialTab: initialTab),
     );
   }
 }
@@ -1905,7 +1930,10 @@ class _SelfProfileTabBodyPreviewState extends State<_SelfProfileTabBodyPreview>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: SelfProfileTab.values.length,
+      vsync: this,
+    );
     _previewScrollController = ScrollController();
   }
 
@@ -1918,27 +1946,10 @@ class _SelfProfileTabBodyPreviewState extends State<_SelfProfileTabBodyPreview>
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        final headerSlivers = CatchSliverHeader(
-          title: const CatchScreenHeaderTitle.block(
-            title: 'Your profile',
-            actions: [ProfileSettingsButton()],
-          ),
-          bottomHeight: CatchLayout.tabRailHeight,
-          bottom: ProfileTabBar(controller: _tabController),
-        ).buildSlivers(context);
-        final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
-        final pinnedSliver = headerSlivers.last;
-
-        return [
-          ...collapsibleSlivers,
-          SliverOverlapAbsorber(
-            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-            sliver: pinnedSliver,
-          ),
-        ];
-      },
+    return CatchTabbedScreenScaffold(
+      title: 'Your profile',
+      actions: const [ProfileSettingsButton()],
+      tabRail: ProfileTabBar(controller: _tabController),
       body: SelfProfileTabBody(
         state: widget.state,
         controller: _tabController,
@@ -2013,9 +2024,10 @@ class _PublicProfileRouteScope extends StatelessWidget {
 }
 
 class _ProfileRouter extends StatelessWidget {
-  const _ProfileRouter({required this.themeMode});
+  const _ProfileRouter({required this.themeMode, required this.initialTab});
 
   final ThemeMode themeMode;
+  final SelfProfileTab initialTab;
 
   @override
   Widget build(BuildContext context) {
@@ -2025,7 +2037,7 @@ class _ProfileRouter extends StatelessWidget {
         GoRoute(
           path: Routes.profileScreen.path,
           name: Routes.profileScreen.name,
-          builder: (_, _) => const ProfileScreen(),
+          builder: (_, _) => ProfileScreen(initialTab: initialTab),
         ),
         GoRoute(
           path: Routes.settingsScreen.path,
@@ -2046,9 +2058,9 @@ class _ProfileRouter extends StatelessWidget {
 }
 
 class _ProfileHeaderPreview extends StatefulWidget {
-  const _ProfileHeaderPreview({required this.initialIndex});
+  const _ProfileHeaderPreview({required this.initialTab});
 
-  final int initialIndex;
+  final SelfProfileTab initialTab;
 
   @override
   State<_ProfileHeaderPreview> createState() => _ProfileHeaderPreviewState();
@@ -2062,8 +2074,8 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
   void initState() {
     super.initState();
     _controller = TabController(
-      length: 3,
-      initialIndex: widget.initialIndex,
+      length: SelfProfileTab.values.length,
+      initialIndex: widget.initialTab.index,
       vsync: this,
     );
   }
@@ -2076,29 +2088,27 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        ...CatchSliverHeader(
-          title: const CatchScreenHeaderTitle.block(
-            title: 'Your profile',
-            actions: [ProfileSettingsButton()],
+    return CatchTabbedScreenScaffold(
+      title: 'Your profile',
+      actions: const [ProfileSettingsButton()],
+      tabRail: ProfileTabBar(controller: _controller),
+      body: const CatchTabbedPageScrollView(
+        scrollKey: PageStorageKey('profile-header-preview-scroll'),
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: Text('Header review body')),
           ),
-          bottomHeight: CatchLayout.tabRailHeight,
-          bottom: ProfileTabBar(controller: _controller),
-        ).buildSlivers(context),
-        const SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(child: Text('Header review body')),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
 class _ProfileTabBarPreview extends StatefulWidget {
-  const _ProfileTabBarPreview({required this.initialIndex});
+  const _ProfileTabBarPreview({required this.initialTab});
 
-  final int initialIndex;
+  final SelfProfileTab initialTab;
 
   @override
   State<_ProfileTabBarPreview> createState() => _ProfileTabBarPreviewState();
@@ -2112,8 +2122,8 @@ class _ProfileTabBarPreviewState extends State<_ProfileTabBarPreview>
   void initState() {
     super.initState();
     _controller = TabController(
-      length: 3,
-      initialIndex: widget.initialIndex,
+      length: SelfProfileTab.values.length,
+      initialIndex: widget.initialTab.index,
       vsync: this,
     );
   }
@@ -2170,6 +2180,7 @@ class ProfileInlineRelationshipGoalChoiceEntryEditor extends StatelessWidget {
     return ProfileInlineSingleChoiceEntryEditor<RelationshipGoal>(
       icon: CatchIcons.favoriteOutline,
       label: 'Looking for',
+      value: RelationshipGoal.relationship.label,
       values: RelationshipGoal.values,
       currentValue: RelationshipGoal.relationship,
       fieldName: 'relationshipGoal',
@@ -2190,6 +2201,7 @@ class ProfileInlineLanguageMultiChoiceEntryEditor extends StatelessWidget {
     return ProfileInlineMultiChoiceEntryEditor<Language>(
       icon: CatchIcons.languageOutlined,
       label: 'Languages',
+      value: 'English, Hindi',
       values: Language.values,
       currentValues: const [Language.english, Language.hindi],
       fieldName: 'languages',

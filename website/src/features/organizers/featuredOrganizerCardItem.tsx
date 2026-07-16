@@ -11,7 +11,7 @@ export function featuredOrganizerCardItemForListing(
   return {
     activity: <ActivityMark listing={listing} />,
     activityColor: activity.token,
-    detail: `${listing.category} · ${listing.city}`,
+    detail: websiteTemplates.organizerCardDetail(listing.category, listing.city),
     href: listing.path,
     key: listing.id,
     name: listing.name,
@@ -19,3 +19,4 @@ export function featuredOrganizerCardItemForListing(
     status: <StatusBadge listing={listing} compact />,
   };
 }
+import {websiteTemplates} from "@content/templates";

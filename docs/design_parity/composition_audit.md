@@ -1,7 +1,7 @@
 ---
 doc_id: composition_audit
-version: 0.1.6
-updated: 2026-07-05
+version: 0.1.7
+updated: 2026-07-16
 owner: design_parity_review
 status: active
 ---
@@ -507,10 +507,12 @@ variant); the raw `bottomHeight: 48` goes to a token in the same change.
 
 ### P2. Positive calibration
 
-The NestedScrollView + overlap-absorber tab architecture is correct and
-`ProfileTabScrollView` earns its place (per-tab scroll wiring).
-`ProfileTabBar` staying distinct from `CatchTopBarTabBar` was already
-ratified in the consolidation ledger.
+The `NestedScrollView` + overlap-absorber architecture remains correct, but its
+reusable ownership now lives in `CatchTabbedScreenScaffold` and
+`CatchTabbedPageScrollView`. Profile and Host Clubs share that shell, while
+their typed `CatchTabControllerRail` adapters keep option taps and native
+`TabBarView` paging on one route-owned controller. Profile retains only its
+feature-specific two-way Preview scroll bridge.
 
 ---
 

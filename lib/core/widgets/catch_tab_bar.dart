@@ -37,7 +37,8 @@ class CatchTabBar<T> extends StatelessWidget {
   final T active;
   final ValueChanged<T>? onChanged;
 
-  static bool floatsFor(BuildContext context) => prefersCupertinoControls();
+  static bool floatsFor(BuildContext context) =>
+      prefersCupertinoControls(platform: Theme.of(context).platform);
 
   static double reservedBottomInset(BuildContext context) {
     if (!floatsFor(context)) return 0;

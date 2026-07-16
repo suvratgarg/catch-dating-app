@@ -1,16 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -26,13 +22,10 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.d
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const _profileTabCount = 3;
-
 class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({super.key, this.initialTabIndex = 0})
-    : assert(initialTabIndex >= 0 && initialTabIndex < _profileTabCount);
+  const ProfileScreen({super.key, this.initialTab = SelfProfileTab.edit});
 
-  final int initialTabIndex;
+  final SelfProfileTab initialTab;
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -48,8 +41,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: _profileTabCount,
-      initialIndex: widget.initialTabIndex,
+      length: SelfProfileTab.values.length,
+      initialIndex: widget.initialTab.index,
       vsync: this,
     );
     _outerScrollController = ScrollController();
@@ -94,8 +87,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     final screenState = ref.watch(selfProfileScreenStateProvider);
 
     ref.listen(photoUploadControllerProvider, (_, state) {
@@ -111,49 +102,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       }
     });
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: Semantics(
-          label: context.l10n.userProfileProfileScreenLabelProfileTabs,
-          hint: context.l10n.userProfileProfileScreenBodyDragLeftOrRight,
-          child: NestedScrollView(
-            controller: _outerScrollController,
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              final headerSlivers = CatchSliverHeader(
-                title: CatchScreenHeaderTitle.block(
-                  title: context.l10n.userProfileProfileScreenTitleYourProfile,
-                  actions: const [ProfileSettingsButton()],
-                ),
-                bottomHeight: CatchLayout.tabRailHeight,
-                bottom: ProfileTabBar(controller: _tabController),
-              ).buildSlivers(context);
-              final collapsibleSlivers = headerSlivers.take(
-                headerSlivers.length - 1,
-              );
-              final pinnedSliver = headerSlivers.last;
-
-              return [
-                ...collapsibleSlivers,
-                SliverOverlapAbsorber(
-                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                    context,
-                  ),
-                  sliver: pinnedSliver,
-                ),
-              ];
-            },
-            body: SelfProfileTabBody(
-              state: screenState,
-              controller: _tabController,
-              previewScrollController: _previewScrollController,
-              onPreviewForwardScroll: _handlePreviewForwardScroll,
-              onPreviewLeadingOverscroll: _handlePreviewLeadingOverscroll,
-              onRetry: () => _handleRetry(screenState.retryIntent),
-            ),
-          ),
-        ),
+    return CatchTabbedScreenScaffold(
+      title: context.l10n.userProfileProfileScreenTitleYourProfile,
+      actions: const [ProfileSettingsButton()],
+      tabRail: ProfileTabBar(controller: _tabController),
+      outerScrollController: _outerScrollController,
+      semanticsLabel: context.l10n.userProfileProfileScreenLabelProfileTabs,
+      semanticsHint: context.l10n.userProfileProfileScreenBodyDragLeftOrRight,
+      body: SelfProfileTabBody(
+        state: screenState,
+        controller: _tabController,
+        previewScrollController: _previewScrollController,
+        onPreviewForwardScroll: _handlePreviewForwardScroll,
+        onPreviewLeadingOverscroll: _handlePreviewLeadingOverscroll,
+        onRetry: () => _handleRetry(screenState.retryIntent),
       ),
     );
   }
@@ -193,12 +155,14 @@ class SelfProfileTabBody extends StatelessWidget {
         return TabBarView(
           controller: controller,
           children: [
-            const ProfileTabScrollView(
+            const CatchTabbedPageScrollView(
               scrollKey: PageStorageKey('profile-edit-tab-loading'),
+              includeTerminalPadding: true,
               slivers: [ProfileTabSkeletonSliverBody()],
             ),
-            ProfileTabScrollView(
+            CatchTabbedPageScrollView(
               scrollKey: const PageStorageKey('profile-preview-tab-loading'),
+              includeTerminalPadding: false,
               slivers: [
                 PreviewTabSkeletonSliverBody(
                   scrollController: previewScrollController,
@@ -207,8 +171,9 @@ class SelfProfileTabBody extends StatelessWidget {
                 ),
               ],
             ),
-            const ProfileTabScrollView(
+            const CatchTabbedPageScrollView(
               scrollKey: PageStorageKey('profile-insights-tab-loading'),
+              includeTerminalPadding: false,
               slivers: [ProfileInsightsTabSliverBody()],
             ),
           ],
@@ -220,15 +185,12 @@ class SelfProfileTabBody extends StatelessWidget {
           onRetry: onRetry,
         );
       case SelfProfileRouteStatus.unavailable:
-        return Center(
-          child: CatchEmptyState(
-            icon: CatchIcons.personOffOutlined,
-            title:
-                context.l10n.userProfileProfileScreenTitleProfileNotAvailable,
-            message: context
-                .l10n
-                .userProfileProfileScreenMessageFinishOnboardingOrSign,
-          ),
+        return CatchEmptyState(
+          icon: CatchIcons.personOffOutlined,
+          title: context.l10n.userProfileProfileScreenTitleProfileNotAvailable,
+          message: context
+              .l10n
+              .userProfileProfileScreenMessageFinishOnboardingOrSign,
         );
       case SelfProfileRouteStatus.ready:
         final user = state.user!;
@@ -236,8 +198,9 @@ class SelfProfileTabBody extends StatelessWidget {
         return TabBarView(
           controller: controller,
           children: [
-            ProfileTabScrollView(
+            CatchTabbedPageScrollView(
               scrollKey: const PageStorageKey('profile-edit-tab-scroll'),
+              includeTerminalPadding: true,
               managesFieldVisibility: true,
               slivers: [
                 ProfileTabSliverBody(
@@ -246,8 +209,9 @@ class SelfProfileTabBody extends StatelessWidget {
                 ),
               ],
             ),
-            ProfileTabScrollView(
+            CatchTabbedPageScrollView(
               scrollKey: const PageStorageKey('profile-preview-tab-scroll'),
+              includeTerminalPadding: false,
               slivers: [
                 PreviewTabSliverBody(
                   profile: previewProfile,
@@ -257,62 +221,14 @@ class SelfProfileTabBody extends StatelessWidget {
                 ),
               ],
             ),
-            const ProfileTabScrollView(
+            const CatchTabbedPageScrollView(
               scrollKey: PageStorageKey('profile-insights-tab-scroll'),
+              includeTerminalPadding: false,
               slivers: [ProfileInsightsTabSliverBody()],
             ),
           ],
         );
     }
-  }
-}
-
-class ProfileTabScrollView extends StatelessWidget {
-  const ProfileTabScrollView({
-    super.key,
-    required this.scrollKey,
-    required this.slivers,
-    this.managesFieldVisibility = false,
-  });
-
-  final PageStorageKey<String> scrollKey;
-  final List<Widget> slivers;
-  final bool managesFieldVisibility;
-
-  @override
-  Widget build(BuildContext context) {
-    final bottomOverlayInset = AppShellActiveTab.bottomOverlayInsetOf(context);
-    final terminalClearance = AppShellActiveTab.bottomOverlayClearanceOf(
-      context,
-      minimum: CatchSpacing.s2,
-    );
-    final scrollView = CatchPagerFocusBoundary(
-      child: Builder(
-        builder: (context) {
-          return CustomScrollView(
-            key: scrollKey,
-            slivers: [
-              SliverOverlapInjector(
-                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                  context,
-                ),
-              ),
-              ...slivers,
-              if (managesFieldVisibility)
-                CatchSliverTerminalPadding(
-                  extra: terminalClearance,
-                  includeSafeArea: false,
-                ),
-            ],
-          );
-        },
-      ),
-    );
-    if (!managesFieldVisibility) return scrollView;
-    return CatchFieldVisibilityScope(
-      bottomObstruction: bottomOverlayInset,
-      child: scrollView,
-    );
   }
 }
 
@@ -344,6 +260,7 @@ class PreviewTabSkeletonSliverBody extends StatelessWidget {
                 onForwardScroll: onForwardScroll,
               ),
               bottomPadding: 0,
+              includeTerminalPadding: true,
               onLeadingOverscroll: onLeadingOverscroll,
             ),
           ),
@@ -383,7 +300,6 @@ class PreviewTabSliverBody extends StatelessWidget {
               scrollPhysics: PreviewHeaderBridgeScrollPhysics(
                 onForwardScroll: onForwardScroll,
               ),
-              bottomPadding: 0,
               onLeadingOverscroll: onLeadingOverscroll,
             ),
           ),

@@ -199,6 +199,7 @@ class ImageUploadRepository {
     required String storagePath,
     required XFile image,
     ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    Map<String, String>? customMetadata,
   }) async {
     return withBackendErrorContext(
       () async {
@@ -213,7 +214,10 @@ class ImageUploadRepository {
         final ref = _storage.ref(finalStoragePath);
         await ref.putData(
           prepared.bytes,
-          SettableMetadata(contentType: prepared.contentType),
+          SettableMetadata(
+            contentType: prepared.contentType,
+            customMetadata: customMetadata,
+          ),
         );
         final url = await ref.getDownloadURL();
         return UploadedImage(url: url, storagePath: finalStoragePath);
@@ -331,10 +335,12 @@ class ImageUploadRepository {
   Future<String> uploadChatImage({
     required String matchId,
     required String messageId,
+    required String uploaderUid,
     required XFile image,
   }) async => (await uploadChatImageWithMetadata(
     matchId: matchId,
     messageId: messageId,
+    uploaderUid: uploaderUid,
     image: image,
   )).url;
 
@@ -344,6 +350,7 @@ class ImageUploadRepository {
   Future<UploadedImage> uploadChatImageWithMetadata({
     required String matchId,
     required String messageId,
+    required String uploaderUid,
     required XFile image,
   }) => uploadWithMetadata(
     storagePath:
@@ -351,6 +358,7 @@ class ImageUploadRepository {
         '${DateTime.now().millisecondsSinceEpoch}',
     image: image,
     purpose: ImageUploadPurpose.chatImage,
+    customMetadata: {'uploaderUid': uploaderUid},
   );
 
   // ── Compensation ──────────────────────────────────────────────────────────

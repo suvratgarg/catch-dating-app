@@ -24,10 +24,11 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
+import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -61,21 +62,26 @@ ExploreEventItem _exploreItem({
   int? bookedCount,
   int priceInPaise = 0,
   double? distanceFromUserKm,
-  double? startingPointLat,
-  double? startingPointLng,
+  double startingPointLat = 19.0608,
+  double startingPointLng = 72.8365,
 }) {
+  final event = buildEvent(
+    id: id,
+    clubId: club.id,
+    startTime: startTime,
+    bookedCount: bookedCount,
+    priceInPaise: priceInPaise,
+  );
   return ExploreEventItem(
-    event:
-        buildEvent(
-          id: id,
-          clubId: club.id,
-          startTime: startTime,
-          bookedCount: bookedCount,
-          priceInPaise: priceInPaise,
-        ).copyWith(
-          startingPointLat: startingPointLat,
-          startingPointLng: startingPointLng,
-        ),
+    event: event.copyWith(
+      meetingLocation: EventMeetingLocation(
+        name: event.meetingPoint,
+        latitude: startingPointLat,
+        longitude: startingPointLng,
+      ),
+      startingPointLat: startingPointLat,
+      startingPointLng: startingPointLng,
+    ),
     club: club,
     isJoinedClubMember: isJoinedClubMember,
     isFollowedClubSignal: isFollowedClubSignal,
@@ -156,22 +162,30 @@ void main() {
       expect(anytime.nextFilter, isNull);
     });
 
-    test('ExploreMapLauncherState derives provider-free map labels', () {
-      expect(
-        ExploreMapLauncherState.from(
-          mappableEventCount: null,
-          l10n: _l10n,
-        ).label,
-        'Map',
+    test('ExploreMapLauncherState hides until mapped supply is loaded', () {
+      final loading = ExploreMapLauncherState.from(
+        mappableEventCount: null,
+        l10n: _l10n,
       );
-      expect(
-        ExploreMapLauncherState.from(mappableEventCount: 0, l10n: _l10n).label,
-        'Map',
+      expect(loading.isVisible, isFalse);
+      expect(loading.actionLabel, 'Map');
+      expect(loading.countLabel, isNull);
+
+      final empty = ExploreMapLauncherState.from(
+        mappableEventCount: 0,
+        l10n: _l10n,
       );
-      expect(
-        ExploreMapLauncherState.from(mappableEventCount: 3, l10n: _l10n).label,
-        'Map · 3',
+      expect(empty.isVisible, isFalse);
+      expect(empty.countLabel, isNull);
+
+      final populated = ExploreMapLauncherState.from(
+        mappableEventCount: 3,
+        l10n: _l10n,
       );
+      expect(populated.isVisible, isTrue);
+      expect(populated.actionLabel, 'Map');
+      expect(populated.countLabel, '3');
+      expect(populated.semanticLabel, 'Map, 3 events');
     });
 
     test('ExploreCityTriggerState derives provider-free city chrome', () {
@@ -694,7 +708,7 @@ void main() {
       );
     });
 
-    test('mappableEventCount ignores external and coordinate-less events', () {
+    test('mappableEventCount includes required-location event supply', () {
       final club = buildClub(id: 'map-club');
       final viewModel = ExploreFeedViewModel(
         items: [
@@ -724,7 +738,33 @@ void main() {
       );
 
       expect(viewModel.count, 3);
-      expect(viewModel.mappableEventCount, 1);
+      expect(viewModel.mappableEventCount, 3);
+    });
+
+    test('map view model preserves external event identity and coordinate', () {
+      final external = _externalEvent(
+        id: 'external-map-event',
+        title: 'Bandra Mixer',
+        citySlug: 'mumbai',
+        startTime: DateTime(2026, 7, 18, 19),
+      );
+
+      final mapViewModel = exploreMapViewModelFromFeed(
+        ExploreFeedViewModel(
+          items: const [],
+          externalItems: [ExploreExternalEventItem(event: external)],
+        ),
+      );
+
+      expect(mapViewModel.externalPinnedItems, hasLength(1));
+      expect(
+        mapViewModel.externalPinnedItems.single.mapId,
+        'external:external-map-event',
+      );
+      expect(
+        mapViewModel.externalPinnedItems.single.coordinate,
+        const LocationCoordinate(19.0435, 72.8204),
+      );
     });
 
     test('ExploreEventRowState derives provider-free event row labels', () {
@@ -739,27 +779,31 @@ void main() {
       final state = ExploreEventRowState.from(item, l10n: _l10n);
 
       expect(state.kicker, 'Row Club');
+      expect(state.title, 'Social run');
       expect(state.supportingLabel, contains('Start'));
       expect(state.priceLabel, 'Free');
       expect(state.capacityLabel, isNotEmpty);
-      expect(state.statusLabel, 'Picked');
+      expect(state.statusLabel, isNull);
     });
 
-    test('ExploreEventRowState uses truthful membership-derived copy', () {
-      final club = buildClub(id: 'member-row-club', name: 'Member Club');
-      final item = _exploreItem(
-        id: 'member-row-event',
-        club: club,
-        startTime: DateTime(2026, 7, 2, 18),
-        isJoinedClubMember: true,
-        isFollowedClubSignal: true,
-      );
+    test(
+      'ExploreEventRowState keeps organizer identity for followed clubs',
+      () {
+        final club = buildClub(id: 'member-row-club', name: 'Member Club');
+        final item = _exploreItem(
+          id: 'member-row-event',
+          club: club,
+          startTime: DateTime(2026, 7, 2, 18),
+          isJoinedClubMember: true,
+          isFollowedClubSignal: true,
+        );
 
-      expect(
-        ExploreEventRowState.from(item, l10n: _l10n).kicker,
-        'FROM ONE OF YOUR CLUBS',
-      );
-    });
+        expect(
+          ExploreEventRowState.from(item, l10n: _l10n).kicker,
+          'Member Club',
+        );
+      },
+    );
 
     test('ExploreExternalEventRowState derives provider-free row labels', () {
       final event = _externalEvent(
@@ -926,7 +970,8 @@ void main() {
         eventFeedHasContent: false,
       );
 
-      expect(state.mapLauncherState.label, 'Map · 4');
+      expect(state.mapLauncherState.isVisible, isTrue);
+      expect(state.mapLauncherState.countLabel, '4');
       expect(
         state.emptyState.kind,
         ExploreDiscoveryEmptyKind.noFilteredSearchResults,
@@ -951,7 +996,8 @@ void main() {
         eventFeedHasContent: true,
       );
 
-      expect(content.mapLauncherState.label, 'Map · 1');
+      expect(content.mapLauncherState.isVisible, isTrue);
+      expect(content.mapLauncherState.countLabel, '1');
       expect(content.bodyState.kind, ExploreScreenBodyKind.content);
     });
 
@@ -1047,7 +1093,7 @@ void main() {
       final selection = container.read(exploreFiltersProvider);
       expect(selection.timeFilter, ExploreTimeFilter.thisWeek);
       expect(selection.thisWeekOnly, isTrue);
-      expect(selection.distanceFilter, ExploreDistanceFilter.threeKm);
+      expect(selection.distanceFilter, ExploreDistanceFilter.any);
       expect(selection.highRatedOnly, isTrue);
       expect(selection.activityTag, isNull);
       expect(selection.area, isNull);
@@ -1079,6 +1125,67 @@ void main() {
       expect(exploreDistanceFilterKm(ExploreDistanceFilter.threeKm), 3);
       expect(exploreDistanceFilterKm(ExploreDistanceFilter.fiveKm), 5);
       expect(exploreDistanceFilterKm(ExploreDistanceFilter.tenKm), 10);
+    });
+
+    test('distance filter requires a resolved device location', () async {
+      final container = ProviderContainer(
+        overrides: [
+          deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final failure = await container
+          .read(exploreFiltersProvider.notifier)
+          .applyDistanceFilter(ExploreDistanceFilter.threeKm);
+
+      expect(failure, DeviceLocationFailure.unavailable);
+      expect(
+        container.read(exploreFiltersProvider).distanceFilter,
+        ExploreDistanceFilter.any,
+      );
+    });
+
+    test('distance filter applies after device location resolves', () async {
+      final container = ProviderContainer(
+        overrides: [
+          deviceLocationProvider.overrideWith(
+            () =>
+                _FakeDeviceLocation(const LocationCoordinate(19.0608, 72.8365)),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final failure = await container
+          .read(exploreFiltersProvider.notifier)
+          .applyDistanceFilter(ExploreDistanceFilter.threeKm);
+
+      expect(failure, isNull);
+      expect(
+        container.read(exploreFiltersProvider).distanceFilter,
+        ExploreDistanceFilter.threeKm,
+      );
+    });
+
+    test('empty map recovery widens only bounded radius filters', () {
+      expect(
+        widerExploreMapDistanceFilter(ExploreDistanceFilter.oneKm),
+        ExploreDistanceFilter.threeKm,
+      );
+      expect(
+        widerExploreMapDistanceFilter(ExploreDistanceFilter.threeKm),
+        ExploreDistanceFilter.fiveKm,
+      );
+      expect(
+        widerExploreMapDistanceFilter(ExploreDistanceFilter.fiveKm),
+        ExploreDistanceFilter.tenKm,
+      );
+      expect(
+        widerExploreMapDistanceFilter(ExploreDistanceFilter.tenKm),
+        isNull,
+      );
+      expect(widerExploreMapDistanceFilter(ExploreDistanceFilter.any), isNull);
     });
 
     test(
@@ -1768,6 +1875,9 @@ class _FakeDeviceLocation extends DeviceLocation {
 
   @override
   Future<LocationCoordinate?> build() async => location;
+
+  @override
+  Future<LocationCoordinate?> request() async => location;
 }
 
 class _FakeEventDiscoveryRepository extends Fake
@@ -1821,6 +1931,8 @@ ExternalEvent _externalEvent({
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 2)),
     meetingPoint: 'Bandra Amphitheatre',
+    latitude: 19.0435,
+    longitude: 72.8204,
     activityKind: ActivityKind.singlesMixer,
     interactionModel: EventInteractionModel.freeFormMixer,
     status: 'active',

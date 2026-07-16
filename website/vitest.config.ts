@@ -14,6 +14,16 @@ export default mergeConfig(
       projects: [
         {
           extends: true,
+          test: {
+            name: "unit",
+            environment: "jsdom",
+            include: ["src/**/*.test.{ts,tsx}"],
+            mockReset: true,
+            restoreMocks: true,
+          },
+        },
+        {
+          extends: true,
           plugins: [
             storybookTest({configDir: path.join(dirname, ".storybook")}),
           ],

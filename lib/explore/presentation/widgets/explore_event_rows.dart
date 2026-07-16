@@ -42,6 +42,7 @@ class ExploreFeedEventRow extends StatelessWidget {
     return EventDateRailCard(
       event: event,
       kicker: state.kicker,
+      title: state.title,
       supportingLabel: state.supportingLabel,
       priceLabel: state.priceLabel,
       capacityLabel: state.capacityLabel,

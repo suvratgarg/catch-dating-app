@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {
   ListingSection,
   ListingSectionIntro,
@@ -23,9 +24,9 @@ export function ListingSourcesSection({listing}: {listing: HostListing}) {
   return (
     <ListingSection variant="split" id="sources">
       <ListingSectionIntro
-        eyebrow="Source ledger"
-        title="Evidence before indexing."
-        body="Thin pages should stay out of search until identity, cadence, and owner-safe details are verified."
+        eyebrow={websiteCopy["listingsourcessection_0449"]}
+        title={websiteCopy["listingsourcessection_0448"]}
+        body={websiteCopy["listingsourcessection_0450"]}
       />
 
       <ListingSourceLedger items={sourceItems} />

@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {
   AuthStatusRow,
   Button,
@@ -19,7 +20,7 @@ import {
 } from "../../../shared/ui/primitives";
 import {claimRoleOptions} from "../../claims/claimModel";
 import type {ListingClaimController} from "../../claims/useListingClaimController";
-import {claimUnlocks} from "../../marketing/content";
+import {claimUnlocks} from "@content/marketing";
 import {trackCtaClick} from "../../marketing/tracking";
 import {trackOrganizerAnalytics} from "../analytics";
 import {claimHrefForListing} from "../routing";
@@ -35,10 +36,10 @@ export function ListingMissingEvidenceSection({
   return (
     <ClaimBandSection aria-labelledby="listing-missing-title">
       <ListingSectionIntro
-        eyebrow="Before public indexing"
-        title="Missing evidence"
+        eyebrow={websiteCopy["listingclaimsections_0367"]}
+        title={websiteCopy["listingclaimsections_0373"]}
         titleId="listing-missing-title"
-        body="This is the pressure mechanic from the prototype: visitors can see what is known, what is missing, and why a verified Catch profile earns stronger placement."
+        body={websiteCopy["listingclaimsections_0381"]}
       />
       <ClaimBandGrid>
         <ClaimMissingEvidenceList items={listing.missingEvidence} />
@@ -55,8 +56,8 @@ function ClaimUnlocksCard({listing}: {listing: HostListing}) {
   const claimHref = claimHrefForListing(listing);
   return (
     <PanelShell variant="claim-unlocks" as="aside" reveal>
-      <UiLabel>Claiming unlocks</UiLabel>
-      <h3>What {listing.name} cannot show yet.</h3>
+      <UiLabel>{websiteCopy["listingclaimsections_0372"]}</UiLabel>
+      <h3>{websiteCopy["listingclaimsections_0383"]}{listing.name}{websiteCopy["listingclaimsections_0370"]}</h3>
       <ul>
         {claimUnlocks.map((item) => (
           <li key={item}>{item}</li>
@@ -68,9 +69,7 @@ function ClaimUnlocksCard({listing}: {listing: HostListing}) {
           trackCtaClick("claim_unlocks_panel", claimHref);
           trackOrganizerAnalytics(listing, "claimClick", "claim_unlocks_panel");
         }}
-      >
-        Claim this listing
-      </ButtonLink>
+      >{websiteCopy["listingclaimsections_0371"]}</ButtonLink>
     </PanelShell>
   );
 }
@@ -99,19 +98,15 @@ function ClaimListingPanel({
     return (
       <ClaimRequestPanel id="claim" reveal>
         <div>
-          <UiLabel>Claim this listing</UiLabel>
-          <h3>Owner review is not enabled for this listing.</h3>
+          <UiLabel>{websiteCopy["listingclaimsections_0371"]}</UiLabel>
+          <h3>{websiteCopy["listingclaimsections_0376"]}</h3>
           <p>
-            {notConfiguredReason} Use the host application while this public
-            claim flow is being connected.
-          </p>
+            {notConfiguredReason}{websiteCopy["listingclaimsections_0382"]}</p>
         </div>
         <ButtonLink
           href="/host/#founding-hosts"
           onClick={() => trackCtaClick("listing_claim_fallback", "/host/#founding-hosts")}
-        >
-          Apply as host
-        </ButtonLink>
+        >{websiteCopy["listingclaimsections_0365"]}</ButtonLink>
       </ClaimRequestPanel>
     );
   }
@@ -119,12 +114,9 @@ function ClaimListingPanel({
   return (
     <ClaimRequestPanel id="claim" reveal>
       <ClaimRequestPanelHeading>
-        <UiLabel>Claim this listing</UiLabel>
-        <h3>Request ownership for {listing.name}</h3>
-        <p>
-          Approved claims attach this profile to a Catch host account before
-          owner tools or responses are unlocked.
-        </p>
+        <UiLabel>{websiteCopy["listingclaimsections_0371"]}</UiLabel>
+        <h3>{websiteCopy["listingclaimsections_0378"]}{listing.name}</h3>
+        <p>{websiteCopy["listingclaimsections_0366"]}</p>
       </ClaimRequestPanelHeading>
 
       <AuthStatusRow
@@ -134,9 +126,7 @@ function ClaimListingPanel({
               variant="ghost"
               onClick={() => void handleSignOut()}
               type="button"
-            >
-              Sign out
-            </Button>
+            >{websiteCopy["listingclaimsections_0380"]}</Button>
           ) : (
             <Button
               disabled={!authReady || isSigningIn}
@@ -158,7 +148,7 @@ function ClaimListingPanel({
       <ClaimRequestForm onSubmit={handleSubmit}>
         <TextField
           id={`claim-${listing.id}-requester-name`}
-          label="Your name"
+          label={websiteCopy["listingclaimsections_0384"]}
           name="requesterName"
           autoComplete="name"
           defaultValue={user?.displayName ?? ""}
@@ -166,7 +156,7 @@ function ClaimListingPanel({
         />
         <SelectField
           id={`claim-${listing.id}-requester-role`}
-          label="Role"
+          label={websiteCopy["listingclaimsections_0379"]}
           name="requesterRole"
           defaultValue="owner"
           required
@@ -179,7 +169,7 @@ function ClaimListingPanel({
         </SelectField>
         <TextField
           id={`claim-${listing.id}-business-email`}
-          label="Business email"
+          label={websiteCopy["listingclaimsections_0368"]}
           name="businessEmail"
           type="email"
           autoComplete="email"
@@ -187,26 +177,26 @@ function ClaimListingPanel({
         />
         <TextField
           id={`claim-${listing.id}-business-phone`}
-          label="Business phone"
+          label={websiteCopy["listingclaimsections_0369"]}
           name="businessPhone"
           type="tel"
           autoComplete="tel"
         />
         <TextAreaField
           id={`claim-${listing.id}-proof-urls`}
-          label="Proof links"
+          label={websiteCopy["listingclaimsections_0377"]}
           name="proofUrls"
           rows={3}
-          placeholder="Official website, Instagram, Luma, Linktree, or event page"
+          placeholder={websiteCopy["listingclaimsections_0375"]}
           span
         />
         <TextAreaField
           id={`claim-${listing.id}-message`}
-          label="Note for review"
+          label={websiteCopy["listingclaimsections_0374"]}
           name="message"
           rows={3}
           maxLength={1000}
-          placeholder="Anything Catch should know before approving ownership"
+          placeholder={websiteCopy["listingclaimsections_0364"]}
           span
         />
         <Button disabled={!user || isSubmitting} type="submit">

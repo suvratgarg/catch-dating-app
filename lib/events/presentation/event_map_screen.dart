@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_center.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
@@ -25,12 +26,18 @@ class EventMapView extends ConsumerStatefulWidget {
     this.enableNetworkTiles = true,
     this.overlay,
     this.onEventSelected,
+    this.onExternalEventSelected,
     this.onSelectionCleared,
     this.onCameraCenterChanged,
     this.onDistanceRingTapped,
     this.viewModel,
     this.onRetry,
     this.distanceRingRadiusKm,
+    this.distanceRingLabel,
+    this.distanceRingSemanticHint,
+    this.deviceLocation,
+    this.showOverviewControl = false,
+    this.preserveCanvasWhenEmpty = false,
     this.selectedEventId,
     this.initialSelectedEventId,
   });
@@ -38,12 +45,18 @@ class EventMapView extends ConsumerStatefulWidget {
   final bool enableNetworkTiles;
   final Widget? overlay;
   final ValueChanged<Event>? onEventSelected;
+  final ValueChanged<ExternalEvent>? onExternalEventSelected;
   final VoidCallback? onSelectionCleared;
   final ValueChanged<LocationCoordinate>? onCameraCenterChanged;
   final VoidCallback? onDistanceRingTapped;
   final AsyncValue<EventMapViewModel>? viewModel;
   final VoidCallback? onRetry;
   final double? distanceRingRadiusKm;
+  final String? distanceRingLabel;
+  final String? distanceRingSemanticHint;
+  final AsyncValue<LocationCoordinate?>? deviceLocation;
+  final bool showOverviewControl;
+  final bool preserveCanvasWhenEmpty;
   final String? selectedEventId;
   final String? initialSelectedEventId;
 
@@ -73,7 +86,9 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
   Widget build(BuildContext context) {
     final AsyncValue<EventMapViewModel> viewModelAsync =
         widget.viewModel ?? ref.watch(eventMapViewModelProvider);
-    final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
+    final AsyncValue<LocationCoordinate?> deviceLocationAsync =
+        widget.deviceLocation ?? ref.watch(deviceLocationProvider);
+    final deviceLocation = deviceLocationAsync.asData?.value;
     final selectedCity = ref.watch(selectedExploreCityProvider);
     final selectedCityWasUserSelected = ref.watch(
       selectedExploreCityWasUserSelectedProvider,
@@ -94,57 +109,51 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
             ),
             builder: (context, viewModel) {
               final selectedEventId = _effectiveSelectedEventId;
-              final selectedEvent = viewModel.selectedEvent(selectedEventId);
-              final selectedEventCenter = _startingPointFor(selectedEvent);
+              final selectedEventCenter = viewModel.selectedCoordinate(
+                selectedEventId,
+              );
               final mapCenter = resolveEventMapInitialCenter(
                 deviceLocation: deviceLocation,
                 selectedCity: selectedCity,
                 selectedCityWasUserSelected: selectedCityWasUserSelected,
               );
 
-              return viewModel.isEmpty
-                  ? Center(
-                      child: CatchEmptyState(
-                        icon: CatchIcons.map,
-                        title: context
-                            .l10n
-                            .eventsEventMapScreenTitleNoMappedEventsYet,
-                        message: context
-                            .l10n
-                            .eventsEventMapScreenMessageJoinClubsBookEvents,
-                      ),
-                    )
-                  : !viewModel.hasPinnedEvents
-                  ? Center(
-                      child: CatchEmptyState(
-                        icon: CatchIcons.pinOutlined,
-                        title: context
-                            .l10n
-                            .eventsEventMapScreenTitleNoExactPinsYet,
-                        message: context
-                            .l10n
-                            .eventsEventMapScreenMessageTheseEventsAreVisible,
-                      ),
-                    )
-                  : Stack(
-                      children: [
-                        Positioned.fill(
-                          child: EventPinsMap(
-                            items: viewModel.effectivePinnedItems,
-                            initialCenter: mapCenter,
-                            selectedEventId: selectedEventId,
-                            selectedEventCenter: selectedEventCenter,
-                            enableNetworkTiles: widget.enableNetworkTiles,
-                            userLocation: deviceLocation,
-                            distanceRingRadiusKm: widget.distanceRingRadiusKm,
-                            onEventSelected: _selectEvent,
-                            onMapTapped: _clearSelection,
-                            onCameraCenterChanged: widget.onCameraCenterChanged,
-                            onDistanceRingTapped: widget.onDistanceRingTapped,
-                          ),
-                        ),
-                      ],
-                    );
+              if (!widget.preserveCanvasWhenEmpty && viewModel.isEmpty) {
+                return Center(
+                  child: CatchEmptyState(
+                    icon: CatchIcons.map,
+                    title:
+                        context.l10n.eventsEventMapScreenTitleNoMappedEventsYet,
+                    message: context
+                        .l10n
+                        .eventsEventMapScreenMessageJoinClubsBookEvents,
+                  ),
+                );
+              }
+              return Stack(
+                children: [
+                  Positioned.fill(
+                    child: EventPinsMap(
+                      items: viewModel.effectivePinnedItems,
+                      externalItems: viewModel.externalPinnedItems,
+                      initialCenter: mapCenter,
+                      selectedEventId: selectedEventId,
+                      selectedEventCenter: selectedEventCenter,
+                      enableNetworkTiles: widget.enableNetworkTiles,
+                      userLocation: deviceLocation,
+                      distanceRingRadiusKm: widget.distanceRingRadiusKm,
+                      distanceRingLabel: widget.distanceRingLabel,
+                      distanceRingSemanticHint: widget.distanceRingSemanticHint,
+                      showOverviewControl: widget.showOverviewControl,
+                      onEventSelected: _selectEvent,
+                      onExternalEventSelected: _selectExternalEvent,
+                      onMapTapped: _clearSelection,
+                      onCameraCenterChanged: widget.onCameraCenterChanged,
+                      onDistanceRingTapped: widget.onDistanceRingTapped,
+                    ),
+                  ),
+                ],
+              );
             },
           ),
         ),
@@ -158,6 +167,13 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
       setState(() => _selectedEventId = event.id);
     }
     widget.onEventSelected?.call(event);
+  }
+
+  void _selectExternalEvent(ExternalEvent event) {
+    if (!_usesExternalSelection) {
+      setState(() => _selectedEventId = 'external:${event.id}');
+    }
+    widget.onExternalEventSelected?.call(event);
   }
 
   void _clearSelection() {
@@ -218,12 +234,4 @@ class EventMapLoadingBody extends StatelessWidget {
       },
     );
   }
-}
-
-LocationCoordinate? _startingPointFor(Event? event) {
-  if (event == null) return null;
-  return LocationCoordinate.fromNullable(
-    latitude: event.effectiveStartingPointLat,
-    longitude: event.effectiveStartingPointLng,
-  );
 }

@@ -398,7 +398,7 @@ void main() {
     final initialTitleTop = tester.getTopLeft(find.text('Chats')).dy;
 
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -220));
-    await tester.pump();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Chats').hitTestable(), findsOneWidget);
     final scrolledTitleTop = tester.getTopLeft(find.text('Chats')).dy;

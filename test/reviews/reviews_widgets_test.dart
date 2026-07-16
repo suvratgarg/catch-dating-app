@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -35,7 +36,9 @@ void main() {
       reviews: const [],
     );
 
-    expect(find.text('No reviews yet'), findsOneWidget);
+    expect(find.text('No reviews yet'), findsNothing);
+    expect(find.text('Be the first to review this event.'), findsOneWidget);
+    expect(find.byKey(ReviewKeys.writeReviewButton), findsOneWidget);
 
     await tester.tap(find.byKey(ReviewKeys.writeReviewButton));
     await pumpFeatureUi(tester);
@@ -61,7 +64,7 @@ void main() {
     expect(repository.addedReview?.comment, 'Friendly crew.');
   });
 
-  testWidgets('empty event reviews state uses compact inline layout', (
+  testWidgets('empty event reviews use an inline actionable state', (
     tester,
   ) async {
     final repository = _FakeReviewsRepository();
@@ -79,13 +82,77 @@ void main() {
     final iconRight = tester
         .getTopRight(find.byIcon(CatchIcons.rateReviewOutlined))
         .dx;
-    final titleLeft = tester.getTopLeft(find.text('No reviews yet')).dx;
+    final messageLeft = tester
+        .getTopLeft(find.text('Be the first to review this event.'))
+        .dx;
+    final emptyState = tester.widget<CatchEmptyState>(
+      find.byType(CatchEmptyState),
+    );
 
-    expect(titleLeft, greaterThan(iconRight));
+    expect(messageLeft, greaterThan(iconRight));
+    expect(emptyState.surface, false);
+    expect(emptyState.layout, CatchEmptyStateLayout.inline);
+    expect(emptyState.padding, EdgeInsets.zero);
+    expect(find.text('No reviews yet'), findsNothing);
+    expect(find.byKey(ReviewKeys.writeReviewButton), findsOneWidget);
+  });
+
+  testWidgets('empty event reviews stay hidden without write access', (
+    tester,
+  ) async {
+    final repository = _FakeReviewsRepository();
+    final user = buildUser(name: 'Asha');
+    final container = _reviewsContainer(repository);
+    addTearDown(container.dispose);
+
+    await _pumpReviewsSection(
+      tester,
+      container: container,
+      user: user,
+      reviews: const [],
+      canWrite: false,
+    );
+
+    expect(find.byType(CatchEmptyState), findsNothing);
+    expect(find.text('No reviews yet'), findsNothing);
+    expect(find.byKey(ReviewKeys.writeReviewButton), findsNothing);
+  });
+
+  testWidgets('club and standalone empty presentations remain explicit', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: Column(
+            children: [
+              ClubReviewsSection(reviews: [], currentUid: 'runner-1'),
+              ReviewsPreviewSection(
+                reviews: [],
+                currentUid: 'runner-1',
+                emptyPresentation: ReviewsEmptyPresentation.standalone,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final emptyStates = tester
+        .widgetList<CatchEmptyState>(find.byType(CatchEmptyState))
+        .toList(growable: false);
+
+    expect(emptyStates, hasLength(2));
+    expect(emptyStates.first.surface, true);
+    expect(emptyStates.first.layout, CatchEmptyStateLayout.inline);
+    expect(emptyStates.last.surface, false);
+    expect(emptyStates.last.layout, CatchEmptyStateLayout.stacked);
     expect(
-      find.text('Reviews appear after attendees complete the event.'),
+      find.text('Reviews appear after members attend an event.'),
       findsOneWidget,
     );
+    expect(find.text('No reviews yet'), findsNWidgets(2));
   });
 
   testWidgets('own review can be edited and deleted from the sheet', (
@@ -168,7 +235,8 @@ void main() {
       container: container,
       user: user,
       reviews: [review],
-      isHost: true,
+      canWrite: false,
+      canRespond: true,
     );
 
     expect(find.byKey(ReviewKeys.writeReviewButton), findsNothing);
@@ -341,7 +409,8 @@ Future<void> _pumpReviewsSection(
   required ProviderContainer container,
   required UserProfile user,
   required List<Review> reviews,
-  bool isHost = false,
+  bool canWrite = true,
+  bool canRespond = false,
 }) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -357,8 +426,8 @@ Future<void> _pumpReviewsSection(
               reviews: reviews,
               currentUid: user.uid,
               userProfile: user,
-              isHost: isHost,
-              hasAttended: true,
+              canWrite: canWrite,
+              canRespond: canRespond,
             ),
           ),
         ),

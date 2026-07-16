@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -61,6 +63,19 @@ Widget appShellNavigationBarState(BuildContext context) {
       unreadCount: 12,
       onDestinationSelected: (_) {},
     ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Adaptive placement',
+  type: CatchAdaptiveTabScaffold,
+  path: '[App shell]',
+)
+Widget catchAdaptiveTabScaffoldState(BuildContext context) {
+  return const _ShellCatalog(
+    title: 'CatchAdaptiveTabScaffold',
+    contractId: 'catch.adaptive_tab_scaffold',
+    child: _AdaptiveTabScaffoldDemo(),
   );
 }
 
@@ -206,6 +221,172 @@ class _DeviceFrame extends StatelessWidget {
     );
   }
 }
+
+class _AdaptiveTabScaffoldDemo extends StatefulWidget {
+  const _AdaptiveTabScaffoldDemo();
+
+  @override
+  State<_AdaptiveTabScaffoldDemo> createState() =>
+      _AdaptiveTabScaffoldDemoState();
+}
+
+class _AdaptiveTabScaffoldDemoState extends State<_AdaptiveTabScaffoldDemo> {
+  TargetPlatform _platform = TargetPlatform.iOS;
+
+  @override
+  Widget build(BuildContext context) {
+    final isIos = _platform == TargetPlatform.iOS;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: SegmentedButton<TargetPlatform>(
+            showSelectedIcon: false,
+            segments: const [
+              ButtonSegment(
+                value: TargetPlatform.iOS,
+                label: Text('iOS · floating'),
+              ),
+              ButtonSegment(
+                value: TargetPlatform.android,
+                label: Text('Android · anchored'),
+              ),
+            ],
+            selected: {_platform},
+            onSelectionChanged: (selection) {
+              setState(() => _platform = selection.single);
+            },
+          ),
+        ),
+        gapH20,
+        _AdaptiveTabScaffoldFrame(
+          platform: _platform,
+          title: isIos ? 'iOS · floating' : 'Android · anchored',
+          behavior: isIos
+              ? 'The body extends behind the pill and publishes the complete '
+                    'physical obstruction to the active tab.'
+              : 'Scaffold reserves the navigation-bar viewport, so the active '
+                    'tab publishes no overlay obstruction.',
+        ),
+      ],
+    );
+  }
+}
+
+class _AdaptiveTabScaffoldFrame extends StatelessWidget {
+  const _AdaptiveTabScaffoldFrame({
+    required this.platform,
+    required this.title,
+    required this.behavior,
+  });
+
+  final TargetPlatform platform;
+  final String title;
+  final String behavior;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(title, style: CatchTextStyles.titleS(context)),
+        gapH4,
+        Text(behavior, style: CatchTextStyles.supporting(context)),
+        gapH10,
+        Center(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(CatchRadius.lg),
+            child: SizedBox(
+              width: 390,
+              height: 360,
+              child: Theme(
+                data: AppTheme.light.copyWith(platform: platform),
+                child: MediaQuery(
+                  data: const MediaQueryData(
+                    size: Size(390, 360),
+                    padding: EdgeInsets.only(bottom: 34),
+                    viewPadding: EdgeInsets.only(bottom: 34),
+                  ),
+                  child: CatchAdaptiveTabScaffold(
+                    activeIndex: appShellClubsTabIndex,
+                    navigationBar: AppShellNavigationBar(
+                      currentIndex: appShellClubsTabIndex,
+                      unreadCount: 3,
+                      onDestinationSelected: _ignoreIndex,
+                    ),
+                    body: _AdaptiveShellBody(
+                      placement: platform == TargetPlatform.iOS
+                          ? 'Floating overlay'
+                          : 'Anchored viewport',
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AdaptiveShellBody extends StatelessWidget {
+  const _AdaptiveShellBody({required this.placement});
+
+  final String placement;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final obstruction = AppShellActiveTab.bottomOverlayInsetOf(context);
+    return ColoredBox(
+      color: t.bg,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s4,
+          CatchSpacing.s4,
+          CatchSpacing.s4,
+          0,
+        ),
+        children: [
+          Text(placement, style: CatchTextStyles.headlineS(context)),
+          gapH4,
+          Text(
+            'Published overlay: ${obstruction.toStringAsFixed(0)} px',
+            style: CatchTextStyles.supporting(context, color: t.ink3),
+          ),
+          gapH16,
+          CatchSurface.card(
+            child: Text(
+              'Tab content owns one scroll terminal. The shell only publishes '
+              'placement and obstruction.',
+              style: CatchTextStyles.bodyM(context),
+            ),
+          ),
+          gapH12,
+          CatchSurface.tinted(
+            child: Text(
+              obstruction > 0
+                  ? 'The floating pill overlays this body.'
+                  : 'The navigation bar sits outside this body.',
+              style: CatchTextStyles.supporting(context),
+            ),
+          ),
+          gapH32,
+          Text(
+            'Body terminal',
+            textAlign: TextAlign.center,
+            style: CatchTextStyles.supporting(context, color: t.ink3),
+          ),
+          gapH20,
+        ],
+      ),
+    );
+  }
+}
+
+void _ignoreIndex(int _) {}
 
 final class _NoOpAnalyticsReporter implements AnalyticsReporter {
   @override

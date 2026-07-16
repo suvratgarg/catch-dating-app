@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {useState} from "react";
 import {
   getMarketingConsent,
@@ -13,12 +14,9 @@ export function MarketingConsentBanner() {
 
   return (
     <MarketingConsentBannerShell
-      aria-label="Analytics consent"
+      aria-label={websiteCopy["marketingconsentbanner_0328"]}
       body={
-        <>
-          Catch uses analytics and ad measurement to understand which campaigns
-          bring real waitlist and host demand.
-        </>
+        <>{websiteCopy["marketingconsentbanner_0329"]}</>
       }
       actions={
         <>
@@ -26,17 +24,13 @@ export function MarketingConsentBanner() {
             size="small"
             type="button"
             onClick={() => setConsent(setMarketingConsent("accepted"))}
-          >
-            Accept all
-          </Button>
+          >{websiteCopy["marketingconsentbanner_0327"]}</Button>
           <Button
             size="small"
             type="button"
             variant="ghost"
             onClick={() => setConsent(setMarketingConsent("essential"))}
-          >
-            Essential only
-          </Button>
+          >{websiteCopy["marketingconsentbanner_0330"]}</Button>
         </>
       }
     />

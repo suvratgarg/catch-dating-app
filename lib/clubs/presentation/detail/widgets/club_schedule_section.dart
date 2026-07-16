@@ -41,7 +41,7 @@ class ClubScheduleSection extends StatelessWidget {
     return SliverMainAxisGroup(
       slivers: [
         SliverPadding(
-          padding: EdgeInsets.fromLTRB(
+          padding: const EdgeInsets.fromLTRB(
             CatchLayout.detailScreenHorizontalPadding,
             0,
             CatchLayout.detailScreenHorizontalPadding,
@@ -50,7 +50,7 @@ class ClubScheduleSection extends StatelessWidget {
           sliver: SliverToBoxAdapter(
             child: CatchSection.divided(
               title: context.l10n.clubsClubScheduleSectionTitleSchedule,
-              child: SizedBox.shrink(),
+              child: const SizedBox.shrink(),
             ),
           ),
         ),
@@ -149,9 +149,6 @@ class ClubScheduleSection extends StatelessWidget {
                             );
                           },
                         ),
-                        if (eventIndex <
-                            groupedRows[groupIndex].value.length - 1)
-                          const SizedBox(height: CatchLayout.agendaItemGap),
                       ],
                     ],
                   ),

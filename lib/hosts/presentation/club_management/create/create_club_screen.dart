@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -393,7 +392,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: maxHeight),
             child: SingleChildScrollView(
-              child: CatchSection.contained(
+              child: CatchSection.containedFieldRows(
                 children: [
                   for (final city in defaultCityOptions.where(
                     (city) => city.hostCreatable,
@@ -403,7 +402,6 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                       body: city.countryIsoCode,
                       icon: CatchIcons.locationCityOutlined,
                       valid: city.effectiveMarketId == _selectedCity,
-                      showChevron: true,
                       onTap: () => Navigator.of(context).pop(city),
                     ),
                 ],
@@ -889,173 +887,173 @@ class HostClubEditScaffold extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               padding: CatchInsets.formEditBodyRelaxed,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              child: CatchSectionList(
+                gap: CatchSpacing.s5,
                 children: [
-                  CreateClubProfileImagePicker(
-                    imageBytes: media.profileImageBytes,
-                    existingImageUrl: media.existingProfileImageUrl,
-                    onTap: scaffoldState.mediaEnabled
-                        ? () => onIntent(
-                            const HostClubCreatePickProfileImageIntent(),
-                          )
-                        : null,
-                    variant: CreateClubProfileImagePickerVariant.editLogo,
-                  ),
-                  gapH20,
-                  CreateClubPhotosPicker(
-                    photos: media.clubPhotoPreviews,
-                    existingImageUrl: media.existingCoverImageUrl,
-                    onAddPhotos: scaffoldState.mediaEnabled
-                        ? () => onIntent(
-                            const HostClubCreatePickClubPhotosIntent(),
-                          )
-                        : null,
-                    onRemovePhoto: scaffoldState.mediaEnabled
-                        ? (index) => onIntent(
-                            HostClubCreateRemoveClubPhotoIntent(index),
-                          )
-                        : null,
-                    onReorderPhoto: scaffoldState.mediaEnabled
-                        ? (fromIndex, toIndex) => onIntent(
-                            HostClubCreateReorderClubPhotoIntent(
-                              fromIndex: fromIndex,
-                              toIndex: toIndex,
-                            ),
-                          )
-                        : null,
-                    variant: CreateClubPhotosPickerVariant.editStrip,
-                  ),
-                  Form(
-                    key: basicsFormKey,
-                    autovalidateMode: autovalidateMode,
+                  CatchSection.plain(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        HostClubEditSection(
-                          label:
-                              context.l10n.hostsCreateClubScreenLabelIdentity,
-                          child: CatchSection.contained(
-                            hasError: editIdentityHasError,
-                            children: [
-                              CatchField.input(
-                                title: context
-                                    .l10n
-                                    .hostsCreateClubScreenTitleClubName,
-                                controller: nameController,
-                                onChanged: (value) => onIntent(
-                                  HostClubCreateIdentityChangedIntent(value),
-                                ),
-                                icon: CatchIcons.groupOutlined,
-                                textCapitalization: TextCapitalization.words,
-                                textInputAction: TextInputAction.next,
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return context
-                                        .l10n
-                                        .hostsCreateClubScreenBodyPleaseEnterAClub;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              HostClubEditCityField(
-                                city: selectedCity,
-                                rawCityName: rawCityName,
-                                enabled: scaffoldState.cityPickerEnabled,
-                                onPickCity: onPickCity,
-                              ),
-                              CatchField.input(
-                                title: context
-                                    .l10n
-                                    .hostsCreateClubScreenTitleAreaNeighbourhood,
-                                controller: areaController,
-                                onChanged: (value) => onIntent(
-                                  HostClubCreateIdentityChangedIntent(value),
-                                ),
-                                icon: CatchIcons.locationOnOutlined,
-                                placeholder: context
-                                    .l10n
-                                    .hostsCreateClubScreenPlaceholderEGBandraKoramangala,
-                                textCapitalization: TextCapitalization.words,
-                                textInputAction: TextInputAction.next,
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return context
-                                        .l10n
-                                        .hostsCreateClubScreenBodyPleaseEnterAnArea;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              CatchField.input(
-                                title: context
-                                    .l10n
-                                    .hostsCreateClubScreenTitleDescription,
-                                controller: descriptionController,
-                                onChanged: (value) => onIntent(
-                                  HostClubCreateIdentityChangedIntent(value),
-                                ),
-                                icon: CatchIcons.editNoteOutlined,
-                                maxLines: 4,
-                                minLines: 2,
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                textInputAction: TextInputAction.newline,
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return context
-                                        .l10n
-                                        .hostsCreateClubScreenBodyPleaseAddADescription;
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
+                        CreateClubProfileImagePicker(
+                          imageBytes: media.profileImageBytes,
+                          existingImageUrl: media.existingProfileImageUrl,
+                          onTap: scaffoldState.mediaEnabled
+                              ? () => onIntent(
+                                  const HostClubCreatePickProfileImageIntent(),
+                                )
+                              : null,
+                          variant: CreateClubProfileImagePickerVariant.editLogo,
                         ),
-                        HostClubEditSection(
-                          label: context.l10n.hostsCreateClubScreenLabelContact,
-                          child: CatchSection.contained(
-                            children: [
-                              CatchField.input(
-                                title: context
-                                    .l10n
-                                    .hostsCreateClubScreenTitleInstagram,
-                                controller: instagramController,
-                                icon: CatchIcons.alternateEmailOutlined,
-                                leadingUnit: '@',
-                                textInputAction: TextInputAction.next,
-                              ),
-                              CatchField.input(
-                                title: context
-                                    .l10n
-                                    .hostsCreateClubScreenTitlePhone,
-                                controller: phoneController,
-                                icon: CatchIcons.phoneOutlined,
-                                keyboardType: TextInputType.phone,
-                                textInputAction: TextInputAction.next,
-                              ),
-                              CatchField.input(
-                                title: context
-                                    .l10n
-                                    .hostsCreateClubScreenTitleEmail,
-                                controller: emailController,
-                                icon: CatchIcons.emailOutlined,
-                                keyboardType: TextInputType.emailAddress,
-                                textInputAction: TextInputAction.done,
-                              ),
-                            ],
-                          ),
+                        gapH20,
+                        CreateClubPhotosPicker(
+                          photos: media.clubPhotoPreviews,
+                          existingImageUrl: media.existingCoverImageUrl,
+                          onAddPhotos: scaffoldState.mediaEnabled
+                              ? () => onIntent(
+                                  const HostClubCreatePickClubPhotosIntent(),
+                                )
+                              : null,
+                          onRemovePhoto: scaffoldState.mediaEnabled
+                              ? (index) => onIntent(
+                                  HostClubCreateRemoveClubPhotoIntent(index),
+                                )
+                              : null,
+                          onReorderPhoto: scaffoldState.mediaEnabled
+                              ? (fromIndex, toIndex) => onIntent(
+                                  HostClubCreateReorderClubPhotoIntent(
+                                    fromIndex: fromIndex,
+                                    toIndex: toIndex,
+                                  ),
+                                )
+                              : null,
+                          variant: CreateClubPhotosPickerVariant.editStrip,
                         ),
                       ],
                     ),
                   ),
-                  HostClubEditSection(
-                    label: context.l10n.hostsCreateClubScreenLabelEventDefaults,
+                  Form(
+                    key: basicsFormKey,
+                    autovalidateMode: autovalidateMode,
+                    child: CatchSectionList(
+                      gap: CatchSpacing.s3,
+                      children: [
+                        CatchSection.containedFieldRows(
+                          title:
+                              context.l10n.hostsCreateClubScreenLabelIdentity,
+                          hasError: editIdentityHasError,
+                          children: [
+                            CatchField.input(
+                              title: context
+                                  .l10n
+                                  .hostsCreateClubScreenTitleClubName,
+                              controller: nameController,
+                              onChanged: (value) => onIntent(
+                                HostClubCreateIdentityChangedIntent(value),
+                              ),
+                              icon: CatchIcons.groupOutlined,
+                              textCapitalization: TextCapitalization.words,
+                              textInputAction: TextInputAction.next,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return context
+                                      .l10n
+                                      .hostsCreateClubScreenBodyPleaseEnterAClub;
+                                }
+                                return null;
+                              },
+                            ),
+                            HostClubEditCityField(
+                              city: selectedCity,
+                              rawCityName: rawCityName,
+                              enabled: scaffoldState.cityPickerEnabled,
+                              onPickCity: onPickCity,
+                            ),
+                            CatchField.input(
+                              title: context
+                                  .l10n
+                                  .hostsCreateClubScreenTitleAreaNeighbourhood,
+                              controller: areaController,
+                              onChanged: (value) => onIntent(
+                                HostClubCreateIdentityChangedIntent(value),
+                              ),
+                              icon: CatchIcons.locationOnOutlined,
+                              inputHint: context
+                                  .l10n
+                                  .hostsCreateClubScreenPlaceholderEGBandraKoramangala,
+                              textCapitalization: TextCapitalization.words,
+                              textInputAction: TextInputAction.next,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return context
+                                      .l10n
+                                      .hostsCreateClubScreenBodyPleaseEnterAnArea;
+                                }
+                                return null;
+                              },
+                            ),
+                            CatchField.input(
+                              title: context
+                                  .l10n
+                                  .hostsCreateClubScreenTitleDescription,
+                              controller: descriptionController,
+                              onChanged: (value) => onIntent(
+                                HostClubCreateIdentityChangedIntent(value),
+                              ),
+                              icon: CatchIcons.editNoteOutlined,
+                              maxLines: 4,
+                              minLines: 2,
+                              textCapitalization: TextCapitalization.sentences,
+                              textInputAction: TextInputAction.newline,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return context
+                                      .l10n
+                                      .hostsCreateClubScreenBodyPleaseAddADescription;
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                        CatchSection.containedFieldRows(
+                          title: context.l10n.hostsCreateClubScreenLabelContact,
+                          children: [
+                            CatchField.input(
+                              title: context
+                                  .l10n
+                                  .hostsCreateClubScreenTitleInstagram,
+                              controller: instagramController,
+                              icon: CatchIcons.alternateEmailOutlined,
+                              leadingUnit: '@',
+                              textInputAction: TextInputAction.next,
+                            ),
+                            CatchField.input(
+                              title:
+                                  context.l10n.hostsCreateClubScreenTitlePhone,
+                              controller: phoneController,
+                              icon: CatchIcons.phoneOutlined,
+                              keyboardType: TextInputType.phone,
+                              textInputAction: TextInputAction.next,
+                            ),
+                            CatchField.input(
+                              title:
+                                  context.l10n.hostsCreateClubScreenTitleEmail,
+                              controller: emailController,
+                              icon: CatchIcons.emailOutlined,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.done,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  CatchSection.plain(
+                    title: context.l10n.hostsCreateClubScreenLabelEventDefaults,
                     subtitle: context
                         .l10n
                         .hostsCreateClubScreenSubtitlePrefillEveryNewEvent,
-                    child: Column(
+                    child: CatchSectionList(
+                      gap: CatchSpacing.s4,
                       children: [
                         ClubHostDefaultsStep(
                           formKey: defaultsFormKey,
@@ -1067,7 +1065,6 @@ class HostClubEditScaffold extends StatelessWidget {
                           scrollable: false,
                           padding: EdgeInsets.zero,
                         ),
-                        gapH16,
                         ClubEventSuccessDefaultsStep(
                           formKey: eventSuccessFormKey,
                           defaults: hostDefaults,
@@ -1097,44 +1094,6 @@ class HostClubEditScaffold extends StatelessWidget {
                   : null,
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class HostClubEditSection extends StatelessWidget {
-  const HostClubEditSection({
-    super.key,
-    required this.label,
-    required this.child,
-    this.subtitle,
-  });
-
-  final String label;
-  final Widget child;
-  final String? subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: CatchInsets.formSectionTop,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CatchDivider.section(),
-          gapH18,
-          Text(label, style: CatchTextStyles.kicker(context, color: t.ink2)),
-          if (subtitle != null) ...[
-            gapH4,
-            Text(
-              subtitle!,
-              style: CatchTextStyles.supporting(context, color: t.ink3),
-            ),
-          ],
-          gapH10,
-          child,
         ],
       ),
     );
@@ -1174,7 +1133,6 @@ class HostClubEditCityField extends StatelessWidget {
           body: value,
           placeholder: context.l10n.hostsCreateClubScreenPlaceholderSelectCity,
           icon: CatchIcons.locationCityOutlined,
-          showChevron: enabled,
           error: field.errorText,
           onTap: enabled
               ? () async {

@@ -32,7 +32,7 @@ test("canonical website metadata satisfies the runtime content contract", () => 
       name: "AFTER FLY",
       city: "Indore",
     }),
-    "AFTER FLY | Indore organizer profile | Catch"
+    "AFTER FLY | Indore events & reviews | Catch"
   );
 });
 

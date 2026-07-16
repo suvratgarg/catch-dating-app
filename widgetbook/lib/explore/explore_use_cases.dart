@@ -33,6 +33,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_events_sec
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -56,6 +57,8 @@ const _delhi = CityData(
   latitude: 28.7041,
   longitude: 77.1025,
 );
+
+const _mapCenter = LocationCoordinate(19.076, 72.8777);
 
 ExploreCityPickerState _cityPickerState({
   CityData? selectedCity,
@@ -1396,7 +1399,11 @@ Widget exploreClubTagsStates(BuildContext context) {
       _StateCard(
         label: 'visible tags',
         child: ExploreClubTags(
-          state: ExploreClubCardState.from(_clubs[0], isSynthetic: false),
+          state: ExploreClubCardState.from(
+            _clubs[0],
+            isSynthetic: false,
+            l10n: context.l10n,
+          ),
         ),
       ),
       _StateCard(
@@ -1405,6 +1412,7 @@ Widget exploreClubTagsStates(BuildContext context) {
           state: ExploreClubCardState.from(
             _clubs[0].copyWith(tags: []),
             isSynthetic: false,
+            l10n: context.l10n,
           ),
         ),
       ),
@@ -1636,6 +1644,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
                 state: ExploreEventsEmptyState.from(
                   filters: const ExploreFilterSelection(),
                   searchQuery: 'pickleball supper',
+                  l10n: context.l10n,
                 ),
                 onClearSearch: _noop,
                 onClearFilters: _noop,
@@ -1656,6 +1665,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
                     timeFilter: ExploreTimeFilter.tonight,
                   ),
                   searchQuery: '',
+                  l10n: context.l10n,
                 ),
                 onSetTimeFilter: (_) {},
               ),
@@ -1922,7 +1932,8 @@ Widget exploreMapLauncherStates(BuildContext context) {
         label: 'with count',
         child: _MapPillFrame(
           child: CatchCountPill(
-            label: 'Map · 6',
+            label: 'Map',
+            value: '6',
             icon: CatchIcons.map,
             semanticLabel: 'Map, 6 events',
           ),
@@ -1932,7 +1943,8 @@ Widget exploreMapLauncherStates(BuildContext context) {
         label: 'pressed review target',
         child: _MapPillFrame(
           child: CatchCountPill(
-            label: 'Map · 12',
+            label: 'Map',
+            value: '12',
             icon: CatchIcons.map,
             semanticLabel: 'Map, 12 events',
           ),
@@ -1944,7 +1956,8 @@ Widget exploreMapLauncherStates(BuildContext context) {
           textScaler: const TextScaler.linear(2),
           child: _MapPillFrame(
             child: CatchCountPill(
-              label: 'Map · 12',
+              label: 'Map',
+              value: '12',
               icon: CatchIcons.map,
               semanticLabel: 'Map, 12 events',
             ),
@@ -2007,29 +2020,6 @@ Widget exploreMapRouteStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'no exact pins',
-        child: _DeviceFrame(
-          height: 420,
-          child: _ExploreScope(
-            feed: AsyncData(
-              ExploreFeedViewModel(
-                items: [
-                  ExploreEventItem(
-                    event: _feedItems.first.event.copyWith(
-                      meetingLocation: null,
-                    ),
-                    club: _feedItems.first.club,
-                    availability: _feedItems.first.availability,
-                    distanceFromUserKm: _feedItems.first.distanceFromUserKm,
-                  ),
-                ],
-              ),
-            ),
-            child: const ExploreMapScreen(enableNetworkTiles: false),
-          ),
-        ),
-      ),
-      _StateCard(
         label: 'error',
         child: _DeviceFrame(
           height: 420,
@@ -2050,6 +2040,7 @@ Widget exploreMapRouteStates(BuildContext context) {
             seedFilters: const _FilterSeed(
               distance: ExploreDistanceFilter.threeKm,
             ),
+            deviceLocation: _mapCenter,
             child: const ExploreMapScreen(enableNetworkTiles: false),
           ),
         ),
@@ -2067,6 +2058,7 @@ class _ExploreScope extends StatelessWidget {
     this.viewModel,
     this.feed,
     this.uid = _viewerUid,
+    this.deviceLocation,
   });
 
   final Widget child;
@@ -2076,6 +2068,7 @@ class _ExploreScope extends StatelessWidget {
   final AsyncValue<ExploreViewModel>? viewModel;
   final AsyncValue<ExploreFeedViewModel>? feed;
   final String? uid;
+  final LocationCoordinate? deviceLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -2099,7 +2092,9 @@ class _ExploreScope extends StatelessWidget {
           (ref) => Stream<UserProfile?>.value(uid == null ? null : _viewer),
         ),
         cityListProvider.overrideWith((ref) async => const [_mumbai, _delhi]),
-        deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+        deviceLocationProvider.overrideWith(
+          () => _PreviewDeviceLocation(deviceLocation),
+        ),
         exploreSourceClubsProvider.overrideWithValue(effectiveSourceClubs),
         exploreClubsViewModelProvider.overrideWithValue(effectiveViewModel),
         exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
@@ -2174,9 +2169,13 @@ class _FilterSeed {
   }
 }
 
-class _NoDeviceLocation extends DeviceLocation {
+class _PreviewDeviceLocation extends DeviceLocation {
+  _PreviewDeviceLocation(this.value);
+
+  final LocationCoordinate? value;
+
   @override
-  Future<LocationCoordinate?> build() async => null;
+  Future<LocationCoordinate?> build() async => value;
 }
 
 class _ExploreBodySliverPreview extends ConsumerWidget {
@@ -2223,6 +2222,7 @@ class _ExploreEventsSliverPreview extends ConsumerWidget {
     return CustomScrollView(
       slivers: buildExploreEventsSlivers(
         ref.watch(exploreFeedViewModelProvider),
+        l10n: context.l10n,
         filters: filters,
         searchQuery: ref.watch(exploreSearchQueryProvider).trim(),
         onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
@@ -2515,18 +2515,22 @@ Event _event({
   required double distanceFromUserKm,
   int priceInPaise = 0,
 }) {
+  final latitude = _mumbai.latitude + distanceFromUserKm / 100;
+  final longitude = _mumbai.longitude + distanceFromUserKm / 100;
   return Event(
     id: id,
     clubId: club.id,
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 1, minutes: 45)),
     meetingPoint: meetingPoint,
-    meetingLocation: EventMeetingLocation.legacy(
+    meetingLocation: EventMeetingLocation(
       name: meetingPoint,
-      latitude: _mumbai.latitude + distanceFromUserKm / 100,
-      longitude: _mumbai.longitude + distanceFromUserKm / 100,
+      latitude: latitude,
+      longitude: longitude,
       notes: club.area,
     ),
+    startingPointLat: latitude,
+    startingPointLng: longitude,
     photoUrl: club.imageUrl,
     eventPhotos: [
       _photo('event-$id-main', 0, '1500530855697-b586d89ba3ee'),

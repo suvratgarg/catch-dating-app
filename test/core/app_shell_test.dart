@@ -1,10 +1,14 @@
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -33,6 +37,152 @@ void main() {
         ]),
         isFalse,
       );
+    });
+  });
+
+  group('CatchAdaptiveTabScaffold', () {
+    testWidgets('floats navigation and publishes raw obstruction on iOS', (
+      tester,
+    ) async {
+      const navigationKey = Key('adaptive-navigation');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+          home: const MediaQuery(
+            data: MediaQueryData(
+              size: Size(393, 852),
+              padding: EdgeInsets.only(bottom: 34),
+              viewPadding: EdgeInsets.only(bottom: 34),
+            ),
+            child: CatchAdaptiveTabScaffold(
+              activeIndex: appShellClubsTabIndex,
+              body: SizedBox.expand(),
+              navigationBar: SizedBox(key: navigationKey, height: 56),
+            ),
+          ),
+        ),
+      );
+
+      final scaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final activeTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+
+      expect(scaffold.extendBody, isTrue);
+      expect(scaffold.body, isA<Stack>());
+      expect(scaffold.bottomNavigationBar, isNull);
+      expect(find.byKey(navigationKey), findsOneWidget);
+      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.floating);
+      expect(activeTab.bottomOverlayInset, 102);
+    });
+
+    testWidgets('anchors navigation through Scaffold on Android', (
+      tester,
+    ) async {
+      const navigationKey = Key('adaptive-navigation');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.android),
+          home: const MediaQuery(
+            data: MediaQueryData(
+              size: Size(393, 852),
+              padding: EdgeInsets.only(bottom: 34),
+              viewPadding: EdgeInsets.only(bottom: 34),
+            ),
+            child: CatchAdaptiveTabScaffold(
+              activeIndex: appShellClubsTabIndex,
+              body: SizedBox.expand(),
+              navigationBar: SizedBox(key: navigationKey, height: 56),
+            ),
+          ),
+        ),
+      );
+
+      final scaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final activeTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+
+      expect(scaffold.extendBody, isFalse);
+      expect(scaffold.body, isA<AppShellActiveTab>());
+      expect(scaffold.bottomNavigationBar, isNotNull);
+      expect(find.byKey(navigationKey), findsOneWidget);
+      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.anchored);
+      expect(activeTab.bottomOverlayInset, 0);
+    });
+
+    testWidgets('anchors fallback chrome even on iOS', (tester) async {
+      const fallbackKey = Key('adaptive-fallback');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+          home: const CatchAdaptiveTabScaffold(
+            activeIndex: appShellHomeTabIndex,
+            body: SizedBox.expand(),
+            anchoredFallback: SizedBox(key: fallbackKey, height: 56),
+          ),
+        ),
+      );
+
+      final scaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final activeTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+
+      expect(scaffold.extendBody, isFalse);
+      expect(scaffold.bottomNavigationBar, isNotNull);
+      expect(find.byKey(fallbackKey), findsOneWidget);
+      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.anchored);
+    });
+
+    testWidgets('preserves safe-area terminal clearance with no bottom bar', (
+      tester,
+    ) async {
+      const terminalKey = Key('adaptive-terminal');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+          home: const MediaQuery(
+            data: MediaQueryData(
+              size: Size(393, 852),
+              padding: EdgeInsets.only(bottom: 12),
+              viewPadding: EdgeInsets.only(bottom: 34),
+            ),
+            child: CatchAdaptiveTabScaffold(
+              activeIndex: appShellHomeTabIndex,
+              body: CatchScrollTerminalPadding(key: terminalKey, extra: 10),
+            ),
+          ),
+        ),
+      );
+
+      final scaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final activeTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+      final terminal = tester.widget<SizedBox>(
+        find.descendant(
+          of: find.byKey(terminalKey),
+          matching: find.byType(SizedBox),
+        ),
+      );
+
+      expect(scaffold.extendBody, isFalse);
+      expect(scaffold.bottomNavigationBar, isNull);
+      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.none);
+      expect(terminal.height, 44);
     });
   });
 
@@ -72,7 +222,7 @@ void main() {
       int? tappedIndex;
       await tester.pumpWidget(
         MaterialApp(
-          theme: AppTheme.light,
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
           home: MediaQuery(
             data: const MediaQueryData(
               size: Size(393, 852),
@@ -127,7 +277,7 @@ void main() {
     try {
       await tester.pumpWidget(
         MaterialApp(
-          theme: AppTheme.light,
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
           home: const MediaQuery(
             data: MediaQueryData(
               size: Size(393, 852),

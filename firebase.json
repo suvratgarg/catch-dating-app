@@ -87,6 +87,18 @@
           ]
         }
       ],
+      "redirects": [
+        {
+          "source": "/host/preview",
+          "destination": "/host/",
+          "type": 301
+        },
+        {
+          "source": "/host/preview/**",
+          "destination": "/host/",
+          "type": 301
+        }
+      ],
       "rewrites": [
         {
           "source": "/api/join-waitlist",

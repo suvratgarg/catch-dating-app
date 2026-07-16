@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -10,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -29,6 +31,7 @@ import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
@@ -63,6 +66,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -73,6 +77,8 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -1744,6 +1750,95 @@ Widget catchFieldContractStates(BuildContext context) {
         ),
       ),
     ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: ChatInputBar,
+  path: '[Core primitives]/Product composites',
+)
+Widget chatComposerContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'ChatInputBar',
+    contractId: 'catch.chat_composer',
+    states: const [
+      'empty-unfocused',
+      'empty-focused',
+      'draft-unfocused',
+      'draft-focused',
+      'multiline',
+      'sending-text',
+      'uploading-image',
+      'disabled',
+      'text-only',
+    ],
+    children: const [
+      _StateCard(
+        label: 'empty-unfocused',
+        child: _ChatComposerContractFrame(
+          state: _ChatComposerContractState.empty,
+        ),
+      ),
+      _StateCard(
+        label: 'draft-unfocused',
+        child: _ChatComposerContractFrame(
+          state: _ChatComposerContractState.draft,
+        ),
+      ),
+      _StateCard(
+        label: 'multiline',
+        child: _ChatComposerContractFrame(
+          state: _ChatComposerContractState.multiline,
+        ),
+      ),
+      _StateCard(
+        label: 'sending-text',
+        child: _ChatComposerContractFrame(
+          state: _ChatComposerContractState.sendingText,
+        ),
+      ),
+      _StateCard(
+        label: 'uploading-image',
+        child: _ChatComposerContractFrame(
+          state: _ChatComposerContractState.uploadingImage,
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _ChatComposerContractFrame(
+          state: _ChatComposerContractState.disabled,
+        ),
+      ),
+      _StateCard(
+        label: 'text-only',
+        child: _ChatComposerContractFrame(
+          state: _ChatComposerContractState.textOnly,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Focused empty',
+  type: ChatInputBar,
+  path: '[Core primitives]/Product composites',
+)
+Widget chatComposerFocusedEmpty(BuildContext context) {
+  return const _ChatComposerContractFrame(
+    state: _ChatComposerContractState.focusedEmpty,
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Focused draft',
+  type: ChatInputBar,
+  path: '[Core primitives]/Product composites',
+)
+Widget chatComposerFocusedDraft(BuildContext context) {
+  return const _ChatComposerContractFrame(
+    state: _ChatComposerContractState.focusedDraft,
   );
 }
 
@@ -3616,6 +3711,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       'with-leading',
       'with-action-icon',
       'with-action-text',
+      'with-grouped-actions',
       'with-search',
       'conversation-title',
       'surface',
@@ -3666,6 +3762,30 @@ Widget catchTopBarContractStates(BuildContext context) {
             title: 'Preview',
             actionText: 'Done',
             onAction: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'with-grouped-actions',
+        description:
+            'The shared action group owns the spacing between sibling actions.',
+        child: _TopBarFrame(
+          child: CatchTopBar(
+            title: 'Event details',
+            leadingType: CatchTopBarLeading.back,
+            onBack: _noop,
+            actions: [
+              CatchIconAction(
+                icon: CatchIcons.share,
+                tooltip: 'Share event',
+                onPressed: _noop,
+              ),
+              CatchIconAction(
+                icon: CatchIcons.savedOutlined,
+                tooltip: 'Save event',
+                onPressed: _noop,
+              ),
+            ],
           ),
         ),
       ),
@@ -4803,6 +4923,83 @@ Widget catchDistanceRingContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchMapPreview,
+  path: '[Core primitives]/Location',
+)
+Widget catchMapPreviewContractStates(BuildContext context) {
+  const coordinate = LocationCoordinate(22.7196, 75.8577);
+
+  return _ContractScreen(
+    title: 'CatchMapPreview',
+    contractId: 'catch.map_preview',
+    states: const [
+      'exact-location',
+      'missing-coordinate',
+      'network-disabled',
+      'android-lite-mode',
+    ],
+    children: [
+      const _StateCard(
+        label: 'exact-location',
+        description:
+            'A fixed coordinate keeps the fixture stable; Widgetbook disables tiles.',
+        child: SizedBox(
+          width: 360,
+          height: 180,
+          child: CatchMapPreview(
+            coordinate: coordinate,
+            fallbackLabel: 'Rajwada square clock tower',
+            enableNetworkTiles: false,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'missing-coordinate',
+        child: SizedBox(
+          width: 360,
+          height: 180,
+          child: CatchMapPreview(
+            coordinate: null,
+            fallbackLabel: 'Location unavailable',
+            enableNetworkTiles: false,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'network-disabled',
+        child: SizedBox(
+          width: 360,
+          height: 180,
+          child: CatchMapPreview(
+            coordinate: coordinate,
+            fallbackLabel: 'Offline map preview',
+            enableNetworkTiles: false,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'android-lite-mode',
+        description:
+            'Production uses Android lite mode; the fixture remains network-free.',
+        child: Theme(
+          data: Theme.of(context).copyWith(platform: TargetPlatform.android),
+          child: const SizedBox(
+            width: 360,
+            height: 180,
+            child: CatchMapPreview(
+              coordinate: coordinate,
+              fallbackLabel: 'Android map preview',
+              enableNetworkTiles: false,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchCodeInput,
   path: '[Core primitives]/Inputs',
 )
@@ -5131,7 +5328,13 @@ Widget catchTabRailContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchTabRail',
     contractId: 'catch.tab_rail',
-    states: const ['two-option', 'four-option', 'selected-middle'],
+    states: const [
+      'two-option',
+      'four-option',
+      'selected-middle',
+      'controller-bound',
+      'swipe-interpolated',
+    ],
     children: [
       _StateCard(
         label: 'two-option',
@@ -5163,8 +5366,74 @@ Widget catchTabRailContractStates(BuildContext context) {
           ),
         ),
       ),
+      const _StateCard(
+        label: 'controller-bound',
+        child: _FieldWidth(child: _ControllerRailContractDemo()),
+      ),
+      _StateCard(
+        label: 'swipe-interpolated',
+        child: _FieldWidth(
+          child: CatchTabRail<String>(
+            selected: 'organizer',
+            selectionPosition: 0.5,
+            onChanged: _ignoreString,
+            options: hostOptions,
+          ),
+        ),
+      ),
     ],
   );
+}
+
+@widgetbook.UseCase(
+  name: 'Shared tabbed screen',
+  type: CatchTabbedScreenScaffold,
+  path: '[Core primitives]/Selection',
+)
+Widget catchTabbedScreenContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+@widgetbook.UseCase(
+  name: 'Shared tabbed page',
+  type: CatchTabbedPageScrollView,
+  path: '[Core primitives]/Selection',
+)
+Widget catchTabbedPageContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+@widgetbook.UseCase(
+  name: 'Controller-backed rail',
+  type: CatchTabControllerRail,
+  path: '[Core primitives]/Selection',
+)
+Widget catchTabControllerRailContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+class _TabbedScreenContractUseCase extends StatelessWidget {
+  const _TabbedScreenContractUseCase();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _ContractScreen(
+      title: 'CatchTabbedScreenScaffold',
+      contractId: 'catch.tabbed_screen',
+      states: [
+        'title-expanded',
+        'title-collapsed',
+        'tab-rail-pinned',
+        'tab-page-restored',
+      ],
+      children: [
+        _StateCard(
+          label: 'shared shell',
+          child: SizedBox(height: 680, child: _TabbedScreenContractDemo()),
+        ),
+      ],
+    );
+  }
 }
 
 @widgetbook.UseCase(
@@ -5633,6 +5902,9 @@ Widget catchTabDockContractStates(BuildContext context) {
       'with-badge',
       'disabled-readonly',
       'safe-area',
+      'ios-floating',
+      'android-anchored',
+      'ios-keyboard-open',
       'text-scale',
       'reduced-motion',
       'with-four-tabs',
@@ -5700,6 +5972,71 @@ Widget catchTabDockContractStates(BuildContext context) {
             items: _contractTabBarItems,
             active: 'clubs',
             onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'ios-floating',
+        description: 'iOS resolves the frosted bar as floating shell chrome.',
+        child: Theme(
+          data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              padding: const EdgeInsets.only(bottom: 34),
+              viewPadding: const EdgeInsets.only(bottom: 34),
+            ),
+            child: SizedBox(
+              width: 420,
+              child: CatchTabBar<String>(
+                items: _contractTabBarItems,
+                active: 'explore',
+                onChanged: _ignoreString,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'android-anchored',
+        description: 'Android resolves the hairline bar as anchored chrome.',
+        child: Theme(
+          data: Theme.of(context).copyWith(platform: TargetPlatform.android),
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              padding: const EdgeInsets.only(bottom: 24),
+              viewPadding: const EdgeInsets.only(bottom: 24),
+            ),
+            child: SizedBox(
+              width: 420,
+              child: CatchTabBar<String>(
+                items: _contractTabBarItems,
+                active: 'explore',
+                onChanged: _ignoreString,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'ios-keyboard-open',
+        description:
+            'Keyboard viewInsets do not become tab or scroll-terminal padding.',
+        child: Theme(
+          data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              padding: EdgeInsets.zero,
+              viewPadding: const EdgeInsets.only(bottom: 34),
+              viewInsets: const EdgeInsets.only(bottom: 300),
+            ),
+            child: SizedBox(
+              width: 420,
+              child: CatchTabBar<String>(
+                items: _contractTabBarItems,
+                active: 'explore',
+                onChanged: _ignoreString,
+              ),
+            ),
           ),
         ),
       ),
@@ -5988,6 +6325,7 @@ Widget catchCountPillContractStates(BuildContext context) {
     states: const [
       'icon-only',
       'label',
+      'label-with-value',
       'label-with-icon',
       'with-badge',
       'semantic-label',
@@ -6001,6 +6339,16 @@ Widget catchCountPillContractStates(BuildContext context) {
       _StateCard(
         label: 'label',
         child: CatchCountPill(label: '24 places', onPressed: _noop),
+      ),
+      _StateCard(
+        label: 'label-with-value',
+        child: CatchCountPill(
+          icon: CatchIcons.mapOutlined,
+          label: 'Map',
+          value: '12',
+          semanticLabel: 'Map, 12 events',
+          onPressed: _noop,
+        ),
       ),
       _StateCard(
         label: 'label-with-icon',
@@ -6098,16 +6446,7 @@ Widget catchBottomDockContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchBottomDock',
     contractId: 'catch.bottom_dock',
-    states: const [
-      'custom',
-      'custom-no-safe-area',
-      'cta',
-      'cta-leading-content',
-      'cta-catch-line',
-      'cta-footnote',
-      'loading',
-      'disabled',
-    ],
+    states: const ['custom', 'custom-no-safe-area'],
     children: [
       _StateCard(
         label: 'custom',
@@ -6126,16 +6465,73 @@ Widget catchBottomDockContractStates(BuildContext context) {
           ),
         ),
       ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchBottomAction,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchBottomActionContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchBottomAction',
+    contractId: 'catch.bottom_action',
+    states: const [
+      'ios-floating',
+      'android-anchored',
+      'leading-content',
+      'catch-line',
+      'footnote',
+      'loading',
+      'disabled',
+    ],
+    children: [
       _StateCard(
-        label: 'cta',
+        label: 'ios-floating',
+        description:
+            'Cupertino platforms resolve the CTA as inset floating chrome.',
         child: _DockFrame(
-          child: CatchBottomDock.cta(label: 'Book your spot', onPressed: _noop),
+          child: Theme(
+            data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                padding: const EdgeInsets.only(bottom: 34),
+                viewPadding: const EdgeInsets.only(bottom: 34),
+              ),
+              child: const CatchBottomAction(
+                label: 'Book your spot',
+                onPressed: _noop,
+              ),
+            ),
+          ),
         ),
       ),
       _StateCard(
-        label: 'cta-leading-content',
+        label: 'android-anchored',
+        description:
+            'Material platforms resolve the same CTA as anchored chrome.',
         child: _DockFrame(
-          child: CatchBottomDock.cta(
+          child: Theme(
+            data: Theme.of(context).copyWith(platform: TargetPlatform.android),
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                padding: const EdgeInsets.only(bottom: 24),
+                viewPadding: const EdgeInsets.only(bottom: 24),
+              ),
+              child: const CatchBottomAction(
+                label: 'Book your spot',
+                onPressed: _noop,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'leading-content',
+        child: _DockFrame(
+          child: CatchBottomAction(
             label: 'Join waitlist',
             leadingContent: const CatchBadge(label: '4 left'),
             onPressed: _noop,
@@ -6143,9 +6539,9 @@ Widget catchBottomDockContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'cta-catch-line',
+        label: 'catch-line',
         child: _DockFrame(
-          child: CatchBottomDock.cta(
+          child: CatchBottomAction(
             label: 'Book free',
             catchLine: 'FREE TO JOIN',
             onPressed: _noop,
@@ -6153,9 +6549,9 @@ Widget catchBottomDockContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'cta-footnote',
+        label: 'footnote',
         child: _DockFrame(
-          child: CatchBottomDock.cta(
+          child: CatchBottomAction(
             label: 'Confirm',
             footnote: 'No charge until the host approves.',
             onPressed: _noop,
@@ -6165,7 +6561,7 @@ Widget catchBottomDockContractStates(BuildContext context) {
       const _StateCard(
         label: 'loading',
         child: _DockFrame(
-          child: CatchBottomDock.cta(
+          child: CatchBottomAction(
             label: 'Saving',
             isLoading: true,
             onPressed: null,
@@ -6175,49 +6571,7 @@ Widget catchBottomDockContractStates(BuildContext context) {
       const _StateCard(
         label: 'disabled',
         child: _DockFrame(
-          child: CatchBottomDock.cta(label: 'Sold out', onPressed: null),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchBottomDockCta,
-  path: '[Core primitives]/Product composites',
-)
-Widget catchBottomDockCtaContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchBottomDockCta',
-    contractId: 'catch.bottom_dock.cta',
-    states: const ['default', 'leading-content', 'catch-line-footnote'],
-    children: [
-      _StateCard(
-        label: 'default',
-        child: _DockFrame(
-          child: CatchBottomDockCta(label: 'Book your spot', onPressed: _noop),
-        ),
-      ),
-      _StateCard(
-        label: 'leading-content',
-        child: _DockFrame(
-          child: CatchBottomDockCta(
-            label: 'Join waitlist',
-            leadingContent: const CatchBadge(label: '4 left'),
-            onPressed: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'catch-line-footnote',
-        child: _DockFrame(
-          child: CatchBottomDockCta(
-            label: 'Confirm',
-            catchLine: 'FREE TO JOIN',
-            footnote: 'No charge until the host approves.',
-            onPressed: _noop,
-          ),
+          child: CatchBottomAction(label: 'Sold out', onPressed: null),
         ),
       ),
     ],
@@ -7173,6 +7527,93 @@ Widget catchInitialsAvatarPlaceholderContractStates(BuildContext context) {
         child: SizedBox.square(
           dimension: 56,
           child: CatchInitialsAvatarPlaceholder(name: '', size: 56),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchHostRow,
+  path: '[Core primitives]/People',
+)
+Widget catchHostRowContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchHostRow',
+    contractId: 'catch.host_row',
+    states: const [
+      'identity-only',
+      'navigable',
+      'message-enabled',
+      'verified',
+      'divider',
+      'long-copy',
+    ],
+    children: [
+      const _StateCard(
+        label: 'identity-only',
+        child: _ChatTileFrame(
+          child: CatchHostRow(
+            activityKind: ActivityKind.socialRun,
+            name: 'Jordan Ellis',
+            meta: 'HOSTING SINCE MAY 2026 · VIJAY NAGAR',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'navigable',
+        child: _ChatTileFrame(
+          child: CatchHostRow(
+            activityKind: ActivityKind.socialRun,
+            name: 'Jordan Ellis',
+            meta: 'Catch Run Club',
+            onTap: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'message-enabled',
+        child: _ChatTileFrame(
+          child: CatchHostRow(
+            activityKind: ActivityKind.dinner,
+            name: 'Priya Shah',
+            meta: 'Sunday Supper Club',
+            onMessage: _noop,
+            messageTooltip: 'Message host',
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'verified',
+        child: _ChatTileFrame(
+          child: CatchHostRow(
+            activityKind: ActivityKind.pickleball,
+            name: 'Courtside Social',
+            meta: 'VERIFIED ORGANIZER',
+            verified: true,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'divider',
+        child: _ChatTileFrame(
+          child: CatchHostRow(
+            activityKind: ActivityKind.pubQuiz,
+            name: 'Indore Quiz Collective',
+            meta: 'HOST TEAM',
+            divider: true,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'long-copy',
+        child: _ChatTileFrame(
+          child: CatchHostRow(
+            activityKind: ActivityKind.socialRun,
+            name: 'The Longest Possible Community Running Collective',
+            meta: 'HOSTING ACROSS VIJAY NAGAR AND CENTRAL INDORE SINCE 2024',
+          ),
         ),
       ),
     ],
@@ -8403,6 +8844,102 @@ class _StepperFieldDemoState extends State<_StepperFieldDemo> {
   }
 }
 
+enum _ChatComposerContractState {
+  empty,
+  focusedEmpty,
+  draft,
+  focusedDraft,
+  multiline,
+  sendingText,
+  uploadingImage,
+  disabled,
+  textOnly,
+}
+
+class _ChatComposerContractFrame extends StatefulWidget {
+  const _ChatComposerContractFrame({required this.state});
+
+  final _ChatComposerContractState state;
+
+  @override
+  State<_ChatComposerContractFrame> createState() =>
+      _ChatComposerContractFrameState();
+}
+
+class _ChatComposerContractFrameState
+    extends State<_ChatComposerContractFrame> {
+  static const double _compactPreviewExtent = 150;
+  static const double _focusedPreviewExtent = 180;
+  static const double _multilinePreviewExtent = 200;
+
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: _initialText);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  String get _initialText => switch (widget.state) {
+    _ChatComposerContractState.empty ||
+    _ChatComposerContractState.focusedEmpty ||
+    _ChatComposerContractState.disabled => '',
+    _ChatComposerContractState.draft ||
+    _ChatComposerContractState.focusedDraft => 'That last loop was fun.',
+    _ChatComposerContractState.multiline =>
+      'The sunrise route sounds great.\nI can meet by the fountain.\nSee you there!',
+    _ChatComposerContractState.sendingText => 'Sending this now…',
+    _ChatComposerContractState.uploadingImage =>
+      'I can still send this while the photo uploads.',
+    _ChatComposerContractState.textOnly => 'No image action in this chat.',
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final disabled = widget.state == _ChatComposerContractState.disabled;
+    final focused =
+        widget.state == _ChatComposerContractState.focusedEmpty ||
+        widget.state == _ChatComposerContractState.focusedDraft;
+    final multiline = widget.state == _ChatComposerContractState.multiline;
+    final previewExtent = multiline
+        ? _multilinePreviewExtent
+        : focused
+        ? _focusedPreviewExtent
+        : _compactPreviewExtent;
+
+    return SizedBox(
+      height: previewExtent,
+      child: Scaffold(
+        backgroundColor: t.bg,
+        body: Column(
+          children: [
+            const Spacer(),
+            ChatInputBar(
+              controller: _controller,
+              autofocus: focused,
+              sending: widget.state == _ChatComposerContractState.sendingText,
+              sendingImage:
+                  widget.state == _ChatComposerContractState.uploadingImage,
+              disabledReason: disabled ? 'This chat is closed.' : null,
+              showImageButton:
+                  widget.state != _ChatComposerContractState.textOnly,
+              onSend: disabled ? null : _noop,
+              onSendImage: disabled ? null : _noop,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ExplicitSaveFieldDemo extends StatefulWidget {
   const _ExplicitSaveFieldDemo({this.initiallyExpanded = false, this.error});
 
@@ -8483,6 +9020,98 @@ class _SelectErrorFieldDemoState extends State<_SelectErrorFieldDemo> {
         prefixIcon: Icon(CatchIcons.eventOutlined),
         validator: (value) => value == null ? 'Choose an activity.' : null,
         onChanged: (_) {},
+      ),
+    );
+  }
+}
+
+class _ControllerRailContractDemo extends StatefulWidget {
+  const _ControllerRailContractDemo();
+
+  @override
+  State<_ControllerRailContractDemo> createState() =>
+      _ControllerRailContractDemoState();
+}
+
+class _ControllerRailContractDemoState
+    extends State<_ControllerRailContractDemo>
+    with SingleTickerProviderStateMixin {
+  late final TabController _controller = TabController(length: 2, vsync: this);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchTabControllerRail<String>(
+      controller: _controller,
+      options: const [
+        CatchOption(value: 'edit', label: 'Edit'),
+        CatchOption(value: 'preview', label: 'Preview'),
+      ],
+    );
+  }
+}
+
+class _TabbedScreenContractDemo extends StatefulWidget {
+  const _TabbedScreenContractDemo();
+
+  @override
+  State<_TabbedScreenContractDemo> createState() =>
+      _TabbedScreenContractDemoState();
+}
+
+class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
+    with SingleTickerProviderStateMixin {
+  late final TabController _controller = TabController(length: 2, vsync: this);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchTabbedScreenScaffold(
+      eyebrow: 'PROFILE',
+      title: 'Tabbed workspace',
+      tabRail: CatchTabControllerRail<String>(
+        controller: _controller,
+        options: const [
+          CatchOption(value: 'edit', label: 'Edit'),
+          CatchOption(value: 'preview', label: 'Preview'),
+        ],
+      ),
+      body: TabBarView(
+        controller: _controller,
+        children: const [
+          CatchTabbedPageScrollView(
+            scrollKey: PageStorageKey<String>('contract-tab-edit'),
+            slivers: [
+              SliverPadding(
+                padding: CatchInsets.pageBody,
+                sliver: SliverToBoxAdapter(
+                  child: Text('Edit owns this scroll position.'),
+                ),
+              ),
+            ],
+          ),
+          CatchTabbedPageScrollView(
+            scrollKey: PageStorageKey<String>('contract-tab-preview'),
+            slivers: [
+              SliverPadding(
+                padding: CatchInsets.pageBody,
+                sliver: SliverToBoxAdapter(
+                  child: Text('Preview owns a separate scroll position.'),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

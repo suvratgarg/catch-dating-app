@@ -1520,6 +1520,13 @@ class _ManualQaFixtures {
       startTime: _eventStart,
       endTime: _eventStart.add(const Duration(minutes: 90)),
       meetingPoint: scenario.meetingPoint,
+      meetingLocation: EventMeetingLocation(
+        name: scenario.meetingPoint,
+        latitude: 19.0608,
+        longitude: 72.8365,
+      ),
+      startingPointLat: 19.0608,
+      startingPointLng: 72.8365,
       eventFormat: EventFormatSnapshot.fromActivityKind(scenario.activityKind),
       distanceKm: scenario.activityKind.isDistanceBased ? 5 : 0,
       pace: PaceLevel.easy,

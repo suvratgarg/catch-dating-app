@@ -53,7 +53,6 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
       return CatchScreenHeaderTitle.block(
         leading: cityPicker,
         title: chrome.title,
-        padding: CatchInsets.screenTitleBlockCompact,
       );
     }
 
@@ -62,8 +61,6 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
       title: chrome.title,
       backgroundColor: backgroundColor ?? t.bg,
       applySafeArea: false,
-      height: CatchLayout.topBarHeight,
-      contentPadding: CatchInsets.screenControlRow,
       searchEnabled: true,
       searchValue: chrome.searchValue,
       onSearch: onQueryChanged,
@@ -208,8 +205,6 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
       ),
       title: chrome.title,
       backgroundColor: backgroundColor ?? t.bg,
-      height: CatchLayout.topBarHeight,
-      contentPadding: CatchInsets.screenControlRow,
       searchEnabled: true,
       searchExpanded: chrome.searchExpanded,
       searchValue: chrome.searchValue,

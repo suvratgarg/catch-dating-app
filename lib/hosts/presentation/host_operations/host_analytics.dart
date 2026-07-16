@@ -4,13 +4,11 @@ class HostClubInsightsPane extends ConsumerStatefulWidget {
   const HostClubInsightsPane({
     super.key,
     required this.club,
-    this.isOwner = true,
     this.dedicated = false,
     this.onOpenEventReport,
   });
 
   final Club club;
-  final bool isOwner;
   final bool dedicated;
   final ValueChanged<String>? onOpenEventReport;
 
@@ -42,14 +40,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!widget.dedicated) ...[
-          HostMetaRow(
-            club: widget.club,
-            roleLabel: context.l10n.hostsHostAnalyticsVisiblecopyInsights,
-            owner: widget.isOwner,
-          ),
-          gapH24,
-        ] else ...[
+        if (widget.dedicated) ...[
           HostAnalyticsRangeChip(
             label: _state.rangePreset.label,
             onTap: _showRangePicker,

@@ -1,6 +1,6 @@
 part of '../host_operations_screen.dart';
 
-class HostClubProfileCard extends ConsumerStatefulWidget {
+class HostClubProfileCard extends StatefulWidget {
   const HostClubProfileCard({
     super.key,
     required this.club,
@@ -17,11 +17,10 @@ class HostClubProfileCard extends ConsumerStatefulWidget {
   final String? initialExpandedField;
 
   @override
-  ConsumerState<HostClubProfileCard> createState() =>
-      _HostClubProfileCardState();
+  State<HostClubProfileCard> createState() => _HostClubProfileCardState();
 }
 
-class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
+class _HostClubProfileCardState extends State<HostClubProfileCard> {
   String? _expandedField;
 
   @override
@@ -57,18 +56,40 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
   Widget build(BuildContext context) {
     final club = widget.club;
     final isOwner = widget.isOwner;
+    final cityFieldName = context.l10n.hostsHostClubProfileVisiblecopyLocation;
+    final cityOptions = <HostInlineOption<String>>[
+      for (final city in defaultCityOptions.where((city) => city.hostCreatable))
+        HostInlineOption(value: city.effectiveMarketId, label: city.label),
+      if (!defaultCityOptions.any(
+        (city) => city.hostCreatable && city.effectiveMarketId == club.location,
+      ))
+        HostInlineOption(value: club.location, label: cityLabel(club.location)),
+    ];
+    final cityEntry = !isOwner
+        ? CatchField.read(
+            title: context.l10n.hostsHostClubProfileLabelCity,
+            valueText: cityLabel(club.location),
+            icon: CatchIcons.locationCityOutlined,
+          )
+        : HostInlineOptionEditor<String>(
+            key: const ValueKey('host-inline-location'),
+            clubId: club.id,
+            icon: CatchIcons.locationCityOutlined,
+            label: context.l10n.hostsHostClubProfileLabelCity,
+            value: cityLabel(club.location),
+            currentValue: club.location,
+            fieldName: cityFieldName,
+            isExpanded: _isExpanded(cityFieldName),
+            options: cityOptions,
+            patchForValue: (value) => UpdateClubPatch(location: value),
+            onTap: () => _toggleField(cityFieldName),
+            onSaved: _collapseField,
+            onCancel: _collapseField,
+          );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HostMetaRow(
-          club: club,
-          roleLabel: isOwner
-              ? context.l10n.hostsHostClubProfileVisiblecopyOwner
-              : context.l10n.hostsHostClubProfileVisiblecopyHostTeam,
-          owner: isOwner,
-        ),
-        gapH24,
         CatchSection.fieldRows(
           title: context.l10n.hostsHostClubProfileTitleIdentity,
           first: true,
@@ -86,20 +107,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
               normalizeInput: _normalizeSingleLineInput,
               patchForValue: (value) => UpdateClubPatch(name: value as String),
             ),
-            _textEntry(
-              club: club,
-              fieldName: context.l10n.hostsHostClubProfileVisiblecopyLocation,
-              label: context.l10n.hostsHostClubProfileLabelCity,
-              value: _valueOrDash(club.location),
-              currentValue: club.location,
-              icon: CatchIcons.locationCityOutlined,
-              validator: _requiredHostFieldValidator(
-                context.l10n.hostsHostClubProfileVisiblecopyCity,
-              ),
-              normalizeInput: _normalizeSingleLineInput,
-              patchForValue: (value) =>
-                  UpdateClubPatch(location: value as String),
-            ),
+            cityEntry,
             _textEntry(
               club: club,
               fieldName: context.l10n.hostsHostClubProfileVisiblecopyArea,
@@ -202,7 +210,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
               title: context.l10n.hostsHostClubProfileTitlePreviewClubPage,
               valueText: context.l10n.hostsHostClubProfileVisiblecopyPreview,
               icon: CatchIcons.visibilityOutlined,
-              onTap: () => widget.onPreviewClub(club),
+              onTap: widget.onPreviewClub,
             ),
           ],
         ),

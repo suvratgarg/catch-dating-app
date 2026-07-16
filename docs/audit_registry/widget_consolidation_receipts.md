@@ -2583,6 +2583,95 @@ Known blockers / inherited debt:
 - `node tool/design/check_screen_contracts.mjs --check` still fails on inherited
   missing-symbol drift for Calendar, Saved Events, host create/edit footers,
   Host settings adapter ownership, Event edit footer, and Reviews History.
+
+## 2026-07-16 - Host Edit Event field and section adoption
+
+Summary:
+
+- Rebuilt all 22 Host Edit Event values on `CatchSectionList`,
+  `CatchSection.fieldRows` / `containedFieldRows`, and canonical `CatchField`
+  nav, input, choices, stepper, toggle, and read modes.
+- Preserved the existing `HostEventEditScreenState`, validation order,
+  `HostEventEditSaveRequest`, schedule/policy locks, private-access seed policy,
+  picker navigation, mutation execution, and snackbar/Navigator effects.
+- Deleted `HostPickerTile` after Create Event and Edit Event both converged on
+  `CatchField.nav`, removed its Widgetbook use case, and regenerated the widget
+  classification, fingerprint, similarity, coverage, variant, and definition
+  registries.
+- Marked the Host Edit Event field-surface ledger entry completed with exact
+  constructor anchors. Classified legacy field callsites fell from 31 to 16;
+  unclassified callsites remain zero.
+- Expanded the editable policy Widgetbook fixture across open capacity, cohort
+  caps, invite only, request to join, and balanced demand-pricing states.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task host-edit-event-field-section-migration --paths lib/hosts/presentation/edit_hosted_event_screen.dart,lib/hosts/presentation/host_event_edit_screen_state.dart,test/hosts/edit_hosted_event_screen_test.dart,design/screens/catch.screens.json,docs/audit_registry/flutter_field_surface_adoption.json,docs/widget_catalog.md`
+- `dart format lib/hosts/presentation/edit_hosted_event_screen.dart test/hosts/edit_hosted_event_screen_test.dart widgetbook/lib/hosts/host_operations_use_cases.dart`
+- `flutter analyze --no-fatal-infos lib/hosts/presentation/edit_hosted_event_screen.dart lib/hosts/presentation/host_event_edit_screen_state.dart lib/hosts/presentation/host_event_edit_view_model.dart test/hosts/edit_hosted_event_screen_test.dart`
+- `flutter test --concurrency=1 test/core/catch_primitives_test.dart test/hosts/edit_hosted_event_screen_test.dart`
+- `node --test tool/design/generate_flutter_field_surface_inventory.test.mjs`
+- `npm run design:fields:inventory`
+- `npm run design:fields:inventory:check`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --write docs/design_parity/widgetbook_coverage_report.json --check`
+- `npm run design:widgets:variants`
+- `npm run design:widgets:variants:check`
+- `python3 tool/audit/definition_catalog.py full`
+- `node tool/design/check_widget_dedupe_probes.mjs`
+- `node tool/architecture/check_adopted_architecture_boundaries.mjs`
+- `node tool/design/check_section_dividers.mjs --summary --max 25 --fail-on high`
+- `node tool/design/check_component_contracts.mjs --check`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/ui_capture/run_captures.mjs --ids edit_hosted_event,edit_hosted_event_schedule_locked,edit_hosted_event_validation_error,edit_hosted_event_location_selected,edit_hosted_event_text_scale_2,edit_hosted_event_light_dark --output-dir /private/tmp/host-edit-event-field-migration --output-layout capture-first`
+- `node tool/ui_capture/run_captures.mjs --ids edit_hosted_event --device design-phone --output-dir /private/tmp/host-edit-event-reference --output-layout capture-first`
+
+Verification:
+
+- Focused production/test analysis reported no issues.
+- The combined primitive and Host Edit Event suites passed all 173 tests; the
+  Edit Event file contributes 14 state, payload, editable, locked, cancelled,
+  validation, choice, and stepper tests.
+- Six deterministic post-migration capture states passed and were visually
+  reviewed. The fresh design-phone image computes within the registered masks
+  and thresholds at 8.84% mismatch / 11.09 mean delta.
+- Widgetbook generation completed without `HostPickerTile`. Its focused
+  analyzer remains at the standing 65-issue Host Operations baseline and
+  reports no issue in the migrated Edit Event policy fixture.
+- Widget classification passed with 1,128 entries, 81 review items, and seven
+  private widget classes flagged. Similarity passed with 1,004 widgets, 45
+  clusters, 200 ranked pairs, 203 name families, and eight absorb candidates.
+- Widget variant inventory passed with 870 use cases, 1,775 state cards, and 44
+  review candidates. Field inventory passed with 10 candidates, one completed
+  candidate, 16 classified legacy callsites, and zero unclassified callsites.
+- Component contracts, adopted architecture boundaries, section-divider
+  high-confidence checks, widget-dedupe probes, and tool-manifest validation
+  passed.
+
+Known blockers / inherited debt:
+
+- The canonical reference comparison stops before diffing because
+  `design/source_packs/host-v2/source-pack.json` has an inherited stale SHA-256
+  for `host-coverage-manifest.json`. The diagnostic metric above executes the
+  same registered masks and per-channel comparator against the fresh capture.
+- Widgetbook coverage remains an inherited 125-item decision queue, down from
+  126 after deleting `HostPickerTile`; there are zero stale decisions.
+- Screen contracts still fail only on the unrelated deleted
+  `lib/dashboard/data/dashboard_recommendations_repository.dart` binding.
+- Widgetbook contract refs still fail only on the unrelated missing
+  `catch.ui_label` / `CatchSectionLabel` formal primitive preview.
+- Widget cleanup ratchet still reports 14 centralized timing candidates against
+  a maximum of 10; none are in the Edit Event test.
+- New-widget inventory still reports two unrelated widget-returning helpers in
+  Chat Input and Create Club defaults.
+- Repo-wide `git diff --check` is blocked by two inherited trailing-whitespace
+  lines in generated `lib/events/domain/event.freezed.dart`; the focused Edit
+  Event and registry path set passes its whitespace check.
 - `node tool/design/check_component_contracts.mjs` and
   `node tool/run.mjs check --category design` still fail on inherited
   `catch.tab_rail` token drift:

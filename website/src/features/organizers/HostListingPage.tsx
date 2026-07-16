@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostListing} from "./types";
 import {useListingClaimController} from "../claims/useListingClaimController";
@@ -27,7 +28,7 @@ export function HostListingPage({listing}: {listing: HostListing}) {
 
       <SiteFooter
         brandHref="/"
-        body="Claimable profiles for hosts who run social events people actually show up for."
+        body={websiteCopy["hostlistingpage_0346"]}
         links={controller.footerLinks}
       />
     </>

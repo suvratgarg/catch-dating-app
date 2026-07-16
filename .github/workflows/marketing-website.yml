@@ -13,13 +13,18 @@ on:
       - "packages/web-config/**"
       - "packages/web-ui/**"
       - "design/tokens/**"
+      - "design/components/**"
       - "design/web-ui/**"
       - "design/website/**"
       - "docs/audit_registry/web_shared_primitive_adoption.json"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
+      - "tool/design/check_component_lexicon.mjs"
+      - "tool/design/check_component_lexicon.test.mjs"
       - "tool/web/check_shared_web_ui_adoption.mjs"
       - "tool/web/check_storybook_visuals.mjs"
+      - "tool/web/check_react_controller_test_targets.mjs"
+      - "tool/web/react_controller_test_targets.json"
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
@@ -38,13 +43,18 @@ on:
       - "packages/web-config/**"
       - "packages/web-ui/**"
       - "design/tokens/**"
+      - "design/components/**"
       - "design/web-ui/**"
       - "design/website/**"
       - "docs/audit_registry/web_shared_primitive_adoption.json"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
+      - "tool/design/check_component_lexicon.mjs"
+      - "tool/design/check_component_lexicon.test.mjs"
       - "tool/web/check_shared_web_ui_adoption.mjs"
       - "tool/web/check_storybook_visuals.mjs"
+      - "tool/web/check_react_controller_test_targets.mjs"
+      - "tool/web/react_controller_test_targets.json"
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
@@ -92,6 +102,9 @@ jobs:
       - name: Check design tokens
         run: npm run web:tokens:check
 
+      - name: Check cross-stack component lexicon
+        run: node tool/design/check_component_lexicon.mjs
+
       - name: Check marketing media
         run: node tool/marketing/sync_website_media.mjs --check
 
@@ -110,11 +123,21 @@ jobs:
       - name: Build marketing website
         run: npm run web:marketing:build
 
+      - name: Run marketing unit tests
+        run: npm --workspace catch-marketing run test:unit
+
+      - name: Check named React controller test targets
+        run: npm run web:controller-tests:check
+
       - name: Check shared web UI adoption
         run: npm run web:shared-ui-adoption:check
 
       - name: Run shared web UI tests and typecheck
         run: npm run web:ui:test && npm run web:ui:typecheck
+
+      - name: Report marketing unit-test coverage
+        continue-on-error: true
+        run: npm --workspace catch-marketing run test:unit:coverage
 
       - name: Install Storybook accessibility browser
         run: npx playwright install --with-deps chromium

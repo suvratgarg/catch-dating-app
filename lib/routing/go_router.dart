@@ -243,9 +243,22 @@ Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
     key: state.pageKey,
     name: state.name,
     child: _clubDetailScreen(state),
-    transitionDuration: CatchMotion.slow,
+    transitionDuration: CatchMotion.calendarScroll,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: catchFadeScalePageTransition,
+  );
+}
+
+Page<void> _exploreMapPage(BuildContext _, GoRouterState state) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    name: state.name,
+    child: const ExploreMapScreen(),
+    transitionDuration: CatchMotion.slow,
+    reverseTransitionDuration: CatchMotion.base,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return CatchMapRevealTransition(animation: animation, child: child);
+    },
   );
 }
 
@@ -533,7 +546,7 @@ GoRouter goRouter(Ref ref) {
                       path: 'map',
                       name: Routes.exploreMapScreen.name,
                       parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => const ExploreMapScreen(),
+                      pageBuilder: _exploreMapPage,
                     ),
                     GoRoute(
                       path: ':clubId',
@@ -655,10 +668,7 @@ List<RouteBase> _hostUtilityRoutes() {
     GoRoute(
       path: Routes.hostClubsScreen.path,
       name: Routes.hostClubsScreen.name,
-      redirect: (context, state) =>
-          state.matchedLocation == Routes.hostClubsScreen.path
-          ? Routes.hostOrganizerScreen.path
-          : null,
+      redirect: (context, state) => hostClubsLegacyRedirect(state.uri),
       routes: [
         GoRoute(
           path: 'create-club',
@@ -778,6 +788,13 @@ List<RouteBase> _hostUtilityRoutes() {
       ],
     ),
   ];
+}
+
+@visibleForTesting
+String? hostClubsLegacyRedirect(Uri uri) {
+  return uri.path == Routes.hostClubsScreen.path
+      ? Routes.hostOrganizerScreen.path
+      : null;
 }
 
 StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {

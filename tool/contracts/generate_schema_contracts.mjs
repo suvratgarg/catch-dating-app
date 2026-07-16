@@ -1065,7 +1065,7 @@ const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
 const FIRESTORE_ADMIN_FIELD_OVERRIDES = new Map([
   ["ClubDocument.hostProfiles", "ClubHostProfile[]"],
   ["ClubDocument.hostDefaults", "ClubHostDefaults"],
-  ["EventDocument.meetingLocation", "EventMeetingLocation | null"],
+  ["EventDocument.meetingLocation", "EventMeetingLocation"],
   ["EventDocument.eventFormat", "EventFormatSnapshot"],
   ["EventDocument.constraints", "EventConstraints"],
   ["EventDocument.eventPolicy", "EventPolicyBundleDocument | null"],
@@ -1105,8 +1105,6 @@ const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
   [
     "EventDocument",
     [
-      "startingPointLat",
-      "startingPointLng",
       "locationDetails",
       "bookedCount",
       "checkedInCount",
