@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.5.5
-updated: 2026-07-14
+version: 4.6.1
+updated: 2026-07-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -38,7 +38,7 @@ section unless the task requires a full historical audit.
 |---|---|---|
 | Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `agent_regression_ledger.json`, `agent_skills/` | Canonical AI-agent entrypoint, execution modes, parent-led Git/worktree delegation protocol, regression guards, project-local skills, readiness workflow, and metrics recording for deterministic Catch cleanup/refactor/design work. |
 | AI-first workflow implementation guide | `ai_first_workflow_guide.md` | Shareable companion guide explaining how the agent entrypoint, context packs, docs registry, rules, scanners, lints, generated registries, audit receipts, CI gates, and readiness metrics combine into the Catch AI-first workflow. Descriptive only; canonical rules remain in owner docs. |
-| Flutter app architecture | `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
+| Flutter app architecture | `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `generated/provider_graph/README.md` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the generated Riverpod provider topology and reviewed relationship candidates; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Catalog of Flutter widgets, primitive APIs, feature ownership notes, and catalog-update rules for material widget architecture changes. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
 | Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
@@ -95,6 +95,7 @@ durable owners above or closed in code.
 | `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
+| `plans/repository_root_hygiene_spec.md` | Proposed Fable/owner review spec for classifying all project-root entries, reclaiming reproducible local output safely, retiring legacy artifacts, consolidating root docs, and adding manifest-backed root hygiene/cleanup enforcement. Delete or mark implemented after accepted policy moves into owner docs, tooling, and the audit registry. |
 
 Completed temporary trackers removed or folded into owner docs after code
 verification include `dashboard_run_focus_tracker.md`,

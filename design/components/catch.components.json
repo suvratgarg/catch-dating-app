@@ -1135,6 +1135,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchErrorState"
       }
     },
     {
@@ -1271,6 +1274,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchErrorBanner"
       }
     },
     {
@@ -1405,6 +1411,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchNotice"
       }
     },
     {
@@ -2530,6 +2539,9 @@
           "CatchSection.contained",
           "CatchSection.plain"
         ]
+      },
+      "surfaces": {
+        "flutter": "CatchSection"
       }
     },
     {
@@ -2766,6 +2778,9 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchSkeleton"
       }
     },
     {
@@ -2887,6 +2902,9 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchKicker"
       }
     },
     {
@@ -2995,6 +3013,9 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchMiniBarChart"
       }
     },
     {
@@ -3207,6 +3228,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchMetricStrip"
       }
     },
     {
@@ -3432,6 +3456,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchBottomSheetScaffold"
       }
     },
     {
@@ -3708,6 +3735,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchMenu"
       }
     },
     {
@@ -3825,6 +3855,9 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchIconTile"
       }
     },
     {
@@ -3990,6 +4023,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchControlShell"
       }
     },
     {
@@ -4126,6 +4162,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchNumberStepper"
       }
     },
     {
@@ -4226,6 +4265,10 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchOptionCard",
+        "website": "ChoiceCard"
       }
     },
     {
@@ -4587,6 +4630,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchSurface"
       }
     },
     {
@@ -4862,6 +4908,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchTopBar"
       }
     },
     {
@@ -4946,6 +4995,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchPrivacyBadge"
       }
     },
     {
@@ -5046,6 +5098,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchJourneySteps"
       }
     },
     {
@@ -5204,6 +5259,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchScreenBody"
       }
     },
     {
@@ -5339,6 +5397,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchSectionStack"
       }
     },
     {
@@ -5436,6 +5497,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchRosterTiles"
       }
     },
     {
@@ -5578,6 +5642,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchRosterRow"
       }
     },
     {
@@ -5699,6 +5766,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchRosterTable"
       }
     },
     {
@@ -5836,6 +5906,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchActivityArt"
       }
     },
     {
@@ -5970,6 +6043,9 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchNetworkImage"
       }
     },
     {
@@ -6061,6 +6137,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchDistanceRing"
       }
     },
     {
@@ -6224,6 +6303,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchCodeInput"
       }
     },
     {
@@ -6370,6 +6452,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchOptionGroup"
       }
     },
     {
@@ -6466,6 +6551,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchTabRail"
       }
     },
     {
@@ -6744,6 +6832,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchRangeSlider"
       }
     },
     {
@@ -6839,6 +6930,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchToggle"
       }
     },
     {
@@ -6935,6 +7029,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchStatusBar"
       }
     },
     {
@@ -7095,6 +7192,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchStepHeader"
       }
     },
     {
@@ -7220,6 +7320,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchTabBar"
       }
     },
     {
@@ -7393,6 +7496,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchBottomDock"
       }
     },
     {
@@ -7489,6 +7595,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchConfirmDialog"
       }
     },
     {
@@ -7603,6 +7712,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchFormDialog"
       }
     },
     {
@@ -7712,6 +7824,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchCountPill"
       }
     },
     {
@@ -7823,6 +7938,9 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchPageDots"
       }
     },
     {
@@ -7979,6 +8097,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "ClubDetailDock"
       }
     },
     {
@@ -8144,6 +8265,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchCoverStory"
       }
     },
     {
@@ -8315,6 +8439,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchCrossPathsCard"
       }
     },
     {
@@ -8563,6 +8690,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchPersonAvatar"
       }
     },
     {
@@ -8651,6 +8781,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchRowPressSurface"
       }
     },
     {
@@ -8810,6 +8943,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchPersonRow"
       }
     },
     {
@@ -9074,6 +9210,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchEventCard"
       }
     },
     {
@@ -9165,6 +9304,9 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchGradedImage"
       }
     },
     {
@@ -9278,6 +9420,9 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchDetailHeroBackdrop"
       }
     },
     {
@@ -9400,6 +9545,9 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "CatchActivityMapPin"
       }
     },
     {
@@ -9736,6 +9884,9 @@
         "actionOwnership": "route-owned",
         "allowedDependencyLevel": "route-boundary",
         "reviewPolicy": "screen-contract-canonical"
+      },
+      "surfaces": {
+        "flutter": "EventDetailBody"
       }
     },
     {
@@ -9872,6 +10023,9 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical"
+      },
+      "surfaces": {
+        "flutter": "NotificationRow"
       }
     },
     {

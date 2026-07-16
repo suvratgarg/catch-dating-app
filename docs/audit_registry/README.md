@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.6.5
-updated: 2026-07-14
+version: 2.6.8
+updated: 2026-07-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -99,15 +99,26 @@ node tool/run.mjs check --category meta
    For widget-system work, regenerate and check the exhaustive role registry:
 
    ```sh
-   npm run design:widgets:classify
-   npm run design:widgets:check
-   npm run design:widgets:new
-   ```
+    npm run design:widgets:classify
+    npm run design:widgets:check
+    npm run design:widgets:new
+    npm run design:fields:inventory:check
+    ```
 
    Private helper widgets are not an allowed destination. A widget that is too
    local or too redundant must still resolve through a public catalog action:
-   merge into a canonical public widget, promote to the catalog, or inline/delete
-   the duplicate.
+    merge into a canonical public widget, promote to the catalog, or inline/delete
+    the duplicate.
+
+   Flutter field migrations are ranked in
+   `flutter_field_surface_adoption.json`; the inventory check validates its
+   route/screen bindings, exact callsite anchors, and zero unclassified legacy
+   product callsites before handoff.
+
+   The broad widget cleanup inventory is a live ratchet, not a stored-zero
+   assertion. `bash tool/widget_cleanup_scan.sh --check` compares every current
+   category with `tool/audit/widget_cleanup_baseline.json`; reductions pass,
+   while increases, missing categories, and newly unbaselined categories fail.
 
    For Riverpod, Freezed, json_serializable, envied, or other build_runner-backed
    source edits, keep generated files synchronized. During iterative cleanup

@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.5.1
-updated: 2026-07-14
+version: 1.5.3
+updated: 2026-07-16
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -252,13 +252,12 @@ Flutter, website, admin, and the shared web UI package. Implementation remains
 stack-native; the registry shares identity and contract ownership, not widget
 or component code.
 
-The `surfaces` map is incremental: every declared symbol must exist in its
-owning source tree, while unmapped families remain valid until they gain a
-second implementation. Entries in `design/website/components.json`,
+Each component declares a `surfaces` map. Every declared symbol must exist in
+its owning source tree. Entries in `design/website/components.json`,
 `design/admin/components.json`, and `design/web-ui/components.json` opt into the
 binding with `lexicon: true` plus a `lexiconId`; the symbol must exactly match
-the corresponding surface link. New or moved cross-stack components add the
-link in the same change.
+the corresponding surface link. New or moved design-system components must add
+the link in the same change.
 
 Run `node tool/run.mjs check design:component-lexicon`. The checker remains a
 repo-level JavaScript gate, including for Flutter symbol existence; do not move

@@ -61,6 +61,13 @@ Use `--summary` for review-friendly output, `--count` for cheap automated
 checks that only need a numeric debt signal, and
 `tool/check_catch_ui_lint_drift.sh --all --json <path>` when a cleanup pass
 needs a reusable drift snapshot artifact with analyzer completion status.
+The drift helper parses the machine analyzer diagnostic-code field; it must not
+count `catch_*` text from filenames, symbol names, or diagnostic messages.
+
+`bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup ratchet.
+Its baseline stores current maximum counts rather than claiming that the repo is
+globally clean; new categories and count increases fail until they are fixed or
+reviewed in an explicit baseline update.
 
 ## Analyzer Plugin Lints
 
@@ -100,6 +107,26 @@ standalone scanners:
 
 New scanners must ship with a manifest `role`, `rules`, `vacuityProof`, and a
 test containing a known-bad fixture.
+
+## Riverpod Provider Graph
+
+`tool/architecture/provider_graph.dart` parses every handwritten Dart AST under
+`lib/` and generates the durable provider topology under
+`docs/generated/provider_graph/`. The JSON includes generated and handwritten
+providers, aliases, families, consumers, provider operations, overrides, and
+Riverpod experimental Mutations. The HTML supports feature exploration and
+one-hop provider inspection; the Mermaid file is the aggregated feature map.
+
+```sh
+dart run tool/architecture/provider_graph.dart --write
+dart run tool/architecture/provider_graph.dart --check
+dart run tool/architecture/provider_graph.dart --summary
+```
+
+Architecture candidates are exhaustively reviewed in
+`tool/architecture/provider_graph_reviews.json`. The gate rejects stale output,
+cycles, unresolved provider-internal references, new unreviewed relationships,
+and obsolete review entries.
 
 ## Remote Ops Manifest
 
