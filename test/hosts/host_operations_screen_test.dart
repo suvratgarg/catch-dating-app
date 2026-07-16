@@ -1211,12 +1211,7 @@ void main() {
           _hostUid,
         ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
         hostAnalyticsRepositoryProvider.overrideWithValue(
-          _EmptyHostAnalyticsRepository(
-            topEvents: List.generate(
-              12,
-              (index) => _hostAnalyticsEventRow(eventId: 'offset-$index'),
-            ),
-          ),
+          const _EmptyHostAnalyticsRepository(),
         ),
       ],
     );
@@ -1291,7 +1286,12 @@ void main() {
           _hostUid,
         ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
         hostAnalyticsRepositoryProvider.overrideWithValue(
-          const _EmptyHostAnalyticsRepository(),
+          _EmptyHostAnalyticsRepository(
+            topEvents: List.generate(
+              12,
+              (index) => _hostAnalyticsEventRow(eventId: 'offset-$index'),
+            ),
+          ),
         ),
       ],
     );
