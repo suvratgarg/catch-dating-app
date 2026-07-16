@@ -1,6 +1,7 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {createHash} from "node:crypto";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {requireAdminRole} from "../admin/adminAuth";
@@ -35,6 +36,7 @@ interface HostAnalyticsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  timestampFromDate: (date: Date) => FirebaseFirestore.Timestamp;
   bigQuerySource: HostAnalyticsBigQuerySource;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
@@ -48,6 +50,7 @@ interface AnalyticsRange {
   endExclusive: Date;
   granularity: AnalyticsGranularity;
   preset: string | null;
+  timezone: string;
 }
 
 interface ClubRecord {
@@ -100,11 +103,14 @@ const maxHostClubs = 25;
 const maxHostEventsPerClub = 500;
 const maxAdminClubs = 100;
 const maxAdminEvents = 1000;
+const hostAnalyticsSnapshotCollection = "hostAnalyticsSnapshots";
+export const hostAnalyticsSnapshotTtlMs = 15 * 60 * 1000;
 
 const defaultDeps: HostAnalyticsDeps = {
   firestore: () => admin.firestore(),
   now: () => new Date(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  timestampFromDate: (date) => admin.firestore.Timestamp.fromDate(date),
   bigQuerySource: defaultHostAnalyticsBigQuerySource,
   checkRateLimit: defaultCheckRateLimit,
 };
@@ -180,22 +186,22 @@ export function resolveAnalyticsRange(
   now: Date
 ): AnalyticsRange {
   const preset = payload.rangePreset ?? "30d";
-  const today = startOfUtcDay(now);
+  const timezone = resolveTimezone(payload.timezone);
+  const today = startOfZonedDay(now, timezone);
   let start = new Date(today);
-  let endExclusive = addUtcDays(today, 1);
+  let endExclusive = addZonedDays(today, 1, timezone);
 
   if (preset === "7d") {
-    start = addUtcDays(today, -6);
+    start = addZonedDays(today, -6, timezone);
   } else if (preset === "30d") {
-    start = addUtcDays(today, -29);
+    start = addZonedDays(today, -29, timezone);
   } else if (preset === "90d") {
-    start = addUtcDays(today, -89);
+    start = addZonedDays(today, -89, timezone);
+  } else if (preset === "12m") {
+    start = addZonedDays(today, -364, timezone);
   } else if (preset === "month") {
-    start = new Date(Date.UTC(
-      today.getUTCFullYear(),
-      today.getUTCMonth(),
-      1
-    ));
+    const parts = zonedDateParts(today, timezone);
+    start = zonedMidnight(parts.year, parts.month, 1, timezone);
   } else if (preset === "custom") {
     if (!payload.startDate || !payload.endDate) {
       throw new HttpsError(
@@ -203,8 +209,12 @@ export function resolveAnalyticsRange(
         "Custom analytics ranges require startDate and endDate."
       );
     }
-    start = parseUtcDate(payload.startDate, "startDate");
-    endExclusive = addUtcDays(parseUtcDate(payload.endDate, "endDate"), 1);
+    start = parseZonedDate(payload.startDate, "startDate", timezone);
+    endExclusive = addZonedDays(
+      parseZonedDate(payload.endDate, "endDate", timezone),
+      1,
+      timezone
+    );
   }
 
   if (endExclusive.getTime() <= start.getTime()) {
@@ -214,9 +224,7 @@ export function resolveAnalyticsRange(
     );
   }
 
-  const rangeDays = Math.ceil(
-    (endExclusive.getTime() - start.getTime()) / 86400000
-  );
+  const rangeDays = calendarDaysBetween(start, endExclusive, timezone);
   if (rangeDays > 366) {
     throw new HttpsError(
       "invalid-argument",
@@ -229,6 +237,7 @@ export function resolveAnalyticsRange(
     endExclusive,
     granularity: payload.granularity ?? defaultGranularity(rangeDays),
     preset,
+    timezone,
   };
 }
 
@@ -248,19 +257,45 @@ export function buildHostAnalyticsFromRecords(
   const rows = records.martRows.filter((row) =>
     dailyRowInRange(row, range)
   );
+  const previousRange = comparisonRange(range);
+  const previousRows = records.martRows.filter((row) =>
+    dailyRowInRange(row, previousRange)
+  );
   const clubIds = uniqueStrings(records.clubs.map((club) => club.id));
   const eventIds = resolveScopeEventIds(records, rows);
-  const eventMetrics = eventMetricsFromRows(rows, records.events);
+  const eventMetrics = eventMetricsFromRows(
+    rows,
+    records.events,
+    range.timezone
+  );
   const topEvents = [...eventMetrics]
     .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
     .slice(0, 25);
   const totals = summarizeEventMetrics(eventMetrics);
   const discoverySummary = summarizeDiscovery(rows);
   const reviewSummary = summarizeReviews(rows);
+  const previousEventMetrics = eventMetricsFromRows(
+    previousRows,
+    [],
+    range.timezone
+  );
+  const previousTotals = summarizeEventMetrics(previousEventMetrics);
+  const previousDiscovery = summarizeDiscovery(previousRows);
+  const previousReviews = summarizeReviews(previousRows);
+  const currencies = uniqueStrings(eventMetrics.map((event) => event.currency));
+  const mixedCurrency = currencies.length > 1;
+  const previousCurrencies = uniqueStrings(
+    previousEventMetrics.map((event) => event.currency)
+  );
+  const previousRevenueComparable =
+    previousCurrencies.length <= 1 &&
+    (currencies.length === 0 ||
+      previousCurrencies.length === 0 ||
+      currencies[0] === previousCurrencies[0]);
   const sourceStatus = rows.length === 0 ? "missing" : "ready";
   const response: HostAnalyticsCallableResponse = {
     generatedAt: now.toISOString(),
-    timezone: "UTC",
+    timezone: range.timezone,
     range: {
       startDate: range.start.toISOString(),
       endDate: addUtcMilliseconds(range.endExclusive, -1).toISOString(),
@@ -280,7 +315,8 @@ export function buildHostAnalyticsFromRecords(
         discoverySummary.listingViews,
         "count",
         sourceStatus,
-        "From BigQuery host analytics events and marts."
+        "From BigQuery host analytics events and marts.",
+        previousDiscovery.listingViews
       ),
       metricCard(
         "eventViews",
@@ -288,57 +324,85 @@ export function buildHostAnalyticsFromRecords(
         discoverySummary.eventViews,
         "count",
         sourceStatus,
-        "From BigQuery host analytics events and marts."
+        "From BigQuery host analytics events and marts.",
+        previousDiscovery.eventViews
       ),
-      metricCard("bookings", "Bookings", totals.booked, "count", sourceStatus),
+      metricCard(
+        "bookings",
+        "Bookings",
+        totals.booked,
+        "count",
+        sourceStatus,
+        null,
+        previousTotals.booked
+      ),
       metricCard(
         "attendanceRate",
         "Attendance",
         percentage(totals.checkedIn, totals.booked),
         "percent",
-        sourceStatus
+        sourceStatus,
+        null,
+        percentage(previousTotals.checkedIn, previousTotals.booked)
       ),
       metricCard(
         "revenue",
         "Revenue",
-        totals.revenue,
+        mixedCurrency ? 0 : totals.revenue,
         "money_minor",
-        sourceStatus
+        mixedCurrency ? "partial" : sourceStatus,
+        mixedCurrency ? "Mixed currencies cannot be combined safely." : null,
+        mixedCurrency || !previousRevenueComparable ?
+          null :
+          previousTotals.revenue
       ),
       metricCard(
         "checkoutDropoff",
         "Checkout drop-off",
         totals.checkoutDropoff,
         "count",
-        sourceStatus
+        sourceStatus,
+        null,
+        previousTotals.checkoutDropoff
       ),
       metricCard(
         "checkoutConversionRate",
         "Checkout conversion",
         percentage(totals.paymentCompleted, totals.checkoutStarted),
         "percent",
-        sourceStatus
+        sourceStatus,
+        null,
+        percentage(
+          previousTotals.paymentCompleted,
+          previousTotals.checkoutStarted
+        )
       ),
       metricCard(
         "newReviews",
         "New reviews",
         reviewSummary.newReviews,
         "count",
-        sourceStatus
+        sourceStatus,
+        null,
+        previousReviews.newReviews
       ),
       metricCard(
         "connections",
         "Connections",
         totals.matches,
         "count",
-        sourceStatus
+        sourceStatus,
+        null,
+        previousTotals.matches
       ),
       metricCard(
         "chats",
         "Chats started",
         totals.chats,
         "count",
-        sourceStatus
+        sourceStatus,
+        null,
+        previousTotals.chats
       ),
     ],
     trend: buildTrend(rows, range),
@@ -388,19 +452,141 @@ async function loadHostAnalytics(
   deps: HostAnalyticsDeps
 ): Promise<HostAnalyticsCallableResponse> {
   const range = resolveAnalyticsRange(payload, now);
+  const previousRange = comparisonRange(range);
   const clubs = await resolveClubs(db, payload, scope, uid);
+  const snapshotId = hostAnalyticsSnapshotId(uid, payload, range, clubs);
+  if (scope === "host") {
+    const cached = await readHostAnalyticsSnapshot(db, snapshotId, now);
+    if (cached !== null) return cached;
+  }
   const events = await resolveEvents(db, payload, clubs, range, scope);
   const martRows = await deps.bigQuerySource.loadRows(
     {
-      startDate: dateKey(range.start),
-      endDate: dateKey(addUtcMilliseconds(range.endExclusive, -1)),
+      startDate: zonedDateKey(previousRange.start, range.timezone),
+      endDate: zonedDateKey(
+        addUtcMilliseconds(range.endExclusive, -1),
+        range.timezone
+      ),
     },
     {
       clubIds: clubs.map((club) => club.id),
       eventId: payload.eventId ?? null,
     },
   );
-  return buildHostAnalyticsFromRecords({clubs, events, martRows}, range, now);
+  const response = buildHostAnalyticsFromRecords(
+    {clubs, events, martRows},
+    range,
+    now
+  );
+  if (scope === "host") {
+    await writeHostAnalyticsSnapshot(db, snapshotId, uid, response, now, deps);
+  }
+  return response;
+}
+
+/**
+ * Returns the stable uid-scoped Firestore document id for a host query.
+ * Resolved club ids and absolute range bounds prevent stale authorization or
+ * a local-midnight rollover from reusing a snapshot for a different scope.
+ * @param {string} uid Authenticated host uid.
+ * @param {HostAnalyticsQueryCallablePayload} payload Normalized query.
+ * @param {AnalyticsRange} range Resolved absolute range.
+ * @param {ClubRecord[]} clubs Currently authorized clubs.
+ * @return {string} Snapshot document id.
+ */
+export function hostAnalyticsSnapshotId(
+  uid: string,
+  payload: HostAnalyticsQueryCallablePayload,
+  range: AnalyticsRange,
+  clubs: ClubRecord[]
+): string {
+  const scopeHash = createHash("sha256").update(JSON.stringify({
+    clubId: payload.clubId ?? null,
+    eventId: payload.eventId ?? null,
+    clubIds: clubs.map((club) => club.id).sort(),
+    start: range.start.toISOString(),
+    endExclusive: range.endExclusive.toISOString(),
+    granularity: range.granularity,
+    preset: range.preset,
+    timezone: range.timezone,
+  })).digest("hex");
+  return `${uid}_${scopeHash}`;
+}
+
+export async function readHostAnalyticsSnapshot(
+  db: FirebaseFirestore.Firestore,
+  snapshotId: string,
+  now: Date
+): Promise<HostAnalyticsCallableResponse | null> {
+  try {
+    const snapshot = await db.collection(hostAnalyticsSnapshotCollection)
+      .doc(snapshotId)
+      .get();
+    if (!snapshot.exists) return null;
+    const data = snapshot.data();
+    if (!isHostAnalyticsSnapshotFresh(data?.expiresAt, now)) return null;
+    const response = data?.response;
+    if (!validateHostAnalyticsCallableResponse(response)) return null;
+    return response as HostAnalyticsCallableResponse;
+  } catch (error) {
+    console.warn("Host analytics snapshot read failed; rebuilding.", error);
+    return null;
+  }
+}
+
+export async function writeHostAnalyticsSnapshot(
+  db: FirebaseFirestore.Firestore,
+  snapshotId: string,
+  uid: string,
+  response: HostAnalyticsCallableResponse,
+  now: Date,
+  deps: Pick<HostAnalyticsDeps, "serverTimestamp" | "timestampFromDate">
+): Promise<void> {
+  try {
+    await db.collection(hostAnalyticsSnapshotCollection).doc(snapshotId).set({
+      uid,
+      scopeHash: snapshotId.slice(uid.length + 1),
+      response,
+      createdAt: deps.serverTimestamp(),
+      expiresAt: deps.timestampFromDate(
+        new Date(now.getTime() + hostAnalyticsSnapshotTtlMs)
+      ),
+    });
+  } catch (error) {
+    console.warn(
+      "Host analytics snapshot write failed; serving live data.",
+      error
+    );
+  }
+}
+
+function timestampLikeMillis(value: unknown): number | null {
+  if (value instanceof Date) return value.getTime();
+  if (value !== null && typeof value === "object") {
+    const candidate = value as {
+      toMillis?: () => number;
+      seconds?: number;
+      _seconds?: number;
+    };
+    if (typeof candidate.toMillis === "function") {
+      const millis = candidate.toMillis();
+      return Number.isFinite(millis) ? millis : null;
+    }
+    const seconds = candidate.seconds ?? candidate._seconds;
+    if (typeof seconds === "number" && Number.isFinite(seconds)) {
+      return seconds * 1000;
+    }
+  }
+  return null;
+}
+
+/** Returns whether a stored snapshot can be served at the supplied time. */
+export function isHostAnalyticsSnapshotFresh(
+  expiresAt: unknown,
+  now: Date
+): boolean {
+  const expiresAtMillis = timestampLikeMillis(expiresAt);
+  return expiresAtMillis !== null && expiresAtMillis > now.getTime();
 }
 
 function validateAnalyticsPayload(
@@ -424,6 +610,7 @@ function normalizeAnalyticsPayload(data: unknown): unknown {
     eventId: nullableTrimmedString(input.eventId),
     startDate: nullableTrimmedString(input.startDate),
     endDate: nullableTrimmedString(input.endDate),
+    timezone: nullableTrimmedString(input.timezone) ?? undefined,
   };
 }
 
@@ -551,7 +738,8 @@ function assertCanReadClub(
 
 function eventMetricsFromRows(
   rows: HostAnalyticsMartRow[],
-  events: EventRecord[]
+  events: EventRecord[],
+  timezone = "UTC"
 ): EventMetricAccumulator[] {
   const eventMap = new Map(events.map((event) => [event.id, event]));
   const byEvent = new Map<string, EventMetricAccumulator>();
@@ -566,7 +754,7 @@ function eventMetricsFromRows(
         title: row.eventTitle ?? fallbackEventTitle(fallbackEvent),
         startTime: parseDate(row.eventStartTime) ??
           timestampToDate(fallbackEvent?.data.startTime) ??
-          parseDailyDate(row.date),
+          parseDailyDate(row.date, timezone),
         status: row.eventStatus ?? fallbackEvent?.data.status ?? "unknown",
         capacityLimit: Math.max(0, Math.trunc(row.capacityLimit)),
         bookedCount: Math.max(0, Math.trunc(row.bookedCount)),
@@ -749,7 +937,7 @@ function buildTrend(
 ): HostAnalyticsCallableResponse["trend"] {
   const buckets = trendBuckets(range);
   for (const row of rows) {
-    const rowDate = parseDailyDate(row.date);
+    const rowDate = parseDailyDate(row.date, range.timezone);
     const bucket = bucketFor(buckets, rowDate);
     if (!bucket) continue;
     bucket.metrics.eventCount += row.eventId ? 1 : 0;
@@ -852,9 +1040,10 @@ function metricCard(
   value: number,
   unit: HostAnalyticsCallableResponse["summaryCards"][number]["unit"],
   status: HostAnalyticsCallableResponse["summaryCards"][number]["status"],
-  caption: string | null = null
+  caption: string | null = null,
+  previousValue: number | null = null
 ): HostAnalyticsCallableResponse["summaryCards"][number] {
-  return {id, label, value, unit, status, caption};
+  return {id, label, value, unit, status, caption, previousValue};
 }
 
 function trendBuckets(range: AnalyticsRange): Array<{
@@ -867,9 +1056,13 @@ function trendBuckets(range: AnalyticsRange): Array<{
     periodEndExclusive: Date;
     metrics: Record<string, number>;
   }> = [];
-  let cursor = startOfBucket(range.start, range.granularity);
+  let cursor = startOfBucket(
+    range.start,
+    range.granularity,
+    range.timezone
+  );
   while (cursor.getTime() < range.endExclusive.getTime()) {
-    const next = nextBucket(cursor, range.granularity);
+    const next = nextBucket(cursor, range.granularity, range.timezone);
     buckets.push({
       periodStart: maxDate(cursor, range.start),
       periodEndExclusive: minDate(next, range.endExclusive),
@@ -962,28 +1155,41 @@ function activityLabel(kind: string): string {
     .replace(/^./, (value) => value.toUpperCase());
 }
 
-function startOfBucket(date: Date, granularity: AnalyticsGranularity): Date {
+function startOfBucket(
+  date: Date,
+  granularity: AnalyticsGranularity,
+  timezone: string
+): Date {
+  const parts = zonedDateParts(date, timezone);
   if (granularity === "month") {
-    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+    return zonedMidnight(parts.year, parts.month, 1, timezone);
   }
-  const start = startOfUtcDay(date);
+  const start = zonedMidnight(parts.year, parts.month, parts.day, timezone);
   if (granularity === "week") {
-    const day = start.getUTCDay();
+    const day = new Date(Date.UTC(parts.year, parts.month - 1, parts.day))
+      .getUTCDay();
     const mondayOffset = day === 0 ? -6 : 1 - day;
-    return addUtcDays(start, mondayOffset);
+    return addZonedDays(start, mondayOffset, timezone);
   }
   return start;
 }
 
-function nextBucket(date: Date, granularity: AnalyticsGranularity): Date {
+function nextBucket(
+  date: Date,
+  granularity: AnalyticsGranularity,
+  timezone: string
+): Date {
   if (granularity === "month") {
-    return new Date(Date.UTC(
-      date.getUTCFullYear(),
-      date.getUTCMonth() + 1,
-      1
-    ));
+    const parts = zonedDateParts(date, timezone);
+    const nextMonth = new Date(Date.UTC(parts.year, parts.month, 1));
+    return zonedMidnight(
+      nextMonth.getUTCFullYear(),
+      nextMonth.getUTCMonth() + 1,
+      1,
+      timezone
+    );
   }
-  return addUtcDays(date, granularity === "week" ? 7 : 1);
+  return addZonedDays(date, granularity === "week" ? 7 : 1, timezone);
 }
 
 function inRange(date: Date, range: AnalyticsRange): boolean {
@@ -995,12 +1201,18 @@ function dailyRowInRange(
   row: HostAnalyticsMartRow,
   range: AnalyticsRange
 ): boolean {
-  return inRange(parseDailyDate(row.date), range);
+  return inRange(parseDailyDate(row.date, range.timezone), range);
 }
 
-function parseDailyDate(value: string): Date {
-  const millis = Date.parse(`${value}T00:00:00.000Z`);
-  return Number.isFinite(millis) ? new Date(millis) : new Date(0);
+function parseDailyDate(value: string, timezone = "UTC"): Date {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return new Date(0);
+  return zonedMidnight(
+    Number(match[1]),
+    Number(match[2]),
+    Number(match[3]),
+    timezone
+  );
 }
 
 function parseDate(value: string | null): Date | null {
@@ -1037,30 +1249,159 @@ function timestampToDate(value: unknown): Date | null {
   return null;
 }
 
-function parseUtcDate(value: string, fieldName: string): Date {
-  const millis = Date.parse(`${value}T00:00:00.000Z`);
-  if (!Number.isFinite(millis)) {
+function comparisonRange(range: AnalyticsRange): AnalyticsRange {
+  const days = calendarDaysBetween(
+    range.start,
+    range.endExclusive,
+    range.timezone
+  );
+  return {
+    start: addZonedDays(range.start, -days, range.timezone),
+    endExclusive: range.start,
+    granularity: range.granularity,
+    preset: null,
+    timezone: range.timezone,
+  };
+}
+
+function resolveTimezone(value: string | undefined): string {
+  const timezone = value?.trim() || "UTC";
+  try {
+    new Intl.DateTimeFormat("en-US", {timeZone: timezone}).format(new Date());
+    return timezone;
+  } catch {
+    throw new HttpsError(
+      "invalid-argument",
+      "timezone must be a valid IANA zone.",
+    );
+  }
+}
+
+interface ZonedDateParts {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+}
+
+const zonedFormatters = new Map<string, Intl.DateTimeFormat>();
+
+function zonedDateParts(date: Date, timezone: string): ZonedDateParts {
+  let formatter = zonedFormatters.get(timezone);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: timezone,
+      calendar: "gregory",
+      numberingSystem: "latn",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    });
+    zonedFormatters.set(timezone, formatter);
+  }
+  const values = Object.fromEntries(
+    formatter.formatToParts(date)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, Number(part.value)])
+  );
+  return {
+    year: values.year,
+    month: values.month,
+    day: values.day,
+    hour: values.hour,
+    minute: values.minute,
+    second: values.second,
+  };
+}
+
+function zonedMidnight(
+  year: number,
+  month: number,
+  day: number,
+  timezone: string
+): Date {
+  const targetWallTime = Date.UTC(year, month - 1, day);
+  let instant = targetWallTime;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const actual = zonedDateParts(new Date(instant), timezone);
+    const actualWallTime = Date.UTC(
+      actual.year,
+      actual.month - 1,
+      actual.day,
+      actual.hour,
+      actual.minute,
+      actual.second
+    );
+    const correction = targetWallTime - actualWallTime;
+    instant += correction;
+    if (correction === 0) break;
+  }
+  return new Date(instant);
+}
+
+function startOfZonedDay(reference: Date, timezone: string): Date {
+  const parts = zonedDateParts(reference, timezone);
+  return zonedMidnight(parts.year, parts.month, parts.day, timezone);
+}
+
+function addZonedDays(date: Date, days: number, timezone: string): Date {
+  const parts = zonedDateParts(date, timezone);
+  const target = new Date(Date.UTC(parts.year, parts.month - 1, parts.day));
+  target.setUTCDate(target.getUTCDate() + days);
+  return zonedMidnight(
+    target.getUTCFullYear(),
+    target.getUTCMonth() + 1,
+    target.getUTCDate(),
+    timezone
+  );
+}
+
+function parseZonedDate(
+  value: string,
+  fieldName: string,
+  timezone: string
+): Date {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) {
     throw new HttpsError("invalid-argument", `${fieldName} is invalid.`);
   }
-  return new Date(millis);
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const probe = new Date(Date.UTC(year, month - 1, day));
+  if (
+    probe.getUTCFullYear() !== year ||
+    probe.getUTCMonth() + 1 !== month ||
+    probe.getUTCDate() !== day
+  ) {
+    throw new HttpsError("invalid-argument", `${fieldName} is invalid.`);
+  }
+  return zonedMidnight(year, month, day, timezone);
 }
 
-function dateKey(date: Date): string {
-  return date.toISOString().slice(0, 10);
+function zonedDateKey(date: Date, timezone: string): string {
+  const parts = zonedDateParts(date, timezone);
+  return `${parts.year}-${String(parts.month).padStart(2, "0")}-` +
+    String(parts.day).padStart(2, "0");
 }
 
-function startOfUtcDay(reference: Date): Date {
-  return new Date(Date.UTC(
-    reference.getUTCFullYear(),
-    reference.getUTCMonth(),
-    reference.getUTCDate()
-  ));
-}
-
-function addUtcDays(date: Date, days: number): Date {
-  const next = new Date(date);
-  next.setUTCDate(next.getUTCDate() + days);
-  return next;
+function calendarDaysBetween(
+  start: Date,
+  endExclusive: Date,
+  timezone: string
+): number {
+  const startParts = zonedDateParts(start, timezone);
+  const endParts = zonedDateParts(endExclusive, timezone);
+  return Math.round((
+    Date.UTC(endParts.year, endParts.month - 1, endParts.day) -
+    Date.UTC(startParts.year, startParts.month - 1, startParts.day)
+  ) / 86400000);
 }
 
 function addUtcMilliseconds(date: Date, millis: number): Date {

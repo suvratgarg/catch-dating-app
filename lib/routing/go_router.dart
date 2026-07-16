@@ -114,8 +114,14 @@ enum Routes {
   hostHomeScreen('/host', AppRouteAudience.host),
   hostEventsScreen('/host/events', AppRouteAudience.host),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
-  hostInsightsScreen('/host/organizer/:clubId/insights', AppRouteAudience.host),
   hostClubsScreen('/host/clubs', AppRouteAudience.host),
+  hostClubEventDefaultsScreen(
+    '/host/clubs/event-defaults',
+    AppRouteAudience.host,
+  ),
+  hostClubLiveGuideScreen('/host/clubs/live-guide', AppRouteAudience.host),
+  hostClubTeamScreen('/host/clubs/team', AppRouteAudience.host),
+  hostClubPaymentsScreen('/host/clubs/payments', AppRouteAudience.host),
   hostClubDetailScreen('/host/clubs/:clubId', AppRouteAudience.host),
   hostCreateClubScreen('/host/clubs/create-club', AppRouteAudience.host),
   hostEditClubScreen('/host/clubs/:clubId/edit', AppRouteAudience.host),
@@ -672,10 +678,36 @@ class _RouteLoadingScreen extends StatelessWidget {
 List<RouteBase> _hostUtilityRoutes() {
   return [
     GoRoute(
-      path: Routes.hostInsightsScreen.path,
-      name: Routes.hostInsightsScreen.name,
+      path: '/host/organizer/:clubId/insights',
+      redirect: (context, state) =>
+          hostInsightsLegacyRedirect(state.pathParameters['clubId']!),
+    ),
+    GoRoute(
+      path: Routes.hostClubEventDefaultsScreen.path,
+      name: Routes.hostClubEventDefaultsScreen.name,
+      builder: (context, state) => HostClubEventDefaultsScreen(
+        clubId: state.uri.queryParameters['clubId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostClubLiveGuideScreen.path,
+      name: Routes.hostClubLiveGuideScreen.name,
+      builder: (context, state) => HostClubLiveGuideScreen(
+        clubId: state.uri.queryParameters['clubId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostClubTeamScreen.path,
+      name: Routes.hostClubTeamScreen.name,
       builder: (context, state) =>
-          HostInsightsScreen(clubId: state.pathParameters['clubId']!),
+          HostClubTeamScreen(clubId: state.uri.queryParameters['clubId'] ?? ''),
+    ),
+    GoRoute(
+      path: Routes.hostClubPaymentsScreen.path,
+      name: Routes.hostClubPaymentsScreen.name,
+      builder: (context, state) => HostClubPaymentsScreen(
+        clubId: state.uri.queryParameters['clubId'] ?? '',
+      ),
     ),
     GoRoute(
       path: Routes.hostClubsScreen.path,
@@ -800,9 +832,20 @@ List<RouteBase> _hostUtilityRoutes() {
 @visibleForTesting
 String? hostClubsLegacyRedirect(Uri uri) {
   return uri.path == Routes.hostClubsScreen.path
-      ? Routes.hostOrganizerScreen.path
+      ? Uri(
+          path: Routes.hostOrganizerScreen.path,
+          queryParameters: uri.queryParameters.isEmpty
+              ? null
+              : uri.queryParameters,
+        ).toString()
       : null;
 }
+
+@visibleForTesting
+String hostInsightsLegacyRedirect(String clubId) => Uri(
+  path: Routes.hostClubsScreen.path,
+  queryParameters: {'clubId': clubId, 'tab': HostClubTab.insights.name},
+).toString();
 
 @visibleForTesting
 String hostEditClubLegacyRedirect(String clubId) => Uri(

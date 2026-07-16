@@ -498,6 +498,11 @@ that must remain usable by synchronous domain models is owned by locale JSON
 under `copy/` and generates deterministic Dart. For Event Success
 questionnaires:
 
+`tool/copy/check_mobile_copy_catalog.mjs` also rejects new ARB identifiers that
+contain the generated `Visiblecopy` marker. Reviewed legacy exceptions live in
+`tool/copy/mobile_copy_identifier_allowlist.json`; additions require an explicit
+review instead of silently expanding the catalog.
+
 ```sh
 node tool/copy/check_l10n_key_usage.mjs --write-inventory
 node tool/run.mjs check copy:l10n-key-usage

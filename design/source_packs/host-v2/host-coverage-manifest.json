@@ -2,7 +2,7 @@
   "$schema": "catch.host-coverage/v1",
   "title": "Catch Host App — design-coverage manifest",
   "scope": "host (lib/main_host_dev.dart · AppRole.host)",
-  "generated": "2026-07-16",
+  "generated": "2026-07-17",
   "purpose": "Authoritative map of every host surface in the Flutter codebase to its Catch design file, with status + divergences. This file is the deterministic spine for repeat audits — re-runs diff against it instead of re-reading the whole app.",
 
   "spine": {
@@ -21,15 +21,15 @@
 
   "sources": {
     "_comment": "Change-detection anchors. On a re-run, compare these line counts; only re-read a source whose count moved. Counts captured at generation.",
-    "lib/routing/go_router.dart": 1143,
+    "lib/routing/go_router.dart": 1199,
     "lib/core/presentation/host_app_shell.dart": 126,
-    "lib/hosts/presentation/host_operations_screen.dart": 100,
+    "lib/hosts/presentation/host_operations_screen.dart": 101,
     "lib/hosts/presentation/host_operations/host_operations_home_screen.dart": 64,
-    "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart": 278,
-    "lib/hosts/presentation/host_operations/host_insights_screen.dart": 203,
+    "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart": 332,
+    "lib/hosts/presentation/host_operations/host_analytics.dart": 1096,
     "lib/hosts/presentation/host_operations/host_account_screen.dart": 472,
     "lib/hosts/presentation/host_operations/host_profile_screen.dart": 354,
-    "lib/hosts/data/host_analytics_repository.dart": 449,
+    "lib/hosts/data/host_analytics_repository.dart": 543,
     "lib/hosts/presentation/host_event_manage_screen.dart": 1781,
     "lib/hosts/presentation/edit_hosted_event_screen.dart": 1447,
     "lib/hosts/presentation/event_management/host_create_event_screen.dart": 128,
@@ -60,10 +60,10 @@
       "notes": "Primary Organizer shell route. The current typed rail { edit, insights, preview } uses CatchTabbedScreenScaffold and native TabBarView; Edit stacks the remaining organizer summary and profile/default-management sections, while Preview directly composes canonical consumer Club Detail slivers under a read-only boundary. The archived design predates the consolidated three-tab workspace. D6 resolved in code."
     },
     {
-      "route": "hostInsightsScreen", "path": "/host/organizer/:clubId/insights", "tab": "Organizer utility",
-      "widget": "HostInsightsScreen", "source": "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+      "route": "hostClubsScreen", "path": "/host/clubs?clubId=:clubId&tab=insights", "tab": "Insights",
+      "widget": "HostClubInsightsPane", "source": "lib/hosts/presentation/host_operations/host_analytics.dart",
       "design": "templates/hosts-insights/Insights.dc.html", "status": "partial",
-      "notes": "Exact-id deep-link utility route. Ordinary Insights navigation stays inside HostClubsScaffold so the Organizer workspace chrome remains visible."
+      "notes": "Canonical Insights tab scorecard with client-owned labels, deltas, timezone-aware buckets, cached refresh, and at most two deterministic Coach recommendations. The retired /host/organizer/:clubId/insights path redirects here while preserving the club id."
     },
     {
       "route": "hostClubsScreen", "path": "/host/clubs", "tab": "Legacy redirect",
@@ -222,7 +222,7 @@
     {
       "id": "D6", "severity": "high", "resolved": true, "where": "Clubs → Insights (host-clubs)",
       "summary": "Host-analytics surface — now built as the Clubs tab's Insights sub-tab.",
-      "detail": "HostClubsScaffold gives each club an Edit/Insights/Preview rail through the shared CatchTabbedScreenScaffold. Edit stacks the remaining organizer summary and profile/default-management sections. HostClubInsightsPane supplies range/granularity controls, custom date bounds, summary metrics, trend visualization, top events, review/discovery signals, and data quality backed by hostAnalyticsProvider. Preview is built: ClubDetailReadOnlyPreviewSliver hydrates the canonical consumer Club Detail view model and renders ClubDetailSliverBody directly without route chrome or actions."
+      "detail": "HostClubsScaffold gives each club an Edit/Insights/Preview rail through the shared CatchTabbedScreenScaffold. HostClubInsightsPane is the single analytics surface: it shows freshness and sync context, an explicit all-time identity strip, a 30-day/90-day/12-month selector, six primary metrics plus four disclosed metrics, a labelled demand/bookings trend, zero-to-two deterministic Coach recommendations, recent-event report links, and reviews. Client-owned copy hides analytics-ops detail, pull-to-refresh invalidates the ten-minute provider cache, the callable uses a server-only fifteen-minute snapshot, and the retired dedicated Insights URL redirects into this tab. Preview is built: ClubDetailReadOnlyPreviewSliver hydrates the canonical consumer Club Detail view model and renders ClubDetailSliverBody directly without route chrome or actions."
     },
     {
       "id": "D2", "severity": "med", "where": "Account (host-account)",

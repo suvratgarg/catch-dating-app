@@ -27,6 +27,7 @@ export interface HostAnalyticsCallableResponse {
     unit: "count" | "percent" | "money_minor" | "rating";
     status: "ready" | "partial" | "missing";
     caption?: string | null;
+    previousValue?: number | null;
   }[];
   trend: {
     periodStart: string;

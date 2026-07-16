@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.3.0
-updated: 2026-07-16
+version: 1.3.3
+updated: 2026-07-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -274,19 +274,37 @@ wizard with a compact shared form. Durable outcomes:
   setup widget consumed by both `EventSuccessDefaultsPanel` (create-event last
   step) and the Host Manage setup tab. The two surfaces stay in sync
   automatically — no copy or behaviour drift.
-- **Compact sections.** Essentials, live tools, group setup, and match
-  questions use `CatchSection` and `CatchField`; disclosures start closed.
-  Host goal and attendee prompt remain direct editable fields.
+- **Stage-based live guide.** The shared body groups selectable tools by their
+  domain stage: Before the event, When people arrive, During the event, and
+  After the event. Catalog order remains stable inside each stage, and
+  recommendation or advanced guidance stays on the relevant toggle row.
+- **Contained configuration.** Rotation cadence, reveal countdown, and match
+  clue configuration appear directly beneath the tool that enables them in
+  `CatchSection.containedFieldRows`. Room grouping appears only when a grouping
+  tool or non-whole-group structure makes it relevant. Host goal and attendee
+  prompt remain direct editable fields.
 - **Inline questions.** Template and custom-question editing stays in the form;
   there is no secondary bottom sheet. Raw text remains editable until save,
   where normalization and validation run once.
 - **Immediate switches.** In Organizer defaults, Event Success enablement and
-  live-tool switches persist as soon as they change. Text, stepper, and choice
-  fields remain staged so partial input is never saved accidentally.
+  live-tool switches persist as soon as they change through functional updates
+  and the serialized `HostClubDefaultsSaver` queue. Text, numeric, and choice
+  fields keep field-local explicit actions so partial input is never saved
+  accidentally.
+- **Spoke ownership.** Club-level Event Success defaults live on the dedicated
+  Live event guide spoke reached from the four-row Club settings section. The
+  Edit tab no longer embeds the form alongside profile, payout, and team UI.
 - **Platform boundary.** Ordinary attendance/check-in, safety controls, and
   crowd balance are event-platform primitives. New Event Success plans do not
   write those legacy module ids. First Hello remains the only Event Success
   arrival ritual; old ids remain readable during the compatibility period.
+- **Gated Phase 4 prototype.** Widgetbook contains an owner-review-only
+  `EventSuccessModuleConsolidationPrototype` under
+  `Event Success / Phase 4 owner review`. It demonstrates the proposed single
+  How people mix choice, conditional size/count/cadence/repeat row order,
+  recommendation copy, and a five-decision visible tool set. It has no domain
+  writer and is not imported by production; module consolidation remains
+  blocked on explicit owner approval.
 - **Guarded persistence.** Setup saves are transactionally revision checked,
   reject frozen or stale plans, and update only setup-owned fields. A newer
   remote snapshot never silently replaces local unsaved edits.

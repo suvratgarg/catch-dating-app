@@ -536,6 +536,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Fifteen-minute callable response cache. Only the Admin SDK may access it.
+    match /hostAnalyticsSnapshots/{snapshotId} {
+      allow read, write: if false;
+    }
+
     // Written exclusively by idempotent Cloud Function trigger handlers.
     match /functionEventReceipts/{receiptId} {
       allow read, write: if false;

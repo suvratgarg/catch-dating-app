@@ -327,28 +327,8 @@ void main() {
       await _pumpTestAnimation(tester);
 
       expect(find.textContaining('about 10 teams'), findsWidgets);
-      expect(
-        find.textContaining('If 50 attend, Catch suggests 10 teams of 5.'),
-        findsOneWidget,
-      );
-      expect(
-        find.textContaining('If 37 check in, expect 8 teams of 4-5.'),
-        findsOneWidget,
-      );
       expect(find.textContaining('3 teams'), findsNothing);
-      expect(find.text('Advanced', skipOffstage: false), findsOneWidget);
-      expect(
-        find.text(
-          'Optional extras you opt into intentionally.',
-          skipOffstage: false,
-        ),
-        findsOneWidget,
-      );
-      expect(find.text('Match clue questions'), findsNothing);
-      expect(
-        find.text('Match clue questions', skipOffstage: false),
-        findsOneWidget,
-      );
+      expect(find.text('Match clue questions'), findsOneWidget);
       expect(
         find.text('"Help me say hi" requests', skipOffstage: false),
         findsOneWidget,

@@ -14,6 +14,7 @@ final class HostAnalyticsQueryCallableRequest {
     this.startDate,
     this.endDate,
     this.granularity,
+    this.timezone,
   });
 
   final String? clubId;
@@ -22,6 +23,7 @@ final class HostAnalyticsQueryCallableRequest {
   final String? startDate;
   final String? endDate;
   final String? granularity;
+  final String? timezone;
 
   Map<String, Object?> toJson() => {
     'clubId': ?clubId,
@@ -30,5 +32,6 @@ final class HostAnalyticsQueryCallableRequest {
     'startDate': ?startDate,
     'endDate': ?endDate,
     'granularity': ?granularity,
+    'timezone': ?timezone,
   };
 }

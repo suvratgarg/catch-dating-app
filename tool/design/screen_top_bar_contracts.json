@@ -101,6 +101,13 @@
       "reason": "Host Clubs uses the canonical screen title bar directly for the empty branch and delegates populated workspace chrome to CatchTabbedScreenScaffold."
     },
     {
+      "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar",
+      "leading": "back"
+    },
+    {
       "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
@@ -232,13 +239,6 @@
       "role": "step-flow",
       "owner": "CatchStepHeader",
       "reason": "Create Event delegates wizard progress and navigation chrome to the canonical step header."
-    },
-    {
-      "path": "lib/hosts/presentation/host_operations/host_insights_screen.dart",
-      "symbol": "HostInsightsHeader",
-      "role": "legacy",
-      "owner": "CatchTextStyles.titleL",
-      "reason": "Host Insights still owns a body-level back and title row; migrate it through canonical route chrome in a reviewed Host pass."
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_today.dart",

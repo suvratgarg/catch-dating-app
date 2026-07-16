@@ -21,6 +21,8 @@ import 'package:widgetbook_workspace/dashboard/dashboard_use_cases.dart'
     as _widgetbook_workspace_dashboard_dashboard_use_cases;
 import 'package:widgetbook_workspace/event_success/event_success_companion_use_cases.dart'
     as _widgetbook_workspace_event_success_event_success_companion_use_cases;
+import 'package:widgetbook_workspace/event_success/event_success_module_consolidation_prototypes.dart'
+    as _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes;
 import 'package:widgetbook_workspace/event_success/event_success_strict_coverage_use_cases.dart'
     as _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases;
 import 'package:widgetbook_workspace/events/event_detail_use_cases.dart'
@@ -7123,6 +7125,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Setup body folded states',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessModuleRows',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Within setup body',
+                    builder:
+                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                            .eventSuccessStrictEventSuccessModuleRows,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessSetupBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7601,6 +7614,99 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Host operations',
         children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'Club settings spokes',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubDefaultsEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Optimistic editor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostClubDefaultsEditorStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubEventDefaultsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner loaded',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostClubEventDefaultsScreenLoaded,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubLiveGuideScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner loaded',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostClubLiveGuideScreenLoaded,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubPaymentsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner loaded',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostClubPaymentsScreenLoaded,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubReadOnlyEventDefaults',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Co-host read only',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostClubReadOnlyEventDefaultsStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubSpokeResolver',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Resolver states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostClubSpokeResolverStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubSpokeScaffold',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Canonical scaffold',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostClubSpokeScaffoldStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubTeamScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Owner loaded',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostClubTeamScreenLoaded,
+                  ),
+                ],
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'ClubDetailScreen',
             useCases: [
@@ -7664,39 +7770,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Composed sections',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsDualBar',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Host Insights route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostAnalyticsDualBarCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsRangeChip',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Host Insights route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostAnalyticsRangeChipCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsRangeSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Host Insights route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostAnalyticsRangeSheetCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostClubsScaffold',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7752,39 +7825,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostInsightsHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Host Insights route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostInsightsHeaderCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostInsightsScaffold',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Host Insights route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostInsightsScaffoldCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostInsightsUnavailableScreen',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Host Insights route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostInsightsUnavailableCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostSettingsProfileRows',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7829,6 +7869,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'HostClubInsightsPane',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Insights scorecard states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .hostInsightsScorecardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostClubsScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -7855,16 +7905,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Route and wizard states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .hostCreateEventRouteAndWizardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostInsightsScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Dedicated route states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostInsightsRouteStates,
               ),
             ],
           ),
@@ -7964,24 +8004,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsControls',
+                name: 'HostAnalyticsDualBar',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsControlsCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsDateButton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsDateButtonCatalogStates,
+                            .hostStrictHostAnalyticsDualBarCatalogStates,
                   ),
                 ],
               ),
@@ -8030,12 +8059,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsReviewDiscoveryPanel',
+                name: 'HostAnalyticsReviewsPanel',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                        .hostStrictHostAnalyticsReviewDiscoveryPanelCatalogStates,
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostStrictHostAnalyticsReviewsPanelCatalogStates,
                   ),
                 ],
               ),
@@ -8084,6 +8114,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostClubEditTab',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostStrictHostClubEditTabCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubInlineTextEntry',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Within Edit tab',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostStrictHostClubInlineTextEntryCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostClubInsightsPane',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8112,17 +8164,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Exact catalog',
                     builder: _widgetbook_workspace_hosts_host_operations_use_cases
                         .hostStrictHostClubOrganizerOverviewControllerCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostClubProfileCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostClubProfileCardCatalogStates,
                   ),
                 ],
               ),
@@ -10363,6 +10404,44 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .settingsScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Prototypes',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Event Success',
+        children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'Phase 4 owner review',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessModuleConsolidationPrototype',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Pods · proposed',
+                    builder:
+                        _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes
+                            .eventSuccessModuleConsolidationPods,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Rotating teams · proposed',
+                    builder:
+                        _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes
+                            .eventSuccessModuleConsolidationTeams,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Whole group · proposed',
+                    builder:
+                        _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes
+                            .eventSuccessModuleConsolidationWholeGroup,
+                  ),
+                ],
               ),
             ],
           ),

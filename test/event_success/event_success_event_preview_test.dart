@@ -126,7 +126,6 @@ void main() {
     );
 
     expect(find.text('Event success preview'), findsOneWidget);
-    expect(find.text('Preview only'), findsOneWidget);
     expect(find.text('Sunday Strides · Social Event Lite'), findsOneWidget);
     expect(find.text('How this maps to the live app'), findsOneWidget);
     expect(find.text('Host setup flow'), findsOneWidget);

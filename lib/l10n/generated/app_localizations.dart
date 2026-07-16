@@ -1500,11 +1500,29 @@ abstract class AppLocalizations {
   String
   get eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff;
 
-  /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (title).
+  /// Stage heading in the host live event guide.
   ///
   /// In en, this message translates to:
-  /// **'Live tools'**
-  String get eventSuccessEventSuccessSetupBodyTitleLiveTools;
+  /// **'Before the event'**
+  String get eventSuccessEventSuccessSetupBodyTitleBeforeTheEvent;
+
+  /// Stage heading in the host live event guide.
+  ///
+  /// In en, this message translates to:
+  /// **'When people arrive'**
+  String get eventSuccessEventSuccessSetupBodyTitleWhenPeopleArrive;
+
+  /// Stage heading in the host live event guide.
+  ///
+  /// In en, this message translates to:
+  /// **'During the event'**
+  String get eventSuccessEventSuccessSetupBodyTitleDuringTheEvent;
+
+  /// Stage heading in the host live event guide.
+  ///
+  /// In en, this message translates to:
+  /// **'After the event'**
+  String get eventSuccessEventSuccessSetupBodyTitleAfterTheEvent;
 
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (label).
   ///
@@ -9265,107 +9283,11 @@ abstract class AppLocalizations {
   /// **'Save profile'**
   String get hostsHostAccountScreenLabelSaveProfile;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Start date'**
-  String get hostsHostAnalyticsTitleStartDate;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'End date'**
-  String get hostsHostAnalyticsTitleEndDate;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'7D'**
-  String get hostsHostAnalyticsLabel7d;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'30D'**
-  String get hostsHostAnalyticsLabel30d;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'90D'**
-  String get hostsHostAnalyticsLabel90d;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'MONTH'**
-  String get hostsHostAnalyticsLabelMonth;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'CUSTOM'**
-  String get hostsHostAnalyticsLabelCustom;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'DAY'**
-  String get hostsHostAnalyticsLabelDay;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'WEEK'**
-  String get hostsHostAnalyticsLabelWeek;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Start'**
-  String get hostsHostAnalyticsLabelStart;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'End'**
-  String get hostsHostAnalyticsLabelEnd;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Event scoped'**
-  String get hostsHostAnalyticsTextEventScoped;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
   ///
   /// In en, this message translates to:
   /// **'All events'**
   String get hostsHostAnalyticsLabelAllEvents;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Date range'**
-  String get hostsHostAnalyticsTitleDateRange;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'Compare organizer performance over a consistent window.'**
-  String get hostsHostAnalyticsSubtitleCompareOrganizerPerformanceOver;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Apply range'**
-  String get hostsHostAnalyticsLabelApplyRange;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'7 days'**
-  String get hostsHostAnalyticsLabel7Days;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
   ///
@@ -9379,41 +9301,254 @@ abstract class AppLocalizations {
   /// **'90 days'**
   String get hostsHostAnalyticsLabel90Days;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
+  /// Long-range preset on the Host club Insights scorecard.
   ///
   /// In en, this message translates to:
-  /// **'Month'**
-  String get hostsHostAnalyticsLabelMonth5406de;
+  /// **'12 months'**
+  String get hostsHostAnalyticsLabel12Months;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
+  /// Freshness label for a Host analytics report.
   ///
   /// In en, this message translates to:
-  /// **'Custom'**
-  String get hostsHostAnalyticsLabelCustoma46c31;
+  /// **'Updated {relative}'**
+  String hostsHostAnalyticsTextUpdatedRelative({required Object relative});
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
+  /// Host-safe analytics freshness warning.
   ///
   /// In en, this message translates to:
-  /// **'Data quality'**
-  String get hostsHostAnalyticsLabelDataQuality;
+  /// **'Some data is still syncing — numbers may update.'**
+  String get hostsHostAnalyticsTextSomeDataIsStillSyncingNumbersMayUpdate;
+
+  /// Scope label for lifetime club identity metrics.
+  ///
+  /// In en, this message translates to:
+  /// **'All time'**
+  String get hostsHostAnalyticsLabelAllTime;
+
+  /// Heading above the Host analytics range control.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance period'**
+  String get hostsHostAnalyticsLabelPerformancePeriod;
+
+  /// Heading for range-scoped Host performance metrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get hostsHostAnalyticsLabelPerformance;
+
+  /// Combined listing and event-view analytics label.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile & event views'**
+  String get hostsHostAnalyticsLabelProfileAndEventViews;
+
+  /// Client-owned label for listing-view analytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile views'**
+  String get hostsHostAnalyticsLabelProfileViews;
+
+  /// Client-owned label for event-view analytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Event views'**
+  String get hostsHostAnalyticsLabelEventViews;
+
+  /// Client-owned Host analytics metric label.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance rate'**
+  String get hostsHostAnalyticsLabelAttendanceRate;
+
+  /// Client-owned Host analytics metric label.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get hostsHostAnalyticsLabelRevenue;
+
+  /// Client-owned Host analytics metric label.
+  ///
+  /// In en, this message translates to:
+  /// **'Connections'**
+  String get hostsHostAnalyticsLabelConnections;
+
+  /// Client-owned Host analytics metric label.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout drop-off'**
+  String get hostsHostAnalyticsLabelCheckoutDropOff;
+
+  /// Client-owned Host analytics metric label.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout conversion'**
+  String get hostsHostAnalyticsLabelCheckoutConversion;
+
+  /// Client-owned Host analytics metric label.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats started'**
+  String get hostsHostAnalyticsLabelChatsStarted;
+
+  /// Disclosure label for secondary Host analytics metrics.
+  ///
+  /// In en, this message translates to:
+  /// **'More metrics'**
+  String get hostsHostAnalyticsLabelMoreMetrics;
+
+  /// Supporting copy for secondary Host analytics metrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout, chats and saves'**
+  String get hostsHostAnalyticsBodyCheckoutChatsAndSaves;
+
+  /// Badge for a partially available Host metric.
+  ///
+  /// In en, this message translates to:
+  /// **'Partial'**
+  String get hostsHostAnalyticsLabelPartial;
+
+  /// Badge for an unavailable Host metric.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing'**
+  String get hostsHostAnalyticsLabelMissing;
+
+  /// Comparison caption for a Host analytics metric.
+  ///
+  /// In en, this message translates to:
+  /// **'{direction} {percent}% vs previous {period}'**
+  String hostsHostAnalyticsTextDirectionPercentVsPreviousPeriod({
+    required Object direction,
+    required Object percent,
+    required Object period,
+  });
+
+  /// Empty-state copy for the Host analytics trend.
+  ///
+  /// In en, this message translates to:
+  /// **'No analytics in this range.'**
+  String get hostsHostAnalyticsTextNoAnalyticsInThisRange;
+
+  /// Selected Host analytics trend-bucket detail.
+  ///
+  /// In en, this message translates to:
+  /// **'{period}: {demand} demand · {bookings} bookings'**
+  String hostsHostAnalyticsTextPeriodDemandBookings({
+    required Object period,
+    required Object demand,
+    required Object bookings,
+  });
+
+  /// Heading for recent events linked to their reports.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent events'**
+  String get hostsHostAnalyticsLabelRecentEvents;
+
+  /// Single warning badge on a recent event with payment friction.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment issues'**
+  String get hostsHostAnalyticsLabelPaymentIssues;
+
+  /// Compact recent-event metric summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{booked} booked · {attended} attended · {matches} matches'**
+  String hostsHostAnalyticsTextBookedAttendedMatches({
+    required Object booked,
+    required Object attended,
+    required Object matches,
+  });
+
+  /// Compact recent-event date and status line.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {status}'**
+  String hostsHostAnalyticsTextEventDateStatus({
+    required Object date,
+    required Object status,
+  });
+
+  /// Heading for the Host analytics review summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get hostsHostAnalyticsLabelReviews;
+
+  /// Published review count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Published reviews'**
+  String get hostsHostAnalyticsLabelPublishedReviews;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get hostsHostAnalyticsStatusLive;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get hostsHostAnalyticsStatusActive;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get hostsHostAnalyticsStatusOpen;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Published'**
+  String get hostsHostAnalyticsStatusPublished;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get hostsHostAnalyticsStatusCompleted;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get hostsHostAnalyticsStatusPast;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostsHostAnalyticsStatusDraft;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get hostsHostAnalyticsStatusPending;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get hostsHostAnalyticsStatusScheduled;
+
+  /// Localized event status.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostsHostAnalyticsStatusCancelled;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Trend · bookings vs demand'**
   String get hostsHostAnalyticsLabelTrendBookingsVsDemand;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Day'**
-  String get hostsHostAnalyticsLabelDaycb7256;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Week'**
-  String get hostsHostAnalyticsLabelWeek4cce87;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
   ///
@@ -9427,123 +9562,11 @@ abstract class AppLocalizations {
   /// **'Bookings'**
   String get hostsHostAnalyticsLabelBookings;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Top events'**
-  String get hostsHostAnalyticsLabelTopEvents;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Selected event'**
-  String get hostsHostAnalyticsLabelSelectedEvent;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'No events in this range.'**
   String get hostsHostAnalyticsTextNoEventsInThis;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Selected'**
-  String get hostsHostAnalyticsLabelSelected;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{demandCount} demand'**
-  String hostsHostAnalyticsLabelDemandcountDemand({
-    required Object demandCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{bookedCount} booked'**
-  String hostsHostAnalyticsLabelBookedcountBooked({
-    required Object bookedCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{waitlistedCount} waitlisted'**
-  String hostsHostAnalyticsLabelWaitlistedcountWaitlisted({
-    required Object waitlistedCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{checkedInCount} attended'**
-  String hostsHostAnalyticsLabelCheckedincountAttended({
-    required Object checkedInCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{mutualMatchCount} matches'**
-  String hostsHostAnalyticsLabelMutualmatchcountMatches({
-    required Object mutualMatchCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{chatStartedCount} chats'**
-  String hostsHostAnalyticsLabelChatstartedcountChats({
-    required Object chatStartedCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{repeatAttendeeCount} repeat'**
-  String hostsHostAnalyticsLabelRepeatattendeecountRepeat({
-    required Object repeatAttendeeCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{checkoutStartedCount} checkouts'**
-  String hostsHostAnalyticsLabelCheckoutstartedcountCheckouts({
-    required Object checkoutStartedCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{checkoutDropoffCount} drop-off'**
-  String hostsHostAnalyticsLabelCheckoutdropoffcountDropOff({
-    required Object checkoutDropoffCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{paymentFailedCount} failed'**
-  String hostsHostAnalyticsLabelPaymentfailedcountFailed({
-    required Object paymentFailedCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{paymentRefundedCount} refunded'**
-  String hostsHostAnalyticsLabelPaymentrefundedcountRefunded({
-    required Object paymentRefundedCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Reviews and saves'**
-  String get hostsHostAnalyticsLabelReviewsAndSaves;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
   ///
@@ -9569,6 +9592,36 @@ abstract class AppLocalizations {
   /// **'Responses'**
   String get hostsHostAnalyticsLabelResponses;
 
+  /// Section title for concise rules-based host recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'Coach'**
+  String get hostsHostAnalyticsTitleCoach;
+
+  /// Coach suggestion shown when attendance is below sixty percent across at least two events.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost half your bookings didn\'\'t show. Reminders and check-in help — see how your last event ran.'**
+  String get hostsHostAnalyticsCoachAttendance;
+
+  /// Coach suggestion shown when checkout drop-off is at least thirty percent.
+  ///
+  /// In en, this message translates to:
+  /// **'Lots of people started paying and stopped. Review your price or enable demand pricing.'**
+  String get hostsHostAnalyticsCoachCheckoutDropoff;
+
+  /// Coach suggestion shown when event demand is at least twice bookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Demand outran capacity on {event}. Consider a bigger venue or a second date.'**
+  String hostsHostAnalyticsCoachDemandCapacity({required String event});
+
+  /// Coach suggestion shown when no repeat attendee appears across at least three events.
+  ///
+  /// In en, this message translates to:
+  /// **'No repeat attendees this period. Club posts and follows help people come back.'**
+  String get hostsHostAnalyticsCoachNoRepeatAttendees;
+
   /// Product copy used by lib/hosts/presentation/host_operations/host_auth_required_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -9581,7 +9634,7 @@ abstract class AppLocalizations {
   /// **'Sign in to manage host operations.'**
   String get hostsHostAuthRequiredScreenMessageSignInToManage;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Identity'**
@@ -9603,125 +9656,137 @@ abstract class AppLocalizations {
     required Object maximumClubPhotoCount,
   });
 
-  /// Section title for advanced policy and Event Success club defaults.
-  ///
-  /// In en, this message translates to:
-  /// **'Advanced event defaults'**
-  String get hostsHostClubProfileTitleAdvancedEventDefaults;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Club name'**
   String get hostsHostClubProfileLabelClubName;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:
   /// **'City'**
   String get hostsHostClubProfileLabelCity;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Area / neighbourhood'**
   String get hostsHostClubProfileLabelAreaNeighbourhood;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Description'**
   String get hostsHostClubProfileLabelDescription;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Contact'**
   String get hostsHostClubProfileTitleContact;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Instagram'**
   String get hostsHostClubProfileLabelInstagram;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (placeholder).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (placeholder).
   ///
   /// In en, this message translates to:
   /// **'@yourclub'**
   String get hostsHostClubProfilePlaceholderYourclub;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Phone'**
   String get hostsHostClubProfileLabelPhone;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Email'**
   String get hostsHostClubProfileLabelEmail;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (placeholder).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (placeholder).
   ///
   /// In en, this message translates to:
   /// **'hello@yourclub.com'**
   String get hostsHostClubProfilePlaceholderHelloYourclubCom;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (title).
+  /// Section heading for organizer configuration destinations.
+  ///
+  /// In en, this message translates to:
+  /// **'Club settings'**
+  String get hostsHostClubEditTabTitleClubSettings;
+
+  /// Navigation row to club event defaults.
   ///
   /// In en, this message translates to:
   /// **'Event defaults'**
-  String get hostsHostClubProfileTitleEventDefaults;
+  String get hostsHostClubEditTabLabelEventDefaults;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (title).
+  /// Navigation row to club live event guide defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Live event guide'**
+  String get hostsHostClubEditTabLabelLiveEventGuide;
+
+  /// Navigation row to club payment setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get hostsHostClubEditTabLabelPayments;
+
+  /// Navigation row to club host team management.
+  ///
+  /// In en, this message translates to:
+  /// **'Host team'**
+  String get hostsHostClubEditTabLabelHostTeam;
+
+  /// Enabled value for organizer configuration rows.
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get hostsHostClubEditTabValueOn;
+
+  /// Disabled value for organizer configuration rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get hostsHostClubEditTabValueOff;
+
+  /// Host count shown on the host team navigation row.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 host} other{{count} hosts}}'**
+  String hostsHostClubEditTabValueHostCount({required int count});
+
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Default activity'**
   String get hostsHostClubProfileTitleDefaultActivity;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Default activity'**
-  String get hostsHostClubProfileLabelDefaultActivity;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Admission'**
   String get hostsHostClubProfileTitleAdmission;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Admission'**
-  String get hostsHostClubProfileLabelAdmission;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Age range'**
   String get hostsHostClubProfileTitleAgeRange;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Age range'**
-  String get hostsHostClubProfileLabelAgeRange;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Cancellation policy'**
   String get hostsHostClubProfileTitleCancellationPolicy;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Cancellation policy'**
-  String get hostsHostClubProfileLabelCancellationPolicy;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (kicker).
   ///
@@ -9857,74 +9922,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Max age'**
   String get hostsHostInlineEditorsTitleMaxAge;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Insights'**
-  String get hostsHostInsightsScreenTitleInsights;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'clubId'**
-  String get hostsHostInsightsScreenBodyClubid;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'eventId'**
-  String get hostsHostInsightsScreenBodyEventid;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'section'**
-  String get hostsHostInsightsScreenBodySection;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'report'**
-  String get hostsHostInsightsScreenBodyReport;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Organizer'**
-  String get hostsHostInsightsScreenTooltipBackToOrganizer;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{clubName} · all events'**
-  String hostsHostInsightsScreenTextClubnameAllEvents({
-    required Object clubName,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Insights'**
-  String get hostsHostInsightsScreenTextInsights;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Insights unavailable'**
-  String get hostsHostInsightsScreenTitleInsightsUnavailable;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'This organizer is not available to your Host account.'**
-  String get hostsHostInsightsScreenMessageThisOrganizerIsNot;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_insights_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Organizer'**
-  String get hostsHostInsightsScreenLabelBackToOrganizer;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_operations_home_screen.dart (title).
   ///
@@ -15099,63 +15096,31 @@ abstract class AppLocalizations {
   /// **'Add a host bio'**
   String get hostsHostAccountScreenVisiblecopyAddAHostBio;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'bookings'**
-  String get hostsHostAnalyticsVisiblecopyBookings;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'demand'**
-  String get hostsHostAnalyticsVisiblecopyDemand;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{newReviews}'**
-  String hostsHostAnalyticsVisiblecopyNewreviews({required Object newReviews});
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{eventSaves}'**
-  String hostsHostAnalyticsVisiblecopyEventsaves({required Object eventSaves});
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{ownerResponseCount}'**
-  String hostsHostAnalyticsVisiblecopyOwnerresponsecount({
-    required Object ownerResponseCount,
-  });
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_auth_required_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Sign in'**
   String get hostsHostAuthRequiredScreenVisiblecopySignIn;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Club name'**
   String get hostsHostClubProfileVisiblecopyClubName;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Area / neighbourhood'**
   String get hostsHostClubProfileVisiblecopyAreaNeighbourhood;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Description'**
   String get hostsHostClubProfileVisiblecopyDescription8d3ca8;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_profile.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{minAge}–{maxAge}'**

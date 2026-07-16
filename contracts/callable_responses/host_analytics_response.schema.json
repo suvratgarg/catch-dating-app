@@ -209,7 +209,8 @@
         "value": {"type": "number"},
         "unit": {"type": "string", "enum": ["count", "percent", "money_minor", "rating"]},
         "status": {"type": "string", "enum": ["ready", "partial", "missing"]},
-        "caption": {"type": ["string", "null"], "maxLength": 160}
+        "caption": {"type": ["string", "null"], "maxLength": 160},
+        "previousValue": {"type": ["number", "null"]}
       }
     }
   }

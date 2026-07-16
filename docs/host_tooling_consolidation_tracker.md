@@ -1,7 +1,7 @@
 ---
 doc_id: host_tooling_consolidation_tracker
-version: 1.0.15
-updated: 2026-07-16
+version: 1.0.16
+updated: 2026-07-17
 owner: host_tooling
 status: active
 ---
@@ -30,6 +30,16 @@ The target state is:
 ## Active Codex Handoff: Host Clubs Edit Tab Consolidation
 
 Status: implemented and focused-verified
+
+2026-07-17 ownership update: the later Host Club Edit and Live Guide
+restructure supersedes the embedded-section topology documented below.
+`HostClubEditTab` now owns exactly Media, Identity, Contact, and Club settings.
+Event defaults, Live event guide, Host team, and owner-only Payments are
+top-level spoke screens with canonical `CatchScreenTopBar`, `CatchSection`, and
+`CatchField` composition. Defaults switches commit through
+`HostClubDefaultsSaver`; media actions commit per action. The historical
+inventory below remains as the evidence for what was consolidated, not as the
+current production tree.
 
 Work item: `HOST-CLUB-EDIT-CONSOLIDATION-001`
 
@@ -141,7 +151,8 @@ ownership state.
 | Concern | Single owner after the pass |
 | --- | --- |
 | Format badges and club metrics | `HostClubOrganizerOverview` |
-| Editable identity/contact/defaults/public profile | `HostClubProfileCard` using direct `CatchSection.fieldRows` instances |
+| Editable identity/contact/media | `HostClubEditTab` using direct `CatchSection.fieldRows` instances |
+| Event defaults and Live event guide | Dedicated spoke screens using `HostClubDefaultsSaver` functional updates |
 | Payout async state and mutations | `HostPaymentAccountControllerCard` |
 | Payout title/chrome/body/actions | Canonical `CatchSection.contained` compositions in the payment-account presentation widgets |
 | Team roster and owner actions | `HostTeamManagementSection`, parameterized by explicit management capability |
@@ -245,7 +256,9 @@ Expected production scope:
 
 - `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart`
 - `lib/hosts/presentation/host_operations/host_organizer.dart`
-- `lib/hosts/presentation/host_operations/host_club_profile.dart`
+- `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
+- `lib/hosts/presentation/host_operations/host_club_spoke_screens.dart`
+- `lib/hosts/presentation/club_management/host_club_defaults_saver.dart`
 - `lib/hosts/presentation/payments/host_payment_account_card.dart`
 - `lib/hosts/presentation/payments/host_payment_account_controller_card.dart`
 - `lib/hosts/presentation/widgets/host_team_management_section.dart`

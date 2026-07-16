@@ -403,6 +403,11 @@ class EventSuccessRuntime {
   }
 
   bool _moduleIdEnabledForLiveStep(String moduleId) {
+    if (moduleId == EventSuccessModuleCatalog.checkIn.id ||
+        moduleId == EventSuccessModuleCatalog.safetyControls.id ||
+        moduleId == EventSuccessModuleCatalog.crowdBalance.id) {
+      return true;
+    }
     if (moduleId == EventSuccessModuleCatalog.wingmanRequests.id) {
       return wingmanRequestsEnabled;
     }

@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 23,
   "updated": "2026-07-17",
   "owner": "agent_operating_model",
   "entries": [
@@ -1669,12 +1669,13 @@
         "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
         "lib/event_success/presentation/event_success_structure_config_editor.dart",
         "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
+        "lib/event_success/domain/event_success_runtime.dart",
         "lib/event_success/data/event_success_repository/plan.dart"
       ],
-      "symptom": "The shared setup form adds feature-local card chrome, forces disclosures open, launches a second questionnaire sheet, treats platform attendance or safety as optional Event Success modules, normalizes raw text during typing, or full-overwrites a stale/frozen plan.",
+      "symptom": "The shared setup form adds feature-local card chrome, forces disclosures open, launches a second questionnaire sheet, flattens every lifecycle stage into one tool list, separates a tool from its dependent configuration, treats platform attendance or safety as optional Event Success modules, filters platform-owned steps out of the runtime run of show, normalizes raw text during typing, or full-overwrites a stale/frozen plan.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/event_success/event_success_setup_body_test.dart test/event_success/event_success_structure_config_editor_test.dart test/event_success/event_success_questionnaire_config_editor_test.dart test/event_success/event_success_playbooks_test.dart test/event_success/event_success_repository_test.dart && ./tool/check_data_contract.sh",
+        "command": "flutter test test/event_success/event_success_setup_body_test.dart test/event_success/event_success_structure_config_editor_test.dart test/event_success/event_success_questionnaire_config_editor_test.dart test/event_success/event_success_playbooks_test.dart test/event_success/event_success_repository_test.dart test/event_success/event_success_runtime_test.dart && ./tool/check_data_contract.sh",
         "guardEvidence": "focused widget/domain/repository coverage plus generated schema, Firestore rule, Functions lint, and Functions test gates"
       },
       "owner_docs": [
@@ -1682,7 +1683,31 @@
         "docs/widget_catalog.md",
         "docs/backend_operation_catalog.md"
       ],
-      "notes": "Keep old qr_check_in, safety_controls, and crowd_balance ids readable during compatibility, but do not restore them to new defaults or the setup UI. First Hello remains the sole Event Success arrival ritual."
+      "notes": "Keep selectable tools grouped by their domain stage and place rotation, reveal, and questionnaire configuration directly beneath the owning row with CatchSection.containedFieldRows. Keep old qr_check_in, safety_controls, and crowd_balance ids readable during compatibility, but do not restore them to new defaults or the setup UI. Runtime step eligibility must still treat those platform capabilities as enabled so removing their stored ids never shifts or drops the run of show. First Hello remains the sole Event Success arrival ritual."
+    },
+    {
+      "id": "REG-COPY-IDENTIFIER-001",
+      "title": "Runtime identifiers drift into the localization catalog",
+      "status": "active",
+      "applies_to": [
+        "lib/l10n/app_en.arb",
+        "lib/hosts/presentation/host_operations/host_analytics.dart",
+        "lib/routing/go_router.dart",
+        "tool/copy/check_mobile_copy_catalog.mjs",
+        "tool/copy/mobile_copy_identifier_allowlist.json"
+      ],
+      "symptom": "A wire-map key, path/query parameter, route section value, or other lowercase identifier is migrated into ARB and later translation or copy editing silently breaks analytics lookup or navigation.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/copy/check_mobile_copy_catalog_test.mjs && node tool/copy/check_mobile_copy_catalog.mjs --check && flutter test test/hosts/host_analytics_repository_test.dart test/routing/router_redirect_test.dart",
+        "guardEvidence": "the copy scanner rejects identifier-shaped Visiblecopy values outside the narrow allowlist, while trend wire keys and Host route literals stay pinned by focused tests"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "tool/README.md"
+      ],
+      "notes": "Localization owns visible prose only. Runtime identifiers remain typed constants or routing literals at their contract owner; allowlist entries require an exact key and reason."
     }
   ]
 }

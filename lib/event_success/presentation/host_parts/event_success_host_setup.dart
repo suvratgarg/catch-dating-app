@@ -221,8 +221,8 @@ class _SetupTabState extends State<SetupTab> {
                 targetAttendeeCount: _targetAttendeeCount,
                 attendeePrompt: _attendeePromptText,
                 editable: !setupFrozen,
-                onDraftChanged: (nextDraft) {
-                  setState(() => _draft = nextDraft);
+                onChanged: (update) {
+                  setState(() => _draft = update(_draft));
                 },
                 onAttendeePromptChanged: (value) {
                   setState(() => _attendeePromptText = value);

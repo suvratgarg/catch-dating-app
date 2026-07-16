@@ -102,7 +102,9 @@
       "semanticFieldCount": 6,
       "bindings": [
         {"file": "lib/hosts/presentation/host_operations/host_inline_editors.dart", "symbol": "HostInlineOptionEditor"},
-        {"file": "lib/hosts/presentation/host_operations/host_club_profile.dart", "symbol": "HostClubProfileCard"}
+        {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "HostClubEditTab"},
+        {"file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart", "symbol": "HostClubEventDefaultsScreen"},
+        {"file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart", "symbol": "HostClubLiveGuideScreen"}
       ],
       "anchors": [
         {"file": "lib/hosts/presentation/host_operations/host_inline_editors.dart", "symbol": "CatchSelectChip", "expected": 1}

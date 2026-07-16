@@ -160,9 +160,10 @@ storytelling surface.** Codified in Phase E.
   deserves)
 - Adoption & governance: **8.5/10** (census discipline, catalog journal,
   correct browse/edit division)
-- **Overall: 7/10.** Phases A–D below are the path to ~8.5; none of them is
+- **Overall: 7/10.** Phases A–E below are the path to ~8.5; none of them is
   a redesign — the scarce thing (a coherent interaction model two apps
-  actually follow) already exists.
+  actually follow) already exists. §14 sketches the remaining 1.5 points as
+  unscheduled stretch goals.
 
 ## 3. Goals and non-goals
 
@@ -450,3 +451,90 @@ per repo rules, and for Phase B specifically: a PR note confirming
   tests out of the primitives catch-all, not out of this file.
 - `inputActions` — one usage today but load-bearing in the edit spec's
   target save model; not a dead limb.
+
+## 14. Stretch — what a 10 looks like (NOT scheduled)
+
+⚠ OWNER: nothing in this section is authorized work. Phases A–E end at
+~8.5/10. The remaining 1.5 points are step-changes in what the system
+*guarantees*, not code cleanliness — each item below is activated
+individually by the owner, in its own work order, and Codex must not start
+one as a side effect of the phases. They are recorded here so the ceiling is
+designed rather than discovered. Ordered by value.
+
+### S1. Contract-derived forms (extends Phase D) — highest value
+
+Today a field's constraints live twice: the widget call site (description
+`maxLength: 280`, host goal 300) and the patch's JSON schema in
+`contracts/`. A 10 closes the loop the same way the token pipeline closed
+raw-color drift: the Phase D descriptors are **generated from, or
+machine-checked against, the patch schemas** — max lengths, required vs
+optional, enum values, keyboard types inferred from field types for
+`UpdateUserProfilePatch` / `UpdateClubPatch` and successors. The
+UI-validation-drifts-from-contract bug class stops existing.
+
+- First increment: a checker (`.mjs` or Dart, manifest-wired) that walks the
+  descriptor definitions and fails when a text row's limits/optionality
+  disagree with the generated DTO schema. Generation can come later;
+  checking alone buys most of the value.
+- Trigger: after Phase D migrations prove the descriptor layer on both apps.
+
+### S2. One motion language for the edit loop — cheapest quality-per-effort
+
+The system is behaviorally rich but choreographically flat. A 10 gives the
+editing loop one motion identity from the motion tokens: accordion
+expand/collapse, disclosure drawers, chip selection, and a deliberately
+satisfying idle→saving→saved moment — all honoring reduced motion (the
+pattern and test precedent exist: the map-reveal reduced-motion test in
+`catch_primitives_test.dart`). The profile editor is an emotional surface
+disguised as a form; polish here is product, not garnish.
+
+- Ship as a Widgetbook choreography prototype first; owner taste sign-off
+  before production adoption (motion is a locked-identity concern).
+- Trigger: any time after Phase B; independent of everything else.
+
+### S3. Illegal states don't compile (completes Phase B)
+
+Replace the 84-parameter private constructor with per-mode private config
+types so "toggle with a text controller" is unrepresentable rather than
+assert-guarded. Public facades unchanged; only proceed where all public
+constructors provably stay `const`. This is the last step past the Phase B
+split — do it opportunistically during B if the diff stays mechanical,
+otherwise as a follow-up.
+
+### S4. Accessibility and dynamic type as tested invariants (extends Phase A)
+
+A bounded audit-plus-test pass, not a program: semantic labels/roles on
+every interactive lane, save-state transitions *announced* (not just drawn),
+44 px targets held (CountPill test precedent), and — the one that kills most
+row systems — rows degrading gracefully at large accessibility font scales
+instead of overflowing the value lane. Encode as Phase-A-matrix rows so a
+regression fails CI.
+
+### S5. Cross-stack interaction contract — only when admin pain bites
+
+The admin React surface is full of forms with its own primitives; the
+lexicon (`design/components/`) already binds names and tokens across
+stacks. A 10 extends it to *interaction contracts*: "field row" as one
+registered concept with the same slots, modes, and save-state semantics,
+checked on both Flutter and admin (shared contract, native implementations —
+implementation sharing stays ruled out). Do not build speculatively;
+activate when the next substantial admin-forms work order lands.
+
+### S6. Agent legibility — only when review churn is observed
+
+The repo is operated by agents executing specs. A 10 system is one an agent
+composes correctly first try: the facade inventory, slot map, and §10
+doctrine as a machine-readable registry (audit-registry style) keyed to the
+catalog/Widgetbook/test quartet, with a gate that new modes update all four.
+Activate only if field-system corrections become a recurring theme in
+work-order review; building it before the pain is how design systems become
+the product instead of serving it.
+
+### Calibration (owner-ratified)
+
+Per the repo's success-criteria principle, a 10 is not the goal — shipped,
+consistent, good-feeling UI is. Ruthless ordering: **S1 and S2 are worth
+real investment** (a live bug class eliminated; visible product quality).
+S3 is semi-free alongside Phase B. S4 is one bounded pass. S5 and S6 wait
+for real pain. A focused 9 that ships the organizer Edit and Insights
+redesigns is worth more than a museum-grade 10.

@@ -342,7 +342,10 @@ void main() {
               EventSuccessModuleCatalog.guidedRotations.id,
               EventSuccessModuleCatalog.liveReveal.id,
             ],
-            activeStepIndex: 0,
+            // Platform-owned arrival remains the first live step even though
+            // it is no longer configurable in setup. The opening step is the
+            // first reveal-capable step.
+            activeStepIndex: 1,
           );
       final runtime = EventSuccessRuntime(
         plan: plan,
@@ -388,11 +391,12 @@ void main() {
       );
 
       expect(runtime.runOfShowSteps.map((step) => step.title), [
+        'Check in and pace sort',
         'Run in pace pods',
       ]);
       expect(
         runtime.livePlan(bookedCount: 12, checkedInCount: 8)?.steps,
-        hasLength(1),
+        hasLength(2),
       );
     });
 

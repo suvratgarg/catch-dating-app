@@ -1,10 +1,15 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -18,15 +23,17 @@ import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
@@ -44,6 +51,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../clubs/clubs_test_helpers.dart';
 import '../test_pump_helpers.dart';
@@ -223,36 +231,18 @@ void main() {
     expect(clampedState.selectedTab, HostClubTab.edit);
   });
 
-  test('HostClubInsightsState owns analytics query and event scope', () {
-    final state = HostClubInsightsState.initial(
-      clubId: 'club-1',
-      now: DateTime(2026, 6, 25, 12),
-    );
+  test('HostClubInsightsState owns only club and narrative range', () {
+    final state = HostClubInsightsState.initial(clubId: 'club-1');
 
     expect(state.rangePreset, HostClubInsightsRangePreset.thirtyDays);
-    expect(state.granularity, HostClubInsightsGranularity.day);
-    expect(state.customStartDate, DateTime(2026, 5, 27));
-    expect(state.customEndDate, DateTime(2026, 6, 25));
     expect(state.query.clubId, 'club-1');
-    expect(state.query.eventId, isNull);
 
-    final scoped = state
-        .selectGranularity(HostClubInsightsGranularity.week)
-        .selectEvent('event-1')
-        .selectCustomStartDate(DateTime(2026, 6, 1, 18))
-        .selectCustomEndDate(DateTime(2026, 6, 20, 9));
+    final ranged = state.selectRange(HostClubInsightsRangePreset.twelveMonths);
+    expect(ranged.rangePreset, HostClubInsightsRangePreset.twelveMonths);
 
-    expect(scoped.rangePreset, HostClubInsightsRangePreset.custom);
-    expect(scoped.query.clubId, 'club-1');
-    expect(scoped.query.eventId, 'event-1');
-    expect(scoped.query.granularity, HostClubInsightsGranularity.week);
-    expect(scoped.query.startDate, DateTime(2026, 6));
-    expect(scoped.query.endDate, DateTime(2026, 6, 20));
-
-    final switchedClub = scoped.selectClub('club-2');
+    final switchedClub = ranged.selectClub('club-2');
     expect(switchedClub.query.clubId, 'club-2');
-    expect(switchedClub.selectedEventId, isNull);
-    expect(switchedClub.rangePreset, HostClubInsightsRangePreset.custom);
+    expect(switchedClub.rangePreset, HostClubInsightsRangePreset.twelveMonths);
   });
 
   test('HostHomeScreenState resolves selected club and host role', () {
@@ -1008,16 +998,19 @@ void main() {
           .every((field) => !field.divider),
       isTrue,
     );
+    final mayDividers = tester
+        .widgetList<CatchDivider>(
+          find.descendant(of: maySection, matching: find.byType(CatchDivider)),
+        )
+        .toList();
+    expect(mayDividers.map((divider) => divider.role), [
+      CatchDividerRole.section,
+      CatchDividerRole.fieldRow,
+    ]);
+    final tokens = CatchTokens.of(tester.element(maySection));
     expect(
-      tester
-          .widgetList<CatchDivider>(
-            find.descendant(
-              of: maySection,
-              matching: find.byType(CatchDivider),
-            ),
-          )
-          .map((divider) => divider.role),
-      [CatchDividerRole.section, CatchDividerRole.fieldRow],
+      CatchDivider.colorFor(tokens, mayDividers.last.role),
+      tokens.line.withValues(alpha: CatchOpacity.fieldRowDivider),
     );
 
     await tester.tap(find.text('Repeat ‘Social run’'));
@@ -1126,19 +1119,33 @@ void main() {
     expect(find.text('How guests see you'), findsNothing);
     expect(find.text('Public page'), findsNothing);
     expect(find.text('Preview'), findsWidgets);
-    expect(
-      find.byWidgetPredicate(
-        (widget) => widget is CatchSection && widget.title == 'Host team',
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.byWidgetPredicate(
-        (widget) => widget is CatchSection && widget.title == 'Payouts',
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('EVENT DEFAULTS'), findsOneWidget);
+    final editSections = tester
+        .widgetList<CatchSection>(
+          find.descendant(
+            of: find.byType(HostClubEditTab),
+            matching: find.byType(CatchSection),
+          ),
+        )
+        .toList();
+    expect(editSections, hasLength(4));
+    expect(editSections.map((section) => section.title), [
+      'Media',
+      'Identity',
+      'Contact',
+      'Club settings',
+    ]);
+    for (final title in ['Media', 'Identity', 'Contact', 'Club settings']) {
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is CatchSection && widget.title == title,
+        ),
+        findsOneWidget,
+      );
+    }
+    expect(find.text('Event defaults'), findsOneWidget);
+    expect(find.text('Live event guide'), findsOneWidget);
+    expect(find.text('Payments'), findsOneWidget);
+    expect(find.text('Host team'), findsOneWidget);
     expect(find.byTooltip('Settings'), findsOneWidget);
     expect(find.bySemanticsLabel('Settings'), findsOneWidget);
     expect(find.text('Trends · last 12 weeks'), findsNothing);
@@ -1266,7 +1273,9 @@ void main() {
         )
         .first;
     await Scrollable.ensureVisible(
-      tester.element(find.text('Cancellation policy')),
+      tester.element(
+        find.byKey(const ValueKey('host-club-settings-host-team')),
+      ),
       alignment: 0.5,
     );
     await pumpFeatureUi(tester);
@@ -1285,12 +1294,6 @@ void main() {
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsOneWidget,
     );
-    expect(
-      tester
-          .getTopLeft(find.byKey(const ValueKey('host-club-insights-summary')))
-          .dy,
-      lessThan(tester.getTopLeft(find.byType(HostAnalyticsControls)).dy),
-    );
 
     expectSharedChrome(switcherVisible: false);
     expect(find.byType(HostClubInsightsPane), findsOneWidget);
@@ -1306,13 +1309,13 @@ void main() {
           .selected,
       HostClubInsightsRangePreset.thirtyDays,
     );
-    await tester.tap(find.text('7D'));
+    await tester.tap(find.text('90 days'));
     await pumpFeatureUi(tester);
     expect(
       tester
           .widget<CatchOptionGroup<HostClubInsightsRangePreset>>(rangeOptions)
           .selected,
-      HostClubInsightsRangePreset.sevenDays,
+      HostClubInsightsRangePreset.ninetyDays,
     );
 
     await tester.tap(tab('Preview'));
@@ -1357,7 +1360,7 @@ void main() {
       tester
           .widget<CatchOptionGroup<HostClubInsightsRangePreset>>(rangeOptions)
           .selected,
-      HostClubInsightsRangePreset.sevenDays,
+      HostClubInsightsRangePreset.ninetyDays,
     );
 
     await tester.tap(tab('Edit'));
@@ -1409,7 +1412,7 @@ void main() {
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsNothing,
     );
-    expect(find.byType(HostClubProfileCard), findsOneWidget);
+    expect(find.byType(HostClubEditTab), findsOneWidget);
     expect(find.byType(HostClubInsightsPane), findsNothing);
 
     await tester.drag(pager, const Offset(-320, 0));
@@ -1419,7 +1422,7 @@ void main() {
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsOneWidget,
     );
-    expect(find.byType(HostClubProfileCard), findsNothing);
+    expect(find.byType(HostClubEditTab), findsNothing);
 
     await tester.drag(pager, const Offset(-320, 0));
     await pumpFeatureUi(tester);
@@ -1435,7 +1438,7 @@ void main() {
 
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);
-    expect(find.byType(HostClubProfileCard), findsOneWidget);
+    expect(find.byType(HostClubEditTab), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsNothing,
@@ -1469,7 +1472,7 @@ void main() {
         ],
       );
 
-      final editTab = find.byType(HostClubProfileCard);
+      final editTab = find.byType(HostClubEditTab);
       expect(editTab, findsOneWidget);
       expect(
         tester.getSize(editTab).width,
@@ -1491,6 +1494,167 @@ void main() {
       expect(descriptionField.open, isTrue);
     },
   );
+
+  testWidgets('Host club photo picks commit immediately', (tester) async {
+    final photoBytes = _testPngBytes();
+    final actions = _RecordingHostClubEditActions(
+      pickedPhotos: [
+        HostPickedClubPhoto(
+          image: XFile.fromData(photoBytes, name: 'picked.jpg'),
+          bytes: photoBytes,
+        ),
+      ],
+    );
+    final club = buildClub(id: 'media-pick', ownerUserId: _hostUid);
+
+    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
+    await Scrollable.ensureVisible(tester.element(add));
+    await tester.tap(add);
+    await pumpFeatureUi(tester);
+
+    expect(actions.mediaWrites, hasLength(1));
+    expect(actions.mediaWrites.single, hasLength(1));
+    expect(actions.mediaWrites.single.single, isA<HostNewClubPhotoInput>());
+  });
+
+  testWidgets('Club settings rows push every spoke with the selected club id', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'spoke-club', ownerUserId: _hostUid);
+    final destinations = <(Routes, String)>[];
+    await _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: SingleChildScrollView(
+          child: HostClubEditTab(
+            club: club,
+            currentUid: _hostUid,
+            isOwner: true,
+            onOpenSettingsRoute: (route, clubId) =>
+                destinations.add((route, clubId)),
+          ),
+        ),
+      ),
+      overrides: _hostClubOverrides(owned: [club]),
+    );
+
+    for (final entry in {
+      'host-club-settings-event-defaults': Routes.hostClubEventDefaultsScreen,
+      'host-club-settings-live-guide': Routes.hostClubLiveGuideScreen,
+      'host-club-settings-payments': Routes.hostClubPaymentsScreen,
+      'host-club-settings-host-team': Routes.hostClubTeamScreen,
+    }.entries) {
+      final field = find.byKey(ValueKey(entry.key));
+      await Scrollable.ensureVisible(tester.element(field));
+      tester.widget<CatchField>(field).onTap!();
+    }
+
+    expect(destinations, [
+      (Routes.hostClubEventDefaultsScreen, club.id),
+      (Routes.hostClubLiveGuideScreen, club.id),
+      (Routes.hostClubPaymentsScreen, club.id),
+      (Routes.hostClubTeamScreen, club.id),
+    ]);
+  });
+
+  testWidgets('Club settings spokes are read-only for co-hosts', (
+    tester,
+  ) async {
+    final club = buildClub(
+      id: 'cohost-spoke-club',
+      hostUserId: 'owner-2',
+      hostUserIds: const [_hostUid],
+    );
+    final overrides = _hostClubOverrides(hosted: [club]);
+
+    await _pumpHostScreen(
+      tester,
+      HostClubEventDefaultsScreen(clubId: club.id),
+      overrides: overrides,
+    );
+    final topBar = tester.widget<CatchScreenTopBar>(
+      find.byType(CatchScreenTopBar),
+    );
+    expect(topBar.title, 'Event defaults');
+    expect(topBar.eyebrow, club.name);
+    expect(topBar.leadingType, CatchTopBarLeading.back);
+    expect(topBar.border, isTrue);
+    expect(find.byType(CatchFieldToggle), findsNothing);
+    expect(find.byType(CatchFieldActionBar), findsNothing);
+    expect(find.text('Default activity'), findsOneWidget);
+
+    await _pumpHostScreen(
+      tester,
+      HostClubLiveGuideScreen(clubId: club.id),
+      overrides: overrides,
+    );
+    expect(find.byType(CatchFieldToggle), findsNothing);
+    expect(find.byType(CatchFieldActionBar), findsNothing);
+
+    await _pumpHostScreen(
+      tester,
+      HostClubTeamScreen(clubId: club.id),
+      overrides: overrides,
+    );
+    expect(find.text('Add host'), findsNothing);
+
+    await _pumpHostScreen(
+      tester,
+      HostClubPaymentsScreen(clubId: club.id),
+      overrides: overrides,
+    );
+    expect(find.text('Owner'), findsOneWidget);
+    expect(find.byType(HostPaymentAccountControllerCard), findsNothing);
+  });
+
+  testWidgets('Host club photo removal commits immediately', (tester) async {
+    final actions = _RecordingHostClubEditActions();
+    final club = buildClub(
+      id: 'media-remove',
+      ownerUserId: _hostUid,
+      clubPhotos: [_uploadedClubPhoto('one', position: 0)],
+    );
+
+    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    final remove = find.byKey(OrderedPhotoPickerKeys.removeAction(0));
+    await Scrollable.ensureVisible(tester.element(remove));
+    await tester.tap(remove);
+    await pumpFeatureUi(tester);
+
+    expect(actions.mediaWrites, hasLength(1));
+    expect(actions.mediaWrites.single, isEmpty);
+  });
+
+  testWidgets('Host club photo reorder debounces one immediate commit', (
+    tester,
+  ) async {
+    final actions = _RecordingHostClubEditActions();
+    final club = buildClub(
+      id: 'media-reorder',
+      ownerUserId: _hostUid,
+      clubPhotos: [
+        _uploadedClubPhoto('one', position: 0),
+        _uploadedClubPhoto('two', position: 1),
+      ],
+    );
+
+    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    tester
+        .widget<CreateClubPhotosPicker>(find.byType(CreateClubPhotosPicker))
+        .onReorderPhoto!(0, 1);
+    await tester.pump(const Duration(milliseconds: 399));
+    expect(actions.mediaWrites, isEmpty);
+    await tester.pump(const Duration(milliseconds: 1));
+    await pumpFeatureUi(tester);
+
+    expect(actions.mediaWrites, hasLength(1));
+    final reordered = actions.mediaWrites.single
+        .whereType<HostExistingClubPhotoInput>()
+        .map((input) => input.photo.id)
+        .toList();
+    expect(reordered, ['two', 'one']);
+  });
 
   testWidgets('Host club tabs preserve independent vertical scroll offsets', (
     tester,
@@ -1587,58 +1751,6 @@ void main() {
     expect(positionFor(insightsKey).pixels, closeTo(insightsOffset, 1));
   });
 
-  testWidgets('Host Insights resolves the exact club and owns range chrome', (
-    tester,
-  ) async {
-    final firstClub = buildClub(
-      id: 'first-club',
-      name: 'First Club',
-      ownerUserId: _hostUid,
-    );
-    final exactClub = buildClub(
-      id: 'exact-club',
-      name: 'Bandra Social',
-      ownerUserId: _hostUid,
-    );
-
-    await _pumpHostScreen(
-      tester,
-      const HostInsightsScreen(clubId: 'exact-club'),
-      overrides: [
-        ..._hostClubOverrides(owned: [firstClub, exactClub]),
-        hostAnalyticsRepositoryProvider.overrideWithValue(
-          _EmptyHostAnalyticsRepository(
-            topEvents: [_hostAnalyticsEventRow(eventId: 'top-event')],
-          ),
-        ),
-      ],
-    );
-
-    expect(find.text('Bandra Social · all events'), findsOneWidget);
-    expect(find.text('First Club · all events'), findsNothing);
-    expect(find.text('Insights'), findsOneWidget);
-    expect(find.byTooltip('Back to Organizer'), findsOneWidget);
-    expect(find.text('30 days'), findsOneWidget);
-    expect(find.text('Organizer'), findsNothing);
-    expect(find.text('Edit'), findsNothing);
-    expect(find.text('Preview'), findsNothing);
-
-    await tester.tap(find.text('30 days'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Date range'), findsOneWidget);
-    await tester.tap(find.text('7 DAYS'));
-    await tester.tap(find.text('Apply range'));
-    await pumpFeatureUi(tester);
-    expect(find.text('7 days'), findsOneWidget);
-
-    await tester.ensureVisible(find.text('Top event'));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Top event'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Manage top-event'), findsOneWidget);
-    expect(find.text('Section report'), findsOneWidget);
-  });
-
   testWidgets('Host analytics trend renders every backend bucket', (
     tester,
   ) async {
@@ -1654,7 +1766,12 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: Scaffold(body: HostAnalyticsTrendPanel(points: points)),
+        home: Scaffold(
+          body: HostAnalyticsTrendPanel(
+            points: points,
+            granularity: HostAnalyticsGranularity.week,
+          ),
+        ),
       ),
     );
 
@@ -1679,29 +1796,6 @@ void main() {
     );
     expect(stack.gap, 0);
     expect(find.byType(CatchSection), findsNWidgets(4));
-  });
-
-  testWidgets('Host Insights never falls back when the route club is unknown', (
-    tester,
-  ) async {
-    final availableClub = buildClub(
-      id: 'available-club',
-      name: 'Available Club',
-      ownerUserId: _hostUid,
-    );
-
-    await _pumpHostScreen(
-      tester,
-      const HostInsightsScreen(clubId: 'missing-club'),
-      overrides: _hostClubOverrides(owned: [availableClub]),
-    );
-
-    expect(find.text('Insights unavailable'), findsOneWidget);
-    expect(find.text('Available Club · all events'), findsNothing);
-
-    await tester.tap(find.text('Back to Organizer'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Organizer route'), findsOneWidget);
   });
 
   testWidgets('Host clubs owns profile management without event CTAs', (
@@ -1764,11 +1858,10 @@ void main() {
     expect(find.text('CONTACT'), findsOneWidget);
     expect(find.text('Instagram'), findsOneWidget);
     expect(find.text('@sundayseafacecrew'), findsOneWidget);
-    expect(find.text('EVENT DEFAULTS'), findsOneWidget);
-    expect(find.text('Default activity'), findsOneWidget);
-    expect(find.text('Admission'), findsOneWidget);
-    expect(find.text('Age range'), findsOneWidget);
-    expect(find.text('Cancellation policy'), findsOneWidget);
+    expect(find.text('CLUB SETTINGS'), findsOneWidget);
+    expect(find.text('Event defaults'), findsOneWidget);
+    expect(find.text('Payments'), findsOneWidget);
+    expect(find.text('Host team'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (widget) => widget is CatchSection && widget.title == 'Media',
@@ -1777,14 +1870,6 @@ void main() {
     );
     expect(find.text('Save media'), findsNothing);
     expect(find.byKey(const ValueKey('host-media-action-bar')), findsNothing);
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchSection && widget.title == 'Advanced event defaults',
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('Cohort caps'), findsOneWidget);
     expect(find.text('Live event guide'), findsOneWidget);
     expect(find.text('Save defaults'), findsNothing);
     expect(
@@ -1794,23 +1879,14 @@ void main() {
     expect(find.text('PUBLIC PROFILE'), findsNothing);
     expect(find.text('Preview club page'), findsNothing);
     expect(
-      find.byWidgetPredicate(
-        (widget) => widget is CatchSection && widget.title == 'Payouts',
-      ),
+      find.byKey(const ValueKey('host-club-settings-payments')),
       findsOneWidget,
     );
     expect(
-      find.byWidgetPredicate(
-        (widget) => widget is CatchSection && widget.title == 'Host team',
-      ),
+      find.byKey(const ValueKey('host-club-settings-host-team')),
       findsOneWidget,
     );
-    expect(
-      find.byWidgetPredicate(
-        (widget) => widget is CatchField && widget.title == 'Add host',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Add host'), findsNothing);
     expect(find.text('Add event'), findsNothing);
     expect(find.text('View club'), findsNothing);
     expect(find.text('Owned club'), findsNothing);
@@ -1821,20 +1897,22 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Co-hosted Club'), findsWidgets);
-    expect(find.text('HOST TEAM'), findsOneWidget);
+    expect(find.text('CLUB SETTINGS'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
-        (widget) => widget is CatchSection && widget.title == 'Host team',
+        (widget) => widget is CatchSection && widget.title == 'Club settings',
       ),
       findsOneWidget,
     );
-    expect(find.text('Payouts'), findsNothing);
     expect(
-      find.byWidgetPredicate(
-        (widget) => widget is CatchField && widget.title == 'Add host',
-      ),
+      find.byKey(const ValueKey('host-club-settings-payments')),
       findsNothing,
     );
+    expect(
+      find.byKey(const ValueKey('host-club-settings-host-team')),
+      findsOneWidget,
+    );
+    expect(find.text('Add host'), findsNothing);
     expect(
       find.byKey(const ValueKey('host-team-actions-owner-2')),
       findsNothing,
@@ -1869,7 +1947,7 @@ void main() {
     expect(find.text('Club cohost-club'), findsNothing);
   });
 
-  testWidgets('Default switches auto-save while choices remain staged', (
+  testWidgets('Default switches auto-save without a Done action', (
     tester,
   ) async {
     final ownedClub = buildClub(
@@ -1882,7 +1960,7 @@ void main() {
 
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      HostClubLiveGuideScreen(clubId: ownedClub.id),
       overrides: [
         ..._hostClubOverrides(owned: [ownedClub]),
         clubsRepositoryProvider.overrideWith((ref) => repository),
@@ -1892,19 +1970,22 @@ void main() {
       ],
     );
 
-    expect(find.text('Save defaults'), findsNothing);
-    await Scrollable.ensureVisible(
-      tester.element(find.text('Live event guide')),
-      alignment: 0.5,
+    final guideField = find.byWidgetPredicate(
+      (widget) => widget is CatchField && widget.title == 'Live event guide',
     );
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Live event guide'));
+    expect(guideField, findsOneWidget);
+    tester
+        .widget<CatchFieldToggle>(
+          find.descendant(
+            of: guideField,
+            matching: find.byType(CatchFieldToggle),
+          ),
+        )
+        .onChanged!(true);
     await pumpFeatureUi(tester);
 
-    final defaultsActionBar = find.byKey(
-      const ValueKey('host-defaults-action-bar'),
-    );
-    expect(defaultsActionBar, findsNothing);
+    expect(find.text('Done'), findsNothing);
+    expect(find.text('Cancel'), findsNothing);
     expect(repository.lastUpdatedClubId, ownedClub.id);
     final savedDefaults = repository.lastUpdatedFields?['hostDefaults'];
     expect(savedDefaults, isA<Map<String, dynamic>>());
@@ -1913,23 +1994,6 @@ void main() {
           as Map<String, dynamic>)['enabled'],
       isTrue,
     );
-
-    final flowTypeField = tester.widget<CatchField>(
-      find.byWidgetPredicate(
-        (widget) => widget is CatchField && widget.title == 'Group people into',
-      ),
-    );
-    final flowTypeControl =
-        flowTypeField.control! as CatchFieldChoiceControl<EventSuccessUnitKind>;
-    flowTypeControl.onSelectionChanged!({EventSuccessUnitKind.pods});
-    await pumpFeatureUi(tester);
-
-    expect(defaultsActionBar, findsOneWidget);
-    expect(find.text('Save defaults'), findsNothing);
-
-    tester.widget<CatchFieldActionBar>(defaultsActionBar).onCancel();
-    await pumpFeatureUi(tester);
-    expect(defaultsActionBar, findsNothing);
   });
 
   testWidgets('Host club fields edit inline without opening edit wizard', (
@@ -2015,7 +2079,7 @@ void main() {
 
       await _pumpHostScreen(
         tester,
-        const HostClubsScreen(),
+        HostClubEventDefaultsScreen(clubId: ownedClub.id),
         overrides: [
           ..._hostClubOverrides(owned: [ownedClub]),
           watchHostPaymentAccountProvider(
@@ -2658,6 +2722,34 @@ Future<void> _pumpHostScreen(
         builder: (_, state) => Text('Edit ${state.pathParameters['clubId']}'),
       ),
       GoRoute(
+        path: Routes.hostClubEventDefaultsScreen.path,
+        name: Routes.hostClubEventDefaultsScreen.name,
+        builder: (_, state) => HostClubEventDefaultsScreen(
+          clubId: state.uri.queryParameters['clubId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: Routes.hostClubLiveGuideScreen.path,
+        name: Routes.hostClubLiveGuideScreen.name,
+        builder: (_, state) => HostClubLiveGuideScreen(
+          clubId: state.uri.queryParameters['clubId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: Routes.hostClubTeamScreen.path,
+        name: Routes.hostClubTeamScreen.name,
+        builder: (_, state) => HostClubTeamScreen(
+          clubId: state.uri.queryParameters['clubId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: Routes.hostClubPaymentsScreen.path,
+        name: Routes.hostClubPaymentsScreen.name,
+        builder: (_, state) => HostClubPaymentsScreen(
+          clubId: state.uri.queryParameters['clubId'] ?? '',
+        ),
+      ),
+      GoRoute(
         path: Routes.hostAppEventManageScreen.path,
         name: Routes.hostAppEventManageScreen.name,
         builder: (_, state) => Column(
@@ -2691,6 +2783,71 @@ Future<void> _pumpHostScreen(
   } else {
     await tester.pump();
     await tester.pump();
+  }
+}
+
+Future<void> _pumpHostClubEditTab(
+  WidgetTester tester, {
+  required Club club,
+  required HostClubEditActions actions,
+}) {
+  return _pumpHostScreen(
+    tester,
+    Scaffold(
+      body: SingleChildScrollView(
+        child: HostClubEditTab(club: club, currentUid: _hostUid, isOwner: true),
+      ),
+    ),
+    overrides: [hostClubEditControllerProvider.overrideWithValue(actions)],
+  );
+}
+
+UploadedPhoto _uploadedClubPhoto(String id, {required int position}) {
+  final timestamp = DateTime(2026);
+  return UploadedPhoto(
+    id: id,
+    url: 'https://example.test/$id.jpg',
+    storagePath: 'clubs/test/$id.jpg',
+    position: position,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  );
+}
+
+Uint8List _testPngBytes() => base64Decode(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUl'
+  'EQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==',
+);
+
+class _RecordingHostClubEditActions implements HostClubEditActions {
+  _RecordingHostClubEditActions({this.pickedPhotos = const []});
+
+  final List<HostPickedClubPhoto> pickedPhotos;
+  final List<List<HostClubMediaInput>> mediaWrites = [];
+
+  @override
+  Future<void> updateClub({
+    required String clubId,
+    required UpdateClubPatch patch,
+  }) async {}
+
+  @override
+  Future<List<HostPickedClubPhoto>> pickClubPhotos({
+    required int limit,
+  }) async => pickedPhotos.take(limit).toList(growable: false);
+
+  @override
+  Future<HostPickedClubLogo?> pickClubLogo() async => null;
+
+  @override
+  Future<void> updateClubMedia({
+    required Club club,
+    List<HostClubMediaInput>? photoInputs,
+    HostPickedClubLogo? logo,
+  }) async {
+    if (photoInputs != null) {
+      mediaWrites.add(List<HostClubMediaInput>.of(photoInputs));
+    }
   }
 }
 

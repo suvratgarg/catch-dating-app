@@ -824,7 +824,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something attendees see before the event kicks off.';
 
   @override
-  String get eventSuccessEventSuccessSetupBodyTitleLiveTools => 'Live tools';
+  String get eventSuccessEventSuccessSetupBodyTitleBeforeTheEvent =>
+      'Before the event';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyTitleWhenPeopleArrive =>
+      'When people arrive';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyTitleDuringTheEvent =>
+      'During the event';
+
+  @override
+  String get eventSuccessEventSuccessSetupBodyTitleAfterTheEvent =>
+      'After the event';
 
   @override
   String get eventSuccessEventSuccessSetupBodyLabelSwitchPartnersEvery =>
@@ -5921,56 +5934,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAccountScreenLabelSaveProfile => 'Save profile';
 
   @override
-  String get hostsHostAnalyticsTitleStartDate => 'Start date';
-
-  @override
-  String get hostsHostAnalyticsTitleEndDate => 'End date';
-
-  @override
-  String get hostsHostAnalyticsLabel7d => '7D';
-
-  @override
-  String get hostsHostAnalyticsLabel30d => '30D';
-
-  @override
-  String get hostsHostAnalyticsLabel90d => '90D';
-
-  @override
-  String get hostsHostAnalyticsLabelMonth => 'MONTH';
-
-  @override
-  String get hostsHostAnalyticsLabelCustom => 'CUSTOM';
-
-  @override
-  String get hostsHostAnalyticsLabelDay => 'DAY';
-
-  @override
-  String get hostsHostAnalyticsLabelWeek => 'WEEK';
-
-  @override
-  String get hostsHostAnalyticsLabelStart => 'Start';
-
-  @override
-  String get hostsHostAnalyticsLabelEnd => 'End';
-
-  @override
-  String get hostsHostAnalyticsTextEventScoped => 'Event scoped';
-
-  @override
   String get hostsHostAnalyticsLabelAllEvents => 'All events';
-
-  @override
-  String get hostsHostAnalyticsTitleDateRange => 'Date range';
-
-  @override
-  String get hostsHostAnalyticsSubtitleCompareOrganizerPerformanceOver =>
-      'Compare organizer performance over a consistent window.';
-
-  @override
-  String get hostsHostAnalyticsLabelApplyRange => 'Apply range';
-
-  @override
-  String get hostsHostAnalyticsLabel7Days => '7 days';
 
   @override
   String get hostsHostAnalyticsLabel30Days => '30 days';
@@ -5979,23 +5943,151 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAnalyticsLabel90Days => '90 days';
 
   @override
-  String get hostsHostAnalyticsLabelMonth5406de => 'Month';
+  String get hostsHostAnalyticsLabel12Months => '12 months';
 
   @override
-  String get hostsHostAnalyticsLabelCustoma46c31 => 'Custom';
+  String hostsHostAnalyticsTextUpdatedRelative({required Object relative}) {
+    return 'Updated $relative';
+  }
 
   @override
-  String get hostsHostAnalyticsLabelDataQuality => 'Data quality';
+  String get hostsHostAnalyticsTextSomeDataIsStillSyncingNumbersMayUpdate =>
+      'Some data is still syncing — numbers may update.';
+
+  @override
+  String get hostsHostAnalyticsLabelAllTime => 'All time';
+
+  @override
+  String get hostsHostAnalyticsLabelPerformancePeriod => 'Performance period';
+
+  @override
+  String get hostsHostAnalyticsLabelPerformance => 'Performance';
+
+  @override
+  String get hostsHostAnalyticsLabelProfileAndEventViews =>
+      'Profile & event views';
+
+  @override
+  String get hostsHostAnalyticsLabelProfileViews => 'Profile views';
+
+  @override
+  String get hostsHostAnalyticsLabelEventViews => 'Event views';
+
+  @override
+  String get hostsHostAnalyticsLabelAttendanceRate => 'Attendance rate';
+
+  @override
+  String get hostsHostAnalyticsLabelRevenue => 'Revenue';
+
+  @override
+  String get hostsHostAnalyticsLabelConnections => 'Connections';
+
+  @override
+  String get hostsHostAnalyticsLabelCheckoutDropOff => 'Checkout drop-off';
+
+  @override
+  String get hostsHostAnalyticsLabelCheckoutConversion => 'Checkout conversion';
+
+  @override
+  String get hostsHostAnalyticsLabelChatsStarted => 'Chats started';
+
+  @override
+  String get hostsHostAnalyticsLabelMoreMetrics => 'More metrics';
+
+  @override
+  String get hostsHostAnalyticsBodyCheckoutChatsAndSaves =>
+      'Checkout, chats and saves';
+
+  @override
+  String get hostsHostAnalyticsLabelPartial => 'Partial';
+
+  @override
+  String get hostsHostAnalyticsLabelMissing => 'Missing';
+
+  @override
+  String hostsHostAnalyticsTextDirectionPercentVsPreviousPeriod({
+    required Object direction,
+    required Object percent,
+    required Object period,
+  }) {
+    return '$direction $percent% vs previous $period';
+  }
+
+  @override
+  String get hostsHostAnalyticsTextNoAnalyticsInThisRange =>
+      'No analytics in this range.';
+
+  @override
+  String hostsHostAnalyticsTextPeriodDemandBookings({
+    required Object period,
+    required Object demand,
+    required Object bookings,
+  }) {
+    return '$period: $demand demand · $bookings bookings';
+  }
+
+  @override
+  String get hostsHostAnalyticsLabelRecentEvents => 'Recent events';
+
+  @override
+  String get hostsHostAnalyticsLabelPaymentIssues => 'Payment issues';
+
+  @override
+  String hostsHostAnalyticsTextBookedAttendedMatches({
+    required Object booked,
+    required Object attended,
+    required Object matches,
+  }) {
+    return '$booked booked · $attended attended · $matches matches';
+  }
+
+  @override
+  String hostsHostAnalyticsTextEventDateStatus({
+    required Object date,
+    required Object status,
+  }) {
+    return '$date · $status';
+  }
+
+  @override
+  String get hostsHostAnalyticsLabelReviews => 'Reviews';
+
+  @override
+  String get hostsHostAnalyticsLabelPublishedReviews => 'Published reviews';
+
+  @override
+  String get hostsHostAnalyticsStatusLive => 'Live';
+
+  @override
+  String get hostsHostAnalyticsStatusActive => 'Active';
+
+  @override
+  String get hostsHostAnalyticsStatusOpen => 'Open';
+
+  @override
+  String get hostsHostAnalyticsStatusPublished => 'Published';
+
+  @override
+  String get hostsHostAnalyticsStatusCompleted => 'Completed';
+
+  @override
+  String get hostsHostAnalyticsStatusPast => 'Past';
+
+  @override
+  String get hostsHostAnalyticsStatusDraft => 'Draft';
+
+  @override
+  String get hostsHostAnalyticsStatusPending => 'Pending';
+
+  @override
+  String get hostsHostAnalyticsStatusScheduled => 'Scheduled';
+
+  @override
+  String get hostsHostAnalyticsStatusCancelled => 'Cancelled';
 
   @override
   String get hostsHostAnalyticsLabelTrendBookingsVsDemand =>
       'Trend · bookings vs demand';
-
-  @override
-  String get hostsHostAnalyticsLabelDaycb7256 => 'Day';
-
-  @override
-  String get hostsHostAnalyticsLabelWeek4cce87 => 'Week';
 
   @override
   String get hostsHostAnalyticsLabelDemand => 'Demand';
@@ -6004,96 +6096,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAnalyticsLabelBookings => 'Bookings';
 
   @override
-  String get hostsHostAnalyticsLabelTopEvents => 'Top events';
-
-  @override
-  String get hostsHostAnalyticsLabelSelectedEvent => 'Selected event';
-
-  @override
   String get hostsHostAnalyticsTextNoEventsInThis => 'No events in this range.';
-
-  @override
-  String get hostsHostAnalyticsLabelSelected => 'Selected';
-
-  @override
-  String hostsHostAnalyticsLabelDemandcountDemand({
-    required Object demandCount,
-  }) {
-    return '$demandCount demand';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelBookedcountBooked({
-    required Object bookedCount,
-  }) {
-    return '$bookedCount booked';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelWaitlistedcountWaitlisted({
-    required Object waitlistedCount,
-  }) {
-    return '$waitlistedCount waitlisted';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelCheckedincountAttended({
-    required Object checkedInCount,
-  }) {
-    return '$checkedInCount attended';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelMutualmatchcountMatches({
-    required Object mutualMatchCount,
-  }) {
-    return '$mutualMatchCount matches';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelChatstartedcountChats({
-    required Object chatStartedCount,
-  }) {
-    return '$chatStartedCount chats';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelRepeatattendeecountRepeat({
-    required Object repeatAttendeeCount,
-  }) {
-    return '$repeatAttendeeCount repeat';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelCheckoutstartedcountCheckouts({
-    required Object checkoutStartedCount,
-  }) {
-    return '$checkoutStartedCount checkouts';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelCheckoutdropoffcountDropOff({
-    required Object checkoutDropoffCount,
-  }) {
-    return '$checkoutDropoffCount drop-off';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelPaymentfailedcountFailed({
-    required Object paymentFailedCount,
-  }) {
-    return '$paymentFailedCount failed';
-  }
-
-  @override
-  String hostsHostAnalyticsLabelPaymentrefundedcountRefunded({
-    required Object paymentRefundedCount,
-  }) {
-    return '$paymentRefundedCount refunded';
-  }
-
-  @override
-  String get hostsHostAnalyticsLabelReviewsAndSaves => 'Reviews and saves';
 
   @override
   String get hostsHostAnalyticsLabelNewReviews => 'New reviews';
@@ -6106,6 +6109,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAnalyticsLabelResponses => 'Responses';
+
+  @override
+  String get hostsHostAnalyticsTitleCoach => 'Coach';
+
+  @override
+  String get hostsHostAnalyticsCoachAttendance =>
+      'Almost half your bookings didn\'t show. Reminders and check-in help — see how your last event ran.';
+
+  @override
+  String get hostsHostAnalyticsCoachCheckoutDropoff =>
+      'Lots of people started paying and stopped. Review your price or enable demand pricing.';
+
+  @override
+  String hostsHostAnalyticsCoachDemandCapacity({required String event}) {
+    return 'Demand outran capacity on $event. Consider a bigger venue or a second date.';
+  }
+
+  @override
+  String get hostsHostAnalyticsCoachNoRepeatAttendees =>
+      'No repeat attendees this period. Club posts and follows help people come back.';
 
   @override
   String get hostsHostAuthRequiredScreenTitleSignInRequired =>
@@ -6129,10 +6152,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$completedCount of $maximumClubPhotoCount added';
   }
-
-  @override
-  String get hostsHostClubProfileTitleAdvancedEventDefaults =>
-      'Advanced event defaults';
 
   @override
   String get hostsHostClubProfileLabelClubName => 'Club name';
@@ -6167,32 +6186,48 @@ class AppLocalizationsEn extends AppLocalizations {
       'hello@yourclub.com';
 
   @override
-  String get hostsHostClubProfileTitleEventDefaults => 'Event defaults';
+  String get hostsHostClubEditTabTitleClubSettings => 'Club settings';
+
+  @override
+  String get hostsHostClubEditTabLabelEventDefaults => 'Event defaults';
+
+  @override
+  String get hostsHostClubEditTabLabelLiveEventGuide => 'Live event guide';
+
+  @override
+  String get hostsHostClubEditTabLabelPayments => 'Payments';
+
+  @override
+  String get hostsHostClubEditTabLabelHostTeam => 'Host team';
+
+  @override
+  String get hostsHostClubEditTabValueOn => 'On';
+
+  @override
+  String get hostsHostClubEditTabValueOff => 'Off';
+
+  @override
+  String hostsHostClubEditTabValueHostCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hosts',
+      one: '1 host',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get hostsHostClubProfileTitleDefaultActivity => 'Default activity';
 
   @override
-  String get hostsHostClubProfileLabelDefaultActivity => 'Default activity';
-
-  @override
   String get hostsHostClubProfileTitleAdmission => 'Admission';
-
-  @override
-  String get hostsHostClubProfileLabelAdmission => 'Admission';
 
   @override
   String get hostsHostClubProfileTitleAgeRange => 'Age range';
 
   @override
-  String get hostsHostClubProfileLabelAgeRange => 'Age range';
-
-  @override
   String get hostsHostClubProfileTitleCancellationPolicy =>
-      'Cancellation policy';
-
-  @override
-  String get hostsHostClubProfileLabelCancellationPolicy =>
       'Cancellation policy';
 
   @override
@@ -6270,46 +6305,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostInlineEditorsTitleMaxAge => 'Max age';
-
-  @override
-  String get hostsHostInsightsScreenTitleInsights => 'Insights';
-
-  @override
-  String get hostsHostInsightsScreenBodyClubid => 'clubId';
-
-  @override
-  String get hostsHostInsightsScreenBodyEventid => 'eventId';
-
-  @override
-  String get hostsHostInsightsScreenBodySection => 'section';
-
-  @override
-  String get hostsHostInsightsScreenBodyReport => 'report';
-
-  @override
-  String get hostsHostInsightsScreenTooltipBackToOrganizer =>
-      'Back to Organizer';
-
-  @override
-  String hostsHostInsightsScreenTextClubnameAllEvents({
-    required Object clubName,
-  }) {
-    return '$clubName · all events';
-  }
-
-  @override
-  String get hostsHostInsightsScreenTextInsights => 'Insights';
-
-  @override
-  String get hostsHostInsightsScreenTitleInsightsUnavailable =>
-      'Insights unavailable';
-
-  @override
-  String get hostsHostInsightsScreenMessageThisOrganizerIsNot =>
-      'This organizer is not available to your Host account.';
-
-  @override
-  String get hostsHostInsightsScreenLabelBackToOrganizer => 'Back to Organizer';
 
   @override
   String get hostsHostOperationsHomeScreenTitleHostEvents => 'Host events';
@@ -9713,29 +9708,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAccountScreenVisiblecopyAddAHostBio => 'Add a host bio';
-
-  @override
-  String get hostsHostAnalyticsVisiblecopyBookings => 'bookings';
-
-  @override
-  String get hostsHostAnalyticsVisiblecopyDemand => 'demand';
-
-  @override
-  String hostsHostAnalyticsVisiblecopyNewreviews({required Object newReviews}) {
-    return '$newReviews';
-  }
-
-  @override
-  String hostsHostAnalyticsVisiblecopyEventsaves({required Object eventSaves}) {
-    return '$eventSaves';
-  }
-
-  @override
-  String hostsHostAnalyticsVisiblecopyOwnerresponsecount({
-    required Object ownerResponseCount,
-  }) {
-    return '$ownerResponseCount';
-  }
 
   @override
   String get hostsHostAuthRequiredScreenVisiblecopySignIn => 'Sign in';

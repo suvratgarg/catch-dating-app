@@ -44,7 +44,8 @@ class EventSuccessStep extends StatelessWidget {
               activityKind: activityKind,
               eventFormat: eventFormat,
               targetAttendeeCount: targetAttendeeCount,
-              onChanged: onEventSuccessDefaultsChanged,
+              onChanged: (update) =>
+                  onEventSuccessDefaultsChanged(update(eventSuccessDefaults)),
               title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
               subtitle:
                   context.l10n.hostsEventSuccessStepSubtitleSaveASimplePlan,

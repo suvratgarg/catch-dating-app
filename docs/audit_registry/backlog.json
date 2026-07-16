@@ -80,9 +80,8 @@
       "owner": "agent",
       "area": "flutter,design-system,screen-chrome",
       "priority": "medium",
-      "summary": "The exhaustive SCREEN-CHROME-001 inventory found three body-owned route/root headers that still style navigation-title typography directly: HostInsightsHeader, HostTodayHeader, and CatchesHubHeader. They are exact legacy manifest entries so future drift fails, but they are not promoted as canonical implementations.",
+      "summary": "The exhaustive SCREEN-CHROME-001 inventory still tracks two body-owned route/root headers that style navigation-title typography directly: HostTodayHeader and CatchesHubHeader. HostInsightsHeader was deleted with the retired dedicated Insights route.",
       "acceptance": [
-        "Host Insights delegates its back/title anatomy to the reviewed canonical route chrome without changing Host workspace behavior",
         "Host Today delegates its root greeting/title typography to CatchScreenHeaderTitle or the reviewed Host workspace owner",
         "Catches Hub is migrated to CatchScreenHeaderTitle or deleted through the planned Home+Catches absorption",
         "node tool/run.mjs check design:screen-top-bar-contracts reports 0 legacy manual headers"

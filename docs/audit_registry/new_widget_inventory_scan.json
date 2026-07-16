@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-16T16:32:03.285Z",
+  "generatedAt": "2026-07-16T21:28:51.820Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,16 +10,16 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 2,
-    "addedPublicWidgetClasses": 2,
+    "addedWidgetClasses": 15,
+    "addedPublicWidgetClasses": 15,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
     "movedWidgetClasses": 0,
     "movedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 2,
+    "coveredNewWidgets": 15,
     "unresolved": 0,
     "widgetsByStatus": {
-      "covered": 2
+      "covered": 15
     },
     "helpersByStatus": {},
     "issues": {}
@@ -27,6 +27,18 @@
   "movedWidgets": [],
   "movedWidgetHelpers": [],
   "addedWidgets": [
+    {
+      "name": "EventSuccessModuleRows",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 267,
+      "file": "lib/event_success/presentation/event_success_setup_body.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
     {
       "name": "CreateClubStepHeader",
       "baseClass": "StatelessWidget",
@@ -40,11 +52,155 @@
       "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
     },
     {
-      "name": "HostClubProfileCard",
+      "name": "HostAnalyticsReportView",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 255,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostAnalyticsTrendPanel",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 477,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostAnalyticsReviewsPanel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 780,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubEditTab",
       "baseClass": "ConsumerStatefulWidget",
       "visibility": "public",
+      "line": 19,
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubInlineTextEntry",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 463,
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubEventDefaultsScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
       "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubLiveGuideScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 47,
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubTeamScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 117,
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubPaymentsScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 136,
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubSpokeResolver",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 160,
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubSpokeScaffold",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 219,
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubDefaultsEditor",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 263,
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostClubReadOnlyEventDefaults",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 349,
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",

@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
+
 /**
  * Schema-derived Admin SDK Firestore document types.
  *
@@ -2027,6 +2029,17 @@ export interface RateLimitDocument {
   action: string;
   windowKey: number;
   count: number;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned 15-minute response cache stored at hostAnalyticsSnapshots/{uid}_{scopeHash}.
+ */
+export interface HostAnalyticsSnapshotDocument {
+  uid: string;
+  scopeHash: string;
+  response: HostAnalyticsCallableResponse;
+  createdAt: FirebaseFirestore.Timestamp;
   expiresAt: FirebaseFirestore.Timestamp;
 }
 

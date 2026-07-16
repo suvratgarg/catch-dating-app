@@ -63,6 +63,7 @@ Do not edit it by hand.
 | ModerationFlagDocument | `firestore/moderation_flags.schema.json` | `functions/src/shared/generated/moderationFlagDocument.ts` |
 | DeletedUserTombstoneDocument | `firestore/deleted_users.schema.json` | `functions/src/shared/generated/deletedUserTombstoneDocument.ts` |
 | RateLimitDocument | `firestore/rate_limits.schema.json` | `functions/src/shared/generated/rateLimitDocument.ts` |
+| HostAnalyticsSnapshotDocument | `firestore/host_analytics_snapshots.schema.json` | `functions/src/shared/generated/hostAnalyticsSnapshotDocument.ts` |
 | FunctionEventReceiptDocument | `firestore/function_event_receipts.schema.json` | `functions/src/shared/generated/functionEventReceiptDocument.ts` |
 | PublicRouteReservationDocument | `firestore/public_route_reservations.schema.json` | `functions/src/shared/generated/publicRouteReservationDocument.ts` |
 | SeedEventManifestDocument | `firestore/seed_events.schema.json` | `functions/src/shared/generated/seedEventManifestDocument.ts` |
@@ -223,6 +224,7 @@ Do not edit it by hand.
 | `schemaModerationFlagDocumentSchema` | ModerationFlagDocument | `firestore/moderation_flags.schema.json` | `lib/core/schema_contracts/generated/schemas/moderation_flag_document.g.dart` |
 | `schemaDeletedUserTombstoneDocumentSchema` | DeletedUserTombstoneDocument | `firestore/deleted_users.schema.json` | `lib/core/schema_contracts/generated/schemas/deleted_user_tombstone_document.g.dart` |
 | `schemaRateLimitDocumentSchema` | RateLimitDocument | `firestore/rate_limits.schema.json` | `lib/core/schema_contracts/generated/schemas/rate_limit_document.g.dart` |
+| `schemaHostAnalyticsSnapshotDocumentSchema` | HostAnalyticsSnapshotDocument | `firestore/host_analytics_snapshots.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_snapshot_document.g.dart` |
 | `schemaFunctionEventReceiptDocumentSchema` | FunctionEventReceiptDocument | `firestore/function_event_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/function_event_receipt_document.g.dart` |
 | `schemaPublicRouteReservationDocumentSchema` | PublicRouteReservationDocument | `firestore/public_route_reservations.schema.json` | `lib/core/schema_contracts/generated/schemas/public_route_reservation_document.g.dart` |
 | `schemaSeedEventManifestDocumentSchema` | SeedEventManifestDocument | `firestore/seed_events.schema.json` | `lib/core/schema_contracts/generated/schemas/seed_event_manifest_document.g.dart` |

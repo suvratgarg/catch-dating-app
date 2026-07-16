@@ -55,6 +55,7 @@ import {ReportDocument} from "./reportDocument";
 import {ModerationFlagDocument} from "./moderationFlagDocument";
 import {DeletedUserTombstoneDocument} from "./deletedUserTombstoneDocument";
 import {RateLimitDocument} from "./rateLimitDocument";
+import {HostAnalyticsSnapshotDocument} from "./hostAnalyticsSnapshotDocument";
 import {FunctionEventReceiptDocument} from "./functionEventReceiptDocument";
 import {PublicRouteReservationDocument} from "./publicRouteReservationDocument";
 import {SeedEventManifestDocument} from "./seedEventManifestDocument";
@@ -211,6 +212,7 @@ import {
   moderationFlagDocumentSchema,
   deletedUserTombstoneDocumentSchema,
   rateLimitDocumentSchema,
+  hostAnalyticsSnapshotDocumentSchema,
   functionEventReceiptDocumentSchema,
   publicRouteReservationDocumentSchema,
   seedEventManifestDocumentSchema,
@@ -524,6 +526,10 @@ export const validateRateLimitDocument:
   ValidateFunction<RateLimitDocument> =
     ajv.compile(rateLimitDocumentSchema) as
       ValidateFunction<RateLimitDocument>;
+export const validateHostAnalyticsSnapshotDocument:
+  ValidateFunction<HostAnalyticsSnapshotDocument> =
+    ajv.compile(hostAnalyticsSnapshotDocumentSchema) as
+      ValidateFunction<HostAnalyticsSnapshotDocument>;
 export const validateFunctionEventReceiptDocument:
   ValidateFunction<FunctionEventReceiptDocument> =
     ajv.compile(functionEventReceiptDocumentSchema) as

@@ -4829,13 +4829,18 @@
           "routeIds": [
             "hostClubsScreen",
             "hostOrganizerScreen",
-            "hostInsightsScreen",
-            "hostEditClubScreen"
+            "hostEditClubScreen",
+            "hostClubEventDefaultsScreen",
+            "hostClubLiveGuideScreen",
+            "hostClubTeamScreen",
+            "hostClubPaymentsScreen"
           ],
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
+            "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+            "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
             "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
-            "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+            "lib/hosts/presentation/club_management/host_club_defaults_saver.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/payments/data/host_payment_account_repository.dart",
             "lib/hosts/data/host_analytics_repository.dart",
@@ -4859,7 +4864,6 @@
             "host_clubs_offline",
             "host_clubs_empty",
             "host_clubs_cohost_edit",
-            "host_clubs_insights_reference",
             "host_clubs_insights_report",
             "host_clubs_preview_tab",
             "host_clubs_text_scale_2",
@@ -5054,12 +5058,55 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Owner-only Advanced defaults in the organizer Edit tab exposes cohort caps, demand pricing, and activity-aware Event Success defaults, persisted as one ClubHostDefaults patch through HostClubEditController.updateClubMutation.",
+              "notes": "Owner-only event-policy and activity-aware Event Success defaults now live on the Event defaults and Live event guide spokes. HostClubDefaultsSaver serializes optimistic functional updates and coalesces rapid changes before HostClubEditController.updateClubMutation persists the full ClubHostDefaults value.",
               "previewIds": [
-                "HostClubsScreen/Route states"
+                "HostClubEventDefaultsScreen/Owner loaded",
+                "HostClubLiveGuideScreen/Owner loaded"
               ],
               "captureIds": [
                 "host_clubs_management"
+              ]
+            },
+            {
+              "id": "club_settings_spokes_loaded",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart",
+                "test/routing/router_redirect_test.dart"
+              ],
+              "notes": "Event defaults, Live event guide, Host team, and owner-only Payments use thin CatchScreenTopBar spoke routes with the club name as eyebrow, capped content width, CatchSection composition, and terminal scroll padding.",
+              "previewIds": [
+                "HostClubEventDefaultsScreen/Owner loaded",
+                "HostClubLiveGuideScreen/Owner loaded",
+                "HostClubTeamScreen/Owner loaded",
+                "HostClubPaymentsScreen/Owner loaded"
+              ]
+            },
+            {
+              "id": "club_settings_spokes_loading_error",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "All four spokes resolve uid plus operable clubs through one adapter; uid/club loading uses HostLoadingScreen and failures use CatchErrorScaffold with typed retry invalidation. Add dedicated deterministic captures if the shared shell diverges visually.",
+              "previewIds": [
+                "HostClubEventDefaultsScreen/Owner loaded",
+                "HostClubLiveGuideScreen/Owner loaded",
+                "HostClubTeamScreen/Owner loaded",
+                "HostClubPaymentsScreen/Owner loaded"
+              ]
+            },
+            {
+              "id": "club_settings_spokes_read_only",
+              "kind": "permission",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "notes": "Co-hosts receive read-only Event defaults and Live event guide content, owner controls are suppressed in Host team, and Payments is omitted from the Edit-tab navigation while direct access remains non-mutating.",
+              "previewIds": [
+                "HostClubEventDefaultsScreen/Owner loaded",
+                "HostClubLiveGuideScreen/Owner loaded",
+                "HostClubTeamScreen/Owner loaded"
               ]
             },
             {
@@ -5171,24 +5218,12 @@
               ]
             },
             {
-              "id": "insights_unknown_club",
-              "kind": "permission",
-              "status": "tested",
-              "tests": [
-                "test/hosts/host_operations_screen_test.dart"
-              ],
-              "notes": "HostInsightsScreen requires an exact operated-club id and renders Insights unavailable instead of silently falling back to the first club. Back navigation returns to Organizer.",
-              "previewIds": [
-                "HostInsightsScreen/Dedicated route states"
-              ]
-            },
-            {
               "id": "insights_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "The dedicated Insights route watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load. A deterministic route capture covers this state without the legacy Clubs tab rail.",
+              "notes": "The Host Clubs Insights tab watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
               "previewIds": [
-                "HostInsightsScreen/Dedicated route states"
+                "HostClubInsightsPane/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_loading"
@@ -5198,13 +5233,21 @@
               "id": "insights_report",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostInsightsScreen renders exact organizer back/title/range chrome and HostAnalyticsReportView renders backend metrics, a real demand/bookings dual-series trend with adjacent granularity control, top events, reviews/saves, and data quality. The routed 390x812 capture and tall report capture are registered; reference export/comparison remains open under HOST-V2-INSIGHTS-REFERENCE-001.",
+              "notes": "HostAnalyticsReportView renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews. Labels are client-owned and incomplete metrics use compact localized status badges.",
               "previewIds": [
-                "HostInsightsScreen/Dedicated route states"
+                "HostClubInsightsPane/Insights scorecard states"
               ],
               "captureIds": [
-                "host_clubs_insights_reference",
                 "host_clubs_insights_report"
+              ]
+            },
+            {
+              "id": "insights_coach",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "HostAnalyticsReportView shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; Widgetbook and tests also pin the normal hidden state.",
+              "previewIds": [
+                "HostClubInsightsPane/Insights scorecard states"
               ]
             },
             {
@@ -5213,7 +5256,7 @@
               "status": "captured",
               "notes": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
               "previewIds": [
-                "HostInsightsScreen/Dedicated route states"
+                "HostClubInsightsPane/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_error",

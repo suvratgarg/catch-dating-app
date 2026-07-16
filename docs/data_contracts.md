@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.19
-updated: 2026-07-16
+version: 1.1.20
+updated: 2026-07-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -287,6 +287,22 @@ instead of sending a duplicate. The receipt stores hashed per-recipient
 evidence for repair and aggregate delivery counts, remains server-only, and
 requires the `eventBroadcasts.expiresAt` Firestore TTL policy for 90-day
 retention.
+
+## Host Analytics Snapshots
+
+The host-facing `getHostAnalytics` callable may reuse a server-owned response
+from `hostAnalyticsSnapshots/{uid}_{scopeHash}` for at most 15 minutes. The
+scope hash includes the authenticated uid through the document id plus the
+current authorized club ids, resolved absolute range, derived granularity,
+preset, optional event id, and IANA timezone. Authorization is resolved before
+the cache lookup, so host-role changes produce a different cache identity.
+
+Clients cannot read or write snapshots. The callable validates a cached
+response against `host_analytics_response.schema.json` before serving it,
+falls back to a live BigQuery build on missing/expired/invalid cache data, and
+keeps the existing rate limit in front of both paths. `expiresAt` has a
+Firestore TTL policy; account deletion also removes snapshots owned by the
+deleted uid.
 
 ## Durable Operations Records
 

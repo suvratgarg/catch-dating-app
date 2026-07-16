@@ -1,17 +1,34 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart' show DateUtils;
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_analytics_repository.g.dart';
+
+// keepalive: the device IANA timezone is stable for the app process and lets
+// host surfaces render from their market fallback while the plugin resolves.
+@Riverpod(keepAlive: true)
+Future<String?> hostAnalyticsDeviceTimezone(Ref ref) async {
+  try {
+    final timezone = (await FlutterTimezone.getLocalTimezone()).identifier;
+    final normalized = timezone.trim();
+    return normalized.isEmpty ? null : normalized;
+  } on Object {
+    return null;
+  }
+}
 
 enum HostAnalyticsRangePreset {
   sevenDays('7d', '7 days'),
   thirtyDays('30d', '30 days'),
   ninetyDays('90d', '90 days'),
+  twelveMonths('12m', '12 months'),
   month('month', 'This month'),
   custom('custom', 'Custom');
 
@@ -38,6 +55,58 @@ enum HostAnalyticsMetricStatus { ready, partial, missing }
 
 enum HostAnalyticsDataQualityState { ok, partial, missing }
 
+/// Wire keys for [HostAnalyticsTrendPoint.metrics], as emitted by
+/// `functions/src/analytics/hostAnalytics.ts`.
+abstract final class HostAnalyticsTrendKeys {
+  static const eventCount = 'eventCount';
+  static const bookings = 'bookings';
+  static const checkedIn = 'checkedIn';
+  static const revenueMinor = 'revenueMinor';
+  static const checkoutStarted = 'checkoutStarted';
+  static const checkoutDropoff = 'checkoutDropoff';
+  static const demand = 'demand';
+  static const reviews = 'reviews';
+  static const matches = 'matches';
+  static const chats = 'chats';
+  static const eventSaves = 'eventSaves';
+  static const listingViews = 'listingViews';
+  static const eventViews = 'eventViews';
+  static const organizerSaves = 'organizerSaves';
+
+  static const values = <String>{
+    eventCount,
+    bookings,
+    checkedIn,
+    revenueMinor,
+    checkoutStarted,
+    checkoutDropoff,
+    demand,
+    reviews,
+    matches,
+    chats,
+    eventSaves,
+    listingViews,
+    eventViews,
+    organizerSaves,
+  };
+}
+
+/// Stable summary-card ids emitted by the host analytics callable.
+abstract final class HostAnalyticsMetricIds {
+  static const listingViews = 'listingViews';
+  static const eventViews = 'eventViews';
+  static const bookings = 'bookings';
+  static const attendanceRate = 'attendanceRate';
+  static const revenue = 'revenue';
+  static const checkoutDropoff = 'checkoutDropoff';
+  static const checkoutConversionRate = 'checkoutConversionRate';
+  static const newReviews = 'newReviews';
+  static const connections = 'connections';
+  static const chats = 'chats';
+  static const combinedViews = 'combinedViews';
+  static const eventSaves = 'eventSaves';
+}
+
 class HostAnalyticsQuery {
   const HostAnalyticsQuery({
     this.clubId,
@@ -46,6 +115,7 @@ class HostAnalyticsQuery {
     this.startDate,
     this.endDate,
     this.granularity,
+    this.timezone,
   });
 
   final String? clubId;
@@ -54,6 +124,7 @@ class HostAnalyticsQuery {
   final DateTime? startDate;
   final DateTime? endDate;
   final HostAnalyticsGranularity? granularity;
+  final String? timezone;
 
   HostAnalyticsQueryCallableRequest toCallableRequest() =>
       HostAnalyticsQueryCallableRequest(
@@ -67,6 +138,7 @@ class HostAnalyticsQuery {
             ? _dateOnlyString(endDate)
             : null,
         granularity: granularity?.wireValue,
+        timezone: timezone,
       );
 
   @override
@@ -77,7 +149,8 @@ class HostAnalyticsQuery {
         other.rangePreset == rangePreset &&
         other.startDate == startDate &&
         other.endDate == endDate &&
-        other.granularity == granularity;
+        other.granularity == granularity &&
+        other.timezone == timezone;
   }
 
   @override
@@ -88,6 +161,7 @@ class HostAnalyticsQuery {
     startDate,
     endDate,
     granularity,
+    timezone,
   );
 }
 
@@ -99,6 +173,7 @@ class HostAnalyticsMetricCard {
     required this.unit,
     required this.status,
     this.caption,
+    this.previousValue,
   });
 
   factory HostAnalyticsMetricCard.fromMap(Map<Object?, Object?> map) {
@@ -109,6 +184,7 @@ class HostAnalyticsMetricCard {
       unit: _metricUnit(_string(map['unit'])),
       status: _metricStatus(_string(map['status'])),
       caption: _nullableString(map['caption']),
+      previousValue: _nullableNum(map['previousValue']),
     );
   }
 
@@ -118,6 +194,7 @@ class HostAnalyticsMetricCard {
   final HostAnalyticsMetricUnit unit;
   final HostAnalyticsMetricStatus status;
   final String? caption;
+  final num? previousValue;
 }
 
 class HostAnalyticsTrendPoint {
@@ -316,6 +393,7 @@ class HostAnalyticsReport {
     required this.reviewSummary,
     required this.discoverySummary,
     required this.dataQuality,
+    this.timezone = 'UTC',
   });
 
   factory HostAnalyticsReport.fromCallableData(Object? data) {
@@ -338,6 +416,7 @@ class HostAnalyticsReport {
           map['dataQuality'],
           HostAnalyticsDataQuality.fromMap,
         ),
+        timezone: _string(map['timezone'], fallback: 'UTC'),
       );
     }
     throw const FormatException('Invalid host analytics response.');
@@ -350,6 +429,7 @@ class HostAnalyticsReport {
   final HostAnalyticsReviewSummary reviewSummary;
   final HostAnalyticsDiscoverySummary discoverySummary;
   final List<HostAnalyticsDataQuality> dataQuality;
+  final String timezone;
 }
 
 class HostAnalyticsRepository {
@@ -380,6 +460,18 @@ HostAnalyticsRepository hostAnalyticsRepository(Ref ref) {
 
 @riverpod
 Future<HostAnalyticsReport> hostAnalytics(Ref ref, HostAnalyticsQuery query) {
+  // keepalive: Reuse each scorecard preset for ten minutes after tab exit.
+  final link = ref.keepAlive();
+  Timer? expiryTimer;
+  ref.onCancel(() {
+    expiryTimer?.cancel();
+    expiryTimer = Timer(const Duration(minutes: 10), () {
+      link.close();
+      ref.invalidateSelf();
+    });
+  });
+  ref.onResume(() => expiryTimer?.cancel());
+  ref.onDispose(() => expiryTimer?.cancel());
   return ref.watch(hostAnalyticsRepositoryProvider).getHostAnalytics(query);
 }
 
@@ -414,6 +506,8 @@ String? _nullableString(Object? value) => value is String ? value : null;
 int _int(Object? value) => value is num ? value.round() : 0;
 
 num _num(Object? value) => value is num ? value : 0;
+
+num? _nullableNum(Object? value) => value is num ? value : null;
 
 DateTime _dateTime(Object? value) {
   if (value is String) return DateTime.tryParse(value) ?? DateTime(1970);

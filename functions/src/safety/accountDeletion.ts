@@ -192,9 +192,22 @@ async function queueRelationshipCleanup(params: {
     queuePaymentCleanup(db, uid, now, writer),
     queueNotificationCleanup(db, uid, writer),
     queueEventBroadcastCleanup(db, uid, writer),
+    queueHostAnalyticsSnapshotCleanup(db, uid, writer),
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
+}
+
+/** Deletes short-lived host analytics responses owned by the account. */
+async function queueHostAnalyticsSnapshotCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const snapshots = await db.collection("hostAnalyticsSnapshots")
+    .where("uid", "==", uid)
+    .get();
+  snapshots.forEach((doc) => writer.delete(doc.ref));
 }
 
 /**

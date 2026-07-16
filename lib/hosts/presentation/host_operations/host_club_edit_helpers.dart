@@ -41,18 +41,6 @@ ClubHostDefaults _hostDefaultsWithActivity(
   );
 }
 
-EventCancellationPolicy _cancellationPolicyFor(
-  EventCancellationPolicyId policyId,
-) {
-  return switch (policyId) {
-    EventCancellationPolicyId.flexible =>
-      const EventCancellationPolicy.flexible(),
-    EventCancellationPolicyId.standard =>
-      const EventCancellationPolicy.standard(),
-    EventCancellationPolicyId.strict => const EventCancellationPolicy.strict(),
-  };
-}
-
 String _normalizeSingleLineInput(String value) {
   return value.trim().replaceAll(RegExp(r'\s+'), ' ');
 }

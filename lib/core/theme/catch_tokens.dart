@@ -1504,6 +1504,7 @@ abstract final class CatchMotion {
   static const Duration standard = base;
   static const Duration pageStep = Duration(milliseconds: 280);
   static const Duration calendarScroll = Duration(milliseconds: 320);
+  static const Duration mediaReorderDebounce = Duration(milliseconds: 400);
   static const Duration slow = Duration(milliseconds: 420);
   static const Duration afterglowBeatEntry = Duration(milliseconds: 480);
   static const Duration afterglowCountUp = Duration(milliseconds: 600);
@@ -1671,6 +1672,9 @@ abstract final class CatchLayout {
   /// Content max-width clamp for large phones / foldables.
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
   static const double maxContentWidth = 600;
+
+  /// Plot height for the compact host demand/bookings trend.
+  static const double analyticsTrendHeight = 120;
 
   /// Confirm-dialog max card width from the implementation handoff.
   static const double confirmDialogMaxWidth = 320.0;

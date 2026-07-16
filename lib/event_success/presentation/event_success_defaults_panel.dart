@@ -19,15 +19,13 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     required this.onChanged,
     required this.title,
     required this.subtitle,
-    this.onImmediateChanged,
     this.eventFormat,
     this.targetAttendeeCount,
   });
 
   final EventSuccessDefaults defaults;
   final ActivityKind activityKind;
-  final ValueChanged<EventSuccessDefaults> onChanged;
-  final ValueChanged<EventSuccessDefaultsUpdate>? onImmediateChanged;
+  final ValueChanged<EventSuccessDefaultsUpdate> onChanged;
   final EventFormatSnapshot? eventFormat;
   final int? targetAttendeeCount;
   final String title;
@@ -43,13 +41,21 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     );
     final draft = normalized.toDraft(targetAttendeeCount: targetAttendeeCount);
 
-    void emitImmediate(EventSuccessDefaultsUpdate update) {
-      final callback = onImmediateChanged;
-      if (callback != null) {
-        callback(update);
-        return;
-      }
-      onChanged(update(normalized));
+    void updateDraft(EventSuccessHostDraftUpdate update) {
+      onChanged((current) {
+        final currentNormalized = current.normalizedForFormat(
+          format,
+          targetAttendeeCount: targetAttendeeCount,
+        );
+        final currentDraft = currentNormalized.toDraft(
+          targetAttendeeCount: targetAttendeeCount,
+        );
+        return EventSuccessDefaults.fromDraft(
+          update(currentDraft),
+          enabled: currentNormalized.enabled,
+          attendeePrompt: currentNormalized.attendeePrompt,
+        ).normalizedForFormat(format, targetAttendeeCount: targetAttendeeCount);
+      });
     }
 
     return CatchSectionList(
@@ -62,7 +68,7 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
             bodyMaxLines: 5,
             value: normalized.enabled,
             onChanged: (value) =>
-                emitImmediate((current) => current.copyWith(enabled: value)),
+                onChanged((current) => current.copyWith(enabled: value)),
           ),
         ),
         if (normalized.enabled)
@@ -77,46 +83,18 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
               targetAttendeeCount,
             ),
             onResetToRecommended: () => onChanged(
-              EventSuccessDefaults.recommendedForFormat(
+              (current) => EventSuccessDefaults.recommendedForFormat(
                 format,
-                enabled: normalized.enabled,
+                enabled: current.enabled,
                 targetAttendeeCount: targetAttendeeCount,
-                attendeePrompt: normalized.attendeePrompt,
+                attendeePrompt: current.attendeePrompt,
               ),
             ),
-            onDraftChanged: (nextDraft) {
-              onChanged(
-                EventSuccessDefaults.fromDraft(
-                  nextDraft,
-                  enabled: normalized.enabled,
-                  attendeePrompt: normalized.attendeePrompt,
-                ).normalizedForFormat(
-                  format,
-                  targetAttendeeCount: targetAttendeeCount,
-                ),
-              );
-            },
-            onImmediateDraftChanged: (updateDraft) => emitImmediate((current) {
-              final currentNormalized = current.normalizedForFormat(
-                format,
-                targetAttendeeCount: targetAttendeeCount,
-              );
-              final currentDraft = currentNormalized.toDraft(
-                targetAttendeeCount: targetAttendeeCount,
-              );
-              return EventSuccessDefaults.fromDraft(
-                updateDraft(currentDraft),
-                enabled: currentNormalized.enabled,
-                attendeePrompt: currentNormalized.attendeePrompt,
-              ).normalizedForFormat(
-                format,
-                targetAttendeeCount: targetAttendeeCount,
-              );
-            }),
+            onChanged: updateDraft,
             onAttendeePromptChanged: (value) {
               final trimmed = value.trim();
               onChanged(
-                normalized.copyWith(
+                (current) => current.copyWith(
                   attendeePrompt: trimmed.isEmpty ? null : trimmed,
                 ),
               );

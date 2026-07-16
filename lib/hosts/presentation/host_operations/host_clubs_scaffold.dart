@@ -33,6 +33,8 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
       tab: CatchTabbedPageScrollController(),
   };
   final Map<HostClubTab, double> _pageScrollOffsets = {};
+  final HostClubInsightsRefreshController _insightsRefreshController =
+      HostClubInsightsRefreshController();
   bool _didRevealInitialEditor = false;
 
   @override
@@ -180,7 +182,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
                         width: double.infinity,
                         child: KeyedSubtree(
                           key: _profileSectionsKey,
-                          child: HostClubProfileCard(
+                          child: HostClubEditTab(
                             key: ValueKey('host-club-${selectedClub.id}-edit'),
                             club: selectedClub,
                             currentUid: _state.currentUid,
@@ -198,6 +200,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
           ),
           CatchTabbedPageScrollView(
             scrollStateController: _pageScrollControllers[HostClubTab.insights],
+            onRefresh: _insightsRefreshController.refresh,
             scrollKey: PageStorageKey(
               'host-club-${selectedClub.id}-insights-scroll',
             ),
@@ -217,6 +220,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
                             'host-club-${selectedClub.id}-insights',
                           ),
                           club: selectedClub,
+                          refreshController: _insightsRefreshController,
                         ),
                       ),
                     ),

@@ -13909,6 +13909,609 @@ export const rateLimitDocumentSchema = {
   }
 };
 
+export const hostAnalyticsSnapshotDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_analytics_snapshots.schema.json",
+  "title": "HostAnalyticsSnapshotDocument",
+  "description": "Server-owned 15-minute response cache stored at hostAnalyticsSnapshots/{uid}_{scopeHash}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostAnalyticsSnapshots",
+  "x-firestore-path": "hostAnalyticsSnapshots/{snapshotId}",
+  "x-document-id-field": "snapshotId",
+  "x-owner": "getHostAnalytics callable",
+  "required": [
+    "uid",
+    "scopeHash",
+    "response",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "scopeHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "response": {
+      "title": "HostAnalyticsCallableResponse",
+      "description": "Shared aggregate analytics response returned by host and admin analytics callables. Values are aggregate-only and host-safe.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generatedAt",
+        "timezone",
+        "range",
+        "scope",
+        "summaryCards",
+        "trend",
+        "topEvents",
+        "reviewSummary",
+        "discoverySummary",
+        "dataQuality"
+      ],
+      "properties": {
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "startDate",
+            "endDate",
+            "granularity"
+          ],
+          "properties": {
+            "startDate": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "endDate": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "granularity": {
+              "type": "string",
+              "enum": [
+                "day",
+                "week",
+                "month"
+              ]
+            },
+            "preset": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 24
+            }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "clubIds",
+            "eventIds"
+          ],
+          "properties": {
+            "clubIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              }
+            },
+            "eventIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              }
+            },
+            "clubName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "eventTitle": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            }
+          }
+        },
+        "summaryCards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "value",
+              "unit",
+              "status"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string",
+                "enum": [
+                  "count",
+                  "percent",
+                  "money_minor",
+                  "rating"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ready",
+                  "partial",
+                  "missing"
+                ]
+              },
+              "caption": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 160
+              },
+              "previousValue": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "trend": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "periodStart",
+              "periodEnd",
+              "metrics"
+            ],
+            "properties": {
+              "periodStart": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "periodEnd": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "metrics": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "topEvents": {
+          "type": "array",
+          "maxItems": 25,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eventId",
+              "clubId",
+              "title",
+              "startTime",
+              "status",
+              "capacityLimit",
+              "bookedCount",
+              "checkedInCount",
+              "waitlistedCount",
+              "fillRate",
+              "checkInRate",
+              "grossRevenueMinor",
+              "currency",
+              "checkoutStartedCount",
+              "checkoutDropoffCount",
+              "paymentCompletedCount",
+              "paymentFailedCount",
+              "paymentRefundedCount",
+              "reviewCount",
+              "averageRating",
+              "demandCount",
+              "inviteOpenCount",
+              "mutualMatchCount",
+              "chatStartedCount",
+              "repeatAttendeeCount"
+            ],
+            "properties": {
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "clubId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "startTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "status": {
+                "type": "string",
+                "maxLength": 48
+              },
+              "capacityLimit": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "bookedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "checkedInCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "waitlistedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "fillRate": {
+                "type": "number",
+                "minimum": 0
+              },
+              "checkInRate": {
+                "type": "number",
+                "minimum": 0
+              },
+              "grossRevenueMinor": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "currency": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3
+              },
+              "checkoutStartedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "checkoutDropoffCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "paymentCompletedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "paymentFailedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "paymentRefundedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "reviewCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "averageRating": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "demandCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "inviteOpenCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "mutualMatchCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "chatStartedCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "repeatAttendeeCount": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "reviewSummary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "newReviews",
+            "publishedReviews",
+            "verifiedReviews",
+            "publicReviews",
+            "ownerResponseCount",
+            "averageRating"
+          ],
+          "properties": {
+            "newReviews": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "publishedReviews": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "verifiedReviews": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "publicReviews": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ownerResponseCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "averageRating": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5
+            }
+          }
+        },
+        "discoverySummary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "listingViews",
+            "searchAppearances",
+            "eventViews",
+            "organizerSaves",
+            "eventSaves",
+            "contactClicks",
+            "claimClicks",
+            "outboundClicks"
+          ],
+          "properties": {
+            "listingViews": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "searchAppearances": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eventViews": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "organizerSaves": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eventSaves": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "contactClicks": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "claimClicks": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outboundClicks": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "dataQuality": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "state",
+              "detail",
+              "owner",
+              "runbook",
+              "nextAction"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "state": {
+                "type": "string",
+                "enum": [
+                  "ok",
+                  "partial",
+                  "missing"
+                ]
+              },
+              "detail": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "owner": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "runbook": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "nextAction": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          }
+        }
+      },
+      "definitions": {
+        "metricCard": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "value",
+            "unit",
+            "status"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "value": {
+              "type": "number"
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "count",
+                "percent",
+                "money_minor",
+                "rating"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "partial",
+                "missing"
+              ]
+            },
+            "caption": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "previousValue": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const functionEventReceiptDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/function_event_receipts.schema.json",
@@ -18479,6 +19082,7 @@ export const hostAnalyticsQueryCallablePayloadSchema = {
         "7d",
         "30d",
         "90d",
+        "12m",
         "month",
         "custom"
       ]
@@ -18504,6 +19108,11 @@ export const hostAnalyticsQueryCallablePayloadSchema = {
         "week",
         "month"
       ]
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
     }
   }
 };
@@ -18660,6 +19269,12 @@ export const hostAnalyticsCallableResponseSchema = {
               "null"
             ],
             "maxLength": 160
+          },
+          "previousValue": {
+            "type": [
+              "number",
+              "null"
+            ]
           }
         }
       }
@@ -19020,6 +19635,12 @@ export const hostAnalyticsCallableResponseSchema = {
             "null"
           ],
           "maxLength": 160
+        },
+        "previousValue": {
+          "type": [
+            "number",
+            "null"
+          ]
         }
       }
     }

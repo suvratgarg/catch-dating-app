@@ -298,7 +298,7 @@ void main() {
       expect(defaults, isNotNull);
       expect(defaults!['enabled'], true);
       expect(defaults['playbookId'], 'dinner_table_mixer');
-      expect(defaults['selectedModuleIds'], contains('qr_check_in'));
+      expect(defaults['selectedModuleIds'], isNot(contains('qr_check_in')));
     });
 
     test(

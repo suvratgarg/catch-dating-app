@@ -149,8 +149,8 @@
   },
   "event_success": {
     "path": "docs/event_success.md",
-    "version": "1.2.0",
-    "updated": "2026-06-30",
+    "version": "1.3.3",
+    "updated": "2026-07-17",
     "status": "active",
     "read_policy": "Read before deleting, moving, wiring, auditing, or QA-ing lib/event_success, event-success Firestore collections, Functions, scorecards, assignment engines, host reporting, participant metrics, or manual QA surfaces."
   },
@@ -254,15 +254,15 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.638",
+    "version": "2.5.641",
     "updated": "2026-07-17",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, reusable design-system roles, action-effect/state adapters, or provider-free section boundaries materially change."
   },
   "host_tooling_consolidation_tracker": {
     "path": "docs/host_tooling_consolidation_tracker.md",
-    "version": "1.0.15",
-    "updated": "2026-07-16",
+    "version": "1.0.16",
+    "updated": "2026-07-17",
     "status": "active",
     "read_policy": "Use while consolidating Host Clubs Edit-tab payout/team/section ownership, host tools, host palette, event management, attendance, and backend-ready host action exposure."
   },
@@ -427,7 +427,7 @@
     "status": "proposed",
     "read_policy": "Read before deleting, moving, reclassifying, or adding project-root entries; cleaning local caches, logs, artifacts, or worktrees; consolidating root docs; changing Firebase default/deploy safety; or implementing root manifest, retention, portability, test-inventory, and protected-cleanup tooling. Fable review recorded 2026-07-12 in section 14; rows marked pending-owner must be resolved before the affected phase begins."
   },
-  "version": "4.6.205",
+  "version": "4.6.206",
   "admin_components": {
     "path": "design/admin/components.json",
     "version": "33",

@@ -113,6 +113,25 @@ void main() {
   });
 
   group('legacy Host clubs redirect', () {
+    test('club settings spokes keep stable top-level routes', () {
+      expect(
+        Routes.hostClubEventDefaultsScreen.path,
+        '/host/clubs/event-defaults',
+      );
+      expect(Routes.hostClubLiveGuideScreen.path, '/host/clubs/live-guide');
+      expect(Routes.hostClubTeamScreen.path, '/host/clubs/team');
+      expect(Routes.hostClubPaymentsScreen.path, '/host/clubs/payments');
+
+      for (final route in [
+        Routes.hostClubEventDefaultsScreen,
+        Routes.hostClubLiveGuideScreen,
+        Routes.hostClubTeamScreen,
+        Routes.hostClubPaymentsScreen,
+      ]) {
+        expect(route.audience, AppRouteAudience.host);
+      }
+    });
+
     test('organizer route forwards stable edit field query keys', () {
       final screen = hostOrganizerScreenForUri(
         Uri.parse(
@@ -132,7 +151,20 @@ void main() {
       );
       expect(
         hostClubsLegacyRedirect(Uri.parse('/host/clubs?source=legacy')),
-        Routes.hostOrganizerScreen.path,
+        '/host/organizer?source=legacy',
+      );
+    });
+
+    test('redirects retired dedicated Insights into the selected tab', () {
+      expect(
+        hostInsightsLegacyRedirect('club-1'),
+        '/host/clubs?clubId=club-1&tab=insights',
+      );
+      expect(
+        hostClubsLegacyRedirect(
+          Uri.parse(hostInsightsLegacyRedirect('club-1')),
+        ),
+        '/host/organizer?clubId=club-1&tab=insights',
       );
     });
 

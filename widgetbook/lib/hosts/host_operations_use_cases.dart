@@ -674,40 +674,53 @@ Widget hostClubsRouteStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Dedicated route states',
-  type: HostInsightsScreen,
+  name: 'Insights scorecard states',
+  type: HostClubInsightsPane,
   path: '[P1 product surfaces]/Host operations',
 )
-Widget hostInsightsRouteStates(BuildContext context) {
+Widget hostInsightsScorecardStates(BuildContext context) {
   return _HostCatalog(
-    title: 'HostInsightsScreen',
-    contractId: 'screen.host.insights',
+    title: 'HostClubInsightsPane',
+    contractId: 'screen.host.clubs.insights',
     children: [
       _StateCard(
-        label: 'authorized organizer report',
+        label: 'loaded narrative scorecard',
+        child: _DeviceFrame(
+          child: const _HostShellScope(
+            child: HostClubsScreen(initialTab: HostClubTab.insights),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty range',
         child: _DeviceFrame(
           child: _HostShellScope(
-            child: HostInsightsScreen(
-              clubId: HostOperationsFixtures.primaryClub.id,
+            analyticsRepository: HostFixtureAnalyticsRepository(
+              report: _emptyHostAnalyticsReport(),
             ),
+            child: const HostClubsScreen(initialTab: HostClubTab.insights),
           ),
         ),
       ),
       _StateCard(
-        label: 'unknown organizer',
-        child: const _DeviceFrame(
+        label: 'partial data',
+        child: _DeviceFrame(
           child: _HostShellScope(
-            child: HostInsightsScreen(clubId: 'missing-club'),
+            analyticsRepository: HostFixtureAnalyticsRepository(
+              report: _partialHostAnalyticsReport(),
+            ),
+            child: const HostClubsScreen(initialTab: HostClubTab.insights),
           ),
         ),
       ),
       _StateCard(
-        label: 'range sheet',
-        child: const _DeviceFrame(
-          child: _ThemedHostPreview(
-            child: HostAnalyticsRangeSheet(
-              selected: HostClubInsightsRangePreset.thirtyDays,
+        label: 'Coach recommendations',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            analyticsRepository: HostFixtureAnalyticsRepository(
+              report: _coachHostAnalyticsReport(),
             ),
+            child: const HostClubsScreen(initialTab: HostClubTab.insights),
           ),
         ),
       ),
@@ -716,10 +729,8 @@ Widget hostInsightsRouteStates(BuildContext context) {
         child: _DeviceFrame(
           child: _MediaOverride(
             textScaler: const TextScaler.linear(2),
-            child: _HostShellScope(
-              child: HostInsightsScreen(
-                clubId: HostOperationsFixtures.primaryClub.id,
-              ),
+            child: const _HostShellScope(
+              child: HostClubsScreen(initialTab: HostClubTab.insights),
             ),
           ),
         ),
@@ -727,54 +738,6 @@ Widget hostInsightsRouteStates(BuildContext context) {
     ],
   );
 }
-
-@widgetbook.UseCase(
-  name: 'Covered by Host Insights route states',
-  type: HostInsightsScaffold,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostInsightsScaffoldCatalogStates(BuildContext context) =>
-    hostInsightsRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Host Insights route states',
-  type: HostInsightsHeader,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostInsightsHeaderCatalogStates(BuildContext context) =>
-    hostInsightsRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Host Insights route states',
-  type: HostInsightsUnavailableScreen,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostInsightsUnavailableCatalogStates(BuildContext context) =>
-    hostInsightsRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Host Insights route states',
-  type: HostAnalyticsRangeChip,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostAnalyticsRangeChipCatalogStates(BuildContext context) =>
-    hostInsightsRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Host Insights route states',
-  type: HostAnalyticsRangeSheet,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostAnalyticsRangeSheetCatalogStates(BuildContext context) =>
-    hostInsightsRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Host Insights route states',
-  type: HostAnalyticsDualBar,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostAnalyticsDualBarCatalogStates(BuildContext context) =>
-    hostInsightsRouteStates(context);
 
 @widgetbook.UseCase(
   name: 'Covered by host event section states',
@@ -1261,18 +1224,6 @@ Widget _hostAnalyticsPreviewFor(String focus) {
         ],
       ),
     ),
-    'HostAnalyticsControls' => HostAnalyticsControls(
-      rangePreset: HostAnalyticsRangePreset.custom,
-      granularity: HostAnalyticsGranularity.week,
-      customStartDate: _hostAnalyticsDateDaysAgo(30),
-      customEndDate: _hostAnalyticsDateDaysAgo(0),
-      selectedEventId: report.topEvents.first.eventId,
-      onRangeChanged: (_) {},
-      onGranularityChanged: (_) {},
-      onPickStartDate: () {},
-      onPickEndDate: () {},
-      onClearEvent: () {},
-    ),
     'CatchAnalyticsDataQualityList' => CatchAnalyticsDataQualityList(
       rows: [
         for (final row in report.dataQuality)
@@ -1288,35 +1239,143 @@ Widget _hostAnalyticsPreviewFor(String focus) {
           ),
       ],
     ),
-    'HostAnalyticsDateButton' => HostAnalyticsDateButton(
-      label: 'Start',
-      value: _hostFormatAnalyticsDate(_hostAnalyticsDateDaysAgo(30)),
-      onTap: () {},
-    ),
     'HostAnalyticsEventList' => HostAnalyticsEventList(
       events: report.topEvents,
-      selectedEventId: report.topEvents.first.eventId,
-      onEventSelected: (_) {},
-      onClearEvent: () {},
+      onOpenEventReport: (_) {},
+      onOpenAllEvents: () {},
     ),
     'HostAnalyticsEventTile' => HostAnalyticsEventTile(
       event: report.topEvents.first,
       divider: false,
-      selected: true,
       onTap: () {},
     ),
     'HostAnalyticsReportView' => HostAnalyticsReportView(
       report: report,
-      selectedEventId: report.topEvents.first.eventId,
-      onEventSelected: (_) {},
-      onClearEvent: () {},
+      rangePreset: HostClubInsightsRangePreset.thirtyDays,
+      currencyCode: 'INR',
+      allTimeOverview: const Text('All-time club metrics'),
+      onRangeChanged: (_) {},
+      onOpenEventReport: (_) {},
+      onOpenAllEvents: () {},
+      onOpenEventDefaults: () {},
     ),
-    'HostAnalyticsReviewDiscoveryPanel' => HostAnalyticsReviewDiscoveryPanel(
-      report: report,
+    'HostAnalyticsReviewsPanel' => HostAnalyticsReviewsPanel(report: report),
+    'HostAnalyticsTrendPanel' => HostAnalyticsTrendPanel(
+      points: report.trend,
+      granularity: HostAnalyticsGranularity.week,
     ),
-    'HostAnalyticsTrendPanel' => HostAnalyticsTrendPanel(points: report.trend),
+    'HostAnalyticsDualBar' => HostAnalyticsDualBar(
+      point: report.trend.first,
+      maxValue: 60,
+      label: '2 Jun',
+      selected: true,
+      onTap: () {},
+    ),
     _ => Text('No exact preview registered for $focus.'),
   };
+}
+
+HostAnalyticsReport _emptyHostAnalyticsReport() {
+  final source = HostOperationsFixtures.analyticsReport;
+  return HostAnalyticsReport(
+    generatedAt: source.generatedAt,
+    timezone: source.timezone,
+    summaryCards: [
+      for (final card in source.summaryCards)
+        HostAnalyticsMetricCard(
+          id: card.id,
+          label: card.label,
+          value: 0,
+          unit: card.unit,
+          status: HostAnalyticsMetricStatus.missing,
+        ),
+    ],
+    trend: const [],
+    topEvents: const [],
+    reviewSummary: const HostAnalyticsReviewSummary(
+      newReviews: 0,
+      publishedReviews: 0,
+      verifiedReviews: 0,
+      publicReviews: 0,
+      ownerResponseCount: 0,
+      averageRating: 0,
+    ),
+    discoverySummary: const HostAnalyticsDiscoverySummary(
+      listingViews: 0,
+      searchAppearances: 0,
+      eventViews: 0,
+      organizerSaves: 0,
+      eventSaves: 0,
+      contactClicks: 0,
+      claimClicks: 0,
+      outboundClicks: 0,
+    ),
+    dataQuality: const [
+      HostAnalyticsDataQuality(
+        id: 'mart',
+        state: HostAnalyticsDataQualityState.missing,
+        detail: 'Fixture data is unavailable.',
+      ),
+    ],
+  );
+}
+
+HostAnalyticsReport _partialHostAnalyticsReport() {
+  final source = HostOperationsFixtures.analyticsReport;
+  return HostAnalyticsReport(
+    generatedAt: source.generatedAt,
+    timezone: source.timezone,
+    summaryCards: [
+      for (final indexed in source.summaryCards.indexed)
+        HostAnalyticsMetricCard(
+          id: indexed.$2.id,
+          label: indexed.$2.label,
+          value: indexed.$2.value,
+          previousValue: indexed.$2.previousValue,
+          unit: indexed.$2.unit,
+          status: indexed.$1 == 0
+              ? HostAnalyticsMetricStatus.partial
+              : indexed.$2.status,
+        ),
+    ],
+    trend: source.trend,
+    topEvents: source.topEvents,
+    reviewSummary: source.reviewSummary,
+    discoverySummary: source.discoverySummary,
+    dataQuality: const [
+      HostAnalyticsDataQuality(
+        id: 'payments',
+        state: HostAnalyticsDataQualityState.partial,
+        detail: 'Payment metrics are still syncing.',
+      ),
+    ],
+  );
+}
+
+HostAnalyticsReport _coachHostAnalyticsReport() {
+  final source = HostOperationsFixtures.analyticsReport;
+  return HostAnalyticsReport(
+    generatedAt: source.generatedAt,
+    timezone: source.timezone,
+    summaryCards: [
+      for (final card in source.summaryCards)
+        HostAnalyticsMetricCard(
+          id: card.id,
+          label: card.label,
+          value: card.id == HostAnalyticsMetricIds.attendanceRate
+              ? 59
+              : card.value,
+          previousValue: card.previousValue,
+          unit: card.unit,
+          status: card.status,
+        ),
+    ],
+    trend: source.trend,
+    topEvents: source.topEvents,
+    reviewSummary: source.reviewSummary,
+    discoverySummary: source.discoverySummary,
+    dataQuality: source.dataQuality,
+  );
 }
 
 Widget _hostHomeExactCatalog(BuildContext context, String focus) {
@@ -1544,7 +1603,7 @@ Widget _hostClubPreviewFor(String focus) {
     ),
     'HostClubOrganizerOverviewController' =>
       HostClubOrganizerOverviewController(club: club),
-    'HostClubProfileCard' => HostClubProfileCard(
+    'HostClubEditTab' => HostClubEditTab(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
@@ -1562,19 +1621,19 @@ Widget _hostClubPreviewFor(String focus) {
       onManageEvent: (_, _) {},
       now: HostOperationsFixtures.now,
     ),
-    'HostInlineAgeRangeEditor' => HostClubProfileCard(
+    'HostInlineAgeRangeEditor' => HostClubEditTab(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
       initialExpandedField: 'ageRange',
     ),
-    'HostInlineOptionEditor' => HostClubProfileCard(
+    'HostInlineOptionEditor' => HostClubEditTab(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
       initialExpandedField: 'primaryActivityKind',
     ),
-    'HostInlineTextEntryEditor' => HostClubProfileCard(
+    'HostInlineTextEntryEditor' => HostClubEditTab(
       club: club,
       currentUid: _hostUid,
       isOwner: true,
@@ -1920,17 +1979,6 @@ Map<String, (String, String?)> _hostAttendeeProfiles() {
     HostOperationsFixtures.secondGuestUid: ('Rhea Kapoor', null),
     HostOperationsFixtures.waitlistUid: ('Kabir Jain', null),
   };
-}
-
-DateTime _hostAnalyticsDateDaysAgo(int days) {
-  final today = DateUtils.dateOnly(DateTime.now());
-  return DateTime(today.year, today.month, today.day - days);
-}
-
-String _hostFormatAnalyticsDate(DateTime date) {
-  final month = date.month.toString().padLeft(2, '0');
-  final day = date.day.toString().padLeft(2, '0');
-  return '$day/$month/${date.year}';
 }
 
 String _hostComponentSlug(String name) {
@@ -4458,28 +4506,12 @@ Widget hostStrictCatchAnalyticsBarCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsControls,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsControlsCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsControls');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
   type: CatchAnalyticsDataQualityList,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictCatchAnalyticsDataQualityListCatalogStates(
   BuildContext context,
 ) => _hostAnalyticsExactCatalog(context, 'CatchAnalyticsDataQualityList');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAnalyticsDateButton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsDateButtonCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsDateButton');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -4516,12 +4548,11 @@ Widget hostStrictHostAnalyticsReportViewCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsReviewDiscoveryPanel,
+  type: HostAnalyticsReviewsPanel,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostAnalyticsReviewDiscoveryPanelCatalogStates(
-  BuildContext context,
-) => _hostAnalyticsExactCatalog(context, 'HostAnalyticsReviewDiscoveryPanel');
+Widget hostStrictHostAnalyticsReviewsPanelCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsReviewsPanel');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -4530,6 +4561,14 @@ Widget hostStrictHostAnalyticsReviewDiscoveryPanelCatalogStates(
 )
 Widget hostStrictHostAnalyticsTrendPanelCatalogStates(BuildContext context) =>
     _hostAnalyticsExactCatalog(context, 'HostAnalyticsTrendPanel');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsDualBar,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsDualBarCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsDualBar');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -4582,11 +4621,90 @@ Widget hostStrictHostClubOrganizerOverviewControllerCatalogStates(
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubProfileCard,
+  type: HostClubEditTab,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubProfileCardCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubProfileCard');
+Widget hostStrictHostClubEditTabCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostClubEditTab');
+
+@widgetbook.UseCase(
+  name: 'Within Edit tab',
+  type: HostClubInlineTextEntry,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostClubInlineTextEntryCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostClubInlineTextEntry');
+
+@widgetbook.UseCase(
+  name: 'Owner loaded',
+  type: HostClubEventDefaultsScreen,
+  path: '[P1 product surfaces]/Host operations/Club settings spokes',
+)
+Widget hostClubEventDefaultsScreenLoaded(BuildContext context) =>
+    _HostShellScope(
+      child: HostClubEventDefaultsScreen(
+        clubId: HostOperationsFixtures.primaryClub.id,
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Owner loaded',
+  type: HostClubLiveGuideScreen,
+  path: '[P1 product surfaces]/Host operations/Club settings spokes',
+)
+Widget hostClubLiveGuideScreenLoaded(BuildContext context) => _HostShellScope(
+  child: HostClubLiveGuideScreen(clubId: HostOperationsFixtures.primaryClub.id),
+);
+
+@widgetbook.UseCase(
+  name: 'Owner loaded',
+  type: HostClubTeamScreen,
+  path: '[P1 product surfaces]/Host operations/Club settings spokes',
+)
+Widget hostClubTeamScreenLoaded(BuildContext context) => _HostShellScope(
+  child: HostClubTeamScreen(clubId: HostOperationsFixtures.primaryClub.id),
+);
+
+@widgetbook.UseCase(
+  name: 'Owner loaded',
+  type: HostClubPaymentsScreen,
+  path: '[P1 product surfaces]/Host operations/Club settings spokes',
+)
+Widget hostClubPaymentsScreenLoaded(BuildContext context) => _HostShellScope(
+  child: HostClubPaymentsScreen(clubId: HostOperationsFixtures.primaryClub.id),
+);
+
+@widgetbook.UseCase(
+  name: 'Resolver states',
+  type: HostClubSpokeResolver,
+  path: '[P1 product surfaces]/Host operations/Club settings spokes',
+)
+Widget hostClubSpokeResolverStates(BuildContext context) =>
+    hostClubEventDefaultsScreenLoaded(context);
+
+@widgetbook.UseCase(
+  name: 'Canonical scaffold',
+  type: HostClubSpokeScaffold,
+  path: '[P1 product surfaces]/Host operations/Club settings spokes',
+)
+Widget hostClubSpokeScaffoldStates(BuildContext context) =>
+    hostClubEventDefaultsScreenLoaded(context);
+
+@widgetbook.UseCase(
+  name: 'Optimistic editor',
+  type: HostClubDefaultsEditor,
+  path: '[P1 product surfaces]/Host operations/Club settings spokes',
+)
+Widget hostClubDefaultsEditorStates(BuildContext context) =>
+    hostClubEventDefaultsScreenLoaded(context);
+
+@widgetbook.UseCase(
+  name: 'Co-host read only',
+  type: HostClubReadOnlyEventDefaults,
+  path: '[P1 product surfaces]/Host operations/Club settings spokes',
+)
+Widget hostClubReadOnlyEventDefaultsStates(BuildContext context) =>
+    hostClubEventDefaultsScreenLoaded(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -5050,7 +5168,7 @@ class _ClubPolicyDefaultsCardFrameState
       child: ClubPolicyDefaultsCard(
         defaults: _defaults,
         currencyCode: currencyCodeForCityName(_club.location),
-        onChanged: (defaults) => setState(() => _defaults = defaults),
+        onChanged: (update) => setState(() => _defaults = update(_defaults)),
       ),
     );
   }

@@ -298,8 +298,8 @@
           "symbol": "HostInlineOptionEditor"
         },
         {
-          "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
-          "symbol": "HostClubProfileCard"
+          "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "symbol": "HostClubEditTab"
         }
       ],
       "anchors": [

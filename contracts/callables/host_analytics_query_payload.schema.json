@@ -21,7 +21,7 @@
     },
     "rangePreset": {
       "type": "string",
-      "enum": ["7d", "30d", "90d", "month", "custom"]
+      "enum": ["7d", "30d", "90d", "12m", "month", "custom"]
     },
     "startDate": {
       "type": ["string", "null"],
@@ -34,6 +34,11 @@
     "granularity": {
       "type": "string",
       "enum": ["day", "week", "month"]
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
     }
   }
 }

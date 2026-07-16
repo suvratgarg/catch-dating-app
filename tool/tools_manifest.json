@@ -540,7 +540,7 @@
       "command": "node tool/copy/check_mobile_copy_catalog.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates typed Flutter ARB copy metadata and can export a marketing review CSV.",
+      "description": "Validates typed Flutter ARB copy metadata, rejects generated visibleCopy-style identifier keys unless explicitly allowlisted, and can export a marketing review CSV.",
       "checks": [
         "node --check tool/copy/check_mobile_copy_catalog.mjs",
         "node tool/copy/check_mobile_copy_catalog_test.mjs",
@@ -3125,12 +3125,37 @@
       "command": "node tool/ui_capture/check_route_inventory.mjs",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates and checks the route inventory that keeps UI captures aligned with go_router.dart, including semantic runtime path checks for nested GoRoute segments.",
+      "description": "Generates and checks the named route inventory that keeps UI captures aligned with go_router.dart, including semantic nested-path checks and a redirect-only exception for retired raw legacy paths.",
       "checks": [
         "node --check tool/ui_capture/check_route_inventory.mjs",
+        "node --test tool/ui_capture/check_route_inventory_test.mjs",
         "node tool/ui_capture/check_route_inventory.mjs --check"
       ],
-      "role": "finder"
+      "role": "finder",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ui_capture/check_route_inventory_test.mjs",
+        "contains": [
+          "rejects unnamed routes that can render a page"
+        ]
+      }
+    },
+    {
+      "id": "ui-capture:route-inventory-tests",
+      "category": "test",
+      "path": "tool/ui_capture/check_route_inventory_test.mjs",
+      "command": "node --test tool/ui_capture/check_route_inventory_test.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Pins the redirect-only exception for unnamed retired route paths.",
+      "checks": [
+        "node --test tool/ui_capture/check_route_inventory_test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ui_capture/check_route_inventory_test.mjs"
+      }
     },
     {
       "id": "ui-capture:coverage",

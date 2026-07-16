@@ -110,18 +110,18 @@ void main() {
     expect(find.text('Pickleball Partner Rotations'), findsOneWidget);
     expect(_selectChip('Pickleball', selected: true), findsOneWidget);
 
-    final checkInSwitch = find.bySemanticsLabel(
-      'Attendance and live roster tool',
+    final rotationsSwitch = find.bySemanticsLabel(
+      'Timed partner rotations tool',
     );
-    expect(checkInSwitch, findsOneWidget);
+    expect(rotationsSwitch, findsOneWidget);
 
-    await tester.scrollUntilVisible(checkInSwitch, 300);
-    await tester.tap(checkInSwitch);
+    await tester.scrollUntilVisible(rotationsSwitch, 300);
+    await tester.tap(rotationsSwitch);
     await pumpFeatureUi(tester);
 
     expect(find.text('Needs work'), findsOneWidget);
     expect(
-      find.text('Add check-in before using attendance for follow-up.'),
+      find.text('Live reveal needs a pod or rotation tool selected.'),
       findsOneWidget,
     );
   });

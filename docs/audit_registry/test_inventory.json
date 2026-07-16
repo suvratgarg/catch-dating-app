@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 506,
+  "total": 507,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 239,
+      "count": 240,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -170,7 +170,7 @@
         "test/hosts/host_analytics_repository_test.dart",
         "test/hosts/host_broadcast_composer_sheet_test.dart",
         "test/hosts/host_club_create_state_test.dart",
-        "test/hosts/host_club_edit_state_test.dart",
+        "test/hosts/host_club_defaults_saver_test.dart",
         "test/hosts/host_create_event_controller_test.dart",
         "test/hosts/host_create_event_screen_test.dart",
         "test/hosts/host_create_event_state_test.dart",
@@ -179,6 +179,7 @@
         "test/hosts/host_event_manage_screen_state_test.dart",
         "test/hosts/host_inbox_screen_test.dart",
         "test/hosts/host_inbox_view_model_test.dart",
+        "test/hosts/host_insights_scorecard_test.dart",
         "test/hosts/host_operations_screen_test.dart",
         "test/hosts/host_profile_repository_test.dart",
         "test/hosts/host_report_export_test.dart",

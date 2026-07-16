@@ -2647,59 +2647,6 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
   }
 }
 
-class _HostInsightsRoutedCapture extends StatefulWidget {
-  const _HostInsightsRoutedCapture({required this.initialLocation});
-
-  final String initialLocation;
-
-  @override
-  State<_HostInsightsRoutedCapture> createState() =>
-      _HostInsightsRoutedCaptureState();
-}
-
-class _HostInsightsRoutedCaptureState
-    extends State<_HostInsightsRoutedCapture> {
-  late final GoRouter _router;
-
-  @override
-  void initState() {
-    super.initState();
-    AppConfig.configureEntrypointRole(AppRole.host);
-    _router = GoRouter(
-      initialLocation: widget.initialLocation,
-      routes: [
-        GoRoute(
-          path: Routes.hostOrganizerScreen.path,
-          name: Routes.hostOrganizerScreen.name,
-          builder: (context, state) => const HostClubsScreen(),
-        ),
-        GoRoute(
-          path: Routes.hostInsightsScreen.path,
-          name: Routes.hostInsightsScreen.name,
-          builder: (context, state) =>
-              HostInsightsScreen(clubId: state.pathParameters['clubId']!),
-        ),
-      ],
-    );
-  }
-
-  @override
-  void dispose() {
-    _router.dispose();
-    AppConfig.resetEntrypointRoleOverrideForTesting();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      theme: Theme.of(context),
-      routerConfig: _router,
-    );
-  }
-}
-
 List<Object> _hostShellCaptureOverrides(String uid, {int unreadCount = 0}) {
   return [
     _captureAnalyticsOverride,
@@ -8861,15 +8808,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         role: AppRole.host,
         child: HostClubsScreen(initialExpandedEditField: 'name'),
       ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_clubs_insights_reference',
-    routeIds: const <String>['hostInsightsScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _HostInsightsRoutedCapture(
-      initialLocation: '/host/organizer/design-host-sea-face/insights',
     ),
   ),
   ScreenCaptureEntry(

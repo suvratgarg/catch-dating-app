@@ -97,6 +97,7 @@ class CatchTabbedPageScrollView extends StatefulWidget {
     this.controller,
     this.scrollStateController,
     this.physics,
+    this.onRefresh,
   });
 
   final PageStorageKey<String> scrollKey;
@@ -105,6 +106,7 @@ class CatchTabbedPageScrollView extends StatefulWidget {
   final ScrollController? controller;
   final CatchTabbedPageScrollController? scrollStateController;
   final ScrollPhysics? physics;
+  final Future<void> Function()? onRefresh;
 
   @override
   State<CatchTabbedPageScrollView> createState() =>
@@ -205,10 +207,12 @@ class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
         builder: (context) {
           _effectiveController =
               widget.controller ?? PrimaryScrollController.maybeOf(context);
-          return CustomScrollView(
+          final scrollView = CustomScrollView(
             key: widget.scrollKey,
             controller: widget.controller,
-            physics: widget.physics,
+            physics: widget.onRefresh == null
+                ? widget.physics
+                : AlwaysScrollableScrollPhysics(parent: widget.physics),
             slivers: [
               SliverOverlapInjector(
                 handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
@@ -220,6 +224,13 @@ class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
                 const CatchSliverTerminalPadding(),
             ],
           );
+          final onRefresh = widget.onRefresh;
+          return onRefresh == null
+              ? scrollView
+              : RefreshIndicator.adaptive(
+                  onRefresh: onRefresh,
+                  child: scrollView,
+                );
         },
       ),
     );

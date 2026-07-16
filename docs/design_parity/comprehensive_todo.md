@@ -27,13 +27,13 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
 - Contracted screen states: 619.
 - Contracted screen sections: 241.
-- Screen registry migration gaps: 4 open, 27 blocked, and 108 closed. These are
+- Screen registry migration gaps: 4 open, 27 blocked, and 104 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,110.
 - Open screen-contract validation gaps: 0.
 - Design parity matrix: 12 feature groups, 36 screens, 625 matrix states, and
-  47 open matrix gaps across screen-state, lint-candidate, and preview-plan
+  46 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
 - Matrix state status spread: 571 captured, 14 implemented, 1 planned, and
   39 tested.

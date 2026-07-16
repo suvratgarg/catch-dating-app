@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
@@ -27,9 +28,8 @@ class EventSuccessSetupBody extends StatefulWidget {
     required this.eventFormat,
     required this.targetAttendeeCount,
     required this.attendeePrompt,
-    required this.onDraftChanged,
+    required this.onChanged,
     required this.onAttendeePromptChanged,
-    this.onImmediateDraftChanged,
     this.editable = true,
     this.showResetToRecommended = false,
     this.onResetToRecommended,
@@ -42,8 +42,7 @@ class EventSuccessSetupBody extends StatefulWidget {
   final EventFormatSnapshot eventFormat;
   final int targetAttendeeCount;
   final String? attendeePrompt;
-  final ValueChanged<EventSuccessHostDraft> onDraftChanged;
-  final ValueChanged<EventSuccessHostDraftUpdate>? onImmediateDraftChanged;
+  final ValueChanged<EventSuccessHostDraftUpdate> onChanged;
   final ValueChanged<String> onAttendeePromptChanged;
   final bool editable;
   final bool showResetToRecommended;
@@ -59,6 +58,8 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
   );
   late final TextEditingController _attendeePromptController =
       TextEditingController(text: widget.attendeePrompt ?? '');
+  bool _hostGoalOpen = false;
+  bool _attendeePromptOpen = false;
 
   @override
   void didUpdateWidget(covariant EventSuccessSetupBody oldWidget) {
@@ -89,11 +90,14 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         .where((recommendation) => recommendation.selectable)
         .where(
           (recommendation) =>
-              !_platformModuleIds.contains(recommendation.module.id) &&
-              recommendation.module.id !=
-                  EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+              !_platformModuleIds.contains(recommendation.module.id),
         )
         .toList(growable: false);
+    final showStructureEditor =
+        draft.isModuleSelected(EventSuccessModuleCatalog.microPods.id) ||
+        draft.isModuleSelected(EventSuccessModuleCatalog.guidedRotations.id) ||
+        draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id) ||
+        draft.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup;
 
     return CatchSectionList(
       children: [
@@ -120,144 +124,180 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                     )
                   : null,
             ),
-            CatchField.input(
+            CatchField.inputActions(
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyTitleYourGoalForTheEvent,
               controller: _hostGoalController,
+              open: _hostGoalOpen,
+              onOpenChanged: (open) =>
+                  setState(() => _hostGoalOpen = open && widget.editable),
+              onCancel: _cancelHostGoal,
+              onSubmit: _submitHostGoal,
               enabled: widget.editable,
               inputHint: draft.hostGoal,
               inputFormatters: [LengthLimitingTextInputFormatter(300)],
               minLines: 2,
               maxLines: 4,
-              textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.newline,
-              errorText: _hostGoalController.text.trim().isEmpty
+              error: _hostGoalController.text.trim().isEmpty
                   ? context
                         .l10n
                         .eventSuccessEventSuccessHostSetupTextAddAGoalSoTheLiveGuideKnowsWhatToAimFor
                   : null,
-              onChanged: (value) {
-                widget.onDraftChanged(draft.copyWith(hostGoal: value));
-                setState(() {});
-              },
+              onChanged: (_) => setState(() {}),
             ),
-            CatchField.input(
+            CatchField.inputActions(
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyTitleMessageToAttendees,
-              isOptional: true,
               controller: _attendeePromptController,
+              open: _attendeePromptOpen,
+              onOpenChanged: (open) =>
+                  setState(() => _attendeePromptOpen = open && widget.editable),
+              onCancel: _cancelAttendeePrompt,
+              onSubmit: _submitAttendeePrompt,
               enabled: widget.editable,
               inputHint: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff,
-              helperText: context.l10n
-                  .eventSuccessEventSuccessSetupBodyTextAttendeesWillSeeText(
-                    text: _attendeePromptPreview(
-                      profile,
-                      widget.attendeePrompt,
+              supporting: Text(
+                context.l10n
+                    .eventSuccessEventSuccessSetupBodyTextAttendeesWillSeeText(
+                      text: _attendeePromptPreview(
+                        profile,
+                        widget.attendeePrompt,
+                      ),
                     ),
-                  ),
+              ),
               inputFormatters: [LengthLimitingTextInputFormatter(300)],
               minLines: 2,
               maxLines: 4,
-              textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.newline,
-              onChanged: widget.onAttendeePromptChanged,
             ),
           ],
         ),
-        CatchSection.fieldRows(
-          title: context.l10n.eventSuccessEventSuccessSetupBodyTitleLiveTools,
-          children: [
-            for (final recommendation in liveTools)
-              CatchField.toggle(
-                title: recommendation.module.title,
-                body: recommendation.reason,
-                value: draft.isModuleSelected(recommendation.module.id),
-                onChanged: widget.editable
-                    ? (selected) => _applyImmediateDraftUpdate(
-                        (current) => current.withModuleSelection(
-                          recommendation.module.id,
-                          selected,
-                        ),
-                      )
-                    : null,
+        for (final bucket in _EventSuccessStageBucket.values) ...[
+          if (_recommendationsForBucket(liveTools, bucket).isNotEmpty)
+            CatchSection.fieldRows(
+              title: _bucketTitle(context, bucket),
+              children: [
+                for (final recommendation in _recommendationsForBucket(
+                  liveTools,
+                  bucket,
+                ))
+                  EventSuccessModuleRows._(
+                    recommendation: recommendation,
+                    draft: draft,
+                    editable: widget.editable,
+                    onModuleChanged: (selected) => _applyImmediateDraftUpdate(
+                      (current) => current.withModuleSelection(
+                        recommendation.module.id,
+                        selected,
+                      ),
+                    ),
+                    onDraftChanged: widget.onChanged,
+                    onQuestionnaireModeChanged: (mode) =>
+                        _setQuestionnaireMode(mode),
+                  ),
+              ],
+            ),
+          if (bucket == _EventSuccessStageBucket.during && showStructureEditor)
+            EventSuccessStructureConfigEditor(
+              sectionTitle: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTitleHowTheRoomIsGrouped,
+              value: draft.structureConfig,
+              targetAttendeeCount: widget.targetAttendeeCount,
+              enabled: widget.editable,
+              onChanged: (value) => widget.onChanged(
+                (current) => current.copyWith(structureConfig: value),
               ),
-            if (draft.isModuleSelected(
-              EventSuccessModuleCatalog.guidedRotations.id,
-            ))
-              CatchField.choices<int?>(
-                title: context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyLabelSwitchPartnersEvery,
-                values: const <int?>[null, 10, 15, 20, 30],
-                itemLabel: (value) => switch (value) {
-                  null =>
-                    context.l10n.eventSuccessEventSuccessSetupBodyLabelNoTimer,
-                  10 =>
-                    context.l10n.eventSuccessEventSuccessSetupBodyLabel10Min,
-                  15 =>
-                    context.l10n.eventSuccessEventSuccessSetupBodyLabel15Min,
-                  20 =>
-                    context.l10n.eventSuccessEventSuccessSetupBodyLabel20Min,
-                  _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel30Min,
-                },
-                selected: {draft.structureConfig.rotationIntervalMinutes},
-                enabled: widget.editable,
-                onSelectionChanged: widget.editable
-                    ? (selection) => widget.onDraftChanged(
-                        draft.copyWith(
-                          structureConfig: draft.structureConfig.copyWith(
-                            rotationIntervalMinutes: selection.single,
-                          ),
-                        ),
-                      )
-                    : null,
-              ),
-            if (draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id))
-              CatchField.choices<int>(
-                title: context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyLabelRevealCountdown,
-                values: const [0, 5, 10, 15],
-                itemLabel: (value) => switch (value) {
-                  0 => context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
-                  5 => context.l10n.eventSuccessEventSuccessSetupBodyLabel5s,
-                  10 => context.l10n.eventSuccessEventSuccessSetupBodyLabel10s,
-                  _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel15s,
-                },
-                selected: {draft.structureConfig.revealCountdownSeconds},
-                enabled: widget.editable,
-                onSelectionChanged: widget.editable
-                    ? (selection) => widget.onDraftChanged(
-                        draft.copyWith(
-                          structureConfig: draft.structureConfig.copyWith(
-                            revealCountdownSeconds: selection.single,
-                          ),
-                        ),
-                      )
-                    : null,
-              ),
-          ],
-        ),
-        EventSuccessStructureConfigEditor(
-          sectionTitle: context
-              .l10n
-              .eventSuccessEventSuccessSetupBodyTitleHowTheRoomIsGrouped,
-          value: draft.structureConfig,
-          targetAttendeeCount: widget.targetAttendeeCount,
-          enabled: widget.editable,
-          onChanged: (value) =>
-              widget.onDraftChanged(draft.copyWith(structureConfig: value)),
-        ),
-        CatchSection.fieldRows(
-          child: CatchField.choices<_QuestionnaireMode>(
+            ),
+        ],
+      ],
+    );
+  }
+
+  void _applyImmediateDraftUpdate(EventSuccessHostDraftUpdate update) {
+    widget.onChanged(update);
+  }
+
+  void _cancelHostGoal() {
+    _setText(_hostGoalController, widget.draft.hostGoal);
+    setState(() => _hostGoalOpen = false);
+  }
+
+  void _submitHostGoal() {
+    final value = _hostGoalController.text;
+    if (value.trim().isEmpty) {
+      setState(() {});
+      return;
+    }
+    widget.onChanged((current) => current.copyWith(hostGoal: value));
+    setState(() => _hostGoalOpen = false);
+  }
+
+  void _cancelAttendeePrompt() {
+    _setText(_attendeePromptController, widget.attendeePrompt ?? '');
+    setState(() => _attendeePromptOpen = false);
+  }
+
+  void _submitAttendeePrompt() {
+    widget.onAttendeePromptChanged(_attendeePromptController.text);
+    setState(() => _attendeePromptOpen = false);
+  }
+
+  void _setQuestionnaireMode(_QuestionnaireMode mode) {
+    final active = mode != _QuestionnaireMode.off;
+    widget.onChanged(
+      (current) => current
+          .withModuleSelection(
+            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+            active,
+          )
+          .copyWith(
+            compatibilityAffectsRanking:
+                active && mode == _QuestionnaireMode.cluesAndPairing,
+          ),
+    );
+  }
+}
+
+class EventSuccessModuleRows extends StatelessWidget {
+  const EventSuccessModuleRows._({
+    required this._recommendation,
+    required this._draft,
+    required this._editable,
+    required this._onModuleChanged,
+    required this._onDraftChanged,
+    required this._onQuestionnaireModeChanged,
+  });
+
+  final EventSuccessModuleRecommendation _recommendation;
+  final EventSuccessHostDraft _draft;
+  final bool _editable;
+  final ValueChanged<bool> _onModuleChanged;
+  final ValueChanged<EventSuccessHostDraftUpdate> _onDraftChanged;
+  final ValueChanged<_QuestionnaireMode> _onQuestionnaireModeChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final module = _recommendation.module;
+    final questionnaire =
+        module.id == EventSuccessModuleCatalog.compatibilityQuestionnaire.id;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (questionnaire)
+          CatchField.choices<_QuestionnaireMode>(
+            key: ValueKey('eventSuccessModule-${module.id}'),
             title: context
                 .l10n
                 .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
-            body: switch (_questionnaireMode(draft)) {
+            body: switch (_questionnaireMode(_draft)) {
               _QuestionnaireMode.off =>
                 context
                     .l10n
@@ -282,53 +322,137 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                     .l10n
                     .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
             },
-            selected: {_questionnaireMode(draft)},
-            enabled: widget.editable,
-            onSelectionChanged: widget.editable
-                ? (selection) => _setQuestionnaireMode(draft, selection.single)
+            selected: {_questionnaireMode(_draft)},
+            enabled: _editable,
+            onSelectionChanged: _editable
+                ? (selection) => _onQuestionnaireModeChanged(selection.single)
                 : null,
+          )
+        else
+          CatchField.toggle(
+            key: ValueKey('eventSuccessModule-${module.id}'),
+            title: module.title,
+            body: _recommendationBody(_recommendation),
+            bodyMaxLines: 3,
+            value: _draft.isModuleSelected(module.id),
+            onChanged: _editable ? _onModuleChanged : null,
           ),
-        ),
-        if (draft.isModuleSelected(
-          EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-        ))
-          EventSuccessQuestionnaireConfigEditor(
-            value: draft.questionnaireConfig,
-            enabled: widget.editable,
-            onChanged: (value) => widget.onDraftChanged(
-              draft.copyWith(questionnaireConfig: value),
+        if (questionnaire && _draft.isModuleSelected(module.id))
+          CatchSection.containedFieldRows(
+            key: const ValueKey('eventSuccessQuestionnaireConfig'),
+            child: EventSuccessQuestionnaireConfigEditor(
+              value: _draft.questionnaireConfig,
+              enabled: _editable,
+              onChanged: (value) => _onDraftChanged(
+                (current) => current.copyWith(questionnaireConfig: value),
+              ),
+            ),
+          ),
+        if (module.id == EventSuccessModuleCatalog.guidedRotations.id &&
+            _draft.isModuleSelected(module.id))
+          CatchSection.containedFieldRows(
+            key: const ValueKey('eventSuccessRotationConfig'),
+            child: CatchField.choices<int?>(
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyLabelSwitchPartnersEvery,
+              values: const <int?>[null, 10, 15, 20, 30],
+              itemLabel: (value) => switch (value) {
+                null =>
+                  context.l10n.eventSuccessEventSuccessSetupBodyLabelNoTimer,
+                10 => context.l10n.eventSuccessEventSuccessSetupBodyLabel10Min,
+                15 => context.l10n.eventSuccessEventSuccessSetupBodyLabel15Min,
+                20 => context.l10n.eventSuccessEventSuccessSetupBodyLabel20Min,
+                _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel30Min,
+              },
+              selected: {_draft.structureConfig.rotationIntervalMinutes},
+              enabled: _editable,
+              onSelectionChanged: _editable
+                  ? (selection) => _onDraftChanged(
+                      (current) => current.copyWith(
+                        structureConfig: current.structureConfig.copyWith(
+                          rotationIntervalMinutes: selection.single,
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+          ),
+        if (module.id == EventSuccessModuleCatalog.liveReveal.id &&
+            _draft.isModuleSelected(module.id))
+          CatchSection.containedFieldRows(
+            key: const ValueKey('eventSuccessRevealConfig'),
+            child: CatchField.choices<int>(
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyLabelRevealCountdown,
+              values: const [0, 5, 10, 15],
+              itemLabel: (value) => switch (value) {
+                0 => context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
+                5 => context.l10n.eventSuccessEventSuccessSetupBodyLabel5s,
+                10 => context.l10n.eventSuccessEventSuccessSetupBodyLabel10s,
+                _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel15s,
+              },
+              selected: {_draft.structureConfig.revealCountdownSeconds},
+              enabled: _editable,
+              onSelectionChanged: _editable
+                  ? (selection) => _onDraftChanged(
+                      (current) => current.copyWith(
+                        structureConfig: current.structureConfig.copyWith(
+                          revealCountdownSeconds: selection.single,
+                        ),
+                      ),
+                    )
+                  : null,
             ),
           ),
       ],
     );
   }
+}
 
-  void _applyImmediateDraftUpdate(EventSuccessHostDraftUpdate update) {
-    final immediate = widget.onImmediateDraftChanged;
-    if (immediate != null) {
-      immediate(update);
-      return;
-    }
-    widget.onDraftChanged(update(widget.draft));
-  }
+enum _EventSuccessStageBucket { before, arrival, during, after }
 
-  void _setQuestionnaireMode(
-    EventSuccessHostDraft draft,
-    _QuestionnaireMode mode,
-  ) {
-    final active = mode != _QuestionnaireMode.off;
-    widget.onDraftChanged(
-      draft
-          .withModuleSelection(
-            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-            active,
-          )
-          .copyWith(
-            compatibilityAffectsRanking:
-                active && mode == _QuestionnaireMode.cluesAndPairing,
-          ),
-    );
-  }
+List<EventSuccessModuleRecommendation> _recommendationsForBucket(
+  List<EventSuccessModuleRecommendation> recommendations,
+  _EventSuccessStageBucket bucket,
+) => recommendations
+    .where(
+      (recommendation) => _bucketFor(recommendation.module.stage) == bucket,
+    )
+    .toList(growable: false);
+
+_EventSuccessStageBucket _bucketFor(EventSuccessStage stage) => switch (stage) {
+  EventSuccessStage.before => _EventSuccessStageBucket.before,
+  EventSuccessStage.arrival => _EventSuccessStageBucket.arrival,
+  EventSuccessStage.opening ||
+  EventSuccessStage.activity ||
+  EventSuccessStage.mixing ||
+  EventSuccessStage.closing => _EventSuccessStageBucket.during,
+  EventSuccessStage.after ||
+  EventSuccessStage.hostDebrief => _EventSuccessStageBucket.after,
+};
+
+String _bucketTitle(BuildContext context, _EventSuccessStageBucket bucket) =>
+    switch (bucket) {
+      _EventSuccessStageBucket.before =>
+        context.l10n.eventSuccessEventSuccessSetupBodyTitleBeforeTheEvent,
+      _EventSuccessStageBucket.arrival =>
+        context.l10n.eventSuccessEventSuccessSetupBodyTitleWhenPeopleArrive,
+      _EventSuccessStageBucket.during =>
+        context.l10n.eventSuccessEventSuccessSetupBodyTitleDuringTheEvent,
+      _EventSuccessStageBucket.after =>
+        context.l10n.eventSuccessEventSuccessSetupBodyTitleAfterTheEvent,
+    };
+
+String _recommendationBody(EventSuccessModuleRecommendation recommendation) {
+  final level = recommendation.level;
+  return switch (level) {
+    EventSuccessRecommendationLevel.recommended ||
+    EventSuccessRecommendationLevel.discouraged =>
+      '${level.label} — ${recommendation.reason}',
+    _ => recommendation.reason,
+  };
 }
 
 enum _QuestionnaireMode { off, cluesOnly, cluesAndPairing }

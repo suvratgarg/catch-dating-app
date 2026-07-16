@@ -42,13 +42,8 @@ class ClubHostDefaultsStep extends StatelessWidget {
         ClubPolicyDefaultsCard(
           defaults: defaults.eventPolicy,
           currencyCode: currencyCode,
-          onChanged: (eventPolicy) =>
-              onChanged(defaults.copyWith(eventPolicy: eventPolicy)),
-        ),
-        _buildDefaultActivitySection(
-          context: context,
-          selectedActivityKind: defaults.primaryActivityKind,
-          onChanged: (activityKind) => onChanged(
+          activityKind: defaults.primaryActivityKind,
+          onActivityChanged: (activityKind) => onChanged(
             defaults.copyWith(
               primaryActivityKind: activityKind,
               supportedActivityKinds:
@@ -58,6 +53,9 @@ class ClubHostDefaultsStep extends StatelessWidget {
                   ? defaults.supportedActivityKinds
                   : [...defaults.supportedActivityKinds, activityKind],
             ),
+          ),
+          onChanged: (update) => onChanged(
+            defaults.copyWith(eventPolicy: update(defaults.eventPolicy)),
           ),
         ),
       ],
@@ -73,29 +71,6 @@ class ClubHostDefaultsStep extends StatelessWidget {
           : Padding(padding: padding ?? EdgeInsets.zero, child: content),
     );
   }
-
-  Widget _buildDefaultActivitySection({
-    required BuildContext context,
-    required ActivityKind selectedActivityKind,
-    required ValueChanged<ActivityKind> onChanged,
-  }) {
-    return CatchSection.fieldRows(
-      child: CatchField.choices<ActivityKind>(
-        title: context.l10n.hostsClubHostDefaultsStepTextDefaultActivity,
-        body: context.l10n.hostsClubHostDefaultsStepTextNewEventsStartFrom,
-        values: ActivityKind.eventCreationDefaults,
-        itemLabel: (activityKind) => activityKind.label,
-        selected: {selectedActivityKind},
-        onSelectionChanged: (selection) => onChanged(selection.single),
-        initiallyOpen: true,
-        icon: CatchIcons.eventOutlined,
-        iconColor: ActivityPalette.resolve(
-          context,
-          selectedActivityKind,
-        ).accent,
-      ),
-    );
-  }
 }
 
 class ClubPolicyDefaultsCard extends StatefulWidget {
@@ -104,14 +79,19 @@ class ClubPolicyDefaultsCard extends StatefulWidget {
     required this.defaults,
     required this.currencyCode,
     required this.onChanged,
-    this.onImmediateChanged,
+    this.activityKind,
+    this.onActivityChanged,
     this.advancedOnly = false,
-  });
+  }) : assert(
+         (activityKind == null) == (onActivityChanged == null),
+         'activityKind and onActivityChanged must be provided together',
+       );
 
   final EventPolicyDefaults defaults;
   final String currencyCode;
-  final ValueChanged<EventPolicyDefaults> onChanged;
-  final ValueChanged<EventPolicyDefaultsUpdate>? onImmediateChanged;
+  final ValueChanged<EventPolicyDefaultsUpdate> onChanged;
+  final ActivityKind? activityKind;
+  final ValueChanged<ActivityKind>? onActivityChanged;
   final bool advancedOnly;
 
   @override
@@ -119,6 +99,8 @@ class ClubPolicyDefaultsCard extends StatefulWidget {
 }
 
 class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
+  String? _openNumericField;
+  final Map<String, String?> _numericErrors = {};
   late final TextEditingController _minAgeController = TextEditingController(
     text: _optionalIntText(
       widget.defaults.minAge == 0 ? null : widget.defaults.minAge,
@@ -207,6 +189,42 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
     super.dispose();
   }
 
+  void _setNumericFieldOpen(String field, bool open) {
+    setState(() {
+      _openNumericField = open ? field : null;
+      _numericErrors[field] = null;
+    });
+  }
+
+  void _cancelNumericField(
+    String field,
+    TextEditingController controller,
+    String confirmedText,
+  ) {
+    _setText(controller, confirmedText);
+    setState(() {
+      _openNumericField = null;
+      _numericErrors[field] = null;
+    });
+  }
+
+  void _submitNumericField({
+    required String field,
+    required String? Function() validate,
+    required EventPolicyDefaultsUpdate update,
+  }) {
+    final error = validate();
+    if (error != null) {
+      setState(() => _numericErrors[field] = error);
+      return;
+    }
+    widget.onChanged(update);
+    setState(() {
+      _openNumericField = null;
+      _numericErrors[field] = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final defaults = widget.defaults;
@@ -231,6 +249,18 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         ),
       ),
       children: [
+        if (widget.activityKind case final activityKind?)
+          CatchField.choices<ActivityKind>(
+            title: context.l10n.hostsClubHostDefaultsStepTextDefaultActivity,
+            body: context.l10n.hostsClubHostDefaultsStepTextNewEventsStartFrom,
+            values: ActivityKind.eventCreationDefaults,
+            itemLabel: (value) => value.label,
+            selected: {activityKind},
+            onSelectionChanged: (selection) =>
+                widget.onActivityChanged!(selection.single),
+            icon: CatchIcons.eventOutlined,
+            iconColor: ActivityPalette.resolve(context, activityKind).accent,
+          ),
         if (!widget.advancedOnly)
           CatchField.choices<EventAdmissionDefaultPreset>(
             title: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
@@ -245,11 +275,11 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             onSelectionChanged: (selection) {
               final preset = selection.single;
               _emit(
-                defaults.copyWith(
+                (current) => current.copyWith(
                   admissionPreset: preset,
                   dynamicPricingEnabled:
                       preset == EventAdmissionDefaultPreset.balancedSingles
-                      ? defaults.dynamicPricingEnabled
+                      ? current.dynamicPricingEnabled
                       : false,
                 ),
               );
@@ -264,7 +294,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 .l10n
                 .hostsClubHostDefaultsStepBodyOptionallyPrefillStraightMen,
             value: cohortCapsEnabled,
-            onChanged: (value) => _emitImmediate(
+            onChanged: (value) => _emit(
               (current) => current.copyWith(
                 admissionPreset: value
                     ? EventAdmissionDefaultPreset.fixedCohortCaps
@@ -278,32 +308,64 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
               Row(
                 children: [
                   Expanded(
-                    child: CatchField.input(
+                    child: CatchField.inputActions(
                       title: context
                           .l10n
                           .hostsClubHostDefaultsStepTitleMaxStraightMen,
-                      isOptional: true,
                       controller: _maxMenController,
+                      open: _openNumericField == 'maxMen',
+                      onOpenChanged: (open) =>
+                          _setNumericFieldOpen('maxMen', open),
+                      onCancel: () => _cancelNumericField(
+                        'maxMen',
+                        _maxMenController,
+                        _optionalIntText(defaults.maxMen),
+                      ),
+                      onSubmit: () => _submitNumericField(
+                        field: 'maxMen',
+                        validate: () =>
+                            positiveOptionalValidator(_maxMenController.text),
+                        update: (current) => current.copyWith(
+                          maxMen: _parseOptionalInt(_maxMenController),
+                        ),
+                      ),
                       icon: CatchIcons.maleOutlined,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: positiveOptionalValidator,
-                      onChanged: (_) => _emitFromControllers(),
+                      error: _numericErrors['maxMen'],
+                      onChanged: (_) =>
+                          setState(() => _numericErrors['maxMen'] = null),
                     ),
                   ),
                   gapW12,
                   Expanded(
-                    child: CatchField.input(
+                    child: CatchField.inputActions(
                       title: context
                           .l10n
                           .hostsClubHostDefaultsStepTitleMaxStraightWomen,
-                      isOptional: true,
                       controller: _maxWomenController,
+                      open: _openNumericField == 'maxWomen',
+                      onOpenChanged: (open) =>
+                          _setNumericFieldOpen('maxWomen', open),
+                      onCancel: () => _cancelNumericField(
+                        'maxWomen',
+                        _maxWomenController,
+                        _optionalIntText(defaults.maxWomen),
+                      ),
+                      onSubmit: () => _submitNumericField(
+                        field: 'maxWomen',
+                        validate: () =>
+                            positiveOptionalValidator(_maxWomenController.text),
+                        update: (current) => current.copyWith(
+                          maxWomen: _parseOptionalInt(_maxWomenController),
+                        ),
+                      ),
                       icon: CatchIcons.femaleOutlined,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: positiveOptionalValidator,
-                      onChanged: (_) => _emitFromControllers(),
+                      error: _numericErrors['maxWomen'],
+                      onChanged: (_) =>
+                          setState(() => _numericErrors['maxWomen'] = null),
                     ),
                   ),
                 ],
@@ -318,7 +380,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 .l10n
                 .hostsClubHostDefaultsStepBodyPrefillDynamicPricingControls,
             value: defaults.dynamicPricingEnabled,
-            onChanged: (value) => _emitImmediate(
+            onChanged: (value) => _emit(
               (current) => current.copyWith(
                 dynamicPricingEnabled: value,
                 dynamicPricingStepInPaise: value
@@ -336,30 +398,79 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 Row(
                   children: [
                     Expanded(
-                      child: CatchField.input(
+                      child: CatchField.inputActions(
                         title: context.l10n.hostsClubHostDefaultsStepTitleStep,
                         controller: _pricingStepController,
+                        open: _openNumericField == 'pricingStep',
+                        onOpenChanged: (open) =>
+                            _setNumericFieldOpen('pricingStep', open),
+                        onCancel: () => _cancelNumericField(
+                          'pricingStep',
+                          _pricingStepController,
+                          _minorUnitsText(
+                            defaults.dynamicPricingStepInPaise,
+                            currencyCode: widget.currencyCode,
+                          ),
+                        ),
+                        onSubmit: () => _submitNumericField(
+                          field: 'pricingStep',
+                          validate: () => positiveRequiredValidator(
+                            _pricingStepController.text,
+                          ),
+                          update: (current) => current.copyWith(
+                            dynamicPricingStepInPaise: _parseMajorUnitsToMinor(
+                              _pricingStepController,
+                              currencyCode: widget.currencyCode,
+                            ),
+                          ),
+                        ),
                         icon: CatchIcons.trendingUpRounded,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                         ],
-                        validator: positiveRequiredValidator,
-                        onChanged: (_) => _emitFromControllers(),
+                        error: _numericErrors['pricingStep'],
+                        onChanged: (_) => setState(
+                          () => _numericErrors['pricingStep'] = null,
+                        ),
                       ),
                     ),
                     gapW12,
                     Expanded(
-                      child: CatchField.input(
+                      child: CatchField.inputActions(
                         title: context.l10n.hostsClubHostDefaultsStepTitleMax,
                         controller: _pricingMaxController,
+                        open: _openNumericField == 'pricingMax',
+                        onOpenChanged: (open) =>
+                            _setNumericFieldOpen('pricingMax', open),
+                        onCancel: () => _cancelNumericField(
+                          'pricingMax',
+                          _pricingMaxController,
+                          _minorUnitsText(
+                            defaults.dynamicPricingMaxInPaise,
+                            currencyCode: widget.currencyCode,
+                          ),
+                        ),
+                        onSubmit: () => _submitNumericField(
+                          field: 'pricingMax',
+                          validate: () => positiveRequiredValidator(
+                            _pricingMaxController.text,
+                          ),
+                          update: (current) => current.copyWith(
+                            dynamicPricingMaxInPaise: _parseMajorUnitsToMinor(
+                              _pricingMaxController,
+                              currencyCode: widget.currencyCode,
+                            ),
+                          ),
+                        ),
                         icon: CatchIcons.priceChangeOutlined,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                         ],
-                        validator: positiveRequiredValidator,
-                        onChanged: (_) => _emitFromControllers(),
+                        error: _numericErrors['pricingMax'],
+                        onChanged: (_) =>
+                            setState(() => _numericErrors['pricingMax'] = null),
                       ),
                     ),
                   ],
@@ -368,33 +479,74 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             ),
         ],
         if (!widget.advancedOnly) ...[
-          CatchField.input(
-            title: context.l10n.hostsClubHostDefaultsStepTitleMinAge,
-            isOptional: true,
-            controller: _minAgeController,
-            icon: CatchIcons.cakeOutlined,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            validator: (value) => validateAge(
-              value,
-              siblingController: _maxAgeController,
-              isMinimum: true,
-            ),
-            onChanged: (_) => _emitFromControllers(),
-          ),
-          CatchField.input(
-            title: context.l10n.hostsClubHostDefaultsStepTitleMaxAge,
-            isOptional: true,
-            controller: _maxAgeController,
-            icon: CatchIcons.cakeOutlined,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            validator: (value) => validateAge(
-              value,
-              siblingController: _minAgeController,
-              isMinimum: false,
-            ),
-            onChanged: (_) => _emitFromControllers(),
+          Row(
+            children: [
+              Expanded(
+                child: CatchField.inputActions(
+                  title: context.l10n.hostsClubHostDefaultsStepTitleMinAge,
+                  controller: _minAgeController,
+                  open: _openNumericField == 'minAge',
+                  onOpenChanged: (open) => _setNumericFieldOpen('minAge', open),
+                  onCancel: () => _cancelNumericField(
+                    'minAge',
+                    _minAgeController,
+                    _optionalIntText(
+                      defaults.minAge == 0 ? null : defaults.minAge,
+                    ),
+                  ),
+                  onSubmit: () => _submitNumericField(
+                    field: 'minAge',
+                    validate: () => validateAge(
+                      _minAgeController.text,
+                      siblingController: _maxAgeController,
+                      isMinimum: true,
+                    ),
+                    update: (current) => current.copyWith(
+                      minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
+                    ),
+                  ),
+                  icon: CatchIcons.cakeOutlined,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  error: _numericErrors['minAge'],
+                  onChanged: (_) =>
+                      setState(() => _numericErrors['minAge'] = null),
+                ),
+              ),
+              gapW12,
+              Expanded(
+                child: CatchField.inputActions(
+                  title: context.l10n.hostsClubHostDefaultsStepTitleMaxAge,
+                  controller: _maxAgeController,
+                  open: _openNumericField == 'maxAge',
+                  onOpenChanged: (open) => _setNumericFieldOpen('maxAge', open),
+                  onCancel: () => _cancelNumericField(
+                    'maxAge',
+                    _maxAgeController,
+                    _optionalIntText(
+                      defaults.maxAge == 99 ? null : defaults.maxAge,
+                    ),
+                  ),
+                  onSubmit: () => _submitNumericField(
+                    field: 'maxAge',
+                    validate: () => validateAge(
+                      _maxAgeController.text,
+                      siblingController: _minAgeController,
+                      isMinimum: false,
+                    ),
+                    update: (current) => current.copyWith(
+                      maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
+                    ),
+                  ),
+                  icon: CatchIcons.cakeOutlined,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  error: _numericErrors['maxAge'],
+                  onChanged: (_) =>
+                      setState(() => _numericErrors['maxAge'] = null),
+                ),
+              ),
+            ],
           ),
           CatchField.choices<EventCancellationPolicyId>(
             title:
@@ -404,7 +556,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             itemLabel: (policyId) => policyFor(policyId).title.toUpperCase(),
             selected: {defaults.cancellationPolicyId},
             onSelectionChanged: (selection) => _emit(
-              defaults.copyWith(cancellationPolicyId: selection.single),
+              (current) =>
+                  current.copyWith(cancellationPolicyId: selection.single),
             ),
             initiallyOpen: true,
             icon: CatchIcons.ruleOutlined,
@@ -414,35 +567,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
     );
   }
 
-  void _emitFromControllers() {
-    _emit(
-      widget.defaults.copyWith(
-        minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
-        maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
-        maxMen: _parseOptionalInt(_maxMenController),
-        maxWomen: _parseOptionalInt(_maxWomenController),
-        dynamicPricingStepInPaise: _parseMajorUnitsToMinor(
-          _pricingStepController,
-          currencyCode: widget.currencyCode,
-        ),
-        dynamicPricingMaxInPaise: _parseMajorUnitsToMinor(
-          _pricingMaxController,
-          currencyCode: widget.currencyCode,
-        ),
-      ),
-    );
-  }
-
-  void _emit(EventPolicyDefaults defaults) => widget.onChanged(defaults);
-
-  void _emitImmediate(EventPolicyDefaultsUpdate update) {
-    final callback = widget.onImmediateChanged;
-    if (callback != null) {
-      callback(update);
-      return;
-    }
-    _emit(update(widget.defaults));
-  }
+  void _emit(EventPolicyDefaultsUpdate update) => widget.onChanged(update);
 }
 
 extension on EventAdmissionDefaultPreset {

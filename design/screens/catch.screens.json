@@ -1,6 +1,6 @@
 {
   "$schema": "./catch.screens.schema.json",
-  "version": 2,
+  "version": 1,
   "updated": "2026-07-16",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
@@ -2403,10 +2403,6 @@
           {
             "file": "lib/dashboard/presentation/dashboard_full_view_model.dart",
             "symbol": "dashboardFullViewModel"
-          },
-          {
-            "file": "lib/dashboard/data/dashboard_recommendations_repository.dart",
-            "symbol": "dashboardRecommendedEventsProvider"
           },
           {
             "file": "lib/dashboard/presentation/dashboard_screen.dart",
@@ -8553,11 +8549,6 @@
           "role": "primary"
         },
         {
-          "id": "hostInsightsScreen",
-          "path": "/host/organizer/:clubId/insights",
-          "role": "alias"
-        },
-        {
           "id": "hostClubsScreen",
           "path": "/host/clubs",
           "role": "alias"
@@ -8566,6 +8557,26 @@
           "id": "hostEditClubScreen",
           "path": "/host/clubs/:clubId/edit",
           "role": "alias"
+        },
+        {
+          "id": "hostClubEventDefaultsScreen",
+          "path": "/host/clubs/event-defaults",
+          "role": "host"
+        },
+        {
+          "id": "hostClubLiveGuideScreen",
+          "path": "/host/clubs/live-guide",
+          "role": "host"
+        },
+        {
+          "id": "hostClubTeamScreen",
+          "path": "/host/clubs/team",
+          "role": "host"
+        },
+        {
+          "id": "hostClubPaymentsScreen",
+          "path": "/host/clubs/payments",
+          "role": "host"
         }
       ],
       "source": {
@@ -8580,8 +8591,16 @@
             "symbol": "HostClubsScreen"
           },
           {
-            "file": "lib/hosts/presentation/host_operations/host_insights_screen.dart",
-            "symbol": "HostInsightsScreen"
+            "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+            "symbol": "HostClubEditTab"
+          },
+          {
+            "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+            "symbol": "HostClubEventDefaultsScreen"
+          },
+          {
+            "file": "lib/hosts/presentation/club_management/host_club_defaults_saver.dart",
+            "symbol": "HostClubDefaultsSaver"
           },
           {
             "file": "lib/clubs/data/clubs_repository.dart",
@@ -8638,7 +8657,7 @@
             "symbol": "HostPaymentAccountController"
           }
         ],
-        "notes": "HostClubsScreen resolves auth and hosted/owned club streams for the Organizer branch, while HostInsightsScreen owns the dedicated analytics utility route and requires an exact operated-club id instead of falling back. HostClubsScreenState owns Organizer/Edit/Preview selected-club state; profile edits run through HostClubEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostClubInsightsState owns analytics query state. The dedicated Insights route supplies real owner/co-host capability, back/title/range chrome, and the reusable analytics pane without the legacy tab rail."
+        "notes": "HostClubsScreen resolves auth and hosted/owned club streams and owns the canonical Edit/Insights/Preview tab shell. HostClubEditTab owns only Media, Identity, Contact, and Club settings; Event defaults, Live event guide, Host team, and owner-only Payments use top-level spoke routes resolved through the same club stream. HostClubDefaultsSaver serializes optimistic defaults updates, profile/media edits run through HostClubEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostClubInsightsState owns analytics query state."
       },
       "designRefs": [
         {
@@ -8702,14 +8721,9 @@
           "notes": "Deterministic Host Clubs capture renders a co-host selection with owner-only controls suppressed."
         },
         {
-          "id": "host_clubs_insights_reference",
-          "status": "captured",
-          "notes": "Routed 390x812 Host Insights capture renders exact organizer back/title/range chrome, backend metric cards, adjacent granularity control, a real demand/bookings trend, top events, and data-quality content without the legacy Clubs tab rail."
-        },
-        {
           "id": "host_clubs_insights_report",
           "status": "captured",
-          "notes": "Deterministic tall capture renders the dedicated populated Host Insights route from host analytics fixtures for below-fold review."
+          "notes": "Deterministic tall capture renders the populated Host Clubs Insights scorecard from host analytics fixtures for below-fold review."
         },
         {
           "id": "host_clubs_preview_tab",
@@ -9009,6 +9023,51 @@
           ]
         },
         {
+          "id": "club_settings_spokes_loaded",
+          "kind": "populated",
+          "status": "tested",
+          "source": "Event defaults, Live event guide, Host team, and owner-only Payments use thin CatchScreenTopBar spoke routes with the club name as eyebrow, capped content width, CatchSection composition, and terminal scroll padding.",
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart",
+            "test/routing/router_redirect_test.dart"
+          ],
+          "nextAction": "Keep the four planned route captures and Widgetbook owner-loaded previews synchronized.",
+          "previewIds": [
+            "HostClubEventDefaultsScreen/Owner loaded",
+            "HostClubLiveGuideScreen/Owner loaded",
+            "HostClubTeamScreen/Owner loaded",
+            "HostClubPaymentsScreen/Owner loaded"
+          ]
+        },
+        {
+          "id": "club_settings_spokes_loading_error",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "All four spokes resolve uid plus operable clubs through one adapter; uid/club loading uses HostLoadingScreen and failures use CatchErrorScaffold with typed retry invalidation.",
+          "nextAction": "Add deterministic route captures if the shared loading or error shell diverges visually.",
+          "previewIds": [
+            "HostClubEventDefaultsScreen/Owner loaded",
+            "HostClubLiveGuideScreen/Owner loaded",
+            "HostClubTeamScreen/Owner loaded",
+            "HostClubPaymentsScreen/Owner loaded"
+          ]
+        },
+        {
+          "id": "club_settings_spokes_read_only",
+          "kind": "permission",
+          "status": "tested",
+          "source": "Co-hosts receive read-only Event defaults and Live event guide content, owner controls are suppressed in Host team, and Payments is omitted from Edit navigation while direct access remains non-mutating.",
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Keep the co-host capability tests aligned with the spoke route contract.",
+          "previewIds": [
+            "HostClubEventDefaultsScreen/Owner loaded",
+            "HostClubLiveGuideScreen/Owner loaded",
+            "HostClubTeamScreen/Owner loaded"
+          ]
+        },
+        {
           "id": "update_club_pending",
           "kind": "mutation",
           "status": "captured",
@@ -9124,26 +9183,13 @@
           ]
         },
         {
-          "id": "insights_unknown_club",
-          "kind": "permission",
-          "status": "tested",
-          "source": "HostInsightsScreen requires an exact operated-club id and renders Insights unavailable instead of selecting another organizer.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Keep exact-id and back-to-Organizer behavior covered as Host authorization evolves.",
-          "previewIds": [
-            "HostInsightsScreen/Dedicated route states"
-          ]
-        },
-        {
           "id": "insights_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "The dedicated Insights route watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
-          "nextAction": "Keep the dedicated-route loading capture synced without restoring the legacy Clubs tab rail.",
+          "source": "The Host Clubs Insights tab watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
+          "nextAction": "Keep the canonical tab loading capture and Widgetbook scorecard state synced.",
           "previewIds": [
-            "HostInsightsScreen/Dedicated route states"
+            "HostClubInsightsPane/Insights scorecard states"
           ],
           "captureIds": [
             "host_clubs_insights_loading"
@@ -9153,14 +9199,23 @@
           "id": "insights_report",
           "kind": "populated",
           "status": "captured",
-          "source": "HostInsightsScreen renders exact organizer utility chrome; HostAnalyticsReportView renders backend metrics, a demand/bookings dual-series trend, top events, reviews/saves, and data-quality panels.",
-          "nextAction": "HostClubInsightsState owns range, granularity, custom bounds, event scope, and provider query derivation. Export/register/compare the pinned reference under HOST-V2-INSIGHTS-REFERENCE-001, then add sparse and long-label variants only if they diverge.",
+          "source": "HostAnalyticsReportView renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews.",
+          "nextAction": "Keep client-owned labels, tab navigation, partial/missing quality badges, narrow and text-scale variants, and backend response compatibility covered.",
           "previewIds": [
-            "HostInsightsScreen/Dedicated route states"
+            "HostClubInsightsPane/Insights scorecard states"
           ],
           "captureIds": [
-            "host_clubs_insights_reference",
             "host_clubs_insights_report"
+          ]
+        },
+        {
+          "id": "insights_coach",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "HostAnalyticsReportView shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; the block is absent when no rule fires.",
+          "nextAction": "Keep rule thresholds, copy, report/defaults links, and the hidden no-recommendation state pinned by tests and Widgetbook.",
+          "previewIds": [
+            "HostClubInsightsPane/Insights scorecard states"
           ]
         },
         {
@@ -9170,7 +9225,7 @@
           "source": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query.",
           "nextAction": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
           "previewIds": [
-            "HostInsightsScreen/Dedicated route states"
+            "HostClubInsightsPane/Insights scorecard states"
           ],
           "captureIds": [
             "host_clubs_insights_error",
@@ -9253,8 +9308,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostClubsScreen reads auth and host club streams directly, _HostClubsScaffold owns selected-club index, selected tab, Organizer overview callbacks, and public-preview route callbacks, _HostClubProfileCard owns expanded inline-editor state, payment/team children read their own providers, and _HostClubInsightsPane composes controls from HostClubInsightsState before rendering local analytics sections.",
-        "targetLayout": "HostClubsScreen should select a HostClubsScreenState from a provider/controller adapter and compose provider-free organizer overview, top bar, tab rail, profile editor, payouts, host team, analytics, preview, access/loading/error, and typed route callbacks. Mutation orchestration should move into controllers/adapters so route widgets compose sections instead of writing repositories directly.",
+        "currentLayout": "HostClubsScreen resolves auth and host club streams, _HostClubsScaffold owns selected-club and tab state, HostClubEditTab composes Media, Identity, Contact, and Club settings, and four top-level spoke screens own Event defaults, Live event guide, Host team, and owner-only Payments. HostClubDefaultsSaver serializes optimistic defaults mutations.",
+        "targetLayout": "Keep Host Clubs as a thin route adapter over provider-free tab and spoke sections, with repository writes owned by controllers and one canonical CatchSection/CatchField composition per concern.",
         "sections": [
           {
             "id": "section.host.clubs_screen_adapter",
@@ -9320,15 +9375,15 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostOperationsTopBar",
+              "CatchTabbedScreenScaffold",
               "ClubSwitcher"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
-              "symbol": "HostOperationsTopBar"
+              "file": "lib/core/widgets/catch_tabbed_screen.dart",
+              "symbol": "CatchTabbedScreenScaffold"
             },
-            "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "provider-free host operations top bar section",
+            "currentOwner": "HostClubsScaffold + CatchTabbedScreenScaffold",
+            "targetOwner": "shared CatchTabbedScreenScaffold",
             "dependencies": [
               "catch.top_bar",
               "catch.icon_button"
@@ -9341,7 +9396,7 @@
               "host_team",
               "hidden_in_organizer_mode"
             ],
-            "migration": "Move selected club title, kicker, switcher labels, and role labels into HostClubsScreenState and share top-bar behavior with Host Home where appropriate. Organizer mode now hides the app bar and exposes club switching from the overview header.",
+            "migration": "HostClubsScreenState owns the selected club and picker visibility while HostClubsScaffold composes the shared CatchTabbedScreenScaffold with settings and club-switcher actions.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -9378,7 +9433,7 @@
           },
           {
             "id": "section.host.clubs_profile_card",
-            "name": "Host club profile editor",
+            "name": "Host club Edit tab",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
@@ -9386,11 +9441,11 @@
               "HostClubMetaRow"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
-              "symbol": "HostClubProfileCard"
+              "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+              "symbol": "HostClubEditTab"
             },
             "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "provider-free host club profile editor section",
+            "targetOwner": "HostClubEditTab",
             "dependencies": [
               "catch.badge",
               "catch.chip",
@@ -9404,7 +9459,7 @@
               "missing_optional_contact",
               "long_description"
             ],
-            "migration": "Move owner/read-only capabilities and display values into a state model; split identity, contact, defaults, public profile, payouts, and host-team sub-sections as local sections until reuse is proven.",
+            "migration": "Edit now owns exactly Media, Identity, Contact, and Club settings. Defaults, payments, and team content moved to dedicated top-level spokes; profile/public preview remains owned by Preview.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -9422,7 +9477,7 @@
               "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
               "symbol": "HostInlineTextEntryEditor"
             },
-            "currentOwner": "_HostClubProfileCard",
+            "currentOwner": "HostClubEditTab",
             "targetOwner": "shared inline editor compound after profile/host use cases converge",
             "dependencies": [
               "catch.field",
@@ -9451,11 +9506,11 @@
               "HostEventDefaultsEditor"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-              "symbol": "HostInlineOptionEditor"
+              "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+              "symbol": "HostClubEventDefaultsScreen"
             },
-            "currentOwner": "_HostClubProfileCard",
-            "targetOwner": "provider-free host event defaults section",
+            "currentOwner": "HostClubEventDefaultsScreen",
+            "targetOwner": "HostClubEventDefaultsScreen plus HostClubDefaultsSaver",
             "dependencies": [
               "catch.chip",
               "catch.field"
@@ -9468,7 +9523,7 @@
               "validation_error",
               "save_error"
             ],
-            "migration": "Move event-default display labels, option sets, validation, and patch construction into an adapter/controller so the section renders typed choices only.",
+            "migration": "Activity and booking-policy defaults share one spoke and one serialized functional update seam; numeric fields use field-local explicit actions while switches commit immediately.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -9485,7 +9540,7 @@
               "file": "lib/hosts/presentation/payments/host_payment_account_card.dart",
               "symbol": "HostPaymentAccountCard"
             },
-            "currentOwner": "_HostClubProfileCard",
+            "currentOwner": "HostClubPaymentsScreen",
             "targetOwner": "provider-free payout section plus payment controller adapter",
             "dependencies": [
               "catch.badge",
@@ -9520,7 +9575,7 @@
               "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
               "symbol": "HostTeamManagementSection"
             },
-            "currentOwner": "_HostClubProfileCard",
+            "currentOwner": "HostClubTeamScreen",
             "targetOwner": "provider-free host team section plus HostTeamManagementController adapter",
             "dependencies": [
               "catch.badge",
@@ -9554,8 +9609,8 @@
             "layer": "section",
             "claudeComponents": [
               "HostClubInsightsState",
-              "HostAnalyticsControls",
-              "HostAnalyticsReport"
+              "HostAnalyticsReportView",
+              "HostAnalyticsTrendPanel"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
@@ -9573,19 +9628,23 @@
               "loading",
               "error",
               "empty",
-              "summary_metrics",
-              "trend",
-              "top_events",
-              "review_discovery",
-              "data_quality",
-              "event_scoped",
-              "custom_range",
-              "retry_query",
-              "club_switch_clears_event_scope"
+              "loaded",
+              "partial_data",
+              "syncing",
+              "thirty_days",
+              "ninety_days",
+              "twelve_months",
+              "more_metrics_collapsed",
+              "more_metrics_expanded",
+              "trend_bucket_selected",
+              "recent_events_empty",
+              "payment_issues",
+              "text_scale"
             ],
-            "migration": "HostClubInsightsState now owns analytics query controls, selected event scope, provider invalidation identity, and club-switch event-scope clearing. Date picker presentation still lives in the pane; add fixtures for sparse, partial, custom-range, event-scoped, and full reports before a provider-free public analytics section split.",
+            "migration": "HostClubInsightsState owns only the selected club and one of three range presets; granularity is derived and event scoping/custom dates are absent from the host surface. HostClubInsightsPane owns device-IANA query resolution, ten-minute provider reuse, pull-to-refresh invalidation, and navigation from recent events to the existing per-event Report. HostAnalyticsReportView is provider-free and Widgetbook covers loaded, empty, partial-data, Coach, and text-scale scorecard states.",
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostClubsScreen/Route states",
+              "HostClubInsightsPane/Insights scorecard states"
             ]
           },
           {
@@ -9594,14 +9653,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostClubPreviewPane"
+              "ClubDetailReadOnlyPreviewSliver"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_club_preview.dart",
-              "symbol": "HostClubPreviewPane"
+              "file": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+              "symbol": "ClubDetailReadOnlyPreviewSliver"
             },
-            "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "provider-free host club preview section",
+            "currentOwner": "HostClubsScaffold + ClubDetailReadOnlyPreviewSliver",
+            "targetOwner": "shared public club preview sliver",
             "dependencies": [
               "catch.surface"
             ],
@@ -9610,7 +9669,7 @@
               "empty_description",
               "open_public_preview"
             ],
-            "migration": "_HostClubsScaffold owns the public-preview route callback for this pane. Coordinate preview display data with screen.host.club.detail so this route composes the same public preview model.",
+            "migration": "HostClubsScaffold composes the same ClubDetailReadOnlyPreviewSliver used by the public club-detail surface so preview rendering has one canonical owner.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -17919,7 +17978,7 @@
           },
           {
             "file": "lib/public_profile/data/public_profiles_lookup.dart",
-            "symbol": "publicProfilesByIdsProvider"
+            "symbol": "publicProfilesByIds"
           }
         ],
         "mutationOwners": [],

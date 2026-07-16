@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-16T17:31:10.509Z",
+  "generatedAt": "2026-07-16T21:05:38.772Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,7 +7,7 @@
   "summary": {
     "useCases": 860,
     "components": 813,
-    "stateCards": 1778,
+    "stateCards": 1779,
     "reviewCandidates": 44,
     "oversizedUseCases": 44,
     "multiUseCaseComponents": 42
@@ -9731,7 +9731,7 @@
       ]
     },
     {
-      "component": "HostInsightsScaffold",
+      "component": "HostEventsClubSection",
       "useCaseCount": 1,
       "stateCardCount": 7,
       "paths": [
@@ -9754,7 +9754,7 @@
       },
       "useCases": [
         {
-          "name": "Covered by Host Insights route states",
+          "name": "Covered by host event section states",
           "functionName": "hostHomeEventSectionStates",
           "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
           "path": "[P1 product surfaces]/Host operations/Composed sections",
@@ -11772,6 +11772,58 @@
       ]
     },
     {
+      "component": "HostClubInsightsPane",
+      "useCaseCount": 1,
+      "stateCardCount": 5,
+      "paths": [
+        "[P1 product surfaces]/Host operations"
+      ],
+      "labels": [
+        "Coach recommendations",
+        "empty range",
+        "loaded narrative scorecard",
+        "partial data",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Insights scorecard states",
+          "functionName": "hostInsightsScorecardStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host operations",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "loaded narrative scorecard",
+              "normalizedLabel": "loaded narrative scorecard"
+            },
+            {
+              "label": "empty range",
+              "normalizedLabel": "empty range"
+            },
+            {
+              "label": "partial data",
+              "normalizedLabel": "partial data"
+            },
+            {
+              "label": "Coach recommendations",
+              "normalizedLabel": "coach recommendations"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostClubManagementPanel",
       "useCaseCount": 1,
       "stateCardCount": 5,
@@ -13782,53 +13834,6 @@
             {
               "label": "co-host read-only / dark",
               "normalizedLabel": "co host read only dark"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "HostInsightsScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 4,
-      "paths": [
-        "[P1 product surfaces]/Host operations"
-      ],
-      "labels": [
-        "authorized organizer report",
-        "range sheet",
-        "text scale 2.0",
-        "unknown organizer"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Dedicated route states",
-          "functionName": "hostInsightsRouteStates",
-          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P1 product surfaces]/Host operations",
-          "stateCardCount": 4,
-          "stateCards": [
-            {
-              "label": "authorized organizer report",
-              "normalizedLabel": "authorized organizer report"
-            },
-            {
-              "label": "unknown organizer",
-              "normalizedLabel": "unknown organizer"
-            },
-            {
-              "label": "range sheet",
-              "normalizedLabel": "range sheet"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
             }
           ]
         }
