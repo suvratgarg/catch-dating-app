@@ -393,23 +393,35 @@
     {
       "id": "WEB-COVERAGE-WEBSITE-CONTROLLERS-001",
       "priority": "p2",
-      "status": "planned",
+      "status": "completed",
       "area": "test_coverage",
-      "summary": "Extend website controller tests to claim and listing-review mutations plus route-state failure cases."
+      "summary": "Extend website controller tests to claim and listing-review mutations plus route-state failure cases.",
+      "evidence": [
+        "Claim mutation tests cover the typed packet, claim-query invalidation, and disabled listing state.",
+        "Listing-review tests cover disabled routes, validation, local preview, remote publish, query failure, and eventual-consistency rendering."
+      ]
     },
     {
       "id": "WEB-COVERAGE-WEBSITE-ROUTE-CONTROLLERS-001",
       "priority": "p2",
-      "status": "planned",
+      "status": "completed",
       "area": "test_coverage",
-      "summary": "Add behavior tests for the remaining claim-flow, host-listing, and organizer-directory route controllers."
+      "summary": "Add behavior tests for the remaining claim-flow, host-listing, and organizer-directory route controllers.",
+      "evidence": [
+        "The website unit loop passes 12 files and 27 tests across every real feature controller and mutation hook, with aggregate line coverage at 68.96%.",
+        "The 2026-07-13 hardening pass required all 22 behavior-owning React hooks in the target manifest; only one compatibility re-export remained exempt."
+      ]
     },
     {
       "id": "WEB-USABILITY-REVIEW-WRITE-001",
       "priority": "p1",
-      "status": "planned",
+      "status": "completed",
       "area": "usability",
-      "summary": "Keep an accepted public review visible while the eventually consistent listing query catches up."
+      "summary": "Keep an accepted public review visible while the eventually consistent listing query catches up.",
+      "evidence": [
+        "The create callable response is retained in the local deduplicating merge layer before query invalidation.",
+        "A behavior test proves an empty immediate refetch does not make the accepted review disappear."
+      ]
     },
     {
       "id": "WEB-PERF-STORYBOOK-CHUNKS-001",
@@ -456,7 +468,7 @@
     {
       "id": "WEB-LEXICON-CHOICE-CONTROLS-001",
       "priority": "p2",
-      "status": "planned",
+      "status": "completed",
       "area": "code_organization",
       "summary": "Split the combined website choice-controls registry/story entry so terse chips map to catch.chip and explanatory cards map to catch.option_card independently."
     },
@@ -484,7 +496,7 @@
     {
       "id": "WEB-TEST-METADATA-FIXTURE-001",
       "priority": "p1",
-      "status": "planned",
+      "status": "completed",
       "area": "test_coverage",
       "summary": "Realign the canonical organizer title-template assertion with the current events-and-reviews metadata source."
     },
