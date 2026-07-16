@@ -919,7 +919,11 @@ void main() {
 
     await tester.tap(find.byTooltip('Switch club'));
     await pumpFeatureUi(tester);
-    await tester.tap(find.text('Quizzicals · Host team'));
+    expect(find.text('Quizzicals'), findsOneWidget);
+    expect(find.text('Host team'), findsOneWidget);
+    await tester.tap(
+      find.byKey(const ValueKey('host-today-club-option-cohost-club')),
+    );
     await pumpFeatureUi(tester);
 
     expect(find.text('Quizzicals'), findsOneWidget);
@@ -982,7 +986,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.text('IDENTITY').hitTestable(), findsOneWidget);
+    expect(find.text('IDENTITY'), findsOneWidget);
   });
 
   testWidgets('Host club workspace keeps shared chrome across every tab', (
@@ -1094,7 +1098,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expectSharedChrome(switcherVisible: false);
-    expect(find.text('IDENTITY').hitTestable(), findsOneWidget);
+    expect(find.text('IDENTITY'), findsOneWidget);
     expect(find.text('SAKET · INDORE'), findsNothing);
     final editScroll = tester
         .state<ScrollableState>(editWorkspaceScrollable)

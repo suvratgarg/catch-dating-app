@@ -105,14 +105,48 @@ class CatchTabbedPageScrollView extends StatefulWidget {
   final ScrollPhysics? physics;
 
   @override
-  State<CatchTabbedPageScrollView> createState() =>
-      _CatchTabbedPageScrollViewState();
+  CatchTabbedPageScrollViewState createState() =>
+      CatchTabbedPageScrollViewState();
 }
 
-class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
+class CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
     with AutomaticKeepAliveClientMixin<CatchTabbedPageScrollView> {
+  ScrollController? _effectiveController;
+
   @override
   bool get wantKeepAlive => true;
+
+  double? captureOffset() {
+    final position = _ownPosition;
+    return position?.hasPixels == true ? position!.pixels : null;
+  }
+
+  void restoreOffset(double? savedPixels) {
+    final position = _ownPosition;
+    if (position?.hasPixels != true || savedPixels == null) return;
+    position!.jumpTo(
+      savedPixels.clamp(position.minScrollExtent, position.maxScrollExtent),
+    );
+  }
+
+  ScrollPosition? get _ownPosition {
+    final controller = _effectiveController;
+    if (controller == null || !controller.hasClients) return null;
+    for (final position in controller.positions) {
+      final notificationContext = position.context.notificationContext;
+      if (notificationContext == null) continue;
+      var belongsToThisPage = false;
+      notificationContext.visitAncestorElements((element) {
+        if (element == context) {
+          belongsToThisPage = true;
+          return false;
+        }
+        return true;
+      });
+      if (belongsToThisPage) return position;
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +154,8 @@ class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
     return CatchPagerFocusBoundary(
       child: Builder(
         builder: (context) {
+          _effectiveController =
+              widget.controller ?? PrimaryScrollController.maybeOf(context);
           return CustomScrollView(
             key: widget.scrollKey,
             controller: widget.controller,

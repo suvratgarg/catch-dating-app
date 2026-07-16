@@ -846,8 +846,14 @@ void main() {
       }
 
       expect(find.text('Club directory'), findsOneWidget);
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -500));
-      await tester.pump();
+      for (
+        var index = 0;
+        index < 10 && dayHeader.hitTestable().evaluate().isNotEmpty;
+        index += 1
+      ) {
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -300));
+        await tester.pump();
+      }
       expect(dayHeader.hitTestable(), findsNothing);
       expect(tester.takeException(), isNull);
     });
@@ -2882,13 +2888,16 @@ void main() {
         );
         await _pumpClubUi(tester);
 
-        final scrollView = tester.widget<CustomScrollView>(
-          find.byType(CustomScrollView),
+        final detailGroup = tester.widget<SliverMainAxisGroup>(
+          find.descendant(
+            of: find.byType(ClubDetailBody),
+            matching: find.byType(SliverMainAxisGroup),
+          ),
         );
-        expect(scrollView.slivers[2], isA<ClubScheduleSection>());
-        expect(scrollView.slivers[3], isA<CatchDetailSliverSectionList>());
+        expect(detailGroup.children[2], isA<ClubScheduleSection>());
+        expect(detailGroup.children[3], isA<CatchDetailSliverSectionList>());
         final trailingSections =
-            scrollView.slivers[3] as CatchDetailSliverSectionList;
+            detailGroup.children[3] as CatchDetailSliverSectionList;
         expect(
           trailingSections.sections.whereType<CatchSection>().map(
             (section) => section.title,

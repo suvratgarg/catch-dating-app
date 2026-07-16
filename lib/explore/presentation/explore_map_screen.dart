@@ -248,9 +248,8 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                 ),
                 child: CatchCountPill.label(
                   icon: CatchIcons.nearMeOutlined,
-                  label: hasDeviceLocation
-                      ? '$distanceControlLabel $distanceControlValue'
-                      : distanceControlLabel,
+                  label: distanceControlLabel,
+                  value: hasDeviceLocation ? distanceControlValue : null,
                   semanticLabel: distanceControlSemantics,
                   onPressed: () {
                     if (!locationLoading) _activateOrCycleDistance();
