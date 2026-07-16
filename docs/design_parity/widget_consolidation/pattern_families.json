@@ -1,0 +1,464 @@
+{
+  "schemaVersion": 1,
+  "families": [
+    {
+      "id": "chip-core",
+      "title": "Core chip family",
+      "intent": "One ergonomic contract for quiet tags, selectable choices, and activity-typed chips. Compact status metadata belongs to badge-status, pressable floating counters belong to floating-compact-controls, identity switching belongs to identity-switchers, and temporal or sequence state belongs to progress-cues. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",
+      "priority": "P0",
+      "status": "implemented",
+      "targetContract": "catch.chip",
+      "qualityReference": "CatchSelectChip",
+      "decisionSource": "user-approved:2026-07-12",
+      "acceptedVisualDelta": [
+        "Use a solid selected fill with inverse ink.",
+        "Use a subtle selected shadow.",
+        "Scale only while pressed.",
+        "Do not retain persistent selected scale or glow."
+      ],
+      "members": [
+        {
+          "symbol": "CatchChip",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Keep CatchChip as the public seam, but replace the weak active flag surface with semantic named constructors and the approved stronger selected treatment."
+        },
+        {
+          "symbol": "CatchSelectChip",
+          "disposition": "unify",
+          "target": "CatchChip.selectable",
+          "preview": "not-applicable",
+          "rationale": "Its pre-migration solid inverse selected state is the quality reference; that behavior now lives in the canonical chip contract without persistent glow or selected scale, and the retired public symbol no longer has an active preview."
+        },
+        {
+          "symbol": "CatchActivityChip",
+          "disposition": "unify",
+          "target": "CatchChip.activity",
+          "preview": "not-applicable",
+          "rationale": "Typed activity pigment and glyph behavior now live in the semantic activity constructor; the retired public symbol no longer has an active preview."
+        }
+      ]
+    },
+    {
+      "id": "badge-status",
+      "title": "Badge and compact status family",
+      "intent": "Review compact non-interactive metadata, status, privacy, role, rating, live, and on-dark treatments against one badge grammar. Floating controls, context switchers, and progress indicators remain separate families. Event Detail symbols, including EventStatusPill, are excluded while the parallel Event Detail change is in flight.",
+      "priority": "P0",
+      "status": "implemented",
+      "targetContract": "catch.badge",
+      "qualityReference": "CatchBadge",
+      "decisionSource": "user-approved:2026-07-13",
+      "acceptedVisualDelta": [
+        "Functional status uses mono uppercase typography; ordinary metadata uses sentence case.",
+        "Badges on dark or media surfaces use EventSuccessDarkPill's translucent light fill, light hairline, and light ink.",
+        "Numeric overlays accept an integer, hide at zero, and cap at 99+ through CatchCountBadge.",
+        "Quiet unsaved status remains unboxed as a status dot plus supporting copy.",
+        "ClubRatingPill and CatchCornerSash are removed because neither has a current production adopter."
+      ],
+      "reviewQuestions": [
+        {
+          "id": "B1",
+          "prompt": "Should the badge grammar keep separate typography modes for functional status and ordinary metadata?",
+          "recommendation": "Two modes: mono uppercase for functional status and sentence case for metadata.",
+          "selectedOption": "Two modes: mono uppercase for functional status and sentence case for metadata.",
+          "options": [
+            "Two modes: mono uppercase for functional status and sentence case for metadata.",
+            "Use uppercase for every compact status.",
+            "Use sentence case for every compact status."
+          ]
+        },
+        {
+          "id": "B2",
+          "prompt": "Should every badge shown over dark or media surfaces use one shared recipe?",
+          "recommendation": "Standardize on EventSuccessDarkPill's translucent light fill, light hairline, and light ink.",
+          "selectedOption": "Standardize on EventSuccessDarkPill's translucent light fill, light hairline, and light ink.",
+          "options": [
+            "Standardize on EventSuccessDarkPill's translucent light fill, light hairline, and light ink.",
+            "Keep feature-owned on-dark treatments."
+          ]
+        },
+        {
+          "id": "B3",
+          "prompt": "Should CatchCountBadge be the sole numeric overlay contract?",
+          "recommendation": "Yes; accept an integer, hide at zero, cap at 99+, and absorb CatchIconBadge's numeric uses.",
+          "selectedOption": "Yes; accept an integer, hide at zero, cap at 99+, and absorb CatchIconBadge's numeric uses.",
+          "options": [
+            "Yes; accept an integer, hide at zero, cap at 99+, and absorb CatchIconBadge's numeric uses.",
+            "Keep CatchIconBadge as a separate flexible string overlay."
+          ]
+        },
+        {
+          "id": "B4",
+          "prompt": "How should the quiet unsaved state survive consolidation?",
+          "recommendation": "Keep it unboxed as a future CatchInlineStatus made from a status dot and supporting copy.",
+          "selectedOption": "Keep it unboxed as a future CatchInlineStatus made from a status dot and supporting copy.",
+          "options": [
+            "Keep it unboxed as a future CatchInlineStatus made from a status dot and supporting copy.",
+            "Convert it into an ordinary warning badge.",
+            "Remove the dedicated unsaved treatment."
+          ]
+        },
+        {
+          "id": "B5",
+          "prompt": "What should happen to the unused rating pill and card-edge sash?",
+          "recommendation": "Discard ClubRatingPill; retain CatchCornerSash only if a real adopter is named.",
+          "selectedOption": "Discard ClubRatingPill; retain CatchCornerSash only if a real adopter is named.",
+          "options": [
+            "Discard ClubRatingPill; retain CatchCornerSash only if a real adopter is named.",
+            "Keep both as supported primitives.",
+            "Discard both."
+          ]
+        }
+      ],
+      "members": [
+        {
+          "symbol": "CatchBadge",
+          "disposition": "repair",
+          "target": "CatchBadge",
+          "preview": "required",
+          "rationale": "Keep the widely used core seam, but split functional mono-uppercase status from sentence-case metadata and add one approved on-dark treatment."
+        },
+        {
+          "symbol": "CatchCountBadge",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Use one typed integer count overlay that hides at zero and owns the shared 99+ clamp."
+        },
+        {
+          "symbol": "CatchIconBadge",
+          "disposition": "unify",
+          "target": "CatchCountBadge",
+          "preview": "not-applicable",
+          "rationale": "Its flexible string-label overlay overlaps the typed count contract; migrate numeric action counts into CatchCountBadge and keep non-count status in CatchBadge."
+        },
+        {
+          "symbol": "CatchPrivacyBadge",
+          "disposition": "repair",
+          "target": "CatchBadge.privacy",
+          "preview": "required",
+          "rationale": "Retain the typed trust semantics and localized icon/copy mapping while routing its chrome through the canonical badge grammar."
+        },
+        {
+          "symbol": "ClubHostRoleBadge",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Keep this as the intended feature-adapter boundary: it maps owner/host domain state into CatchBadge without inventing chrome."
+        },
+        {
+          "symbol": "CatchStatusDot",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Keep one dot ingredient for live, presence, and row-local semantic adapters."
+        },
+        {
+          "symbol": "CatchInlineStatus",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Use one unboxed status row for low-emphasis state, with a semantic dot, wrapping supporting copy, and no parallel pill chrome."
+        },
+        {
+          "symbol": "ActivityDot",
+          "disposition": "unify",
+          "target": "CatchStatusDot",
+          "preview": "not-applicable",
+          "rationale": "The Explore activity dot is a color-mapped use of the same dot renderer and should not retain a parallel surface implementation."
+        },
+        {
+          "symbol": "CatchPersonNewMatchDot",
+          "disposition": "repair",
+          "target": "CatchStatusDot",
+          "preview": "required",
+          "rationale": "Keep its localized new-match semantics as a row adapter while delegating the visual dot to CatchStatusDot."
+        },
+        {
+          "symbol": "CatchPersonUnreadCountPill",
+          "disposition": "repair",
+          "target": "CatchCountBadge",
+          "preview": "required",
+          "rationale": "Keep localized unread semantics at the row boundary while delegating count clamping and overlay chrome to the typed count contract."
+        },
+        {
+          "symbol": "CatchCornerSash",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "No real production adopter was named during approval, so the unused sash is removed rather than retained as speculative core API."
+        },
+        {
+          "symbol": "ClubRatingPill",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "It has no current production adopter; rating metadata can use the canonical badge grammar if the concept returns."
+        },
+        {
+          "symbol": "ExploreDarkPill",
+          "disposition": "unify",
+          "target": "CatchBadge.solid",
+          "preview": "not-applicable",
+          "rationale": "Its member-count and action-label metadata are solid badges, not a separate Explore pill primitive."
+        },
+        {
+          "symbol": "EventSuccessDarkPill",
+          "disposition": "unify",
+          "target": "CatchBadge.onDark",
+          "preview": "not-applicable",
+          "rationale": "Use its translucent light fill, light hairline, and light ink as the canonical on-dark badge treatment."
+        },
+        {
+          "symbol": "LiveNowPill",
+          "disposition": "unify",
+          "target": "CatchBadge.live",
+          "preview": "not-applicable",
+          "rationale": "Live status is the canonical dot-plus-functional-label badge case and should not retain feature-owned chrome."
+        },
+        {
+          "symbol": "HostTodayCountdownPill",
+          "disposition": "unify",
+          "target": "CatchBadge.onDark",
+          "preview": "not-applicable",
+          "rationale": "This is passive temporal metadata on a hero and should use the same on-dark recipe rather than a third translucent treatment."
+        },
+        {
+          "symbol": "EventSuccessMetricPill",
+          "disposition": "repair",
+          "target": "CatchBadge",
+          "preview": "required",
+          "rationale": "Keep its value-formatting adapter while routing the resulting short factual label through shared badge chrome."
+        },
+        {
+          "symbol": "UnsavedChangesPill",
+          "disposition": "unify",
+          "target": "CatchInlineStatus",
+          "preview": "not-applicable",
+          "rationale": "Its intentionally quiet unboxed status now lives in CatchInlineStatus, so the feature-owned pill symbol and misleading name are retired."
+        }
+      ]
+    },
+    {
+      "id": "floating-compact-controls",
+      "title": "Floating compact controls",
+      "intent": "Review the shared rendering and ergonomics of compact single-action controls across floating overlays and dense rails. Labelled and icon-only commands may share family metrics while feature adapters retain toggle or loading semantics. Picker shells, multi-action inputs, media decision actions, status badges, and Event Detail symbols remain separate.",
+      "priority": "P1",
+      "status": "implemented",
+      "targetContract": "catch.icon_button + catch.count_pill",
+      "qualityReference": "CatchIconButton",
+      "decisionSource": "user-approved:2026-07-13",
+      "acceptedVisualDelta": [
+        "Icon-only actions remain CatchIconButton; labelled floating actions retain a separate repaired contract while sharing family metrics.",
+        "Compact icon actions use 44px minimum targets except the documented 40px app-bar navigation case.",
+        "Counted icon actions accept integer counts and render CatchCountBadge internally.",
+        "Picker triggers, toggle and loading adapters, bounded-step inputs, and media mutations retain their semantic boundaries while sharing renderers and metrics."
+      ],
+      "reviewQuestions": [
+        {
+          "id": "C1",
+          "prompt": "Should icon-only and labelled floating actions remain separate public widgets?",
+          "recommendation": "Keep CatchIconButton for icon-only actions and a repaired labelled control, with shared family metrics.",
+          "selectedOption": "Keep CatchIconButton for icon-only actions and a repaired labelled control, with shared family metrics.",
+          "options": [
+            "Keep CatchIconButton for icon-only actions and a repaired labelled control, with shared family metrics.",
+            "Replace both with one widget and named constructors."
+          ]
+        },
+        {
+          "id": "C2",
+          "prompt": "What minimum hit target should compact icon actions use?",
+          "recommendation": "Enforce 44px outside the documented 40px app-bar navigation exception.",
+          "selectedOption": "Enforce 44px outside the documented 40px app-bar navigation exception.",
+          "options": [
+            "Enforce 44px outside the documented 40px app-bar navigation exception.",
+            "Allow 36–40px wherever the visual circle is compact."
+          ]
+        },
+        {
+          "id": "C3",
+          "prompt": "How should counted icon actions receive and render their count?",
+          "recommendation": "Accept a typed integer and render the winning count badge internally.",
+          "selectedOption": "Accept a typed integer and render the winning count badge internally.",
+          "options": [
+            "Accept a typed integer and render the winning count badge internally.",
+            "Let feature callers compose arbitrary string badges."
+          ]
+        },
+        {
+          "id": "C4",
+          "prompt": "Should picker triggers, toggle/loading adapters, bounded-step inputs, and pass/reaction mutations join the generic compact-control API?",
+          "recommendation": "No; share renderers and metrics without collapsing their semantics.",
+          "selectedOption": "No; share renderers and metrics without collapsing their semantics.",
+          "options": [
+            "No; share renderers and metrics without collapsing their semantics.",
+            "Yes; fold every visually compact action into one API."
+          ]
+        }
+      ],
+      "members": [
+        {
+          "symbol": "CatchCountPill",
+          "disposition": "repair",
+          "target": "CatchCountPill.label",
+          "preview": "required",
+          "rationale": "Keep its raised translucent labelled silhouette, but remove the overlapping 38px icon-only state, raw string badge drawing, empty-valid construction, and action-looking passive state."
+        },
+        {
+          "symbol": "CatchIconButton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Use its icon-only semantics, disabled state, floating palette, and 44px default as the ergonomic reference for compact icon commands."
+        },
+        {
+          "symbol": "ExploreFilterGlyphButton",
+          "disposition": "unify",
+          "target": "CatchIconButton.counted",
+          "preview": "not-applicable",
+          "rationale": "Replace the custom 40px InkWell and separately composed badge with the canonical counted icon-action contract."
+        },
+        {
+          "symbol": "DashboardNotificationBellButton",
+          "disposition": "unify",
+          "target": "CatchIconButton.counted",
+          "preview": "not-applicable",
+          "rationale": "Its filled/unfilled notification mapping is useful evidence, but its only production caller can configure the shared counted icon action directly."
+        },
+        {
+          "symbol": "DockBell",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Keep this feature adapter because it adds toggled and pending semantics while already delegating visual rendering to CatchIconButton."
+        },
+        {
+          "symbol": "ProfileHeightStepButton",
+          "disposition": "unify",
+          "target": "CatchIconButton",
+          "preview": "not-applicable",
+          "rationale": "Replace the custom 36px Material circle with the canonical icon renderer while leaving bounded-step state in the profile input adapter."
+        }
+      ]
+    },
+    {
+      "id": "identity-switchers",
+      "title": "Identity switchers",
+      "intent": "Review compact current-context controls that combine identity art, a constrained label, and an optional switch menu. They should not be flattened into generic chips. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",
+      "priority": "P1",
+      "status": "implemented",
+      "targetContract": "HostTodayClubPill",
+      "qualityReference": "HostTodayClubPill",
+      "decisionSource": "user-approved:2026-07-13",
+      "acceptedVisualDelta": [
+        "Multi-club identity surfaces are whole-surface interactive; single-club surfaces are explicitly passive.",
+        "Identity art uses the real club logo with activity-colored initials as the fallback.",
+        "Switch-menu rows show selected state plus owner or host-team secondary context."
+      ],
+      "reviewQuestions": [
+        {
+          "id": "I1",
+          "prompt": "How should the compact identity surface behave with one club versus multiple clubs?",
+          "recommendation": "Make the whole surface interactive for multiple clubs and explicitly passive for a single club.",
+          "selectedOption": "Make the whole surface interactive for multiple clubs and explicitly passive for a single club.",
+          "options": [
+            "Make the whole surface interactive for multiple clubs and explicitly passive for a single club.",
+            "Keep only the nested chevron interactive.",
+            "Use a different primitive for the single-club state."
+          ]
+        },
+        {
+          "id": "I2",
+          "prompt": "What identity art should the compact switcher use?",
+          "recommendation": "Show the real club logo when available and activity-colored initials as the fallback.",
+          "selectedOption": "Show the real club logo when available and activity-colored initials as the fallback.",
+          "options": [
+            "Show the real club logo when available and activity-colored initials as the fallback.",
+            "Always use activity-colored initials."
+          ]
+        },
+        {
+          "id": "I3",
+          "prompt": "What context should each switch-menu row expose?",
+          "recommendation": "Show a selected check plus owner or host-team as secondary text.",
+          "selectedOption": "Show a selected check plus owner or host-team as secondary text.",
+          "options": [
+            "Show a selected check plus owner or host-team as secondary text.",
+            "Keep the current concatenated one-line label."
+          ]
+        }
+      ],
+      "members": [
+        {
+          "symbol": "HostTodayClubPill",
+          "disposition": "repair",
+          "target": "HostTodayClubPill",
+          "preview": "required",
+          "rationale": "Use the whole bounded identity surface as the switch action when multiple clubs exist, render a passive state for one club, show real logo art with a deterministic fallback, and expose selected and role context in the menu."
+        }
+      ]
+    },
+    {
+      "id": "progress-cues",
+      "title": "Compact progress cues",
+      "intent": "Review ordered progress cues whose future, active, and complete states communicate sequence. Compact rails and expanded rows should share one state model without being forced into one layout. Domain progress thresholds remain adapter-owned; wizard bars, page dots, static countdown metadata, and Event Detail symbols remain separate.",
+      "priority": "P1",
+      "status": "implemented",
+      "targetContract": "CatchProgressCueState",
+      "qualityReference": "CountdownBeatRail",
+      "decisionSource": "user-approved:2026-07-13",
+      "acceptedVisualDelta": [
+        "Reusable progress sequences accept ordered display items plus currentIndex while Event Success retains percentage-threshold adaptation.",
+        "Completed items use an explicit success check; only the current item uses the gold active treatment and future items remain muted.",
+        "Compact rails and expanded rows share future, current, and complete semantics while retaining distinct layouts."
+      ],
+      "reviewQuestions": [
+        {
+          "id": "P1",
+          "prompt": "Where should the reusable progress contract live?",
+          "recommendation": "Use generic ordered items plus currentIndex at the sequence level; keep percentage thresholds in Event Success.",
+          "selectedOption": "Use generic ordered items plus currentIndex at the sequence level; keep percentage thresholds in Event Success.",
+          "options": [
+            "Use generic ordered items plus currentIndex at the sequence level; keep percentage thresholds in Event Success.",
+            "Keep the public boolean leaf-pill API.",
+            "Keep the entire rail feature-specific."
+          ]
+        },
+        {
+          "id": "P2",
+          "prompt": "How should completed and current items differ visually?",
+          "recommendation": "Use an explicit success check for complete items and reserve the gold active treatment for the current item.",
+          "selectedOption": "Use an explicit success check for complete items and reserve the gold active treatment for the current item.",
+          "options": [
+            "Use an explicit success check for complete items and reserve the gold active treatment for the current item.",
+            "Keep current and complete items gold with opacity as the only distinction."
+          ]
+        },
+        {
+          "id": "P3",
+          "prompt": "Should compact rails and expanded run-of-show rows share one renderer?",
+          "recommendation": "No; share the future/current/complete state model while retaining distinct layouts.",
+          "selectedOption": "No; share the future/current/complete state model while retaining distinct layouts.",
+          "options": [
+            "No; share the future/current/complete state model while retaining distinct layouts.",
+            "Yes; force both through one presentation widget."
+          ]
+        }
+      ],
+      "members": [
+        {
+          "symbol": "CountdownBeatRail",
+          "disposition": "repair",
+          "target": "CountdownBeatRail",
+          "preview": "required",
+          "rationale": "Use the complete three-item rail as the visual reference, but replace hard-coded items and implicit threshold ownership with ordered display items plus a current index."
+        },
+        {
+          "symbol": "CountdownBeatPill",
+          "disposition": "unify",
+          "target": "CountdownBeatRail",
+          "preview": "not-applicable",
+          "rationale": "The item renderer belongs to the rail-owned progress contract rather than remaining an independently selectable public pill."
+        },
+        {
+          "symbol": "LiveStepRow",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Keep this expanded sibling, but make it consume the same future/current/complete state model and explicit completion treatment as the compact rail."
+        }
+      ]
+    }
+  ]
+}

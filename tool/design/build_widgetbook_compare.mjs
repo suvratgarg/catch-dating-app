@@ -28,6 +28,12 @@ const inventorySource = fs.readFileSync(
 );
 
 const canonicalOverrides = {
+  ActivityChip: {
+    id: "catch.chip",
+    name: "CatchChip",
+    bucket: "unify",
+    note: "Use CatchChip.activity; activity identity is a semantic chip constructor, not a parallel primitive.",
+  },
   ActivityAvatar: {
     id: "catch.person_avatar",
     name: "CatchPersonAvatar",
@@ -117,6 +123,12 @@ const canonicalOverrides = {
     name: "CatchSection",
     bucket: "canonical",
     note: "CatchSection is the canonical information-grouping primitive.",
+  },
+  SelectChip: {
+    id: "catch.chip",
+    name: "CatchChip",
+    bucket: "unify",
+    note: "Use CatchChip.selectable; selected choices belong to the canonical chip contract.",
   },
   MapPin: {
     id: "catch.activity_map_pin",
