@@ -16,6 +16,7 @@ class CatchCountPill extends StatelessWidget {
     super.key,
     this.icon,
     required this.label,
+    this.value,
     this.count = 0,
     required this.onPressed,
     this.semanticLabel,
@@ -28,6 +29,7 @@ class CatchCountPill extends StatelessWidget {
 
   final IconData? icon;
   final String label;
+  final String? value;
   final int count;
   final VoidCallback onPressed;
   final String? semanticLabel;
@@ -43,6 +45,14 @@ class CatchCountPill extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: CatchTextStyles.monoLabel(context, color: t.ink),
         );
+        final valueText = value == null || value!.isEmpty
+            ? null
+            : Text(
+                value!.toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.monoCapsLabel(context, color: t.ink),
+              );
         return ConstrainedBox(
           constraints: const BoxConstraints(
             minHeight: CatchIconButton.defaultSize,
@@ -58,6 +68,18 @@ class CatchCountPill extends StatelessWidget {
                 Flexible(child: labelText)
               else
                 labelText,
+              if (valueText != null) ...[
+                gapW6,
+                Text(
+                  '·',
+                  style: CatchTextStyles.buttonSm(context, color: t.ink3),
+                ),
+                gapW6,
+                if (constraints.hasBoundedWidth)
+                  Flexible(child: valueText)
+                else
+                  valueText,
+              ],
             ],
           ),
         );
