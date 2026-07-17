@@ -2,12 +2,13 @@
   "version": 1,
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
-    "routes": 51,
-    "captures": 619,
+    "routes": 54,
+    "captures": 618,
     "statusCounts": {
       "excluded": 6,
-      "captured": 38,
-      "alias": 7
+      "captured": 37,
+      "alias": 7,
+      "planned": 4
     }
   },
   "profile": {
@@ -2159,23 +2160,6 @@
         "dark": "dark/host_clubs_inline_edit_offline.png"
       },
       "whatItIs": "Host Clubs Inline Edit Offline",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_clubs_insights_reference",
-      "routes": [
-        "hostInsightsScreen"
-      ],
-      "device": "claude-phone-390x812",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_clubs_insights_reference.png",
-        "dark": "dark/host_clubs_insights_reference.png"
-      },
-      "whatItIs": "Host Clubs Insights Reference",
       "keepChangeNotes": ""
     },
     {

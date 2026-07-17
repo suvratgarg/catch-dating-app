@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 2,
-  "updated": "2026-07-16",
+  "updated": "2026-07-17",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -1421,7 +1421,7 @@
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
-      "summary": "Unified handoff field primitive with one canonical single-line empty Add state across direct inputs and addable disclosures, stable native-input identity, root-owned inactive/error/active label color resolution, one caption-reserve 18.9 px value-line trailing lane, exactly one visible saving indicator, shared section-edge overlay geometry, a dedicated natural-height content row, one-gesture press-to-focus transfer, native cursor placement, height-neutral clear targets, full-row animated disclosure drawers, wrapping choices, bounded steppers, exact toggles, async status, direct and explicit-save text editing, select triggers, and add actions.",
+      "summary": "Unified handoff field primitive with one canonical single-line empty Add state across direct inputs and addable disclosures, stable native-input identity, root-owned inactive/error/active label color resolution, one caption-reserve 18.9 px value-line trailing lane, exactly one visible saving indicator, shared section-edge overlay geometry, a dedicated natural-height content row, one-gesture press-to-focus transfer, native cursor placement, height-neutral clear targets, full-row animated disclosure drawers, wrapping and per-item-accent choices, helper and badge metadata, bounded steppers, exact toggles, async status, direct and explicit-save text editing, select triggers, and add actions.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1668,6 +1668,35 @@
             "dartType": "String?"
           },
           {
+            "name": "badgeLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "CatchField.toggle title-row metadata rendered through CatchBadge."
+          },
+          {
+            "name": "badgeTone",
+            "type": "enum",
+            "required": false,
+            "default": "neutral",
+            "dartType": "CatchBadgeTone?",
+            "values": [
+              "neutral",
+              "brand",
+              "success",
+              "warning",
+              "danger",
+              "gold"
+            ]
+          },
+          {
+            "name": "itemAccent",
+            "type": "callback",
+            "required": false,
+            "dartType": "Color? Function(T item)?",
+            "notes": "CatchField.choices forwards a resolved item accent to CatchChip.selectable."
+          },
+          {
             "name": "helperTone",
             "type": "enum",
             "required": false,
@@ -1736,6 +1765,7 @@
           "chevron",
           "toggle-on",
           "toggle-off",
+          "toggle-helper-badge",
           "control-collapsed",
           "control-open",
           "disclosure-active-pressed",
@@ -1744,6 +1774,7 @@
           "choices-retain-final-selection",
           "choices-derived-summary",
           "choices-explicit-summary",
+          "choices-helper-accent",
           "stepper-open",
           "direct-input-one-tap",
           "direct-input-focused-cursor",
@@ -2111,8 +2142,6 @@
           "CatchField.toggle",
           "CatchField.input",
           "CatchField.inputActions",
-          "CatchField.expanding",
-          "CatchField.actions",
           "CatchField.control",
           "CatchField.choices",
           "CatchField.stepper",
@@ -2412,6 +2441,7 @@
           "CatchField",
           "CatchFieldTokens",
           "CatchDividerRole.fieldSection",
+          "CatchDividerRole.fieldRow",
           "CatchKicker",
           "CatchSectionHeader",
           "CatchSectionLabel",
@@ -2526,7 +2556,7 @@
           "Use divided sections for top-level information groups when nested rounded rectangles would add visual clutter.",
           "Use containedFieldRows for the handoff field surface: it owns a clipped 14 px radius, neutral line border, explicit section-focus/error border, inset internal rules, and no generic elevation. Descendant field focus remains child-owned; the section publishes a one-hairline active-overlay overlap so child chrome and the outer perimeter share identical left/right geometry, then paints the section edge last. Its optional title, right-aligned count, and trailing slot use 14 px / 16 px / 2 px in-card header padding; its optional footer stays inside the border with 2 px / 16 px / 12 px padding. Divided fieldRows footers render outside the rows with 8 px top padding and the field-caption style. Headerless prompt cards begin directly with their first field row. Use contained for non-field carded content that needs one bounded surface.",
           "Use plain sections for compact titled blocks without a container or divider.",
-          "The section owns the outer grouping and internal dividers. Divided field sections use the full line token so an active field's 10 px bleed can cover the shared boundary. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
+          "The section owns the outer grouping and internal dividers. Outer section rules use the full line token; boundaries between sibling field rows use the muted fieldRow tone and remain coverable by an active field's 10 px bleed. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
           "Divided and contained field-row headers accept title, count, and trailing content. Contained footers use 2 px top padding; divided footers use 8 px. Field-section kickers use the exact 11 px, 600-weight, 1.43 px tracking treatment.",
           "Section headers, section labels, day headers, vertical sections, and horizontal rails are public members of this grouping family, not separate section systems."
         ]
