@@ -10,6 +10,7 @@ import {HostListingPage} from "../features/organizers/HostListingPage";
 import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
 import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
+import {PageShell} from "../shared/site";
 import {captures} from "./fixtures/marketingCaptures";
 
 const generatedOrganizerListing = requireListing("afterfly");
@@ -147,7 +148,11 @@ export const NotFound: Story = {
       states: ["unknown-route"],
     },
   },
-  render: () => <NotFoundPage />,
+  render: () => (
+    <PageShell pageClassName="not-found-page">
+      <NotFoundPage />
+    </PageShell>
+  ),
 };
 
 export const OrganizerSearch: Story = {
