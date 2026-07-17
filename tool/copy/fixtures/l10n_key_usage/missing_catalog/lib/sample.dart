@@ -7,3 +7,5 @@ String renderFixture(dynamic l10n) {
   const ignored = 'l10n.stringOnly';
   return '$valid $missing $transformed $locale $ignored';
 }
+
+dynamic resolve(dynamic value) => value;
