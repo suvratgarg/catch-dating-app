@@ -42,7 +42,11 @@ void main() {
         EventDateRailCardStripPosition.last,
       ]);
 
-      await tester.tap(find.byType(EventDateRailCard).first);
+      final morningCard = find.byWidgetPredicate(
+        (widget) => widget is EventDateRailCard && widget.event.id == 'morning',
+        description: 'morning event date rail card',
+      );
+      await tester.tap(morningCard);
       await tester.pump();
 
       expect(selected, same(events.first));
