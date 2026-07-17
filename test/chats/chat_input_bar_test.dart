@@ -36,7 +36,7 @@ void main() {
     expect(imageRect.center.dy, sendRect.center.dy);
     expect(find.byTooltip('Send an image'), findsOneWidget);
     expect(find.byTooltip('Send message'), findsOneWidget);
-    expect(find.text('Message…'), findsOneWidget);
+    expect(find.text('Message...'), findsOneWidget);
   });
 
   testWidgets('derives sendability from the trimmed draft', (tester) async {
