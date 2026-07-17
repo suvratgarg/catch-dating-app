@@ -44,11 +44,11 @@ void main() {
     await pumpFeatureUi(tester);
 
     await tester.tap(find.byKey(ReviewKeys.ratingStar(4)));
-    await tester.tap(find.widgetWithText(CatchField, 'Review'));
+    await tester.tap(find.byKey(ReviewKeys.commentField));
     await pumpFeatureUi(tester);
     await tester.enterText(
       find.descendant(
-        of: find.widgetWithText(CatchField, 'Review'),
+        of: find.byKey(ReviewKeys.commentField),
         matching: find.byType(TextField),
       ),
       '  Friendly crew.  ',
