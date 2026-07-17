@@ -92,7 +92,7 @@ forbidText(
   "user-facing callable must not expose internal percentile fields",
 );
 requireText(copy, "UserAnalyticsCopy");
-requireText(copy, "tipCopy");
+requireText(copy, "static UserAnalyticsTipCopy tip(");
 
 if (errors.length > 0) {
   console.error("User analytics BigQuery validation failed:");
