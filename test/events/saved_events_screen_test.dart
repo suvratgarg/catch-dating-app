@@ -135,8 +135,8 @@ void main() {
 
       expect(find.text('Events you saved'), findsOneWidget);
       expect(find.text('STRIDE SOCIAL'), findsAtLeastNWidgets(1));
-      expect(find.text('SAVED'), findsOneWidget);
-      expect(find.text('PAST'), findsOneWidget);
+      expect(find.textContaining('SAVED', findRichText: true), findsOneWidget);
+      expect(find.textContaining('PAST', findRichText: true), findsOneWidget);
       expect(
         tester.getTopLeft(find.textContaining('Future Park')).dy,
         lessThan(tester.getTopLeft(find.textContaining('Past Park')).dy),

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,7 +58,7 @@ void main() {
       );
     });
 
-    testWidgets('uses Google default map styling', (tester) async {
+    testWidgets('uses the shared muted Catch map styling', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -75,7 +76,7 @@ void main() {
       );
 
       expect(googleMap.mapType, gmaps.MapType.none);
-      expect(googleMap.style, isNull);
+      expect(googleMap.style, CatchGoogleMapStyle.dark);
     });
 
     testWidgets('can render deterministic non-platform map shell', (
