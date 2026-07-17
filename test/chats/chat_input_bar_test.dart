@@ -8,6 +8,8 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets('uses canonical symmetric one-line geometry', (tester) async {
     final controller = TextEditingController();
@@ -84,7 +86,7 @@ void main() {
     );
 
     await tester.tap(find.byKey(ChatInputBar.fieldLaneKey));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(
       tester
@@ -112,9 +114,9 @@ void main() {
     controller.text = 'Line one\nLine two\nLine three\nLine four';
     await tester.pump();
     final animationStart = tester.getRect(find.byKey(ChatInputBar.pillKey));
-    await tester.pump(const Duration(milliseconds: 60));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 60));
     final animationMiddle = tester.getRect(find.byKey(ChatInputBar.pillKey));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     final finalPill = tester.getRect(find.byKey(ChatInputBar.pillKey));
     final imageRect = tester.getRect(find.byKey(ChatInputBar.imageButtonKey));
     final sendRect = tester.getRect(find.byKey(ChatInputBar.sendButtonKey));
@@ -265,7 +267,7 @@ Future<void> _pumpComposer(
     ),
   );
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 200));
+  await pumpFeatureUiFor(tester, const Duration(milliseconds: 200));
 }
 
 (Rect, Rect) _actionRects(WidgetTester tester) => (

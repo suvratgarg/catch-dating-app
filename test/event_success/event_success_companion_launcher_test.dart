@@ -17,6 +17,7 @@ import 'package:go_router/go_router.dart';
 import '../clubs/clubs_test_helpers.dart' show FakeClubsRepository, buildClub;
 import '../events/events_test_helpers.dart'
     show buildEvent, buildEventParticipation;
+import '../test_pump_helpers.dart';
 
 void main() {
   group('EventSuccessCompanionLaunchRegistry', () {
@@ -201,7 +202,7 @@ void main() {
         await resultCompleter.future,
         EventSuccessCompanionLaunchResult.launched,
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('Launcher home'), findsNothing);
       expect(find.text('Companion event-1'), findsOneWidget);
     });

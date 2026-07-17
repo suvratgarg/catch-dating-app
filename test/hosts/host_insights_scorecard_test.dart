@@ -6,6 +6,8 @@ import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets('Host Insights renders the narrative scorecard hierarchy', (
     tester,
@@ -45,7 +47,7 @@ void main() {
     expect(primary.metrics.first.caption, '↑ 50% vs previous 30 days');
 
     await tester.tap(find.text('More metrics'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     final secondary = tester.widget<CatchAnalyticsMetricGrid>(
       find.byKey(const ValueKey('host-analytics-secondary-grid')),
     );
@@ -109,10 +111,10 @@ void main() {
       onOpenAllEvents: () {},
     );
 
-    final firstBar = find.byType(HostAnalyticsDualBar).first;
+    final firstBar = findFirstByType<HostAnalyticsDualBar>();
     await tester.ensureVisible(firstBar);
     tester.widget<HostAnalyticsDualBar>(firstBar).onTap();
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     final detail = find.byKey(
       const ValueKey('host-analytics-trend-detail'),
       skipOffstage: false,
@@ -280,7 +282,7 @@ Future<void> _pumpReport(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  await pumpFeatureUi(tester);
 }
 
 HostAnalyticsReport _report({

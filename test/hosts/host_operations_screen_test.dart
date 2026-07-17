@@ -1643,9 +1643,9 @@ void main() {
     tester
         .widget<CreateClubPhotosPicker>(find.byType(CreateClubPhotosPicker))
         .onReorderPhoto!(0, 1);
-    await tester.pump(const Duration(milliseconds: 399));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 399));
     expect(actions.mediaWrites, isEmpty);
-    await tester.pump(const Duration(milliseconds: 1));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 1));
     await pumpFeatureUi(tester);
 
     expect(actions.mediaWrites, hasLength(1));
@@ -2127,7 +2127,7 @@ void main() {
     await pumpFeatureUi(tester);
     await tester.tap(find.text('City'));
     await pumpFeatureUi(tester);
-    final citySheetScroll = find.byType(Scrollable).last;
+    final citySheetScroll = findLastByType<Scrollable>();
     await tester.scrollUntilVisible(
       find.text('Mumbai'),
       180,

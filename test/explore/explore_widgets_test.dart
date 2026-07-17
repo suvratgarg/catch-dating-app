@@ -1751,7 +1751,7 @@ void main() {
       final initialTitleTop = tester.getTopLeft(find.text('Explore')).dy;
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -220));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Explore').hitTestable(), findsOneWidget);
       expect(find.byType(ExploreCityPicker).hitTestable(), findsOneWidget);

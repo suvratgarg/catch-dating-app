@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets(
     'uses compact canonical chrome and the shared staged prompt selector',
@@ -137,7 +139,7 @@ void main() {
     await tester.ensureVisible(find.text('Save changes'));
     await tester.tap(find.text('Save changes'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
 
     final savedPrompt = repository.updatedProfilePhotos.single.first.prompt;
     expect(savedPrompt?.promptId, 'legacy-photo-prompt');
@@ -191,7 +193,7 @@ Future<void> _pumpEditor(
 
 Future<void> _pumpFieldMotion(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 500));
+  await pumpFeatureUiFor(tester, const Duration(milliseconds: 500));
 }
 
 class _PhotoEditorProfileRepository extends Fake

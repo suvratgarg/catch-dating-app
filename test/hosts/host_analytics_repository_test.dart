@@ -2,6 +2,8 @@ import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   test('HostAnalyticsQuery serializes custom event-scoped ranges', () {
     final request = HostAnalyticsQuery(
@@ -142,10 +144,7 @@ void main() {
       addTearDown(container.dispose);
 
       const queries = [
-        HostAnalyticsQuery(
-          clubId: 'club-1',
-          timezone: 'Asia/Kolkata',
-        ),
+        HostAnalyticsQuery(clubId: 'club-1', timezone: 'Asia/Kolkata'),
         HostAnalyticsQuery(
           clubId: 'club-1',
           rangePreset: HostAnalyticsRangePreset.ninetyDays,
@@ -165,7 +164,7 @@ void main() {
         final subscription = container.listen(provider, (_, _) {});
         await container.read(provider.future);
         subscription.close();
-        await Future<void>.delayed(Duration.zero);
+        await flushTestEventQueue();
       }
 
       for (final query in queries) {

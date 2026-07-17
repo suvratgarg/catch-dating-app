@@ -522,11 +522,9 @@ class _HostAnalyticsTrendPanelState extends State<HostAnalyticsTrendPanel> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: entry.$2.$1,
-                        borderRadius: BorderRadius.circular(CatchRadius.xs),
-                      ),
+                    Material(
+                      color: entry.$2.$1,
+                      borderRadius: BorderRadius.circular(CatchRadius.xs),
                       child: const SizedBox(
                         width: CatchSpacing.s3,
                         height: CatchSpacing.s2,
@@ -640,26 +638,41 @@ class HostAnalyticsDualBar extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.bottomCenter,
                   children: [
-                    AnimatedContainer(
+                    TweenAnimationBuilder<double>(
                       duration: CatchMotion.fast,
-                      width: CatchSpacing.s6,
-                      height: math.max(CatchSpacing.micro2, heightFor(demand)),
-                      decoration: BoxDecoration(
+                      tween: Tween(
+                        begin: 0,
+                        end: math.max(CatchSpacing.micro2, heightFor(demand)),
+                      ),
+                      builder: (_, height, child) => SizedBox(
+                        width: CatchSpacing.s6,
+                        height: height,
+                        child: child,
+                      ),
+                      child: Material(
                         color: t.primarySoft,
                         borderRadius: BorderRadius.circular(CatchRadius.xs),
                       ),
                     ),
-                    AnimatedContainer(
+                    TweenAnimationBuilder<double>(
                       duration: CatchMotion.fast,
-                      width: CatchSpacing.s3,
-                      height: math.max(
-                        CatchSpacing.micro2,
-                        heightFor(bookings),
+                      tween: Tween(
+                        begin: 0,
+                        end: math.max(CatchSpacing.micro2, heightFor(bookings)),
                       ),
-                      decoration: BoxDecoration(
+                      builder: (_, height, child) => SizedBox(
+                        width: CatchSpacing.s3,
+                        height: height,
+                        child: child,
+                      ),
+                      child: Material(
                         color: t.ink,
-                        borderRadius: BorderRadius.circular(CatchRadius.xs),
-                        border: selected ? Border.all(color: t.primary) : null,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(CatchRadius.xs),
+                          side: selected
+                              ? BorderSide(color: t.primary)
+                              : BorderSide.none,
+                        ),
                       ),
                     ),
                   ],

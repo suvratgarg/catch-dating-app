@@ -137,13 +137,13 @@ void main() {
     await pumpFeatureUi(tester);
 
     await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.byType(CatchMenu<HostInboxScope>), findsOneWidget);
     expect(find.text('General inquiries'), findsOneWidget);
 
     await tester.tap(find.text('General inquiries'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('GENERAL INQUIRIES'), findsOneWidget);
     expect(find.byType(HostInboxAudienceRail), findsNothing);

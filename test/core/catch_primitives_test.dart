@@ -1413,7 +1413,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.byType(CatchActivityInitialsPlaceholder), findsOneWidget);
       expect(find.byType(CatchInitialsAvatarPlaceholder), findsNothing);

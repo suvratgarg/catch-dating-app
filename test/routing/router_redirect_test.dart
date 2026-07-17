@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import '../support/profile_readiness_fixtures.dart';
+import '../test_pump_helpers.dart';
 
 const _testUid = 'user-1';
 
@@ -223,7 +224,7 @@ void main() {
       addTearDown(router.dispose);
 
       await tester.pumpWidget(MaterialApp.router(routerConfig: router));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Create event route'), findsOneWidget);
       expect(find.text('Organizer route'), findsNothing);

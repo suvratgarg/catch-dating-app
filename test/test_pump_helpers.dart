@@ -3,6 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 Finder findPrimaryScrollable() => find.byType(Scrollable).first;
 
+Finder findFirstByType<T extends Widget>() => find.byType(T).first;
+
+Finder findLastByType<T extends Widget>() => find.byType(T).last;
+
 Finder findFirstByTooltip(String tooltip) => find.byTooltip(tooltip).first;
 
 Finder findLastByTooltip(String tooltip) => find.byTooltip(tooltip).last;

@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../test_pump_helpers.dart';
+
 void main() {
   testWidgets('CatchField preserves the last state when control is released', (
     tester,
@@ -229,23 +231,23 @@ void main() {
       CatchFieldTokens.repeatDelay - const Duration(milliseconds: 1),
     );
     expect(steps, 1);
-    await tester.pump(const Duration(milliseconds: 1));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 1));
     expect(steps, 2);
 
-    await tester.pump(const Duration(milliseconds: 1000));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 1000));
     expect(steps, 11);
-    await tester.pump(const Duration(milliseconds: 99));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 99));
     expect(steps, 11);
-    await tester.pump(const Duration(milliseconds: 1));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 1));
     expect(steps, 12);
     await tester.pump(
       CatchFieldTokens.repeatAccelerated - const Duration(milliseconds: 1),
     );
     expect(steps, 12);
-    await tester.pump(const Duration(milliseconds: 1));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 1));
     expect(steps, 13);
     await gesture.up();
-    await tester.pump(const Duration(milliseconds: 1000));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 1000));
     expect(steps, 13);
   });
 
@@ -710,8 +712,8 @@ void main() {
 
     await tester.tap(find.text('Diet'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 16));
-    await tester.pump(const Duration(milliseconds: 16));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
     expect(scrollController.offset, greaterThan(0));
 
     setOpen(false);
@@ -764,8 +766,8 @@ void main() {
 
     await tester.tap(find.text('Diet'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 16));
-    await tester.pump(const Duration(milliseconds: 16));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
     expect(scrollController.offset, greaterThan(0));
 
     final drag = await tester.startGesture(const Offset(200, 300));
@@ -779,7 +781,7 @@ void main() {
     expect(scrollController.offset, closeTo(offsetDuringDrag, 0.1));
 
     await drag.up();
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(open, isTrue);
   });
 

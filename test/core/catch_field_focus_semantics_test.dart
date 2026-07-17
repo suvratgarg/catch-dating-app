@@ -6,6 +6,8 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets('external focus node remains caller-owned', (tester) async {
     final controller = TextEditingController();
@@ -257,7 +259,7 @@ void main() {
 
       expect(pressedDecoration().border, isNotNull);
       expect(focusNode.hasFocus, isFalse);
-      await tester.pump(const Duration(milliseconds: 100));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
       expect(pressedDecoration().border, isNotNull);
       expect(pressedDecoration().color, isNot(equals(Colors.transparent)));
 

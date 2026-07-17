@@ -7,6 +7,8 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets('CatchChip.tag renders passive compact metadata', (tester) async {
     await tester.pumpWidget(
@@ -69,7 +71,7 @@ void main() {
       );
 
       rebuild(() => selected = requestedSelection!);
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       final selectedDecoration = _chipDecoration(tester, chip);
       final tokens = CatchTokens.of(tester.element(chip));

@@ -5,6 +5,8 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_defaults_saver.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   test('coalesces rapid updates behind one in-flight write', () async {
     final firstWrite = Completer<void>();
@@ -78,7 +80,5 @@ void main() {
 }
 
 Future<void> _drainQueue() async {
-  for (var index = 0; index < 4; index++) {
-    await Future<void>.delayed(Duration.zero);
-  }
+  await flushTestEventQueue(times: 4);
 }
