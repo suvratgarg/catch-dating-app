@@ -57,7 +57,10 @@ function ClaimUnlocksCard({listing}: {listing: HostListing}) {
   return (
     <PanelShell variant="claim-unlocks" as="aside" reveal>
       <UiLabel>{websiteCopy["listingclaimsections_0372"]}</UiLabel>
-      <h3>{websiteCopy["listingclaimsections_0383"]}{listing.name}{websiteCopy["listingclaimsections_0370"]}</h3>
+      <h3>
+        {websiteCopy["listingclaimsections_0383"]} {listing.name}{" "}
+        {websiteCopy["listingclaimsections_0370"]}
+      </h3>
       <ul>
         {claimUnlocks.map((item) => (
           <li key={item}>{item}</li>
@@ -101,7 +104,7 @@ function ClaimListingPanel({
           <UiLabel>{websiteCopy["listingclaimsections_0371"]}</UiLabel>
           <h3>{websiteCopy["listingclaimsections_0376"]}</h3>
           <p>
-            {notConfiguredReason}{websiteCopy["listingclaimsections_0382"]}</p>
+            {notConfiguredReason} {websiteCopy["listingclaimsections_0382"]}</p>
         </div>
         <ButtonLink
           href="/host/#founding-hosts"
@@ -115,7 +118,7 @@ function ClaimListingPanel({
     <ClaimRequestPanel id="claim" reveal>
       <ClaimRequestPanelHeading>
         <UiLabel>{websiteCopy["listingclaimsections_0371"]}</UiLabel>
-        <h3>{websiteCopy["listingclaimsections_0378"]}{listing.name}</h3>
+        <h3>{websiteCopy["listingclaimsections_0378"]} {listing.name}</h3>
         <p>{websiteCopy["listingclaimsections_0366"]}</p>
       </ClaimRequestPanelHeading>
 

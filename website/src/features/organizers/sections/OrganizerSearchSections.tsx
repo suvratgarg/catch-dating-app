@@ -199,7 +199,10 @@ export function DirectoryClaimPressureStrip({
             <ActivityMark listing={listing} size="sm" />
             <span>
               <strong>{listing.name}</strong>
-              <small>{listing.city} · {listing.missingEvidence.length}{websiteCopy["organizersearchsections_0471"]}</small>
+              <small>
+                {listing.city} · {listing.missingEvidence.length}{" "}
+                {websiteCopy["organizersearchsections_0471"]}
+              </small>
             </span>
             <StatusBadge listing={listing} compact />
           </PlainLink>

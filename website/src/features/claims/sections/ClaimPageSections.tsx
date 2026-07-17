@@ -134,7 +134,10 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
                   <ActivityMark listing={item} size="sm" />
                   <span>
                     <strong>{item.name}</strong>
-                    <small>{item.category} · {item.city} · {item.sources.length}{websiteCopy["claimpagesections_0088"]}</small>
+                    <small>
+                      {item.category} · {item.city} · {item.sources.length}{" "}
+                      {websiteCopy["claimpagesections_0088"]}
+                    </small>
                   </span>
                   <StatusBadge listing={item} compact />
                 </ClaimResultButton>

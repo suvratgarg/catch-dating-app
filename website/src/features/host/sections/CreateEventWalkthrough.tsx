@@ -44,7 +44,9 @@ export function CreateEventWalkthrough({captures}: {captures: HostCaptureMap}) {
         />
         <ProductShell variant="host-create-mock" reveal>
           <HostCreateMockBar activeIndex={activeStep} items={hostCreateSteps}>
-            <span>{websiteCopy["createeventwalkthrough_0277"]}{activeStep + 1}/5 · {step.title}</span>
+            <span>
+              {websiteCopy["createeventwalkthrough_0277"]} {activeStep + 1}/5 · {step.title}
+            </span>
           </HostCreateMockBar>
           <HostCreateFieldGrid fields={step.fields} />
           <ActionGroup variant="host-create-flow">

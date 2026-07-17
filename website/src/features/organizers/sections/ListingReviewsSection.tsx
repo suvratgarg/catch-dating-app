@@ -59,7 +59,7 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
       <SectionHeader
         eyebrow={websiteCopy["listingreviewssection_0437"]}
         id="listing-reviews-title"
-        title={<>{websiteCopy["listingreviewssection_0434"]}{listing.name}.</>}
+        title={<>{websiteCopy["listingreviewssection_0434"]} {listing.name}.</>}
         body={websiteCopy["listingreviewssection_0445"]} />
       <ListingReviewSummary>
         <div>
@@ -105,7 +105,10 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
             <ListingReviewEmptyState reveal>
               <div>
                 <UiLabel>{websiteCopy["listingreviewssection_0428"]}</UiLabel>
-                <h3>{websiteCopy["listingreviewssection_0429"]}{listing.name}{websiteCopy["listingreviewssection_0447"]}</h3>
+                <h3>
+                  {websiteCopy["listingreviewssection_0429"]} {listing.name}{" "}
+                  {websiteCopy["listingreviewssection_0447"]}
+                </h3>
                 <p>{websiteCopy["listingreviewssection_0425"]}</p>
               </div>
             </ListingReviewEmptyState>
@@ -129,7 +132,7 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
         >
           <div>
             <UiLabel>{websiteCopy["listingreviewssection_0424"]}</UiLabel>
-            <h3>{websiteCopy["listingreviewssection_0438"]}{listing.name}.</h3>
+            <h3>{websiteCopy["listingreviewssection_0438"]} {listing.name}.</h3>
           </div>
           <SelectField
             id={`${reviewFormId}-rating`}
