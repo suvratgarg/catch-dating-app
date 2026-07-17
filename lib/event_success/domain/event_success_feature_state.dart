@@ -43,9 +43,9 @@ class EventSuccessHostDraft {
     );
     return EventSuccessHostDraft(
       playbook: playbook,
-      selectedModuleIds: profile.defaultModuleIds
-          .where(playbook.moduleIds.contains)
-          .toSet(),
+      selectedModuleIds: playbook.effectiveModuleSelection(
+        profile.defaultModuleIds,
+      ),
       targetAttendeeCount: target,
       structureConfig: profile.structureConfig,
       compatibilityAffectsRanking: profile.compatibilityAffectsRankingByDefault,
@@ -70,9 +70,9 @@ class EventSuccessHostDraft {
     );
     return EventSuccessHostDraft(
       playbook: profile.playbook,
-      selectedModuleIds: profile.defaultModuleIds
-          .where(profile.playbook.moduleIds.contains)
-          .toSet(),
+      selectedModuleIds: profile.playbook.effectiveModuleSelection(
+        profile.defaultModuleIds,
+      ),
       targetAttendeeCount:
           targetAttendeeCount ??
           ((profile.playbook.capacity.min + profile.playbook.capacity.max) / 2)
@@ -92,8 +92,11 @@ class EventSuccessHostDraft {
   final bool compatibilityAffectsRanking;
   final EventSuccessQuestionnaireConfig questionnaireConfig;
 
+  Set<String> get effectiveSelectedModuleIds =>
+      playbook.effectiveModuleSelection(selectedModuleIds);
+
   List<EventSuccessModule> get selectedModules => playbook.modules
-      .where((module) => selectedModuleIds.contains(module.id))
+      .where((module) => effectiveSelectedModuleIds.contains(module.id))
       .toList(growable: false);
 
   List<EventSuccessModule> get livePhoneModules => selectedModules
@@ -105,7 +108,7 @@ class EventSuccessHostDraft {
       : EventSuccessSetupStatus.needsWork;
 
   bool isModuleSelected(String moduleId) =>
-      selectedModuleIds.contains(moduleId);
+      effectiveSelectedModuleIds.contains(moduleId);
 
   EventSuccessHostDraft toggleModule(String moduleId) {
     final nextIds = {...selectedModuleIds};
@@ -160,9 +163,10 @@ class EventSuccessHostDraft {
     ).normalizedForSelectedModules();
   }
 
-  /// Applies invariants shared by the Flutter editor and assignment backend.
-  /// Guided rotations are currently a pair-only engine; larger units use the
-  /// generic group-assignment path instead.
+  /// Applies invariants shared by the current Flutter editor and assignment
+  /// backend. The owner-review people-mix projection is not wired here: the
+  /// live guided-rotation engine remains pair-only until that design and its
+  /// backend topology are approved together.
   EventSuccessHostDraft normalizedForSelectedModules() {
     if (!selectedModuleIds.contains(
       EventSuccessModuleCatalog.guidedRotations.id,
@@ -199,9 +203,9 @@ class EventSuccessHostDraft {
     final resolvedIds = selectedModuleIds ?? this.selectedModuleIds;
     final resolvedTargetAttendeeCount =
         targetAttendeeCount ?? this.targetAttendeeCount;
-    final resolvedModuleIds = resolvedIds
-        .where(resolvedPlaybook.moduleIds.contains)
-        .toSet();
+    final resolvedModuleIds = resolvedPlaybook.effectiveModuleSelection(
+      resolvedIds,
+    );
     final canUseCompatibilityRanking = resolvedModuleIds.contains(
       EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
     );
@@ -277,6 +281,80 @@ class EventSuccessHostDraft {
       );
     }
     return issues;
+  }
+}
+
+extension EventSuccessHostDraftPeopleMix on EventSuccessHostDraft {
+  /// Reconciles the legacy grouping module ids with the visible structure.
+  ///
+  /// This is a presentation projection only: persisted ids and structure
+  /// fields keep their existing schema, while the host sees one decision.
+  EventSuccessHostDraft normalizedForPeopleMix() =>
+      withPeopleMixStructure(structureConfig);
+
+  EventSuccessHostDraft withPeopleMixUnitKind(EventSuccessUnitKind unitKind) {
+    final nextStructure = switch (unitKind) {
+      EventSuccessUnitKind.wholeGroup => structureConfig.copyWith(
+        unitKind: unitKind,
+        unitSize: targetAttendeeCount,
+        unitCount: 1,
+        rotationIntervalMinutes: null,
+        balanceActivityAttributes: const [],
+        clusterActivityAttributes: const [],
+      ),
+      EventSuccessUnitKind.pods => structureConfig.copyWith(
+        unitKind: unitKind,
+        unitSize: structureConfig.unitSize.clamp(3, 8).toInt(),
+        unitCount: null,
+        rotationIntervalMinutes: null,
+      ),
+      EventSuccessUnitKind.pairs => structureConfig.copyWith(
+        unitKind: unitKind,
+        unitSize: 2,
+        unitCount: null,
+        rotationIntervalMinutes: structureConfig.rotationIntervalMinutes ?? 15,
+      ),
+      EventSuccessUnitKind.teams => structureConfig.copyWith(
+        unitKind: unitKind,
+        unitSize: structureConfig.unitSize.clamp(3, 8).toInt(),
+        unitCount: null,
+        rotationIntervalMinutes: structureConfig.rotationIntervalMinutes ?? 15,
+      ),
+      EventSuccessUnitKind.tables => structureConfig.copyWith(
+        unitKind: unitKind,
+        unitSize: structureConfig.unitSize.clamp(3, 8).toInt(),
+        rotationIntervalMinutes: structureConfig.rotationIntervalMinutes ?? 30,
+      ),
+    };
+    return withPeopleMixStructure(nextStructure);
+  }
+
+  EventSuccessHostDraft withPeopleMixStructure(
+    EventSuccessStructureConfig structure,
+  ) {
+    final selectedIds = {...effectiveSelectedModuleIds}
+      ..remove(EventSuccessModuleCatalog.microPods.id)
+      ..remove(EventSuccessModuleCatalog.guidedRotations.id);
+    switch (structure.unitKind) {
+      case EventSuccessUnitKind.wholeGroup:
+        break;
+      case EventSuccessUnitKind.pods:
+        if (playbook.moduleIds.contains(
+          EventSuccessModuleCatalog.microPods.id,
+        )) {
+          selectedIds.add(EventSuccessModuleCatalog.microPods.id);
+        }
+      case EventSuccessUnitKind.pairs ||
+          EventSuccessUnitKind.teams ||
+          EventSuccessUnitKind.tables:
+        if (structure.rotationIntervalMinutes != null &&
+            playbook.moduleIds.contains(
+              EventSuccessModuleCatalog.guidedRotations.id,
+            )) {
+          selectedIds.add(EventSuccessModuleCatalog.guidedRotations.id);
+        }
+    }
+    return copyWith(selectedModuleIds: selectedIds, structureConfig: structure);
   }
 }
 

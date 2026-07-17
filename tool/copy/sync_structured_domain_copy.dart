@@ -177,6 +177,7 @@ void _sync() {
       catalog['version'] != 1 ||
       catalog['locale'] != 'en' ||
       catalog['owner'] != 'marketing' ||
+      catalog['eventSuccessModuleMetadata'] is! Map<String, Object?> ||
       catalog['constants'] is! Map<String, Object?> ||
       catalog['messages'] is! Map<String, Object?>) {
     throw const FormatException(
@@ -189,6 +190,9 @@ void _sync() {
   );
   final rawMessages = catalog['messages']! as Map<String, Object?>;
   final messages = _validatedValues(rawMessages);
+  final moduleMetadata = _validatedModuleMetadata(
+    catalog['eventSuccessModuleMetadata']! as Map<String, Object?>,
+  );
 
   final constantFields = constants.entries
       .map(
@@ -205,6 +209,7 @@ void _sync() {
   );
 
   final used = <String>{};
+  final usedModuleMetadata = <String>{};
   for (final entry in _files.entries) {
     final template = File(
       'tool/copy/templates/structured_domain_copy/${entry.key}.dart.template',
@@ -213,6 +218,20 @@ void _sync() {
       match,
     ) {
       final key = match.group(1)!;
+      const metadataPrefix = 'eventSuccessModuleMetadata.';
+      const metadataSuffix = '.hostConfigurable';
+      if (key.startsWith(metadataPrefix) && key.endsWith(metadataSuffix)) {
+        final moduleKey = key.substring(
+          metadataPrefix.length,
+          key.length - metadataSuffix.length,
+        );
+        final value = moduleMetadata[moduleKey];
+        if (value == null) {
+          throw FormatException('Template references missing $key.');
+        }
+        usedModuleMetadata.add(moduleKey);
+        return value.toString();
+      }
       final value = messages[key];
       if (value == null) {
         throw FormatException('Template references missing $key.');
@@ -231,9 +250,37 @@ void _sync() {
   if (unused.isNotEmpty) {
     throw FormatException('Catalog has unused messages: ${unused.join(', ')}');
   }
+  final unusedModuleMetadata = moduleMetadata.keys.toSet().difference(
+    usedModuleMetadata,
+  );
+  if (unusedModuleMetadata.isNotEmpty) {
+    throw FormatException(
+      'Catalog has unused Event Success module metadata: '
+      '${unusedModuleMetadata.join(', ')}',
+    );
+  }
   stdout.writeln(
     'Synchronized ${messages.length} templates and ${constants.length} structured constants.',
   );
+}
+
+Map<String, bool> _validatedModuleMetadata(Map<String, Object?> raw) {
+  final values = <String, bool>{};
+  for (final entry in raw.entries) {
+    if (!RegExp(r'^[a-z][A-Za-z0-9]*$').hasMatch(entry.key)) {
+      throw FormatException(
+        '${entry.key} must be a lower-camel module identifier.',
+      );
+    }
+    final value = entry.value;
+    if (value is! Map<String, Object?> || value['hostConfigurable'] is! bool) {
+      throw FormatException(
+        '${entry.key} needs a boolean hostConfigurable value.',
+      );
+    }
+    values[entry.key] = value['hostConfigurable']! as bool;
+  }
+  return values;
 }
 
 void _writeOrCheck(File file, String expected) {

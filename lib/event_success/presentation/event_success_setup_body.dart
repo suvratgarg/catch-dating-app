@@ -88,10 +88,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
     );
     final liveTools = profile.recommendations
         .where((recommendation) => recommendation.selectable)
-        .where(
-          (recommendation) =>
-              !_platformModuleIds.contains(recommendation.module.id),
-        )
+        .where((recommendation) => recommendation.module.hostConfigurable)
         .toList(growable: false);
     final showStructureEditor =
         draft.isModuleSelected(EventSuccessModuleCatalog.microPods.id) ||
@@ -458,12 +455,6 @@ String? _recommendationBadgeLabel(
 }
 
 enum _QuestionnaireMode { off, cluesOnly, cluesAndPairing }
-
-const _platformModuleIds = <String>{
-  'safety_controls',
-  'qr_check_in',
-  'crowd_balance',
-};
 
 _QuestionnaireMode _questionnaireMode(EventSuccessHostDraft draft) {
   if (!draft.isModuleSelected(

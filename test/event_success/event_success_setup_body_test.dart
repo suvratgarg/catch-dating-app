@@ -73,7 +73,7 @@ void main() {
     expect(_section('Before the event'), findsOneWidget);
     expect(_section('When people arrive'), findsOneWidget);
     expect(_section('During the event'), findsOneWidget);
-    expect(_section('After the event'), findsOneWidget);
+    expect(_section('After the event'), findsNothing);
     expect(
       tester.getTopLeft(_section('Before the event')).dy,
       lessThan(tester.getTopLeft(_section('When people arrive')).dy),
@@ -82,21 +82,16 @@ void main() {
       tester.getTopLeft(_section('When people arrive')).dy,
       lessThan(tester.getTopLeft(_section('During the event')).dy),
     );
-    expect(
-      tester.getTopLeft(_section('During the event')).dy,
-      lessThan(tester.getTopLeft(_section('After the event')).dy),
-    );
-
-    final afterSection = _section('After the event');
     for (final title in [
+      EventSuccessModuleCatalog.crowdBalance.title,
+      EventSuccessModuleCatalog.checkIn.title,
+      EventSuccessModuleCatalog.wingmanRequests.title,
       EventSuccessModuleCatalog.contextualOpeners.title,
       EventSuccessModuleCatalog.decomposedFeedback.title,
       EventSuccessModuleCatalog.hostAnalytics.title,
+      EventSuccessModuleCatalog.safetyControls.title,
     ]) {
-      expect(
-        find.descendant(of: afterSection, matching: _field(title)),
-        findsOneWidget,
-      );
+      expect(_field(title), findsNothing);
     }
 
     expect(

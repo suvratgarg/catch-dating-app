@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventSuccessDefaults {
 
- bool get enabled; String get playbookId; List<String> get selectedModuleIds; bool get moduleSelectionConfigured; EventSuccessStructureConfig get structureConfig; String get hostGoal; bool get wingmanRequestsEnabled; bool get contextualOpenersEnabled; bool get compatibilityAffectsRanking; EventSuccessQuestionnaireConfig get questionnaireConfig; String? get attendeePrompt;
+ bool get enabled; String get playbookId; List<String> get selectedModuleIds; bool get moduleSelectionConfigured; EventSuccessStructureConfig get structureConfig; String get hostGoal;@Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') bool get wingmanRequestsEnabled;@Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') bool get contextualOpenersEnabled; bool get compatibilityAffectsRanking; EventSuccessQuestionnaireConfig get questionnaireConfig; String? get attendeePrompt;
 /// Create a copy of EventSuccessDefaults
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $EventSuccessDefaultsCopyWith<$Res>  {
   factory $EventSuccessDefaultsCopyWith(EventSuccessDefaults value, $Res Function(EventSuccessDefaults) _then) = _$EventSuccessDefaultsCopyWithImpl;
 @useResult
 $Res call({
- bool enabled, String playbookId, List<String> selectedModuleIds, bool moduleSelectionConfigured, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, String? attendeePrompt
+ bool enabled, String playbookId, List<String> selectedModuleIds, bool moduleSelectionConfigured, EventSuccessStructureConfig structureConfig, String hostGoal,@Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') bool wingmanRequestsEnabled,@Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, String? attendeePrompt
 });
 
 
@@ -163,7 +163,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  bool moduleSelectionConfigured,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  String? attendeePrompt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  bool moduleSelectionConfigured,  EventSuccessStructureConfig structureConfig,  String hostGoal, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.')  bool wingmanRequestsEnabled, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.')  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  String? attendeePrompt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventSuccessDefaults() when $default != null:
 return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.moduleSelectionConfigured,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.attendeePrompt);case _:
@@ -184,7 +184,7 @@ return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.mod
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  bool moduleSelectionConfigured,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  String? attendeePrompt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  bool moduleSelectionConfigured,  EventSuccessStructureConfig structureConfig,  String hostGoal, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.')  bool wingmanRequestsEnabled, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.')  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  String? attendeePrompt)  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessDefaults():
 return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.moduleSelectionConfigured,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.attendeePrompt);case _:
@@ -204,7 +204,7 @@ return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.mod
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  bool moduleSelectionConfigured,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  String? attendeePrompt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  bool moduleSelectionConfigured,  EventSuccessStructureConfig structureConfig,  String hostGoal, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.')  bool wingmanRequestsEnabled, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.')  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  String? attendeePrompt)?  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessDefaults() when $default != null:
 return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.moduleSelectionConfigured,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.attendeePrompt);case _:
@@ -219,7 +219,7 @@ return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.mod
 @JsonSerializable()
 
 class _EventSuccessDefaults extends EventSuccessDefaults {
-  const _EventSuccessDefaults({this.enabled = false, this.playbookId = 'social_run_light', final  List<String> selectedModuleIds = const <String>[], this.moduleSelectionConfigured = false, this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), this.hostGoal = 'Help attendees meet at least two new people.', this.wingmanRequestsEnabled = true, this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.attendeePrompt}): _selectedModuleIds = selectedModuleIds,super._();
+  const _EventSuccessDefaults({this.enabled = false, this.playbookId = 'social_run_light', final  List<String> selectedModuleIds = const <String>[], this.moduleSelectionConfigured = false, this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), this.hostGoal = 'Help attendees meet at least two new people.', @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') this.wingmanRequestsEnabled = true, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.attendeePrompt}): _selectedModuleIds = selectedModuleIds,super._();
   factory _EventSuccessDefaults.fromJson(Map<String, dynamic> json) => _$EventSuccessDefaultsFromJson(json);
 
 @override@JsonKey() final  bool enabled;
@@ -234,8 +234,8 @@ class _EventSuccessDefaults extends EventSuccessDefaults {
 @override@JsonKey() final  bool moduleSelectionConfigured;
 @override@JsonKey() final  EventSuccessStructureConfig structureConfig;
 @override@JsonKey() final  String hostGoal;
-@override@JsonKey() final  bool wingmanRequestsEnabled;
-@override@JsonKey() final  bool contextualOpenersEnabled;
+@override@JsonKey()@Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') final  bool wingmanRequestsEnabled;
+@override@JsonKey()@Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') final  bool contextualOpenersEnabled;
 @override@JsonKey() final  bool compatibilityAffectsRanking;
 @override@JsonKey() final  EventSuccessQuestionnaireConfig questionnaireConfig;
 @override final  String? attendeePrompt;
@@ -273,7 +273,7 @@ abstract mixin class _$EventSuccessDefaultsCopyWith<$Res> implements $EventSucce
   factory _$EventSuccessDefaultsCopyWith(_EventSuccessDefaults value, $Res Function(_EventSuccessDefaults) _then) = __$EventSuccessDefaultsCopyWithImpl;
 @override @useResult
 $Res call({
- bool enabled, String playbookId, List<String> selectedModuleIds, bool moduleSelectionConfigured, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, String? attendeePrompt
+ bool enabled, String playbookId, List<String> selectedModuleIds, bool moduleSelectionConfigured, EventSuccessStructureConfig structureConfig, String hostGoal,@Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') bool wingmanRequestsEnabled,@Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, String? attendeePrompt
 });
 
 

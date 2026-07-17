@@ -1,5 +1,5 @@
 {
-  "version": 23,
+  "version": 24,
   "updated": "2026-07-17",
   "owner": "agent_operating_model",
   "entries": [
@@ -1669,10 +1669,14 @@
         "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
         "lib/event_success/presentation/event_success_structure_config_editor.dart",
         "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
+        "lib/event_success/domain/event_success_defaults.dart",
+        "lib/event_success/domain/event_success_feature_state.dart",
+        "lib/event_success/domain/event_success_models.dart",
+        "lib/event_success/domain/event_success_plan.dart",
         "lib/event_success/domain/event_success_runtime.dart",
         "lib/event_success/data/event_success_repository/plan.dart"
       ],
-      "symptom": "The shared setup form adds feature-local card chrome, forces disclosures open, launches a second questionnaire sheet, flattens every lifecycle stage into one tool list, separates a tool from its dependent configuration, treats platform attendance or safety as optional Event Success modules, filters platform-owned steps out of the runtime run of show, normalizes raw text during typing, or full-overwrites a stale/frozen plan.",
+      "symptom": "The shared setup form adds feature-local card chrome, forces disclosures open, launches a second questionnaire sheet, flattens every lifecycle stage into one tool list, separates a tool from its dependent configuration, exposes a platform-owned module as a host toggle, drops platform-owned ids from an effective read or new write, rewrites a legacy stored selection during hydration, automatically applies the How people mix projection outside an explicit host edit, filters platform-owned steps out of the runtime run of show, normalizes raw text during typing, or full-overwrites a stale/frozen plan.",
       "guard": {
         "type": "command",
         "command": "flutter test test/event_success/event_success_setup_body_test.dart test/event_success/event_success_structure_config_editor_test.dart test/event_success/event_success_questionnaire_config_editor_test.dart test/event_success/event_success_playbooks_test.dart test/event_success/event_success_repository_test.dart test/event_success/event_success_runtime_test.dart && ./tool/check_data_contract.sh",
@@ -1683,7 +1687,7 @@
         "docs/widget_catalog.md",
         "docs/backend_operation_catalog.md"
       ],
-      "notes": "Keep selectable tools grouped by their domain stage and place rotation, reveal, and questionnaire configuration directly beneath the owning row with CatchSection.containedFieldRows. Keep old qr_check_in, safety_controls, and crowd_balance ids readable during compatibility, but do not restore them to new defaults or the setup UI. Runtime step eligibility must still treat those platform capabilities as enabled so removing their stored ids never shifts or drops the run of show. First Hello remains the sole Event Success arrival ritual."
+      "notes": "Keep selectable tools grouped by their domain stage and place rotation, reveal, and questionnaire configuration directly beneath the owning row with CatchSection.containedFieldRows. Catalog metadata is the source of truth for platform ownership: qr_check_in, safety_controls, crowd_balance, wingman_requests, contextual_openers, decomposed_feedback, and host_analytics stay hidden from hosts, are unioned into effective reads and all new draft/default/plan writes, and remain absent from untouched legacy JSON until an explicit save. Preserve every legacy selected id in the read projection. The How people mix API derives micro_pods or guided_rotations only when the host explicitly changes the composite control; never run it automatically while hydrating or serializing an existing draft. Runtime step eligibility must treat platform capabilities as enabled without shifting older run-of-show behavior. First Hello remains the sole Event Success arrival ritual."
     },
     {
       "id": "REG-COPY-IDENTIFIER-001",

@@ -87,21 +87,19 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     DateTime? completedAt,
     String? attendeePrompt,
   }) {
+    final selectedModuleIds = draft.playbook.effectiveModuleSelection(
+      draft.selectedModuleIds,
+    );
     return EventSuccessPlan(
       id: id,
       eventId: eventId,
       clubId: clubId,
       playbookId: draft.playbook.id,
-      selectedModuleIds: _stableModuleIds(draft.selectedModuleIds),
+      selectedModuleIds: _stableModuleIds(selectedModuleIds),
       targetAttendeeCount: draft.targetAttendeeCount,
       structureConfig: draft.structureConfig,
       hostGoal: _persistedHostGoal(draft),
-      wingmanRequestsEnabled: draft.isModuleSelected(
-        EventSuccessModuleCatalog.wingmanRequests.id,
-      ),
-      contextualOpenersEnabled: draft.isModuleSelected(
-        EventSuccessModuleCatalog.contextualOpeners.id,
-      ),
+      // Legacy flags intentionally use their hardcoded `true` defaults.
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
       questionnaireConfig: draft.questionnaireConfig.normalized(),
       activeStepIndex: activeStepIndex,
@@ -117,25 +115,25 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
   EventSuccessPlaybook get playbook =>
       EventSuccessPlaybookLibrary.byIdOrDefault(playbookId);
 
+  Set<String> get effectiveSelectedModuleIds =>
+      playbook.effectiveModuleSelection(selectedModuleIds);
+
   EventSuccessHostDraft get hostDraft => EventSuccessHostDraft(
     playbook: playbook,
-    selectedModuleIds: selectedModuleIds
-        .where(playbook.moduleIds.contains)
-        .toSet(),
+    selectedModuleIds: effectiveSelectedModuleIds,
     targetAttendeeCount: targetAttendeeCount,
     structureConfig: structureConfig,
     hostGoal: hostGoal,
-    wingmanRequestsEnabled: wingmanRequestsEnabled,
-    contextualOpenersEnabled: contextualOpenersEnabled,
     compatibilityAffectsRanking: compatibilityAffectsRanking,
     questionnaireConfig: questionnaireConfig,
   );
 
   List<EventSuccessModule> get selectedModules => playbook.modules
-      .where((module) => selectedModuleIds.contains(module.id))
+      .where((module) => effectiveSelectedModuleIds.contains(module.id))
       .toList(growable: false);
 
-  bool hasModule(String moduleId) => selectedModuleIds.contains(moduleId);
+  bool hasModule(String moduleId) =>
+      effectiveSelectedModuleIds.contains(moduleId);
 
   bool get liveRevealConfigured =>
       hasModule(EventSuccessModuleCatalog.liveReveal.id);
@@ -206,18 +204,17 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     EventSuccessHostDraft draft, {
     required DateTime updatedAt,
   }) {
+    final selectedModuleIds = draft.playbook.effectiveModuleSelection(
+      draft.selectedModuleIds,
+    );
     return copyWith(
       playbookId: draft.playbook.id,
-      selectedModuleIds: _stableModuleIds(draft.selectedModuleIds),
+      selectedModuleIds: _stableModuleIds(selectedModuleIds),
       targetAttendeeCount: draft.targetAttendeeCount,
       structureConfig: draft.structureConfig,
       hostGoal: _persistedHostGoal(draft),
-      wingmanRequestsEnabled: draft.isModuleSelected(
-        EventSuccessModuleCatalog.wingmanRequests.id,
-      ),
-      contextualOpenersEnabled: draft.isModuleSelected(
-        EventSuccessModuleCatalog.contextualOpeners.id,
-      ),
+      wingmanRequestsEnabled: true,
+      contextualOpenersEnabled: true,
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
       questionnaireConfig: draft.questionnaireConfig.normalized(),
       updatedAt: updatedAt,

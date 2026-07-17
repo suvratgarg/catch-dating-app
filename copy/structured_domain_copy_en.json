@@ -2,6 +2,15 @@
   "version": 1,
   "locale": "en",
   "owner": "marketing",
+  "eventSuccessModuleMetadata": {
+    "crowdBalance": { "hostConfigurable": false },
+    "checkIn": { "hostConfigurable": false },
+    "wingmanRequests": { "hostConfigurable": false },
+    "contextualOpeners": { "hostConfigurable": false },
+    "decomposedFeedback": { "hostConfigurable": false },
+    "hostAnalytics": { "hostConfigurable": false },
+    "safetyControls": { "hostConfigurable": false }
+  },
   "constants": {
     "eventTitleMorning": {
       "value": "Morning",

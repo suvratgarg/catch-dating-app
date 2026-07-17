@@ -11,6 +11,8 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.crowdBalance,
     productLayer: EventSuccessProductLayer.rosterAttendance,
     stage: EventSuccessStage.before,
+    hostConfigurable:
+        false,
     attendeePromise: 'The room feels intentional instead of random.',
     hostPromise:
         'Shows waitlist, cohort, skill, and pace gaps before the event.',
@@ -31,6 +33,8 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.checkIn,
     productLayer: EventSuccessProductLayer.rosterAttendance,
     stage: EventSuccessStage.arrival,
+    hostConfigurable:
+        false,
     attendeePromise: 'Arrival is quick and the right people enter the loop.',
     hostPromise: 'Confirms who actually attended before matching and reviews.',
     requiresLivePhoneUse: true,
@@ -201,6 +205,8 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.wingmanRequests,
     productLayer: EventSuccessProductLayer.hostFacilitation,
     stage: EventSuccessStage.mixing,
+    hostConfigurable:
+        false,
     attendeePromise:
         'Ask the host for help with a specific introduction while the event is still live.',
     hostPromise:
@@ -223,6 +229,8 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.contextualOpeners,
     productLayer: EventSuccessProductLayer.conversation,
     stage: EventSuccessStage.after,
+    hostConfigurable:
+        false,
     attendeePromise: 'A match starts with shared context instead of a cold hi.',
     hostPromise: 'Improves downstream chat starts without host involvement.',
     setupSteps: [
@@ -240,6 +248,8 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.decomposedFeedback,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.after,
+    hostConfigurable:
+        false,
     attendeePromise: 'Feedback is specific and private.',
     hostPromise:
         'Separates welcome, balance, structure, safety, and chemistry.',
@@ -255,6 +265,8 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.hostAnalytics,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.hostDebrief,
+    hostConfigurable:
+        false,
     attendeePromise:
         'The next event should feel better because this one taught us something.',
     hostPromise:
@@ -272,6 +284,8 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.safetyControls,
     productLayer: EventSuccessProductLayer.safety,
     stage: EventSuccessStage.before,
+    hostConfigurable:
+        false,
     attendeePromise: 'Attendees can participate without losing control.',
     hostPromise: 'Gives hosts escalation and boundary tools.',
     setupSteps: [

@@ -294,17 +294,21 @@ wizard with a compact shared form. Durable outcomes:
 - **Spoke ownership.** Club-level Event Success defaults live on the dedicated
   Live event guide spoke reached from the four-row Club settings section. The
   Edit tab no longer embeds the form alongside profile, payout, and team UI.
-- **Platform boundary.** Ordinary attendance/check-in, safety controls, and
-  crowd balance are event-platform primitives. New Event Success plans do not
-  write those legacy module ids. First Hello remains the only Event Success
-  arrival ritual; old ids remain readable during the compatibility period.
+- **Platform boundary.** Attendance/check-in, safety controls, crowd balance,
+  wingman requests, contextual openers, attendee feedback, and host analytics
+  are event-platform primitives. Catalog metadata hides them from host setup;
+  effective reads and new defaults/plans include every platform-owned id that
+  the active playbook contains, while untouched legacy JSON remains unchanged.
+  The two legacy boolean fields stay serialized as `true` until a later schema
+  migration. First Hello remains the only Event Success arrival ritual.
 - **Gated Phase 4 prototype.** Widgetbook contains an owner-review-only
   `EventSuccessModuleConsolidationPrototype` under
   `Event Success / Phase 4 owner review`. It demonstrates the proposed single
   How people mix choice, conditional size/count/cadence/repeat row order,
-  recommendation copy, and a five-decision visible tool set. It has no domain
-  writer and is not imported by production; module consolidation remains
-  blocked on explicit owner approval.
+  recommendation copy, and a five-decision visible tool set. Its grouping
+  derivation exists as an explicit draft projection, but the prototype has no
+  writer and production still uses the pair-only backend-safe interaction.
+  Wiring the composite control remains blocked on explicit owner approval.
 - **Guarded persistence.** Setup saves are transactionally revision checked,
   reject frozen or stale plans, and update only setup-owned fields. A newer
   remote snapshot never silently replaces local unsaved edits.

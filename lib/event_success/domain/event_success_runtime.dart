@@ -131,11 +131,9 @@ class EventSuccessRuntime {
       compatibilityQuestionnaireEnabled && plan.compatibilityAffectsRanking;
 
   bool get wingmanRequestsEnabled =>
-      plan.wingmanRequestsEnabled &&
       moduleEnabled(EventSuccessModuleCatalog.wingmanRequests.id);
 
   bool get contextualOpenersConfigured =>
-      plan.contextualOpenersEnabled &&
       moduleEnabled(EventSuccessModuleCatalog.contextualOpeners.id);
 
   bool get conversationCuesEnabled =>
@@ -403,11 +401,6 @@ class EventSuccessRuntime {
   }
 
   bool _moduleIdEnabledForLiveStep(String moduleId) {
-    if (moduleId == EventSuccessModuleCatalog.checkIn.id ||
-        moduleId == EventSuccessModuleCatalog.safetyControls.id ||
-        moduleId == EventSuccessModuleCatalog.crowdBalance.id) {
-      return true;
-    }
     if (moduleId == EventSuccessModuleCatalog.wingmanRequests.id) {
       return wingmanRequestsEnabled;
     }
@@ -431,6 +424,9 @@ class EventSuccessRuntime {
     if (lifecycle != EventSuccessAttendeeLifecycle.checkedIn) return false;
     if (plan.revealStatus != EventSuccessRevealStatus.idle) return false;
     if (step == null) return true;
+    if (step.moduleIds.every(plan.playbook.nonConfigurableModuleIds.contains)) {
+      return true;
+    }
     return switch (step.stage) {
       EventSuccessStage.before || EventSuccessStage.arrival => true,
       EventSuccessStage.opening ||

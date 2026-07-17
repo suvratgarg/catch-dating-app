@@ -159,18 +159,19 @@ void main() {
     expect(find.text('Your plan'), findsOneWidget);
     expect(find.text('WHEN PEOPLE ARRIVE'), findsOneWidget);
     expect(find.text('DURING THE EVENT'), findsOneWidget);
-    expect(find.text('AFTER THE EVENT'), findsOneWidget);
+    expect(find.text('AFTER THE EVENT'), findsNothing);
     expect(find.text('Save setup'), findsOneWidget);
     // Only host-configurable modules are shown. Platform-owned attendance,
-    // safety, and balancing stay active without duplicate setup controls.
+    // safety, balancing, follow-up, and reporting stay active without
+    // duplicate setup controls.
     expect(find.text('Attendance and live roster'), findsNothing);
     expect(find.text('Safety layer'), findsNothing);
     expect(find.text('Booking balance preview'), findsNothing);
     expect(find.text('Welcome script'), findsOneWidget);
-    expect(find.text('Attendee feedback'), findsOneWidget);
-    expect(find.text('Host recap'), findsOneWidget);
-    expect(find.text('"Help me say hi" requests'), findsWidgets);
-    expect(find.text('Suggested first-message openers'), findsWidgets);
+    expect(find.text('Attendee feedback'), findsNothing);
+    expect(find.text('Host recap'), findsNothing);
+    expect(find.text('"Help me say hi" requests'), findsNothing);
+    expect(find.text('Suggested first-message openers'), findsNothing);
     // Match clue questions is a first-class field, not nested in Advanced.
     expect(find.text('Match clue questions'), findsOneWidget);
 
@@ -654,7 +655,7 @@ void main() {
     expect(failed.retryIntent, EventSuccessCompanionRetryIntent.preference);
   });
 
-  testWidgets('host report is hidden when host analytics is disabled', (
+  testWidgets('host report remains available for legacy module selections', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -693,8 +694,8 @@ void main() {
       ),
     );
 
-    expect(find.text('Post-event insights are off'), findsOneWidget);
-    expect(find.text('Post-event host report'), findsNothing);
+    expect(find.text('Post-event insights are off'), findsNothing);
+    expect(find.text('Waiting for attendee feedback'), findsOneWidget);
   });
 
   testWidgets('host report summarizes live signal quality', (tester) async {
@@ -3133,7 +3134,7 @@ void main() {
   });
 
   testWidgets(
-    'companion hides post-event sections when their modules are disabled',
+    'companion keeps always-on post-event sections for legacy selections',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(430, 1600);
@@ -3177,8 +3178,8 @@ void main() {
       );
 
       expect(find.text('Ask host for help'), findsNothing);
-      expect(find.text('How did it feel?'), findsNothing);
-      expect(find.text('The host is running the room'), findsOneWidget);
+      expect(find.text('How did it feel?'), findsOneWidget);
+      expect(find.text('The host is running the room'), findsNothing);
     },
   );
 

@@ -331,11 +331,11 @@ void main() {
       expect(find.text('Match clue questions'), findsOneWidget);
       expect(
         find.text('"Help me say hi" requests', skipOffstage: false),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         find.text('Suggested first-message openers', skipOffstage: false),
-        findsOneWidget,
+        findsNothing,
       );
 
       expect(
