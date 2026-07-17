@@ -466,7 +466,7 @@ void main() {
         (widget) =>
             widget is CatchField &&
             widget.key == CreateEventFormKeys.datePicker &&
-            widget.mode == CatchFieldMode.nav,
+            widget.onTap != null,
       ),
       findsOneWidget,
     );
@@ -475,7 +475,7 @@ void main() {
         (widget) =>
             widget is CatchField &&
             widget.key == CreateEventFormKeys.timePicker &&
-            widget.mode == CatchFieldMode.nav,
+            widget.onTap != null,
       ),
       findsOneWidget,
     );
@@ -639,7 +639,6 @@ void main() {
     );
 
     expect(meetingPoint.enabled, isFalse);
-    expect(mapPicker.mode, CatchFieldMode.nav);
     expect(mapPicker.onTap, isNull);
     expect(paceField.enabled, isFalse);
     expect(saveButton.onPressed, isNull);

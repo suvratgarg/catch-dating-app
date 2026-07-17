@@ -17,6 +17,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
 part 'catch_field_control.dart';
@@ -1535,7 +1536,7 @@ class CatchField extends StatefulWidget {
       _inputConfig?.inputFormatters;
   Iterable<String>? get autofillHints => _inputConfig?.autofillHints;
   bool get obscureText => _inputConfig?.obscureText ?? false;
-  int? get maxLines => _inputConfig?.maxLines ?? 1;
+  int? get maxLines => _inputConfig == null ? 1 : _inputConfig!.maxLines;
   int? get minLines => _inputConfig?.minLines;
   int? get maxLength => _inputConfig?.maxLength;
   bool get readOnly => _inputConfig?.readOnly ?? false;

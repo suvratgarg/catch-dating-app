@@ -14,6 +14,31 @@ import '../../../test_pump_helpers.dart';
 import 'test_support.dart';
 
 void main() {
+  testWidgets('CatchField input preserves an explicit unbounded maxLines', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: 'existing');
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchField.input(
+          title: 'Answer',
+          controller: controller,
+          maxLines: null,
+          minLines: 1,
+          keyboardType: TextInputType.multiline,
+        ),
+      ),
+    );
+
+    expect(tester.widget<CatchField>(find.byType(CatchField)).maxLines, isNull);
+    expect(tester.widget<TextField>(find.byType(TextField)).maxLines, isNull);
+
+    await tester.enterText(find.byType(TextField), 'first\nsecond');
+    expect(controller.text, 'first\nsecond');
+  });
+
   testWidgets('CatchField choices wrap and report caller-owned selection', (
     tester,
   ) async {

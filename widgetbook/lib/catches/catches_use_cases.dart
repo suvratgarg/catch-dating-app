@@ -15,6 +15,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/labs/design_fixtures/catches_surface_fixtures.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
@@ -584,6 +585,7 @@ Widget eventRecapVibeGridStates(BuildContext context) {
         label: 'profile tiles',
         child: VibeGrid(
           rows: _recapReadyState(
+            context,
             event: event,
             attendeeIds: attendeeIds,
           ).attendeeRows,
@@ -594,6 +596,7 @@ Widget eventRecapVibeGridStates(BuildContext context) {
         label: 'selected and fallback',
         child: VibeGrid(
           rows: _recapReadyState(
+            context,
             event: event,
             attendeeIds: partialAttendeeIds,
             rosterProfiles: partialRoster,
@@ -687,12 +690,17 @@ Widget catchProfileViewStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'read only',
-        child: _DeviceFrame(child: CatchProfileView(data: _profileView())),
+        child: _DeviceFrame(
+          child: CatchProfileView(data: _profileView(context)),
+        ),
       ),
       _StateCard(
         label: 'reactable',
         child: _DeviceFrame(
-          child: CatchProfileView(data: _profileView(), onReact: _noopReaction),
+          child: CatchProfileView(
+            data: _profileView(context),
+            onReact: _noopReaction,
+          ),
         ),
       ),
     ],
@@ -705,7 +713,7 @@ Widget catchProfileViewStates(BuildContext context) {
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileHeroWidgetStates(BuildContext context) {
-  final data = _profileView();
+  final data = _profileView(context);
   return _CatchesCatalog(
     title: 'ProfileHeroWidget',
     contractId: 'screen.catches.profile.hero',
@@ -731,7 +739,7 @@ Widget profileHeroWidgetStates(BuildContext context) {
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profilePhotoStates(BuildContext context) {
-  final data = _profileView();
+  final data = _profileView(context);
   return _CatchesCatalog(
     title: 'ProfilePhoto',
     contractId: 'screen.catches.profile.photo',
@@ -760,7 +768,7 @@ Widget profilePhotoStates(BuildContext context) {
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profilePhotoBlockStates(BuildContext context) {
-  final section = _profileSection<ProfilePhotoSection>();
+  final section = _profileSection<ProfilePhotoSection>(context);
   return _CatchesCatalog(
     title: 'ProfilePhotoBlock',
     contractId: 'screen.catches.profile.photo_block',
@@ -815,7 +823,7 @@ Widget photoCaptionStates(BuildContext context) {
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileSectionViewStates(BuildContext context) {
-  final section = _profileSection<ProfileCompatibilitySection>();
+  final section = _profileSection<ProfileCompatibilitySection>(context);
   return _CatchesCatalog(
     title: 'ProfileSectionView',
     contractId: 'screen.catches.profile.section_view',
@@ -879,7 +887,7 @@ Widget profileCompatibilityStates(BuildContext context) {
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileCompatibility(
-              section: _profileSection<ProfileCompatibilitySection>(),
+              section: _profileSection<ProfileCompatibilitySection>(context),
             ),
           ),
         ),
@@ -901,7 +909,7 @@ Widget profilePromptStates(BuildContext context) {
       _StateCard(
         label: 'prompt answer',
         child: ProfilePrompt(
-          section: _profileSection<ProfilePromptSectionData>(),
+          section: _profileSection<ProfilePromptSectionData>(context),
         ),
       ),
     ],
@@ -925,7 +933,7 @@ Widget profileRunningStates(BuildContext context) {
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileRunning(
-              section: _profileSection<ProfileRunningSection>(),
+              section: _profileSection<ProfileRunningSection>(context),
             ),
           ),
         ),
@@ -969,7 +977,7 @@ Widget profileFactsStates(BuildContext context) {
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileFacts(
-              section: _profileSection<ProfileFactsSection>(),
+              section: _profileSection<ProfileFactsSection>(context),
             ),
           ),
         ),
@@ -1678,6 +1686,7 @@ Widget swipeEmptyStateStates(BuildContext context) {
         child: _DeviceFrame(
           child: SwipeEmptyState(
             content: buildSwipeEmptyContent(
+              l10n: context.l10n,
               event: openEvent,
               currentUser: null,
               currentUserParticipation: null,
@@ -1691,6 +1700,7 @@ Widget swipeEmptyStateStates(BuildContext context) {
         child: _DeviceFrame(
           child: SwipeEmptyState(
             content: buildSwipeEmptyContent(
+              l10n: context.l10n,
               event: upcomingEvent,
               currentUser: CatchesSurfaceFixtures.viewer,
               currentUserParticipation:
@@ -1707,6 +1717,7 @@ Widget swipeEmptyStateStates(BuildContext context) {
         child: _DeviceFrame(
           child: SwipeEmptyState(
             content: buildSwipeEmptyContent(
+              l10n: context.l10n,
               event: openEvent,
               currentUser: CatchesSurfaceFixtures.viewer,
               currentUserParticipation:
@@ -1723,6 +1734,7 @@ Widget swipeEmptyStateStates(BuildContext context) {
         child: _DeviceFrame(
           child: SwipeEmptyState(
             content: buildSwipeEmptyContent(
+              l10n: context.l10n,
               event: closedEvent,
               currentUser: CatchesSurfaceFixtures.viewer,
               currentUserParticipation:
@@ -1878,6 +1890,7 @@ class _RecapReadyBodyPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ready = _recapReadyState(
+      context,
       event: event,
       attendeeIds: attendeeIds,
       selectedVibeIds: selectedVibeIds,
@@ -1894,7 +1907,8 @@ class _RecapReadyBodyPreview extends StatelessWidget {
   }
 }
 
-EventRecapReady _recapReadyState({
+EventRecapReady _recapReadyState(
+  BuildContext context, {
   required Event event,
   required List<String> attendeeIds,
   Map<String, PublicProfile>? rosterProfiles,
@@ -1907,6 +1921,7 @@ EventRecapReady _recapReadyState({
     ),
     rosterProfiles: rosterProfiles ?? _recapRosterProfiles(),
     selectedVibeIds: selectedVibeIds,
+    l10n: context.l10n,
     now: CatchesSurfaceFixtures.now,
   );
 
@@ -1955,16 +1970,18 @@ EventRecapViewModel _recapViewModel({
   );
 }
 
-ProfileView _profileView() {
+ProfileView _profileView(BuildContext context) {
   final profile = CatchesSurfaceFixtures.candidates.first;
   final content = ProfileCardContent.fromProfile(
     profile,
+    l10n: context.l10n,
     viewerProfile: CatchesSurfaceFixtures.viewer,
     sharedRunTitle: CatchesSurfaceFixtures.openWindowEvent().title,
   );
 
   return profileViewFromCardContent(
     content,
+    l10n: context.l10n,
     name: profile.name,
     age: profile.age,
     running: profile.activityPreferences.running,
@@ -1974,8 +1991,8 @@ ProfileView _profileView() {
   );
 }
 
-T _profileSection<T extends ProfileSection>() {
-  return _profileView().sections.whereType<T>().first;
+T _profileSection<T extends ProfileSection>(BuildContext context) {
+  return _profileView(context).sections.whereType<T>().first;
 }
 
 void _noopTap() {}

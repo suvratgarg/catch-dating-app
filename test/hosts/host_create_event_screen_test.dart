@@ -841,7 +841,7 @@ void main() {
       'host manage keeps ritual controls in Live and check-in in Guests',
       (tester) async {
         tester.view.devicePixelRatio = 1;
-        tester.view.physicalSize = const Size(430, 2200);
+        tester.view.physicalSize = const Size(430, 3000);
         addTearDown(tester.view.resetDevicePixelRatio);
         addTearDown(tester.view.resetPhysicalSize);
 
@@ -936,9 +936,21 @@ void main() {
         await tester.tap(find.text('GUESTS'));
         await _pumpTestAnimation(tester);
 
-        expect(find.byType(HostEventCheckInQrPanel), findsOneWidget);
+        expect(publicProfiles.fetchPublicProfilesCalls, hasLength(1));
         expect(find.text('Check-in QR'), findsOneWidget);
-        expect(find.text('Check-in board'), findsOneWidget);
+        await tester.tap(find.text('Check-in QR'));
+        await _pumpHostActionFrame(tester);
+        await _pumpTestAnimation(tester);
+
+        expect(find.byType(HostEventCheckInQrPanel), findsOneWidget);
+        await tester.tap(find.text('Check-in QR'));
+        await _pumpTestAnimation(tester);
+        await tester.drag(
+          find.byKey(const Key('host_event_manage_scroll_view')),
+          const Offset(0, -800),
+        );
+        await _pumpTestAnimation(tester);
+        expect(find.text('CHECK-IN BOARD'), findsOneWidget);
         expect(find.byType(CatchSearchField), findsOneWidget);
         expect(find.text('Harsh'), findsOneWidget);
         expect(find.text('Manan'), findsOneWidget);

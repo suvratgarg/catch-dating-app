@@ -337,16 +337,16 @@ class PaymentReceiptSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final statusPresentation = paymentStatusPresentation(payment, context.l10n);
 
     return SafeArea(
+      bottom: false,
       child: SingleChildScrollView(
         child: CatchBottomSheetScaffold(
           title: eventTitle,
           padding: CatchInsets.pageBody.copyWith(
             top: CatchSpacing.s3,
-            bottom: CatchSpacing.s5 + bottomPadding,
+            bottom: CatchSpacing.s0,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -419,6 +419,7 @@ class PaymentReceiptSheet extends StatelessWidget {
                   ),
                 ),
               ],
+              const CatchScrollTerminalPadding(extra: CatchSpacing.s5),
             ],
           ),
         ),

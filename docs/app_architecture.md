@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.32
-updated: 2026-07-17
+version: 1.4.33
+updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
 ---
@@ -348,6 +348,14 @@ terminal sliver such as `CatchSliverTerminalPadding` instead of hard-coded
 bottom spacers. When a route uses this terminal sliver inside a `SafeArea`, the
 screen-level `SafeArea` must leave `bottom: false` so the device bottom inset
 remains visible to the sliver and becomes scrollable clearance.
+
+`AppShellBottomBarPlacement` is the shell-to-scroll-owner contract:
+`floating` publishes the complete physical obstruction and terminal padding
+consumes it; `anchored` means the scaffold already reduced the body viewport,
+so only the requested breathing room is added; `none` (and routes outside a
+shell) falls back to the larger of the device padding and view padding. Product
+screens consume that contract through `CatchScrollTerminalPadding` or
+`CatchSliverTerminalPadding`; they never read safe-area bottom values directly.
 
 Software-keyboard visibility is defined by `MediaQuery.viewInsets.bottom > 0`,
 not by focus. While that inset is nonzero, both `AppShell` and `HostAppShell`

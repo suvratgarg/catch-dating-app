@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -15,6 +16,7 @@ class HostCreateEventRouteLoadingScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: t.bg,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             CreateEventStepHeader(
@@ -102,37 +104,41 @@ class CreateEventLoadingFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final bottomPadding = MediaQuery.paddingOf(context).bottom;
-
     return ColoredBox(
       color: t.bg,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          CatchSpacing.s4,
-          CatchSpacing.s3,
-          CatchSpacing.s4,
-          CatchSpacing.s3 + bottomPadding,
-        ),
-        child: Row(
-          children: [
-            CatchSkeleton.box(
-              width: CatchLayout.skeletonTextBodyWidth,
-              height: CatchLayout.buttonLgHeight,
-              radius: CatchRadius.pill,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s4,
+              CatchSpacing.s3,
+              CatchSpacing.s4,
+              CatchSpacing.s0,
             ),
-            gapW12,
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: CatchSkeleton.box(
-                  width: CatchLayout.skeletonTextInlineTitleWidth,
+            child: Row(
+              children: [
+                CatchSkeleton.box(
+                  width: CatchLayout.skeletonTextBodyWidth,
                   height: CatchLayout.buttonLgHeight,
                   radius: CatchRadius.pill,
                 ),
-              ),
+                gapW12,
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: CatchSkeleton.box(
+                      width: CatchLayout.skeletonTextInlineTitleWidth,
+                      height: CatchLayout.buttonLgHeight,
+                      radius: CatchRadius.pill,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const CatchScrollTerminalPadding(extra: CatchSpacing.s3),
+        ],
       ),
     );
   }

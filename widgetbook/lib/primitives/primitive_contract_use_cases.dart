@@ -3776,9 +3776,13 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Chats',
-            actionIcon: CatchIcons.moreHorizRounded,
-            actionLabel: 'More',
-            onAction: _noop,
+            actions: [
+              CatchIconAction(
+                icon: CatchIcons.moreHorizRounded,
+                tooltip: 'More',
+                onPressed: _noop,
+              ),
+            ],
           ),
         ),
       ),
@@ -3787,8 +3791,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Preview',
-            actionText: 'Done',
-            onAction: _noop,
+            actions: [CatchTopBarTextAction(label: 'Done', onPressed: _noop)],
           ),
         ),
       ),
@@ -3798,9 +3801,12 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Clubs',
-            searchValue: 'run',
-            searchPlaceholder: 'Search clubs',
-            onSearch: _ignoreString,
+            search: CatchTopBarSearch(
+              value: 'run',
+              placeholder: 'Search clubs',
+              tooltip: 'Search clubs',
+              onChanged: _ignoreString,
+            ),
           ),
         ),
       ),

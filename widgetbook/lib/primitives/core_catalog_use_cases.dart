@@ -887,10 +887,11 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
           ),
           title: 'Explore',
           subtitle: 'Tonight near you',
-          searchEnabled: true,
-          searchValue: '',
-          onSearch: _ignoreString,
-          searchPlaceholder: 'Search events',
+          search: CatchTopBarSearch(
+            placeholder: 'Search events',
+            tooltip: 'Search events',
+            onChanged: _ignoreString,
+          ),
         ),
       ),
     ],
@@ -1320,14 +1321,15 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
           children: [
             CatchAsyncValueView<String>(
               value: const AsyncValue.data('3 events ready'),
-              data: (value) => CatchSurface.card(child: Text(value)),
+              builder: (context, value) =>
+                  CatchSurface.card(child: Text(value)),
             ),
             gapH12,
-            const SizedBox(
+            SizedBox(
               height: 80,
               child: CatchAsyncValueView<String>(
                 value: AsyncValue.loading(),
-                data: _textData,
+                builder: (context, value) => _textData(value),
               ),
             ),
             gapH12,
@@ -1338,7 +1340,7 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
                   Exception('Could not load events'),
                   StackTrace.current,
                 ),
-                data: _textData,
+                builder: (context, value) => _textData(value),
                 onRetry: _noop,
               ),
             ),
@@ -1367,23 +1369,23 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
             slivers: [
               CatchAsyncValueSliver<String>(
                 value: const AsyncValue.data('Sliver data loaded'),
-                data: (value) => SliverToBoxAdapter(
+                builder: (context, value) => SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.all(CatchSpacing.s4),
                     child: CatchSurface.card(child: Text(value)),
                   ),
                 ),
               ),
-              const CatchAsyncValueSliver<String>(
+              CatchAsyncValueSliver<String>(
                 value: AsyncValue.loading(),
-                data: _sliverTextData,
+                builder: (context, value) => _sliverTextData(value),
               ),
               CatchAsyncValueSliver<String>(
                 value: AsyncValue.error(
                   Exception('Could not load sliver list'),
                   StackTrace.current,
                 ),
-                data: _sliverTextData,
+                builder: (context, value) => _sliverTextData(value),
                 onRetry: _noop,
                 fillErrorRemaining: false,
               ),

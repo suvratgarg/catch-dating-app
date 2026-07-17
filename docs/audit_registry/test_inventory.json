@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 515,
+  "total": 520,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 248,
+      "count": 252,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -91,6 +91,7 @@
         "test/core/firebase_options_role_test.dart",
         "test/core/firestore_converters_test.dart",
         "test/core/forms/catch_form_descriptors_test.dart",
+        "test/core/forms/contract_alignment_test.dart",
         "test/core/privacy_badge_test.dart",
         "test/core/responsive/screen_size_test.dart",
         "test/core/schema_contracts_generated_test.dart",
@@ -175,6 +176,7 @@
         "test/hosts/club_form_primitives_test.dart",
         "test/hosts/create_event_prefill_test.dart",
         "test/hosts/edit_hosted_event_screen_test.dart",
+        "test/hosts/event_age_range_field_test.dart",
         "test/hosts/host_analytics_repository_test.dart",
         "test/hosts/host_broadcast_composer_sheet_test.dart",
         "test/hosts/host_club_create_state_test.dart",
@@ -191,6 +193,7 @@
         "test/hosts/host_operations_screen_test.dart",
         "test/hosts/host_profile_repository_test.dart",
         "test/hosts/host_report_export_test.dart",
+        "test/hosts/host_roster_primitives_test.dart",
         "test/hosts/host_team_management_controller_test.dart",
         "test/hosts/host_team_management_section_test.dart",
         "test/hosts/host_today_identity_switcher_test.dart",
@@ -268,6 +271,7 @@
         "test/tooling/catch_ui_lints_mutation_pending_test.dart",
         "test/tooling/catch_ui_lints_raw_motion_test.dart",
         "test/tooling/catch_ui_lints_typography_test.dart",
+        "test/tooling/descriptive_option_field_contract_test.dart",
         "test/ui_captures/capture_runner_test.dart",
         "test/user_analytics/user_analytics_panel_test.dart",
         "test/user_analytics/user_analytics_repository_test.dart",
@@ -378,7 +382,7 @@
       ]
     },
     "tooling": {
-      "count": 116,
+      "count": 117,
       "files": [
         "tool/agent/check_agent_readiness.test.mjs",
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
@@ -421,6 +425,7 @@
         "tool/design/check_section_dividers.test.mjs",
         "tool/design/check_section_headers.test.mjs",
         "tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "tool/design/check_terminal_padding.test.mjs",
         "tool/design/check_widget_pattern_families.test.mjs",
         "tool/design/context_pack_builder_test.dart",
         "tool/design/generate_flutter_field_surface_inventory.test.mjs",

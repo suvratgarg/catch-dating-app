@@ -3378,7 +3378,7 @@ Event _eventAtMapCoordinate(Event event, int index) {
   final latitude = _mapCenter.latitude + (index * 0.006);
   final longitude = _mapCenter.longitude + (index * 0.004);
   return event.copyWith(
-    meetingLocation: event.meetingLocation.copyWith(
+    meetingLocation: event.meetingLocation!.copyWith(
       latitude: latitude,
       longitude: longitude,
     ),

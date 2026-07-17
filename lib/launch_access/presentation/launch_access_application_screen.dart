@@ -53,7 +53,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                 )
               : CatchAsyncValueView<String?>(
                   value: uidAsync,
-                  data: (uid) {
+                  builder: (context, uid) {
                     if (uid == null || uid.isEmpty) {
                       return Center(
                         child: CatchEmptyState(

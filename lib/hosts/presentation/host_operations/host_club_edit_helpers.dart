@@ -52,15 +52,6 @@ String _normalizeMultilineInput(String value) {
       .replaceAll(RegExp(r'\n{3,}'), '\n\n');
 }
 
-String? Function(String?) _requiredHostFieldValidator(String label) {
-  return (value) {
-    if (value == null || value.trim().isEmpty) {
-      return '$label is required.';
-    }
-    return null;
-  };
-}
-
 String? _optionalEmailValidator(String? value) {
   final trimmed = value?.trim() ?? '';
   if (trimmed.isEmpty) return null;
@@ -71,40 +62,4 @@ String? _optionalEmailValidator(String? value) {
 Object? _optionalStringFieldValue(String value) {
   final trimmed = value.trim();
   return trimmed.isEmpty ? null : trimmed;
-}
-
-String _optionalMinAgeText(int minAge) => minAge == 0 ? '' : '$minAge';
-
-String _optionalMaxAgeText(int maxAge) => maxAge == 99 ? '' : '$maxAge';
-
-_ParsedAgeRange _parseAgeRange({
-  required String minText,
-  required String maxText,
-}) {
-  final minRaw = minText.trim();
-  final maxRaw = maxText.trim();
-  final minAge = minRaw.isEmpty ? 0 : int.tryParse(minRaw);
-  final maxAge = maxRaw.isEmpty ? 99 : int.tryParse(maxRaw);
-
-  if (minAge == null || (minRaw.isNotEmpty && (minAge < 18 || minAge > 99))) {
-    return const _ParsedAgeRange.error('Min age must be 18-99.');
-  }
-  if (maxAge == null || (maxRaw.isNotEmpty && (maxAge < 18 || maxAge > 99))) {
-    return const _ParsedAgeRange.error('Max age must be 18-99.');
-  }
-  if (minAge > maxAge) {
-    return const _ParsedAgeRange.error('Min age must be less than max age.');
-  }
-  return _ParsedAgeRange(minAge: minAge, maxAge: maxAge);
-}
-
-class _ParsedAgeRange {
-  const _ParsedAgeRange({required this.minAge, required this.maxAge})
-    : error = null;
-
-  const _ParsedAgeRange.error(this.error) : minAge = null, maxAge = null;
-
-  final int? minAge;
-  final int? maxAge;
-  final String? error;
 }

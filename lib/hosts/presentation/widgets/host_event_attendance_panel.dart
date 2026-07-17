@@ -38,6 +38,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_sta
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,6 +96,15 @@ class HostEventParticipantsPanel extends ConsumerStatefulWidget {
 
 class _HostEventParticipantsPanelState
     extends ConsumerState<HostEventParticipantsPanel> {
+  List<String> _stableProfileIds = const [];
+
+  List<String> _profileIdsFor(List<String> nextProfileIds) {
+    if (!listEquals(_stableProfileIds, nextProfileIds)) {
+      _stableProfileIds = List.unmodifiable(nextProfileIds);
+    }
+    return _stableProfileIds;
+  }
+
   @override
   Widget build(BuildContext context) {
     final eventId = widget.eventId;
@@ -239,7 +249,7 @@ class _HostEventParticipantsPanelState
           revenueReportError: revenueReportError,
         );
 
-        final profileIds = viewModel.profileIds;
+        final profileIds = _profileIdsFor(viewModel.profileIds);
         final profilesAsync = profileIds.isEmpty
             ? null
             : ref.watch(attendeeProfilesProvider(profileIds));

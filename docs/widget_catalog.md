@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.646
+version: 2.5.647
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,28 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.647
+
+- Consolidated expanding-search configuration for `CatchScreenTopBar` and
+  `CatchTopBar` into immutable `CatchTopBarSearch`. Placeholder and tooltip copy
+  are required and localized by callers. `CatchScreenTopBar` remains the
+  static/root-screen wrapper whose `BuildContext` factory resolves accessible
+  preferred height; `CatchTopBar` remains the stateful/search/identity bar. The
+  two roles are intentionally not merged.
+- Deleted the unused `CatchSliverTopBar`, folded the two live shortcut-action
+  examples into `actions`, and split the top-bar implementation into 890-line
+  primary and 299-line component parts.
+- `CatchAsyncValueView` and `CatchAsyncValueSliver` now expose only
+  context-aware builders. Use content-shaped skeletons for page or section
+  loads, `CatchLoadingIndicator` for inline waits,
+  `CatchErrorState.fromError` with the narrowest `AppErrorContext` for failures,
+  and `CatchAsyncValueView` as the default three-state composer.
+- The Host Insights time-window control remains a justified
+  `CatchField.control`: it is a composite analytics grid containing coordinated
+  period selection and report content, not a plain selector. Plain single- or
+  multi-choice inputs must use `CatchField.choices`, and numeric adjustment must
+  use `CatchField.stepper`.
 
 ### 2.5.646
 

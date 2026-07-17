@@ -1766,6 +1766,11 @@
           "tool": "design:tab-root-scroll-contracts",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#app-shell-chrome-policy"
+        },
+        {
+          "tool": "design:terminal-padding",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#app-shell-chrome-policy"
         }
       ]
     },

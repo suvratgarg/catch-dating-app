@@ -443,6 +443,24 @@ table appended to THIS doc as §9.4.1 with per-item dispositions
 scheduled. The survey grep set from this doc's PR description is the
 starting point.
 
+### 9.4.1 Configurable-surface findings (2026-07-18)
+
+This is the bounded survey only. No production changes below are authorized by
+the survey; the owner must review the dispositions before a follow-up schedules
+any `fix-now` item. Parameter counts exclude `key`. Usage counts include
+`lib/`, tests, and Widgetbook unless called out.
+
+| Surface | Lines | Public parameter count | Dead named constructors | English defaults | Duplicated configuration / finding | Disposition |
+|---|---:|---|---|---|---|---|
+| `CatchBottomSheetScaffold` | 242 | 11 | None; 24 uses | None (`keyboardSafe` only reads keyboard insets) | `title`/`subtitle`/`glyph`/`badge`/`trailing` form one intentional header-composition cluster; callers need only one sheet shell. | doctrine — keep the single shell and document header roles; do not add named variants. |
+| `CatchSurface` | 264 | base 18; `card` 10; `tinted` 7; `message` 9 | None; base 223, card 23, tinted 5, message 12 uses | None | The base color/elevation/border cluster overlaps the three semantic named constructors, but the named constructors already remove illegal combinations at the common call sites. | doctrine — prefer semantic named constructors; retain the base escape hatch for compositional surfaces. |
+| `CatchButton` | 337 | 13 | No named constructors; 194 uses | None | `variant` plus four color overrides is the only overlap cluster. `accentColor` has a bounded primary-action role; arbitrary colors remain needed by reviewed warning/brand actions. | doctrine — variants first, overrides only for registry-backed accents or reviewed semantic colors. |
+| `CatchChip` | 380 | `tag` 6; `selectable` 7; `activity` 6; `removable` 7 | None; tag 7, selectable 20, activity 11, removable 4 uses | None; removable semantics use `MaterialLocalizations` | The private 13-field storage object is shared, while each public constructor exposes a disjoint interaction contract. No public duplicated cluster survives. | leave — the typed constructors are the desired state. |
+| Adaptive dialog + picker | 414 combined | adaptive dialog 5; confirm helper 7; confirm/form widgets 3 each; date picker 5; time picker 3 | None; APIs are function-based | None; confirm/cancel/date/time/done copy resolves through l10n | Cupertino/Material branching repeats by necessity, while dialog card geometry and Cupertino picker-sheet chrome are already shared internally. | leave — platform branching is explicit and localized. |
+| `CatchOptionGroup` | 307 | 10 | No named constructors; 18 uses | None | Variant, scrolling, trailing content, divider, and controller-driven `selectionPosition` describe orthogonal layout/animation concerns; no repeated caller bundle justified another config type. | leave — keep the current parent-owned selection contract. |
+| `CatchTabbedScreenScaffold` + `CatchTabbedPageScrollView` | 238 | scaffold 12; page 7 | None; one production scaffold and three production page uses | None | All three live page uses repeat the centered `ConstrainedBox(maxWidth: CatchLayout.maxContentWidth)` pattern around primary box content, while the page primitive already owns overlap and terminal padding. | fix-now (future follow-up) — promote an optional semantic max-width/content wrapper into the page primitive after owner review; do not alter sliver-native preview content. |
+| `CatchBottomDock` | 37 | 3 | No named constructors; 16 uses | None | Padding and safe-area ownership are the entire contract; no duplicated mode cluster. | leave — small, semantic, and correctly bounded. |
+
 ## 10. Base-spec leftovers (O1–O3) — scheduled
 
 1. **O1 — host surfaces onto the forms layer**: migrate the host club

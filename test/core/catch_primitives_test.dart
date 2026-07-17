@@ -2327,7 +2327,7 @@ void main() {
       _wrap(
         CatchAsyncValueView<int>(
           value: AsyncError<int>(StateError('load failed'), StackTrace.empty),
-          data: (value) => Text('$value'),
+          builder: (context, value) => Text('$value'),
         ),
       ),
     );
@@ -2361,7 +2361,7 @@ void main() {
       _wrap(
         CatchAsyncValueView<int>(
           value: const AsyncLoading<int>(),
-          data: (value) => Text('$value'),
+          builder: (context, value) => Text('$value'),
           loadingBuilder: (context) => const Text('Loading custom state'),
         ),
       ),

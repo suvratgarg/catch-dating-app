@@ -43,6 +43,8 @@ import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
 import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
+import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
+    as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
@@ -10370,6 +10372,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .eventSuccessModuleConsolidationWholeGroup,
                   ),
                 ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Review gates',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Field motion',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Current vs proposed',
+                builder: _widgetbook_workspace_primitives_field_motion_use_cases
+                    .catchFieldMotionReview,
               ),
             ],
           ),

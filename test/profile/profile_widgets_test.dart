@@ -1129,8 +1129,8 @@ void main() {
       );
       final genderTile = tester.widget<CatchField>(_profileInfoTile('Gender'));
 
-      expect(displayNameTile.mode, CatchFieldMode.edit);
       expect(displayNameTile.enabled, isTrue);
+      expect(displayNameTile.controller, isNotNull);
       expect(displayNameTile.showClearButton, isTrue);
       expect(
         find.descendant(
@@ -1140,9 +1140,9 @@ void main() {
         findsWidgets,
       );
       expect(find.text('Name'), findsNothing);
-      expect(dobTile.mode, CatchFieldMode.read);
+      expect(dobTile.controller, isNull);
       expect(dobTile.onTap, isNull);
-      expect(genderTile.mode, CatchFieldMode.read);
+      expect(genderTile.controller, isNull);
       expect(genderTile.onTap, isNull);
       expect(
         find.descendant(
@@ -1172,8 +1172,8 @@ void main() {
       final instagramTile = tester.widget<CatchField>(
         _profileInfoTile('Instagram'),
       );
-      expect(instagramTile.mode, CatchFieldMode.edit);
       expect(instagramTile.enabled, isTrue);
+      expect(instagramTile.controller, isNotNull);
       expect(instagramTile.leadingUnit, '@');
       expect(instagramTile.showClearButton, isTrue);
       expect(find.text('@'), findsOneWidget);

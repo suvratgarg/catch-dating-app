@@ -71,22 +71,24 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
           subtitle: hasHeaderSubtitle ? l10n.hostInboxSubtitle : null,
           leadingType: CatchTopBarLeading.none,
           applySafeArea: false,
-          searchEnabled: widget.showSearchAction || searchActive,
-          searchExpanded: searchActive,
-          onSearchExpandedChanged: (expanded) =>
-              setState(() => _searchController.setExpanded(expanded)),
-          searchValue: query,
-          onSearch: widget.onSearchChanged ?? (_) {},
-          searchPlaceholder: l10n.sharedSearchByNameHint,
-          searchAutofocus: true,
-          onSearchSubmitted: _closeEmptySearch,
-          onSearchFocusChanged: _handleSearchFocusChanged,
-          searchTooltip: isHostApp
-              ? l10n.hostSearchAttendeesAction
-              : l10n.consumerSearchChatsAction,
-          searchSemanticLabel: isHostApp
-              ? l10n.hostSearchAttendeesAction
-              : l10n.consumerSearchChatsAction,
+          search: CatchTopBarSearch(
+            enabled: widget.showSearchAction || searchActive,
+            expanded: searchActive,
+            onExpandedChanged: (expanded) =>
+                setState(() => _searchController.setExpanded(expanded)),
+            value: query,
+            onChanged: widget.onSearchChanged ?? (_) {},
+            placeholder: l10n.sharedSearchByNameHint,
+            autofocus: true,
+            onSubmitted: _closeEmptySearch,
+            onFocusChanged: _handleSearchFocusChanged,
+            tooltip: isHostApp
+                ? l10n.hostSearchAttendeesAction
+                : l10n.consumerSearchChatsAction,
+            semanticLabel: isHostApp
+                ? l10n.hostSearchAttendeesAction
+                : l10n.consumerSearchChatsAction,
+          ),
         ),
         if (widget.hostFilter != null)
           CatchTabRail<HostInboxFilter>(

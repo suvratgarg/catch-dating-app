@@ -1,6 +1,6 @@
 {
-  "version": 24,
-  "updated": "2026-07-17",
+  "version": 26,
+  "updated": "2026-07-18",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -1712,6 +1712,47 @@
         "tool/README.md"
       ],
       "notes": "Localization owns visible prose only. Runtime identifiers remain typed constants or routing literals at their contract owner; allowlist entries require an exact key and reason."
+    },
+    {
+      "id": "REG-FIELD-MULTILINE-001",
+      "title": "Typed CatchField config collapses explicit unbounded multiline input",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_field.dart",
+        "test/core/widgets/catch_field/input_test.dart",
+        "test/profile/profile_widgets_test.dart"
+      ],
+      "symptom": "A per-mode config projection uses null-coalescing for maxLines, turning an intentional null multiline contract into a one-line field and corrupting profile prompt editing behavior.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/core/widgets/catch_field/input_test.dart test/profile/profile_widgets_test.dart",
+        "guardEvidence": "the field matrix pins explicit null maxLines and the profile suite pins multiline prompt rendering plus repeated-empty-line normalization"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/plans/catch_system_stretch_spec.md"
+      ],
+      "notes": "Null is a meaningful TextField maxLines value. Branch on config presence before reading maxLines; do not use a null-coalescing fallback on the stored value."
+    },
+    {
+      "id": "REG-RIVERPOD-COLLECTION-KEY-001",
+      "title": "Collection-valued Riverpod family keys restart profile loading",
+      "status": "active",
+      "applies_to": [
+        "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+        "lib/events/presentation/widgets/who_is_going.dart",
+        "test/hosts/host_create_event_screen_test.dart"
+      ],
+      "symptom": "A freshly allocated List is passed to a Riverpod family whose generated provider compares arguments by identity, creating a new profile request on rebuild and leaving the host roster in a repeated loading cycle.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/hosts/host_create_event_screen_test.dart --plain-name 'host manage keeps ritual controls in Live and check-in in Guests'",
+        "guardEvidence": "the host-manage test opens the live roster, renders both profiles, and asserts the repository is fetched exactly once"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md"
+      ],
+      "notes": "Until the provider accepts a value-equality key type, stabilize the ordered uid list by contents in the owning ConsumerState before watching or invalidating the family."
     }
   ]
 }
