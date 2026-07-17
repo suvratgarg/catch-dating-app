@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'test_support.dart';
+
 void main() {
   testWidgets(
     'CatchField choice toggle and stepper atoms activate from hardware keys',
@@ -271,6 +273,62 @@ void main() {
       find.widgetWithText(CatchBadge, 'Recommended'),
     );
     expect(badge.tone, CatchBadgeTone.success);
+  });
+
+  for (final scale in [1.3, 2.0]) {
+    testWidgets('CatchField toggle remains usable at ${scale}x text', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 280,
+            child: CatchField.toggle(
+              title: 'Show running pace on my public event profile',
+              body: 'Visible to other participants before the event.',
+              value: true,
+              onChanged: null,
+            ),
+          ),
+          textScale: scale,
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expectMinimumAccessibleTarget(
+        tester,
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.label ==
+                  'Show running pace on my public event profile' &&
+              widget.properties.toggled != null,
+        ),
+      );
+    });
+  }
+
+  testWidgets('CatchField toggle lanes mirror in RTL', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        const Directionality(
+          textDirection: TextDirection.rtl,
+          child: SizedBox(
+            width: 280,
+            child: CatchField.toggle(
+              title: 'Show pace',
+              value: true,
+              onChanged: null,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getCenter(find.byType(CatchFieldToggle)).dx,
+      lessThan(tester.getCenter(find.text('Show pace')).dx),
+    );
   });
 }
 

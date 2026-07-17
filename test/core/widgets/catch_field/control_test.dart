@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../test_pump_helpers.dart';
+import 'test_support.dart';
 
 void main() {
   testWidgets('CatchField preserves the last state when control is released', (
@@ -246,6 +247,18 @@ void main() {
     );
     expect(decreaseVisual.center, decreaseHit.center);
     expect(increaseVisual.center, increaseHit.center);
+    expectMinimumAccessibleTarget(
+      tester,
+      find.byKey(
+        const ValueKey('catch-field-stepper-Decrease height-focus-outline'),
+      ),
+    );
+    expectMinimumAccessibleTarget(
+      tester,
+      find.byKey(
+        const ValueKey('catch-field-stepper-Increase height-focus-outline'),
+      ),
+    );
 
     final increase = tester.widget<Semantics>(
       find.byWidgetPredicate(
@@ -1143,6 +1156,57 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await _pumpCatchFieldMotion(tester);
     expect(cancels, 1);
+  });
+
+  for (final scale in [1.3, 2.0]) {
+    testWidgets('CatchField control remains usable at ${scale}x text', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 280,
+            child: CatchField.control(
+              title: 'Preferred group size',
+              body: 'Four people for a comfortable conversation',
+              initiallyOpen: true,
+              control: CatchFieldStepper(
+                value: 4,
+                decreaseSemanticLabel: 'Decrease group size',
+                increaseSemanticLabel: 'Increase group size',
+                onChanged: (_) {},
+              ),
+            ),
+          ),
+          textScale: scale,
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('CatchField control lanes mirror in RTL', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: CatchFieldStepper(
+            value: 4,
+            decreaseSemanticLabel: 'Decrease group size',
+            increaseSemanticLabel: 'Increase group size',
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getCenter(find.bySemanticsLabel('Decrease group size')).dx,
+      greaterThan(
+        tester.getCenter(find.bySemanticsLabel('Increase group size')).dx,
+      ),
+    );
   });
 }
 

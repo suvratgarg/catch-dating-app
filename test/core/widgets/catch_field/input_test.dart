@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../test_pump_helpers.dart';
+import 'test_support.dart';
 
 void main() {
   testWidgets('CatchField choices wrap and report caller-owned selection', (
@@ -1067,6 +1068,56 @@ void main() {
       expect(submits, 1);
     },
   );
+
+  for (final scale in [1.3, 2.0]) {
+    testWidgets('CatchField input remains usable at ${scale}x text', (
+      tester,
+    ) async {
+      final controller = TextEditingController(
+        text: 'A long club description that must remain editable',
+      );
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 280,
+            child: CatchField.input(
+              title: 'Description',
+              controller: controller,
+              maxLines: 3,
+            ),
+          ),
+          textScale: scale,
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expectMinimumAccessibleTarget(tester, find.byType(TextField));
+    });
+  }
+
+  testWidgets('CatchField input lanes mirror in RTL', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: SizedBox(
+            width: 280,
+            child: CatchField.input(
+              title: 'City',
+              initialValue: 'Mumbai',
+              prefixIcon: Icon(CatchIcons.locationOnOutlined),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getCenter(find.byIcon(CatchIcons.locationOnOutlined)).dx,
+      greaterThan(tester.getCenter(find.byType(EditableText)).dx),
+    );
+  });
 }
 
 Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {

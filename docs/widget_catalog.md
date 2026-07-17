@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.645
-updated: 2026-07-17
+version: 2.5.646
+updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,23 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.646
+
+- Replaced `CatchFieldMode` and the 84-parameter private constructor with
+  sealed per-family configs. Public named constructors remain source-compatible
+  and const; rendering now switches exhaustively over row, toggle, edit,
+  select, and disclosure-control configs.
+- Completed the bounded field accessibility audit:
+
+  | Invariant | Audit finding | Disposition and proof |
+  | --- | --- | --- |
+  | Roles and labels | Navigation, toggle, select, choice, and stepper lanes already exposed their roles, labels, selected/toggled state, and enabled state. | Kept; pinned by the per-mode semantics tests. |
+  | Save announcements | Saving/saved visuals carried localized live-region labels, but transition delivery was implicit. | Status transitions now send one localized accessibility announcement; `save_status_test.dart` proves exactly `Saving`, then `Saved`, with no repeat on an unchanged rebuild. |
+  | Error announcements | Error anatomy and color were covered, but appearance was not a live region. | Error support rows now publish one labeled live region; `row_modes_test.dart` pins it. |
+  | Interactive targets | Row, chip, commit, and stepper targets passed; the field toggle exposed only its 44×26 visual as the target. | The toggle keeps the 44×26 visual but centers it in a 44-point target; the shared target assertion pins toggle and stepper lanes. |
+  | Dynamic type | The field modes rendered without overflow at 1.3×; a trailing read value could still truncate meaning at 2.0×. | At 2.0×, a trailing value without a body moves below the title and wraps. Row, input, toggle, and control suites run at 1.3× and 2.0×. |
+  | RTL | Directional padding and alignment already mirrored. | Added row, input, toggle, and control smoke tests for leading/trailing lane reversal. |
 
 ### 2.5.645
 

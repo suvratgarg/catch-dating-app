@@ -277,7 +277,6 @@ extension _CatchFieldRowModes on _CatchFieldState {
       expanded: _hasControl ? _isOpen : null,
       toggled: isToggle ? widget.toggled : null,
       value: isToggle ? toggleStatusValue : null,
-      liveRegion: isToggle && toggleStatusValue != null,
       onTap: isToggle && canInteract ? action : null,
       child: MouseRegion(
         cursor: mouseCursor,
@@ -399,7 +398,9 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final children = <Widget>[];
     final flexibleIndices = <int>{};
     final valueText = widget.valueText?.trim();
-    if (valueText != null && valueText.isNotEmpty) {
+    if (!_stacksTrailingValueText &&
+        valueText != null &&
+        valueText.isNotEmpty) {
       flexibleIndices.add(children.length);
       children.add(
         CatchFieldTrailing.valueText(
@@ -570,7 +571,9 @@ extension _CatchFieldRowModes on _CatchFieldState {
     }
 
     final title = _title?.trim();
-    final value = _body?.trim().isNotEmpty == true
+    final value = _stacksTrailingValueText
+        ? widget.valueText!.trim()
+        : _body?.trim().isNotEmpty == true
         ? _body!.trim()
         : widget._onSubmit != null
         ? _emptyEditableValueText

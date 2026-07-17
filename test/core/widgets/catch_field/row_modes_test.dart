@@ -7,6 +7,8 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'test_support.dart';
+
 void main() {
   testWidgets('CatchField valueText stays inside narrow row constraints', (
     tester,
@@ -414,6 +416,76 @@ void main() {
     );
     expect(error.style?.fontSize, CatchFieldTokens.captionFontSize);
     expect(error.style?.height, CatchFieldTokens.supportLineHeight);
+    final errorSemantics = tester.widget<Semantics>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics &&
+            widget.properties.label == 'Invite code is unavailable.',
+      ),
+    );
+    expect(errorSemantics.properties.liveRegion, isTrue);
+  });
+
+  for (final scale in [1.3, 2.0]) {
+    testWidgets('CatchField row modes remain meaningful at ${scale}x text', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 280,
+            child: CatchField.nav(
+              title: 'Availability window',
+              valueText: 'Weeknights after work and weekend mornings',
+              icon: CatchIcons.schedule,
+              onTap: () {},
+            ),
+          ),
+          textScale: scale,
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expectMinimumAccessibleTarget(tester, find.byType(CatchField));
+      if (scale == 2.0) {
+        expect(
+          tester
+              .getTopLeft(
+                find.text('Weeknights after work and weekend mornings'),
+              )
+              .dy,
+          greaterThan(tester.getTopLeft(find.text('Availability window')).dy),
+        );
+      }
+    });
+  }
+
+  testWidgets('CatchField row lanes mirror in RTL', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: SizedBox(
+            width: 320,
+            child: CatchField.nav(
+              title: 'Open profile',
+              icon: CatchIcons.schedule,
+              onTap: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final titleCenter = tester.getCenter(find.text('Open profile'));
+    expect(
+      tester.getCenter(find.byIcon(CatchIcons.schedule)).dx,
+      greaterThan(titleCenter.dx),
+    );
+    expect(
+      tester.getCenter(find.byIcon(CatchIcons.chevronRightRounded)).dx,
+      lessThan(titleCenter.dx),
+    );
   });
 
   testWidgets(

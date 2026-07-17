@@ -73,6 +73,9 @@ class _CatchFieldState extends State<CatchField>
   @override
   void didUpdateWidget(covariant CatchField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.status != widget.status) {
+      _announceStatusTransition(widget.status);
+    }
     if (oldWidget.focusNode != widget.focusNode) {
       _detachFocusNode();
       _attachFocusNode(widget.focusNode);
@@ -124,6 +127,22 @@ class _CatchFieldState extends State<CatchField>
       );
       _syncFieldValue();
     }
+  }
+
+  void _announceStatusTransition(CatchFieldStatus status) {
+    final message = switch (status) {
+      CatchFieldStatus.idle => null,
+      CatchFieldStatus.saving => context.l10n.coreCatchFieldSemanticSaving,
+      CatchFieldStatus.saved => context.l10n.coreCatchFieldSemanticSaved,
+    };
+    if (message == null) return;
+    unawaited(
+      SemanticsService.sendAnnouncement(
+        View.of(context),
+        message,
+        Directionality.of(context),
+      ),
+    );
   }
 
   @override
@@ -491,6 +510,14 @@ class _CatchFieldState extends State<CatchField>
   }
 
   bool get _hasValue => _body != null && _body!.isNotEmpty;
+  bool get _stacksTrailingValueText {
+    final valueText = widget.valueText?.trim();
+    return MediaQuery.textScalerOf(context).scale(1) >= 2 &&
+        (_body?.trim().isNotEmpty != true) &&
+        valueText != null &&
+        valueText.isNotEmpty;
+  }
+
   bool get _inlineControlAddAtRest => widget.addable && !_hasValue && !_isOpen;
   bool get _hasControl => widget.control != null || widget._explicitSaveInput;
   Object get _textFieldTapRegionGroup =>

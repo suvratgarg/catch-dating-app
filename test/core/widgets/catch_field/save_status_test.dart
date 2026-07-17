@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -251,6 +252,55 @@ void main() {
     await tester.pump();
     expect(find.byKey(const ValueKey('catch-field-spinner')), findsNothing);
     expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
+  });
+
+  testWidgets('CatchField announces each save transition exactly once', (
+    tester,
+  ) async {
+    final messages = <Map<dynamic, dynamic>>[];
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockDecodedMessageHandler<dynamic>(
+      SystemChannels.accessibility,
+      (message) async {
+        messages.add(message as Map<dynamic, dynamic>);
+        return null;
+      },
+    );
+    addTearDown(
+      () => messenger.setMockDecodedMessageHandler<dynamic>(
+        SystemChannels.accessibility,
+        null,
+      ),
+    );
+
+    var status = CatchFieldStatus.idle;
+    late StateSetter update;
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) {
+            update = setState;
+            return CatchField.read(title: 'Club name', status: status);
+          },
+        ),
+      ),
+    );
+
+    update(() => status = CatchFieldStatus.saving);
+    await tester.pump();
+    await tester.pump();
+    update(() {});
+    await tester.pump();
+    update(() => status = CatchFieldStatus.saved);
+    await tester.pump();
+    await tester.pump();
+
+    final announcements = messages
+        .where((message) => message['type'] == 'announce')
+        .map((message) => (message['data'] as Map<dynamic, dynamic>)['message'])
+        .toList();
+    expect(announcements, ['Saving', 'Saved']);
   });
 
   testWidgets('CatchField error takes precedence over saved status', (
