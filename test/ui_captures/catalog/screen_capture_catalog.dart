@@ -862,8 +862,8 @@ class _CaptureBandraDeviceLocation extends DeviceLocation {
       const LocationCoordinate(19.064, 72.835);
 }
 
-class _CaptureMatchRepository implements MatchRepository {
-  const _CaptureMatchRepository({required this.matches});
+class _CaptureMatchRepository extends Fake implements MatchRepository {
+  _CaptureMatchRepository({required this.matches});
 
   final List<Match> matches;
 

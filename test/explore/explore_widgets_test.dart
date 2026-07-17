@@ -176,6 +176,7 @@ Widget _exploreBodySliverGroup({
   VoidCallback onRetryClubs = _noop,
   VoidCallback onClearSearch = _noop,
   VoidCallback onClearFilters = _noop,
+  VoidCallback? onLoadMore,
   ValueChanged<ExploreTimeFilter> onSetTimeFilter = _noopTimeFilter,
   ValueChanged<ActivityKind> onActivitySelected = _noopActivityKind,
   ExploreEventSelected onEventSelected = _noopExploreEventSelected,
@@ -197,6 +198,7 @@ Widget _exploreBodySliverGroup({
         onRetryClubs: onRetryClubs,
         onClearSearch: onClearSearch,
         onClearFilters: onClearFilters,
+        onLoadMore: onLoadMore,
         onSetTimeFilter: onSetTimeFilter,
         onActivitySelected: onActivitySelected,
         onEventSelected: onEventSelected,
@@ -530,6 +532,40 @@ void main() {
       }
 
       expect(find.text('Club directory'), findsOneWidget);
+    });
+
+    testWidgets('Explore body exposes an honest load-more action', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'cursor-club', name: 'Cursor Club');
+      final event = event_test.buildEvent(
+        id: 'cursor-event',
+        clubId: club.id,
+        startTime: DateTime.now().add(const Duration(days: 1)),
+      );
+      var loadMoreCalls = 0;
+
+      await _pumpClubsSlivers(tester, [
+        _exploreBodySliverGroup(
+          clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+          feedAsync: AsyncData(
+            ExploreFeedViewModel(
+              items: [ExploreEventItem(event: event, club: club)],
+              isExhaustive: false,
+            ),
+          ),
+          onLoadMore: () => loadMoreCalls += 1,
+        ),
+      ]);
+
+      await tester.scrollUntilVisible(
+        find.text('Load more plans'),
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Load more plans'));
+
+      expect(loadMoreCalls, 1);
     });
 
     testWidgets('ExploreEventsSection renders event-first content', (
@@ -3199,8 +3235,99 @@ void main() {
       // visual choice; assert "at least one" so future tightening doesn't
       // re-break the test.
       expect(find.byType(CatchSkeleton), findsAtLeastNWidgets(1));
+      expect(find.byType(RefreshIndicator), findsOneWidget);
       expect(_topLevelSearchField(), findsOneWidget);
       expect(find.byType(TextField), findsNothing);
+    });
+
+    testWidgets('ExploreScreen revalidates when its shell tab is re-entered', (
+      tester,
+    ) async {
+      var activeIndex = appShellClubsTabIndex;
+      var feedBuilds = 0;
+      late StateSetter setShellState;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            exploreSourceClubsProvider.overrideWithValue(
+              const AsyncData(<Club>[]),
+            ),
+            exploreClubsViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+            ),
+            exploreFeedViewModelProvider.overrideWith((ref) {
+              feedBuilds += 1;
+              return const AsyncData(ExploreFeedViewModel(items: []));
+            }),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: StatefulBuilder(
+              builder: (context, setState) {
+                setShellState = setState;
+                return AppShellActiveTab(
+                  index: activeIndex,
+                  child: const ExploreScreen(),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      final initialBuilds = feedBuilds;
+
+      setShellState(() => activeIndex = appShellHomeTabIndex);
+      await tester.pump();
+      setShellState(() => activeIndex = appShellClubsTabIndex);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 60));
+
+      expect(feedBuilds, greaterThan(initialBuilds));
+    });
+
+    testWidgets('ExploreScreen pull-to-refresh revalidates the feed', (
+      tester,
+    ) async {
+      var feedBuilds = 0;
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            exploreSourceClubsProvider.overrideWithValue(
+              const AsyncData(<Club>[]),
+            ),
+            exploreClubsViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+            ),
+            exploreFeedViewModelProvider.overrideWith((ref) {
+              feedBuilds += 1;
+              return const AsyncData(ExploreFeedViewModel(items: []));
+            }),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreScreen(),
+          ),
+        ),
+      );
+      await tester.pump();
+      final initialBuilds = feedBuilds;
+
+      unawaited(
+        tester
+            .state<RefreshIndicatorState>(find.byType(RefreshIndicator))
+            .show(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(feedBuilds, greaterThan(initialBuilds));
     });
 
     testWidgets(

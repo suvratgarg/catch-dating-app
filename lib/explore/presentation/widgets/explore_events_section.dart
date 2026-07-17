@@ -199,6 +199,9 @@ List<Widget> _exploreContentSlivers(
       : ExploreFeedViewModel(
           items: effectiveItems,
           externalItems: viewModel.externalItems,
+          isExhaustive: viewModel.isExhaustive,
+          isLoadingMore: viewModel.isLoadingMore,
+          windowRequest: viewModel.windowRequest,
         );
   final sectionState = ExploreFeedSectionState.from(
     l10n: l10n,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -25,6 +26,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
+import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -52,6 +54,25 @@ class ExploreScreen extends ConsumerStatefulWidget {
 
 class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   bool _searchRequested = false;
+  bool? _wasExploreTabActive;
+  bool _reentryRefreshQueued = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final activeIndex = AppShellActiveTab.maybeIndexOf(context);
+    if (activeIndex == null) return;
+    final isActive = activeIndex == appShellClubsTabIndex;
+    final shouldRefresh = _wasExploreTabActive == false && isActive;
+    _wasExploreTabActive = isActive;
+    if (!shouldRefresh || _reentryRefreshQueued) return;
+    _reentryRefreshQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reentryRefreshQueued = false;
+      if (!mounted) return;
+      unawaited(_refreshExploreData());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -239,6 +260,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         onClearSearch: () =>
             ref.read(exploreSearchQueryProvider.notifier).clear(),
         onClearFilters: () => ref.read(exploreFiltersProvider.notifier).clear(),
+        onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
         onSetTimeFilter: (filter) =>
             ref.read(exploreFiltersProvider.notifier).setTimeFilter(filter),
         onActivitySelected: (activityKind) => ref
@@ -261,6 +283,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         onClearSearch: () =>
             ref.read(exploreSearchQueryProvider.notifier).clear(),
         onClearFilters: () => ref.read(exploreFiltersProvider.notifier).clear(),
+        onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
         onSetTimeFilter: (filter) =>
             ref.read(exploreFiltersProvider.notifier).setTimeFilter(filter),
         onActivitySelected: (activityKind) => ref
@@ -290,61 +313,65 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         children: [
           CatchMutationErrorListener(
             mutation: ClubMembershipController.joinMutation,
-            child: CustomScrollView(
-              key: ValueKey(
-                context.l10n.exploreExploreScreenBodyExploreListScrollView,
+            child: RefreshIndicator.adaptive(
+              onRefresh: _refreshExploreData,
+              child: CustomScrollView(
+                key: ValueKey(
+                  context.l10n.exploreExploreScreenBodyExploreListScrollView,
+                ),
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: ExploreDiscoveryCoverHeader(
+                      cityPickerState: cityPickerState,
+                      query: query,
+                      featuredItem: featuredItem,
+                      onCitySelected: (selectedCity) => ref
+                          .read(selectedExploreCityProvider.notifier)
+                          .setCity(selectedCity),
+                      onQueryChanged: (value) => ref
+                          .read(exploreSearchQueryProvider.notifier)
+                          .setQuery(value),
+                      actions: [savedEventsAction()],
+                      heroActions: [savedEventsAction(onDarkBackdrop: true)],
+                      searchRequested: _searchRequested,
+                      onSearchRequestedChanged: (expanded) {
+                        if (_searchRequested == expanded) return;
+                        setState(() => _searchRequested = expanded);
+                      },
+                      onFeaturedEventSelected: openFeaturedEvent,
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: ExploreFilterRail(
+                      filters: filters,
+                      state: filterRailState,
+                      sheetState: filterSheetState,
+                      onTimeFilterSelected: (filter) => ref
+                          .read(exploreFiltersProvider.notifier)
+                          .setTimeFilter(filter),
+                      onDistanceFilterSelected: (filter) =>
+                          unawaited(_applyDistanceFilter(filter)),
+                      onToggleJoinedOnly: () => ref
+                          .read(exploreFiltersProvider.notifier)
+                          .toggleJoinedOnly(),
+                      onToggleHighRatedOnly: () => ref
+                          .read(exploreFiltersProvider.notifier)
+                          .toggleHighRatedOnly(),
+                      onToggleActivityTag: (tag) => ref
+                          .read(exploreFiltersProvider.notifier)
+                          .toggleActivityTag(tag),
+                      onToggleArea: (area) => ref
+                          .read(exploreFiltersProvider.notifier)
+                          .toggleArea(area),
+                      onClearFilters: () =>
+                          ref.read(exploreFiltersProvider.notifier).clear(),
+                    ),
+                  ),
+                  ...bodySlivers,
+                  const CatchSliverTerminalPadding(),
+                ],
               ),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: ExploreDiscoveryCoverHeader(
-                    cityPickerState: cityPickerState,
-                    query: query,
-                    featuredItem: featuredItem,
-                    onCitySelected: (selectedCity) => ref
-                        .read(selectedExploreCityProvider.notifier)
-                        .setCity(selectedCity),
-                    onQueryChanged: (value) => ref
-                        .read(exploreSearchQueryProvider.notifier)
-                        .setQuery(value),
-                    actions: [savedEventsAction()],
-                    heroActions: [savedEventsAction(onDarkBackdrop: true)],
-                    searchRequested: _searchRequested,
-                    onSearchRequestedChanged: (expanded) {
-                      if (_searchRequested == expanded) return;
-                      setState(() => _searchRequested = expanded);
-                    },
-                    onFeaturedEventSelected: openFeaturedEvent,
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: ExploreFilterRail(
-                    filters: filters,
-                    state: filterRailState,
-                    sheetState: filterSheetState,
-                    onTimeFilterSelected: (filter) => ref
-                        .read(exploreFiltersProvider.notifier)
-                        .setTimeFilter(filter),
-                    onDistanceFilterSelected: (filter) =>
-                        unawaited(_applyDistanceFilter(filter)),
-                    onToggleJoinedOnly: () => ref
-                        .read(exploreFiltersProvider.notifier)
-                        .toggleJoinedOnly(),
-                    onToggleHighRatedOnly: () => ref
-                        .read(exploreFiltersProvider.notifier)
-                        .toggleHighRatedOnly(),
-                    onToggleActivityTag: (tag) => ref
-                        .read(exploreFiltersProvider.notifier)
-                        .toggleActivityTag(tag),
-                    onToggleArea: (area) => ref
-                        .read(exploreFiltersProvider.notifier)
-                        .toggleArea(area),
-                    onClearFilters: () =>
-                        ref.read(exploreFiltersProvider.notifier).clear(),
-                  ),
-                ),
-                ...bodySlivers,
-                const CatchSliverTerminalPadding(),
-              ],
             ),
           ),
           if (screenState.mapLauncherState.isVisible)
@@ -383,6 +410,42 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         .applyDistanceFilter(filter);
     if (!mounted || failure == null) return;
     _showLocationFailure(failure);
+  }
+
+  Future<void> _refreshExploreData() async {
+    ref.invalidate(exploreDiscoveryWindowProvider);
+    ref.invalidate(watchClubsByLocationProvider);
+    ref.invalidate(exploreSourceClubsProvider);
+    ref.invalidate(exploreClubsViewModelProvider);
+    ref.invalidate(exploreFeedViewModelProvider);
+    ref.invalidate(exploreRecommendationsProvider);
+
+    // The feed provider is a synchronous AsyncValue composition over several
+    // async repositories, so it has no `.future` to await. Hold the refresh
+    // indicator until the recomposed feed reaches either data or error.
+    for (var attempt = 0; attempt < 200; attempt += 1) {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      if (!mounted) return;
+      if (!ref.read(exploreFeedViewModelProvider).isLoading) return;
+    }
+  }
+
+  Future<void> _loadMore(ExploreFeedViewModel? feed) async {
+    final request = feed?.windowRequest;
+    if (request == null || feed?.hasMore != true || feed!.isLoadingMore) return;
+    try {
+      await ref
+          .read(exploreDiscoveryWindowProvider(request).notifier)
+          .loadNext();
+    } catch (error) {
+      if (!mounted) return;
+      showCatchErrorSnackBar(
+        context,
+        error,
+        errorContext: AppErrorContext.explore,
+        onRetry: () => unawaited(_loadMore(feed)),
+      );
+    }
   }
 
   void _showLocationFailure(DeviceLocationFailure failure) {

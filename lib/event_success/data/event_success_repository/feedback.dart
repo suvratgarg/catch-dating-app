@@ -5,6 +5,7 @@ mixin _EventSuccessFeedbackRepository on _EventSuccessRepositoryCore {
       withBackendErrorStream(
         () => _feedbackRef
             .where('eventId', isEqualTo: eventId)
+            .limit(ReadLimitPolicy.boundedWorkingSet)
             .snapshots()
             .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
         context: const BackendErrorContext(

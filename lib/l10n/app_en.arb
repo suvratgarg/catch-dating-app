@@ -2663,6 +2663,13 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
+  "exploreExploreScreenActionLoadMorePlans": "Load more plans",
+  "@exploreExploreScreenActionLoadMorePlans": {
+    "description": "Button that advances the cursor-paginated Explore discovery window.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen"
+  },
   "exploreExploreScreenTitleNoClubsMatchThis": "No clubs match this search",
   "@exploreExploreScreenTitleNoClubsMatchThis": {
     "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
@@ -16434,9 +16441,32 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
+  "exploreExploreScreenStateVisiblecopyCountPlusNoun": "{count}+ {noun}",
+  "@exploreExploreScreenStateVisiblecopyCountPlusNoun": {
+    "description": "Honest Explore result count while more cursor pages are available.",
+    "placeholders": {
+      "count": {},
+      "noun": {}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
   "exploreExploreScreenStateVisiblecopyCountNounDatespan": "{count} {noun} · {dateSpan}",
   "@exploreExploreScreenStateVisiblecopyCountNounDatespan": {
     "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "placeholders": {
+      "count": {},
+      "noun": {},
+      "dateSpan": {}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateVisiblecopyCountPlusNounDatespan": "{count}+ {noun} · {dateSpan}",
+  "@exploreExploreScreenStateVisiblecopyCountPlusNounDatespan": {
+    "description": "Honest dated Explore result count while more cursor pages are available.",
     "placeholders": {
       "count": {},
       "noun": {},

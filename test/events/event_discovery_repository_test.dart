@@ -207,6 +207,38 @@ void main() {
         'event-visible-in-general-feed',
       ]);
     });
+
+    test('cursor pages advance through Anytime discovery', () async {
+      final firestore = FakeFirebaseFirestore();
+      final repository = EventDiscoveryRepository(firestore);
+      final now = DateTime(2026, 5, 26, 10);
+      for (var day = 1; day <= 3; day += 1) {
+        await _seedDiscoverableEvent(
+          firestore,
+          buildEvent(
+            id: 'event-$day',
+            clubId: 'club-a',
+            startTime: now.add(Duration(days: day)),
+          ),
+        );
+      }
+      final query = EventDiscoveryQuery.forCity(
+        marketId: 'in-mh-mumbai',
+        startAt: now,
+        limit: 2,
+      );
+
+      final first = await repository.fetchDiscoverableEventsPage(query);
+      final second = await repository.fetchDiscoverableEventsPage(
+        query,
+        startAfter: first.nextCursor,
+      );
+
+      expect(first.items.map((event) => event.id), ['event-1', 'event-2']);
+      expect(first.hasMore, isTrue);
+      expect(second.items.map((event) => event.id), ['event-3']);
+      expect(second.hasMore, isFalse);
+    });
   });
 }
 

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -30,6 +31,7 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -710,6 +712,11 @@ void main() {
 
     test('mappableEventCount includes required-location event supply', () {
       final club = buildClub(id: 'map-club');
+      final unpinned = _exploreItem(
+        id: 'unpinned',
+        club: club,
+        startTime: DateTime(2026, 7, 2, 11),
+      );
       final viewModel = ExploreFeedViewModel(
         items: [
           _exploreItem(
@@ -719,10 +726,13 @@ void main() {
             startingPointLat: 19.06,
             startingPointLng: 72.83,
           ),
-          _exploreItem(
-            id: 'unpinned',
+          ExploreEventItem(
+            event: unpinned.event.copyWith(
+              meetingLocation: null,
+              startingPointLat: null,
+              startingPointLng: null,
+            ),
             club: club,
-            startTime: DateTime(2026, 7, 2, 11),
           ),
         ],
         externalItems: [
@@ -738,7 +748,35 @@ void main() {
       );
 
       expect(viewModel.count, 3);
-      expect(viewModel.mappableEventCount, 3);
+      expect(viewModel.mappableEventCount, 2);
+    });
+
+    test('result count uses a plus while cursor pages remain', () {
+      final club = buildClub(id: 'windowed-count-club');
+      final state = ExploreFeedSectionState.from(
+        viewModel: ExploreFeedViewModel(
+          items: [
+            _exploreItem(
+              id: 'windowed-one',
+              club: club,
+              startTime: DateTime(2026, 7, 2, 10),
+            ),
+            _exploreItem(
+              id: 'windowed-two',
+              club: club,
+              startTime: DateTime(2026, 7, 2, 11),
+            ),
+          ],
+          isExhaustive: false,
+        ),
+        candidateClubs: const [],
+        joinedClubIds: const {},
+        showThisWeekList: false,
+        promoteFeaturedItem: false,
+        l10n: _l10n,
+      );
+
+      expect(state.resultCountLabel, '2+ PLANS · JUL 2');
     });
 
     test('map view model preserves external event identity and coordinate', () {
@@ -1912,6 +1950,13 @@ class _FakeEventDiscoveryRepository extends Fake
   Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) async {
     return events;
   }
+
+  @override
+  Future<CursorPage<Event, DocumentSnapshot<Event>>>
+  fetchDiscoverableEventsPage(
+    EventDiscoveryQuery query, {
+    DocumentSnapshot<Event>? startAfter,
+  }) async => CursorPage(items: events, hasMore: false);
 }
 
 class _FakeExternalEventRepository extends Fake
@@ -1926,6 +1971,13 @@ class _FakeExternalEventRepository extends Fake
   ) async {
     return events;
   }
+
+  @override
+  Future<CursorPage<ExternalEvent, DocumentSnapshot<ExternalEvent>>>
+  fetchDiscoverableExternalEventsPage(
+    ExternalEventDiscoveryQuery query, {
+    DocumentSnapshot<ExternalEvent>? startAfter,
+  }) async => CursorPage(items: events, hasMore: false);
 }
 
 ExternalEvent _externalEvent({

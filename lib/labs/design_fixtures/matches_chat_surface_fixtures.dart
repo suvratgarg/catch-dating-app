@@ -6,6 +6,8 @@ import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -417,6 +419,17 @@ class MatchesChatFixtureMatchRepository implements MatchRepository {
       return Stream<List<Match>>.error(error, StackTrace.empty);
     }
     return Stream<List<Match>>.value(matches);
+  }
+
+  @override
+  Future<CursorPage<Match, MatchPageCursor>> fetchMatchesForUserPage({
+    required String uid,
+    MatchPageCursor? startAfter,
+    int limit = ReadLimitPolicy.historyPage,
+  }) async {
+    final error = matchesError;
+    if (error != null) throw error;
+    return CursorPage(items: matches.take(limit).toList(), hasMore: false);
   }
 
   @override

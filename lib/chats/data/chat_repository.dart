@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -48,15 +50,47 @@ class ChatRepository {
   Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
       withBackendErrorStream(
         () => _messagesRef(matchId)
-            .orderBy('sentAt')
+            .orderBy('sentAt', descending: true)
+            .limit(ReadLimitPolicy.historyPage)
             .snapshots()
-            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+            .map(
+              (snap) => snap.docs
+                  .map((document) => document.data())
+                  .toList(growable: false)
+                  .reversed
+                  .toList(growable: false),
+            ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
           action: 'watch chat messages',
           resource: _matchesCollectionPath,
         ),
       );
+
+  /// Fetches one newest-first history page. Consumers prepend older pages
+  /// after reversing for chronological presentation.
+  Future<CursorPage<ChatMessage, DocumentSnapshot<ChatMessage>>>
+  fetchMessagesPage({
+    required String matchId,
+    DocumentSnapshot<ChatMessage>? startAfter,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => withBackendErrorContext(
+    () async {
+      final page = await _messagesRef(matchId)
+          .orderBy('sentAt', descending: true)
+          .fetchDocumentCursorPage(limit: limit, startAfter: startAfter);
+      return CursorPage(
+        items: List.unmodifiable(page.items.map((document) => document.data())),
+        nextCursor: page.nextCursor,
+        hasMore: page.hasMore,
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch chat message page',
+      resource: _matchesCollectionPath,
+    ),
+  );
 
   // ── Write ─────────────────────────────────────────────────────────────────
 

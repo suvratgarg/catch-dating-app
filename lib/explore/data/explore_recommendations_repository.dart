@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -84,7 +85,7 @@ List<ExploreEventRecommendation> rankExploreEventRecommendations({
   required List<Event> signedUpEvents,
   required DateTime now,
   UserProfile? viewer,
-  int limit = 10,
+  int limit = ReadLimitPolicy.recommendationRail,
 }) {
   final timePreference = _timePreferenceFromEvents(
     attendedEvents: attendedEvents,

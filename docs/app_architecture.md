@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.37
-updated: 2026-07-18
+version: 1.4.38
+updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -2373,6 +2373,41 @@ CatchFormRowList<UpdateUserProfilePatch>(
   errorText: _profileSaveErrorText,
 )
 ```
+
+### Exhibit ARCH-DATA-CURSOR-001: Bounded Cursor Read Window
+
+<!-- exhibit-freshness: ARCH-DATA-CURSOR-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference implementation:
+
+- `lib/core/data/cursor_page.dart` owns `limit + 1`, opaque document cursors,
+  and honest `hasMore` state.
+- `lib/explore/presentation/explore_discovery_window_controller.dart` is the
+  reference provider family: the normalized query pair is its identity, the
+  notifier alone accumulates pages, and views receive immutable state.
+- `lib/events/data/event_discovery_repository.dart` and
+  `lib/events/data/external_event_repository.dart` retain raw Firestore cursors
+  through client-side post-filtering so rejected documents are never fetched
+  repeatedly or skipped.
+- `lib/core/data/read_limit_policy.dart` owns every numeric Firestore page or
+  working-set ceiling. Repository code does not introduce numeric literals.
+
+Adopters follow these constraints:
+
+1. Realtime history listeners expose only the newest bounded page; older
+   history has an explicit repository cursor method.
+2. A page cursor points at the final returned Firestore document, never the
+   final post-filtered domain item.
+3. Query identity includes every city, time, activity, availability, cohort,
+   distance, and page-size input that changes server results.
+4. UI count copy distinguishes an exhaustive total from a partial `N+` window,
+   and loading-more failures preserve the previously loaded window.
+5. Working sets without pagination require a named exception in
+   `docs/data_contracts.md` and remain capped by `ReadLimitPolicy`.
+
+The enforcement loop is `node tool/run.mjs check
+contracts:firestore-read-limits`, focused repository/controller tests, and the
+Firestore index-parity check whenever query shape changes.
 
 ## Migration Plan
 

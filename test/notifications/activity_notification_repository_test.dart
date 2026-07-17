@@ -112,9 +112,9 @@ void main() {
   });
 }
 
-class _FakeActivityNotificationRepository
+class _FakeActivityNotificationRepository extends Fake
     implements ActivityNotificationRepository {
-  const _FakeActivityNotificationRepository(this.notifications);
+  _FakeActivityNotificationRepository(this.notifications);
 
   final List<ActivityNotification> notifications;
 

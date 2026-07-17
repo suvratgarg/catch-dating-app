@@ -2330,6 +2330,12 @@ abstract class AppLocalizations {
   /// **'Saved events'**
   String get exploreExploreScreenTooltipSavedEvents;
 
+  /// Button that advances the cursor-paginated Explore discovery window.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more plans'**
+  String get exploreExploreScreenActionLoadMorePlans;
+
   /// Product copy used by lib/explore/presentation/explore_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -14089,11 +14095,30 @@ abstract class AppLocalizations {
     required Object noun,
   });
 
+  /// Honest Explore result count while more cursor pages are available.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ {noun}'**
+  String exploreExploreScreenStateVisiblecopyCountPlusNoun({
+    required Object count,
+    required Object noun,
+  });
+
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{count} {noun} · {dateSpan}'**
   String exploreExploreScreenStateVisiblecopyCountNounDatespan({
+    required Object count,
+    required Object noun,
+    required Object dateSpan,
+  });
+
+  /// Honest dated Explore result count while more cursor pages are available.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ {noun} · {dateSpan}'**
+  String exploreExploreScreenStateVisiblecopyCountPlusNounDatespan({
     required Object count,
     required Object noun,
     required Object dateSpan,

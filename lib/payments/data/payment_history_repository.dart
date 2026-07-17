@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -31,6 +33,7 @@ class PaymentHistoryRepository {
         () => _paymentsRef
             .where('userId', isEqualTo: userId)
             .orderBy('createdAt', descending: true)
+            .limit(ReadLimitPolicy.historyPage)
             .snapshots()
             .map((snap) => snap.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
@@ -40,22 +43,33 @@ class PaymentHistoryRepository {
         ),
       );
 
-  Future<List<Payment>> fetchPaymentsForUser(String userId) =>
-      withBackendErrorContext(
-        () async {
-          // firestore-index: payments (userId:ASCENDING,createdAt:DESCENDING)
-          final snap = await _paymentsRef
-              .where('userId', isEqualTo: userId)
-              .orderBy('createdAt', descending: true)
-              .get();
-          return snap.docs.map((d) => d.data()).toList();
-        },
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'fetch payment history',
-          resource: _collectionPath,
-        ),
+  Future<List<Payment>> fetchPaymentsForUser(String userId) async =>
+      (await fetchPaymentsForUserPage(userId: userId)).items;
+
+  Future<CursorPage<Payment, DocumentSnapshot<Payment>>>
+  fetchPaymentsForUserPage({
+    required String userId,
+    DocumentSnapshot<Payment>? startAfter,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => withBackendErrorContext(
+    () async {
+      // firestore-index: payments (userId:ASCENDING,createdAt:DESCENDING)
+      final page = await _paymentsRef
+          .where('userId', isEqualTo: userId)
+          .orderBy('createdAt', descending: true)
+          .fetchDocumentCursorPage(limit: limit, startAfter: startAfter);
+      return CursorPage(
+        items: List.unmodifiable(page.items.map((document) => document.data())),
+        nextCursor: page.nextCursor,
+        hasMore: page.hasMore,
       );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch payment history page',
+      resource: _collectionPath,
+    ),
+  );
 
   Stream<Payment?> watchPayment(String paymentId) => withBackendErrorStream(
     () => _paymentsRef
@@ -82,7 +96,7 @@ class PaymentHistoryRepository {
           .where('status', isEqualTo: PaymentStatus.completed.name)
           .where('signUpFailed', isEqualTo: false)
           .orderBy('createdAt', descending: true)
-          .limit(1)
+          .limit(ReadLimitPolicy.lookup)
           .get();
       return selectLatestSuccessfulPayment(snap.docs.map((doc) => doc.data()));
     },

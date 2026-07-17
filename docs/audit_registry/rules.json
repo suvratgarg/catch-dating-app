@@ -1918,7 +1918,7 @@
         "version": "1.2.0"
       },
       "applies_to": [
-        "lib/**/data/*repository*.dart",
+        "lib/**/data/**",
         "firestore.indexes.json",
         "tool/contracts/check_firestore_query_indexes.mjs"
       ],
@@ -1942,6 +1942,42 @@
           "tool": "contracts:firestore-query-indexes",
           "stage": "scanner-gate",
           "docAnchor": "docs/data_contracts.md#read-path-discipline"
+        }
+      ]
+    },
+    "FIRESTORE-READ-LIMIT-POLICY-001": {
+      "title": "Repository read limits use one reviewed surface policy",
+      "status": "active",
+      "kind": "scar",
+      "introduced_in": {
+        "doc_id": "data_contracts",
+        "version": "1.3.0"
+      },
+      "applies_to": [
+        "lib/**/data/*repository*.dart",
+        "lib/core/data/read_limit_policy.dart",
+        "lib/core/data/cursor_page.dart"
+      ],
+      "instruction": "Growing repository reads use a reviewed ReadLimitPolicy value plus an opaque cursor path. Numeric limit and take literals must not be reintroduced in repository code, and bounded-set exceptions must remain explicit in data_contracts.md.",
+      "sunset_when": [
+        "A generated repository layer owns page-size and cursor contracts for every Firestore read"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "contracts:firestore-read-limits"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-18",
+        "decision": "keep",
+        "note": "The gate prevents the ad-hoc limit zoo from returning while cursor adoption proceeds surface by surface."
+      },
+      "enforcement": [
+        {
+          "tool": "contracts:firestore-read-limits",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/data_contracts.md#canonical-read-limits-and-cursors"
         }
       ]
     },
@@ -2914,6 +2950,6 @@
       ]
     }
   },
-  "version": "2.7.19",
-  "updated": "2026-07-18"
+  "version": "2.7.20",
+  "updated": "2026-07-19"
 }

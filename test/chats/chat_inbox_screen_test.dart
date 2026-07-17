@@ -33,7 +33,7 @@ import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
-class _FakeMatchRepository implements MatchRepository {
+class _FakeMatchRepository extends Fake implements MatchRepository {
   _FakeMatchRepository({required this.matches, this.match});
 
   final List<Match> matches;

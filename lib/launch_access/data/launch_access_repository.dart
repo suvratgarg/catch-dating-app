@@ -34,15 +34,21 @@ class LaunchAccessRepository {
         ),
       );
 
-  Stream<LaunchAccessApplication?> watchApplication({required String uid}) {
-    return _applicationRef(uid).snapshots().map((snap) {
-      if (!snap.exists) return null;
-      return LaunchAccessApplication.fromJson({
-        ...snap.data()!,
-        'uid': snap.id,
-      });
-    });
-  }
+  Stream<LaunchAccessApplication?> watchApplication({required String uid}) =>
+      withBackendErrorStream(
+        () => _applicationRef(uid).snapshots().map((snap) {
+          if (!snap.exists) return null;
+          return LaunchAccessApplication.fromJson({
+            ...snap.data()!,
+            'uid': snap.id,
+          });
+        }),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch launch access application',
+          resource: collectionPath,
+        ),
+      );
 
   Future<void> submitApplication({
     required String uid,

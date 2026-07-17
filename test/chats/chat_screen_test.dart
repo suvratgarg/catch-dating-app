@@ -36,7 +36,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
-class FakeMatchRepository implements MatchRepository {
+class FakeMatchRepository extends Fake implements MatchRepository {
   FakeMatchRepository({this.match, this.matchStream});
 
   Match? match;

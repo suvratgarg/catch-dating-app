@@ -1327,6 +1327,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenTooltipSavedEvents => 'Saved events';
 
   @override
+  String get exploreExploreScreenActionLoadMorePlans => 'Load more plans';
+
+  @override
   String get exploreExploreScreenTitleNoClubsMatchThis =>
       'No clubs match this search';
 
@@ -9050,12 +9053,29 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String exploreExploreScreenStateVisiblecopyCountPlusNoun({
+    required Object count,
+    required Object noun,
+  }) {
+    return '$count+ $noun';
+  }
+
+  @override
   String exploreExploreScreenStateVisiblecopyCountNounDatespan({
     required Object count,
     required Object noun,
     required Object dateSpan,
   }) {
     return '$count $noun · $dateSpan';
+  }
+
+  @override
+  String exploreExploreScreenStateVisiblecopyCountPlusNounDatespan({
+    required Object count,
+    required Object noun,
+    required Object dateSpan,
+  }) {
+    return '$count+ $noun · $dateSpan';
   }
 
   @override

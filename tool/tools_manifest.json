@@ -1213,6 +1213,33 @@
       }
     },
     {
+      "id": "contracts:firestore-read-limits",
+      "category": "contracts",
+      "path": "tool/contracts/check_firestore_read_limits.mjs",
+      "command": "node tool/contracts/check_firestore_read_limits.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Rejects numeric repository read limits and unbounded Firestore collection reads outside the canonical ReadLimitPolicy and reviewed-exception contracts.",
+      "checks": [
+        "node --check tool/contracts/check_firestore_read_limits.mjs",
+        "node --test tool/contracts/check_firestore_read_limits.test.mjs",
+        "node tool/contracts/check_firestore_read_limits.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "FIRESTORE-READ-LIMIT-POLICY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/check_firestore_read_limits.test.mjs",
+        "contains": [
+          "known-bad numeric repository limit is detected",
+          "known-bad numeric limit default is detected",
+          "unbounded collection reads are detected"
+        ]
+      }
+    },
+    {
       "id": "contracts:storage-contract",
       "category": "contracts",
       "path": "tool/contracts/check_storage_contract.mjs",

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.2.0
+version: 1.3.0
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -486,6 +486,70 @@ handwritten repository source, rejects composite builders with no contract,
 and verifies each declared ordered field list against `firestore.indexes.json`.
 The check also runs inside `./tool/check_data_contract.sh` and Tools CI whenever
 repository data code or the index file changes.
+
+### Canonical read limits and cursors
+
+`lib/core/data/read_limit_policy.dart` owns the numeric policy and
+`lib/core/data/cursor_page.dart` owns the shared `limit + 1`,
+`startAfterDocument`, honest-`hasMore` contract. Repository call sites must not
+introduce numeric limits directly. `node tool/run.mjs check
+contracts:firestore-read-limits` enforces that boundary and runs in Tools CI
+and `./tool/check_data_contract.sh`.
+
+| Surface class | Page size | Notes |
+|---|---:|---|
+| Explore internal discovery | 80 | Primary mixed-feed supply. |
+| Explore external discovery | 40 | Secondary outbound supply. |
+| General feed/history | 40 / 50 | Feed page / chronological history page. |
+| Directory | 30 | Clubs and other entity directories. |
+| Bounded operational set | 1,000 | Contract ceiling for rosters and reviewed exceptions; never a browse-page substitute. |
+| Search | 20 | Interactive callable result window. |
+| Recommendation rail | 10 | Ranked, explicitly non-exhaustive rail. |
+| Deterministic lookup | 1 | Prefer direct document reads; use only where no deterministic id exists. |
+
+The first cursor adopters are Explore internal/external discovery, chat
+messages, active matches, club/event/user reviews, and activity notifications.
+Payment history uses the same cursor contract. Their realtime methods now
+expose only the bounded first page; their repository page methods advance
+opaque document cursors for older or additional supply.
+Explore accumulates both discovery cursors, shows `N+` while either has more,
+and exposes a load-more action. Its map count includes only records with a
+complete coordinate pair.
+
+### Feed freshness policy
+
+Every route-visible feed must provide one explicit manual refresh path and
+revalidate on a new route/tab session. Realtime first-page subscriptions count
+as continuous revalidation while mounted; they still need manual recovery for
+offline/reconnect and older-page failures. Explore invalidates its discovery
+window, club source, composed feed, and recommendation providers on pull and on
+inactive-to-active tab re-entry. Availability and attendance are recomposed in
+that same session refresh.
+
+### Reviewed bounded-set exceptions
+
+The following reads are intentionally not cursor-paged because they are
+working sets rather than user-browsed histories. Reclassify them and add a
+cursor before expanding their product surface:
+
+| Exception id | Reads | Bound / review trigger |
+|---|---|---|
+| `READ-EXCEPTION-ACTIVE-EDGES` | active memberships, saved events, blocks, event participations | At most one active edge per deterministic entity pair; paginate if inactive/history states join the query. |
+| `READ-EXCEPTION-EVENT-ROSTER` | active event roster and host event report | Bounded by the event admission capacity; exports remain explicit one-shot operations. |
+| `READ-EXCEPTION-HOST-CLUBS` | hosted/owned clubs for one user | Small authorization working set; paginate if surfaced as an organization history. |
+| `READ-EXCEPTION-CLUB-EVENT-SCHEDULE` | one club's event schedule and invite-link set | Operational club/event working sets; history/archive experiences require cursor pages. |
+| `READ-EXCEPTION-RECENT-CLUB-POSTS` | seven-day club post quota window | Server-enforced three-active-post quota; the bounded read exists only to calculate remaining quota. |
+| `READ-EXCEPTION-EVENT-SUCCESS` | active event-success module/check-in lists | Bounded to one event's configured workflow; archive/history surfaces require cursor pages. |
+| `READ-EXCEPTION-RETIRED-SWIPES` | legacy swipe/profile-decision history | No active `swipes/` product read may be added; migration tooling remains dry-run only. |
+
+Every exception above is still capped with
+`ReadLimitPolicy.boundedWorkingSet`; the exception waives cursor UX only, not
+the Firestore read ceiling.
+
+`CityRepository` is a deliberate availability exception: it logs normalized
+backend errors and falls back to the checked-in launched-city catalog so global
+city selection remains usable. Launch-access realtime reads, by contrast, fail
+through the standard backend error wrapper and never silently downgrade.
 
 ## Current Health
 

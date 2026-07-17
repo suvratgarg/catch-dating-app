@@ -20,6 +20,7 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
+import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -32,14 +33,28 @@ class ExploreFeedViewModel {
   const ExploreFeedViewModel({
     required this.items,
     this.externalItems = const <ExploreExternalEventItem>[],
+    this.isExhaustive = true,
+    this.isLoadingMore = false,
+    this.windowRequest,
   });
 
   final List<ExploreEventItem> items;
   final List<ExploreExternalEventItem> externalItems;
+  final bool isExhaustive;
+  final bool isLoadingMore;
+  final ExploreDiscoveryWindowRequest? windowRequest;
 
   bool get isEmpty => items.isEmpty && externalItems.isEmpty;
   int get count => items.length + externalItems.length;
-  int get mappableEventCount => items.length + externalItems.length;
+  int get mappableEventCount =>
+      items.where((item) => item.event.hasExactStartingPoint).length +
+      externalItems
+          .where(
+            (item) =>
+                item.event.latitude != null && item.event.longitude != null,
+          )
+          .length;
+  bool get hasMore => !isExhaustive;
   ExploreEventItem? get featuredItem => items.isEmpty ? null : items.first;
   List<ExploreEventItem> get railItems => items.skip(1).take(8).toList();
 
@@ -340,48 +355,39 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final userProfile = userProfileAsync.asData?.value;
   final viewerCohortId = viewerCohortIdAsync.asData?.value;
 
-  final eventsAsync = ref.watch(
-    discoverableEventsProvider(
-      EventDiscoveryQuery.forCity(
-        marketId: city.effectiveMarketId,
-        startAt: timeWindow?.start ?? now,
-        endBefore: timeWindow?.end,
-        activityKinds: [?activityKindFilter],
-        center: deviceLocationAsync.asData?.value,
-        maxDistanceKm: distanceFilterKm,
-        viewerCohortId: viewerCohortId,
-      ),
+  final windowRequest = ExploreDiscoveryWindowRequest(
+    internalQuery: EventDiscoveryQuery.forCity(
+      marketId: city.effectiveMarketId,
+      startAt: timeWindow?.start ?? now,
+      endBefore: timeWindow?.end,
+      activityKinds: [?activityKindFilter],
+      center: deviceLocationAsync.asData?.value,
+      maxDistanceKm: distanceFilterKm,
+      viewerCohortId: viewerCohortId,
+    ),
+    externalQuery: ExternalEventDiscoveryQuery.forCity(
+      citySlug: city.effectiveSlug,
+      startAt: timeWindow?.start ?? now,
+      endBefore: timeWindow?.end,
+      activityKinds: [?activityKindFilter],
     ),
   );
-  final externalEventsAsync = ref.watch(
-    discoverableExternalEventsProvider(
-      ExternalEventDiscoveryQuery.forCity(
-        citySlug: city.effectiveSlug,
-        startAt: timeWindow?.start ?? now,
-        endBefore: timeWindow?.end,
-        activityKinds: [?activityKindFilter],
-      ),
-    ),
+  final discoveryWindowAsync = ref.watch(
+    exploreDiscoveryWindowProvider(windowRequest),
   );
-  if (eventsAsync.isLoading || externalEventsAsync.isLoading) {
+  if (discoveryWindowAsync.isLoading) {
     return const AsyncLoading();
   }
-  if (eventsAsync.hasError) {
+  if (discoveryWindowAsync.hasError) {
     return AsyncError(
-      eventsAsync.error!,
-      eventsAsync.stackTrace ?? StackTrace.current,
+      discoveryWindowAsync.error!,
+      discoveryWindowAsync.stackTrace ?? StackTrace.current,
     );
   }
-  if (externalEventsAsync.hasError) {
-    return AsyncError(
-      externalEventsAsync.error!,
-      externalEventsAsync.stackTrace ?? StackTrace.current,
-    );
-  }
+  final discoveryWindow = discoveryWindowAsync.requireValue;
 
   final eventsById = <String, Event>{
-    for (final event in eventsAsync.asData?.value ?? const <Event>[])
-      event.id: event,
+    for (final event in discoveryWindow.internalEvents) event.id: event,
   };
   final followedRecommendationsAsync = uid == null || followedClubIds.isEmpty
       ? const AsyncData<List<ExploreEventRecommendationCandidate>>([])
@@ -528,7 +534,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
           .toList()
         ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
   final externalItems =
-      (externalEventsAsync.asData?.value ?? const <ExternalEvent>[])
+      discoveryWindow.externalEvents
           .where((event) => event.isUpcomingAt(now))
           .where(
             (event) => _matchesExternalEventTimeFilters(event, filters, now),
@@ -553,6 +559,9 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
     ExploreFeedViewModel(
       items: List.unmodifiable(items),
       externalItems: List.unmodifiable(externalItems),
+      isExhaustive: discoveryWindow.isExhaustive,
+      isLoadingMore: discoveryWindow.isLoadingMore,
+      windowRequest: windowRequest,
     ),
   );
 }

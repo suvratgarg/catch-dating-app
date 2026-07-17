@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
@@ -32,6 +33,7 @@ class SafetyRepository {
             .collection('blocks')
             .where('blockerUserId', isEqualTo: uid)
             .orderBy('createdAt', descending: true)
+            .limit(ReadLimitPolicy.boundedWorkingSet)
             .snapshots()
             .map(
               (snap) => snap.docs
@@ -52,10 +54,12 @@ class SafetyRepository {
       final outgoing = await _db
           .collection('blocks')
           .where('blockerUserId', isEqualTo: uid)
+          .limit(ReadLimitPolicy.boundedWorkingSet)
           .get();
       final incoming = await _db
           .collection('blocks')
           .where('blockedUserId', isEqualTo: uid)
+          .limit(ReadLimitPolicy.boundedWorkingSet)
           .get();
 
       return {

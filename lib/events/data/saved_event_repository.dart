@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/data/event_stream_utils.dart';
@@ -46,6 +47,7 @@ class SavedEventRepository {
       withBackendErrorStream(
         () => _savedEventsRef
             .where('uid', isEqualTo: uid)
+            .limit(ReadLimitPolicy.boundedWorkingSet)
             .snapshots()
             .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
         context: const BackendErrorContext(
@@ -58,6 +60,7 @@ class SavedEventRepository {
   Stream<List<Event>> watchSavedEventDetailsForUser({required String uid}) {
     final idStream = _savedEventsRef
         .where('uid', isEqualTo: uid)
+        .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map(
           (snap) => snap.docs.map((doc) => doc.data().eventId).toSet().toList(),
@@ -79,11 +82,9 @@ class SavedEventRepository {
     required String eventId,
   }) => withBackendErrorStream(
     () => _savedEventsRef
-        .where('uid', isEqualTo: uid)
-        .where('eventId', isEqualTo: eventId)
-        .limit(1)
+        .doc(savedEventId(uid: uid, eventId: eventId))
         .snapshots()
-        .map((snap) => snap.docs.isEmpty ? null : snap.docs.first.data()),
+        .map((snapshot) => snapshot.exists ? snapshot.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch saved event',

@@ -21,6 +21,7 @@ mixin _EventSuccessPreferenceRepository on _EventSuccessRepositoryCore {
   ) => withBackendErrorStream(
     () => _preferencesRef
         .where('eventId', isEqualTo: eventId)
+        .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(

@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
@@ -36,6 +38,7 @@ class ReviewsRepository {
         () => _reviewsRef
             .where('clubId', isEqualTo: clubId)
             .orderBy('createdAt', descending: true)
+            .limit(ReadLimitPolicy.historyPage)
             .snapshots()
             .map((s) => s.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
@@ -50,6 +53,7 @@ class ReviewsRepository {
         () => _reviewsRef
             .where('eventId', isEqualTo: eventId)
             .orderBy('createdAt', descending: true)
+            .limit(ReadLimitPolicy.historyPage)
             .snapshots()
             .map((s) => s.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
@@ -64,6 +68,7 @@ class ReviewsRepository {
         () => _reviewsRef
             .where('reviewerUserId', isEqualTo: reviewerUserId)
             .orderBy('createdAt', descending: true)
+            .limit(ReadLimitPolicy.historyPage)
             .snapshots()
             .map((s) => s.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
@@ -72,6 +77,69 @@ class ReviewsRepository {
           resource: _collectionPath,
         ),
       );
+
+  Future<CursorPage<Review, DocumentSnapshot<Review>>> fetchClubReviewsPage({
+    required String clubId,
+    DocumentSnapshot<Review>? startAfter,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => _fetchReviewsPage(
+    _reviewsRef
+        .where('clubId', isEqualTo: clubId)
+        .orderBy('createdAt', descending: true),
+    startAfter: startAfter,
+    limit: limit,
+    action: 'fetch club review page',
+  );
+
+  Future<CursorPage<Review, DocumentSnapshot<Review>>> fetchEventReviewsPage({
+    required String eventId,
+    DocumentSnapshot<Review>? startAfter,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => _fetchReviewsPage(
+    _reviewsRef
+        .where('eventId', isEqualTo: eventId)
+        .orderBy('createdAt', descending: true),
+    startAfter: startAfter,
+    limit: limit,
+    action: 'fetch event review page',
+  );
+
+  Future<CursorPage<Review, DocumentSnapshot<Review>>> fetchUserReviewsPage({
+    required String reviewerUserId,
+    DocumentSnapshot<Review>? startAfter,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => _fetchReviewsPage(
+    _reviewsRef
+        .where('reviewerUserId', isEqualTo: reviewerUserId)
+        .orderBy('createdAt', descending: true),
+    startAfter: startAfter,
+    limit: limit,
+    action: 'fetch user review page',
+  );
+
+  Future<CursorPage<Review, DocumentSnapshot<Review>>> _fetchReviewsPage(
+    Query<Review> query, {
+    required DocumentSnapshot<Review>? startAfter,
+    required int limit,
+    required String action,
+  }) => withBackendErrorContext(
+    () async {
+      final page = await query.fetchDocumentCursorPage(
+        limit: limit,
+        startAfter: startAfter,
+      );
+      return CursorPage(
+        items: List.unmodifiable(page.items.map((document) => document.data())),
+        nextCursor: page.nextCursor,
+        hasMore: page.hasMore,
+      );
+    },
+    context: BackendErrorContext(
+      service: BackendService.firestore,
+      action: action,
+      resource: _collectionPath,
+    ),
+  );
 
   /// Watches the review this user wrote for a specific event (null if none).
   Stream<Review?> watchUserReviewForEvent({
@@ -144,12 +212,14 @@ class ReviewsRepository {
     required String reviewId,
     required String message,
   }) => withBackendErrorContext(
-    () => _functions.httpsCallable('setReviewResponse').call(
-      SetReviewResponseCallableRequest(
-        reviewId: reviewId,
-        message: message,
-      ).toJson(),
-    ),
+    () => _functions
+        .httpsCallable('setReviewResponse')
+        .call(
+          SetReviewResponseCallableRequest(
+            reviewId: reviewId,
+            message: message,
+          ).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'set review response',

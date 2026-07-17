@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_chunks.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
@@ -115,6 +116,7 @@ class EventRepository {
     () => _inviteLinksRef
         .where('eventId', isEqualTo: eventId)
         .orderBy('createdAt')
+        .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(
@@ -130,6 +132,7 @@ class EventRepository {
         () => _eventsRef
             .where('clubId', isEqualTo: clubId)
             .orderBy('startTime')
+            .limit(ReadLimitPolicy.historyPage)
             .snapshots()
             .map((snap) => snap.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
@@ -195,9 +198,12 @@ class EventRepository {
         ? query.where('status', isEqualTo: statusNames.single)
         : query.where('status', whereIn: statusNames);
 
-    final idStream = query.snapshots().map(
-      (snap) => snap.docs.map((doc) => doc.data().eventId).toSet().toList(),
-    );
+    final idStream = query
+        .limit(ReadLimitPolicy.boundedWorkingSet)
+        .snapshots()
+        .map(
+          (snap) => snap.docs.map((doc) => doc.data().eventId).toSet().toList(),
+        );
 
     return watchEventsByIdStream(
       idStream: idStream,
@@ -219,41 +225,41 @@ class EventRepository {
       _db.collection('eventBroadcastRequests').doc().id;
 
   /// Fetches upcoming events from the given club IDs.
-  Future<List<Event>> fetchUpcomingEventsForClubs(List<String> clubIds) =>
-      withBackendErrorContext(
-        () async {
-          // firestore-index: events (clubId:ASCENDING,startTime:ASCENDING)
-          final uniqueClubIds = clubIds.toSet().toList()..sort();
-          if (uniqueClubIds.isEmpty) return [];
-          final nowDateTime = DateTime.now();
-          final now = Timestamp.fromDate(nowDateTime);
-          final events = <Event>[];
-          for (final chunk in chunkedForWhereIn(uniqueClubIds)) {
-            final snap = await _eventsRef
-                .where('clubId', whereIn: chunk)
-                .where('startTime', isGreaterThan: now)
-                .orderBy('startTime')
-                .limit(10)
-                .get();
-            events.addAll(
-              snap.docs
-                  .map((doc) => doc.data())
-                  .where(
-                    (event) =>
-                        !event.isCancelled &&
-                        event.startTime.isAfter(nowDateTime),
-                  ),
-            );
-          }
-          events.sort((a, b) => a.startTime.compareTo(b.startTime));
-          return events.take(30).toList(growable: false);
-        },
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'fetch recommended events',
-          resource: _collectionPath,
-        ),
-      );
+  Future<List<Event>> fetchUpcomingEventsForClubs(
+    List<String> clubIds,
+  ) => withBackendErrorContext(
+    () async {
+      // firestore-index: events (clubId:ASCENDING,startTime:ASCENDING)
+      final uniqueClubIds = clubIds.toSet().toList()..sort();
+      if (uniqueClubIds.isEmpty) return [];
+      final nowDateTime = DateTime.now();
+      final now = Timestamp.fromDate(nowDateTime);
+      final events = <Event>[];
+      for (final chunk in chunkedForWhereIn(uniqueClubIds)) {
+        final snap = await _eventsRef
+            .where('clubId', whereIn: chunk)
+            .where('startTime', isGreaterThan: now)
+            .orderBy('startTime')
+            .limit(ReadLimitPolicy.directoryPage)
+            .get();
+        events.addAll(
+          snap.docs
+              .map((doc) => doc.data())
+              .where(
+                (event) =>
+                    !event.isCancelled && event.startTime.isAfter(nowDateTime),
+              ),
+        );
+      }
+      events.sort((a, b) => a.startTime.compareTo(b.startTime));
+      return events.take(ReadLimitPolicy.directoryPage).toList(growable: false);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch recommended events',
+      resource: _collectionPath,
+    ),
+  );
 
   // ── Write ─────────────────────────────────────────────────────────────────
 

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/clubs.dart'
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
@@ -33,6 +34,7 @@ List<Widget> buildExploreBodySlivers({
   VoidCallback? onRetryClubs,
   VoidCallback? onClearSearch,
   VoidCallback? onClearFilters,
+  VoidCallback? onLoadMore,
   ValueChanged<ExploreTimeFilter>? onSetTimeFilter,
   ValueChanged<ActivityKind>? onActivitySelected,
   ExploreEventSelected? onEventSelected,
@@ -80,6 +82,22 @@ List<Widget> buildExploreBodySlivers({
       SliverMainAxisGroup(slivers: eventSlivers)
     else
       ...eventSlivers,
+    if (feedValue?.hasMore ?? false)
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: CatchInsets.pageHorizontal.copyWith(
+            top: CatchSpacing.s2,
+            bottom: CatchSpacing.s4,
+          ),
+          child: CatchButton(
+            label: context.l10n.exploreExploreScreenActionLoadMorePlans,
+            onPressed: feedValue!.isLoadingMore ? null : onLoadMore,
+            isLoading: feedValue.isLoadingMore,
+            variant: CatchButtonVariant.secondary,
+            fullWidth: true,
+          ),
+        ),
+      ),
     if (recommendationsAsync != null)
       switch (recommendationsAsync) {
         AsyncLoading() => const SliverToBoxAdapter(

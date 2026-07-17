@@ -370,6 +370,9 @@ class ExploreFeedSectionState {
     final bodyViewModel = ExploreFeedViewModel(
       items: bodyItems,
       externalItems: viewModel.externalItems,
+      isExhaustive: viewModel.isExhaustive,
+      isLoadingMore: viewModel.isLoadingMore,
+      windowRequest: viewModel.windowRequest,
     );
     final candidateThisWeekItems = showThisWeekList
         ? topExploreThisWeekRecommendations(bodyItems, now: now)
@@ -809,9 +812,22 @@ String _exploreResultCountLine(
       : l10n.exploreExploreScreenStateVisiblecopyPlans;
   final dateSpan = _exploreDateSpanLabel(viewModel);
   if (dateSpan == null) {
+    if (!viewModel.isExhaustive) {
+      return l10n.exploreExploreScreenStateVisiblecopyCountPlusNoun(
+        count: count,
+        noun: noun,
+      );
+    }
     return l10n.exploreExploreScreenStateVisiblecopyCountNoun(
       count: count,
       noun: noun,
+    );
+  }
+  if (!viewModel.isExhaustive) {
+    return l10n.exploreExploreScreenStateVisiblecopyCountPlusNounDatespan(
+      count: count,
+      noun: noun,
+      dateSpan: dateSpan,
     );
   }
   return l10n.exploreExploreScreenStateVisiblecopyCountNounDatespan(

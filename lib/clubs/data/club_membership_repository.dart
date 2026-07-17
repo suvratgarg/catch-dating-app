@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -32,6 +33,7 @@ class ClubMembershipRepository {
     () => _membershipsRef
         .where('uid', isEqualTo: uid)
         .where('status', isEqualTo: ClubMembershipStatus.active.name)
+        .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(
@@ -47,6 +49,7 @@ class ClubMembershipRepository {
     () => _membershipsRef
         .where('clubId', isEqualTo: clubId)
         .where('status', isEqualTo: ClubMembershipStatus.active.name)
+        .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(
@@ -63,7 +66,7 @@ class ClubMembershipRepository {
     () => _membershipsRef
         .where('clubId', isEqualTo: clubId)
         .where('uid', isEqualTo: uid)
-        .limit(1)
+        .limit(ReadLimitPolicy.lookup)
         .snapshots()
         .map((snap) => snap.docs.isEmpty ? null : snap.docs.first.data()),
     context: const BackendErrorContext(
