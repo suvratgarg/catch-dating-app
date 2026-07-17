@@ -1189,7 +1189,7 @@ void main() {
         userId: 'runner-1',
         draft: _buildEventDraft(
           id: 'saved-draft',
-          savedAt: now,
+          savedAt: DateTime.now(),
           distance: '9',
           meetingPoint: 'Saved draft point',
         ),
