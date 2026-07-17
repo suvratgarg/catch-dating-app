@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 514,
+  "total": 515,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 247,
+      "count": 248,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -90,6 +90,7 @@
         "test/core/external_share_test.dart",
         "test/core/firebase_options_role_test.dart",
         "test/core/firestore_converters_test.dart",
+        "test/core/forms/catch_form_descriptors_test.dart",
         "test/core/privacy_badge_test.dart",
         "test/core/responsive/screen_size_test.dart",
         "test/core/schema_contracts_generated_test.dart",
