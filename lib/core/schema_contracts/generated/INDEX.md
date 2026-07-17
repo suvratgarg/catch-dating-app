@@ -420,6 +420,7 @@ Do not edit it by hand.
 | `tool/contracts/generated/schema_contract_registry.mjs` | Node-side schema registry for validation tooling. |
 | `tool/contracts/generated/schema_contract_validators.mjs` | Node-side Ajv validators for contract checks. |
 | `lib/core/schema_contracts/generated/profile_schema_contracts.g.dart` | Dart profile catalog and storage policy constants. |
+| `lib/core/schema_contracts/generated/field_constraints.g.dart` | UI-relevant constraints projected from patch and Firestore document schemas. |
 | `lib/core/schema_contracts/generated/schema_contracts.g.dart` | Dart schema contract barrel. |
 | `lib/core/schema_contracts/generated/schemas/*.g.dart` | One generated Dart JSON Schema constant file per schema, plus lookup registry files. |
 | `lib/core/schema_contracts/generated/callable_request_dtos.g.dart` | Generated Dart callable request and patch helper barrel. |

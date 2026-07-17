@@ -1443,7 +1443,7 @@ void main() {
       expect(find.text('0 of 6 added'), findsOneWidget);
 
       final descriptionEditor = find.byKey(
-        const ValueKey('host-inline-description'),
+        const ValueKey('catch-form-text-description'),
       );
       expect(descriptionEditor, findsOneWidget);
       final descriptionField = tester.widget<CatchField>(
@@ -1992,7 +1992,7 @@ void main() {
     expect(find.text('Edit owned-club'), findsNothing);
 
     final descriptionEditor = find.byKey(
-      const ValueKey('host-inline-description'),
+      const ValueKey('catch-form-text-description'),
     );
     expect(descriptionEditor, findsOneWidget);
 

@@ -1766,8 +1766,6 @@ function buildCandidates() {
       names: [
         "CatchField",
         "ProfileDirectTextEntryField",
-        "HostInlineTextEntryEditor",
-        "HostInlineAgeRangeEditor",
         "ProfileInlineRangeEditor",
         "ProfileInlineHeightEditor",
         "StructureNumberField",

@@ -369,6 +369,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreCatchFormFieldLabelTextOptional => 'Optional';
 
   @override
+  String coreCatchFormValidationRequired({required String field}) {
+    return '$field is required';
+  }
+
+  @override
+  String coreCatchFormValidationMinLength({
+    required String field,
+    required int minLength,
+  }) {
+    return '$field must be at least $minLength characters';
+  }
+
+  @override
+  String coreCatchFormValidationMaxLength({
+    required String field,
+    required int maxLength,
+  }) {
+    return '$field must be $maxLength characters or fewer';
+  }
+
+  @override
+  String coreCatchFormValidationPattern({required String field}) {
+    return 'Enter a valid $field';
+  }
+
+  @override
   String get coreCatchFrameworkErrorViewTextSomethingWentWrong =>
       'Something went wrong';
 
@@ -6294,20 +6320,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventsScaffoldLabelCreateClub => 'Create club';
 
   @override
-  String hostsHostInlineEditorsTextLengthMaxlength({
-    required Object length,
-    required Object maxLength,
-  }) {
-    return '$length / $maxLength';
-  }
-
-  @override
-  String get hostsHostInlineEditorsTitleMinAge => 'Min age';
-
-  @override
-  String get hostsHostInlineEditorsTitleMaxAge => 'Max age';
-
-  @override
   String get hostsHostOperationsHomeScreenTitleHostEvents => 'Host events';
 
   @override
@@ -9686,14 +9698,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostsHostClubProfileVisiblecopyMinageMaxage({
-    required Object minAge,
-    required Object maxAge,
-  }) {
-    return '$minAge–$maxAge';
-  }
-
-  @override
-  String hostsHostInlineEditorsVisiblecopyMinageMaxage({
     required Object minAge,
     required Object maxAge,
   }) {

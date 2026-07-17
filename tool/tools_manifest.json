@@ -1036,6 +1036,29 @@
       }
     },
     {
+      "id": "contracts:form-alignment",
+      "category": "contracts",
+      "path": "test/core/forms/contract_alignment_test.dart",
+      "command": "flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart",
+      "safety": "local-build-test",
+      "status": "active",
+      "description": "Checks that consumer and host form descriptors bind to generated schema field constraints, including a seeded contradictory-limit probe.",
+      "checks": [
+        "flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart"
+      ],
+      "role": "gate",
+      "rules": [
+        "FORM-CONTRACT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "test/core/forms/contract_alignment_test.dart",
+        "contains": [
+          "seeded overlong UI limit proves the alignment gate is non-vacuous"
+        ]
+      }
+    },
+    {
       "id": "contracts:check-all",
       "category": "contracts",
       "path": "tool/check_data_contract.sh",

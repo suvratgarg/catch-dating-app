@@ -757,6 +757,36 @@ abstract class AppLocalizations {
   /// **'Optional'**
   String get coreCatchFormFieldLabelTextOptional;
 
+  /// Schema-derived validation message for an empty required form field.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} is required'**
+  String coreCatchFormValidationRequired({required String field});
+
+  /// Schema-derived validation message for text shorter than the contract minimum.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} must be at least {minLength} characters'**
+  String coreCatchFormValidationMinLength({
+    required String field,
+    required int minLength,
+  });
+
+  /// Schema-derived validation message for text longer than the contract maximum.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} must be {maxLength} characters or fewer'**
+  String coreCatchFormValidationMaxLength({
+    required String field,
+    required int maxLength,
+  });
+
+  /// Schema-derived validation message for text that does not match the contract pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid {field}'**
+  String coreCatchFormValidationPattern({required String field});
+
   /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
   ///
   /// In en, this message translates to:
@@ -9902,27 +9932,6 @@ abstract class AppLocalizations {
   /// **'Create club'**
   String get hostsHostEventsScaffoldLabelCreateClub;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_inline_editors.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{length} / {maxLength}'**
-  String hostsHostInlineEditorsTextLengthMaxlength({
-    required Object length,
-    required Object maxLength,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_inline_editors.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Min age'**
-  String get hostsHostInlineEditorsTitleMinAge;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_inline_editors.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Max age'**
-  String get hostsHostInlineEditorsTitleMaxAge;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_operations_home_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -15059,15 +15068,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minAge}–{maxAge}'**
   String hostsHostClubProfileVisiblecopyMinageMaxage({
-    required Object minAge,
-    required Object maxAge,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_inline_editors.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{minAge}–{maxAge}'**
-  String hostsHostInlineEditorsVisiblecopyMinageMaxage({
     required Object minAge,
     required Object maxAge,
   });

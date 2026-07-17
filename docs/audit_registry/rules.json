@@ -498,6 +498,40 @@
         }
       ]
     },
+    "FORM-CONTRACT-001": {
+      "title": "Editable form constraints derive from schema contracts",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "data_contracts",
+        "version": "1.1.21"
+      },
+      "applies_to": [
+        "contracts/**/*.schema.json",
+        "tool/contracts/generate_schema_contracts.mjs",
+        "lib/core/schema_contracts/generated/field_constraints.g.dart",
+        "lib/core/forms/**",
+        "lib/user_profile/presentation/**",
+        "lib/hosts/presentation/**",
+        "test/core/forms/contract_alignment_test.dart"
+      ],
+      "instruction": "Editable consumer and host form rows that map to schema-owned fields must bind the generated CatchContractFieldConstraints entry instead of repeating length, required, pattern, enum, or numeric constraints as literals.",
+      "sunset_when": [
+        "All schema-backed form factories are generated directly from schema-owned form metadata"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "contracts:form-alignment",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/data_contracts.md#field-constraint-projection"
+        }
+      ]
+    },
     "SCHEMA-FIXTURE-001": {
       "title": "Contract fixtures stay schema-backed",
       "status": "active",

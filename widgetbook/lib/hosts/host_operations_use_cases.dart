@@ -68,6 +68,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
@@ -175,7 +176,7 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   id: 'design-host-long-name-event',
   clubId: _longNameOwnerClub.id,
   meetingPoint: 'Bandra West Promenade amphitheatre',
-  meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation
+  meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation!
       .copyWith(name: 'Bandra West Promenade amphitheatre'),
 );
 final _customActivityEventDraft = HostOperationsFixtures.eventDraft.copyWith(
@@ -186,6 +187,14 @@ final _customActivityEventDraft = HostOperationsFixtures.eventDraft.copyWith(
   distance: null,
   paceName: null,
 );
+
+const _createEventSteps = <int, String>{
+  0: 'Basics',
+  1: 'Location',
+  2: 'Photos',
+  3: 'Policy',
+  4: 'Review',
+};
 final _hostManageDisabledInviteLinks = <EventInviteLink>[
   HostOperationsFixtures.inviteLinks.first.copyWith(
     id: 'design-host-link-disabled-edge',
@@ -1386,22 +1395,25 @@ Widget _hostHomeExactCatalog(BuildContext context, String focus) {
     children: [
       _StateCard(
         label: 'exact component',
-        child: _HostHomeSectionFrame(child: _hostHomePreviewFor(focus)),
+        child: _HostHomeSectionFrame(
+          child: _hostHomePreviewFor(context, focus),
+        ),
       ),
     ],
   );
 }
 
-Widget _hostHomePreviewFor(String focus) {
+Widget _hostHomePreviewFor(BuildContext context, String focus) {
   final club = HostOperationsFixtures.primaryClub;
   final event = HostOperationsFixtures.upcomingEvent;
   final clubs = HostOperationsFixtures.clubs;
   final state = buildHostHomeTodayDashboardState(
     AsyncData<List<Event>>([event, HostOperationsFixtures.privateEvent]),
     now: event.startTime.subtract(const Duration(hours: 2)),
+    l10n: context.l10n,
   );
   final now = event.startTime.subtract(const Duration(hours: 2));
-  final tasks = HostHomeTodayTaskData.forEvent(event);
+  final tasks = HostHomeTodayTaskData.forEvent(event, context.l10n);
   return switch (focus) {
     'HostEmptyActionCard' => HostEmptyActionCard(
       title: 'No clubs yet',
@@ -1622,24 +1634,6 @@ Widget _hostClubPreviewFor(String focus) {
       onManageEvent: (_, _) {},
       now: HostOperationsFixtures.now,
     ),
-    'HostInlineAgeRangeEditor' => HostClubEditTab(
-      club: club,
-      currentUid: _hostUid,
-      isOwner: true,
-      initialExpandedField: 'ageRange',
-    ),
-    'HostInlineOptionEditor' => HostClubEditTab(
-      club: club,
-      currentUid: _hostUid,
-      isOwner: true,
-      initialExpandedField: 'primaryActivityKind',
-    ),
-    'HostInlineTextEntryEditor' => HostClubEditTab(
-      club: club,
-      currentUid: _hostUid,
-      isOwner: true,
-      initialExpandedField: 'name',
-    ),
     'HostOrganizerMetricGrid' => HostOrganizerMetricGrid(
       club: club,
       eventsLoaded: true,
@@ -1690,14 +1684,14 @@ Widget _hostEventManageExactCatalog(BuildContext context, String focus) {
       _StateCard(
         label: 'exact component',
         child: _HostManageComponentFrame(
-          child: _hostEventManagePreviewFor(focus),
+          child: _hostEventManagePreviewFor(context, focus),
         ),
       ),
     ],
   );
 }
 
-Widget _hostEventManagePreviewFor(String focus) {
+Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
   final event = HostOperationsFixtures.privateEvent;
   final club = HostOperationsFixtures.primaryClub;
   final roster = EventParticipationRoster.fromParticipations(
@@ -1753,6 +1747,7 @@ Widget _hostEventManagePreviewFor(String focus) {
       ),
       actionError: null,
       privateLinkActionState: HostPrivateLinkActionState.resolve(
+        l10n: context.l10n,
         accessState: CatchAsyncState<EventPrivateAccess?>.data(
           HostOperationsFixtures.privateAccess,
         ),
@@ -1883,6 +1878,7 @@ Widget _hostEventManagePreviewFor(String focus) {
         return HostPrivateAccessBody(
           event: event,
           state: HostPrivateAccessDisplayState.resolve(
+            l10n: context.l10n,
             access: HostOperationsFixtures.privateAccess,
             inviteLinksState: CatchAsyncState<List<EventInviteLink>>.data(
               HostOperationsFixtures.inviteLinks,
@@ -4401,14 +4397,6 @@ Widget hostStrictHostClubEditTabCatalogStates(BuildContext context) =>
     _hostClubExactCatalog(context, 'HostClubEditTab');
 
 @widgetbook.UseCase(
-  name: 'Within Edit tab',
-  type: HostClubInlineTextEntry,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostClubInlineTextEntryCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubInlineTextEntry');
-
-@widgetbook.UseCase(
   name: 'Owner loaded',
   type: HostClubEventDefaultsScreen,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
@@ -4518,7 +4506,7 @@ Widget hostStrictHostEventAttendancePanelCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostEventManageRouteScreenCatalogStates(
   BuildContext context,
-) => hostEventManageRouteAndSectionStates(context);
+) => _hostEventManageExactCatalog(context, 'HostEventManageRouteScreen');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -4629,35 +4617,11 @@ Widget hostStrictHostFullCapacityBannerCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostInlineAgeRangeEditor,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostInlineAgeRangeEditorCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostInlineAgeRangeEditor');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostInlineOptionEditor,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostInlineOptionEditorCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostInlineOptionEditor');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
   type: HostInlineSkeletonIcon,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostInlineSkeletonIconCatalogStates(BuildContext context) =>
     hostLoadingSkeletonCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostInlineTextEntryEditor,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostInlineTextEntryEditorCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostInlineTextEntryEditor');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -4682,6 +4646,28 @@ Widget hostStrictHostInviteLinksListCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostLoadingScreenCatalogStates(BuildContext context) =>
     hostHomeRouteStates(context);
+
+enum _HostCreateEventMutationPreviewMode {
+  saveDraftPending,
+  saveDraftError,
+  submitPending,
+  submitError,
+  submitOffline,
+}
+
+class _HostCreateEventMutationPreview extends ConsumerStatefulWidget {
+  const _HostCreateEventMutationPreview({
+    required this.mode,
+    required this.child,
+  });
+
+  final _HostCreateEventMutationPreviewMode mode;
+  final Widget child;
+
+  @override
+  ConsumerState<_HostCreateEventMutationPreview> createState() =>
+      _HostCreateEventMutationPreviewState();
+}
 
 class _HostCreateEventMutationPreviewState
     extends ConsumerState<_HostCreateEventMutationPreview> {
@@ -5921,12 +5907,14 @@ class _HostTeamAddHostSheetPreview extends StatelessWidget {
       _HostTeamAddHostSheetPreviewMode.error => HostTeamAddHostActionState(
         errorMessage: appErrorMessage(
           StateError('Widgetbook add host failed'),
+          l10n: context.l10n,
           context: AppErrorContext.club,
         ),
       ),
       _HostTeamAddHostSheetPreviewMode.offline => HostTeamAddHostActionState(
         errorMessage: appErrorMessage(
           obviousOfflineException(),
+          l10n: context.l10n,
           context: AppErrorContext.club,
         ),
       ),

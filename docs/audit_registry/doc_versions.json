@@ -212,8 +212,8 @@
   },
   "data_contracts": {
     "path": "docs/data_contracts.md",
-    "version": "1.1.18",
-    "updated": "2026-07-14",
+    "version": "1.1.21",
+    "updated": "2026-07-18",
     "status": "active",
     "read_policy": "Read before Firestore rules, Functions mutation boundaries, schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, relationship documents, data migrations, or rules test execution."
   },

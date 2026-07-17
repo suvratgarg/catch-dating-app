@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -268,6 +269,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
           : user.displayName.trim(),
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyDisplayname,
       patchForValue: patchFactory.displayName,
+      contract: CatchContractConstraints.updateUserProfilePatchDisplayName,
       textCapitalization: TextCapitalization.words,
       autofillHints: const [AutofillHints.nickname],
       validator: validateRequiredDisplayName,
@@ -306,6 +308,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
       currentValue: user.email,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyEmaile69bb2,
       patchForValue: patchFactory.email,
+      contract: CatchContractConstraints.updateUserProfilePatchEmail,
       keyboardType: TextInputType.emailAddress,
       textCapitalization: TextCapitalization.none,
       autofillHints: const [AutofillHints.email],
@@ -320,6 +323,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
       fieldName: l10n
           .userProfileSelfProfileEditTabStateVisiblecopyInstagramhandle71eebb,
       patchForValue: patchFactory.instagramHandle,
+      contract: CatchContractConstraints.updateUserProfilePatchInstagramHandle,
       keyboardType: TextInputType.text,
       textCapitalization: TextCapitalization.none,
       validator: validateOptionalInstagramHandle,
@@ -334,6 +338,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
       id: 'height',
       icon: CatchIcons.heightOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelHeight,
+      contract: CatchContractConstraints.updateUserProfilePatchHeight,
       build: (context, scope) {
         final value = user.height != null
             ? l10n.userProfileSelfProfileEditTabStateVisiblecopyHeightCm(
@@ -375,6 +380,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       value: cityOptionByName(user.city),
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyCity,
       patchForValue: patchFactory.city,
+      contract: CatchContractConstraints.updateUserProfilePatchCity,
     ),
     CatchFormTextRow<UpdateUserProfilePatch>(
       id: 'occupation',
@@ -383,6 +389,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       currentValue: user.occupation ?? '',
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyOccupation,
       patchForValue: patchFactory.occupation,
+      contract: CatchContractConstraints.updateUserProfilePatchOccupation,
       validator: (value) => validateOptionalProfileShortText(
         value,
         label: l10n.userProfileSelfProfileEditTabStateLabelJobTitle,
@@ -396,6 +403,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyCompanyfd8aec,
       patchForValue: patchFactory.company,
+      contract: CatchContractConstraints.updateUserProfilePatchCompany,
       validator: (value) => validateOptionalProfileShortText(
         value,
         label: l10n.userProfileSelfProfileEditTabStateLabelCompany,
@@ -409,6 +417,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       value: user.education,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyEducation,
       patchForValue: patchFactory.education,
+      contract: CatchContractConstraints.updateUserProfilePatchEducation,
     ),
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, Religion>(
       id: 'religion',
@@ -418,6 +427,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       value: user.religion,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyReligion,
       patchForValue: patchFactory.religion,
+      contract: CatchContractConstraints.updateUserProfilePatchReligion,
       showOptionalLabel: true,
     ),
     CatchFormMultiChoiceRow<UpdateUserProfilePatch, Language>(
@@ -438,6 +448,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyRelationshipgoal,
       patchForValue: patchFactory.relationshipGoal,
+      contract: CatchContractConstraints.updateUserProfilePatchRelationshipGoal,
     ),
   ];
 }

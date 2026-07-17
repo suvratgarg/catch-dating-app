@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.20
-updated: 2026-07-17
+version: 1.1.21
+updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
 ---
@@ -220,6 +220,23 @@ cannot capture the behavior — specifically:
 See backlog item `CONTRACT-DART-GEN-001` for the path to migrating the
 remaining cases (custom normalization, generated adapters, and response
 decoders).
+
+### Field Constraint Projection
+
+The schema generator also emits
+`lib/core/schema_contracts/generated/field_constraints.g.dart`. It projects
+UI-relevant `minLength`, `maxLength`, `pattern`, enum, and numeric bounds from
+patch and Firestore document schemas into typed
+`CatchContractFieldConstraints` constants. `CatchForm*Row` descriptors bind
+those constants through `contract:`; call sites may narrow a bound explicitly,
+but may not relax the contract.
+
+`test/core/forms/contract_alignment_test.dart` walks the consumer-profile and
+host-club descriptor factories and contains a seeded over-limit probe, so the
+gate proves both missing bindings and contradictory limits are detectable. Run
+it through `node tool/run.mjs check contracts:form-alignment`; contract CI also
+keeps the generated projection deterministic via the schema generator's
+`--check` mode.
 
 ## Relationship Documents
 

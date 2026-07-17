@@ -831,6 +831,60 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_form_field_label"
   },
+  "coreCatchFormValidationRequired": "{field} is required",
+  "@coreCatchFormValidationRequired": {
+    "description": "Schema-derived validation message for an empty required form field.",
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    },
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.forms.catch_form_descriptors"
+  },
+  "coreCatchFormValidationMinLength": "{field} must be at least {minLength} characters",
+  "@coreCatchFormValidationMinLength": {
+    "description": "Schema-derived validation message for text shorter than the contract minimum.",
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "minLength": {
+        "type": "int"
+      }
+    },
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.forms.catch_form_descriptors"
+  },
+  "coreCatchFormValidationMaxLength": "{field} must be {maxLength} characters or fewer",
+  "@coreCatchFormValidationMaxLength": {
+    "description": "Schema-derived validation message for text longer than the contract maximum.",
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "maxLength": {
+        "type": "int"
+      }
+    },
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.forms.catch_form_descriptors"
+  },
+  "coreCatchFormValidationPattern": "Enter a valid {field}",
+  "@coreCatchFormValidationPattern": {
+    "description": "Schema-derived validation message for text that does not match the contract pattern.",
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    },
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.forms.catch_form_descriptors"
+  },
   "coreCatchFrameworkErrorViewTextSomethingWentWrong": "Something went wrong",
   "@coreCatchFrameworkErrorViewTextSomethingWentWrong": {
     "description": "Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).",
@@ -11553,31 +11607,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_scaffold"
   },
-  "hostsHostInlineEditorsTextLengthMaxlength": "{length} / {maxLength}",
-  "@hostsHostInlineEditorsTextLengthMaxlength": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_inline_editors.dart (Text).",
-    "placeholders": {
-      "length": {},
-      "maxLength": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_inline_editors"
-  },
-  "hostsHostInlineEditorsTitleMinAge": "Min age",
-  "@hostsHostInlineEditorsTitleMinAge": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_inline_editors.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_inline_editors"
-  },
-  "hostsHostInlineEditorsTitleMaxAge": "Max age",
-  "@hostsHostInlineEditorsTitleMaxAge": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_inline_editors.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_inline_editors"
-  },
   "hostsHostOperationsHomeScreenTitleHostEvents": "Host events",
   "@hostsHostOperationsHomeScreenTitleHostEvents": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_operations_home_screen.dart (title).",
@@ -17555,17 +17584,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_profile"
-  },
-  "hostsHostInlineEditorsVisiblecopyMinageMaxage": "{minAge}–{maxAge}",
-  "@hostsHostInlineEditorsVisiblecopyMinageMaxage": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_inline_editors.dart (visibleCopy).",
-    "placeholders": {
-      "minAge": {},
-      "maxAge": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_inline_editors"
   },
   "hostsHostTodayVisiblecopyMorning": "morning",
   "@hostsHostTodayVisiblecopyMorning": {

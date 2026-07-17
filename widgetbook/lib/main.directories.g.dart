@@ -6352,17 +6352,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostCheckInQrPanel',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'HostCheckInQrPanel',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictHostCheckInQrPanel,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostFunnelSummary',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6381,39 +6370,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictHostReportSignalGrid,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'LiveAttendanceSummaryCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveAttendanceSummaryCard',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveAttendanceSummaryCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'LiveCheckInQrCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveCheckInQrCard',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveCheckInQrCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'LiveCheckInSummaryStrip',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveCheckInSummaryStrip',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveCheckInSummaryStrip,
                   ),
                 ],
               ),
@@ -8125,17 +8081,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubInlineTextEntry',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Within Edit tab',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostClubInlineTextEntryCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostClubInsightsPane',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8219,6 +8164,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostStrictHostEventAttendancePanelCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventCheckInQrPanel',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostStrictHostEventCheckInQrPanelCatalogStates,
                   ),
                 ],
               ),
@@ -8344,17 +8300,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostExportReportButton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostExportReportButtonCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostFullCapacityApron',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8377,28 +8322,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostInlineAgeRangeEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostInlineAgeRangeEditorCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostInlineOptionEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostInlineOptionEditorCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostInlineSkeletonIcon',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8406,17 +8329,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostStrictHostInlineSkeletonIconCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostInlineTextEntryEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostInlineTextEntryEditorCatalogStates,
                   ),
                 ],
               ),
