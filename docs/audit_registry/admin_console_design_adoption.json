@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 7,
-  "updated": "2026-07-14",
+  "version": 8,
+  "updated": "2026-07-17",
   "owner": "admin_dashboard",
   "purpose": "Track production adoption of the comprehensive Catch admin console design export without presenting prototype-only behavior as backed functionality.",
   "sourceInputs": {
@@ -432,7 +432,7 @@
         "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
         "admin/src/shared/ui/AdminPrimitives/overview.tsx",
         "design/admin/components.json",
-        "design-qa.md"
+        "artifacts/admin_console/design-qa-2026-07-13.md"
       ],
       "decision": "Adopt the export's hierarchy and density through canonical Archivo, IBM Plex Mono, paper/ink surfaces, explicit metric context and ownership, flat section captions, neutral queue composition, and routine hairlines rather than decorative shadows or global accent color.",
       "nextAction": "Apply the same hierarchy route by route, starting with Events, without changing backed workflow or mutation boundaries."
