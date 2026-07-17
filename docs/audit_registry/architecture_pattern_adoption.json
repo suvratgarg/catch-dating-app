@@ -1447,6 +1447,18 @@
           "role": "typed descriptor, shared accordion, and single save-delegate contract coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "role": "Host Club Identity and Contact adopter with typed UpdateClubPatch descriptors, schema-derived constraints, and one save delegate",
+          "status": "aligned",
+          "lastReviewedPass": "catch-system-stretch-20260718"
+        },
+        {
+          "path": "test/core/forms/contract_alignment_test.dart",
+          "role": "consumer and Host descriptor-to-schema alignment gate with a seeded drift fixture",
+          "status": "aligned",
+          "lastReviewedPass": "catch-system-stretch-20260718"
         }
       ],
       "candidateQueue": [
@@ -1454,12 +1466,6 @@
           "id": "ARCH-FORM-DESCRIPTOR-001-CONSUMER-REMAINDER",
           "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
           "reason": "Running and Lifestyle intentionally retain SelfProfile descriptors until the About You prototype receives owner API review.",
-          "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
-        },
-        {
-          "id": "ARCH-FORM-DESCRIPTOR-001-HOST-EDIT",
-          "path": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-          "reason": "Host Club migration is ordered after owner approval and the edit-spec Phase 3 immediate-save model.",
           "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
         },
         {

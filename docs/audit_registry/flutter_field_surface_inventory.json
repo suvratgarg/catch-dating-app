@@ -3,21 +3,20 @@
   "generatedBy": "tool/design/generate_flutter_field_surface_inventory.mjs",
   "source": {
     "manifest": "docs/audit_registry/flutter_field_surface_adoption.json",
-    "manifestSha256": "0f0d8937026b8c7290bad2e1d0f4b28a563eff58a6081617ea30672bd0839e6a",
+    "manifestSha256": "466168695b4fc5fa226115c76cddbeda3072856c7beaf2aad200d65cf39c53f2",
     "routeInventory": "tool/ui_capture/route_inventory.json",
     "routeInventorySha256": "06791556d5d634a08f5b60481c7c258a8ecbd0eb7828b63033a5fc020d16c03c",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "8ce300aa5760458ed872b9abef9606eed67e5109bef324379f49bfcc811b40e1"
+    "screenContractsSha256": "758abb78d0f928b602ed3cf582524fde78ba7771a6fde527187b76173073fe14"
   },
   "summary": {
     "candidateCount": 10,
-    "activeCandidateCount": 9,
-    "completedCandidateCount": 1,
+    "activeCandidateCount": 7,
+    "completedCandidateCount": 3,
     "statusCounts": {
-      "approval_ready": 6,
-      "completed": 1,
+      "approval_ready": 5,
+      "completed": 3,
       "deferred_specialized": 1,
-      "needs_domain_approval": 1,
       "owner_decision": 1
     },
     "riskCounts": {
@@ -25,7 +24,7 @@
       "low": 2,
       "medium": 5
     },
-    "legacyCallsites": 7,
+    "legacyCallsites": 6,
     "reviewedExclusionCallsites": 2,
     "unclassifiedLegacyCallsites": 0
   },
@@ -294,9 +293,10 @@
     {
       "id": "FIELD-SURFACE-HOST-CLUB-INLINE-EDITORS",
       "rank": 3,
-      "status": "approval_ready",
+      "status": "completed",
+      "completedAt": "2026-07-18",
       "risk": "medium",
-      "migrationKind": "choice_field_only",
+      "migrationKind": "full_field_section",
       "reachability": "production_embedded",
       "screenIds": [
         "screen.host.clubs"
@@ -304,12 +304,8 @@
       "routeIds": [
         "hostClubsScreen"
       ],
-      "semanticFieldCount": 6,
+      "semanticFieldCount": 7,
       "bindings": [
-        {
-          "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-          "symbol": "HostInlineOptionEditor"
-        },
         {
           "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
           "symbol": "HostClubEditTab"
@@ -325,12 +321,18 @@
       ],
       "anchors": [
         {
-          "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-          "symbol": "CatchChip.selectable",
+          "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "symbol": "CatchFormRowList<UpdateClubPatch>",
+          "expected": 2
+        },
+        {
+          "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "symbol": "CatchFormSingleChoiceRow",
           "expected": 1
         }
       ],
       "targetModes": [
+        "CatchFormRowList",
         "CatchField.choices"
       ],
       "preserve": [
@@ -338,16 +340,32 @@
         "UpdateClubPatch typing",
         "save and cancel behavior"
       ],
-      "recommendation": "Approve with the remaining Host club edit pass, separate from create-club.",
+      "verification": [
+        "Host Club Identity and Contact sections render through two typed CatchFormRowList<UpdateClubPatch> instances",
+        "Contract alignment test covers all seven editable Host Club patch fields",
+        "Deleted HostInline editors leave zero production legacy call sites"
+      ],
+      "recommendation": "Completed: Host Club Identity and Contact editing now use typed form descriptors; the former HostInline editor file and hand-rolled choice chips are deleted.",
       "observedAnchors": [
         {
-          "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
+          "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
           "kind": "call",
-          "symbol": "CatchChip.selectable",
+          "symbol": "CatchFormRowList<UpdateClubPatch>",
+          "expected": 2,
+          "observed": 2,
+          "lines": [
+            286,
+            293
+          ]
+        },
+        {
+          "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "kind": "call",
+          "symbol": "CatchFormSingleChoiceRow",
           "expected": 1,
           "observed": 1,
           "lines": [
-            364
+            388
           ]
         }
       ]
@@ -532,7 +550,8 @@
     {
       "id": "FIELD-SURFACE-EVENT-SUCCESS-HOST-TARGET",
       "rank": 7,
-      "status": "needs_domain_approval",
+      "status": "completed",
+      "completedAt": "2026-07-18",
       "risk": "high",
       "migrationKind": "stepper_only",
       "reachability": "production_route",
@@ -550,7 +569,7 @@
       "anchors": [
         {
           "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-          "symbol": "CatchNumberStepper",
+          "symbol": "CatchField.stepper",
           "expected": 1
         }
       ],
@@ -561,16 +580,20 @@
         "Event Success plan constraints",
         "club defaults"
       ],
-      "recommendation": "Confirm the domain contract before changing its one specialized stepper.",
+      "verification": [
+        "TargetAttendeeControl retains Event Success plan bounds while rendering through CatchField.stepper",
+        "Zero CatchNumberStepper calls remain in the Event Success host setup surface"
+      ],
+      "recommendation": "Completed: the target-attendee control retains its domain bounds while using the canonical field stepper facade.",
       "observedAnchors": [
         {
           "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
           "kind": "call",
-          "symbol": "CatchNumberStepper",
+          "symbol": "CatchField.stepper",
           "expected": 1,
           "observed": 1,
           "lines": [
-            335
+            293
           ]
         }
       ]

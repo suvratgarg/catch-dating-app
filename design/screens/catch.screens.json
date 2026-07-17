@@ -9075,7 +9075,7 @@
           "id": "inline_text_edit",
           "kind": "mutation",
           "status": "captured",
-          "source": "_HostInlineTextEntryEditor expands identity/contact rows and writes changed scalar fields through ClubsRepository.updateClub.",
+          "source": "CatchFormTextRow<UpdateClubPatch> descriptors expand Identity and Contact rows and save changed scalar fields through HostClubEditController.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -9093,8 +9093,8 @@
           "id": "inline_choice_edit",
           "kind": "mutation",
           "status": "implemented",
-          "source": "_HostInlineOptionEditor edits activity, admission, and cancellation defaults through UpdateClubPatch.",
-          "nextAction": "Text-entry inline mutation states cover the shared action boundary; add choice-specific long-label/helper-text variants only if design references require them.",
+          "source": "CatchFormSingleChoiceRow<UpdateClubPatch> owns the Host Club city choice; dedicated settings spokes use canonical policy field facades.",
+          "nextAction": "Add choice-specific long-label/helper-text variants only if design references require them.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ]
@@ -9103,8 +9103,8 @@
           "id": "age_range_edit",
           "kind": "mutation",
           "status": "implemented",
-          "source": "_HostInlineAgeRangeEditor validates numeric age bounds and writes host default policy ranges.",
-          "nextAction": "Text-entry inline mutation states cover the shared action boundary; add age-specific invalid/edge-bound variants only if design references require them.",
+          "source": "EventAgeRangeField validates numeric age bounds in the dedicated Event defaults spoke and writes typed host-default policy ranges.",
+          "nextAction": "Add age-specific invalid/edge-bound variants only if design references require them.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ]
@@ -9803,19 +9803,19 @@
           },
           {
             "id": "section.host.clubs_inline_editors",
-            "name": "Host club inline editors",
+            "name": "Host club form rows",
             "status": "implemented_local",
             "layer": "compound",
             "claudeComponents": [
               "ProfileInlineFieldScaffold",
-              "HostInlineEditor"
+              "Field"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-              "symbol": "HostInlineTextEntryEditor"
+              "file": "lib/core/forms/catch_form_descriptors.dart",
+              "symbol": "CatchFormRowList"
             },
             "currentOwner": "HostClubEditTab",
-            "targetOwner": "shared inline editor compound after profile/host use cases converge",
+            "targetOwner": "CatchFormRowList with Host-owned UpdateClubPatch descriptors",
             "dependencies": [
               "catch.field",
               "catch.button",
@@ -9829,7 +9829,7 @@
               "save_error",
               "unchanged_cancel"
             ],
-            "migration": "Extract reusable inline editor fixtures and move repository writes out of private editor widgets before promoting the compound.",
+            "migration": "Completed: Identity and Contact use typed form descriptors and one Host-owned save delegate; the private HostInline editor family is deleted.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]

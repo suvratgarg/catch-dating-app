@@ -5019,7 +5019,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "_HostInlineTextEntryEditor expands identity/contact rows and now runs saves through HostClubEditController.updateClubMutation. Captures cover an expanded text field with pending, generic error, and offline save states.",
+              "notes": "CatchFormTextRow<UpdateClubPatch> descriptors expand Identity and Contact rows and run saves through HostClubEditController.updateClubMutation. Captures cover an expanded text field with pending, generic error, and offline save states.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5033,7 +5033,7 @@
               "id": "inline_choice_edit",
               "kind": "mutation",
               "status": "implemented",
-              "notes": "_HostInlineOptionEditor edits activity, admission, and cancellation defaults through UpdateClubPatch and HostClubEditController.updateClubMutation. Text-entry mutation states are captured; add focused choice-specific validation/long-label variants if design diverges.",
+              "notes": "CatchFormSingleChoiceRow<UpdateClubPatch> owns the Host Club city choice; dedicated settings spokes use canonical policy field facades. Add focused choice-specific validation or long-label variants if design diverges.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ]
@@ -5042,7 +5042,7 @@
               "id": "age_range_edit",
               "kind": "mutation",
               "status": "implemented",
-              "notes": "_HostInlineAgeRangeEditor validates numeric age bounds and writes host default policy ranges through HostClubEditController.updateClubMutation. Text-entry mutation states are captured; add age-specific invalid/edge-bound captures if design diverges.",
+              "notes": "EventAgeRangeField validates numeric age bounds in the dedicated Event defaults spoke and writes typed host-default policy ranges. Add age-specific invalid or edge-bound captures if design diverges.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ]

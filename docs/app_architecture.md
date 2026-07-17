@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.33
+version: 1.4.34
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -2324,7 +2324,9 @@ Reference files:
 - `lib/core/forms/catch_form_descriptors.dart`
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab.dart`
+- `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
 - `test/core/forms/catch_form_descriptors_test.dart`
+- `test/core/forms/contract_alignment_test.dart`
 - `test/profile/self_profile_edit_tab_state_test.dart`
 
 Use this pattern when multiple form surfaces need the same row mapping,
@@ -2335,9 +2337,10 @@ wiring, pending/error presentation, and one `Future<bool> Function(P)` save
 delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
 provided scope instead of adding feature policy to core.
 
-The consumer Profile About You section is the reference prototype. Do not
-migrate its Running/Lifestyle sections, Host Club editing, or onboarding until
-the prototype API receives owner review; those remain tracker candidates.
+The consumer Profile About You section remains the reference prototype. Host
+Club Identity and Contact are the first promoted adopter: both sections use
+typed `UpdateClubPatch` descriptors, schema-derived field constraints, and one
+save delegate. Running/Lifestyle and onboarding remain tracker candidates.
 
 ```dart
 CatchFormRowList<UpdateUserProfilePatch>(

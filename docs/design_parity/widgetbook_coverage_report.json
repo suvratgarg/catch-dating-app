@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-17T12:19:43.981Z",
+  "generatedAt": "2026-07-17T23:28:00.542Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
-  "total": 945,
+  "total": 939,
   "stats": {
-    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 841,
+    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 835,
     "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 99,
     "PRIVATE_NEEDS_RENAME_OR_REPLACE": 5
   },
@@ -11,8 +11,8 @@
   "areaStats": [
     {
       "area": "event_success",
-      "total": 181,
-      "publicAlreadyCataloged": 175,
+      "total": 177,
+      "publicAlreadyCataloged": 171,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
       "publicNeedsCatalogOrReplace": 6,
@@ -33,8 +33,8 @@
     },
     {
       "area": "hosts",
-      "total": 143,
-      "publicAlreadyCataloged": 108,
+      "total": 141,
+      "publicAlreadyCataloged": 106,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
       "publicNeedsCatalogOrReplace": 35,
@@ -1663,7 +1663,7 @@
     },
     {
       "file": "lib/core/widgets/catch_async_value_view.dart",
-      "line": 159,
+      "line": 133,
       "name": "CatchAsyncScreenLoading",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -1677,7 +1677,7 @@
     },
     {
       "file": "lib/core/widgets/catch_async_value_view.dart",
-      "line": 183,
+      "line": 157,
       "name": "CatchAsyncSliverLoading",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2223,7 +2223,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_control.dart",
-      "line": 104,
+      "line": 168,
       "name": "CatchFieldChoiceChip",
       "base": "StatefulWidget",
       "area": "core/widgets",
@@ -2237,7 +2237,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_control.dart",
-      "line": 126,
+      "line": 190,
       "name": "CatchFieldFocusOutline",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2251,7 +2251,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_control.dart",
-      "line": 342,
+      "line": 406,
       "name": "CatchFieldStepper",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2265,7 +2265,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_control.dart",
-      "line": 430,
+      "line": 494,
       "name": "CatchFieldRepeatButton",
       "base": "StatefulWidget",
       "area": "core/widgets",
@@ -2321,7 +2321,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_lanes.dart",
-      "line": 394,
+      "line": 392,
       "name": "CatchFieldSupportRow",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2335,7 +2335,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_lanes.dart",
-      "line": 471,
+      "line": 475,
       "name": "CatchFieldExplicitSaveControl",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2349,7 +2349,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_lanes.dart",
-      "line": 511,
+      "line": 515,
       "name": "CatchFieldActionBar",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2363,7 +2363,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_lanes.dart",
-      "line": 571,
+      "line": 575,
       "name": "CatchFieldDisclosureDrawer",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2377,7 +2377,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_lanes.dart",
-      "line": 667,
+      "line": 671,
       "name": "CatchFieldSpinner",
       "base": "StatefulWidget",
       "area": "core/widgets",
@@ -2391,7 +2391,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_lanes.dart",
-      "line": 709,
+      "line": 713,
       "name": "CatchFieldCommitButton",
       "base": "StatefulWidget",
       "area": "core/widgets",
@@ -2405,7 +2405,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field_lanes.dart",
-      "line": 823,
+      "line": 827,
       "name": "CatchFieldToggle",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2419,7 +2419,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
-      "line": 47,
+      "line": 513,
       "name": "CatchField",
       "base": "StatefulWidget",
       "area": "core/widgets",
@@ -3678,8 +3678,50 @@
       "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
+      "file": "lib/core/widgets/catch_top_bar_components.dart",
+      "line": 3,
+      "name": "CatchTopBarTabBar",
+      "base": "StatefulWidget",
+      "area": "core/widgets",
+      "visibility": "public",
+      "publicName": "CatchTopBarTabBar",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
+      "decision": null,
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
+    },
+    {
+      "file": "lib/core/widgets/catch_top_bar_components.dart",
+      "line": 168,
+      "name": "CatchTopBarTextAction",
+      "base": "StatelessWidget",
+      "area": "core/widgets",
+      "visibility": "public",
+      "publicName": "CatchTopBarTextAction",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
+      "decision": null,
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
+    },
+    {
+      "file": "lib/core/widgets/catch_top_bar_components.dart",
+      "line": 193,
+      "name": "CatchCollapsedSliverTitle",
+      "base": "StatelessWidget",
+      "area": "core/widgets",
+      "visibility": "public",
+      "publicName": "CatchCollapsedSliverTitle",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
+      "decision": null,
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
+    },
+    {
       "file": "lib/core/widgets/catch_top_bar.dart",
-      "line": 26,
+      "line": 73,
       "name": "CatchTopBarActionGroup",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -3693,7 +3735,7 @@
     },
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
-      "line": 46,
+      "line": 93,
       "name": "CatchScreenHeaderTitle",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -3707,7 +3749,7 @@
     },
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
-      "line": 151,
+      "line": 203,
       "name": "CatchScreenTopBar",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -3721,7 +3763,7 @@
     },
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
-      "line": 402,
+      "line": 374,
       "name": "CatchTopBar",
       "base": "StatefulWidget",
       "area": "core/widgets",
@@ -3735,7 +3777,7 @@
     },
     {
       "file": "lib/core/widgets/catch_top_bar.dart",
-      "line": 882,
+      "line": 776,
       "name": "_TopBarSearchLane",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -3746,48 +3788,6 @@
       "mechanicalStatus": "PRIVATE_NEEDS_RENAME_OR_REPLACE",
       "decision": null,
       "status": "PRIVATE_NEEDS_RENAME_OR_REPLACE"
-    },
-    {
-      "file": "lib/core/widgets/catch_top_bar.dart",
-      "line": 1003,
-      "name": "CatchTopBarTabBar",
-      "base": "StatefulWidget",
-      "area": "core/widgets",
-      "visibility": "public",
-      "publicName": "CatchTopBarTabBar",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/core/widgets/catch_top_bar.dart",
-      "line": 1168,
-      "name": "CatchTopBarTextAction",
-      "base": "StatelessWidget",
-      "area": "core/widgets",
-      "visibility": "public",
-      "publicName": "CatchTopBarTextAction",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/core/widgets/catch_top_bar.dart",
-      "line": 1225,
-      "name": "CatchCollapsedSliverTitle",
-      "base": "StatelessWidget",
-      "area": "core/widgets",
-      "visibility": "public",
-      "publicName": "CatchCollapsedSliverTitle",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
       "file": "lib/core/widgets/catch_vertical_section.dart",
@@ -5709,7 +5709,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "line": 1003,
+      "line": 975,
       "name": "EventSuccessMetricPill",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5737,7 +5737,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 140,
+      "line": 82,
       "name": "EventSuccessHostSection",
       "base": "ConsumerStatefulWidget",
       "area": "event_success",
@@ -5751,7 +5751,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 606,
+      "line": 537,
       "name": "EventSuccessHostSectionSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5765,7 +5765,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 640,
+      "line": 571,
       "name": "EventSuccessSetupTabSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5779,7 +5779,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 665,
+      "line": 596,
       "name": "EventSuccessLiveTabSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5793,7 +5793,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 690,
+      "line": 621,
       "name": "EventSuccessReportTabSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5807,7 +5807,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 715,
+      "line": 646,
       "name": "EventSuccessSetupControlsSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5821,7 +5821,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 747,
+      "line": 678,
       "name": "EventSuccessReportMetricsSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5835,7 +5835,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 789,
+      "line": 720,
       "name": "EventSuccessHostPanel",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -6157,7 +6157,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-      "line": 96,
+      "line": 90,
       "name": "CustomQuestionnaireFields",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6171,7 +6171,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-      "line": 198,
+      "line": 192,
       "name": "CustomQuestionFields",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6199,7 +6199,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_setup_body.dart",
-      "line": 264,
+      "line": 263,
       "name": "EventSuccessModuleRows",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6255,7 +6255,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "line": 371,
+      "line": 314,
       "name": "LiveNowConsole",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6269,35 +6269,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "line": 603,
-      "name": "LiveCheckInSummaryStrip",
-      "base": "StatelessWidget",
-      "area": "event_success",
-      "visibility": "public",
-      "publicName": "LiveCheckInSummaryStrip",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "line": 671,
-      "name": "LiveCheckInQrCard",
-      "base": "StatelessWidget",
-      "area": "event_success",
-      "visibility": "public",
-      "publicName": "LiveCheckInQrCard",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "line": 712,
+      "line": 468,
       "name": "LiveStepNavigation",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6325,7 +6297,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 205,
+      "line": 188,
       "name": "GroupOverrideSheet",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -6339,7 +6311,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 412,
+      "line": 395,
       "name": "GroupOverrideRoundEditor",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6353,7 +6325,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 494,
+      "line": 477,
       "name": "GroupOverrideUnitEditor",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6367,7 +6339,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 585,
+      "line": 568,
       "name": "GroupOverrideMemberEditor",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6381,7 +6353,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 634,
+      "line": 617,
       "name": "RotationsHostCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6395,7 +6367,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 875,
+      "line": 839,
       "name": "RotationOverrideSheet",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -6409,7 +6381,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 1061,
+      "line": 1025,
       "name": "RotationOverrideRoundEditor",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6423,7 +6395,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 1136,
+      "line": 1100,
       "name": "RotationOverridePairEditor",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6437,7 +6409,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 1208,
+      "line": 1172,
       "name": "PodGroupSummary",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6451,7 +6423,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "line": 1234,
+      "line": 1198,
       "name": "AssignmentReasonSummary",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6479,7 +6451,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_report.dart",
-      "line": 122,
+      "line": 131,
       "name": "HostReportSignalGrid",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6493,7 +6465,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_report.dart",
-      "line": 259,
+      "line": 212,
       "name": "HostFunnelSummary",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6521,7 +6493,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-      "line": 285,
+      "line": 275,
       "name": "TargetAttendeeControl",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6535,7 +6507,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-      "line": 376,
+      "line": 319,
       "name": "ReadinessIssues",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6549,7 +6521,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-      "line": 434,
+      "line": 346,
       "name": "NoticeCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6591,7 +6563,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
-      "line": 62,
+      "line": 68,
       "name": "PlanSummary",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6605,7 +6577,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
-      "line": 113,
+      "line": 100,
       "name": "HostActivitySummary",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6619,7 +6591,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
-      "line": 159,
+      "line": 123,
       "name": "CompatibilitySignalHostCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6633,35 +6605,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
-      "line": 235,
-      "name": "LiveAttendanceSummaryCard",
-      "base": "StatelessWidget",
-      "area": "event_success",
-      "visibility": "public",
-      "publicName": "LiveAttendanceSummaryCard",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
-      "line": 331,
-      "name": "HostCheckInQrPanel",
-      "base": "StatelessWidget",
-      "area": "event_success",
-      "visibility": "public",
-      "publicName": "HostCheckInQrPanel",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
-      "line": 384,
+      "line": 161,
       "name": "WingmanRequestsHostCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6675,7 +6619,7 @@
     },
     {
       "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
-      "line": 467,
+      "line": 209,
       "name": "WingmanRequestHostRow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -9055,7 +8999,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_header.dart",
-      "line": 76,
+      "line": 77,
       "name": "ExploreDiscoveryCoverHeader",
       "base": "StatefulWidget",
       "area": "explore",
@@ -9069,7 +9013,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_header.dart",
-      "line": 170,
+      "line": 171,
       "name": "_ExploreDiscoveryTopBar",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9251,7 +9195,7 @@
     },
     {
       "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-      "line": 19,
+      "line": 20,
       "name": "ClubHostDefaultsStep",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9265,7 +9209,7 @@
     },
     {
       "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-      "line": 76,
+      "line": 77,
       "name": "ClubPolicyDefaultsCard",
       "base": "StatefulWidget",
       "area": "hosts",
@@ -9391,7 +9335,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 180,
+      "line": 181,
       "name": "EditHostedEventScreen",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -9405,7 +9349,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 880,
+      "line": 881,
       "name": "EditHostedEventScopeNotice",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9419,7 +9363,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 954,
+      "line": 955,
       "name": "EditableHostedEventPolicyCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9433,7 +9377,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1208,
+      "line": 1179,
       "name": "ReadOnlyHostedEventPolicyCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9447,7 +9391,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1260,
+      "line": 1231,
       "name": "ReadOnlyHostedEventScheduleCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9503,7 +9447,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
-      "line": 8,
+      "line": 9,
       "name": "HostCreateEventRouteLoadingScreen",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9517,7 +9461,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
-      "line": 41,
+      "line": 43,
       "name": "CreateEventLoadingBody",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9531,7 +9475,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
-      "line": 77,
+      "line": 79,
       "name": "LoadingChipRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9545,7 +9489,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
-      "line": 99,
+      "line": 101,
       "name": "CreateEventLoadingFooter",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9656,6 +9600,20 @@
       "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
+      "file": "lib/hosts/presentation/event_management/widgets/event_age_range_field.dart",
+      "line": 15,
+      "name": "EventAgeRangeField",
+      "base": "StatefulWidget",
+      "area": "hosts",
+      "visibility": "public",
+      "publicName": "EventAgeRangeField",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
+      "decision": null,
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
+    },
+    {
       "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
       "line": 15,
       "name": "EventDetailsStep",
@@ -9671,7 +9629,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 15,
+      "line": 16,
       "name": "EventPolicyStep",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9741,7 +9699,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 58,
+      "line": 60,
       "name": "HostEventManageScreen",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -9755,7 +9713,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 642,
+      "line": 637,
       "name": "HostManageMetaRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9769,7 +9727,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 687,
+      "line": 682,
       "name": "HostManageSectionPicker",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9783,7 +9741,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 714,
+      "line": 713,
       "name": "HostPrivateAccessCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9797,7 +9755,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 833,
+      "line": 832,
       "name": "HostPrivateAccessShell",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9811,7 +9769,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 849,
+      "line": 848,
       "name": "HostPrivateAccessBody",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9825,7 +9783,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 968,
+      "line": 967,
       "name": "HostInviteLinksList",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9839,7 +9797,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1092,
+      "line": 1091,
       "name": "HostInviteLinkRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9853,7 +9811,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1292,
+      "line": 1291,
       "name": "HostFullCapacityApron",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9867,7 +9825,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1376,
+      "line": 1375,
       "name": "HostFullCapacityBanner",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9881,7 +9839,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1410,
+      "line": 1409,
       "name": "HostCapacityTile",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9895,7 +9853,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1471,
+      "line": 1470,
       "name": "HostEventActionsSection",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9909,7 +9867,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1575,
+      "line": 1569,
       "name": "HostActionRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9923,7 +9881,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1656,
+      "line": 1595,
       "name": "HostEventSummaryCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9937,7 +9895,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1708,
+      "line": 1642,
       "name": "HostEventSummaryRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10069,20 +10027,6 @@
       "area": "hosts",
       "visibility": "public",
       "publicName": "HostClubEditTab",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-      "line": 466,
-      "name": "HostClubInlineTextEntry",
-      "base": "StatelessWidget",
-      "area": "hosts",
-      "visibility": "public",
-      "publicName": "HostClubInlineTextEntry",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -10335,34 +10279,6 @@
       "area": "hosts",
       "visibility": "public",
       "publicName": "HostEventsScaffold",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-      "line": 39,
-      "name": "HostInlineTextEntryEditor",
-      "base": "ConsumerStatefulWidget",
-      "area": "hosts",
-      "visibility": "public",
-      "publicName": "HostInlineTextEntryEditor",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-      "line": 391,
-      "name": "HostInlineAgeRangeEditor",
-      "base": "ConsumerStatefulWidget",
-      "area": "hosts",
-      "visibility": "public",
-      "publicName": "HostInlineAgeRangeEditor",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -10749,7 +10665,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 39,
+      "line": 43,
       "name": "CatchRosterTiles",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10763,7 +10679,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 72,
+      "line": 76,
       "name": "CatchRosterTileCell",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10777,7 +10693,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 198,
+      "line": 202,
       "name": "CatchRosterRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10791,7 +10707,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 294,
+      "line": 298,
       "name": "CatchRosterActionCell",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10805,7 +10721,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 369,
+      "line": 373,
       "name": "CatchRosterDecideTarget",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10819,7 +10735,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "line": 402,
+      "line": 406,
       "name": "CatchRosterTable",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10875,7 +10791,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "line": 40,
+      "line": 50,
       "name": "HostEventAttendancePanel",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10889,7 +10805,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "line": 66,
+      "line": 76,
       "name": "HostEventParticipantsPanel",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -10903,7 +10819,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "line": 460,
+      "line": 479,
       "name": "HostEventParticipantsList",
       "base": "StatefulWidget",
       "area": "hosts",
@@ -10917,7 +10833,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "line": 561,
+      "line": 580,
       "name": "HostParticipationLifecycleBoard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10931,7 +10847,21 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "line": 1014,
+      "line": 1073,
+      "name": "HostEventCheckInQrPanel",
+      "base": "StatelessWidget",
+      "area": "hosts",
+      "visibility": "public",
+      "publicName": "HostEventCheckInQrPanel",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
+      "decision": null,
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "line": 1099,
       "name": "HostRosterSearchBar",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10945,7 +10875,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "line": 1046,
+      "line": 1124,
       "name": "HostRosterFilterHeader",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10959,7 +10889,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "line": 1100,
+      "line": 1183,
       "name": "HostWaitlistBulkOfferAction",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10970,20 +10900,6 @@
       "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
       "decision": null,
       "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "line": 1202,
-      "name": "HostExportReportButton",
-      "base": "StatelessWidget",
-      "area": "hosts",
-      "visibility": "public",
-      "publicName": "HostExportReportButton",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
       "file": "lib/hosts/presentation/widgets/host_event_tools.dart",
