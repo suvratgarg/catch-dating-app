@@ -1,4 +1,4 @@
-// ignore_for_file: scoped_providers_should_specify_dependencies
+// ignore_for_file: riverpod_lint/scoped_providers_should_specify_dependencies
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
