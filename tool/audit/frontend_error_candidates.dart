@@ -24,7 +24,8 @@ import 'dart:io';
 /// `mustMigrate`, `review`, `verified`, `intentional`, `fixture`, `migrated`.
 /// The finished-state invariant is `mustMigrate == 0` and `review == 0`.
 const defaultRoots = ['lib', 'test'];
-const defaultBaselinePath = 'tool/audit/frontend_error_candidates_baseline.json';
+const defaultBaselinePath =
+    'tool/audit/frontend_error_candidates_baseline.json';
 const generatedSuffixes = ['.g.dart', '.freezed.dart', '.mocks.dart'];
 
 final rules = <CandidateRule>[
@@ -375,7 +376,9 @@ FrontendErrorBaseline _loadBaseline(String path) {
   }
   final decoded = jsonDecode(file.readAsStringSync());
   if (decoded is! Map<String, Object?>) {
-    throw FormatException('Frontend error baseline must be a JSON object: $path');
+    throw FormatException(
+      'Frontend error baseline must be a JSON object: $path',
+    );
   }
   final entries = decoded['allowedReviewCandidates'];
   final allowedReviewCandidates = <String, int>{};
@@ -392,7 +395,11 @@ FrontendErrorBaseline _loadBaseline(String path) {
       }
       final countValue = entry['maxOccurrences'];
       final maxOccurrences = countValue is int ? countValue : 1;
-      allowedReviewCandidates[_candidateKeyParts(rule, candidatePath, snippet)] =
+      allowedReviewCandidates[_candidateKeyParts(
+            rule,
+            candidatePath,
+            snippet,
+          )] =
           maxOccurrences;
     }
   }
@@ -426,11 +433,8 @@ List<Candidate> _blockingCandidates(
   return blocking;
 }
 
-String _candidateKey(Candidate candidate) => _candidateKeyParts(
-  candidate.rule.id,
-  candidate.path,
-  candidate.snippet,
-);
+String _candidateKey(Candidate candidate) =>
+    _candidateKeyParts(candidate.rule.id, candidate.path, candidate.snippet);
 
 String _candidateKeyParts(String rule, String path, String snippet) =>
     '$rule|${path.replaceAll('\\', '/')}|$snippet';
@@ -450,6 +454,28 @@ Future<void> swallow() async {
   }
 }
 ''');
+
+    final surfacedFixtureFile = File('${temp.path}/lib/surfaced.dart');
+    surfacedFixtureFile.writeAsStringSync('''
+
+Future<void> surfaceThroughFieldState(dynamic state) async {
+  try {
+    throw StateError('boom');
+  } catch (error) {
+    state
+      ..saving = false
+      ..error = error;
+  }
+}
+
+Future<void> surfaceThroughMessageState() async {
+  try {
+    throw StateError('boom');
+  } catch (error) {
+    _errorMessage = error.toString();
+  }
+}
+''');
     final candidates = _scan(['${temp.path}/lib']);
     final reviewCandidate = candidates.where((candidate) {
       return candidate.rule.id == 'bare_catch' &&
@@ -463,12 +489,23 @@ Future<void> swallow() async {
       exitCode = 1;
       return;
     }
+    final verifiedSurfaceCandidates = candidates.where((candidate) {
+      return candidate.rule.id == 'named_catch' &&
+          candidate.status == CandidateStatus.verified &&
+          candidate.disposition.contains('surfaced to the user');
+    }).toList();
+    if (verifiedSurfaceCandidates.length != 2) {
+      stderr.writeln(
+        'Expected two surfaced named_catch candidates, found '
+        '${verifiedSurfaceCandidates.length}.',
+      );
+      exitCode = 1;
+      return;
+    }
 
     final baseline = FrontendErrorBaseline(
       path: '<self-test>',
-      allowedReviewCandidates: {
-        _candidateKey(reviewCandidate.single): 1,
-      },
+      allowedReviewCandidates: {_candidateKey(reviewCandidate.single): 1},
     );
     final blockedWithoutBaseline = _blockingCandidates(
       candidates,
@@ -643,7 +680,8 @@ CandidateDisposition _throwDisposition(
     if (lines.any((l) => l.contains('on StateError catch'))) {
       return const CandidateDisposition(
         status: CandidateStatus.intentional,
-        reason: 'user-facing StateError caught locally for inline field-error '
+        reason:
+            'user-facing StateError caught locally for inline field-error '
             'control flow (never reported as a crash)',
       );
     }
@@ -793,14 +831,16 @@ CandidateDisposition _catchDisposition(
     if (_near(lines, lineIndex, before: 0, after: 5, needle: 'test:')) {
       return const CandidateDisposition(
         status: CandidateStatus.verified,
-        reason: 'scoped .catchError(test:) only swallows a specific expected '
+        reason:
+            'scoped .catchError(test:) only swallows a specific expected '
             'error; all others propagate',
       );
     }
     if (_isWrapped(lines, lineIndex)) {
       return const CandidateDisposition(
         status: CandidateStatus.verified,
-        reason: '.catchError inside an op-context wrapper that normalizes '
+        reason:
+            '.catchError inside an op-context wrapper that normalizes '
             'unexpected errors',
       );
     }
@@ -946,6 +986,8 @@ bool _catchSurfacesToUser(List<String> lines, int lineIndex) {
       'ErrorBanner',
       '_searchError',
       '_error =',
+      '.error =',
+      '_errorMessage =',
       'Error =',
       'Error;',
       'completeError',
