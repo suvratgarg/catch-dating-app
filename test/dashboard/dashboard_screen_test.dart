@@ -756,7 +756,7 @@ void main() {
       expect(field.title, 'Event starts tomorrow');
       expect(field.body, 'Sundowner 5K meets at Carter Road Jetty.');
       expect(field.emphasis, CatchFieldEmphasis.title);
-      expect(field.mode, CatchFieldMode.read);
+      expect(field.mode, CatchFieldMode.nav);
       expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
 
       expect(find.text('2H'), findsOneWidget);
