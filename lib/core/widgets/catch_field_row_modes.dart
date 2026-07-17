@@ -26,8 +26,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
         !widget._explicitSaveInput &&
         widget.enabled &&
         (!widget.readOnly || widget.onTap != null);
-    final canToggleRow =
-        _mode == CatchFieldMode.toggle && widget.onToggle != null && !_isSaving;
+    final canToggleRow = _isToggle && widget.onToggle != null && !_isSaving;
     final canExpand =
         _hasControl &&
         widget.enabled &&
@@ -63,7 +62,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       rowAction = null;
     }
     final centerVertically =
-        _mode == CatchFieldMode.toggle ||
+        _isToggle ||
         (widget._contentRow && widget.emphasis == CatchFieldEmphasis.title);
     final leadingTopPadding = centerVertically
         ? 0.0
@@ -148,7 +147,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final tapRegion = _isEdit
         ? TextFieldTapRegion(groupId: _textFieldTapRegionGroup, child: row)
         : row;
-    final isToggle = _mode == CatchFieldMode.toggle;
+    final isToggle = _isToggle;
     final toggleStatusValue = switch (widget.status) {
       CatchFieldStatus.idle => null,
       CatchFieldStatus.saving => context.l10n.coreCatchFieldSemanticSaving,
@@ -336,7 +335,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
   }
 
   Widget? _buildTrailingSlot(CatchTokens t) {
-    if (_mode == CatchFieldMode.toggle) {
+    if (_isToggle) {
       return CatchFieldTrailing.toggle(
         value: widget.toggled,
         onChanged: _isSaving ? null : widget.onToggle,
@@ -367,7 +366,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       );
     }
 
-    if (_mode == CatchFieldMode.nav) {
+    if (_isNavigation) {
       return _buildTrailingGroup(t, includeChevron: _shouldShowChevron);
     }
 
