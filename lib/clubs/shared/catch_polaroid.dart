@@ -324,7 +324,7 @@ class _ClubCoverPatternPainter extends CustomPainter {
         alpha: CatchOpacity.clubCoverPatternLine,
       )
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+      ..strokeWidth = CatchStroke.hairline;
     final gap = size.shortestSide * 0.18;
     for (var x = -size.height; x < size.width + size.height; x += gap) {
       canvas.drawLine(

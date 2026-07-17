@@ -2,11 +2,12 @@ import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/shared/event_price_copy.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 /// Explore recommendation card.
 ///
@@ -64,12 +65,7 @@ class RecommendCard extends StatelessWidget {
       subtitle: _buildSubtitle(),
       timeLabel: EventFormatters.time(event.startTime),
       countdownLabel: _countdownLabel(),
-      priceLabel: event.isFree
-          ? context.l10n.exploreRecommendCardVisiblecopyFree
-          : EventFormatters.priceInPaise(
-              event.priceInPaise,
-              currencyCode: event.currency,
-            ),
+      priceLabel: eventPriceLabel(context.l10n, event),
       capacityLabel: _capacityLabel(),
       activityKind: event.activityKind,
       statusLabel: reasonLabel,

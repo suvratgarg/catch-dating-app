@@ -140,6 +140,11 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   Color get darkMutedInk =>
       editorialWhite.withValues(alpha: CatchOpacity.onDarkMuted);
 
+  /// Opaque-looking surface treatment for labelled controls that float above
+  /// scrollable content while still allowing a hint of the backdrop through.
+  Color get floatingPillFill =>
+      surface.withValues(alpha: CatchOpacity.floatingPillFill);
+
   // ── Paper/ink palette — light (launch default) ───────────────────────────────
 
   // B&W base — light (browse/forms register)
@@ -977,6 +982,9 @@ abstract final class CatchOpacity {
   /// High-opacity fill for compact overlay pills on image/map surfaces.
   static const double overlayPillFill = 0.93;
 
+  /// Surface fill for labelled floating pills over scrolling content.
+  static const double floatingPillFill = 0.94;
+
   /// High-opacity blur fill for the floating iOS tab bar glass.
   static const double tabBarGlassFill = 0.93;
 
@@ -992,6 +1000,8 @@ abstract final class CatchOpacity {
 
   // CoverStory (design-system components/explore/CoverStory) — the dark wow cover.
   static const double coverStoryGlow = 0.58;
+  static const double coverStoryContrastScrim = 0.62;
+  static const double coverStoryContrastScrimMid = 0.48;
   static const double coverStoryGhostGlyph = 0.07;
   static const double coverStoryScrim = 0.035;
   static const double coverStoryBody = 0.76;
@@ -1871,6 +1881,7 @@ abstract final class CatchLayout {
   static const double clubCoverThumbnailExtent = 64.0;
   static const double clubPolaroidRadius = CatchSpacing.micro6;
   static const double clubPolaroidMediaRadius = CatchSpacing.micro3;
+  static const double clubCoverCompactMediaRadius = CatchRadius.md;
   static const double clubPolaroidTitleSize = CatchSpacing.s6;
   static const double polaroidBodyReserve = 108.0;
   static const double polaroidBodyReserveWithFooter = 212.0;
@@ -1966,6 +1977,12 @@ abstract final class CatchLayout {
   static const double coverStorySearchExtent = iconButtonNavSize;
   static const double coverStoryGhostRightInset = 34.0;
   static const double coverStoryGhostBottomInset = 14.0;
+  static const double coverStoryContentMaxWidth = 320.0;
+  static const Alignment coverStoryGlowCenter = Alignment(0.7, 1.2);
+  static const double coverStoryGlowRadius = 1.2;
+  static const List<double> coverStoryGlowStops = [0.0, 0.6];
+  static const List<double> coverStoryContrastStops = [0.0, 0.78, 1.0];
+  static const double coverStoryScrimStride = 18.0;
   // "Your hosts" HostCard (design-system components/events/HostCard).
   static const double eventDetailHostAvatarExtent = 46.0;
   static const double eventDetailHostSealSize = 15.0;
@@ -2018,6 +2035,7 @@ abstract final class CatchLayout {
   static const double sheetGlyphTileSize = CatchSpacing.s11;
   static const double sheetGlyphTileRadius = CatchSpacing.s3;
   static const double sheetGlyphIconSize = 22.0;
+  static const double sheetMaxHeightFraction = 0.56;
   static const double skeletonCardHeight = 120.0;
   static const double skeletonCardCompactHeight = 96.0;
   static const double skeletonTextHeight = CatchIcon.sm;
@@ -2232,6 +2250,9 @@ abstract final class CatchLayout {
   static const double eventTicketDividerHeight = 20.0;
   static const double eventTicketNotchRadius = 10.0;
   static const double eventTicketNotchDepth = 8.0;
+  static const double ticketPerforationStartOffset = 0.5;
+  static const double ticketPerforationDashLength = 2.2;
+  static const double ticketPerforationStride = 7.0;
   static const double hostTargetStepperWidth = 150.0;
   static const double skeletonTextShortWidth = 64.0;
   static const double skeletonTextTitleWidth = 132.0;

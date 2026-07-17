@@ -23,6 +23,7 @@ import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
@@ -38,9 +39,11 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -1247,11 +1250,144 @@ void main() {
 
       expect(find.byTooltip('Change location'), findsOneWidget);
       expect(find.bySemanticsLabel('Change location, Mumbai'), findsOneWidget);
+      expect(
+        tester
+            .getSize(
+              find
+                  .ancestor(
+                    of: find.text('MUMBAI'),
+                    matching: find.byType(CatchSurface),
+                  )
+                  .first,
+            )
+            .height,
+        greaterThanOrEqualTo(CatchIconButton.defaultSize),
+      );
 
       await tester.tap(find.text('MUMBAI'));
       await tester.pump();
 
       expect(tapped, isTrue);
+    });
+
+    testWidgets('Explore scope city trigger keeps a 44 point tap target', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: CityTrigger(
+                city: _testCities.first,
+                focused: false,
+                presentation: ExploreCityPickerPresentation.scopeLabel,
+                onTap: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSize(find.byType(CityTrigger)).height,
+        greaterThanOrEqualTo(CatchIconButton.defaultSize),
+      );
+    });
+
+    testWidgets('Explore club cover prefers the primary uploaded photo', (
+      tester,
+    ) async {
+      final club = buildClub(
+        id: 'club-primary-photo',
+        imageUrl: 'https://example.com/legacy.jpg',
+        clubPhotos: [
+          UploadedPhoto.fromUpload(
+            url: 'https://example.com/primary.jpg',
+            storagePath: 'clubs/primary.jpg',
+            position: 0,
+            now: DateTime(2026),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(body: ExploreClubCover(club: club)),
+        ),
+      );
+
+      expect(
+        tester.widget<CatchNetworkImage>(find.byType(CatchNetworkImage)).url,
+        'https://example.com/primary.jpg',
+      );
+    });
+
+    testWidgets('Explore club card composes rating and semantics', (
+      tester,
+    ) async {
+      final club = buildClub(
+        id: 'club-semantic-card',
+        name: 'Tempo House',
+        memberCount: 42,
+        rating: 4.9,
+        reviewCount: 61,
+        nextEventLabel: 'Fri 8 PM',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SizedBox(
+              width: 360,
+              child: ExploreClubPolaroidCard(
+                club: club,
+                onClubSelected: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('4.9 · 61 REVIEWS'), findsOneWidget);
+      expect(find.text('View club'), findsNothing);
+      expect(
+        find.bySemanticsLabel(RegExp('Tempo House.*42 members.*61 REVIEWS')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('external event row exposes one composed summary', (
+      tester,
+    ) async {
+      final item = ExploreExternalEventItem(
+        event: _buildExternalExploreEvent(
+          id: 'external-semantic-row',
+          title: 'Afterfly Social',
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: ExploreExternalEventRow(
+              item: item,
+              onExternalEventOpened: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        find.bySemanticsLabel(
+          RegExp('Afterfly Social.*FROM DISTRICT.*READ-ONLY SUPPLY'),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Explore club card and detail hero share media padding', (

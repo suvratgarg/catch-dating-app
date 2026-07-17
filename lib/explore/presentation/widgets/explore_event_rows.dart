@@ -72,81 +72,86 @@ class ExploreExternalEventRow extends StatelessWidget {
     final t = CatchTokens.of(context);
     final visual = eventActivityVisual(event.activityKind, context: context);
     final state = ExploreExternalEventRowState.from(item, l10n: context.l10n);
-    return CatchSurface(
-      radius: CatchRadius.md,
-      borderColor: t.line2,
-      elevation: CatchSurfaceElevation.card,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              EventActivityStamp(
-                visual: visual,
-                size: 26,
-                iconSize: CatchIcon.sm,
-              ),
-              gapW8,
-              Expanded(
-                child: ExploreMonoLabel(state.sourceLabel, color: t.ink3),
-              ),
-              gapW8,
-              EventStatusPill(label: state.statusLabel, color: visual.accent),
-            ],
-          ),
-          gapH8,
-          Text(
-            event.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.eventDisplay(
-              context,
-              size: 25,
-              height: 1.02,
-            ),
-          ),
-          gapH4,
-          Text(
-            state.supportingLabel,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          gapH10,
-          Row(
-            children: [
-              EventClockMark(
-                accent: visual.accent,
-                time: TimeOfDay.fromDateTime(event.startTime),
-                size: 17,
-              ),
-              gapW8,
-              Expanded(
-                child: Text(
-                  state.timePriceLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.mono(context, color: t.ink2),
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      label: state.semanticLabel,
+      child: CatchSurface(
+        radius: CatchRadius.md,
+        borderColor: t.line2,
+        elevation: CatchSurfaceElevation.card,
+        padding: CatchInsets.content,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                EventActivityStamp(
+                  visual: visual,
+                  size: 26,
+                  iconSize: CatchIcon.sm,
                 ),
+                gapW8,
+                Expanded(
+                  child: ExploreMonoLabel(state.sourceLabel, color: t.ink3),
+                ),
+                gapW8,
+                EventStatusPill(label: state.statusLabel, color: visual.accent),
+              ],
+            ),
+            gapH8,
+            Text(
+              event.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.eventDisplay(
+                context,
+                size: 25,
+                height: 1.02,
               ),
-              gapW12,
-              CatchButton(
-                label: state.actionLabel,
-                icon: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
-                size: CatchButtonSize.sm,
-                variant: CatchButtonVariant.secondary,
-                onPressed: !state.hasExternalLink
-                    ? null
-                    : () => onExternalEventOpened?.call(item),
-                semanticsLabel: state.actionSemanticsLabel,
-              ),
-            ],
-          ),
-          gapH8,
-          ExploreMonoLabel(state.readOnlySupplyLabel, color: t.ink3),
-        ],
+            ),
+            gapH4,
+            Text(
+              state.supportingLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+            gapH10,
+            Row(
+              children: [
+                EventClockMark(
+                  accent: visual.accent,
+                  time: TimeOfDay.fromDateTime(event.startTime),
+                  size: 17,
+                ),
+                gapW8,
+                Expanded(
+                  child: Text(
+                    state.timePriceLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.mono(context, color: t.ink2),
+                  ),
+                ),
+                gapW12,
+                CatchButton(
+                  label: state.actionLabel,
+                  icon: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
+                  size: CatchButtonSize.sm,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: !state.hasExternalLink
+                      ? null
+                      : () => onExternalEventOpened?.call(item),
+                  semanticsLabel: state.actionSemanticsLabel,
+                ),
+              ],
+            ),
+            gapH8,
+            ExploreMonoLabel(state.readOnlySupplyLabel, color: t.ink3),
+          ],
+        ),
       ),
     );
   }

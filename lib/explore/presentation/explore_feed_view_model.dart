@@ -11,7 +11,6 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/external_event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -152,34 +151,6 @@ class ExploreEventItem {
       );
   EventTileStatus get tileStatus => status;
 
-  String? get distanceFromUserLabel {
-    final distance = distanceFromUserKm;
-    if (distance == null) return null;
-    if (distance < 1) {
-      return '${(distance * 1000).round()} m away';
-    }
-    final rounded = distance >= 10
-        ? distance.round().toString()
-        : distance.toStringAsFixed(1);
-    return '$rounded km away';
-  }
-
-  String get priceLabel {
-    final quotedPrice = availability?.quotedPriceInPaise;
-    if (quotedPrice == null) return tileData.priceLabel;
-    if (quotedPrice <= 0) return 'Free';
-    return EventFormatters.priceInPaise(
-      quotedPrice,
-      currencyCode: event.currency,
-    );
-  }
-
-  String? get availabilityLabel {
-    final viewerAvailability = availability;
-    if (viewerAvailability == null) return null;
-    return _availabilityLabel(viewerAvailability);
-  }
-
   EventTileData get tileData => EventTileData.fromEvent(
     event: event,
     status: tileStatus,
@@ -195,18 +166,6 @@ class ExploreExternalEventItem {
 
   final ExternalEvent event;
   final double? distanceFromUserKm;
-
-  String? get distanceFromUserLabel {
-    final distance = distanceFromUserKm;
-    if (distance == null) return null;
-    if (distance < 1) {
-      return '${(distance * 1000).round()} m away';
-    }
-    final rounded = distance >= 10
-        ? distance.round().toString()
-        : distance.toStringAsFixed(1);
-    return '$rounded km away';
-  }
 }
 
 EventTileStatus _statusForAvailability(
@@ -233,46 +192,6 @@ EventTileStatus _statusForAvailability(
     ViewerEventAvailabilityStatus.open ||
     null =>
       isJoinedClubMember ? EventTileStatus.recommended : EventTileStatus.open,
-  };
-}
-
-String? _availabilityLabel(ViewerEventAvailability availability) {
-  final lowSpotLabel = _lowSpotLabel(availability.spotsRemaining);
-  return switch (availability.status) {
-    ViewerEventAvailabilityStatus.open => lowSpotLabel ?? 'Open',
-    ViewerEventAvailabilityStatus.saved => lowSpotLabel,
-    ViewerEventAvailabilityStatus.hosted => lowSpotLabel,
-    ViewerEventAvailabilityStatus.joined ||
-    ViewerEventAvailabilityStatus.waitlisted ||
-    ViewerEventAvailabilityStatus.attended => null,
-    ViewerEventAvailabilityStatus.approvedToBook => 'Approved to join',
-    ViewerEventAvailabilityStatus.requestRequired => 'Request required',
-    ViewerEventAvailabilityStatus.waitlistAvailable => 'Waitlist open',
-    ViewerEventAvailabilityStatus.full => 'Full',
-    ViewerEventAvailabilityStatus.fullForViewer => 'Full for you',
-    ViewerEventAvailabilityStatus.inviteRequired => 'Invite required',
-    ViewerEventAvailabilityStatus.membershipRequired => 'Members only',
-    ViewerEventAvailabilityStatus.runPreferencesRequired => 'Set preferences',
-    ViewerEventAvailabilityStatus.ageRestricted => _ageRestrictedLabel(
-      availability,
-    ),
-    ViewerEventAvailabilityStatus.past => 'Ended',
-    ViewerEventAvailabilityStatus.cancelled => 'Cancelled',
-  };
-}
-
-String? _lowSpotLabel(int spotsRemaining) {
-  if (spotsRemaining <= 0) return null;
-  if (spotsRemaining == 1) return '1 spot left';
-  if (spotsRemaining <= 4) return '$spotsRemaining spots left';
-  return null;
-}
-
-String _ageRestrictedLabel(ViewerEventAvailability availability) {
-  return switch (availability.eligibility) {
-    AgeTooYoung(:final minAge) => 'Must be $minAge+',
-    AgeTooOld(:final maxAge) => 'Max age $maxAge',
-    _ => 'Age restricted',
   };
 }
 

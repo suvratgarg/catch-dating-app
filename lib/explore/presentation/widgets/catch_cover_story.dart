@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -81,13 +82,33 @@ class CatchCoverStory extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: RadialGradient(
-                    center: const Alignment(0.7, 1.2),
-                    radius: 1.2,
+                    center: CatchLayout.coverStoryGlowCenter,
+                    radius: CatchLayout.coverStoryGlowRadius,
                     colors: [
                       deep.withValues(alpha: CatchOpacity.coverStoryGlow),
                       deep.withValues(alpha: CatchOpacity.none),
                     ],
-                    stops: const [0, 0.6],
+                    stops: CatchLayout.coverStoryGlowStops,
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      CatchTokens.editorialBlack.withValues(
+                        alpha: CatchOpacity.coverStoryContrastScrim,
+                      ),
+                      CatchTokens.editorialBlack.withValues(
+                        alpha: CatchOpacity.coverStoryContrastScrimMid,
+                      ),
+                      CatchTokens.editorialBlack.withValues(
+                        alpha: CatchOpacity.none,
+                      ),
+                    ],
+                    stops: CatchLayout.coverStoryContrastStops,
                   ),
                 ),
               ),
@@ -197,7 +218,14 @@ class CoverStoryChrome extends StatelessWidget {
                           location: location,
                         ),
                     child: ExcludeSemantics(
-                      child: GestureDetector(onTap: onLocation, child: label),
+                      child: CatchSurface(
+                        height: CatchIconButton.defaultSize,
+                        radius: CatchRadius.sm,
+                        borderWidth: 0,
+                        backgroundColor: Colors.transparent,
+                        onTap: onLocation,
+                        child: label,
+                      ),
                     ),
                   ),
                 );
@@ -271,7 +299,9 @@ class CoverStoryContent extends StatelessWidget {
         if (story.body != null && story.body!.isNotEmpty) ...[
           const SizedBox(height: CatchSpacing.micro14),
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 320),
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.coverStoryContentMaxWidth,
+            ),
             child: Text(
               story.body!,
               style: CatchTextStyles.proseM(
@@ -344,8 +374,11 @@ class _DiagonalScrimPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..strokeWidth = CatchStroke.underline;
-    const stride = 18.0;
-    for (double x = -size.height; x < size.width; x += stride) {
+    for (
+      double x = -size.height;
+      x < size.width;
+      x += CatchLayout.coverStoryScrimStride
+    ) {
       canvas.drawLine(
         Offset(x, size.height),
         Offset(x + size.height, 0),

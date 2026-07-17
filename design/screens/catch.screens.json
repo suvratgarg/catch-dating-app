@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-18",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -994,6 +994,7 @@
         {
           "id": "club_detail_member",
           "status": "captured",
+          "capturedAt": "2026-07-18",
           "notes": "Authenticated member-state capture with upcoming events and reviews."
         },
         {
@@ -1661,7 +1662,14 @@
         {
           "id": "member_event_discovery",
           "status": "captured",
+          "capturedAt": "2026-07-18",
           "notes": "Guest/member discovery feed fixture with deterministic clubs, events, city, and feed provider overrides."
+        },
+        {
+          "id": "explore_cover_contrast_floor",
+          "status": "captured",
+          "capturedAt": "2026-07-18",
+          "notes": "Worst-case pale activity glow fixture proving the cover-story contrast scrim in both themes."
         },
         {
           "id": "explore_joined_clubs",

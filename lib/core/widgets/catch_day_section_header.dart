@@ -108,7 +108,7 @@ class CatchDaySectionHeaderDelegate extends SliverPersistentHeaderDelegate {
   const CatchDaySectionHeaderDelegate({
     required this.label,
     this.count,
-    this.height = 44,
+    this.height = CatchSpacing.s11,
   });
 
   final String label;

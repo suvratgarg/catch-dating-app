@@ -2469,6 +2469,26 @@ void main() {
     expect(tester.getSize(find.byType(CatchSkeleton)), const Size(42, 24));
   });
 
+  testWidgets('CatchSkeleton uses the theme raised fill in dark mode', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(CatchSkeleton.box(width: 42, height: 24), theme: AppTheme.dark),
+    );
+
+    final themedShape = tester
+        .widgetList<Container>(
+          find.descendant(
+            of: find.byType(CatchSkeleton),
+            matching: find.byType(Container),
+          ),
+        )
+        .firstWhere((container) => container.decoration is BoxDecoration);
+    final decoration = themedShape.decoration! as BoxDecoration;
+    expect(decoration.color, CatchTokens.dark.raised);
+    expect(decoration.color, isNot(CatchTokens.editorialWhite));
+  });
+
   testWidgets('showCatchErrorSnackBar maps errors to user copy', (
     tester,
   ) async {

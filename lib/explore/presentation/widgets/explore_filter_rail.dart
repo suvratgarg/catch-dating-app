@@ -171,7 +171,9 @@ class ExploreFilterSheet extends StatelessWidget {
       ),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.56,
+          maxHeight:
+              MediaQuery.sizeOf(context).height *
+              CatchLayout.sheetMaxHeightFraction,
         ),
         child: SingleChildScrollView(
           child: Column(

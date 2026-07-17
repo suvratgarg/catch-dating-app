@@ -204,6 +204,10 @@
         "status": {
           "enum": ["planned", "captured", "ready", "blocked"]
         },
+        "capturedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
         "notes": {
           "type": "string"
         }

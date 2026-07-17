@@ -17440,6 +17440,231 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account unblocked.'**
   String get safetyAccountUnblockedMessage;
+
+  /// Canonical zero-price label shared by event cards and Explore.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get eventsEventPriceCopyFree;
+
+  /// Canonical demand-priced event label when only the base price is known.
+  ///
+  /// In en, this message translates to:
+  /// **'From {price}'**
+  String eventsEventPriceCopyFromPrice({required Object price});
+
+  /// Fallback price label for external events whose source has no parsed price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price on source'**
+  String get eventsEventPriceCopyPriceOnSource;
+
+  /// Localized event count spoken for an Explore activity category.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No events} =1{1 event} other{{count} events}}'**
+  String exploreExploreEventTypeBrowseGridEventCount({required int count});
+
+  /// Explore distance label for a venue less than one kilometre away.
+  ///
+  /// In en, this message translates to:
+  /// **'{meters} m away'**
+  String exploreExploreScreenStateDistanceMetersAway({required int meters});
+
+  /// Explore distance label for a venue at least one kilometre away.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km away'**
+  String exploreExploreScreenStateDistanceKilometersAway({
+    required Object distance,
+  });
+
+  /// Explore availability label for an event open to the viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get exploreExploreScreenStateAvailabilityOpen;
+
+  /// Explore availability label after a viewer is approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved to join'**
+  String get exploreExploreScreenStateAvailabilityApprovedToJoin;
+
+  /// Explore availability label when a join request is required.
+  ///
+  /// In en, this message translates to:
+  /// **'Request required'**
+  String get exploreExploreScreenStateAvailabilityRequestRequired;
+
+  /// Explore availability label when only the waitlist is open.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist open'**
+  String get exploreExploreScreenStateAvailabilityWaitlistOpen;
+
+  /// Explore availability label for a full event.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get exploreExploreScreenStateAvailabilityFull;
+
+  /// Explore availability label when viewer-specific inventory is full.
+  ///
+  /// In en, this message translates to:
+  /// **'Full for you'**
+  String get exploreExploreScreenStateAvailabilityFullForYou;
+
+  /// Explore availability label for an invite-only event.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite required'**
+  String get exploreExploreScreenStateAvailabilityInviteRequired;
+
+  /// Explore availability label for a members-only event.
+  ///
+  /// In en, this message translates to:
+  /// **'Members only'**
+  String get exploreExploreScreenStateAvailabilityMembersOnly;
+
+  /// Explore availability label when run preferences are missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Set preferences'**
+  String get exploreExploreScreenStateAvailabilitySetPreferences;
+
+  /// Explore availability label for a past event.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get exploreExploreScreenStateAvailabilityEnded;
+
+  /// Explore availability label for a cancelled event.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get exploreExploreScreenStateAvailabilityCancelled;
+
+  /// Explore availability fallback for an age-restricted event.
+  ///
+  /// In en, this message translates to:
+  /// **'Age restricted'**
+  String get exploreExploreScreenStateAvailabilityAgeRestricted;
+
+  /// Explore availability label for a minimum-age restriction.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be {minAge}+'**
+  String exploreExploreScreenStateAvailabilityMinimumAge({required int minAge});
+
+  /// Explore availability label for a maximum-age restriction.
+  ///
+  /// In en, this message translates to:
+  /// **'Max age {maxAge}'**
+  String exploreExploreScreenStateAvailabilityMaximumAge({required int maxAge});
+
+  /// Explore low-inventory availability label.
+  ///
+  /// In en, this message translates to:
+  /// **'{spots, plural, =1{1 spot left} other{{spots} spots left}}'**
+  String exploreExploreScreenStateAvailabilitySpotsLeft({required int spots});
+
+  /// Explore event attendance count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 going} other{{count} going}}'**
+  String exploreExploreScreenStateGoingCount({required int count});
+
+  /// Explore attendance and availability decision line.
+  ///
+  /// In en, this message translates to:
+  /// **'{goingLabel} · {availabilityLabel}'**
+  String exploreExploreScreenStateGoingAvailability({
+    required Object goingLabel,
+    required Object availabilityLabel,
+  });
+
+  /// Compact club rating and review-count line on Explore cards.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} · {reviewCount, plural, =0{NO REVIEWS} =1{1 REVIEW} other{{reviewCount} REVIEWS}}'**
+  String exploreExploreScreenStateClubRatingReviews({
+    required Object rating,
+    required int reviewCount,
+  });
+
+  /// Composed screen-reader label for an Explore club card.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}, {caption}, {supportingLabel}, {memberCountLabel}, {ratingReviewLabel}'**
+  String exploreExploreScreenStateClubCardSemantics({
+    required Object title,
+    required Object caption,
+    required Object supportingLabel,
+    required Object memberCountLabel,
+    required Object ratingReviewLabel,
+  });
+
+  /// Composed screen-reader summary for an external Explore event row.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}, {sourceLabel}, {statusLabel}, {supportingLabel}, {timePriceLabel}, {readOnlySupplyLabel}'**
+  String exploreExploreScreenStateExternalEventSemantics({
+    required Object title,
+    required Object sourceLabel,
+    required Object statusLabel,
+    required Object supportingLabel,
+    required Object timePriceLabel,
+    required Object readOnlySupplyLabel,
+  });
+
+  /// Explore card status after joining.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'\'re in'**
+  String get exploreExploreScreenStateStatusJoined;
+
+  /// Explore card status for a saved event.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get exploreExploreScreenStateStatusSaved;
+
+  /// Explore card status for a recommended event.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get exploreExploreScreenStateStatusRecommended;
+
+  /// Explore card status for an event hosted by the viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosted'**
+  String get exploreExploreScreenStateStatusHosted;
+
+  /// Explore card status for a waitlisted viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlisted'**
+  String get exploreExploreScreenStateStatusWaitlisted;
+
+  /// Explore card status for an attended event.
+  ///
+  /// In en, this message translates to:
+  /// **'Attended'**
+  String get exploreExploreScreenStateStatusAttended;
+
+  /// Explore card status for a past event.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get exploreExploreScreenStateStatusPast;
+
+  /// Explore card status when a viewer is not eligible.
+  ///
+  /// In en, this message translates to:
+  /// **'Not eligible'**
+  String get exploreExploreScreenStateStatusNotEligible;
 }
 
 class _AppLocalizationsDelegate

@@ -4,7 +4,9 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -322,7 +324,11 @@ class ExploreCoverStoryState {
       ctaLabel: l10n.exploreExploreScreenStateCtalabelClaimASeat,
       timePriceLabel: l10n.exploreExploreScreenStateVisiblecopyTimePricelabel(
         time: EventFormatters.time(item.event.startTime),
-        priceLabel: item.priceLabel,
+        priceLabel: eventPriceLabel(
+          l10n,
+          item.event,
+          quotedPriceInPaise: item.availability?.quotedPriceInPaise,
+        ),
       ),
       attendanceLabel: l10n
           .exploreExploreScreenStateVisiblecopySignedupcountGoingCoverspotslabel(
@@ -441,9 +447,13 @@ class ExploreEventRowState {
       title: item.event.eventFormat.customActivityLabel == null
           ? item.event.eventFormat.label
           : item.event.eventFormat.eventTitleLabel,
-      supportingLabel: _rowSupportingLabel(item),
-      priceLabel: item.priceLabel,
-      capacityLabel: _capacityLabel(item),
+      supportingLabel: _rowSupportingLabel(item, l10n),
+      priceLabel: eventPriceLabel(
+        l10n,
+        item.event,
+        quotedPriceInPaise: item.availability?.quotedPriceInPaise,
+      ),
+      capacityLabel: _capacityLabel(item, l10n),
       statusLabel: _cardStatusLabel(item, l10n),
     );
   }
@@ -469,6 +479,7 @@ class ExploreExternalEventRowState {
     required this.actionLabel,
     required this.actionSemanticsLabel,
     required this.readOnlySupplyLabel,
+    required this.semanticLabel,
     required this.hasExternalLink,
   });
 
@@ -483,11 +494,11 @@ class ExploreExternalEventRowState {
         toUpperCase: event.platformLabel.toUpperCase(),
       ),
       statusLabel: l10n.exploreExploreScreenStateVisiblecopyExternal,
-      supportingLabel: _externalEventSupportingLabel(item),
+      supportingLabel: _externalEventSupportingLabel(item, l10n),
       timePriceLabel: l10n
           .exploreExploreScreenStateVisiblecopyTimePricelabelc30029(
             time: EventFormatters.time(event.startTime),
-            priceLabel: event.priceLabel,
+            priceLabel: externalEventPriceLabel(l10n, event),
           ),
       actionLabel: hasExternalLink
           ? l10n.exploreExploreScreenStateActionlabelOpen
@@ -497,6 +508,21 @@ class ExploreExternalEventRowState {
           : l10n.exploreExploreScreenStateVisiblecopyExternalEventLinkUnavailable,
       readOnlySupplyLabel:
           l10n.exploreExploreScreenStateVisiblecopyReadOnlySupplyNo,
+      semanticLabel: l10n.exploreExploreScreenStateExternalEventSemantics(
+        title: event.title,
+        sourceLabel: l10n.exploreExploreScreenStateVisiblecopyFromTouppercase(
+          toUpperCase: event.platformLabel.toUpperCase(),
+        ),
+        statusLabel: l10n.exploreExploreScreenStateVisiblecopyExternal,
+        supportingLabel: _externalEventSupportingLabel(item, l10n),
+        timePriceLabel: l10n
+            .exploreExploreScreenStateVisiblecopyTimePricelabelc30029(
+              time: EventFormatters.time(event.startTime),
+              priceLabel: externalEventPriceLabel(l10n, event),
+            ),
+        readOnlySupplyLabel:
+            l10n.exploreExploreScreenStateVisiblecopyReadOnlySupplyNo,
+      ),
       hasExternalLink: hasExternalLink,
     );
   }
@@ -508,6 +534,7 @@ class ExploreExternalEventRowState {
   final String actionLabel;
   final String actionSemanticsLabel;
   final String readOnlySupplyLabel;
+  final String semanticLabel;
   final bool hasExternalLink;
 }
 
@@ -517,14 +544,14 @@ class ExploreClubCardState {
     required this.caption,
     required this.title,
     required this.supportingLabel,
-    required this.actionLabel,
+    required this.ratingReviewLabel,
+    required this.semanticLabel,
     required this.rowKicker,
     required this.tags,
   });
 
   factory ExploreClubCardState.from(
     Club club, {
-    required bool isSynthetic,
     required AppLocalizations l10n,
   }) {
     return ExploreClubCardState(
@@ -535,9 +562,23 @@ class ExploreClubCardState {
               .toUpperCase(),
       title: club.name,
       supportingLabel: _clubSupportingLabel(club, l10n),
-      actionLabel: isSynthetic
-          ? l10n.exploreExploreScreenStateActionlabelPreview
-          : l10n.exploreExploreScreenStateActionlabelViewClub,
+      ratingReviewLabel: l10n.exploreExploreScreenStateClubRatingReviews(
+        rating: club.rating.toStringAsFixed(1),
+        reviewCount: club.reviewCount,
+      ),
+      semanticLabel: l10n.exploreExploreScreenStateClubCardSemantics(
+        title: club.name,
+        caption:
+            (club.nextEventLabel ??
+                    l10n.exploreExploreScreenStateCaptionClubToKnow)
+                .toUpperCase(),
+        supportingLabel: _clubSupportingLabel(club, l10n),
+        memberCountLabel: clubMemberCountLabel(club),
+        ratingReviewLabel: l10n.exploreExploreScreenStateClubRatingReviews(
+          rating: club.rating.toStringAsFixed(1),
+          reviewCount: club.reviewCount,
+        ),
+      ),
       rowKicker: l10n.exploreExploreScreenStateVisiblecopyClubToKnow,
       tags: visibleClubTags(club, limit: 2),
     );
@@ -547,7 +588,8 @@ class ExploreClubCardState {
   final String caption;
   final String title;
   final String supportingLabel;
-  final String actionLabel;
+  final String ratingReviewLabel;
+  final String semanticLabel;
   final String rowKicker;
   final List<String> tags;
 }
@@ -803,25 +845,36 @@ String _monthDayLabel(DateTime value) {
   return '${EventFormatters.shortMonth(value).toUpperCase()} ${value.day}';
 }
 
-String _rowSupportingLabel(ExploreEventItem item) {
+String _rowSupportingLabel(ExploreEventItem item, AppLocalizations l10n) {
   final event = item.event;
   return [
     if (event.eventFormat.isDistanceBased) event.activitySummaryLabel,
     event.locationName,
-    item.distanceFromUserLabel,
+    _distanceLabel(item.distanceFromUserKm, l10n),
   ].whereType<String>().where((label) => label.trim().isNotEmpty).join(' · ');
 }
 
-String _capacityLabel(ExploreEventItem item) {
-  return EventCapacityLabels(
-    item.event,
-  ).goingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
+String _capacityLabel(ExploreEventItem item, AppLocalizations l10n) {
+  final event = item.event;
+  final goingLabel = l10n.exploreExploreScreenStateGoingCount(
+    count: event.signedUpCount,
+  );
+  final availabilityLabel = event.spotsRemaining <= 0
+      ? l10n.exploreExploreScreenStateAvailabilityFull
+      : _availabilityLabel(item.availability, l10n) ??
+            l10n.exploreExploreScreenStateAvailabilitySpotsLeft(
+              spots: event.spotsRemaining,
+            );
+  return l10n.exploreExploreScreenStateGoingAvailability(
+    goingLabel: goingLabel,
+    availabilityLabel: availabilityLabel,
+  );
 }
 
 String? _cardStatusLabel(ExploreEventItem item, AppLocalizations l10n) {
   return switch (item.status) {
-    EventTileStatus.open => _availabilityStatusLabel(item),
-    EventTileStatus.recommended => _availabilityStatusLabel(item),
+    EventTileStatus.open => _availabilityStatusLabel(item, l10n),
+    EventTileStatus.recommended => _availabilityStatusLabel(item, l10n),
     EventTileStatus.joined ||
     EventTileStatus.saved ||
     EventTileStatus.hosted ||
@@ -830,34 +883,104 @@ String? _cardStatusLabel(ExploreEventItem item, AppLocalizations l10n) {
     EventTileStatus.past ||
     EventTileStatus.ineligible ||
     EventTileStatus.cancelled => eventTileStatusLabel(item.status, l10n),
-    EventTileStatus.full => _availabilityStatusLabel(item),
+    EventTileStatus.full => _availabilityStatusLabel(item, l10n),
   };
 }
 
-String? _availabilityStatusLabel(ExploreEventItem item) {
-  final label = item.availabilityLabel?.trim();
-  if (label == null ||
-      label.isEmpty ||
-      label.toLowerCase() == _openAvailabilityValue) {
+String? _availabilityStatusLabel(ExploreEventItem item, AppLocalizations l10n) {
+  final availability = item.availability;
+  if (availability == null ||
+      availability.status == ViewerEventAvailabilityStatus.open ||
+      availability.status == ViewerEventAvailabilityStatus.full) {
     return null;
   }
-  if (RegExp(r'^\d+ spots? left$', caseSensitive: false).hasMatch(label)) {
-    return null;
-  }
-  if (label.toLowerCase() == _fullAvailabilityValue) return null;
-  return label;
+  return _availabilityLabel(availability, l10n);
 }
 
-const _openAvailabilityValue = 'open';
-const _fullAvailabilityValue = 'full';
-
-String _externalEventSupportingLabel(ExploreExternalEventItem item) {
+String _externalEventSupportingLabel(
+  ExploreExternalEventItem item,
+  AppLocalizations l10n,
+) {
   final event = item.event;
   return _joinExploreLabels([
     event.activityKind.label,
     event.meetingPoint,
-    item.distanceFromUserLabel,
+    _distanceLabel(item.distanceFromUserKm, l10n),
   ]);
+}
+
+String? _distanceLabel(double? distanceKm, AppLocalizations l10n) {
+  if (distanceKm == null) return null;
+  if (distanceKm < 1) {
+    return l10n.exploreExploreScreenStateDistanceMetersAway(
+      meters: (distanceKm * 1000).round(),
+    );
+  }
+  final rounded = distanceKm >= 10
+      ? distanceKm.round().toString()
+      : distanceKm.toStringAsFixed(1);
+  return l10n.exploreExploreScreenStateDistanceKilometersAway(
+    distance: rounded,
+  );
+}
+
+String? _availabilityLabel(
+  ViewerEventAvailability? availability,
+  AppLocalizations l10n,
+) {
+  if (availability == null) return null;
+  final lowSpotLabel =
+      availability.spotsRemaining > 0 && availability.spotsRemaining <= 4
+      ? l10n.exploreExploreScreenStateAvailabilitySpotsLeft(
+          spots: availability.spotsRemaining,
+        )
+      : null;
+  return switch (availability.status) {
+    ViewerEventAvailabilityStatus.open =>
+      lowSpotLabel ?? l10n.exploreExploreScreenStateAvailabilityOpen,
+    ViewerEventAvailabilityStatus.saved ||
+    ViewerEventAvailabilityStatus.hosted => lowSpotLabel,
+    ViewerEventAvailabilityStatus.joined ||
+    ViewerEventAvailabilityStatus.waitlisted ||
+    ViewerEventAvailabilityStatus.attended => null,
+    ViewerEventAvailabilityStatus.approvedToBook =>
+      l10n.exploreExploreScreenStateAvailabilityApprovedToJoin,
+    ViewerEventAvailabilityStatus.requestRequired =>
+      l10n.exploreExploreScreenStateAvailabilityRequestRequired,
+    ViewerEventAvailabilityStatus.waitlistAvailable =>
+      l10n.exploreExploreScreenStateAvailabilityWaitlistOpen,
+    ViewerEventAvailabilityStatus.full =>
+      l10n.exploreExploreScreenStateAvailabilityFull,
+    ViewerEventAvailabilityStatus.fullForViewer =>
+      l10n.exploreExploreScreenStateAvailabilityFullForYou,
+    ViewerEventAvailabilityStatus.inviteRequired =>
+      l10n.exploreExploreScreenStateAvailabilityInviteRequired,
+    ViewerEventAvailabilityStatus.membershipRequired =>
+      l10n.exploreExploreScreenStateAvailabilityMembersOnly,
+    ViewerEventAvailabilityStatus.runPreferencesRequired =>
+      l10n.exploreExploreScreenStateAvailabilitySetPreferences,
+    ViewerEventAvailabilityStatus.ageRestricted => _ageRestrictedLabel(
+      availability,
+      l10n,
+    ),
+    ViewerEventAvailabilityStatus.past =>
+      l10n.exploreExploreScreenStateAvailabilityEnded,
+    ViewerEventAvailabilityStatus.cancelled =>
+      l10n.exploreExploreScreenStateAvailabilityCancelled,
+  };
+}
+
+String _ageRestrictedLabel(
+  ViewerEventAvailability availability,
+  AppLocalizations l10n,
+) {
+  return switch (availability.eligibility) {
+    AgeTooYoung(:final minAge) =>
+      l10n.exploreExploreScreenStateAvailabilityMinimumAge(minAge: minAge),
+    AgeTooOld(:final maxAge) =>
+      l10n.exploreExploreScreenStateAvailabilityMaximumAge(maxAge: maxAge),
+    _ => l10n.exploreExploreScreenStateAvailabilityAgeRestricted,
+  };
 }
 
 String _clubSupportingLabel(Club club, AppLocalizations l10n) {

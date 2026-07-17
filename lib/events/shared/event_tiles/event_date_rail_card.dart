@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/shared/event_price_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -65,7 +66,8 @@ class EventDateRailCard extends StatelessWidget {
     final effectiveTitle = title?.trim().isNotEmpty == true
         ? title!.trim()
         : _eventIdentityTitle(event);
-    final effectivePrice = (priceLabel ?? _priceLabel(event, context)).trim();
+    final effectivePrice = (priceLabel ?? eventPriceLabel(context.l10n, event))
+        .trim();
     final effectiveCapacity =
         capacityLabel?.trim() ?? capacity.goingAvailabilityLabel();
     final decisionLabel = [
@@ -424,7 +426,7 @@ class _DateRailTicketBorderPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+      ..strokeWidth = CatchStroke.hairline;
     if (excludeBottomEdge) {
       canvas.save();
       canvas.clipRect(Rect.fromLTRB(0, 0, size.width, size.height - 1));
@@ -447,7 +449,7 @@ class PerforationLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 1,
+      width: CatchStroke.hairline,
       child: CustomPaint(painter: _PerforationPainter(color: color)),
     );
   }
@@ -462,12 +464,16 @@ class _PerforationPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 1.4
+      ..strokeWidth = CatchStroke.underline
       ..strokeCap = StrokeCap.round;
-    var y = 0.5;
+    var y = CatchLayout.ticketPerforationStartOffset;
     while (y < size.height) {
-      canvas.drawLine(Offset(0, y), Offset(0, y + 2.2), paint);
-      y += 7;
+      canvas.drawLine(
+        Offset(0, y),
+        Offset(0, y + CatchLayout.ticketPerforationDashLength),
+        paint,
+      );
+      y += CatchLayout.ticketPerforationStride;
     }
   }
 
@@ -561,10 +567,3 @@ String _eventIdentityTitle(Event event) {
       ? event.eventFormat.label
       : event.eventFormat.eventTitleLabel;
 }
-
-String _priceLabel(Event event, BuildContext context) => event.priceInPaise <= 0
-    ? context.l10n.eventsEventDateRailCardVisiblecopyFree
-    : EventFormatters.priceInPaise(
-        event.priceInPaise,
-        currencyCode: event.currency,
-      );

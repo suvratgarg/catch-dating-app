@@ -114,22 +114,30 @@ class CityTrigger extends StatelessWidget {
           child: InkWell(
             onTap: enabled ? onTap : null,
             borderRadius: BorderRadius.circular(CatchRadius.sm),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Text(
-                      state.scopeLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.kicker(context, color: labelColor),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: CatchIconButton.defaultSize,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        state.scopeLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.kicker(
+                          context,
+                          color: labelColor,
+                        ),
+                      ),
                     ),
-                  ),
-                  gapW4,
-                  Icon(state.icon, color: labelColor, size: CatchIcon.sm),
-                ],
+                    gapW4,
+                    Icon(state.icon, color: labelColor, size: CatchIcon.sm),
+                  ],
+                ),
               ),
             ),
           ),
@@ -205,7 +213,8 @@ class ExploreCityPickerSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
+    final maxHeight =
+        MediaQuery.sizeOf(context).height * CatchLayout.sheetMaxHeightFraction;
 
     return Material(
       color: t.surface,

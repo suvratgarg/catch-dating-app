@@ -862,25 +862,38 @@ void main() {
         nextEventLabel: 'Fri 8 PM',
       );
 
-      final state = ExploreClubCardState.from(
-        club,
-        isSynthetic: false,
-        l10n: _l10n,
-      );
-      final previewState = ExploreClubCardState.from(
-        club,
-        isSynthetic: true,
-        l10n: _l10n,
-      );
+      final state = ExploreClubCardState.from(club, l10n: _l10n);
 
       expect(state.memberCountLabel, '42 members');
       expect(state.caption, 'FRI 8 PM');
       expect(state.title, 'Tempo House');
       expect(state.supportingLabel, 'Next: Fri 8 PM');
-      expect(state.actionLabel, 'View club');
+      expect(state.ratingReviewLabel, '0.0 · NO REVIEWS');
+      expect(state.semanticLabel, contains('Tempo House'));
       expect(state.rowKicker, 'CLUB TO KNOW');
       expect(state.tags, ['music', 'social']);
-      expect(previewState.actionLabel, 'Preview');
+    });
+
+    test('event price copy distinguishes demand floor from viewer quote', () {
+      final demandEvent = event_test.buildEvent(
+        priceInPaise: 50000,
+        eventPolicy: EventPolicyBundle.demandPricedBalancedSinglesEvent(
+          capacityLimit: 20,
+          basePriceInPaise: 50000,
+          stepAdjustmentInPaise: 10000,
+          maxAdjustmentInPaise: 30000,
+        ),
+      );
+
+      expect(eventPriceLabel(_l10n, demandEvent), startsWith('From '));
+      expect(
+        eventPriceLabel(_l10n, demandEvent, quotedPriceInPaise: 70000),
+        isNot(startsWith('From ')),
+      );
+      expect(
+        eventPriceLabel(_l10n, demandEvent.copyWith(priceInPaise: 0)),
+        'Free',
+      );
     });
 
     test('ExploreScreenBodyState derives route branch precedence', () {
@@ -1579,7 +1592,10 @@ void main() {
         expect(viewModel.items.map((item) => item.event.id), ['near-event']);
         expect(viewModel.items.single.distanceFromUserKm, lessThan(3));
         expect(
-          viewModel.items.single.distanceFromUserLabel,
+          ExploreEventRowState.from(
+            viewModel.items.single,
+            l10n: _l10n,
+          ).supportingLabel,
           contains('km away'),
         );
       },
@@ -1733,7 +1749,13 @@ void main() {
           byId['request-event']?.availability?.status,
           ViewerEventAvailabilityStatus.requestRequired,
         );
-        expect(byId['request-event']?.availabilityLabel, 'Request required');
+        expect(
+          ExploreEventRowState.from(
+            byId['request-event']!,
+            l10n: _l10n,
+          ).statusLabel,
+          'Request required',
+        );
       },
     );
 

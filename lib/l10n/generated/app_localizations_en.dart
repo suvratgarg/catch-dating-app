@@ -11198,4 +11198,187 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get safetyAccountUnblockedMessage => 'Account unblocked.';
+
+  @override
+  String get eventsEventPriceCopyFree => 'Free';
+
+  @override
+  String eventsEventPriceCopyFromPrice({required Object price}) {
+    return 'From $price';
+  }
+
+  @override
+  String get eventsEventPriceCopyPriceOnSource => 'Price on source';
+
+  @override
+  String exploreExploreEventTypeBrowseGridEventCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events',
+      one: '1 event',
+      zero: 'No events',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exploreExploreScreenStateDistanceMetersAway({required int meters}) {
+    return '$meters m away';
+  }
+
+  @override
+  String exploreExploreScreenStateDistanceKilometersAway({
+    required Object distance,
+  }) {
+    return '$distance km away';
+  }
+
+  @override
+  String get exploreExploreScreenStateAvailabilityOpen => 'Open';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityApprovedToJoin =>
+      'Approved to join';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityRequestRequired =>
+      'Request required';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityWaitlistOpen =>
+      'Waitlist open';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityFull => 'Full';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityFullForYou => 'Full for you';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityInviteRequired =>
+      'Invite required';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityMembersOnly => 'Members only';
+
+  @override
+  String get exploreExploreScreenStateAvailabilitySetPreferences =>
+      'Set preferences';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityEnded => 'Ended';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityCancelled => 'Cancelled';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityAgeRestricted =>
+      'Age restricted';
+
+  @override
+  String exploreExploreScreenStateAvailabilityMinimumAge({
+    required int minAge,
+  }) {
+    return 'Must be $minAge+';
+  }
+
+  @override
+  String exploreExploreScreenStateAvailabilityMaximumAge({
+    required int maxAge,
+  }) {
+    return 'Max age $maxAge';
+  }
+
+  @override
+  String exploreExploreScreenStateAvailabilitySpotsLeft({required int spots}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      spots,
+      locale: localeName,
+      other: '$spots spots left',
+      one: '1 spot left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exploreExploreScreenStateGoingCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count going',
+      one: '1 going',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exploreExploreScreenStateGoingAvailability({
+    required Object goingLabel,
+    required Object availabilityLabel,
+  }) {
+    return '$goingLabel · $availabilityLabel';
+  }
+
+  @override
+  String exploreExploreScreenStateClubRatingReviews({
+    required Object rating,
+    required int reviewCount,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      reviewCount,
+      locale: localeName,
+      other: '$reviewCount REVIEWS',
+      one: '1 REVIEW',
+      zero: 'NO REVIEWS',
+    );
+    return '$rating · $_temp0';
+  }
+
+  @override
+  String exploreExploreScreenStateClubCardSemantics({
+    required Object title,
+    required Object caption,
+    required Object supportingLabel,
+    required Object memberCountLabel,
+    required Object ratingReviewLabel,
+  }) {
+    return '$title, $caption, $supportingLabel, $memberCountLabel, $ratingReviewLabel';
+  }
+
+  @override
+  String exploreExploreScreenStateExternalEventSemantics({
+    required Object title,
+    required Object sourceLabel,
+    required Object statusLabel,
+    required Object supportingLabel,
+    required Object timePriceLabel,
+    required Object readOnlySupplyLabel,
+  }) {
+    return '$title, $sourceLabel, $statusLabel, $supportingLabel, $timePriceLabel, $readOnlySupplyLabel';
+  }
+
+  @override
+  String get exploreExploreScreenStateStatusJoined => 'You\'re in';
+
+  @override
+  String get exploreExploreScreenStateStatusSaved => 'Saved';
+
+  @override
+  String get exploreExploreScreenStateStatusRecommended => 'Recommended';
+
+  @override
+  String get exploreExploreScreenStateStatusHosted => 'Hosted';
+
+  @override
+  String get exploreExploreScreenStateStatusWaitlisted => 'Waitlisted';
+
+  @override
+  String get exploreExploreScreenStateStatusAttended => 'Attended';
+
+  @override
+  String get exploreExploreScreenStateStatusPast => 'Past';
+
+  @override
+  String get exploreExploreScreenStateStatusNotEligible => 'Not eligible';
 }

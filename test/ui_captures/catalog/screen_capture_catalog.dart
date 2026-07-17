@@ -105,6 +105,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
@@ -10009,6 +10010,27 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ],
     builder: (context) => const ExploreScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'explore_cover_contrast_floor',
+    routeIds: const <String>['exploreScreen'],
+    device: CaptureDevice.reviewPhone,
+    builder: (context) => const Align(
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        width: double.infinity,
+        height: CatchLayout.exploreDiscoveryCoverHeight,
+        child: CatchCoverStory(
+          activityKind: ActivityKind.walking,
+          kicker: 'Bright activity backdrop',
+          title: 'Thursday Evening Walk',
+          body: 'A deliberately pale activity glow behind the complete story.',
+          cta: 'Claim a seat',
+          data: '7:30 PM · Free',
+          data2: '18 going · 4 left',
+        ),
+      ),
+    ),
   ),
   ScreenCaptureEntry(
     id: 'explore_joined_clubs',

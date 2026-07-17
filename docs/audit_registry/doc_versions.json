@@ -387,8 +387,8 @@
   },
   "design_language": {
     "path": "docs/design_language.md",
-    "version": "1.5.5",
-    "updated": "2026-07-17",
+    "version": "1.5.6",
+    "updated": "2026-07-18",
     "status": "active",
     "read_policy": "Read before changing Catch visual identity, palette, typography, photography treatment, metaphors, presentation tiers (§6), containment doctrine (§7.1), motion, or remaining map-pin palette policy."
   },
@@ -427,7 +427,7 @@
     "status": "proposed",
     "read_policy": "Read before deleting, moving, reclassifying, or adding project-root entries; cleaning local caches, logs, artifacts, or worktrees; consolidating root docs; changing Firebase default/deploy safety; or implementing root manifest, retention, portability, test-inventory, and protected-cleanup tooling. Fable review recorded 2026-07-12 in section 14; rows marked pending-owner must be resolved before the affected phase begins."
   },
-  "version": "4.6.207",
+  "version": "4.6.208",
   "admin_components": {
     "path": "design/admin/components.json",
     "version": "33",

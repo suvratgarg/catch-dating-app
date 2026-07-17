@@ -223,7 +223,7 @@ class ActivityTypeRow extends StatelessWidget {
       selected: active,
       label: context.l10n.exploreExploreEventTypeBrowseGridLabelLabelCountlabel(
         label: visual.label,
-        countLabel: _countLabel(entry.count),
+        countLabel: _countLabel(context.l10n, entry.count),
       ),
       child: InkWell(
         onTap: onTap,
@@ -381,13 +381,8 @@ List<ActivityEntry> _rankedActivityEntries(List<ExploreEventItem> items) {
   return entries;
 }
 
-String _countLabel(int count) {
-  return switch (count) {
-    0 => 'No events',
-    1 => '1 event',
-    _ => '$count events',
-  };
-}
+String _countLabel(AppLocalizations l10n, int count) =>
+    l10n.exploreExploreEventTypeBrowseGridEventCount(count: count);
 
 bool _matchesActiveTag(String? tag, ActivityKind kind) {
   final normalized = tag?.trim().toLowerCase();
