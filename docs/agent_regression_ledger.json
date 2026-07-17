@@ -1680,7 +1680,7 @@
       "guard": {
         "type": "command",
         "command": "flutter test test/event_success/event_success_setup_body_test.dart test/event_success/event_success_structure_config_editor_test.dart test/event_success/event_success_questionnaire_config_editor_test.dart test/event_success/event_success_playbooks_test.dart test/event_success/event_success_repository_test.dart test/event_success/event_success_runtime_test.dart && ./tool/check_data_contract.sh",
-        "guardEvidence": "focused widget/domain/repository coverage plus generated schema, Firestore rule, Functions lint, and Functions test gates"
+        "guardEvidence": "setup body uses CatchField choices for live guide choices"
       },
       "owner_docs": [
         "docs/event_success.md",
