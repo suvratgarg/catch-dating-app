@@ -1,9 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -67,9 +64,7 @@ import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -2874,12 +2869,6 @@ Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
   );
 }
 
-Future<void> _pumpCatchFieldMotion(WidgetTester tester) async {
-  await tester.pump();
-  await tester.pump(CatchFieldTokens.reveal);
-  await tester.pump();
-}
-
 bool _chipSelected(WidgetTester tester, Finder chip) {
   final semantics = tester.widget<Semantics>(
     find
@@ -2893,10 +2882,4 @@ bool _chipSelected(WidgetTester tester, Finder chip) {
         .first,
   );
   return semantics.properties.selected!;
-}
-
-void _noop() {}
-
-String? _requiredPublicName(String? value) {
-  return value == null || value.isEmpty ? 'Public name is required' : null;
 }
