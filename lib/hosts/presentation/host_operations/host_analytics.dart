@@ -624,7 +624,11 @@ class HostAnalyticsDualBar extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label: '$label, ${demand.round()} demand, ${bookings.round()} bookings',
+      label: context.l10n.hostsHostAnalyticsTextPeriodDemandBookings(
+        period: label,
+        demand: demand.round(),
+        bookings: bookings.round(),
+      ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(CatchRadius.sm),

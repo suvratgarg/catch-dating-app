@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-17T06:54:32.642977+00:00",
+  "generated_at": "2026-07-17T07:01:58.593120+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
   "total_files_scanned": 779,
   "total_definitions": 3840,
@@ -2776,7 +2776,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line_count": 1112,
+      "line_count": 1116,
       "definition_count": 35
     },
     {
@@ -29498,13 +29498,13 @@
       "signature": "class HostAnalyticsDualBar extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "3618e31344f87c06"
+      "body_hash": "541643826279abae"
     },
     {
       "name": "HostAnalyticsEventList",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 700,
+      "line": 704,
       "signature": "class HostAnalyticsEventList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29514,7 +29514,7 @@
       "name": "HostAnalyticsEventTile",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 748,
+      "line": 752,
       "signature": "class HostAnalyticsEventTile extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29524,7 +29524,7 @@
       "name": "HostAnalyticsReviewsPanel",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 795,
+      "line": 799,
       "signature": "class HostAnalyticsReviewsPanel extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29534,7 +29534,7 @@
       "name": "_primaryMetricCards",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 853,
+      "line": 857,
       "signature": "List<HostAnalyticsMetricCard> _primaryMetricCards(HostAnalyticsReport report) {",
       "return_type": "List<HostAnalyticsMetricCard>",
       "body_hash": "69a119c1203b680c"
@@ -29543,7 +29543,7 @@
       "name": "_secondaryMetricCards",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 886,
+      "line": 890,
       "signature": "List<HostAnalyticsMetricCard> _secondaryMetricCards(",
       "return_type": "List<HostAnalyticsMetricCard>",
       "body_hash": "7347d955b65fe639"
@@ -29552,7 +29552,7 @@
       "name": "_metricOrMissing",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 913,
+      "line": 917,
       "signature": "HostAnalyticsMetricCard _metricOrMissing(",
       "return_type": "HostAnalyticsMetricCard",
       "body_hash": "988ecf612dc144c0"
@@ -29561,7 +29561,7 @@
       "name": "_combinedMetricStatus",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 928,
+      "line": 932,
       "signature": "HostAnalyticsMetricStatus _combinedMetricStatus(",
       "return_type": "HostAnalyticsMetricStatus",
       "body_hash": "cbfde0140d3d0b94"
@@ -29570,7 +29570,7 @@
       "name": "_metricIcon",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 945,
+      "line": 949,
       "signature": "IconData _metricIcon(String metricId) {",
       "return_type": "IconData",
       "body_hash": "70cfb28f9d8287b5"
@@ -29579,7 +29579,7 @@
       "name": "_hostMetricCardData",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 964,
+      "line": 968,
       "signature": "CatchMetricCardData _hostMetricCardData(",
       "return_type": "CatchMetricCardData",
       "body_hash": "81f84c2e620af8f7"
@@ -29588,7 +29588,7 @@
       "name": "_metricLabel",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 985,
+      "line": 989,
       "signature": "String _metricLabel(BuildContext context, HostAnalyticsMetricCard metric) {",
       "return_type": "String",
       "body_hash": "7b241d16d51586bc"
@@ -29597,7 +29597,7 @@
       "name": "_deltaCaption",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 1015,
+      "line": 1019,
       "signature": "String? _deltaCaption(",
       "return_type": "String?",
       "body_hash": "34ebc63dad2dbc86"
@@ -29606,7 +29606,7 @@
       "name": "_rangeLabel",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 1030,
+      "line": 1034,
       "signature": "String _rangeLabel(",
       "return_type": "String",
       "body_hash": "6c14038c63441d47"
@@ -29615,7 +29615,7 @@
       "name": "_granularityFor",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 1044,
+      "line": 1048,
       "signature": "HostAnalyticsGranularity _granularityFor(",
       "return_type": "HostAnalyticsGranularity",
       "body_hash": "be087ba01e1d1f8d"
@@ -29624,7 +29624,7 @@
       "name": "_formatMetricValue",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 1054,
+      "line": 1058,
       "signature": "String _formatMetricValue(",
       "return_type": "String",
       "body_hash": "b66781ef87eeebbf"
@@ -29633,7 +29633,7 @@
       "name": "_analyticsEventStatusLabel",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 1070,
+      "line": 1074,
       "signature": "String _analyticsEventStatusLabel(BuildContext context, String status) {",
       "return_type": "String",
       "body_hash": "4f2e4ecd48df15ba"
@@ -29642,7 +29642,7 @@
       "name": "_titleCaseIdentifier",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 1086,
+      "line": 1090,
       "signature": "String _titleCaseIdentifier(String value) {",
       "return_type": "String",
       "body_hash": "1d6d22a3cd482123"
@@ -29651,7 +29651,7 @@
       "name": "_trendBucketLabel",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 1096,
+      "line": 1100,
       "signature": "String _trendBucketLabel(",
       "return_type": "String",
       "body_hash": "4b0426860d392ecf"
@@ -29660,7 +29660,7 @@
       "name": "_trendDetailPeriod",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "line": 1107,
+      "line": 1111,
       "signature": "String _trendDetailPeriod(DateTime date, HostAnalyticsGranularity granularity) {",
       "return_type": "String",
       "body_hash": "f76a77ae31c179e6"
