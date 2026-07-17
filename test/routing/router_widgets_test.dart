@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -181,7 +182,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.text('Distance (km)'), findsOneWidget);
+      expect(find.byKey(CreateEventFormKeys.distance), findsOneWidget);
       expect(find.text('Club not found.'), findsNothing);
     },
   );
