@@ -27,6 +27,7 @@ class PaymentHistoryRepository {
 
   Stream<List<Payment>> watchPaymentsForUser(String userId) =>
       withBackendErrorStream(
+        // firestore-index: payments (userId:ASCENDING,createdAt:DESCENDING)
         () => _paymentsRef
             .where('userId', isEqualTo: userId)
             .orderBy('createdAt', descending: true)
@@ -42,6 +43,7 @@ class PaymentHistoryRepository {
   Future<List<Payment>> fetchPaymentsForUser(String userId) =>
       withBackendErrorContext(
         () async {
+          // firestore-index: payments (userId:ASCENDING,createdAt:DESCENDING)
           final snap = await _paymentsRef
               .where('userId', isEqualTo: userId)
               .orderBy('createdAt', descending: true)
@@ -73,11 +75,14 @@ class PaymentHistoryRepository {
     required String eventId,
   }) => withBackendErrorContext(
     () async {
+      // firestore-index: payments (userId:ASCENDING,eventId:ASCENDING,status:ASCENDING,signUpFailed:ASCENDING,createdAt:DESCENDING)
       final snap = await _paymentsRef
           .where('userId', isEqualTo: userId)
           .where('eventId', isEqualTo: eventId)
           .where('status', isEqualTo: PaymentStatus.completed.name)
-          .limit(10)
+          .where('signUpFailed', isEqualTo: false)
+          .orderBy('createdAt', descending: true)
+          .limit(1)
           .get();
       return selectLatestSuccessfulPayment(snap.docs.map((doc) => doc.data()));
     },

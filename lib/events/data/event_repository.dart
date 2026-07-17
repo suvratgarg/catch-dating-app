@@ -108,22 +108,25 @@ class EventRepository {
         ),
       );
 
-  Stream<List<EventInviteLink>> watchInviteLinks(String eventId) =>
-      withBackendErrorStream(
-        () => _inviteLinksRef
-            .where('eventId', isEqualTo: eventId)
-            .orderBy('createdAt')
-            .snapshots()
-            .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'watch event invite links',
-          resource: 'eventInviteLinks',
-        ),
-      );
+  Stream<List<EventInviteLink>> watchInviteLinks(
+    String eventId,
+  ) => withBackendErrorStream(
+    // firestore-index: eventInviteLinks (eventId:ASCENDING,createdAt:ASCENDING)
+    () => _inviteLinksRef
+        .where('eventId', isEqualTo: eventId)
+        .orderBy('createdAt')
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch event invite links',
+      resource: 'eventInviteLinks',
+    ),
+  );
 
   Stream<List<Event>> watchEventsForClub({required String clubId}) =>
       withBackendErrorStream(
+        // firestore-index: events (clubId:ASCENDING,startTime:ASCENDING)
         () => _eventsRef
             .where('clubId', isEqualTo: clubId)
             .orderBy('startTime')
@@ -219,6 +222,7 @@ class EventRepository {
   Future<List<Event>> fetchUpcomingEventsForClubs(List<String> clubIds) =>
       withBackendErrorContext(
         () async {
+          // firestore-index: events (clubId:ASCENDING,startTime:ASCENDING)
           final uniqueClubIds = clubIds.toSet().toList()..sort();
           if (uniqueClubIds.isEmpty) return [];
           final nowDateTime = DateTime.now();

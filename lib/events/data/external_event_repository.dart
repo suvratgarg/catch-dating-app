@@ -83,6 +83,7 @@ class ExternalEventRepository {
   Future<List<ExternalEvent>> fetchDiscoverableExternalEvents(
     ExternalEventDiscoveryQuery query,
   ) {
+    // firestore-index: externalEvents (discovery.citySlug:ASCENDING,publicationStatus:ASCENDING,status:ASCENDING,startTime:ASCENDING)
     return withBackendErrorContext(
       () async {
         if (query.citySlug.isEmpty) return const [];

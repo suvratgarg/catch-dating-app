@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-18",
   "tools": [
     {
       "id": "tool:runner",
@@ -1185,6 +1185,32 @@
       "checks": [
         "node --check tool/contracts/check_firestore_contract.mjs"
       ]
+    },
+    {
+      "id": "contracts:firestore-query-indexes",
+      "category": "contracts",
+      "path": "tool/contracts/check_firestore_query_indexes.mjs",
+      "command": "node tool/contracts/check_firestore_query_indexes.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json and rejects uncontracted composite query builders.",
+      "checks": [
+        "node --check tool/contracts/check_firestore_query_indexes.mjs",
+        "node --test tool/contracts/check_firestore_query_indexes.test.mjs",
+        "node tool/contracts/check_firestore_query_indexes.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "FIRESTORE-INDEX-PARITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/check_firestore_query_indexes.test.mjs",
+        "contains": [
+          "known-bad missing composite index is detected",
+          "known-bad uncontracted composite query builder is detected"
+        ]
+      }
     },
     {
       "id": "contracts:storage-contract",

@@ -1909,6 +1909,42 @@
         }
       ]
     },
+    "FIRESTORE-INDEX-PARITY-001": {
+      "title": "Composite Firestore queries stay synchronized with deployed index configuration",
+      "status": "active",
+      "kind": "scar",
+      "introduced_in": {
+        "doc_id": "data_contracts",
+        "version": "1.2.0"
+      },
+      "applies_to": [
+        "lib/**/data/*repository*.dart",
+        "firestore.indexes.json",
+        "tool/contracts/check_firestore_query_indexes.mjs"
+      ],
+      "instruction": "Every repository-owned composite query builder declares its ordered firestore-index contract beside the query. The checked index configuration must contain every declared contract, retired collection indexes must not survive renames, and the parity gate must run before deploy.",
+      "sunset_when": [
+        "The Firestore SDK or deployment platform provides equivalent compile-time query/index validation"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "contracts:firestore-query-indexes"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-18",
+        "decision": "keep",
+        "note": "The gate closes a production FAILED_PRECONDITION path and remains necessary while indexes are configured separately from Dart query builders."
+      },
+      "enforcement": [
+        {
+          "tool": "contracts:firestore-query-indexes",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/data_contracts.md#read-path-discipline"
+        }
+      ]
+    },
     "DATA-ACCESS-BATCH-001": {
       "title": "List/roster surfaces resolve display-only data via one batched provider, not per-tile streams or sequential reads",
       "status": "active",

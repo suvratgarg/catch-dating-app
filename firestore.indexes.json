@@ -117,6 +117,37 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryAvailability", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryGeoCell", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryAvailability", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryGeoCell", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "eventInviteLinks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
         {"fieldPath": "clubId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
@@ -537,6 +568,17 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "userId", "mode": "ASCENDING"},
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "signUpFailed", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "payments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "userId", "mode": "ASCENDING"},
         {"fieldPath": "runId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
@@ -556,72 +598,6 @@
       "fields": [
         {"fieldPath": "runId", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
-      ]
-    },
-    {
-      "collectionGroup": "runClubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "location", "mode": "ASCENDING"},
-        {"fieldPath": "createdAt", "mode": "DESCENDING"}
-      ]
-    },
-    {
-      "collectionGroup": "runClubs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "location", "mode": "ASCENDING"},
-        {"fieldPath": "rating", "mode": "DESCENDING"}
-      ]
-    },
-    {
-      "collectionGroup": "runParticipations",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "runId", "mode": "ASCENDING"},
-        {"fieldPath": "status", "mode": "ASCENDING"}
-      ]
-    },
-    {
-      "collectionGroup": "runParticipations",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "runId", "mode": "ASCENDING"},
-        {"fieldPath": "status", "mode": "ASCENDING"},
-        {"fieldPath": "waitlistedAt", "mode": "ASCENDING"}
-      ]
-    },
-    {
-      "collectionGroup": "runParticipations",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "uid", "mode": "ASCENDING"},
-        {"fieldPath": "status", "mode": "ASCENDING"}
-      ]
-    },
-    {
-      "collectionGroup": "runs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "runClubId", "mode": "ASCENDING"},
-        {"fieldPath": "startTime", "mode": "ASCENDING"}
-      ]
-    },
-    {
-      "collectionGroup": "runs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "runClubId", "mode": "ASCENDING"},
-        {"fieldPath": "status", "mode": "ASCENDING"},
-        {"fieldPath": "startTime", "mode": "ASCENDING"}
-      ]
-    },
-    {
-      "collectionGroup": "runs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "status", "mode": "ASCENDING"},
-        {"fieldPath": "startTime", "mode": "ASCENDING"}
       ]
     },
     {

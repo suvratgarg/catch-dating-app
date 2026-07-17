@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.1.21
+version: 1.2.0
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -452,6 +452,40 @@ Read-only dry-runs on 2026-05-26 found:
 | `dev` | 146 | 146 | 0 |
 | `staging` | 0 | 0 | 0 |
 | `prod` | 166 | 166 | 0 |
+
+## Read Path Discipline
+
+Firestore reads use an explicit surface policy instead of ad-hoc unbounded
+queries:
+
+- **Feed and history surfaces** are growing collections. They require a
+  reviewed page size, a stable ordered cursor, refresh behavior, and an honest
+  `hasMore` state. Realtime first-page listeners are allowed when freshness is
+  product-critical, but older history still loads through a cursor.
+- **Rosters and bounded working sets** require a reviewed limit based on the
+  product's real domain bound. If the domain is not actually bounded, they use
+  the feed/history policy.
+- **Point lookups** use deterministic document ids whenever the schema owns
+  one. A `where(...).limit(1)` query is not a substitute for a known document
+  id.
+- **Realtime vs one-shot:** route-visible state that must reflect concurrent
+  mutations may use `snapshots()` and follows the lifecycle policy in
+  `docs/app_architecture.md#realtime-stream-lifecycle`. Discovery/search pages
+  may use one-shot pages when they expose pull-to-refresh and revalidate on
+  route or tab re-entry. Administrative reports and explicit exports are
+  one-shot unless the workflow contract says otherwise.
+
+Repository-owned composite query builders declare adjacent contracts using:
+
+```dart
+// firestore-index: events (marketId:ASCENDING,startTime:ASCENDING)
+```
+
+`node tool/run.mjs check contracts:firestore-query-indexes` scans every
+handwritten repository source, rejects composite builders with no contract,
+and verifies each declared ordered field list against `firestore.indexes.json`.
+The check also runs inside `./tool/check_data_contract.sh` and Tools CI whenever
+repository data code or the index file changes.
 
 ## Current Health
 

@@ -122,6 +122,18 @@ class EventDiscoveryRepository {
       );
 
   Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) {
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
     return withBackendErrorContext(
       () async {
         if (query.marketId.isEmpty) return const [];
