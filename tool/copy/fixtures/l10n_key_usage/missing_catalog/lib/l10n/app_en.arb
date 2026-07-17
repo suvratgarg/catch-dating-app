@@ -1,0 +1,5 @@
+{
+  "@@locale": "en",
+  "validKey": "Valid key",
+  "@validKey": {"description": "Fixture"}
+}

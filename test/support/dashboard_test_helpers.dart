@@ -1,19 +1,16 @@
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
-import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const noRecommendationCandidates =
-    AsyncData<List<DashboardEventRecommendationCandidate>>([]);
+    AsyncData<List<ExploreEventRecommendationCandidate>>([]);
 
-DashboardRecommendationsQuery recommendationsQueryFor(
+ExploreRecommendationsQuery recommendationsQueryFor(
   String uid,
   List<String> followedClubIds,
-) => DashboardRecommendationsQuery(
-  userId: uid,
-  followedClubIds: followedClubIds,
-);
+) => ExploreRecommendationsQuery(userId: uid, followedClubIds: followedClubIds);
 
 AsyncData<WeeklyActivitySnapshot> emptyWeeklyActivitySnapshot() {
   return AsyncData(
@@ -24,11 +21,11 @@ AsyncData<WeeklyActivitySnapshot> emptyWeeklyActivitySnapshot() {
   );
 }
 
-DashboardEventRecommendationCandidate recommendationCandidate(
+ExploreEventRecommendationCandidate recommendationCandidate(
   Event event, {
   String clubName = 'Stride Social',
   String? clubLocation = 'mumbai',
-}) => DashboardEventRecommendationCandidate(
+}) => ExploreEventRecommendationCandidate(
   event: event,
   clubName: clubName,
   clubLocation: clubLocation,

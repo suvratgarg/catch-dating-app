@@ -5,7 +5,9 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -14,6 +16,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
@@ -39,7 +42,7 @@ void main() {
       );
 
       expect(find.byType(CatchSkeleton), findsWidgets);
-      expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
       expect(find.text('No planned events yet'), findsNothing);
     });
 
@@ -74,7 +77,7 @@ void main() {
 
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
       expect(find.text('No planned events yet'), findsNothing);
     });
 
@@ -100,11 +103,17 @@ void main() {
         ],
       );
 
-      expect(find.text('Calendar'), findsOneWidget);
+      final monthLabel = _monthYearLabel(event.startTime);
+      expect(find.byType(CatchScreenTopBar), findsOneWidget);
+      expect(find.text(monthLabel), findsOneWidget);
+      expect(
+        tester.widget<Text>(find.text(monthLabel)).style?.fontFamily,
+        CatchFonts.voiceFamily,
+      );
       expect(find.text('Planned'), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(find.text(event.title), findsNothing);
+      expect(_eventCard(event), findsNothing);
     });
 
     testWidgets('seeds expanded month and selected date', (tester) async {
@@ -148,7 +157,7 @@ void main() {
         find.byKey(const ValueKey<String>('calendar-month-day-2026-06-04')),
         findsOneWidget,
       );
-      expect(find.text(event.title), findsOneWidget);
+      expect(_eventCard(event), findsOneWidget);
     });
 
     testWidgets(
@@ -236,7 +245,6 @@ void main() {
         ],
       );
 
-      expect(find.text('Calendar'), findsOneWidget);
       expect(find.text(_monthYearLabel(firstEventStart)), findsOneWidget);
       expect(find.text('Planned'), findsOneWidget);
       expect(
@@ -252,18 +260,24 @@ void main() {
       expect(find.text('7:15 AM'), findsAtLeastNWidgets(1));
 
       await tester.scrollUntilVisible(
-        find.text(events[1].title),
+        _eventCard(events[1]),
         180,
         scrollable: find.byType(Scrollable),
       );
       await tester.pump();
 
       expect(find.text(_agendaDayLabel(firstEventStart, now)), findsOneWidget);
-      expect(find.text(events[1].title), findsOneWidget);
-      expect(find.text(events[0].title), findsOneWidget);
+      expect(_eventCard(events[1]), findsOneWidget);
+      expect(_eventCard(events[0]), findsOneWidget);
       expect(find.text('STRIDE SOCIAL'), findsAtLeastNWidgets(1));
-      expect(find.text('1 going · 19 left'), findsOneWidget);
-      expect(find.text('2 going · 10 left'), findsOneWidget);
+      expect(
+        find.textContaining('1 GOING · 19 LEFT', findRichText: true),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('2 GOING · 10 LEFT', findRichText: true),
+        findsOneWidget,
+      );
     });
 
     testWidgets('includes future saved events as planned calendar rows', (
@@ -312,16 +326,16 @@ void main() {
       expect(find.text('Old Saved Start'), findsNothing);
 
       await tester.scrollUntilVisible(
-        find.text(savedFutureEvent.title),
+        _eventCard(savedFutureEvent),
         180,
         scrollable: find.byType(Scrollable),
       );
       await tester.pump();
 
-      expect(find.text(savedFutureEvent.title), findsOneWidget);
-      expect(find.text(signedUpEvent.title), findsOneWidget);
-      expect(find.text('SAVED'), findsOneWidget);
-      expect(find.text('JOINED'), findsOneWidget);
+      expect(_eventCard(savedFutureEvent), findsOneWidget);
+      expect(_eventCard(signedUpEvent), findsOneWidget);
+      expect(find.textContaining('SAVED', findRichText: true), findsOneWidget);
+      expect(find.textContaining('JOINED', findRichText: true), findsOneWidget);
     });
 
     testWidgets('anchors calendar summary to the next upcoming event', (
@@ -358,8 +372,8 @@ void main() {
         findsAtLeastNWidgets(1),
       );
       expect(
-        tester.getTopLeft(find.text(futureEvent.title)).dy,
-        lessThan(tester.getTopLeft(find.text(pastEvent.title)).dy),
+        tester.getTopLeft(_eventCard(futureEvent)).dy,
+        lessThan(tester.getTopLeft(_eventCard(pastEvent)).dy),
       );
     });
 
@@ -388,7 +402,7 @@ void main() {
         expect(find.text(_monthYearLabel(now)), findsOneWidget);
         expect(find.text('Next'), findsOneWidget);
         expect(find.text('None'), findsOneWidget);
-        expect(find.text(oldEvent.title), findsOneWidget);
+        expect(_eventCard(oldEvent), findsOneWidget);
       },
     );
 
@@ -410,7 +424,7 @@ void main() {
           eventFormat: _eventFormat('Future Event $index'),
         ),
       );
-      final targetEventLabel = events.last.title;
+      final targetEvent = events.last;
 
       await _pumpCalendar(
         tester,
@@ -421,17 +435,17 @@ void main() {
         ],
       );
 
-      expect(find.text(targetEventLabel), findsOneWidget);
-      expect(find.text(targetEventLabel).hitTestable(), findsNothing);
+      expect(_eventCard(targetEvent), findsOneWidget);
+      expect(_eventCard(targetEvent).hitTestable(), findsNothing);
 
       await tester.scrollUntilVisible(
-        find.text(targetEventLabel),
+        _eventCard(targetEvent),
         300,
         scrollable: find.byType(Scrollable),
       );
       await tester.pump();
 
-      expect(find.text(targetEventLabel).hitTestable(), findsOneWidget);
+      expect(_eventCard(targetEvent).hitTestable(), findsOneWidget);
     });
 
     testWidgets('tapping a week date scrolls to that agenda day', (
@@ -456,7 +470,7 @@ void main() {
         ),
       );
       final targetDate = DateUtils.dateOnly(events.last.startTime);
-      final targetEventLabel = events.last.title;
+      final targetEvent = events.last;
 
       await _pumpCalendar(
         tester,
@@ -467,13 +481,13 @@ void main() {
         ],
       );
 
-      expect(find.text(targetEventLabel), findsOneWidget);
-      expect(find.text(targetEventLabel).hitTestable(), findsNothing);
+      expect(_eventCard(targetEvent), findsOneWidget);
+      expect(_eventCard(targetEvent).hitTestable(), findsNothing);
 
       await tester.tap(find.byKey(_calendarWeekDayKey(targetDate)));
       await pumpFeatureUi(tester);
 
-      expect(find.text(targetEventLabel).hitTestable(), findsOneWidget);
+      expect(_eventCard(targetEvent).hitTestable(), findsOneWidget);
     });
 
     testWidgets(
@@ -632,8 +646,8 @@ void main() {
         ),
       );
       final targetDate = DateUtils.dateOnly(events.last.startTime);
-      final targetEventLabel = events.last.title;
-      final firstEventLabel = events.first.title;
+      final targetEvent = events.last;
+      final firstEvent = events.first;
 
       await _pumpCalendar(
         tester,
@@ -647,7 +661,7 @@ void main() {
       await tester.tap(find.byKey(_calendarWeekDayKey(targetDate)));
       await pumpFeatureUi(tester);
 
-      expect(find.text(targetEventLabel).hitTestable(), findsOneWidget);
+      expect(_eventCard(targetEvent).hitTestable(), findsOneWidget);
       expect(
         find.text(_monthYearLabel(targetDate)).hitTestable(),
         findsOneWidget,
@@ -660,7 +674,7 @@ void main() {
       await tester.tap(find.byKey(_calendarWeekDayKey(monday)));
       await pumpFeatureUi(tester);
 
-      expect(find.text(firstEventLabel).hitTestable(), findsOneWidget);
+      expect(_eventCard(firstEvent).hitTestable(), findsOneWidget);
     });
 
     testWidgets(
@@ -743,12 +757,12 @@ void main() {
         );
         await _pumpRouterFrame(tester);
 
-        expect(find.text('Calendar'), findsWidgets);
+        expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
         expect(_routerPath(router), app_router.Routes.calendarScreen.path);
 
         await _scrollCalendarDown(tester);
 
-        await tester.tap(find.text(event.title));
+        await tester.tap(_eventCard(event));
         expect(tester.takeException(), isNull);
         await _pumpRouterFrame(tester);
 
@@ -760,7 +774,7 @@ void main() {
 
         expect(_routerPath(router), app_router.Routes.calendarScreen.path);
         expect(find.byType(EventDetailScreen), findsNothing);
-        expect(find.text('Calendar'), findsWidgets);
+        expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
       },
     );
   });
@@ -791,6 +805,10 @@ Future<void> _pumpCalendar(
   );
   await tester.pump();
 }
+
+Finder _eventCard(Event event) => find.byWidgetPredicate(
+  (widget) => widget is EventDateRailCard && widget.event.id == event.id,
+);
 
 Future<void> _pumpRouterFrame(WidgetTester tester) async {
   await tester.pump();

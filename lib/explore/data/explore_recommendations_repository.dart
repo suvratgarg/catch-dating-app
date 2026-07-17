@@ -7,7 +7,9 @@ import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dar
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'explore_recommendations_repository.g.dart';
 
 class ExploreRecommendationsQuery {
   ExploreRecommendationsQuery({
@@ -45,36 +47,35 @@ class ExploreEventRecommendationCandidate {
 
 // Data-owned provider so Explore can consume recommendation supply without
 // coupling the feed view model directly to repository providers.
-final exploreRecommendedEventsProvider = FutureProvider.autoDispose
-    .family<
-      List<ExploreEventRecommendationCandidate>,
-      ExploreRecommendationsQuery
-    >((ref, query) async {
-      final events = await ref
-          .watch(eventRepositoryProvider)
-          .fetchUpcomingEventsForClubs(query.followedClubIds);
-      if (events.isEmpty) return const [];
+@riverpod
+Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
+  Ref ref,
+  ExploreRecommendationsQuery query,
+) async {
+  final events = await ref
+      .watch(eventRepositoryProvider)
+      .fetchUpcomingEventsForClubs(query.followedClubIds);
+  if (events.isEmpty) return const [];
 
-      final clubsRepository = ref.watch(clubsRepositoryProvider);
-      final clubIds = events.map((event) => event.clubId).toSet().toList()
-        ..sort();
-      final clubs = await Future.wait(clubIds.map(clubsRepository.fetchClub));
-      final clubsById = <String, Club>{};
-      for (final club in clubs) {
-        if (club != null) {
-          clubsById[club.id] = club;
-        }
-      }
+  final clubsRepository = ref.watch(clubsRepositoryProvider);
+  final clubIds = events.map((event) => event.clubId).toSet().toList()..sort();
+  final clubs = await Future.wait(clubIds.map(clubsRepository.fetchClub));
+  final clubsById = <String, Club>{};
+  for (final club in clubs) {
+    if (club != null) {
+      clubsById[club.id] = club;
+    }
+  }
 
-      return [
-        for (final event in events)
-          ExploreEventRecommendationCandidate(
-            event: event,
-            clubName: clubsById[event.clubId]?.name ?? 'Your club',
-            clubLocation: clubsById[event.clubId]?.location,
-          ),
-      ];
-    });
+  return [
+    for (final event in events)
+      ExploreEventRecommendationCandidate(
+        event: event,
+        clubName: clubsById[event.clubId]?.name ?? 'Your club',
+        clubLocation: clubsById[event.clubId]?.location,
+      ),
+  ];
+}
 
 List<ExploreEventRecommendation> rankExploreEventRecommendations({
   required List<ExploreEventRecommendationCandidate> candidates,

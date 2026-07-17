@@ -197,6 +197,14 @@ for (const file of walkSourceFiles(websiteSrcRoot)) {
   }
 
   for (const specifier of importSpecifiers(source)) {
+    if (specifier.startsWith("@catch/web-ui/")) {
+      violations.push({
+        source: sourceRelativePath,
+        specifier,
+        reason: "shared web UI must be imported from @catch/web-ui without deep imports",
+      });
+      continue;
+    }
     const aliasedTarget = contentAliasTarget(specifier);
     if (!specifier.startsWith(".") && aliasedTarget === null) continue;
 

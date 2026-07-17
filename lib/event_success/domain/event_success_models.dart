@@ -124,6 +124,7 @@ class EventSuccessModule {
     required this.stage,
     required this.attendeePromise,
     required this.hostPromise,
+    this.hostConfigurable = true,
     this.enabledByDefault = true,
     this.requiresLivePhoneUse = false,
     this.recommendedFor = const {},
@@ -138,6 +139,7 @@ class EventSuccessModule {
   final EventSuccessStage stage;
   final String attendeePromise;
   final String hostPromise;
+  final bool hostConfigurable;
   final bool enabledByDefault;
   final bool requiresLivePhoneUse;
   final Set<ActivityKind> recommendedFor;
@@ -214,6 +216,23 @@ class EventSuccessPlaybook {
   final List<String> wiringNotes;
 
   Set<String> get moduleIds => modules.map((module) => module.id).toSet();
+
+  Set<String> get nonConfigurableModuleIds => modules
+      .where((module) => !module.hostConfigurable)
+      .map((module) => module.id)
+      .toSet();
+
+  /// Resolves the effective module selection without mutating persisted data.
+  ///
+  /// Legacy documents can omit modules that are now platform-owned. Read
+  /// projections and new write boundaries both use this helper so those
+  /// modules behave as enabled while the stored legacy document stays intact.
+  /// Existing ids are preserved as-is so the compatibility projection never
+  /// silently disables an older plan whose playbook catalog has since moved.
+  Set<String> effectiveModuleSelection(Iterable<String> selectedModuleIds) => {
+    ...selectedModuleIds,
+    ...nonConfigurableModuleIds,
+  };
 
   bool get hasLivePhoneUse =>
       modules.any((module) => module.requiresLivePhoneUse);

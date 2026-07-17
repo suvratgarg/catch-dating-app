@@ -2,10 +2,13 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import '../support/profile_readiness_fixtures.dart';
+import '../test_pump_helpers.dart';
 
 const _testUid = 'user-1';
 
@@ -107,6 +110,124 @@ void main() {
         ),
         '/host/clubs/club-1/events/event-1',
       );
+    });
+  });
+
+  group('legacy Host clubs redirect', () {
+    test('club settings spokes keep stable top-level routes', () {
+      expect(
+        Routes.hostClubEventDefaultsScreen.path,
+        '/host/clubs/event-defaults',
+      );
+      expect(Routes.hostClubLiveGuideScreen.path, '/host/clubs/live-guide');
+      expect(Routes.hostClubTeamScreen.path, '/host/clubs/team');
+      expect(Routes.hostClubPaymentsScreen.path, '/host/clubs/payments');
+
+      for (final route in [
+        Routes.hostClubEventDefaultsScreen,
+        Routes.hostClubLiveGuideScreen,
+        Routes.hostClubTeamScreen,
+        Routes.hostClubPaymentsScreen,
+      ]) {
+        expect(route.audience, AppRouteAudience.host);
+      }
+    });
+
+    test('organizer route forwards stable edit field query keys', () {
+      final screen = hostOrganizerScreenForUri(
+        Uri.parse(
+          '/host/organizer?clubId=club-1&tab=insights&editField=description',
+        ),
+      );
+
+      expect(screen.initialClubId, 'club-1');
+      expect(screen.initialExpandedEditField, 'description');
+      expect(screen.initialTab.name, 'insights');
+    });
+
+    test('redirects only the exact legacy clubs location', () {
+      expect(
+        hostClubsLegacyRedirect(Uri.parse('/host/clubs')),
+        Routes.hostOrganizerScreen.path,
+      );
+      expect(
+        hostClubsLegacyRedirect(Uri.parse('/host/clubs?source=legacy')),
+        '/host/organizer?source=legacy',
+      );
+    });
+
+    test('redirects retired dedicated Insights into the selected tab', () {
+      expect(
+        hostInsightsLegacyRedirect('club-1'),
+        '/host/clubs?clubId=club-1&tab=insights',
+      );
+      expect(
+        hostClubsLegacyRedirect(
+          Uri.parse(hostInsightsLegacyRedirect('club-1')),
+        ),
+        '/host/organizer?clubId=club-1&tab=insights',
+      );
+    });
+
+    test('preserves nested Host club operations', () {
+      for (final path in [
+        '/host/clubs/club-1',
+        '/host/clubs/club-1/edit',
+        '/host/clubs/club-1/create-event',
+        '/host/clubs/club-1/events/event-1',
+        '/host/clubs/club-1/events/event-1/manage',
+      ]) {
+        expect(
+          hostClubsLegacyRedirect(Uri.parse(path)),
+          isNull,
+          reason: '$path must not be swallowed by the legacy redirect.',
+        );
+      }
+    });
+
+    test(
+      'sends the retired club editor to the selected organizer Edit tab',
+      () {
+        expect(
+          hostEditClubLegacyRedirect('club-1'),
+          '/host/organizer?clubId=club-1&tab=edit',
+        );
+      },
+    );
+
+    testWidgets('GoRouter keeps the create-event child route', (tester) async {
+      final router = GoRouter(
+        initialLocation: '/host/clubs/club-1/create-event',
+        routes: [
+          GoRoute(
+            path: Routes.hostOrganizerScreen.path,
+            builder: (_, _) => const Text('Organizer route'),
+          ),
+          GoRoute(
+            path: Routes.hostClubsScreen.path,
+            redirect: (_, state) => hostClubsLegacyRedirect(state.uri),
+            routes: [
+              GoRoute(
+                path: ':clubId',
+                builder: (_, _) => const Text('Club route'),
+                routes: [
+                  GoRoute(
+                    path: 'create-event',
+                    builder: (_, _) => const Text('Create event route'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await pumpFeatureUi(tester);
+
+      expect(find.text('Create event route'), findsOneWidget);
+      expect(find.text('Organizer route'), findsNothing);
     });
   });
 

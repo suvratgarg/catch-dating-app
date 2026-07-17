@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {activeFeaturedCity} from "@content/markets";
 
 export type HostApplicationStep = "profile" | "event" | "policy" | "success" | "review";
@@ -32,52 +33,52 @@ export const hostApplicationSteps: Array<{
 }> = [
   {
     id: "profile",
-    label: "Host profile",
-    body: "Who you are, what you run, and where Catch should place the operating profile.",
+    label: websiteCopy["applicationmodel_0185"],
+    body: websiteCopy["applicationmodel_0204"],
   },
   {
     id: "event",
-    label: "Event draft",
-    body: "The first event you want to publish, with enough detail for a real setup review.",
+    label: websiteCopy["applicationmodel_0179"],
+    body: websiteCopy["applicationmodel_0200"],
   },
   {
     id: "policy",
-    label: "Admission",
-    body: "Capacity, pricing, approval, waitlists, and payment readiness.",
+    label: websiteCopy["applicationmodel_0169"],
+    body: websiteCopy["applicationmodel_0174"],
   },
   {
     id: "success",
-    label: "Run of show",
-    body: "Event Success modules you want live at the door, during the room, and after.",
+    label: websiteCopy["applicationmodel_0195"],
+    body: websiteCopy["applicationmodel_0180"],
   },
   {
     id: "review",
-    label: "Submit",
-    body: "Catch receives the operating packet, not just an email address.",
+    label: websiteCopy["applicationmodel_0199"],
+    body: websiteCopy["applicationmodel_0175"],
   },
 ];
 
 export const hostFormatOptions = [
-  "Dinner",
-  "Singles mixer",
-  "Social run",
-  "Padel or pickleball",
-  "Pub quiz",
-  "Bar crawl",
-  "Community meetup",
-  "Custom format",
+  websiteCopy["applicationmodel_0178"],
+  websiteCopy["applicationmodel_0196"],
+  websiteCopy["applicationmodel_0197"],
+  websiteCopy["applicationmodel_0189"],
+  websiteCopy["applicationmodel_0192"],
+  websiteCopy["applicationmodel_0172"],
+  websiteCopy["applicationmodel_0176"],
+  websiteCopy["applicationmodel_0177"],
 ];
 
 export const hostSuccessModuleOptions = [
-  "Booking balance preview",
-  "Attendance and live roster",
-  "Welcome script",
-  "Starter groups",
-  "Timed partner rotations",
-  "Host introduction help",
-  "Private catch window",
-  "Verified attendee reviews",
-  "Post-event report",
+  websiteCopy["applicationmodel_0173"],
+  websiteCopy["applicationmodel_0171"],
+  websiteCopy["applicationmodel_0203"],
+  websiteCopy["applicationmodel_0198"],
+  websiteCopy["applicationmodel_0201"],
+  websiteCopy["applicationmodel_0184"],
+  websiteCopy["applicationmodel_0191"],
+  websiteCopy["applicationmodel_0202"],
+  websiteCopy["applicationmodel_0190"],
 ];
 
 export const initialHostApplicationDraft: HostApplicationDraft = {
@@ -86,22 +87,22 @@ export const initialHostApplicationDraft: HostApplicationDraft = {
   city: activeFeaturedCity.label,
   customCity: "",
   organizationName: "",
-  organizationType: "Independent host",
+  organizationType: websiteCopy["applicationmodel_0186"],
   communityLink: "",
-  formats: ["Dinner"],
-  eventCadence: "Monthly",
+  formats: [websiteCopy["applicationmodel_0178"]],
+  eventCadence: websiteCopy["applicationmodel_0187"],
   nextEventName: "",
   nextEventDate: "",
   eventLocation: "",
   expectedCapacity: "20",
   priceRange: "₹1,000–₹2,000",
-  admissionModel: "Request to join",
-  waitlistPlan: "Ranked timed offers",
-  paymentReadiness: "Need Catch payment onboarding",
+  admissionModel: websiteCopy["applicationmodel_0194"],
+  waitlistPlan: websiteCopy["applicationmodel_0193"],
+  paymentReadiness: websiteCopy["applicationmodel_0188"],
   eventSuccessModules: [
-    "Attendance and live roster",
-    "Welcome script",
-    "Private catch window",
+    websiteCopy["applicationmodel_0171"],
+    websiteCopy["applicationmodel_0203"],
+    websiteCopy["applicationmodel_0191"],
   ],
   hostGoals: "",
   operatingNotes: "",
@@ -151,7 +152,7 @@ export function hostApplicationStepError(step: HostApplicationStep) {
     case "policy":
       return "Add capacity, pricing, admission, waitlist, and payment readiness.";
     case "success":
-      return "Choose at least one Event Success module and add your host goal.";
+      return "Choose at least one Playbook module and add your host goal.";
     case "review":
       return "Finish the required fields before submitting.";
   }
@@ -172,19 +173,19 @@ export function hostApplicationCompleteness(draft: HostApplicationDraft) {
 export function hostApplicationChecklist(draft: HostApplicationDraft) {
   return [
     {
-      label: "Host identity and public link",
+      label: websiteCopy["applicationmodel_0183"],
       done: hostApplicationStepIsComplete("profile", draft),
     },
     {
-      label: "First event draft",
+      label: websiteCopy["applicationmodel_0182"],
       done: hostApplicationStepIsComplete("event", draft),
     },
     {
-      label: "Admission and payment policy",
+      label: websiteCopy["applicationmodel_0170"],
       done: hostApplicationStepIsComplete("policy", draft),
     },
     {
-      label: "Event Success setup",
+      label: websiteCopy["applicationmodel_0181"],
       done: hostApplicationStepIsComplete("success", draft),
     },
   ];

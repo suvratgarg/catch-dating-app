@@ -1,10 +1,14 @@
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -36,6 +40,248 @@ void main() {
     });
   });
 
+  group('CatchAdaptiveTabScaffold', () {
+    testWidgets('floats navigation and publishes raw obstruction on iOS', (
+      tester,
+    ) async {
+      const navigationKey = Key('adaptive-navigation');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+          home: const MediaQuery(
+            data: MediaQueryData(
+              size: Size(393, 852),
+              padding: EdgeInsets.only(bottom: 34),
+              viewPadding: EdgeInsets.only(bottom: 34),
+            ),
+            child: CatchAdaptiveTabScaffold(
+              activeIndex: appShellClubsTabIndex,
+              body: SizedBox.expand(),
+              navigationBar: SizedBox(key: navigationKey, height: 56),
+            ),
+          ),
+        ),
+      );
+
+      final scaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final activeTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+
+      expect(scaffold.extendBody, isTrue);
+      expect(scaffold.body, isA<Stack>());
+      expect(scaffold.bottomNavigationBar, isNull);
+      expect(find.byKey(navigationKey), findsOneWidget);
+      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.floating);
+      expect(activeTab.bottomOverlayInset, 102);
+    });
+
+    testWidgets(
+      'suppresses floating navigation without reparenting a focused editor',
+      (tester) async {
+        const navigationKey = Key('adaptive-navigation');
+        const editorKey = Key('adaptive-editor');
+        final controller = TextEditingController(text: 'Draft reply');
+        final focusNode = FocusNode();
+        addTearDown(controller.dispose);
+        addTearDown(focusNode.dispose);
+        addTearDown(tester.view.resetViewInsets);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+            home: CatchAdaptiveTabScaffold(
+              activeIndex: appShellChatsTabIndex,
+              body: TextField(
+                key: editorKey,
+                controller: controller,
+                focusNode: focusNode,
+              ),
+              navigationBar: const SizedBox(key: navigationKey, height: 56),
+            ),
+          ),
+        );
+
+        await tester.tap(find.byKey(editorKey));
+        await tester.pump();
+        controller.selection = const TextSelection.collapsed(offset: 5);
+        final editorElement = tester.element(find.byKey(editorKey));
+
+        // Focus with zero viewInsets models a hardware keyboard. Chrome stays.
+        expect(tester.view.viewInsets.bottom, 0);
+        expect(focusNode.hasFocus, isTrue);
+        expect(find.byKey(navigationKey), findsOneWidget);
+        expect(
+          tester
+              .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+              .bottomBarPlacement,
+          AppShellBottomBarPlacement.floating,
+        );
+
+        tester.view.viewInsets = const FakeViewPadding(bottom: 318);
+        await tester.pump();
+
+        final keyboardScaffold = tester.widget<Scaffold>(
+          find.byKey(AppShellKeys.scaffold),
+        );
+        final keyboardActiveTab = tester.widget<AppShellActiveTab>(
+          find.byType(AppShellActiveTab),
+        );
+        expect(keyboardScaffold.extendBody, isFalse);
+        expect(keyboardScaffold.body, isA<Stack>());
+        expect(keyboardScaffold.bottomNavigationBar, isNull);
+        expect(find.byKey(navigationKey), findsNothing);
+        expect(
+          keyboardActiveTab.bottomBarPlacement,
+          AppShellBottomBarPlacement.none,
+        );
+        expect(keyboardActiveTab.bottomOverlayInset, 0);
+        expect(tester.element(find.byKey(editorKey)), same(editorElement));
+        expect(focusNode.hasFocus, isTrue);
+        expect(controller.text, 'Draft reply');
+        expect(controller.selection, const TextSelection.collapsed(offset: 5));
+
+        tester.view.resetViewInsets();
+        await tester.pump();
+        expect(find.byKey(navigationKey), findsOneWidget);
+        expect(
+          tester
+              .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+              .bottomBarPlacement,
+          AppShellBottomBarPlacement.floating,
+        );
+      },
+    );
+
+    testWidgets('anchors navigation through Scaffold on Android', (
+      tester,
+    ) async {
+      const navigationKey = Key('adaptive-navigation');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.android),
+          home: const MediaQuery(
+            data: MediaQueryData(
+              size: Size(393, 852),
+              padding: EdgeInsets.only(bottom: 34),
+              viewPadding: EdgeInsets.only(bottom: 34),
+            ),
+            child: CatchAdaptiveTabScaffold(
+              activeIndex: appShellClubsTabIndex,
+              body: SizedBox.expand(),
+              navigationBar: SizedBox(key: navigationKey, height: 56),
+            ),
+          ),
+        ),
+      );
+
+      final scaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final activeTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+
+      expect(scaffold.extendBody, isFalse);
+      expect(scaffold.body, isA<AppShellActiveTab>());
+      expect(scaffold.bottomNavigationBar, isNotNull);
+      expect(find.byKey(navigationKey), findsOneWidget);
+      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.anchored);
+      expect(activeTab.bottomOverlayInset, 0);
+    });
+
+    testWidgets('anchors fallback chrome even on iOS', (tester) async {
+      const fallbackKey = Key('adaptive-fallback');
+      addTearDown(tester.view.resetViewInsets);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+          home: const CatchAdaptiveTabScaffold(
+            activeIndex: appShellHomeTabIndex,
+            body: SizedBox.expand(),
+            anchoredFallback: SizedBox(key: fallbackKey, height: 56),
+          ),
+        ),
+      );
+
+      final scaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final activeTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+
+      expect(scaffold.extendBody, isFalse);
+      expect(scaffold.bottomNavigationBar, isNotNull);
+      expect(find.byKey(fallbackKey), findsOneWidget);
+      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.anchored);
+
+      tester.view.viewInsets = const FakeViewPadding(bottom: 318);
+      await tester.pump();
+
+      final keyboardScaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final keyboardActiveTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+      expect(keyboardScaffold.extendBody, isFalse);
+      expect(keyboardScaffold.bottomNavigationBar, isNull);
+      expect(find.byKey(fallbackKey), findsNothing);
+      expect(
+        keyboardActiveTab.bottomBarPlacement,
+        AppShellBottomBarPlacement.none,
+      );
+      expect(keyboardActiveTab.bottomOverlayInset, 0);
+    });
+
+    testWidgets('preserves safe-area terminal clearance with no bottom bar', (
+      tester,
+    ) async {
+      const terminalKey = Key('adaptive-terminal');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+          home: const MediaQuery(
+            data: MediaQueryData(
+              size: Size(393, 852),
+              padding: EdgeInsets.only(bottom: 12),
+              viewPadding: EdgeInsets.only(bottom: 34),
+            ),
+            child: CatchAdaptiveTabScaffold(
+              activeIndex: appShellHomeTabIndex,
+              body: CatchScrollTerminalPadding(key: terminalKey, extra: 10),
+            ),
+          ),
+        ),
+      );
+
+      final scaffold = tester.widget<Scaffold>(
+        find.byKey(AppShellKeys.scaffold),
+      );
+      final activeTab = tester.widget<AppShellActiveTab>(
+        find.byType(AppShellActiveTab),
+      );
+      final terminal = tester.widget<SizedBox>(
+        find.descendant(
+          of: find.byKey(terminalKey),
+          matching: find.byType(SizedBox),
+        ),
+      );
+
+      expect(scaffold.extendBody, isFalse);
+      expect(scaffold.bottomNavigationBar, isNull);
+      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.none);
+      expect(terminal.height, 44);
+    });
+  });
+
   testWidgets('chat navigation badge stays inside its icon box', (
     tester,
   ) async {
@@ -43,9 +289,17 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Center(
-          child: CatchCountBadge(
-            count: 3,
-            child: Icon(CatchIcons.chatBubbleOutlineRounded),
+          child: SizedBox(
+            width: CatchLayout.appShellNavigationBadgeWidth,
+            height: CatchLayout.appShellNavigationBadgeHeight,
+            child: CatchCountBadge(
+              count: 3,
+              offset: const Offset(-1, 2),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Icon(CatchIcons.chatBubbleOutlineRounded),
+              ),
+            ),
           ),
         ),
       ),
@@ -53,7 +307,9 @@ void main() {
 
     final badgeBox = find.byWidgetPredicate(
       (widget) =>
-          widget is SizedBox && widget.width == 38 && widget.height == 30,
+          widget is SizedBox &&
+          widget.width == CatchLayout.appShellNavigationBadgeWidth &&
+          widget.height == CatchLayout.appShellNavigationBadgeHeight,
     );
     final boxRect = tester.getRect(badgeBox);
     final labelRect = tester.getRect(find.text('3'));
@@ -72,7 +328,7 @@ void main() {
       int? tappedIndex;
       await tester.pumpWidget(
         MaterialApp(
-          theme: AppTheme.light,
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
           home: MediaQuery(
             data: const MediaQueryData(
               size: Size(393, 852),
@@ -127,7 +383,7 @@ void main() {
     try {
       await tester.pumpWidget(
         MaterialApp(
-          theme: AppTheme.light,
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
           home: const MediaQuery(
             data: MediaQueryData(
               size: Size(393, 852),

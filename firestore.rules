@@ -536,6 +536,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Fifteen-minute callable response cache. Only the Admin SDK may access it.
+    match /hostAnalyticsSnapshots/{snapshotId} {
+      allow read, write: if false;
+    }
+
     // Written exclusively by idempotent Cloud Function trigger handlers.
     match /functionEventReceipts/{receiptId} {
       allow read, write: if false;
@@ -907,7 +912,11 @@ service cloud.firestore {
           'unitSize',
           'unitCount',
           'rotationIntervalMinutes',
-          'revealCountdownSeconds'
+          'revealCountdownSeconds',
+          'rotationRepeatStrategy',
+          'maxPairMeetings',
+          'balanceActivityAttributes',
+          'clusterActivityAttributes'
         ])
         && data.keys().hasAll(['unitKind', 'unitSize', 'revealCountdownSeconds'])
         && data.unitKind in ['wholeGroup', 'pods', 'pairs', 'teams', 'tables']
@@ -931,7 +940,9 @@ service cloud.firestore {
         )
         && data.revealCountdownSeconds is number
         && data.revealCountdownSeconds >= 0
-        && data.revealCountdownSeconds <= 60;
+        && data.revealCountdownSeconds <= 60
+        && optionalString(data, 'rotationRepeatStrategy')
+        && optionalNumber(data, 'maxPairMeetings');
     }
 
     function isValidEventSuccessQuestionnaireConfig(data) {

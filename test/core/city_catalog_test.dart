@@ -37,6 +37,17 @@ void main() {
       expect(cityOptionByName('unknown-city'), isNull);
     });
 
+    test('resolves canonical market and city ids to display labels', () {
+      expect(cityLabel('in-mp-indore'), 'Indore');
+      expect(cityLabel('in-dl-delhi-ncr'), 'Delhi NCR');
+      expect(cityLabel('in-dl-new-delhi'), 'Delhi NCR');
+      expect(cityLabel('IN-DL-DELHI-NCR'), 'Delhi NCR');
+      expect(cityLabel('delhi'), 'Delhi NCR');
+      expect(cityLabel('in-ga-goa'), 'Goa');
+      expect(cityLabel('in-ga-panaji'), 'Goa');
+      expect(cityLabel('panjim'), 'Goa');
+    });
+
     test('parses currency amounts using each currency exponent', () {
       expect(parseMajorCurrencyAmountToMinorUnits('249.50'), 24950);
       expect(

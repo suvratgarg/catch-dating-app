@@ -14,6 +14,9 @@ outputs:
   firebase-tools-version:
     description: Firebase CLI version.
     value: ${{ steps.load.outputs.firebase-tools-version }}
+  cocoapods-version:
+    description: CocoaPods version.
+    value: ${{ steps.load.outputs.cocoapods-version }}
 
 runs:
   using: composite
@@ -30,7 +33,7 @@ runs:
 
         # shellcheck source=/dev/null
         source "$toolchain_file"
-        for name in FLUTTER_VERSION NODE_VERSION JAVA_VERSION FIREBASE_TOOLS_VERSION; do
+        for name in FLUTTER_VERSION NODE_VERSION JAVA_VERSION FIREBASE_TOOLS_VERSION COCOAPODS_VERSION; do
           if [[ -z "${!name:-}" ]]; then
             echo "Missing $name in $toolchain_file"
             exit 1
@@ -42,4 +45,5 @@ runs:
           echo "node-version=$NODE_VERSION"
           echo "java-version=$JAVA_VERSION"
           echo "firebase-tools-version=$FIREBASE_TOOLS_VERSION"
+          echo "cocoapods-version=$COCOAPODS_VERSION"
         } >> "$GITHUB_OUTPUT"

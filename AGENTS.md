@@ -1,7 +1,7 @@
 ---
 doc_id: agent_entrypoint
-version: 1.4.1
-updated: 2026-07-14
+version: 1.4.9
+updated: 2026-07-16
 owner: agent_operating_model
 status: active
 ---
@@ -44,7 +44,7 @@ the right verification loop.
 | Data contracts, Firestore, Functions writes | `docs/data_contracts.md`, `docs/backend_operation_catalog.md` | `./tool/check_data_contract.sh` when contract/rules behavior changed |
 | Durable business workflows, workers, autonomous agents, run queues, leases, receipts, or workflow learning | `docs/operations_platform.md`, `contracts/operations/README.md`, and the owning `operations/src/workflows/<workflow>/` README/manifest | Keep `tool/` limited to utilities and compatibility producers; use shadow-safe defaults; validate operation schemas; dry-run any admin projection import before an explicitly confirmed apply; run `npm --prefix operations test`, `npm --prefix operations run check`, focused Functions/admin checks, manifest validation, and readiness |
 | Release, deploy, CI, environment config | `docs/release_operations.md`, `docs/web_surface_architecture.md` | Local CI-equivalent checks; verify workflow/deploy state before declaring done |
-| React web architecture across website/admin, shared UI primitives, React Router, TanStack Query, feature folders, component governance | `docs/web_surface_architecture.md`, `docs/agent_skills/catch-react-surface-refactor.md`, `docs/marketing_website_architecture.md`, `design/admin/components.json` | Prototype one reference implementation first; keep canonical docs/registries parent-owned; run `node tool/run.mjs check web:react-architecture-boundaries`, `node tool/run.mjs check web:website-import-boundaries` when website imports move, `node tool/run.mjs check web:react-ui-primitives`, `node tool/run.mjs check web:react-component-governance`, `node tool/run.mjs check web:admin-feature-exports` and `node tool/run.mjs check web:admin-components` when admin feature/shared UI exports move, `node tool/run.mjs check web:admin-storybook` when admin preview coverage changes, relevant route/component/admin boundary checks, and both React app typecheck/build loops |
+| React web architecture across website/admin, shared UI primitives, React Router, TanStack Query, feature folders, component governance | `docs/web_surface_architecture.md`, `docs/agent_skills/catch-react-surface-refactor.md`, `docs/marketing_website_architecture.md`, `design/admin/components.json` | Prototype one reference implementation first; keep canonical docs/registries parent-owned; run `node tool/run.mjs check web:react-architecture-boundaries`, `node tool/run.mjs check web:website-import-boundaries` when website imports move, `node tool/run.mjs check web:react-ui-primitives`, `node tool/run.mjs check web:react-component-governance`, `node tool/run.mjs check web:shared-ui-adoption`, `node tool/run.mjs check web:react-controller-test-targets`, `node tool/run.mjs check web:admin-feature-ui-size`, `node tool/run.mjs check web:admin-bundle-budget` after the admin production build, `node tool/run.mjs check web:admin-storybook-bundle-budget` after the admin Storybook build, `node tool/run.mjs check web:admin-feature-exports` and `node tool/run.mjs check web:admin-components` when admin feature/shared UI exports move, `node tool/run.mjs check web:admin-storybook` when admin preview coverage changes, relevant route/component/admin boundary checks, and all shared/React app test, typecheck, and build loops |
 | Marketing website architecture, routes, components, public pages, SEO metadata, generated organizer listings | `docs/marketing_website_architecture.md`, `docs/web_surface_architecture.md`, `docs/marketing_landing_page_research.md`, `design/website/routes.json`, `design/website/components.json` | Update the route contract before public route changes; update the component registry before Storybook/component changes; run `node tool/run.mjs check marketing:website-routes`, `node tool/run.mjs check marketing:website-components`, `node tool/run.mjs check web:website-import-boundaries`, `node tool/run.mjs check web:react-ui-primitives`, `node tool/run.mjs check web:react-component-governance`, and the marketing build/typecheck loop |
 | Widget consolidation / dedupe (work-order execution, cluster triage) | `docs/design_parity/widget_consolidation/codex_worklog.md` (queue + standing gotchas), `docs/design_parity/widget_consolidation/consolidation_rules.md` (decision criteria), `docs/design_parity/widget_consolidation/decisions.json` (ledger) | Apply only the rulebook's K/R/D rules; a candidate matching no rule exactly is escalated, never stretched. Naming new `Catch*` primitives, new-primitive API design, concept-identity calls, and visual-change trade-offs belong to the review session. Ledger every outcome (incl. keeps) as `codex-rule:<id>`; per-order registry regen + receipts per the worklog's standing gotchas |
 | Tooling or automation | `tool/README.md`, `tool/tools_manifest.json` | Add tool manifest entries; `node tool/run.mjs check --manifest-only` |
@@ -68,6 +68,13 @@ the right verification loop.
   explore or produce isolated branch commits, but the parent agent is the only
   default writer for canonical docs, generated registries, audit receipts, and
   final verification.
+- Push a new working branch immediately. Before ending a dirty agent session,
+  make and push a bounded `chore(wip)` snapshot on that session branch; never
+  rely on one machine's working tree as the only copy.
+- Before rebase, reset, amend, or a conflict-heavy merge, create a dated
+  `backup/` ref. Never rewrite a branch with a shared upstream. Reconciliation
+  merges touching more than 50 paths require `git:audit-merge-drops` output and
+  explicit discard receipts before handoff.
 - React website/admin UI shells must route through shared primitives. When a
   repeated component family matters, add or update the React component-governance
   scanner plus the matching source-of-truth docs, component registry, and audit

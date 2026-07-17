@@ -237,7 +237,7 @@ export const ListingReviewsEmpty: Story = {
 };
 
 export const ListingEventSuccess: Story = {
-  name: "Event Success",
+  name: "Playbook outcomes",
   parameters: {
     catchComponent: {
       id: "listing_event_success_section",

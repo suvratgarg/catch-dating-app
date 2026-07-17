@@ -664,6 +664,7 @@
           "maxItems": 24,
           "items": {"type": "string", "minLength": 1, "maxLength": 120}
         },
+        "moduleSelectionConfigured": {"type": "boolean"},
         "structureConfig": {
           "$ref": "#/definitions/eventSuccessStructureConfig"
         },

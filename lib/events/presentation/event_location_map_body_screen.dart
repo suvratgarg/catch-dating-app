@@ -27,15 +27,16 @@ class EventLocationMapScreen extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     if (!state.hasExactStartingPoint) {
-      final error = CatchErrorState(
-        title: context
-            .l10n
-            .eventsEventLocationMapBodyScreenTitleLocationUnavailable,
-        message: context
-            .l10n
-            .eventsEventLocationMapBodyScreenMessageThisEventDoesNot,
+      return SafeArea(
+        child: CatchErrorState(
+          title: context
+              .l10n
+              .eventsEventLocationMapBodyScreenTitleLocationUnavailable,
+          message: context
+              .l10n
+              .eventsEventLocationMapBodyScreenMessageThisEventDoesNot,
+        ),
       );
-      return SafeArea(child: error);
     }
 
     return Stack(

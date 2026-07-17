@@ -171,7 +171,7 @@
         "event_location_map_text_scale_2",
         "event_location_map_reduced_motion"
       ],
-      "reason": "Event location map captures now cover pinned map, route loading, route error, event not found, no-coordinate empty state, text scale, reduced motion, and paired light/dark output with network tiles disabled."
+      "reason": "Event location map captures cover the required pinned map, route loading, route error, event not found, missing exact coordinates, text scale, reduced motion, and paired light/dark output with network tiles disabled."
     },
     {
       "routeId": "dashboardScreen",
@@ -465,6 +465,7 @@
         "profile_self_unavailable",
         "profile_self_edit_tab",
         "profile_self_preview_tab",
+        "profile_self_insights_tab",
         "profile_self_photo_upload_pending",
         "profile_self_photo_upload_error",
         "profile_self_inline_save_pending",
@@ -473,7 +474,7 @@
         "profile_self_reduced_motion",
         "profile_self_light_dark"
       ],
-      "reason": "Self-profile captures now cover flagship profile surface plus deterministic full-route loading, error, offline, unavailable, edit tab, preview tab, upload-pending, upload-failure snackbar, inline save pending/error drawers, text scale, reduced motion, and paired light/dark variants."
+      "reason": "Self-profile captures now cover flagship profile surface plus deterministic full-route loading, error, offline, unavailable, Edit, Preview, and Insights tabs, upload-pending, upload-failure snackbar, inline save pending/error drawers, text scale, reduced motion, and paired light/dark variants."
     },
     {
       "routeId": "reviewsHistoryScreen",
@@ -618,19 +619,6 @@
       "reason": "The first-class Host Organizer branch is captured through the real four-branch Host shell and compared against the pinned full-shell Organizer source reference."
     },
     {
-      "routeId": "hostInsightsScreen",
-      "status": "captured",
-      "priority": "P2",
-      "captureIds": [
-        "host_clubs_insights_reference",
-        "host_clubs_insights_report",
-        "host_clubs_insights_loading",
-        "host_clubs_insights_error",
-        "host_clubs_insights_offline"
-      ],
-      "reason": "The dedicated Organizer Insights utility route has a routed 390x812 primary capture plus deterministic tall report, loading, generic error, and offline captures."
-    },
-    {
       "routeId": "hostClubsScreen",
       "status": "captured",
       "priority": "P1",
@@ -640,6 +628,10 @@
         "host_clubs_offline",
         "host_clubs_empty",
         "host_clubs_cohost_edit",
+        "host_clubs_insights_report",
+        "host_clubs_insights_loading",
+        "host_clubs_insights_error",
+        "host_clubs_insights_offline",
         "host_clubs_preview_tab",
         "host_clubs_text_scale_2",
         "host_clubs_reduced_motion",
@@ -664,6 +656,30 @@
         "host_clubs_team_offline"
       ],
       "reason": "The legacy Host Clubs utility surface remains captured for signed-out, loading, generic/offline load errors, empty, co-host edit, inline editor pending/error/offline, preview, payout provider and mutation states, host-team mutation states, text scale 2.0, reduced motion, and paired light/dark output. Primary Organizer and Insights ownership now lives on their dedicated routes."
+    },
+    {
+      "routeId": "hostClubEventDefaultsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "The Event defaults spoke has loaded Widgetbook coverage; add routed narrow owner and co-host captures in the next Host Clubs capture refresh."
+    },
+    {
+      "routeId": "hostClubLiveGuideScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "The Live event guide spoke has loaded Widgetbook coverage; add routed narrow owner and co-host captures in the next Host Clubs capture refresh."
+    },
+    {
+      "routeId": "hostClubTeamScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "The Host team spoke has loaded Widgetbook coverage; add routed owner and co-host captures in the next Host Clubs capture refresh."
+    },
+    {
+      "routeId": "hostClubPaymentsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "The owner-only Payments spoke has loaded Widgetbook coverage; add routed payout-ready and restricted captures in the next Host Clubs capture refresh."
     },
     {
       "routeId": "hostClubDetailScreen",
@@ -710,25 +726,10 @@
     },
     {
       "routeId": "hostEditClubScreen",
-      "status": "captured",
+      "status": "alias",
       "priority": "P2",
-      "captureIds": [
-        "edit_club_basics",
-        "edit_club_validation_error",
-        "edit_club_media_replacement",
-        "edit_club_submit_pending",
-        "edit_club_submit_error",
-        "edit_club_route_loading",
-        "edit_club_route_error",
-        "edit_club_route_offline",
-        "edit_club_not_found",
-        "edit_club_cohost_media",
-        "edit_club_forbidden",
-        "edit_club_text_scale_2",
-        "edit_club_reduced_motion",
-        "edit_club_light_dark"
-      ],
-      "reason": "Host app edit-club route now has deterministic captures for owner edit, validation errors, media replacement, submit pending/error, route loading/error/offline/not-found, co-host media-only mode, forbidden identity, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
+      "canonicalRouteId": "hostOrganizerScreen",
+      "reason": "The retired edit-club location redirects to the selected organizer Edit tab, which is the canonical club editor and owns identity, contact, media, advanced policy, and Event Success defaults."
     },
     {
       "routeId": "hostCreateEventScreen",
@@ -959,7 +960,7 @@
         "host_settings_clubs_loading",
         "host_settings_clubs_error",
         "host_settings_clubs_offline",
-        "host_settings_profile_editor_sheet",
+        "host_settings_inline_profile_edit",
         "host_settings_save_profile_pending",
         "host_settings_save_profile_error",
         "host_settings_save_profile_offline",

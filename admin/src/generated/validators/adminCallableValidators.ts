@@ -1017,6 +1017,9 @@ const model = {
                 "maxLength": 120
               }
             },
+            "moduleSelectionConfigured": {
+              "type": "boolean"
+            },
             "structureConfig": {
               "$ref": "#/definitions/eventSuccessStructureConfig"
             },
@@ -2940,6 +2943,7 @@ const model = {
             "7d",
             "30d",
             "90d",
+            "12m",
             "month",
             "custom"
           ]
@@ -2965,6 +2969,11 @@ const model = {
             "week",
             "month"
           ]
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
         }
       }
     },
@@ -4403,6 +4412,12 @@ const model = {
                 "null"
               ],
               "maxLength": 160
+            },
+            "previousValue": {
+              "type": [
+                "number",
+                "null"
+              ]
             }
           }
         }

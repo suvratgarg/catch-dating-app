@@ -118,10 +118,13 @@ export function PublicEventCard({
           <span>{event.location}</span>
           <span>{event.priceLabel}</span>
           {capacityLabel ? <span>{capacityLabel}</span> : null}
-          {event.waitlistedCount ? <span>{event.waitlistedCount}{"waitlisted"}</span> : null}
+          {event.waitlistedCount ? <span>{event.waitlistedCount}{" waitlisted"}</span> : null}
           {event.sourceLabel ? <span>{event.sourceLabel}</span> : null}
           {event.externalLinkCount ? (
-            <span>{event.externalLinkCount}{"external"}{event.externalLinkCount === 1 ? "link" : "links"}</span>
+            <span>
+              {event.externalLinkCount}{" external "}
+              {event.externalLinkCount === 1 ? "link" : "links"}
+            </span>
           ) : null}
           {event.readOnlyLabel ? <span>{event.readOnlyLabel}</span> : null}
         </div>

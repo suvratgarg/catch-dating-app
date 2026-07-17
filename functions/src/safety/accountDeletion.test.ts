@@ -114,6 +114,10 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
           },
         },
       },
+      "hostAnalyticsSnapshots/runner-1_cached": {
+        uid: "runner-1",
+        scopeHash: "cached",
+      },
       "blocks/runner-1__runner-2": {
         blockerUserId: "runner-1",
         blockedUserId: "runner-2",
@@ -247,6 +251,11 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     harness.deletedPublicDocs.includes("notifications/runner-1/items/item-1")
   );
   assert.ok(harness.deletedPublicDocs.includes("eventBroadcasts/authored"));
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      "hostAnalyticsSnapshots/runner-1_cached"
+    )
+  );
   const targetedBroadcastUpdate = harness.updateWrites.find(
     (write) => write.path === "eventBroadcasts/targeted"
   );

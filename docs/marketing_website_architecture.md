@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.162
-updated: 2026-07-14
+version: 0.4.167
+updated: 2026-07-16
 owner: marketing_website
 status: active
 ---
@@ -65,47 +65,42 @@ The website is already split out of the old monolithic shell:
   snapshot lives at `docs/audit_registry/react_component_governance_families.json`
   and documents the known-family blocklist limitation.
 - `docs/audit_registry/web_shared_primitive_adoption.json` owns the audited
-  marketing/admin compatibility queue. Website buttons, fields, choice
-  controls, empty states, status badges, and data tables adapt compatible
-  `@catch/web-ui` native semantics; visual classes, authored labels, domain
-  variants, and feature composition remain website-owned.
+  marketing/admin compatibility queue. Website buttons, fields, choice chips,
+  choice cards, empty states, status badges, and data tables adapt the
+  compatible `@catch/web-ui` native semantics; visual classes, authored labels,
+  domain variants, and feature composition remain website-owned.
 - Shared route/page shell presentation lives in `website/src/shared/site` as
   `PageShell` and `WebsitePageMain`. `website/src/app/App.tsx` owns React
   Router, route metadata, lifecycle hooks, and page-class selection, but
   configures `PageShell` instead of rendering raw `page-shell` markup. Ordinary
   route files use `WebsitePageMain`; routes with their own visual shell keep
-  using shared route-specific mains such as `ClaimFlowMain` and
-  `HostPreviewMain`. Raw `page-shell` wrappers and raw `<main>` tags are
+  using shared route-specific mains such as `ClaimFlowMain`. Raw `page-shell`
+  wrappers and raw `<main>` tags are
   blocked by `web:react-component-governance`.
-- `website/src/features/host/HostPage.tsx` and
-  `website/src/features/host/HostPreviewPage.tsx` own separate host route
-  assembly. Shared and route-specific host sections live under
-  `website/src/features/host/sections/**`; the Host route section set lives in
-  `website/src/features/host/sections/HostPageSections.tsx`, and the Host
-  Preview route-specific section set lives in
-  `website/src/features/host/sections/HostPreviewSections.tsx`.
+- `website/src/features/host/HostPage.tsx` is the single canonical host route.
+  `/host/preview{,/**}` is retired at Firebase Hosting with a permanent redirect
+  to `/host/`. Host sections live under `website/src/features/host/sections/**`;
+  `HostPageSections.tsx` owns the core sequence, `HostSupportingSections.tsx`
+  owns offer/trust/FAQ, and `PlaybookShowcase.tsx` owns the stage rail and
+  deep-linkable module catalog.
   Host application form state lives under `website/src/features/host/application/**`.
-- Shared Host Preview route shells live in
-  `website/src/shared/ui/primitives.tsx` as `HostPreviewMain`,
-  `HostPreviewHero*`, `HostPreviewOfferShell`, `HostPreviewSection`,
-  `HostPreviewApplyShell`, `HostPreviewHeroStores`,
-  `HostPreviewFormatRail`, `HostPreviewChipRow`, and the existing
-  `HostPreview*` product modules. Host Preview sections configure those
-  primitives; they do not render raw route, hero, offer, section, modifier,
-  apply, store-slot, format-rail, or chip-row shells directly.
+- The remaining legacy-named `HostPreview*` Storybook and offer/trust/FAQ
+  primitives are internal implementation details in the host primitive family;
+  no preview route or preview feature owner remains. New public concepts use
+  Host or Playbook names and must not recreate the retired route boundary.
 - Shared Host Page route shells live in
-  `website/src/shared/ui/primitives.tsx` as `HostHero*` and
+  `website/src/shared/ui/primitives/` as `HostHero*` and
   `HostPageSection`; `CaptureGrid` owns the host capture-grid modifier.
   Host sections configure those primitives; they do not render raw host hero,
   evidence, surface, fill-room, proof-ledger, or capture-grid modifier shells
   directly.
 - Shared Host Application flow shells live in
-  `website/src/shared/ui/primitives.tsx` as `HostApplication*` and
+  `website/src/shared/ui/primitives/` as `HostApplication*` and
   `OperationalNote`. `HostApplicationFlow.tsx` owns the form state and field
   choices, but configures shared flow shells instead of rendering raw
   `host-application*`, `submitted-panel__mark`, or `operational-note` markup.
 - Shared Host feature section shells live in
-  `website/src/shared/ui/primitives.tsx` as `HostFeatureSection`,
+  `website/src/shared/ui/primitives/` as `HostFeatureSection`,
   `HostFeatureGrid`, `HostFeatureRail`, `HostCreateFlowCapture`,
   `HostComparisonTable*`, `PrivacyGuardrail`, and `PhoneCaptureShell`.
   `CreateEventWalkthrough`, `EventSuccessShowcase`, `HostComparisonSection`,
@@ -114,15 +109,15 @@ The website is already split out of the old monolithic shell:
   `event-success-*`, `host-comparison*`, `comparison-table*`,
   `privacy-guardrail`, or `phone-capture*` markup.
 - Shared app capture card shells live in
-  `website/src/shared/ui/primitives.tsx` as `CaptureCard`.
+  `website/src/shared/ui/primitives/` as `CaptureCard`.
   Home and Host sections pass capture manifests and fallback labels to that
   primitive instead of rendering raw `capture-card` figure shells.
 - Shared product module grid shells live in
-  `website/src/shared/ui/primitives.tsx` as `ProductModuleGrid`. Host fill-room
+  `website/src/shared/ui/primitives/` as `ProductModuleGrid`. Host fill-room
   sections pass module content into that primitive instead of rendering raw
   `product-module-grid` or `product-module-card` shells.
 - Shared listing event action cards live in
-  `website/src/shared/ui/primitives.tsx` as `EventActionCard`. Organizer
+  `website/src/shared/ui/primitives/` as `EventActionCard`. Organizer
   listing event sections own the event-card content and analytics callback, but
   configure the shared card instead of rendering raw `event-action-card` shells.
 - Shared organizer identity display shells use `ActivityMark` and
@@ -132,7 +127,7 @@ The website is already split out of the old monolithic shell:
   `ProfileStrength` meter remains a host-application completeness primitive,
   not an organizer reputation signal.
 - Shared process status panels live in
-  `website/src/shared/ui/primitives.tsx` as `ProcessStatusPanel`. Claim route
+  `website/src/shared/ui/primitives/` as `ProcessStatusPanel`. Claim route
   sections own state-specific copy and CTA analytics callbacks, but configure
   the shared panel instead of rendering raw `process-status-panel` shells.
 - Shared Event Success grids are configured through
@@ -145,7 +140,7 @@ The website is already split out of the old monolithic shell:
   `website/src/features/home/sections/HomePageSections.tsx`, with route and
   section Storybook coverage registered in `design/website/components.json`.
 - Shared Home and marketing section shells live in
-  `website/src/shared/ui/primitives.tsx` as `HomeHero*`,
+  `website/src/shared/ui/primitives/` as `HomeHero*`,
   `MarketingSection`, `MarketingSectionCopy`, `MarketingFormatCard`,
   `MarketingInfoCardGrid`, `HostComparisonSummaryCards`, `MarketingLoopList`,
   `FeaturedOrganizerCardGrid`, and `LiveMeter`. Feature sections configure
@@ -153,7 +148,7 @@ The website is already split out of the old monolithic shell:
   the raw marketing section, loop-list, or reveal-article info-card shells
   directly.
 - Shared marketing consent banner presentation lives in
-  `website/src/shared/ui/primitives.tsx` as `MarketingConsentBannerShell`.
+  `website/src/shared/ui/primitives/` as `MarketingConsentBannerShell`.
   `website/src/features/marketing/MarketingConsentBanner.tsx` owns consent
   state and analytics choices, but configures the shared shell instead of
   rendering raw `consent-banner` markup.
@@ -162,7 +157,7 @@ The website is already split out of the old monolithic shell:
   `featuredOrganizerCardItemForListing` rather than rendering feature-owned
   mini-card shells.
 - Shared app-download CTA presentation lives in
-  `website/src/shared/ui/primitives.tsx` as `AppDownloadCtaGroup`, with
+  `website/src/shared/ui/primitives/` as `AppDownloadCtaGroup`, with
   `AppDownloadCtas*` and `StoreButton*` kept as shared implementation helpers.
   `website/src/features/marketing/useAppDownloadCtas.ts` owns store-link
   analytics configuration only. Route sections pass placement, variant, and
@@ -170,15 +165,17 @@ The website is already split out of the old monolithic shell:
   deleted `AppDownloadCtas.tsx` feature component or render raw
   `app-download-ctas` / `store-button` structure directly.
 - Shared waitlist form presentation lives in
-  `website/src/shared/ui/primitives.tsx` as `WaitlistFormShell`.
+  `website/src/shared/ui/primitives/` as `WaitlistFormShell`.
   `website/src/features/waitlist/WaitlistForm.tsx` owns controller-driven form
   state, field choices, and submission behavior, but configures the shared form
   shell instead of passing raw `waitlist-form` classes through a generic
   primitive.
-- Shared UI label shells live in `website/src/shared/ui/primitives.tsx` as
+- Shared UI label shells live in `website/src/shared/ui/primitives/` as
   `UiLabel`, with the base `.ui-label` style owned by `site-shell.css`.
   Route sections and legacy website display components configure `UiLabel`
-  instead of rendering raw uppercase label spans directly.
+  instead of rendering raw uppercase label spans directly. `UiLabel` maps to
+  `catch.ui_label` for hierarchy; status-oriented `StatusBadge` remains mapped
+  to `catch.badge`.
 - `website/src/features/organizers/OrganizerSearchPage.tsx` now composes
   organizer-owned search sections from
   `website/src/features/organizers/sections/OrganizerSearchSections.tsx`; the
@@ -191,7 +188,7 @@ The website is already split out of the old monolithic shell:
   ordered route-section assembly. The visible listing sections retain their own
   Storybook/component-registry entries.
 - Shared organizer listing shells live in
-  `website/src/shared/ui/primitives.tsx` as `ListingSection`,
+  `website/src/shared/ui/primitives/` as `ListingSection`,
   `ListingSectionIntro`, `ListingFactGrid`, `ListingNoteGrid`,
   `ListingFormatRow`, `ListingDiagnostics*`, `ListingEventDownloadPanel`,
   `ListingEventEvidenceList`, `ListingReview*`, and `ListingSourceLedger`.
@@ -208,14 +205,14 @@ The website is already split out of the old monolithic shell:
   but configures `ListingSourceLedger` instead of composing ledger rows or
   `source-link` anchors directly.
 - Shared organizer listing hero shells live in
-  `website/src/shared/ui/primitives.tsx` as `ListingHeroShell`,
+  `website/src/shared/ui/primitives/` as `ListingHeroShell`,
   `ListingHeroInner`, `ListingHeroCopy`, `ListingHeroEyebrow`,
   `ListingHeroMetrics`, and `ListingHeroShareStatus`. `ListingHeroSection`
   owns listing data, CTAs, analytics, and diagnostics, but configures shared
   hero shells instead of rendering raw `listing-hero*`, `listing-panel__metrics`,
   or `listing-share-status` markup.
 - Shared organizer listing review shells live in
-  `website/src/shared/ui/primitives.tsx` as `ListingReviewSummary`,
+  `website/src/shared/ui/primitives/` as `ListingReviewSummary`,
   `ListingReviewWorkspace`, `ListingReviewLanes`, `ReviewSignalLane`,
   `ReviewSignalCard`, `OwnerResponsePrompt`, `ListingReviewEmptyState`,
   `ListingReviewForm`, and `ListingReviewCheckbox`. `ListingReviewsSection`
@@ -224,26 +221,26 @@ The website is already split out of the old monolithic shell:
   `review-signal-*`, `owner-response-prompt`, `listing-owner-response`, or
   `listing-review-*` form/state markup.
 - Shared organizer listing claim shells live in
-  `website/src/shared/ui/primitives.tsx` as `ClaimMissingEvidenceList` and
+  `website/src/shared/ui/primitives/` as `ClaimMissingEvidenceList` and
   `ClaimRequestForm`, alongside the existing `ClaimBand*` and
   `ClaimRequestPanel*` primitives. `ListingClaimSections.tsx` owns claim
   controller state, auth actions, copy, and analytics, but configures shared
   claim list/form shells instead of rendering raw `missing-list` or
   `claim-request-form` markup.
 - Shared organizer search result shells live in
-  `website/src/shared/ui/primitives.tsx` as `OrganizerResultCard*` and
+  `website/src/shared/ui/primitives/` as `OrganizerResultCard*` and
   `OrganizerEventHighlights`. Organizer search sections configure those
   primitives; they do not render raw result-card, topline, highlight, or footer
   shells directly.
 - Shared organizer search section shells live in
-  `website/src/shared/ui/primitives.tsx` as `OrganizerSearchSection`,
+  `website/src/shared/ui/primitives/` as `OrganizerSearchSection`,
   `OrganizerSearchStats`, `OrganizerResultSummary`, and
   `DirectoryClaimPressure*`. Organizer search sections own controller-driven
   filters, result mapping, and claim links, but configure shared section shells
   instead of rendering raw `organizer-search-*`, `organizer-result-summary`,
   `directory-claim-pressure*`, or `organizer-results` markup.
 - Shared claim-flow route shells live in
-  `website/src/shared/ui/primitives.tsx` as `ClaimFlowMain`,
+  `website/src/shared/ui/primitives/` as `ClaimFlowMain`,
   `ClaimFlowHero`, `ClaimFlowWorkspace`, `ClaimFlowPanel`,
   `ClaimFlowStage`, `ClaimListingResults`, `ClaimResultButton`,
   `SelectedListingCard`, `VerificationMethodGrid`, `OwnerUnlockBoard`, and
@@ -263,7 +260,7 @@ The website is already split out of the old monolithic shell:
   `SiteHeader`, `SiteFooter`, and `SectionHeader`.
 - The legacy `website/src/components/site.tsx` barrel is retired. New website
   code must import neutral site primitives from `website/src/shared/site/**`,
-  governed visual primitives from `website/src/shared/ui/primitives.tsx`, and
+  governed visual primitives from `website/src/shared/ui/primitives/`, and
   domain adapters from their owning feature folder.
 - `website/.storybook/**`, `website/src/stories/MarketingRoutes.stories.tsx`,
   `website/src/stories/HomeSections.stories.tsx`,
@@ -318,9 +315,9 @@ aggregation points:
 |---|---|---|
 | `website/src/features/home/HomePage.tsx` | Thin home route shell that wires site chrome to `HomePageSections` | Keep route assembly here; move future Home section edits into `features/home/sections/` and only promote neutral, repeated shells to shared UI. |
 | `website/src/features/organizers/HostListingPage.tsx` | Thin listing route shell that wires site chrome to `useHostListingPageController` and `HostListingSections` | Keep page-local sections under `features/organizers/sections/`; avoid moving listing-specific blocks into shared UI too early. |
-| `website/src/features/host/HostPage.tsx` and `HostPreviewPage.tsx` | Route-specific host assembly with shared and route-specific section imports | Keep route files as tables of contents; move section bodies under `features/host/sections/` before extracting only neutral, cross-feature primitives. |
+| `website/src/features/host/HostPage.tsx` | Canonical host assembly with core, supporting, and Playbook section imports | Keep the route file as a table of contents; section bodies stay under `features/host/sections/`. |
 | `website/src/features/claims/ClaimPage.tsx` | Thin claim route shell using injected `ClaimRouteState`, `useClaimFlowController`, and `ClaimPageSections` | Keep route URL parsing in `features/claims/claimRouting.ts` and the React Router shell; keep auth/submission behavior in the controller; keep visible route sections in `features/claims/sections/`. |
-| `website/src/shared/ui/primitives.tsx` | Governed visual primitives used by website feature sections | Keep repeated shell markup here, but keep state, analytics, and domain mapping in feature controllers/adapters. |
+| `website/src/shared/ui/primitives/` | Family-split governed visual primitives used by website feature sections | Keep repeated shell markup in the relevant family module; state, analytics, and domain mapping stay in feature controllers/adapters. |
 | `website/src/styles/responsive.css` | Mixed responsive selectors preserved from the former aggregate stylesheet | Split by feature only when visual output can be checked route-by-route. |
 
 ## Architecture Rules
@@ -597,15 +594,14 @@ website/src/
         HomePageSections.tsx
     host/
       HostPage.tsx
-      HostPreviewPage.tsx
-      hostContent.ts
       application/
         HostApplicationFlow.tsx
         applicationModel.ts
         useHostApplicationController.ts
       sections/
         HostPageSections.tsx
-        HostPreviewSections.tsx
+        HostSupportingSections.tsx
+        PlaybookShowcase.tsx
     organizers/
       OrganizerSearchPage.tsx
       HostListingPage.tsx
@@ -875,6 +871,13 @@ website/src/
    distinguishes adopted package semantics from deliberate surface-specific
    families; package exports, exact-name cross-app overlap, and adopted
    adapters cannot drift outside that decision record.
+
+13. Keep controller behavior-test targets explicit.
+
+   `tool/web/react_controller_test_targets.json` classifies every marketing and
+   admin feature controller/mutation hook. Run `node tool/run.mjs check
+   web:react-controller-test-targets`; required targets need named importing
+   behavior suites, while aggregate coverage remains an informational report.
 
 ## Next Implementation Batch
 

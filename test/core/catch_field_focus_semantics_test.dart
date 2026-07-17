@@ -1,9 +1,12 @@
 import 'dart:ui' show SemanticsAction;
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('external focus node remains caller-owned', (tester) async {
@@ -91,6 +94,46 @@ void main() {
     expect(find.bySemanticsLabel('Message'), findsOne);
     semantics.dispose();
   });
+
+  testWidgets(
+    'empty optional input exposes one Add semantic and restores its field label on focus',
+    (tester) async {
+      final semantics = tester.ensureSemantics();
+      final controller = TextEditingController();
+      final focusNode = FocusNode();
+      addTearDown(controller.dispose);
+      addTearDown(focusNode.dispose);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CatchField.input(
+              title: 'Job title',
+              controller: controller,
+              focusNode: focusNode,
+              isOptional: true,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(TextField)).label,
+        'Add job title, optional',
+      );
+      expect(find.bySemanticsLabel('Add job title, optional'), findsOneWidget);
+
+      await tester.tap(find.byType(TextField));
+      await tester.pump();
+      await tester.pump(CatchMotion.fast);
+
+      expect(focusNode.hasFocus, isTrue);
+      expect(tester.getSemantics(find.byType(TextField)).label, 'Job title');
+      expect(find.bySemanticsLabel('Add job title, optional'), findsNothing);
+      semantics.dispose();
+    },
+  );
 
   testWidgets('direct inputs contribute one keyboard focus stop each', (
     tester,
@@ -216,7 +259,7 @@ void main() {
 
       expect(pressedDecoration().border, isNotNull);
       expect(focusNode.hasFocus, isFalse);
-      await tester.pump(const Duration(milliseconds: 100));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
       expect(pressedDecoration().border, isNotNull);
       expect(pressedDecoration().color, isNot(equals(Colors.transparent)));
 
@@ -229,6 +272,129 @@ void main() {
       expect(tester.testTextInput.isVisible, isTrue);
     },
   );
+
+  testWidgets(
+    'non-text disclosure label becomes primary only after the opening gesture',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: CatchField.control(
+              title: 'Religion',
+              body: 'Christian',
+              isOptional: true,
+              control: SizedBox(height: 80),
+            ),
+          ),
+        ),
+      );
+
+      Color? labelColor() =>
+          tester.widget<Text>(find.text('Religion')).style?.color;
+
+      expect(labelColor(), CatchTokens.editorialLight.ink3);
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('Religion')),
+      );
+      await tester.pump();
+
+      expect(labelColor(), CatchTokens.editorialLight.ink3);
+
+      await gesture.up();
+      await tester.pump();
+
+      expect(labelColor(), CatchTokens.editorialLight.ink);
+      expect(
+        tester.widget<Text>(find.text(' · Optional')).style?.color,
+        CatchTokens.editorialLight.ink3,
+      );
+
+      await tester.tap(find.text('Religion'));
+      await tester.pump();
+
+      expect(labelColor(), CatchTokens.editorialLight.ink3);
+    },
+  );
+
+  testWidgets(
+    'choice factory inherits the semantic active label color in dark mode',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.dark,
+          home: Scaffold(
+            body: CatchField.choices<String>(
+              title: 'Languages',
+              values: const ['English', 'Hindi'],
+              itemLabel: (value) => value,
+              selected: const {'English'},
+              onSelectionChanged: (_) {},
+              multi: true,
+              initiallyOpen: true,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.widget<Text>(find.text('Languages')).style?.color,
+        CatchTokens.editorialDark.ink,
+      );
+    },
+  );
+
+  testWidgets('select label inherits the root focus color resolver', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: CatchField.select<String>(
+            title: 'City',
+            values: const ['Indore', 'Mumbai'],
+            itemLabel: (value) => value,
+            value: 'Indore',
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    Text label() => tester.widget<Text>(find.text('City'));
+    expect(label().style?.color, CatchTokens.editorialLight.ink3);
+
+    await tester.tap(find.text('City'));
+    await tester.pump();
+
+    expect(label().style?.color, CatchTokens.editorialLight.ink);
+  });
+
+  testWidgets('expanded error label keeps danger precedence', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: CatchField.control(
+            title: 'Religion',
+            body: 'Christian',
+            error: 'Choose a religion',
+            control: SizedBox(height: 80),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Religion'));
+    await tester.pump();
+
+    expect(
+      tester.widget<Text>(find.text('Religion')).style?.color,
+      CatchTokens.editorialLight.danger,
+    );
+  });
 
   testWidgets('one disclosure gesture opens and focuses explicit text input', (
     tester,

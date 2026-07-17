@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,5 +31,6 @@ void main() {
     expect(find.byIcon(CatchIcons.lockOutlineRounded), findsOneWidget);
     expect(find.byIcon(CatchIcons.shieldOutlined), findsOneWidget);
     expect(find.byIcon(CatchIcons.visibilityOutlined), findsOneWidget);
+    expect(find.byType(CatchBadge), findsNWidgets(3));
   });
 }

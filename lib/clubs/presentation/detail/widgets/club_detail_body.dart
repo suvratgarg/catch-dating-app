@@ -14,8 +14,8 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -26,6 +26,8 @@ import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:flutter/material.dart';
 
 typedef ClubEventSelectionHandler = void Function(Event event);
+
+enum ClubDetailPresentationMode { route, embeddedReadOnlyPreview }
 
 const EdgeInsets _clubActivityTilePadding = EdgeInsets.symmetric(
   horizontal: CatchSpacing.s4,
@@ -41,6 +43,7 @@ class ClubDetailBody extends StatelessWidget {
     this.onViewHostProfile,
     this.onMessageHost,
     this.onContactSelected,
+    this.presentationMode = ClubDetailPresentationMode.route,
   });
 
   final ClubDetailBodyState state;
@@ -49,6 +52,54 @@ class ClubDetailBody extends StatelessWidget {
   final ClubHostProfileHandler? onViewHostProfile;
   final ClubHostMessageHandler? onMessageHost;
   final ClubContactActionHandler? onContactSelected;
+  final ClubDetailPresentationMode presentationMode;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return ColoredBox(
+      color: t.surface,
+      child: CustomScrollView(
+        slivers: [
+          ClubDetailSliverBody(
+            state: state,
+            onShareClub: onShareClub,
+            onEventSelected: onEventSelected,
+            onViewHostProfile: onViewHostProfile,
+            onMessageHost: onMessageHost,
+            onContactSelected: onContactSelected,
+            presentationMode: presentationMode,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sliver-native form of the canonical Club Detail composition.
+///
+/// Consumer routes and embedded owner previews use this same renderer; only
+/// route chrome and interaction callbacks differ.
+class ClubDetailSliverBody extends StatelessWidget {
+  const ClubDetailSliverBody({
+    super.key,
+    required this.state,
+    this.onShareClub,
+    this.onEventSelected,
+    this.onViewHostProfile,
+    this.onMessageHost,
+    this.onContactSelected,
+    this.presentationMode = ClubDetailPresentationMode.route,
+  });
+
+  final ClubDetailBodyState state;
+  final ClubShareHandler? onShareClub;
+  final ClubEventSelectionHandler? onEventSelected;
+  final ClubHostProfileHandler? onViewHostProfile;
+  final ClubHostMessageHandler? onMessageHost;
+  final ClubContactActionHandler? onContactSelected;
+  final ClubDetailPresentationMode presentationMode;
 
   @override
   Widget build(BuildContext context) {
@@ -58,106 +109,116 @@ class ClubDetailBody extends StatelessWidget {
     final nextEvent = state.nextEvent;
     final showTrailingSections =
         state.showReviews || state.contactActions.isNotEmpty;
+    final embeddedPreview =
+        presentationMode == ClubDetailPresentationMode.embeddedReadOnlyPreview;
+    final effectiveEventSelection = embeddedPreview ? null : onEventSelected;
+    final effectiveHostProfileSelection = embeddedPreview
+        ? null
+        : onViewHostProfile;
+    final effectiveHostMessage = embeddedPreview ? null : onMessageHost;
+    final effectiveContactSelection = embeddedPreview
+        ? null
+        : onContactSelected;
 
-    return ColoredBox(
-      color: t.surface,
-      child: CustomScrollView(
-        slivers: [
-          ClubHeroAppBar(
-            club: club,
-            isHost: state.isHost,
-            locationLabel: _clubHeroLocationLabel(club, nextEvent),
-            onShareClub: onShareClub,
-          ),
-          CatchDetailSliverSectionList(
-            gap: CatchSpacing.screenPt,
-            bottomPadding: 0,
-            sections: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (nextEvent != null) ...[
-                    ClubNextRunBanner(
-                      event: nextEvent,
-                      onTap: onEventSelected == null
-                          ? null
-                          : () => onEventSelected!(nextEvent),
-                    ),
-                    gapH16,
-                  ],
-                  CatchMetricStrip(items: _clubMetricItems(club, context.l10n)),
+    return SliverMainAxisGroup(
+      slivers: [
+        ClubHeroAppBar(
+          club: club,
+          isHost: state.isHost,
+          locationLabel: _clubHeroLocationLabel(club, nextEvent),
+          onShareClub: embeddedPreview ? null : onShareClub,
+          presentationMode: embeddedPreview
+              ? ClubHeroPresentationMode.embeddedReadOnlyPreview
+              : ClubHeroPresentationMode.route,
+        ),
+        CatchDetailSliverSectionList(
+          gap: CatchSpacing.screenPt,
+          bottomPadding: 0,
+          sections: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (nextEvent != null) ...[
+                  ClubNextRunBanner(
+                    event: nextEvent,
+                    onTap: effectiveEventSelection == null
+                        ? null
+                        : () => effectiveEventSelection(nextEvent),
+                  ),
+                  gapH16,
                 ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CatchSection.divided(
-                    title: context.l10n.clubsClubDetailBodyTitleAbout,
-                    first: true,
-                    child: Text(
-                      club.description,
-                      style: CatchTextStyles.proseL(context, color: t.ink),
-                    ),
-                  ),
-                  if (tags.isNotEmpty)
-                    CatchSection.divided(
-                      title: context.l10n.clubsClubDetailBodyTitleWhatWeDo,
-                      child: ClubActivitySection(club: club, tags: tags),
-                    ),
-                  if (club.clubPhotos.isNotEmpty)
-                    CatchSection.divided(
-                      title: context.l10n.clubsClubDetailBodyTitleFromTheClub,
-                      child: ClubPhotoStrip(club: club),
-                    ),
-                  CatchSection.divided(
-                    title: context.l10n.clubsClubDetailBodyTitleYourHosts,
-                    count: club.displayHostProfiles.length,
-                    child: ClubHostSection(
-                      club: club,
-                      canViewProfile: onViewHostProfile != null,
-                      isMessageHostPending: state.isMessageHostPending,
-                      messageableHostUids: state.messageableHostUids,
-                      onViewProfile: onViewHostProfile,
-                      onMessageHost: onMessageHost,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          ClubScheduleSection(
-            events: state.upcomingEvents,
-            isHost: state.isHost,
-            onEventSelected: onEventSelected,
-            bottomPadding: showTrailingSections
-                ? 0
-                : CatchLayout.detailScreenBottomPadding,
-          ),
-          if (showTrailingSections)
-            CatchDetailSliverSectionList(
-              topPadding: 0,
-              sections: [
-                if (state.showReviews)
-                  CatchSection.divided(
-                    title: context.l10n.clubsClubDetailBodyTitleReviews,
-                    child: ClubReviewsSection(
-                      reviews: state.reviews,
-                      currentUid: state.uid,
-                    ),
-                  ),
-                if (state.contactActions.isNotEmpty)
-                  CatchSection.divided(
-                    title: context.l10n.clubsClubDetailBodyTitleGetInTouch,
-                    child: ClubContactSection(
-                      actions: state.contactActions,
-                      showTitle: false,
-                      onContactSelected: onContactSelected,
-                    ),
-                  ),
+                CatchMetricStrip(items: _clubMetricItems(club, context.l10n)),
               ],
             ),
-        ],
-      ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchSection.divided(
+                  title: context.l10n.clubsClubDetailBodyTitleAbout,
+                  first: true,
+                  child: Text(
+                    club.description,
+                    style: CatchTextStyles.proseL(context, color: t.ink),
+                  ),
+                ),
+                if (tags.isNotEmpty)
+                  CatchSection.divided(
+                    title: context.l10n.clubsClubDetailBodyTitleWhatWeDo,
+                    child: ClubActivitySection(club: club, tags: tags),
+                  ),
+                if (club.clubPhotos.isNotEmpty)
+                  CatchSection.divided(
+                    title: context.l10n.clubsClubDetailBodyTitleFromTheClub,
+                    child: ClubPhotoStrip(club: club),
+                  ),
+                CatchSection.divided(
+                  title: context.l10n.clubsClubDetailBodyTitleYourHosts,
+                  count: club.displayHostProfiles.length,
+                  child: ClubHostSection(
+                    club: club,
+                    canViewProfile: effectiveHostProfileSelection != null,
+                    isMessageHostPending: state.isMessageHostPending,
+                    messageableHostUids: state.messageableHostUids,
+                    onViewProfile: effectiveHostProfileSelection,
+                    onMessageHost: effectiveHostMessage,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        ClubScheduleSection(
+          events: state.upcomingEvents,
+          isHost: state.isHost,
+          onEventSelected: effectiveEventSelection,
+          bottomPadding: showTrailingSections
+              ? 0
+              : CatchLayout.detailScreenBottomPadding,
+        ),
+        if (showTrailingSections)
+          CatchDetailSliverSectionList(
+            topPadding: 0,
+            sections: [
+              if (state.showReviews)
+                CatchSection.divided(
+                  title: context.l10n.clubsClubDetailBodyTitleReviews,
+                  child: ClubReviewsSection(
+                    reviews: state.reviews,
+                    currentUid: state.uid,
+                  ),
+                ),
+              if (state.contactActions.isNotEmpty)
+                CatchSection.divided(
+                  title: context.l10n.clubsClubDetailBodyTitleGetInTouch,
+                  child: ClubContactSection(
+                    actions: state.contactActions,
+                    showTitle: false,
+                    onContactSelected: effectiveContactSelection,
+                  ),
+                ),
+            ],
+          ),
+      ],
     );
   }
 }
@@ -278,22 +339,23 @@ class ClubActivitySection extends StatelessWidget {
       runSpacing: CatchSpacing.micro6,
       children: [
         for (final activity in activities)
-          CatchActivityChip(
+          CatchChip.activity(
             activityKind: activity,
-            primary: activity == club.hostDefaults.primaryActivityKind,
+            emphasis: activity == club.hostDefaults.primaryActivityKind
+                ? CatchChipEmphasis.solid
+                : CatchChipEmphasis.soft,
           ),
         if (activities.isEmpty)
-          CatchActivityChip(
+          CatchChip.activity(
             activityKind: ActivityKind.openActivity,
             label: tags.first,
-            primary: true,
+            emphasis: CatchChipEmphasis.solid,
           ),
         if (firstGenericTag != null)
           ClubTagWrap(
             tags: [firstGenericTag],
             tone: CatchBadgeTone.neutral,
             size: CatchBadgeSize.md,
-            uppercase: false,
           ),
       ],
     );
@@ -314,7 +376,6 @@ class ClubActivitySection extends StatelessWidget {
                 tags: [tag],
                 tone: CatchBadgeTone.neutral,
                 size: CatchBadgeSize.md,
-                uppercase: false,
               ),
           ],
         ),

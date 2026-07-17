@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "description": "Fixture baseline with no orphan debt.",
+  "allowedOrphanedKeys": []
+}

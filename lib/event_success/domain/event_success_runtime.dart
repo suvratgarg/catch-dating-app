@@ -102,8 +102,9 @@ class EventSuccessRuntime {
 
   bool moduleEnabled(String moduleId) => plan.hasModule(moduleId);
 
-  bool get checkInEnabled =>
-      moduleEnabled(EventSuccessModuleCatalog.checkIn.id);
+  /// Attendance check-in is an event-platform primitive, not an optional
+  /// Event Success module. Old plans may still carry the legacy module id.
+  bool get checkInEnabled => true;
 
   bool get firstHelloCheckInEnabled =>
       moduleEnabled(EventSuccessModuleCatalog.firstHelloCheckIn.id);
@@ -130,11 +131,9 @@ class EventSuccessRuntime {
       compatibilityQuestionnaireEnabled && plan.compatibilityAffectsRanking;
 
   bool get wingmanRequestsEnabled =>
-      plan.wingmanRequestsEnabled &&
       moduleEnabled(EventSuccessModuleCatalog.wingmanRequests.id);
 
   bool get contextualOpenersConfigured =>
-      plan.contextualOpenersEnabled &&
       moduleEnabled(EventSuccessModuleCatalog.contextualOpeners.id);
 
   bool get conversationCuesEnabled =>
@@ -166,8 +165,7 @@ class EventSuccessRuntime {
     return steps[index];
   }
 
-  bool canShowSelfCheckIn({required bool checkInOpen}) =>
-      checkInEnabled && checkInOpen;
+  bool canShowSelfCheckIn({required bool checkInOpen}) => checkInOpen;
 
   bool canShowFirstHelloCheckIn({
     required EventParticipationStatus? participationStatus,
@@ -177,7 +175,6 @@ class EventSuccessRuntime {
     bool arrivalMissionStartAvailable = false,
   }) {
     return firstHelloCheckInEnabled &&
-        checkInEnabled &&
         checkInOpen &&
         !eventEnded &&
         (arrivalMissionAssigned || arrivalMissionStartAvailable) &&
@@ -427,6 +424,9 @@ class EventSuccessRuntime {
     if (lifecycle != EventSuccessAttendeeLifecycle.checkedIn) return false;
     if (plan.revealStatus != EventSuccessRevealStatus.idle) return false;
     if (step == null) return true;
+    if (step.moduleIds.every(plan.playbook.nonConfigurableModuleIds.contains)) {
+      return true;
+    }
     return switch (step.stage) {
       EventSuccessStage.before || EventSuccessStage.arrival => true,
       EventSuccessStage.opening ||

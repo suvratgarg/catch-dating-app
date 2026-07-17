@@ -10,10 +10,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -100,10 +99,9 @@ class HostPaymentAccountCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchBadge(
+              CatchBadge.functional(
                 label: presentation.badge,
                 tone: presentation.tone,
-                uppercase: true,
               ),
               gapH14,
               Text(
@@ -124,21 +122,19 @@ class HostPaymentAccountCard extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    CatchField.nav(
+                    CatchField.read(
                       title:
                           context.l10n.hostsHostPaymentAccountCardTitleCountry,
                       valueText: _countryLabel(country),
                       icon: CatchIcons.locationOnOutlined,
-                      showChevron: false,
                     ),
-                    CatchField.nav(
+                    CatchField.read(
                       title: context
                           .l10n
                           .hostsHostPaymentAccountCardTitleDefaultCurrency,
                       valueText: currency.toUpperCase(),
                       icon: CatchIcons.paymentsOutlined,
                       divider: true,
-                      showChevron: false,
                     ),
                   ],
                 ),
@@ -204,96 +200,62 @@ class HostPaymentAccountContentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final account = this.account;
     final presentation = _presentation(account, context.l10n);
-    final t = CatchTokens.of(context);
 
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: CatchSectionHeader(
-                  title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
-                ),
-              ),
-              CatchBadge(
-                label: presentation.badge,
-                tone: presentation.tone,
-                uppercase: true,
-              ),
-            ],
+    return CatchSection.fieldRows(
+      title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
+      trailing: CatchBadge.functional(
+        label: presentation.badge,
+        tone: presentation.tone,
+      ),
+      children: [
+        CatchField.content(
+          title: presentation.title,
+          body: presentation.body,
+          icon: CatchIcons.paymentsOutlined,
+        ),
+        if (account != null) ...[
+          CatchField.read(
+            title: context.l10n.hostsHostPaymentAccountCardTitleCountry,
+            valueText: _countryLabel(account.country),
+            icon: CatchIcons.locationOnOutlined,
           ),
-          gapH10,
-          Text(
-            presentation.title,
-            style: CatchTextStyles.sectionTitle(context),
-          ),
-          gapH4,
-          Text(
-            presentation.body,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          if (account != null) ...[
-            gapH10,
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                CatchBadge(label: account.defaultCurrency),
-                CatchBadge(label: account.country),
-                if (account.disabledReason != null)
-                  CatchBadge(
-                    label:
-                        context.l10n.hostsHostPaymentAccountCardLabelRestricted,
-                    tone: CatchBadgeTone.warning,
-                  ),
-              ],
-            ),
-          ],
-          if (actionErrorMessage != null) ...[
-            gapH12,
-            CatchErrorBanner(message: actionErrorMessage!),
-          ],
-          gapH12,
-          Row(
-            children: [
-              Expanded(
-                child: CatchButton(
-                  label: account == null
-                      ? context
-                            .l10n
-                            .hostsHostPaymentAccountCardLabelSetUpPayouts
-                      : context
-                            .l10n
-                            .hostsHostPaymentAccountCardLabelContinueSetup,
-                  onPressed: onboardingPending
-                      ? null
-                      : () => unawaited(
-                          onShowPayoutsHandoff(account, presentation),
-                        ),
-                  isLoading: onboardingPending,
-                  icon: Icon(CatchIcons.paymentsOutlined),
-                ),
-              ),
-              if (account != null) ...[
-                gapW10,
-                CatchButton(
-                  label: context.l10n.hostsHostPaymentAccountCardLabelRefresh,
-                  onPressed: refreshPending
-                      ? null
-                      : () => unawaited(onRefresh()),
-                  isLoading: refreshPending,
-                  variant: CatchButtonVariant.secondary,
-                  icon: Icon(CatchIcons.refreshRounded),
-                ),
-              ],
-            ],
+          CatchField.read(
+            title: context.l10n.hostsHostPaymentAccountCardTitleDefaultCurrency,
+            valueText: account.defaultCurrency.toUpperCase(),
+            icon: CatchIcons.paymentsOutlined,
           ),
         ],
-      ),
+        if (actionErrorMessage != null)
+          CatchField.content(
+            title: presentation.title,
+            body: actionErrorMessage!,
+            icon: CatchIcons.errorOutlineRounded,
+            tone: CatchFieldTone.danger,
+          ),
+        CatchField.action(
+          title: account == null
+              ? context.l10n.hostsHostPaymentAccountCardLabelSetUpPayouts
+              : context.l10n.hostsHostPaymentAccountCardLabelContinueSetup,
+          body: context.l10n.hostsHostPaymentAccountCardSubtitlePoweredByStripe,
+          icon: CatchIcons.openInNewRounded,
+          status: onboardingPending
+              ? CatchFieldStatus.saving
+              : CatchFieldStatus.idle,
+          onTap: onboardingPending
+              ? null
+              : () => unawaited(onShowPayoutsHandoff(account, presentation)),
+        ),
+        if (account != null)
+          CatchField.action(
+            title: context.l10n.hostsHostPaymentAccountCardLabelRefresh,
+            body: context.l10n.hostsHostPaymentAccountCardTextWeWillRefreshYour,
+            icon: CatchIcons.refreshRounded,
+            status: refreshPending
+                ? CatchFieldStatus.saving
+                : CatchFieldStatus.idle,
+            onTap: refreshPending ? null : () => unawaited(onRefresh()),
+          ),
+      ],
     );
   }
 
@@ -342,28 +304,16 @@ class HostPaymentAccountLoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.tileContentCompact,
+    return CatchSection.fieldRows(
+      title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
+      trailing: CatchSkeleton.box(
+        width: CatchLayout.skeletonStatusPillWidth,
+        height: CatchSpacing.s6,
+        radius: CatchRadius.pill,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: CatchSectionHeader(
-                  title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
-                ),
-              ),
-              CatchSkeleton.box(
-                width: CatchLayout.skeletonStatusPillWidth,
-                height: CatchSpacing.s6,
-                radius: CatchRadius.pill,
-              ),
-            ],
-          ),
-          gapH14,
           CatchSkeleton.text(width: CatchLayout.skeletonTextLongWidth),
           gapH8,
           CatchSkeleton.textBlock(lines: 2),
@@ -390,17 +340,11 @@ class HostPaymentAccountErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.tileContentCompact,
+    return CatchSection.fieldRows(
+      title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchSectionHeader(
-            title: context.l10n.hostsHostPaymentAccountCardTitlePayouts,
-          ),
-          gapH12,
           CatchErrorState.fromError(
             error,
             context: AppErrorContext.payments,

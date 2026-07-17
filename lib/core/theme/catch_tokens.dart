@@ -438,6 +438,16 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.screenPx,
   );
 
+  /// Leading route action aligned to the canonical screen gutter.
+  static const EdgeInsets topBarLeadingAction = EdgeInsets.only(
+    left: CatchSpacing.screenPx,
+  );
+
+  /// Trailing route actions aligned to the canonical screen gutter.
+  static const EdgeInsets topBarTrailingActions = EdgeInsets.only(
+    right: CatchSpacing.screenPx,
+  );
+
   /// Dense Host Inbox title row: preserves the page gutter while leaving a
   /// full 40px lane for the headline and expanding-search action.
   static const EdgeInsets hostInboxHeader = EdgeInsets.symmetric(
@@ -726,6 +736,14 @@ abstract final class CatchInsets {
     vertical: CatchSpacing.s3,
   );
 
+  /// Ticket-card body inset after the perforated date rail.
+  static const EdgeInsets eventTicketBody = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.micro14,
+    CatchSpacing.s4,
+    CatchSpacing.micro14,
+  );
+
   /// Content block padding with slightly stronger bottom separation.
   static const EdgeInsets contentBlock = EdgeInsets.fromLTRB(
     CatchSpacing.s4,
@@ -938,6 +956,7 @@ abstract final class CatchOpacity {
   static const double none = 0.0;
   static const double onFillMuted = 0.76;
   static const double ticketPerforationLine = 0.22;
+  static const double eventDateRailGlyph = 0.14;
 
   /// Filled-surface scrim for text/icons that need contrast on colored
   /// backgrounds — activity stamps, active date-marker text.
@@ -1038,6 +1057,12 @@ abstract final class CatchOpacity {
   /// Translucent pill fills over fixed dark editorial hero surfaces.
   static const double darkHeroPillFill = 0.16;
 
+  /// Canonical light-fill badge treatment over dark, media, or art surfaces.
+  static const double badgeOnDarkFill = 0.12;
+
+  /// Canonical light hairline for badges over dark, media, or art surfaces.
+  static const double badgeOnDarkBorder = 0.18;
+
   /// Backing ring opacity for overlapping avatar stacks on dark/art surfaces.
   static const double avatarStackRing = 0.28;
 
@@ -1108,10 +1133,8 @@ abstract final class CatchOpacity {
   static const double photoDragGhost = 0.35;
   static const double profileInfoDivider = 0.62;
 
-  /// Legacy low-contrast inset divider treatment used outside the canonical
-  /// FieldSection contract. CatchDividerRole.fieldSection uses the full
-  /// `line` token; CatchDividerRole.fieldRow keeps this muted compatibility
-  /// treatment for existing non-FieldSection rows.
+  /// Low-contrast inset treatment for boundaries between sibling field/list
+  /// rows. Outer section rules keep the full `line` token.
   static const double fieldRowDivider = 0.38;
   static const double profileProgressTrack = 0.70;
   static const double profileShadowDark = 0.34;
@@ -1481,6 +1504,7 @@ abstract final class CatchMotion {
   static const Duration standard = base;
   static const Duration pageStep = Duration(milliseconds: 280);
   static const Duration calendarScroll = Duration(milliseconds: 320);
+  static const Duration mediaReorderDebounce = Duration(milliseconds: 400);
   static const Duration slow = Duration(milliseconds: 420);
   static const Duration afterglowBeatEntry = Duration(milliseconds: 480);
   static const Duration afterglowCountUp = Duration(milliseconds: 600);
@@ -1648,6 +1672,9 @@ abstract final class CatchLayout {
   /// Content max-width clamp for large phones / foldables.
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
   static const double maxContentWidth = 600;
+
+  /// Plot height for the compact host demand/bookings trend.
+  static const double analyticsTrendHeight = 120;
 
   /// Confirm-dialog max card width from the implementation handoff.
   static const double confirmDialogMaxWidth = 320.0;
@@ -1831,7 +1858,9 @@ abstract final class CatchLayout {
   static const double noticeTitleMessageGap = CatchSpacing.micro2;
   static const double personUnreadBadgeHorizontalPadding =
       CatchSpacing.micro6 + CatchStroke.hairline;
+  static const double countBadgeMinExtent = 17.0;
   static const double countPillIconSize = CatchIcon.sm + CatchSpacing.micro2;
+  static const double countPillMinExtent = CatchSpacing.s11;
   static const double countPillLabelVerticalPadding =
       CatchSpacing.micro10 + CatchStroke.hairline;
   static const double settingsRowVerticalPadding =
@@ -2084,6 +2113,8 @@ abstract final class CatchLayout {
   static const double eventCompactDatePillWidth = 52.0;
   static const double eventCompactDatePillHeight = 58.0;
   static const double eventDateRailWidth = 66.0;
+  static const double eventDateRailGlyphSize = 50.0;
+  static const double eventTicketDecisionInlineMinWidth = 220.0;
   static const double clubAvatarRailColumnWidth = 76.0;
   static const double clubDirectorySkeletonTitleWidth = 180.0;
   static const double clubDirectorySkeletonSubtitleWidth = 132.0;

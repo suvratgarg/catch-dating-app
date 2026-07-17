@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 32,
-  "updated": "2026-07-14",
+  "version": 33,
+  "updated": "2026-07-16",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -4978,7 +4978,7 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "SegmentedControl",
       "lexicon": true,
-      "lexiconId": "catch.segmented_control"
+      "lexiconId": "catch.option_group"
     },
     {
       "id": "shared_selectable_card_button",

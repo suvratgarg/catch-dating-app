@@ -309,6 +309,40 @@ void main() {
     );
 
     test(
+      'unexpected payment errors use the stable user-safe fallback',
+      () async {
+        functions.callables['createRazorpayOrder'] = TestHttpsCallable(
+          'createRazorpayOrder',
+        )..error = StateError('private SDK response');
+
+        await expectLater(
+          repository.processPayment(
+            eventId: 'event-1',
+            currencyCode: 'INR',
+            description: 'Sunrise Event',
+            userName: 'Priya',
+            userEmail: 'priya@example.com',
+            userContact: '+919876543210',
+          ),
+          throwsA(
+            isA<PaymentFailedException>()
+                .having(
+                  (error) => error.message,
+                  'message',
+                  'Payment failed: Unable to start the payment.',
+                )
+                .having(
+                  (error) => error.debugMessage,
+                  'debugMessage',
+                  contains('private SDK response'),
+                ),
+          ),
+        );
+        expect(razorpay.openCalls, isEmpty);
+      },
+    );
+
+    test(
       'processPayment rejects malformed order responses before checkout',
       () async {
         functions.callables['createRazorpayOrder'] = TestHttpsCallable(

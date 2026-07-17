@@ -1010,14 +1010,12 @@ function defaultEventSuccessModuleIdsFor(
   primitives: ResolvedEventSuccessPrimitives
 ): string[] {
   const base = [
-    "qr_check_in",
     "host_script",
     "social_missions",
     "wingman_requests",
     "contextual_openers",
     "decomposed_feedback",
     "host_analytics",
-    "safety_controls",
   ];
   switch (interactionModel) {
   case "pacePods":
@@ -1192,33 +1190,33 @@ function normalizeMeetingLocationForCreate(
  * Merges legacy where fields or the structured field into one location object.
  * @param {EventDocument} event Current event document.
  * @param {object} fields Host update fields.
- * @return {EventMeetingLocation|undefined} Normalized update location.
+ * @return {EventMeetingLocation} Normalized merged location.
  */
 function normalizeMeetingLocationForUpdate(
   event: EventDocument,
   fields: EventHostUpdateFields
-): EventMeetingLocation | undefined {
+): EventMeetingLocation {
   if (fields.meetingLocation !== undefined) {
     return normalizeMeetingLocation(fields.meetingLocation);
   }
-  if (!hasLegacyLocationChange(fields)) return undefined;
+  if (!hasLegacyLocationChange(fields)) return effectiveMeetingLocation(event);
 
   const current = effectiveMeetingLocation(event);
   const latitude = fields.startingPointLat !== undefined ?
     fields.startingPointLat :
-    current?.latitude ?? event.startingPointLat;
+    current.latitude;
   const longitude = fields.startingPointLng !== undefined ?
     fields.startingPointLng :
-    current?.longitude ?? event.startingPointLng;
+    current.longitude;
   return normalizeMeetingLocation({
-    name: fields.meetingPoint ?? current?.name ?? event.meetingPoint,
-    address: current?.address ?? null,
-    placeId: current?.placeId ?? null,
+    name: fields.meetingPoint ?? current.name,
+    address: current.address ?? null,
+    placeId: current.placeId ?? null,
     latitude,
     longitude,
     notes: fields.locationDetails !== undefined ?
       fields.locationDetails :
-      current?.notes ?? event.locationDetails ?? null,
+      current.notes ?? event.locationDetails ?? null,
   });
 }
 
@@ -1249,16 +1247,19 @@ function normalizeMeetingLocation(
 /**
  * Reads a canonical location from new docs or legacy location fields.
  * @param {EventDocument} event Current event document.
- * @return {EventMeetingLocation|null} Effective meeting location.
+ * @return {EventMeetingLocation} Effective meeting location.
  */
 function effectiveMeetingLocation(
   event: EventDocument
-): EventMeetingLocation | null {
+): EventMeetingLocation {
   if (event.meetingLocation) {
     return normalizeMeetingLocation(event.meetingLocation);
   }
   if (event.startingPointLat == null || event.startingPointLng == null) {
-    return null;
+    throw new HttpsError(
+      "failed-precondition",
+      "This event has no exact meeting location. Resolve it before editing."
+    );
   }
   return normalizeMeetingLocation({
     name: event.meetingPoint,
@@ -1350,13 +1351,11 @@ function buildUpdateEventPatch(
   if (fields.endTimeMillis !== undefined) {
     patch.endTime = deps.timestampFromMillis(fields.endTimeMillis);
   }
-  if (meetingLocation !== undefined) {
-    patch.meetingLocation = meetingLocation;
-    patch.meetingPoint = meetingLocation.name;
-    patch.startingPointLat = meetingLocation.latitude;
-    patch.startingPointLng = meetingLocation.longitude;
-    patch.locationDetails = meetingLocation.notes ?? null;
-  }
+  patch.meetingLocation = meetingLocation;
+  patch.meetingPoint = meetingLocation.name;
+  patch.startingPointLat = meetingLocation.latitude;
+  patch.startingPointLng = meetingLocation.longitude;
+  patch.locationDetails = meetingLocation.notes ?? null;
   if (fields.eventPhotos !== undefined) {
     const eventPhotos = normalizeUploadedPhotosForFirestore(fields.eventPhotos);
     patch.eventPhotos = eventPhotos;
@@ -1609,35 +1608,7 @@ function assertValidMergedRunUpdate(
   const endTimeMillis = fields.endTimeMillis ??
     event.endTime.toMillis();
   assertValidEventTimeRange(startTimeMillis, endTimeMillis);
-  if (fields.meetingLocation !== undefined || hasLegacyLocationChange(fields)) {
-    normalizeMeetingLocationForUpdate(event, fields);
-    return;
-  }
-  assertValidCoordinatePair(
-    fields.startingPointLat !== undefined ?
-      fields.startingPointLat :
-      event.startingPointLat,
-    fields.startingPointLng !== undefined ?
-      fields.startingPointLng :
-      event.startingPointLng
-  );
-}
-
-/**
- * Throws when only one coordinate is present.
- * @param {number|null=} latitude Latitude.
- * @param {number|null=} longitude Longitude.
- */
-function assertValidCoordinatePair(
-  latitude?: number | null,
-  longitude?: number | null
-) {
-  if ((latitude == null) !== (longitude == null)) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Starting latitude and longitude must be provided together."
-    );
-  }
+  normalizeMeetingLocationForUpdate(event, fields);
 }
 
 /**

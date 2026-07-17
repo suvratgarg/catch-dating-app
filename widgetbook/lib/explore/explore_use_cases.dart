@@ -13,8 +13,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -33,6 +33,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_events_sec
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -56,6 +57,8 @@ const _delhi = CityData(
   latitude: 28.7041,
   longitude: 77.1025,
 );
+
+const _mapCenter = LocationCoordinate(19.076, 72.8777);
 
 ExploreCityPickerState _cityPickerState({
   CityData? selectedCity,
@@ -948,21 +951,23 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Filter glyph states',
-  type: ExploreFilterGlyphButton,
+  name: 'Counted filter action',
+  type: CatchIconButton,
   path: '[Explore]/Controls',
 )
-Widget exploreFilterGlyphButtonStates(BuildContext context) {
+Widget exploreCountedFilterActionStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreFilterGlyphButton',
-    catalogId: 'control.explore.filter_glyph_button',
+    title: 'CatchIconButton.counted filter action',
+    catalogId: 'catch.icon_button',
     children: [
       _StateCard(
         label: 'inactive',
         child: Center(
-          child: ExploreFilterGlyphButton(
-            activeCount: 0,
-            semanticLabel: 'Filters',
+          child: CatchIconButton.counted(
+            icon: CatchIcons.tuneRounded,
+            count: 0,
+            variant: CatchIconButtonVariant.plain,
+            tooltip: 'Filters',
             onTap: _noop,
           ),
         ),
@@ -970,9 +975,11 @@ Widget exploreFilterGlyphButtonStates(BuildContext context) {
       _StateCard(
         label: 'active count',
         child: Center(
-          child: ExploreFilterGlyphButton(
-            activeCount: 3,
-            semanticLabel: 'Filters, 3 active',
+          child: CatchIconButton.counted(
+            icon: CatchIcons.tuneRounded,
+            count: 3,
+            variant: CatchIconButtonVariant.plain,
+            tooltip: 'Filters, 3 active',
             onTap: _noop,
           ),
         ),
@@ -1396,7 +1403,11 @@ Widget exploreClubTagsStates(BuildContext context) {
       _StateCard(
         label: 'visible tags',
         child: ExploreClubTags(
-          state: ExploreClubCardState.from(_clubs[0], isSynthetic: false),
+          state: ExploreClubCardState.from(
+            _clubs[0],
+            isSynthetic: false,
+            l10n: context.l10n,
+          ),
         ),
       ),
       _StateCard(
@@ -1405,27 +1416,9 @@ Widget exploreClubTagsStates(BuildContext context) {
           state: ExploreClubCardState.from(
             _clubs[0].copyWith(tags: []),
             isSynthetic: false,
+            l10n: context.l10n,
           ),
         ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Dark pill states',
-  type: ExploreDarkPill,
-  path: '[Explore]/Cards',
-)
-Widget exploreDarkPillStates(BuildContext context) {
-  return const _CatalogScreen(
-    title: 'ExploreDarkPill',
-    catalogId: 'card.explore.feed.dark_pill',
-    children: [
-      _StateCard(label: 'default', child: ExploreDarkPill('412 members')),
-      _StateCard(
-        label: 'compact action',
-        child: ExploreDarkPill('View club', compact: true),
       ),
     ],
   );
@@ -1636,6 +1629,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
                 state: ExploreEventsEmptyState.from(
                   filters: const ExploreFilterSelection(),
                   searchQuery: 'pickleball supper',
+                  l10n: context.l10n,
                 ),
                 onClearSearch: _noop,
                 onClearFilters: _noop,
@@ -1656,6 +1650,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
                     timeFilter: ExploreTimeFilter.tonight,
                   ),
                   searchQuery: '',
+                  l10n: context.l10n,
                 ),
                 onSetTimeFilter: (_) {},
               ),
@@ -1859,31 +1854,6 @@ Widget moreActivityTypesRowStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Activity dot states',
-  type: ActivityDot,
-  path: '[Explore]/Rows',
-)
-Widget activityDotStates(BuildContext context) {
-  final run = eventActivityVisual(ActivityKind.socialRun, context: context);
-  final dinner = eventActivityVisual(ActivityKind.dinner, context: context);
-  return _CatalogScreen(
-    title: 'ActivityDot',
-    catalogId: 'row.explore.activity_type.dot',
-    children: [
-      _StateCard(
-        label: 'activity accents',
-        child: _InlineSwatches(
-          children: [
-            ActivityDot(color: run.accent),
-            ActivityDot(color: dinner.accent),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Activity skeleton states',
   type: EventTypeBrowseSkeleton,
   path: '[Explore]/Sections',
@@ -1911,30 +1881,35 @@ Widget exploreMapLauncherStates(BuildContext context) {
       _StateCard(
         label: 'empty count',
         child: _MapPillFrame(
-          child: CatchCountPill(
+          child: CatchCountPill.label(
             label: 'Map',
             icon: CatchIcons.map,
             semanticLabel: 'Map',
+            onPressed: _noop,
           ),
         ),
       ),
       _StateCard(
         label: 'with count',
         child: _MapPillFrame(
-          child: CatchCountPill(
-            label: 'Map · 6',
+          child: CatchCountPill.label(
+            label: 'Map',
             icon: CatchIcons.map,
+            count: 6,
             semanticLabel: 'Map, 6 events',
+            onPressed: _noop,
           ),
         ),
       ),
       _StateCard(
         label: 'pressed review target',
         child: _MapPillFrame(
-          child: CatchCountPill(
-            label: 'Map · 12',
+          child: CatchCountPill.label(
+            label: 'Map',
             icon: CatchIcons.map,
+            count: 12,
             semanticLabel: 'Map, 12 events',
+            onPressed: _noop,
           ),
         ),
       ),
@@ -1943,10 +1918,12 @@ Widget exploreMapLauncherStates(BuildContext context) {
         child: _MediaOverride(
           textScaler: const TextScaler.linear(2),
           child: _MapPillFrame(
-            child: CatchCountPill(
-              label: 'Map · 12',
+            child: CatchCountPill.label(
+              label: 'Map',
               icon: CatchIcons.map,
+              count: 12,
               semanticLabel: 'Map, 12 events',
+              onPressed: _noop,
             ),
           ),
         ),
@@ -2050,6 +2027,7 @@ Widget exploreMapRouteStates(BuildContext context) {
             seedFilters: const _FilterSeed(
               distance: ExploreDistanceFilter.threeKm,
             ),
+            deviceLocation: _mapCenter,
             child: const ExploreMapScreen(enableNetworkTiles: false),
           ),
         ),
@@ -2067,6 +2045,7 @@ class _ExploreScope extends StatelessWidget {
     this.viewModel,
     this.feed,
     this.uid = _viewerUid,
+    this.deviceLocation,
   });
 
   final Widget child;
@@ -2076,6 +2055,7 @@ class _ExploreScope extends StatelessWidget {
   final AsyncValue<ExploreViewModel>? viewModel;
   final AsyncValue<ExploreFeedViewModel>? feed;
   final String? uid;
+  final LocationCoordinate? deviceLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -2099,7 +2079,9 @@ class _ExploreScope extends StatelessWidget {
           (ref) => Stream<UserProfile?>.value(uid == null ? null : _viewer),
         ),
         cityListProvider.overrideWith((ref) async => const [_mumbai, _delhi]),
-        deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+        deviceLocationProvider.overrideWith(
+          () => _PreviewDeviceLocation(deviceLocation),
+        ),
         exploreSourceClubsProvider.overrideWithValue(effectiveSourceClubs),
         exploreClubsViewModelProvider.overrideWithValue(effectiveViewModel),
         exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
@@ -2174,9 +2156,13 @@ class _FilterSeed {
   }
 }
 
-class _NoDeviceLocation extends DeviceLocation {
+class _PreviewDeviceLocation extends DeviceLocation {
+  _PreviewDeviceLocation(this.value);
+
+  final LocationCoordinate? value;
+
   @override
-  Future<LocationCoordinate?> build() async => null;
+  Future<LocationCoordinate?> build() async => value;
 }
 
 class _ExploreBodySliverPreview extends ConsumerWidget {
@@ -2223,6 +2209,7 @@ class _ExploreEventsSliverPreview extends ConsumerWidget {
     return CustomScrollView(
       slivers: buildExploreEventsSlivers(
         ref.watch(exploreFeedViewModelProvider),
+        l10n: context.l10n,
         filters: filters,
         searchQuery: ref.watch(exploreSearchQueryProvider).trim(),
         onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
@@ -2425,21 +2412,6 @@ class _MapPillFrame extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _InlineSwatches extends StatelessWidget {
-  const _InlineSwatches({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s3,
-      runSpacing: CatchSpacing.s3,
-      children: children,
     );
   }
 }

@@ -16,6 +16,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
     'startTimeMillis',
     'endTimeMillis',
     'meetingPoint',
+    'meetingLocation',
     'startingPointLat',
     'startingPointLng',
     'distanceKm',
@@ -743,6 +744,9 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
             'minLength': 1,
             'maxLength': 120,
           },
+        },
+        'moduleSelectionConfigured': <String, Object?>{
+          'type': 'boolean',
         },
         'structureConfig': <String, Object?>{
           'type': 'object',

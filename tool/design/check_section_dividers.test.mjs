@@ -115,6 +115,48 @@ test("flags thin feature wrappers around CatchSection field rows", () => {
   assert.equal(findings[0].rule, "SECTION-WRAPPER-001");
 });
 
+test("flags feature row groups that manually assign sibling field dividers", () => {
+  const findings = scanSourceForSectionDividers({
+    relativePath: "lib/hosts/presentation/host_operations/host_account_screen.dart",
+    source: [
+      "class HostSettingsClubRows extends StatelessWidget {",
+      "  const HostSettingsClubRows({required this.clubs});",
+      "  final List<Club> clubs;",
+      "  @override",
+      "  Widget build(BuildContext context) => Column(children: [",
+      "    for (final club in clubs)",
+      "      CatchField.nav(",
+      "        title: 'Owner',",
+      "        divider: club != clubs.first,",
+      "      ),",
+      "  ]);",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "high");
+  assert.equal(findings[0].rule, "SECTION-DIVIDER-002");
+  assert.match(findings[0].reason, /CatchSection\.fieldRows/u);
+});
+
+test("allows CatchSection field rows to own sibling dividers", () => {
+  const findings = scanSourceForSectionDividers({
+    relativePath: "lib/hosts/presentation/host_operations/host_account_screen.dart",
+    source: [
+      "CatchSection.fieldRows(",
+      "  title: 'Clubs you host',",
+      "  children: [",
+      "    for (final club in clubs)",
+      "      CatchField.nav(title: 'Owner'),",
+      "  ],",
+      ")",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 0);
+});
+
 test("scanSectionDividers covers lib, test, and widgetbook sources", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-dividers-"));
   writeFile(

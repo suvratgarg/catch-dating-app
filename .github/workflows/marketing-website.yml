@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/actions/**"
       - ".github/workflows/marketing-website.yml"
+      - ".github/workflows/react-surface-validation.yml"
       - ".firebaserc"
       - "firebase.json"
       - "package.json"
@@ -13,13 +14,21 @@ on:
       - "packages/web-config/**"
       - "packages/web-ui/**"
       - "design/tokens/**"
+      - "design/components/**"
       - "design/web-ui/**"
       - "design/website/**"
       - "docs/audit_registry/web_shared_primitive_adoption.json"
+      - "docs/generated/react_dependency_graph/**"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
+      - "tool/design/check_component_lexicon.mjs"
+      - "tool/design/check_component_lexicon.test.mjs"
       - "tool/web/check_shared_web_ui_adoption.mjs"
       - "tool/web/check_storybook_visuals.mjs"
+      - "tool/web/check_react_controller_test_targets.mjs"
+      - "tool/web/react_controller_test_targets.json"
+      - "tool/web/react_dependency_graph.mjs"
+      - "tool/web/react_dependency_graph.test.mjs"
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
@@ -30,6 +39,7 @@ on:
     paths:
       - ".github/actions/**"
       - ".github/workflows/marketing-website.yml"
+      - ".github/workflows/react-surface-validation.yml"
       - ".firebaserc"
       - "firebase.json"
       - "package.json"
@@ -38,13 +48,21 @@ on:
       - "packages/web-config/**"
       - "packages/web-ui/**"
       - "design/tokens/**"
+      - "design/components/**"
       - "design/web-ui/**"
       - "design/website/**"
       - "docs/audit_registry/web_shared_primitive_adoption.json"
+      - "docs/generated/react_dependency_graph/**"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
+      - "tool/design/check_component_lexicon.mjs"
+      - "tool/design/check_component_lexicon.test.mjs"
       - "tool/web/check_shared_web_ui_adoption.mjs"
       - "tool/web/check_storybook_visuals.mjs"
+      - "tool/web/check_react_controller_test_targets.mjs"
+      - "tool/web/react_controller_test_targets.json"
+      - "tool/web/react_dependency_graph.mjs"
+      - "tool/web/react_dependency_graph.test.mjs"
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
@@ -68,98 +86,10 @@ permissions:
 jobs:
   validate:
     name: Validate marketing website
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - uses: ./.github/actions/setup-flutter
-
-      - run: flutter pub get
-
-      - run: npm ci
-
-      - name: Check design tokens
-        run: npm run web:tokens:check
-
-      - name: Check marketing media
-        run: node tool/marketing/sync_website_media.mjs --check
-
-      - name: Check marketing screenshot design context
-        run: node tool/marketing/export_app_screenshots.mjs --check-design-json
-
-      - name: Check generated organizer listings
-        run: npm --workspace catch-marketing run check:organizer-listings
-
-      - name: Check organizer promotion bridge
-        run: node tool/organizer_intake/check_promotion_bridge.mjs
-
-      - name: Check marketing route contracts
-        run: npm --workspace catch-marketing run check:routes
-
-      - name: Build marketing website
-        run: npm run web:marketing:build
-
-      - name: Check shared web UI adoption
-        run: npm run web:shared-ui-adoption:check
-
-      - name: Run shared web UI tests and typecheck
-        run: npm run web:ui:test && npm run web:ui:typecheck
-
-      - name: Install Storybook accessibility browser
-        run: npx playwright install --with-deps chromium
-
-      - name: Build marketing Storybook
-        run: npm --workspace catch-marketing run build:storybook
-
-      - name: Run marketing and shared web UI visual regression
-        id: visual-check
-        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.update_visual_baselines }}
-        run: npm --workspace catch-marketing run test:visual
-
-      - name: Capture marketing and shared web UI visual baselines
-        id: visual-update
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines }}
-        run: |
-          node tool/web/check_storybook_visuals.mjs --surface website --update
-          node tool/web/check_storybook_visuals.mjs --surface webui --update
-
-      - name: Upload marketing visual diagnostics
-        if: ${{ always() && steps.visual-check.outcome == 'failure' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: marketing-visual-diagnostics-${{ github.run_id }}
-          path: |
-            artifacts/visual-actuals/website
-            artifacts/visual-actuals/webui
-            artifacts/visual-diffs/website
-            artifacts/visual-diffs/webui
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Upload marketing visual baselines
-        if: ${{ steps.visual-update.outcome == 'success' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: marketing-visual-baselines-${{ github.run_id }}
-          path: |
-            design/visual_baselines/website/linux
-            design/visual_baselines/webui/linux
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Run Storybook accessibility gate
-        run: npm --workspace catch-marketing run test:storybook:a11y
+    uses: ./.github/workflows/react-surface-validation.yml
+    with:
+      surface: marketing
+      update_visual_baselines: ${{ github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines }}
 
   deploy:
     name: Deploy marketing Hosting

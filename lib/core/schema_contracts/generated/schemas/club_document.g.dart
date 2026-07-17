@@ -874,6 +874,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                 'maxLength': 120,
               },
             },
+            'moduleSelectionConfigured': <String, Object?>{
+              'type': 'boolean',
+            },
             'structureConfig': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -1075,6 +1078,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                   'minLength': 1,
                   'maxLength': 120,
                 },
+              },
+              'moduleSelectionConfigured': <String, Object?>{
+                'type': 'boolean',
               },
               'structureConfig': <String, Object?>{
                 'type': 'object',

@@ -5,6 +5,9 @@ import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const defaultCatalog = fromRepo("lib/l10n/app_en.arb");
+const defaultIdentifierAllowlist = fromRepo(
+  "tool/copy/mobile_copy_identifier_allowlist.json",
+);
 const validAudiences = new Set(["consumer", "host", "shared"]);
 const validOwners = new Set([
   "engineering",
@@ -20,8 +23,9 @@ const isCliEntrypoint =
 
 if (isCliEntrypoint) runCli();
 
-export function validateMobileCopyCatalog(value) {
+export function validateMobileCopyCatalog(value, options = {}) {
   const errors = [];
+  const identifierAllowlist = options.identifierAllowlist ?? new Set();
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return ["Catalog must be a JSON object."];
   }
@@ -70,6 +74,20 @@ export function validateMobileCopyCatalog(value) {
   for (const key of metadataKeys) {
     if (!Object.hasOwn(value, key)) errors.push(`@${key}: metadata has no message.`);
   }
+  for (const key of messageKeys) {
+    const message = value[key];
+    if (
+      key.includes("Visiblecopy") &&
+      typeof message === "string" &&
+      /^[a-z][a-zA-Z0-9_]*$/.test(message) &&
+      !identifierAllowlist.has(key)
+    ) {
+      errors.push(
+        `${key}: identifier-shaped Visiblecopy value "${message}" must not ` +
+        "be stored in ARB or used as a runtime key.",
+      );
+    }
+  }
   return errors;
 }
 
@@ -95,8 +113,14 @@ function runCli() {
   const catalogPath = argumentValue("--catalog")
     ? path.resolve(argumentValue("--catalog"))
     : defaultCatalog;
+  const allowlistPath = argumentValue("--identifier-allowlist")
+    ? path.resolve(argumentValue("--identifier-allowlist"))
+    : defaultIdentifierAllowlist;
   const value = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
-  const errors = validateMobileCopyCatalog(value);
+  const identifierAllowlist = new Set(
+    JSON.parse(fs.readFileSync(allowlistPath, "utf8")),
+  );
+  const errors = validateMobileCopyCatalog(value, {identifierAllowlist});
   if (errors.length > 0) {
     console.error(`Mobile copy catalog is invalid (${errors.length} errors):`);
     for (const error of errors) console.error(`- ${error}`);

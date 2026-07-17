@@ -61,10 +61,14 @@ final class CatchesSurfaceFixtures {
 
   static Event closingSoonEvent() {
     final end = now.subtract(const Duration(hours: 23, minutes: 10));
-    return openWindowEvent(id: 'design-catches-closing-soon').copyWith(
+    final event = openWindowEvent(id: 'design-catches-closing-soon');
+    return event.copyWith(
       startTime: end.subtract(const Duration(hours: 1)),
       endTime: end,
       meetingPoint: 'Joggers Park gate',
+      meetingLocation: event.meetingLocation!.copyWith(
+        name: 'Joggers Park gate',
+      ),
       checkedInCount: 11,
       description:
           'A smaller easy loop where the catch window is closing soon.',

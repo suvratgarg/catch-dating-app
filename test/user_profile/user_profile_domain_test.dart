@@ -203,6 +203,24 @@ void main() {
       expect(updated.last.prompt, isNull);
     });
 
+    test('normalizeProfilePhotos preserves unknown prompt display copy', () {
+      final updated = normalizeProfilePhotos([
+        photo(
+          0,
+          prompt: const PhotoPromptAnswer(
+            photoIndex: 0,
+            promptId: 'legacy-photo-prompt',
+            prompt: 'A legacy photo prompt',
+            caption: 'Keep this caption',
+          ),
+        ),
+      ]);
+
+      expect(updated.single.prompt?.promptId, 'legacy-photo-prompt');
+      expect(updated.single.prompt?.prompt, 'A legacy photo prompt');
+      expect(updated.single.prompt?.caption, 'Keep this caption');
+    });
+
     test('replaceProfilePhotoPromptAtPosition makes the edited slot win', () {
       final updated = replaceProfilePhotoPromptAtPosition(
         profilePhotos: [

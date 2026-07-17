@@ -1,6 +1,6 @@
 {
-  "version": "1.5.34",
-  "updated": "2026-07-12",
+  "version": "1.5.39",
+  "updated": "2026-07-17",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -409,12 +409,13 @@
         "flutter test test/explore/explore_widgets_test.dart --plain-name 'Explore header'",
         "flutter test test/chats/chat_inbox_screen_test.dart",
         "flutter test test/profile/profile_widgets_test.dart --plain-name 'Profile header'",
+        "node tool/run.mjs check design:screen-top-bar-contracts",
         "flutter analyze --no-fatal-infos lib/core/widgets/catch_top_bar.dart lib/dashboard/presentation/dashboard_home_screen.dart lib/dashboard/presentation/activity_screen.dart lib/explore/presentation/widgets/explore_header.dart lib/chats/presentation/inbox/widgets/chats_sliver_header.dart lib/user_profile/presentation/profile_screen.dart lib/safety/presentation/settings_screen.dart test/core/catch_top_bar_test.dart test/explore/explore_widgets_test.dart test/chats/chat_inbox_screen_test.dart test/profile/profile_widgets_test.dart widgetbook/lib/dashboard/dashboard_use_cases.dart widgetbook/lib/profiles/profile_use_cases.dart",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "bash tool/widget_cleanup_scan.sh",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "This pattern separates root screen voice chrome from compact navigation chrome. CatchScreenHeaderTitle owns Archivo headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots."
+      "notes": "This pattern separates root screen voice chrome from compact navigation chrome. CatchScreenHeaderTitle owns Archivo headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots. The screen-top-bar contract gate inventories every compact and identity app bar, exact raw media-hero exception, feature-owned Screen/Scaffold/Header/TopBar/HeaderContent class including delegated State bodies, and shell-covering editor launcher. Every discovered surface in an aligned adopter path must retain a canonical root owner, so one correct header cannot hide a second drifting implementation."
     },
     {
       "id": "ARCH-UI-STATE-001",
@@ -467,10 +468,23 @@
           "lastReviewedPass": "2026-07-02-event-detail-display-state-ownership"
         },
         {
+          "path": "lib/events/presentation/event_detail_information_state.dart",
+          "role": "provider-free Event Detail information-section adapter for non-overlapping sign-up and good-to-know fact rows, localized activity expectations, and invariant validation",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-event-detail-information-state-registration"
+        },
+        {
           "path": "test/events/event_detail_screen_state_test.dart",
           "role": "EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState behavior coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-01-event-detail-booking-dock-state"
+        },
+        {
+          "path": "test/events/event_detail_information_state_test.dart",
+          "role": "EventDetailInformationState section ownership, row projection, and invariant behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-event-detail-information-state-registration"
         },
         {
           "path": "lib/swipes/presentation/catches_event_screen_state.dart",
@@ -670,19 +684,6 @@
           "role": "Host Operations clubs and insights state behavior coverage for selected club, tab, owner role, analytics query, custom range, and event scope",
           "status": "aligned",
           "lastReviewedPass": "2026-07-03-host-operations-screen-state"
-        },
-        {
-          "path": "lib/hosts/presentation/club_management/host_create_club_screen_state.dart",
-          "role": "provider-free Host Create/Edit Club route access-state adapter for uid loading, owner/co-host edit mode, media-only access, and forbidden route branches",
-          "providerFree": true,
-          "status": "aligned",
-          "lastReviewedPass": "2026-07-03-host-create-club-screen-state"
-        },
-        {
-          "path": "test/hosts/host_club_edit_state_test.dart",
-          "role": "HostClubEditState owner, co-host, loading identity, missing identity, and forbidden identity behavior coverage",
-          "status": "aligned",
-          "lastReviewedPass": "2026-07-03-host-create-club-screen-state"
         },
         {
           "path": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
@@ -1177,6 +1178,306 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "notes": "The ARB, native JSON, and notification JSON files are the editable product sources. Generated Dart, plist strings, and TypeScript files are consumers and must not be edited by hand."
+    },
+    {
+      "id": "ARCH-SHELL-SCROLL-001",
+      "name": "Adaptive tab-root scroll clearance",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-shell-scroll-001-adaptive-tab-root-scroll-clearance",
+      "prototypeFiles": [
+        "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
+        "lib/core/presentation/app_shell_active_tab.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/core/widgets/catch_tab_bar.dart",
+        "lib/core/widgets/catch_tabbed_screen.dart",
+        "test/core/app_shell_test.dart",
+        "test/core/semantic_layout_contracts_test.dart",
+        "tool/design/tab_root_scroll_contracts.json",
+        "tool/design/check_tab_root_scroll_contracts.mjs"
+      ],
+      "adopters": [
+        {
+          "path": "lib/core/presentation/app_shell.dart",
+          "role": "consumer shell delegates adaptive placement and raw exclusion publication",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "role": "host shell delegates the same adaptive placement contract",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
+          "role": "consumer Home populated root terminal",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/explore/presentation/explore_screen.dart",
+          "role": "consumer Explore feed terminal while map overlay keeps SafeArea-relative clearance",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+          "role": "consumer Chats root terminal",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "consumer Profile delegates per-tab page owners and terminals to the shared tabbed shell while retaining its feature-specific Preview scroll bridge",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "role": "host Today and Events ListView terminals",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+          "role": "host Inbox sliver terminal",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-12-tab-root-scroll-clearance"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_route_providers.dart",
+          "role": "host Clubs uses per-club, per-page keyed scroll owners and terminals, including the embedded consumer Club Detail preview",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When shell placement, tab geometry, root routes, or terminal primitives change, update both shells, every manifest owner, the architecture exhibit, Widgetbook platform states, and the known-bad scanner fixtures in one pass.",
+      "requiredChecks": [
+        "node tool/design/check_tab_root_scroll_contracts.mjs --check",
+        "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "flutter test test/core/semantic_layout_contracts_test.dart test/core/app_shell_test.dart test/routing/app_shell_guest_cta_test.dart test/routing/host_shell_navigation_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "The shell publishes placement; root scroll primitives consume it. Android anchored chrome is already in layout, iOS floating chrome is a raw exclusion, and transient no-bar shells fall back to device safe area."
+    },
+    {
+      "id": "ARCH-TABBED-SCREEN-001",
+      "name": "Route-owned nested tab screen shell",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-tabbed-screen-001-route-owned-nested-tab-screen-shell",
+      "prototypeFiles": [
+        "lib/core/widgets/catch_tabbed_screen.dart",
+        "lib/core/widgets/catch_tab_rail.dart",
+        "lib/user_profile/presentation/profile_screen.dart",
+        "test/profile/profile_widgets_test.dart",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "adopters": [
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "reference three-page adopter with a route-owned typed controller, native paging, shared page scroll owners, and a feature-owned two-way Preview scroll bridge",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "role": "aligned four-page adopter with independent per-club offsets and a direct embedded read-only Club Detail preview",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        },
+        {
+          "path": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+          "role": "sliver-native consumer Club Detail adapter that keeps route chrome and interactions outside the embedded Host Preview page",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-host-club-profile-parity-preview"
+        }
+      ],
+      "retiredSymbols": [
+        {
+          "symbol": "ProfileTabScrollView",
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "reason": "The feature-local overlap and focus wrapper is now the shared CatchTabbedPageScrollView."
+        },
+        {
+          "symbol": "HostClubPreviewPane",
+          "path": "lib/hosts/presentation/host_operations/host_club_preview.dart",
+          "reason": "The second-click preview adapter was replaced by direct composition of the canonical consumer Club Detail slivers."
+        }
+      ],
+      "requiredBackPropagation": "When nested title, pinned rail, paging, overlap, focus, restoration, terminal, or embedded-preview policy changes, inspect Profile and Host Clubs together, keep typed controllers route-owned, and update the component and scroll contracts in the same pass.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/clubs/clubs_controllers_test.dart test/clubs/club_hero_app_bar_test.dart test/clubs/club_detail_read_only_preview_test.dart",
+        "flutter analyze --no-fatal-infos lib/core/widgets/catch_tabbed_screen.dart lib/core/widgets/catch_tab_rail.dart lib/user_profile/presentation/profile_screen.dart lib/hosts/presentation/host_operations/host_clubs_scaffold.dart lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+        "node tool/design/check_component_contracts.mjs",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "The shared shell owns composition mechanics only. Feature state, async policy, callbacks, and specialized inner-scroll behavior remain feature-owned. Embedded detail previews reuse canonical slivers and disable actions at one boundary instead of cloning the public screen."
+    },
+    {
+      "id": "ARCH-PROVIDER-001",
+      "name": "Feature-owned startup orchestration",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-provider-001-feature-owned-startup-orchestration",
+      "prototypeFiles": [
+        "lib/user_profile/data/profile_location_initializer.dart",
+        "lib/user_profile/data/profile_location_initializer.g.dart",
+        "lib/app.dart",
+        "test/user_profile/profile_location_initializer_test.dart",
+        "tool/architecture/provider_graph.dart",
+        "tool/architecture/provider_graph_reviews.json"
+      ],
+      "adopters": [
+        {
+          "path": "lib/user_profile/data/profile_location_initializer.dart",
+          "role": "reference feature-owned keepAlive startup provider that combines current-profile state with feature-neutral device-location and city services before writing through the owning repository",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-13-provider-graph-architecture"
+        },
+        {
+          "path": "lib/app.dart",
+          "role": "composition root that activates the public feature-owned initializer without owning profile persistence or location policy",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-13-provider-graph-architecture"
+        },
+        {
+          "path": "test/user_profile/profile_location_initializer_test.dart",
+          "role": "provider-container proof that app-lifetime orchestration resolves passive location and persists it through the feature repository",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-13-provider-graph-architecture"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When a core provider begins watching feature data, move the orchestration to the owning feature or introduce a feature-neutral inversion contract; update the provider graph review, exhibit, and focused provider-container test in the same pass.",
+      "requiredChecks": [
+        "flutter test test/user_profile/profile_location_initializer_test.dart",
+        "dart run tool/architecture/provider_graph.dart --check",
+        "node tool/architecture/check_dependency_direction.mjs",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The app root may activate feature startup work. It must not make core own a feature repository or profile stream."
+    },
+    {
+      "id": "ARCH-PROVIDER-CODEGEN-001",
+      "name": "Generated auto-dispose provider family",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-provider-codegen-001-generated-auto-dispose-provider-family",
+      "prototypeFiles": [
+        "lib/clubs/data/club_name_lookup.dart",
+        "lib/clubs/data/club_name_lookup.g.dart",
+        "test/architecture/generated_provider_family_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/clubs/data/club_name_lookup.dart",
+          "role": "reference generated Future provider family keyed by a value-equality club-id query",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        },
+        {
+          "path": "lib/event_success/event_success_companion_clock.dart",
+          "role": "generated auto-dispose Stream provider for the Event Success companion clock",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        },
+        {
+          "path": "lib/explore/data/explore_recommendations_repository.dart",
+          "role": "generated Future provider family keyed by a value-equality Explore recommendation query",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        },
+        {
+          "path": "lib/public_profile/data/public_profiles_lookup.dart",
+          "role": "generated Future provider family keyed by a value-equality batched public-profile query",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        },
+        {
+          "path": "test/architecture/generated_provider_family_test.dart",
+          "role": "ProviderContainer proof that equivalent query keys and generated override contracts remain stable across all four adopters",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-16-generated-provider-families"
+        }
+      ],
+      "exceptions": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "reason": "_hostClubsForUserProvider remains the reviewed private part-file adapter exception recorded in provider_graph_reviews.json."
+        }
+      ],
+      "requiredBackPropagation": "When a handwritten feature-owned async provider family is migrated, preserve its provider name, family call shape, value-equality key semantics, lifecycle, .future access, and override contracts; regenerate adjacent output and remove the matching planned manual-provider review decision.",
+      "requiredChecks": [
+        "flutter test test/architecture/generated_provider_family_test.dart",
+        "flutter analyze --no-fatal-infos lib/clubs/data/club_name_lookup.dart lib/event_success/event_success_companion_clock.dart lib/explore/data/explore_recommendations_repository.dart lib/public_profile/data/public_profiles_lookup.dart test/architecture/generated_provider_family_test.dart",
+        "dart run tool/architecture/provider_graph.dart --check",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "Generated function providers are auto-dispose by default. KeepAlive remains an explicit reviewed lifecycle decision with a rationale marker."
+    },
+    {
+      "id": "ARCH-FORM-DESCRIPTOR-001",
+      "name": "Typed form row orchestration",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-form-descriptor-001-typed-form-row-orchestration",
+      "prototypeFiles": [
+        "lib/core/forms/catch_form_descriptors.dart",
+        "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "test/core/forms/catch_form_descriptors_test.dart",
+        "test/profile/self_profile_edit_tab_state_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
+          "role": "reference About You section adopter with one typed UpdateUserProfilePatch save delegate and shared accordion wiring",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "role": "reference feature adapter for read, text, choice, multi-choice, and custom height descriptors without moving profile policy into core",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "path": "test/core/forms/catch_form_descriptors_test.dart",
+          "role": "typed descriptor, shared accordion, and single save-delegate contract coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-FORM-DESCRIPTOR-001-CONSUMER-REMAINDER",
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "reason": "Running and Lifestyle intentionally retain SelfProfile descriptors until the About You prototype receives owner API review.",
+          "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "id": "ARCH-FORM-DESCRIPTOR-001-HOST-EDIT",
+          "path": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
+          "reason": "Host Club migration is ordered after owner approval and the edit-spec Phase 3 immediate-save model.",
+          "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "id": "ARCH-FORM-DESCRIPTOR-001-ONBOARDING",
+          "path": "lib/onboarding/presentation",
+          "reason": "Onboarding adopts opportunistically only after the reference prototype is approved.",
+          "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When descriptor fields, save semantics, accordion ownership, or error mapping change, update the About You prototype, core descriptor tests, architecture exhibit, and every promoted adopter before broad rollout.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/core/forms/catch_form_descriptors_test.dart test/profile/self_profile_edit_tab_state_test.dart test/profile/profile_widgets_test.dart",
+        "flutter analyze --no-fatal-infos lib/core/forms/catch_form_descriptors.dart lib/user_profile/presentation/self_profile_edit_tab_state.dart lib/user_profile/presentation/widgets/profile_tab.dart test/core/forms/catch_form_descriptors_test.dart test/profile/self_profile_edit_tab_state_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "Only the consumer Profile About You section is promoted. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope."
     }
   ]
 }

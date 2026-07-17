@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import type {PublicReviewCardModel} from "../../shared/ui/primitives";
 import type {HostListing, HostListingReview} from "../organizers/types";
 
@@ -66,9 +67,9 @@ export function buildListingReviewSummary(
     displayRating,
     displayReviewCount,
     ownerPromptStats: [
-      {label: "published responses", value: ownerResponseCount},
-      {label: "verified signals", value: verifiedCount},
-      {label: "public reviews", value: publicReviews.length},
+      {label: websiteCopy["reviewmodel_0500"], value: ownerResponseCount},
+      {label: websiteCopy["reviewmodel_0501"], value: verifiedCount},
+      {label: websiteCopy["reviewmodel_0499"], value: publicReviews.length},
     ],
     publicReviews,
     verifiedCount,

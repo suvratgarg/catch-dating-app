@@ -43,6 +43,7 @@ abstract final class CatchIcons {
   static IconData get nearMeOutlined => PhosphorIconsRegular.navigationArrow;
   static IconData get pin => PhosphorIconsBold.mapPin;
   static IconData get pinOutlined => PhosphorIconsRegular.mapPin;
+  static IconData get fitMap => PhosphorIconsRegular.frameCorners;
 
   // ── Filters / chips ──────────────────────────────────────────────────────
   static IconData get joined => PhosphorIconsRegular.checkCircle;
@@ -53,7 +54,7 @@ abstract final class CatchIcons {
   static IconData get clearCircle => PhosphorIconsRegular.xCircle;
 
   // ── Browse modes / navigation ────────────────────────────────────────────
-  static IconData get map => PhosphorIconsBold.mapTrifold;
+  static IconData get map => PhosphorIconsRegular.mapTrifold;
   static IconData get list => PhosphorIconsBold.list;
   static IconData get search => PhosphorIconsRegular.magnifyingGlass;
   static IconData get add => PhosphorIconsBold.plus;

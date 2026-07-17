@@ -1,19 +1,10 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
@@ -22,34 +13,14 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-const EdgeInsets _foundationLineIconInset = EdgeInsets.only(
-  top: CatchSpacing.micro2,
-);
-const EdgeInsets _setupNestedControlPadding = EdgeInsets.only(
-  left: CatchSpacing.s4,
-  bottom: CatchSpacing.s2,
-);
-const EdgeInsets _attendeePromptPreviewPadding = EdgeInsets.only(
-  top: CatchSpacing.s2,
-);
-const EdgeInsets _attendeePromptPreviewIconInset = EdgeInsets.only(
-  top: CatchSpacing.micro2,
-);
-const EdgeInsets _disclosureChildrenPadding = EdgeInsets.only(
-  top: CatchSpacing.s2,
-);
-const EdgeInsets _disclosureSubtitlePadding = EdgeInsets.only(
-  top: CatchSpacing.s1,
-);
+typedef EventSuccessHostDraftUpdate =
+    EventSuccessHostDraft Function(EventSuccessHostDraft current);
 
-/// Shared event-success setup body used by both the create-event last step
-/// (`EventSuccessDefaultsPanel`) and the Host Manage Setup tab (`SetupTab`).
+/// Compact Event Success setup shared by create-event defaults and Host Manage.
 ///
-/// Owns the visual layout of the configuration UI — preset preview, guide
-/// notes, match clue questions, structure, and tools — and emits changes back
-/// to the host via [onDraftChanged] and [onAttendeePromptChanged]. The parent
-/// widget is responsible for persistence, freeze/notice banners, and any
-/// surrounding chrome.
+/// Text remains raw while the host edits. Domain normalization happens only at
+/// the explicit persistence boundary, so clearing or replacing a value never
+/// causes the UI to fight the user's input.
 class EventSuccessSetupBody extends StatefulWidget {
   const EventSuccessSetupBody({
     super.key,
@@ -57,21 +28,21 @@ class EventSuccessSetupBody extends StatefulWidget {
     required this.eventFormat,
     required this.targetAttendeeCount,
     required this.attendeePrompt,
-    required this.onDraftChanged,
+    required this.onChanged,
     required this.onAttendeePromptChanged,
     this.editable = true,
     this.showResetToRecommended = false,
     this.onResetToRecommended,
   }) : assert(
          !showResetToRecommended || onResetToRecommended != null,
-         'onResetToRecommended must be provided when showResetToRecommended is true',
+         'onResetToRecommended must be provided when reset is visible',
        );
 
   final EventSuccessHostDraft draft;
   final EventFormatSnapshot eventFormat;
   final int targetAttendeeCount;
   final String? attendeePrompt;
-  final ValueChanged<EventSuccessHostDraft> onDraftChanged;
+  final ValueChanged<EventSuccessHostDraftUpdate> onChanged;
   final ValueChanged<String> onAttendeePromptChanged;
   final bool editable;
   final bool showResetToRecommended;
@@ -87,6 +58,8 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
   );
   late final TextEditingController _attendeePromptController =
       TextEditingController(text: widget.attendeePrompt ?? '');
+  bool _hostGoalOpen = false;
+  bool _attendeePromptOpen = false;
 
   @override
   void didUpdateWidget(covariant EventSuccessSetupBody oldWidget) {
@@ -108,918 +81,390 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
 
   @override
   Widget build(BuildContext context) {
-    final draft = _syncModuleBooleans(widget.draft);
+    final draft = widget.draft;
     final profile = EventSuccessActivityProfile.forFormat(
       widget.eventFormat,
-      targetAttendeeCount: draft.targetAttendeeCount,
+      targetAttendeeCount: widget.targetAttendeeCount,
     );
+    final liveTools = profile.recommendations
+        .where((recommendation) => recommendation.selectable)
+        .where((recommendation) => recommendation.module.hostConfigurable)
+        .toList(growable: false);
+    final showStructureEditor =
+        draft.isModuleSelected(EventSuccessModuleCatalog.microPods.id) ||
+        draft.isModuleSelected(EventSuccessModuleCatalog.guidedRotations.id) ||
+        draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id) ||
+        draft.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return CatchSectionList(
       children: [
-        PresetReviewCard(
-          profile: profile,
-          draft: draft,
-          targetAttendeeCount: widget.targetAttendeeCount,
-          showReset: widget.showResetToRecommended,
-          onReset: widget.onResetToRecommended,
-        ),
-        gapH8,
-        SetupDisclosureSection(
-          title: context.l10n.eventSuccessEventSuccessSetupBodyTitleGuideNotes,
-          subtitle: _guideNotesSubtitle(draft, widget.attendeePrompt),
-          initiallyExpanded: true,
+        CatchSection.fieldRows(
+          first: true,
+          title: context.l10n.eventSuccessEventSuccessHostSetupTitleYourPlan,
           children: [
-            CatchField.input(
-              title:
-                  context.l10n.eventSuccessEventSuccessSetupBodyTitleHostGoal,
-              controller: _hostGoalController,
-              enabled: widget.editable,
-              placeholder: draft.hostGoal,
-              inputFormatters: [LengthLimitingTextInputFormatter(300)],
-              minLines: 2,
-              maxLines: 4,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.newline,
-              onChanged: (value) {
-                widget.onDraftChanged(
-                  draft.copyWith(
-                    hostGoal: _normalizedRequired(
-                      value,
-                      fallback: draft.hostGoal,
-                    ),
+            CatchField.read(
+              title: profile.formatLabel,
+              body: profile.summary,
+              valueText: context.l10n
+                  .eventSuccessEventSuccessSetupBodyVisiblecopyMinimumcapacityMaximumcapacityGuests(
+                    minimumCapacity: draft.playbook.capacity.min,
+                    maximumCapacity: draft.playbook.capacity.max,
                   ),
-                );
-              },
+              action:
+                  widget.showResetToRecommended &&
+                      widget.onResetToRecommended != null
+                  ? CatchTextButton(
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessSetupBodyLabelReset,
+                      onPressed: widget.onResetToRecommended,
+                    )
+                  : null,
             ),
-            gapH12,
-            CatchField.input(
+            CatchField.inputActions(
               title: context
                   .l10n
-                  .eventSuccessEventSuccessSetupBodyTitleAttendeePrompt,
-              isOptional: true,
-              controller: _attendeePromptController,
+                  .eventSuccessEventSuccessSetupBodyTitleYourGoalForTheEvent,
+              controller: _hostGoalController,
+              open: _hostGoalOpen,
+              onOpenChanged: (open) =>
+                  setState(() => _hostGoalOpen = open && widget.editable),
+              onCancel: _cancelHostGoal,
+              onSubmit: _submitHostGoal,
               enabled: widget.editable,
-              placeholder: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodyPlaceholderPromptAttendeesBeforeOr,
+              inputHint: draft.hostGoal,
               inputFormatters: [LengthLimitingTextInputFormatter(300)],
               minLines: 2,
               maxLines: 4,
-              textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.newline,
-              onChanged: widget.onAttendeePromptChanged,
+              error: _hostGoalController.text.trim().isEmpty
+                  ? context
+                        .l10n
+                        .eventSuccessEventSuccessHostSetupTextAddAGoalSoTheLiveGuideKnowsWhatToAimFor
+                  : null,
+              onChanged: (_) => setState(() {}),
             ),
-            AttendeePromptPreview(
-              text: _attendeePromptPreview(profile, widget.attendeePrompt),
-            ),
-          ],
-        ),
-        gapH8,
-        StageCard(
-          title: context
-              .l10n
-              .eventSuccessEventSuccessSetupBodyTitleWhenPeopleArrive,
-          subtitle: context
-              .l10n
-              .eventSuccessEventSuccessSetupBodySubtitleCheckInStaysReliable,
-          children: [
-            FoundationLine(
+            CatchField.inputActions(
               title: context
                   .l10n
-                  .eventSuccessEventSuccessSetupBodyTitleCheckAttendeesInAnd,
-              subtitle: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodySubtitleArrivalIsTheSource,
-            ),
-            FoundationLine(
-              title: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodyTitleReadABriefWelcome,
-              subtitle: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodySubtitleAShortHostOpener,
-            ),
-            for (final recommendation in _stageRecommendations(
-              profile,
-              _SetupLifecycleStage.arrival,
-            ))
-              RecommendationSwitch(
-                recommendation: recommendation,
-                active: draft.isModuleSelected(recommendation.module.id),
-                onChanged: widget.editable && recommendation.selectable
-                    ? (_) => _emitModuleToggle(draft, recommendation.module.id)
-                    : null,
-              ),
-          ],
-        ),
-        gapH8,
-        StageCard(
-          title:
-              context.l10n.eventSuccessEventSuccessSetupBodyTitleDuringTheEvent,
-          subtitle: context
-              .l10n
-              .eventSuccessEventSuccessSetupBodySubtitleToolsTheHostRuns,
-          children: [
-            for (final recommendation in _stageRecommendations(
-              profile,
-              _SetupLifecycleStage.during,
-            )) ...[
-              RecommendationSwitch(
-                recommendation: recommendation,
-                active: draft.isModuleSelected(recommendation.module.id),
-                onChanged: widget.editable && recommendation.selectable
-                    ? (_) => _emitModuleToggle(draft, recommendation.module.id)
-                    : null,
-              ),
-              if (recommendation.module.id ==
-                      EventSuccessModuleCatalog.guidedRotations.id &&
-                  draft.isModuleSelected(
-                    EventSuccessModuleCatalog.guidedRotations.id,
-                  ))
-                SetupChoiceChips<int?>(
-                  label: context
-                      .l10n
-                      .eventSuccessEventSuccessSetupBodyLabelRotationCadence,
-                  options: [
-                    CatchOption<int?>(
-                      value: null,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabelNoTimedRotation,
-                    ),
-                    CatchOption(
-                      value: 10,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel10Min,
-                    ),
-                    CatchOption(
-                      value: 15,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel15Min,
-                    ),
-                    CatchOption(
-                      value: 20,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel20Min,
-                    ),
-                    CatchOption(
-                      value: 30,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel30Min,
-                    ),
-                  ],
-                  value: draft.structureConfig.rotationIntervalMinutes,
-                  enabled: widget.editable,
-                  onChanged: (interval) {
-                    widget.onDraftChanged(
-                      draft.copyWith(
-                        structureConfig: draft.structureConfig.copyWith(
-                          rotationIntervalMinutes: interval,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              if (recommendation.module.id ==
-                      EventSuccessModuleCatalog.liveReveal.id &&
-                  draft.isModuleSelected(
-                    EventSuccessModuleCatalog.liveReveal.id,
-                  ))
-                SetupChoiceChips<int>(
-                  label: _revealCountdownLabel(draft),
-                  options: [
-                    CatchOption(
-                      value: 0,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabelOff,
-                    ),
-                    CatchOption(
-                      value: 5,
-                      label:
-                          context.l10n.eventSuccessEventSuccessSetupBodyLabel5s,
-                    ),
-                    CatchOption(
-                      value: 10,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel10s,
-                    ),
-                    CatchOption(
-                      value: 15,
-                      label: context
-                          .l10n
-                          .eventSuccessEventSuccessSetupBodyLabel15s,
-                    ),
-                  ],
-                  value: draft.structureConfig.revealCountdownSeconds,
-                  enabled: widget.editable,
-                  onChanged: (seconds) {
-                    widget.onDraftChanged(
-                      draft.copyWith(
-                        structureConfig: draft.structureConfig.copyWith(
-                          revealCountdownSeconds: seconds,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-            ],
-          ],
-        ),
-        gapH8,
-        StageCard(
-          title:
-              context.l10n.eventSuccessEventSuccessSetupBodyTitleAfterTheEvent,
-          subtitle: context
-              .l10n
-              .eventSuccessEventSuccessSetupBodySubtitleWrapUpToolsFor,
-          children: [
-            for (final recommendation in _stageRecommendations(
-              profile,
-              _SetupLifecycleStage.after,
-            ))
-              RecommendationSwitch(
-                recommendation: recommendation,
-                active: draft.isModuleSelected(recommendation.module.id),
-                onChanged: widget.editable && recommendation.selectable
-                    ? (_) => _emitModuleToggle(draft, recommendation.module.id)
-                    : null,
-              ),
-            FoundationLine(
-              title: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodyTitleCollectQuickAttendeeFeedback,
-              subtitle: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodySubtitleShortRatingsTellYou,
-            ),
-            FoundationLine(
-              title: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodyTitleHostCoachingSummary,
-              subtitle: context
-                  .l10n
-                  .eventSuccessEventSuccessSetupBodySubtitleAShortPostEvent,
-            ),
-          ],
-        ),
-        gapH8,
-        SetupDisclosureSection(
-          title: _structureSectionTitle(draft),
-          subtitle: _structureSectionSubtitle(draft),
-          children: [
-            EventSuccessStructureConfigEditor(
-              value: draft.structureConfig,
-              targetAttendeeCount: draft.targetAttendeeCount,
+                  .eventSuccessEventSuccessSetupBodyTitleMessageToAttendees,
+              controller: _attendeePromptController,
+              open: _attendeePromptOpen,
+              onOpenChanged: (open) =>
+                  setState(() => _attendeePromptOpen = open && widget.editable),
+              onCancel: _cancelAttendeePrompt,
+              onSubmit: _submitAttendeePrompt,
               enabled: widget.editable,
-              onChanged: (value) {
-                widget.onDraftChanged(draft.copyWith(structureConfig: value));
-              },
-            ),
-          ],
-        ),
-        gapH8,
-        SetupDisclosureSection(
-          title: context.l10n.eventSuccessEventSuccessSetupBodyTitleAdvanced,
-          subtitle: _advancedSubtitle(draft),
-          children: [
-            QuestionnaireBlock(
-              active: draft.isModuleSelected(
-                EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-              ),
-              editable: widget.editable,
-              compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
-              questionnaireConfig: draft.questionnaireConfig,
-              onModeChanged: (mode) {
-                final newActive = mode != _QuestionnaireMode.off;
-                final newRanking = mode == _QuestionnaireMode.cluesAndPairing;
-                final next =
-                    _syncModuleBooleans(
-                      draft.withModuleSelection(
-                        EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-                        newActive,
+              inputHint: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff,
+              supporting: Text(
+                context.l10n
+                    .eventSuccessEventSuccessSetupBodyTextAttendeesWillSeeText(
+                      text: _attendeePromptPreview(
+                        profile,
+                        widget.attendeePrompt,
                       ),
-                    ).copyWith(
-                      compatibilityAffectsRanking: newActive && newRanking,
-                    );
-                widget.onDraftChanged(next);
-              },
-              onQuestionnaireChanged: (value) {
-                widget.onDraftChanged(
-                  draft.copyWith(questionnaireConfig: value),
-                );
-              },
+                    ),
+              ),
+              inputFormatters: [LengthLimitingTextInputFormatter(300)],
+              minLines: 2,
+              maxLines: 4,
+              textInputAction: TextInputAction.newline,
             ),
           ],
         ),
-        gapH8,
-        const SafetyFooter(),
+        for (final bucket in _EventSuccessStageBucket.values) ...[
+          if (_recommendationsForBucket(liveTools, bucket).isNotEmpty)
+            CatchSection.fieldRows(
+              title: _bucketTitle(context, bucket),
+              children: [
+                for (final recommendation in _recommendationsForBucket(
+                  liveTools,
+                  bucket,
+                ))
+                  EventSuccessModuleRows._(
+                    recommendation: recommendation,
+                    draft: draft,
+                    editable: widget.editable,
+                    onModuleChanged: (selected) => _applyImmediateDraftUpdate(
+                      (current) => current.withModuleSelection(
+                        recommendation.module.id,
+                        selected,
+                      ),
+                    ),
+                    onDraftChanged: widget.onChanged,
+                    onQuestionnaireModeChanged: (mode) =>
+                        _setQuestionnaireMode(mode),
+                  ),
+              ],
+            ),
+          if (bucket == _EventSuccessStageBucket.during && showStructureEditor)
+            EventSuccessStructureConfigEditor(
+              sectionTitle: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTitleHowTheRoomIsGrouped,
+              value: draft.structureConfig,
+              targetAttendeeCount: widget.targetAttendeeCount,
+              enabled: widget.editable,
+              onChanged: (value) => widget.onChanged(
+                (current) => current.copyWith(structureConfig: value),
+              ),
+            ),
+        ],
       ],
     );
   }
 
-  void _emitModuleToggle(EventSuccessHostDraft draft, String moduleId) {
-    widget.onDraftChanged(
-      _syncModuleBooleans(
-        draft
-            .toggleModule(moduleId)
-            .copyWith(
-              hostGoal: _normalizedRequired(
-                _hostGoalController.text,
-                fallback: draft.hostGoal,
-              ),
-            ),
-      ),
-    );
+  void _applyImmediateDraftUpdate(EventSuccessHostDraftUpdate update) {
+    widget.onChanged(update);
   }
-}
 
-/// Lifecycle stage a module belongs to in the host-facing setup view.
-enum _SetupLifecycleStage { arrival, during, after }
+  void _cancelHostGoal() {
+    _setText(_hostGoalController, widget.draft.hostGoal);
+    setState(() => _hostGoalOpen = false);
+  }
 
-/// Modules that are "always-on event basics" for the host — surfaced as ✓ lines
-/// in the lifecycle stage cards instead of toggles.
-const Set<String> _foundationModuleIds = {
-  'safety_controls',
-  'qr_check_in',
-  'host_script',
-  'decomposed_feedback',
-  'host_analytics',
-  'crowd_balance',
-};
-
-/// Maps host-toggleable modules to the lifecycle stage card they appear under.
-/// Modules absent from this map (and not in [_foundationModuleIds]) fall into
-/// the Advanced drawer.
-const Map<String, _SetupLifecycleStage> _lifecycleStageForModule = {
-  'first_hello_check_in': _SetupLifecycleStage.arrival,
-  'micro_pods': _SetupLifecycleStage.during,
-  'guided_rotations': _SetupLifecycleStage.during,
-  'live_reveal': _SetupLifecycleStage.during,
-  'social_missions': _SetupLifecycleStage.during,
-  'wingman_requests': _SetupLifecycleStage.during,
-  'contextual_openers': _SetupLifecycleStage.after,
-};
-
-bool _isFoundationModule(String moduleId) =>
-    _foundationModuleIds.contains(moduleId);
-
-bool _isStageVisible(EventSuccessModuleRecommendation recommendation) =>
-    recommendation.level == EventSuccessRecommendationLevel.defaultOn ||
-    recommendation.level == EventSuccessRecommendationLevel.recommended;
-
-List<EventSuccessModuleRecommendation> _stageRecommendations(
-  EventSuccessActivityProfile profile,
-  _SetupLifecycleStage stage,
-) {
-  return profile.recommendations
-      .where(
-        (recommendation) =>
-            !_isFoundationModule(recommendation.module.id) &&
-            recommendation.module.id !=
-                EventSuccessModuleCatalog.compatibilityQuestionnaire.id &&
-            _lifecycleStageForModule[recommendation.module.id] == stage &&
-            _isStageVisible(recommendation),
-      )
-      .toList(growable: false);
-}
-
-/// Force foundation modules selected on every draft update so the host's saved
-/// plan stays consistent with the "always on" lines shown in the stage cards.
-EventSuccessHostDraft _enforceFoundationSelections(
-  EventSuccessHostDraft draft,
-) {
-  var next = draft;
-  for (final id in _foundationModuleIds) {
-    if (!next.playbook.moduleIds.contains(id)) continue;
-    if (!next.isModuleSelected(id)) {
-      next = next.withModuleSelection(id, true);
+  void _submitHostGoal() {
+    final value = _hostGoalController.text;
+    if (value.trim().isEmpty) {
+      setState(() {});
+      return;
     }
+    widget.onChanged((current) => current.copyWith(hostGoal: value));
+    setState(() => _hostGoalOpen = false);
   }
-  return next;
-}
 
-class StageCard extends StatelessWidget {
-  const StageCard({required this.title, this.subtitle, required this.children});
+  void _cancelAttendeePrompt() {
+    _setText(_attendeePromptController, widget.attendeePrompt ?? '');
+    setState(() => _attendeePromptOpen = false);
+  }
 
-  final String title;
-  final String? subtitle;
-  final List<Widget> children;
+  void _submitAttendeePrompt() {
+    widget.onAttendeePromptChanged(_attendeePromptController.text);
+    setState(() => _attendeePromptOpen = false);
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.contentDense,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: CatchTextStyles.labelL(context)),
-          if (subtitle != null) ...[
-            gapH4,
-            Text(
-              subtitle!,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ],
-          gapH6,
-          ...children,
-        ],
-      ),
+  void _setQuestionnaireMode(_QuestionnaireMode mode) {
+    final active = mode != _QuestionnaireMode.off;
+    widget.onChanged(
+      (current) => current
+          .withModuleSelection(
+            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+            active,
+          )
+          .copyWith(
+            compatibilityAffectsRanking:
+                active && mode == _QuestionnaireMode.cluesAndPairing,
+          ),
     );
   }
 }
 
-class FoundationLine extends StatelessWidget {
-  const FoundationLine({required this.title, this.subtitle});
-
-  final String title;
-  final String? subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: CatchInsets.controlVerticalTight,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: _foundationLineIconInset,
-            child: Icon(
-              CatchIcons.checkRounded,
-              size: CatchIcon.md,
-              color: t.primary,
-            ),
-          ),
-          gapW8,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: CatchTextStyles.labelL(context)),
-                if (subtitle != null) ...[
-                  gapH2,
-                  Text(
-                    subtitle!,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Inline setup chips rendered beneath setup toggles in the During stage card.
-class SetupChoiceChips<T> extends StatelessWidget {
-  const SetupChoiceChips({
-    super.key,
-    required this.label,
-    required this.options,
-    required this.value,
-    required this.enabled,
-    required this.onChanged,
+class EventSuccessModuleRows extends StatelessWidget {
+  const EventSuccessModuleRows._({
+    required this._recommendation,
+    required this._draft,
+    required this._editable,
+    required this._onModuleChanged,
+    required this._onDraftChanged,
+    required this._onQuestionnaireModeChanged,
   });
 
-  final String label;
-  final List<CatchOption<T>> options;
-  final T value;
-  final bool enabled;
-  final ValueChanged<T> onChanged;
+  final EventSuccessModuleRecommendation _recommendation;
+  final EventSuccessHostDraft _draft;
+  final bool _editable;
+  final ValueChanged<bool> _onModuleChanged;
+  final ValueChanged<EventSuccessHostDraftUpdate> _onDraftChanged;
+  final ValueChanged<_QuestionnaireMode> _onQuestionnaireModeChanged;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: _setupNestedControlPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: CatchTextStyles.labelM(context)),
-          gapH6,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final option in options)
-                CatchSelectChip(
-                  label: option.label,
-                  active: value == option.value,
-                  enabled: enabled,
-                  onTap: enabled ? () => onChanged(option.value) : null,
-                ),
-            ],
+    final module = _recommendation.module;
+    final questionnaire =
+        module.id == EventSuccessModuleCatalog.compatibilityQuestionnaire.id;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (questionnaire)
+          CatchField.choices<_QuestionnaireMode>(
+            key: ValueKey('eventSuccessModule-${module.id}'),
+            title: context
+                .l10n
+                .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
+            body: switch (_questionnaireMode(_draft)) {
+              _QuestionnaireMode.off =>
+                context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyTextOptionalPromptsAreOff,
+              _QuestionnaireMode.cluesOnly =>
+                context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyTextAnswersCreateRevealClues,
+              _QuestionnaireMode.cluesAndPairing =>
+                context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyTextAnswersCreateCluesAndSoftlyGuidePairings,
+            },
+            values: _QuestionnaireMode.values,
+            itemLabel: (mode) => switch (mode) {
+              _QuestionnaireMode.off =>
+                context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
+              _QuestionnaireMode.cluesOnly =>
+                context.l10n.eventSuccessEventSuccessSetupBodyLabelCluesOnly,
+              _QuestionnaireMode.cluesAndPairing =>
+                context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
+            },
+            selected: {_questionnaireMode(_draft)},
+            enabled: _editable,
+            onSelectionChanged: _editable
+                ? (selection) => _onQuestionnaireModeChanged(selection.single)
+                : null,
+          )
+        else
+          CatchField.toggle(
+            key: ValueKey('eventSuccessModule-${module.id}'),
+            title: module.title,
+            body: _recommendation.reason,
+            badgeLabel: _recommendationBadgeLabel(_recommendation),
+            bodyMaxLines: 3,
+            value: _draft.isModuleSelected(module.id),
+            onChanged: _editable ? _onModuleChanged : null,
           ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Live preview rendered beneath the attendee-prompt field showing exactly
-/// what attendees will see — the host's typed prompt, or the playbook default
-/// when the field is empty.
-class AttendeePromptPreview extends StatelessWidget {
-  const AttendeePromptPreview({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: _attendeePromptPreviewPadding,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: _attendeePromptPreviewIconInset,
-            child: Icon(
-              CatchIcons.visibilityOutlined,
-              size: CatchIcon.sm,
-              color: t.ink2,
+        if (questionnaire && _draft.isModuleSelected(module.id))
+          CatchSection.containedFieldRows(
+            key: const ValueKey('eventSuccessQuestionnaireConfig'),
+            child: EventSuccessQuestionnaireConfigEditor(
+              value: _draft.questionnaireConfig,
+              enabled: _editable,
+              onChanged: (value) => _onDraftChanged(
+                (current) => current.copyWith(questionnaireConfig: value),
+              ),
             ),
           ),
-          gapW6,
-          Expanded(
-            child: Text(
-              context.l10n
-                  .eventSuccessEventSuccessSetupBodyTextAttendeesWillSeeText(
-                    text: text,
-                  ),
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SafetyFooter extends StatelessWidget {
-  const SafetyFooter();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: CatchInsets.inlineHorizontal,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(CatchIcons.shieldOutlined, size: CatchIcon.md, color: t.ink2),
-          gapW8,
-          Expanded(
-            child: Text(
-              context
+        if (module.id == EventSuccessModuleCatalog.guidedRotations.id &&
+            _draft.isModuleSelected(module.id))
+          CatchSection.containedFieldRows(
+            key: const ValueKey('eventSuccessRotationConfig'),
+            child: CatchField.choices<int?>(
+              title: context
                   .l10n
-                  .eventSuccessEventSuccessSetupBodyTextSafetyBlockingAndReport,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+                  .eventSuccessEventSuccessSetupBodyLabelSwitchPartnersEvery,
+              values: const <int?>[null, 10, 15, 20, 30],
+              itemLabel: (value) => switch (value) {
+                null =>
+                  context.l10n.eventSuccessEventSuccessSetupBodyLabelNoTimer,
+                10 => context.l10n.eventSuccessEventSuccessSetupBodyLabel10Min,
+                15 => context.l10n.eventSuccessEventSuccessSetupBodyLabel15Min,
+                20 => context.l10n.eventSuccessEventSuccessSetupBodyLabel20Min,
+                _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel30Min,
+              },
+              selected: {_draft.structureConfig.rotationIntervalMinutes},
+              enabled: _editable,
+              onSelectionChanged: _editable
+                  ? (selection) => _onDraftChanged(
+                      (current) => current.copyWith(
+                        structureConfig: current.structureConfig.copyWith(
+                          rotationIntervalMinutes: selection.single,
+                        ),
+                      ),
+                    )
+                  : null,
             ),
           ),
-        ],
-      ),
+        if (module.id == EventSuccessModuleCatalog.liveReveal.id &&
+            _draft.isModuleSelected(module.id))
+          CatchSection.containedFieldRows(
+            key: const ValueKey('eventSuccessRevealConfig'),
+            child: CatchField.choices<int>(
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyLabelRevealCountdown,
+              values: const [0, 5, 10, 15],
+              itemLabel: (value) => switch (value) {
+                0 => context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
+                5 => context.l10n.eventSuccessEventSuccessSetupBodyLabel5s,
+                10 => context.l10n.eventSuccessEventSuccessSetupBodyLabel10s,
+                _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel15s,
+              },
+              selected: {_draft.structureConfig.revealCountdownSeconds},
+              enabled: _editable,
+              onSelectionChanged: _editable
+                  ? (selection) => _onDraftChanged(
+                      (current) => current.copyWith(
+                        structureConfig: current.structureConfig.copyWith(
+                          revealCountdownSeconds: selection.single,
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+          ),
+      ],
     );
   }
 }
 
-class PresetReviewCard extends StatelessWidget {
-  const PresetReviewCard({
-    required this.profile,
-    required this.draft,
-    required this.targetAttendeeCount,
-    required this.showReset,
-    required this.onReset,
-  });
+enum _EventSuccessStageBucket { before, arrival, during, after }
 
-  final EventSuccessActivityProfile profile;
-  final EventSuccessHostDraft draft;
-  final int targetAttendeeCount;
-  final bool showReset;
-  final VoidCallback? onReset;
+List<EventSuccessModuleRecommendation> _recommendationsForBucket(
+  List<EventSuccessModuleRecommendation> recommendations,
+  _EventSuccessStageBucket bucket,
+) => recommendations
+    .where(
+      (recommendation) => _bucketFor(recommendation.module.stage) == bucket,
+    )
+    .toList(growable: false);
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      tone: CatchSurfaceTone.primarySoft,
-      borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-      radius: CatchRadius.md,
-      padding: CatchInsets.contentDense,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  context
-                      .l10n
-                      .eventSuccessEventSuccessSetupBodyTextRecommendedPreset,
-                  style: CatchTextStyles.labelL(context),
-                ),
-              ),
-              if (showReset && onReset != null)
-                CatchTextButton(
-                  label:
-                      context.l10n.eventSuccessEventSuccessSetupBodyLabelReset,
-                  onPressed: onReset,
-                  minimumSize: const Size(
-                    CatchLayout.eventSuccessResetButtonMinWidth,
-                    CatchLayout.eventSuccessResetButtonMinHeight,
-                  ),
-                  padding: EdgeInsets.zero,
-                ),
-            ],
-          ),
-          gapH6,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              CatchBadge(
-                label: profile.formatLabel,
-                tone: CatchBadgeTone.brand,
-                icon: CatchIcons.autoAwesomeOutlined,
-              ),
-              CatchBadge(label: profile.interactionModel.label),
-              CatchBadge(
-                label: _capacitySummary(draft),
-                icon: CatchIcons.groups2Outlined,
-              ),
-            ],
-          ),
-          gapH8,
-          Text(
-            profile.summary,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          gapH6,
-          Text(
-            _structureSectionSubtitle(draft),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          gapH6,
-          Text(
-            _structurePreviewText(draft),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-        ],
-      ),
-    );
-  }
+_EventSuccessStageBucket _bucketFor(EventSuccessStage stage) => switch (stage) {
+  EventSuccessStage.before => _EventSuccessStageBucket.before,
+  EventSuccessStage.arrival => _EventSuccessStageBucket.arrival,
+  EventSuccessStage.opening ||
+  EventSuccessStage.activity ||
+  EventSuccessStage.mixing ||
+  EventSuccessStage.closing => _EventSuccessStageBucket.during,
+  EventSuccessStage.after ||
+  EventSuccessStage.hostDebrief => _EventSuccessStageBucket.after,
+};
+
+String _bucketTitle(BuildContext context, _EventSuccessStageBucket bucket) =>
+    switch (bucket) {
+      _EventSuccessStageBucket.before =>
+        context.l10n.eventSuccessEventSuccessSetupBodyTitleBeforeTheEvent,
+      _EventSuccessStageBucket.arrival =>
+        context.l10n.eventSuccessEventSuccessSetupBodyTitleWhenPeopleArrive,
+      _EventSuccessStageBucket.during =>
+        context.l10n.eventSuccessEventSuccessSetupBodyTitleDuringTheEvent,
+      _EventSuccessStageBucket.after =>
+        context.l10n.eventSuccessEventSuccessSetupBodyTitleAfterTheEvent,
+    };
+
+String? _recommendationBadgeLabel(
+  EventSuccessModuleRecommendation recommendation,
+) {
+  final level = recommendation.level;
+  return switch (level) {
+    EventSuccessRecommendationLevel.recommended ||
+    EventSuccessRecommendationLevel.discouraged => level.label,
+    _ => null,
+  };
 }
 
-/// Compatibility-questionnaire setting mode. Collapses the old two-switch
-/// arrangement (module toggle + "guide pairings") into a single host choice.
 enum _QuestionnaireMode { off, cluesOnly, cluesAndPairing }
 
-/// Inner content of the Match clue questions feature. Rendered inside the
-/// Advanced disclosure (no disclosure shell of its own). Exposes a single
-/// 3-state chooser so the host doesn't have to reason about a separate
-/// "ask questions" and "guide pairings" switch pair.
-class QuestionnaireBlock extends StatelessWidget {
-  const QuestionnaireBlock({
-    required this.active,
-    required this.editable,
-    required this.compatibilityAffectsRanking,
-    required this.questionnaireConfig,
-    required this.onModeChanged,
-    required this.onQuestionnaireChanged,
-  });
-
-  final bool active;
-  final bool editable;
-  final bool compatibilityAffectsRanking;
-  final EventSuccessQuestionnaireConfig questionnaireConfig;
-  final ValueChanged<_QuestionnaireMode> onModeChanged;
-  final ValueChanged<EventSuccessQuestionnaireConfig> onQuestionnaireChanged;
-
-  _QuestionnaireMode get _mode {
-    if (!active) return _QuestionnaireMode.off;
-    return compatibilityAffectsRanking
-        ? _QuestionnaireMode.cluesAndPairing
-        : _QuestionnaireMode.cluesOnly;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final mode = _mode;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          context.l10n.eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
-          style: CatchTextStyles.labelL(context),
-        ),
-        gapH4,
-        Text(
-          _questionnaireModeSubtitle(mode),
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-        gapH8,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (final option in _QuestionnaireMode.values)
-              CatchSelectChip(
-                label: _questionnaireModeLabel(option),
-                active: mode == option,
-                enabled: editable,
-                onTap: editable ? () => onModeChanged(option) : null,
-              ),
-          ],
-        ),
-        if (active) ...[
-          gapH12,
-          EventSuccessQuestionnaireConfigEditor(
-            value: questionnaireConfig,
-            enabled: editable,
-            onChanged: onQuestionnaireChanged,
-            useBottomSheetForCustom: true,
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-String _questionnaireModeLabel(_QuestionnaireMode mode) {
-  switch (mode) {
-    case _QuestionnaireMode.off:
-      return 'Off';
-    case _QuestionnaireMode.cluesOnly:
-      return 'Clues only';
-    case _QuestionnaireMode.cluesAndPairing:
-      return 'Clues + soft pairing';
-  }
-}
-
-String _questionnaireModeSubtitle(_QuestionnaireMode mode) {
-  switch (mode) {
-    case _QuestionnaireMode.off:
-      return 'Attendees skip the prompts.';
-    case _QuestionnaireMode.cluesOnly:
-      return 'Answers create reveal clues. Pairing suggestions ignore them.';
-    case _QuestionnaireMode.cluesAndPairing:
-      return 'Answers create reveal clues and softly inform pairing suggestions.';
-  }
-}
-
-class SetupDisclosureSection extends StatefulWidget {
-  const SetupDisclosureSection({
-    required this.title,
-    required this.subtitle,
-    required this.children,
-    this.initiallyExpanded = false,
-  });
-
-  final String title;
-  final String subtitle;
-  final List<Widget> children;
-  final bool initiallyExpanded;
-
-  @override
-  State<SetupDisclosureSection> createState() => _SetupDisclosureSectionState();
-}
-
-class _SetupDisclosureSectionState extends State<SetupDisclosureSection> {
-  late bool _expanded = widget.initiallyExpanded;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Semantics(
-          button: true,
-          expanded: _expanded,
-          child: CatchSurface(
-            tone: CatchSurfaceTone.transparent,
-            radius: 0,
-            borderWidth: 0,
-            onTap: () => setState(() => _expanded = !_expanded),
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                      Padding(
-                        padding: _disclosureSubtitlePadding,
-                        child: Text(
-                          widget.subtitle,
-                          style: CatchTextStyles.supporting(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                gapW12,
-                AnimatedRotation(
-                  turns: _expanded ? 0.25 : 0,
-                  duration: CatchMotion.fast,
-                  curve: CatchMotion.standardCurve,
-                  child: Icon(
-                    CatchIcons.chevronRightRounded,
-                    color: _expanded ? t.primary : t.ink2,
-                    size: CatchIcon.sm,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        AnimatedSize(
-          duration: CatchMotion.fast,
-          curve: CatchMotion.standardCurve,
-          alignment: Alignment.topCenter,
-          child: _expanded
-              ? Padding(
-                  padding: _disclosureChildrenPadding,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: widget.children,
-                  ),
-                )
-              : const SizedBox.shrink(),
-        ),
-      ],
-    );
-  }
-}
-
-class RecommendationSwitch extends StatelessWidget {
-  const RecommendationSwitch({
-    super.key,
-    required this.recommendation,
-    required this.active,
-    required this.onChanged,
-  });
-
-  final EventSuccessModuleRecommendation recommendation;
-  final bool active;
-  final ValueChanged<bool>? onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchField.toggle(
-      title: recommendation.module.title,
-      body: recommendation.reason,
-      value: active,
-      onChanged: onChanged,
-    );
-  }
-}
-
-/// Enforces foundation module selections (so the ✓ lines in the stage cards
-/// reflect the saved state) and keeps the `wingmanRequestsEnabled` /
-/// `contextualOpenersEnabled` boolean flags on the draft in sync with the
-/// underlying module selections.
-EventSuccessHostDraft _syncModuleBooleans(EventSuccessHostDraft draft) {
-  final enforced = _enforceFoundationSelections(draft);
-  return enforced.copyWith(
-    wingmanRequestsEnabled: enforced.isModuleSelected(
-      EventSuccessModuleCatalog.wingmanRequests.id,
-    ),
-    contextualOpenersEnabled: enforced.isModuleSelected(
-      EventSuccessModuleCatalog.contextualOpeners.id,
-    ),
-  );
-}
-
-String _advancedSubtitle(EventSuccessHostDraft draft) {
-  final questionnaireActive = draft.isModuleSelected(
+_QuestionnaireMode _questionnaireMode(EventSuccessHostDraft draft) {
+  if (!draft.isModuleSelected(
     EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-  );
-  if (questionnaireActive) {
-    return 'Match clue questions are on.';
+  )) {
+    return _QuestionnaireMode.off;
   }
-  return 'Optional extras you opt into intentionally.';
+  return draft.compatibilityAffectsRanking
+      ? _QuestionnaireMode.cluesAndPairing
+      : _QuestionnaireMode.cluesOnly;
 }
 
 String _attendeePromptPreview(
@@ -1027,106 +472,15 @@ String _attendeePromptPreview(
   String? typed,
 ) {
   final configured = typed?.trim();
-  if (configured != null && configured.isNotEmpty) return configured;
-  return profile.defaultAttendeePrompt;
-}
-
-String _guideNotesSubtitle(
-  EventSuccessHostDraft draft,
-  String? attendeePrompt,
-) {
-  final prompt = attendeePrompt?.trim();
-  if (prompt != null && prompt.isNotEmpty) {
-    return 'Host goal and attendee prompt are ready.';
-  }
-  return 'Host goal: ${draft.hostGoal}';
-}
-
-String _structureSectionTitle(EventSuccessHostDraft draft) {
-  return switch (draft.structureConfig.unitKind) {
-    EventSuccessUnitKind.wholeGroup => 'Group flow',
-    EventSuccessUnitKind.pods => 'Pod setup',
-    EventSuccessUnitKind.pairs => 'Pair setup',
-    EventSuccessUnitKind.teams => 'Team setup',
-    EventSuccessUnitKind.tables => 'Table setup',
-  };
-}
-
-String _structureSectionSubtitle(EventSuccessHostDraft draft) {
-  final config = draft.structureConfig;
-  final estimatedUnitCount = config.estimatedUnitCount(
-    draft.targetAttendeeCount,
-  );
-  if (config.unitKind == EventSuccessUnitKind.wholeGroup) {
-    return 'Plan for up to ${draft.targetAttendeeCount} attendees in one shared flow.';
-  }
-  final countPrefix = config.unitCount == null
-      ? 'about $estimatedUnitCount'
-      : estimatedUnitCount.toString();
-  return 'Plan for up to ${draft.targetAttendeeCount} attendees: $countPrefix ${config.unitKind.label.toLowerCase()}, aiming for ${config.unitSize} people per ${config.unitKind.singularLabel}. Final assignments use actual signups and check-ins.';
-}
-
-String _structurePreviewText(EventSuccessHostDraft draft) {
-  final config = draft.structureConfig;
-  final target = draft.targetAttendeeCount;
-  if (config.unitKind == EventSuccessUnitKind.wholeGroup) {
-    return 'Preview: If $target attend, Catch keeps everyone in one shared flow. If fewer people check in, Live mode uses the actual roster.';
-  }
-  final targetEstimate = config.estimateForAttendance(target);
-  final sampleAttendance = _sampleAttendanceCount(target);
-  final sampleEstimate = config.estimateForAttendance(sampleAttendance);
-  return 'Preview: If $target attend, Catch suggests ${_estimatePhrase(config, targetEstimate)}. If $sampleAttendance check in, expect ${_estimatePhrase(config, sampleEstimate)}.';
-}
-
-int _sampleAttendanceCount(int targetAttendeeCount) {
-  if (targetAttendeeCount <= 1) return 1;
-  final drop = math.max(1, (targetAttendeeCount * 0.25).round());
-  return math.max(1, targetAttendeeCount - drop);
-}
-
-String _estimatePhrase(
-  EventSuccessStructureConfig config,
-  EventSuccessStructureEstimate estimate,
-) {
-  final countText = config.unitKind.countText(estimate.unitCount);
-  if (estimate.minPeoplePerUnit == 0) {
-    return '$countText with up to ${estimate.maxPeoplePerUnit} ${_peopleWord(estimate.maxPeoplePerUnit)} each';
-  }
-  if (estimate.isEven) {
-    return '$countText of ${estimate.minPeoplePerUnit}';
-  }
-  return '$countText of ${estimate.minPeoplePerUnit}-${estimate.maxPeoplePerUnit}';
-}
-
-String _peopleWord(int count) => count == 1 ? 'person' : 'people';
-
-String _capacitySummary(EventSuccessHostDraft draft) {
-  final config = draft.structureConfig;
-  if (config.unitKind == EventSuccessUnitKind.wholeGroup) {
-    return '${draft.targetAttendeeCount} target';
-  }
-  final estimatedUnitCount = config.estimatedUnitCount(
-    draft.targetAttendeeCount,
-  );
-  return '$estimatedUnitCount ${config.unitKind.label.toLowerCase()}';
-}
-
-String _revealCountdownLabel(EventSuccessHostDraft draft) {
-  return switch (draft.structureConfig.unitKind) {
-    EventSuccessUnitKind.teams => 'Team reveal countdown',
-    EventSuccessUnitKind.tables => 'Table reveal countdown',
-    EventSuccessUnitKind.pairs => 'Pair reveal countdown',
-    EventSuccessUnitKind.pods => 'Pod reveal countdown',
-    EventSuccessUnitKind.wholeGroup => 'Reveal countdown',
-  };
+  return configured == null || configured.isEmpty
+      ? profile.defaultAttendeePrompt
+      : configured;
 }
 
 void _setText(TextEditingController controller, String value) {
   if (controller.text == value) return;
-  controller.text = value;
-}
-
-String _normalizedRequired(String value, {required String fallback}) {
-  final normalized = value.trim();
-  return normalized.isEmpty ? fallback : normalized;
+  controller.value = TextEditingValue(
+    text: value,
+    selection: TextSelection.collapsed(offset: value.length),
+  );
 }

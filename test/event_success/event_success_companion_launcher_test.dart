@@ -17,6 +17,7 @@ import 'package:go_router/go_router.dart';
 import '../clubs/clubs_test_helpers.dart' show FakeClubsRepository, buildClub;
 import '../events/events_test_helpers.dart'
     show buildEvent, buildEventParticipation;
+import '../test_pump_helpers.dart';
 
 void main() {
   group('EventSuccessCompanionLaunchRegistry', () {
@@ -172,7 +173,7 @@ void main() {
       expect(find.text('Companion event-1'), findsNothing);
     });
 
-    testWidgets('does not launch ended events without attendee surfaces', (
+    testWidgets('launches ended events with always-on attendee surfaces', (
       tester,
     ) async {
       final now = DateTime.now();
@@ -199,10 +200,11 @@ void main() {
 
       expect(
         await resultCompleter.future,
-        EventSuccessCompanionLaunchResult.unavailable,
+        EventSuccessCompanionLaunchResult.launched,
       );
-      expect(find.text('Launcher home'), findsOneWidget);
-      expect(find.text('Companion event-1'), findsNothing);
+      await pumpFeatureUi(tester);
+      expect(find.text('Launcher home'), findsNothing);
+      expect(find.text('Companion event-1'), findsOneWidget);
     });
 
     testWidgets('fetches the event for a foreground attendance transition', (

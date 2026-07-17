@@ -1,5 +1,8 @@
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../test_pump_helpers.dart';
 
 void main() {
   test('HostAnalyticsQuery serializes custom event-scoped ranges', () {
@@ -36,6 +39,58 @@ void main() {
       'rangePreset': '90d',
       'granularity': 'month',
     });
+  });
+
+  test('HostAnalyticsQuery sends the 12-month preset and IANA timezone', () {
+    const query = HostAnalyticsQuery(
+      clubId: 'club-1',
+      rangePreset: HostAnalyticsRangePreset.twelveMonths,
+      granularity: HostAnalyticsGranularity.month,
+      timezone: 'Asia/Kolkata',
+    );
+    final request = query.toCallableRequest().toJson();
+
+    expect(request, {
+      'clubId': 'club-1',
+      'rangePreset': '12m',
+      'granularity': 'month',
+      'timezone': 'Asia/Kolkata',
+    });
+  });
+
+  test('trend wire keys stay pinned to the callable response fixture', () {
+    final report = HostAnalyticsReport.fromCallableData({
+      'generatedAt': '2026-06-18T12:00:00.000Z',
+      'timezone': 'Asia/Kolkata',
+      'summaryCards': [
+        {
+          'id': 'bookings',
+          'label': 'SERVER_LABEL',
+          'value': 12,
+          'previousValue': 8,
+          'unit': 'count',
+          'status': 'ready',
+        },
+      ],
+      'trend': [
+        {
+          'periodStart': '2026-06-01T18:30:00.000Z',
+          'periodEnd': '2026-06-08T18:29:59.999Z',
+          'metrics': {for (final key in HostAnalyticsTrendKeys.values) key: 1},
+        },
+      ],
+      'topEvents': const [],
+      'reviewSummary': const {},
+      'discoverySummary': const {},
+      'dataQuality': const [],
+    });
+
+    expect(report.timezone, 'Asia/Kolkata');
+    expect(report.summaryCards.single.previousValue, 8);
+    expect(
+      report.trend.single.metrics.keys.toSet(),
+      HostAnalyticsTrendKeys.values,
+    );
   });
 
   test('HostAnalyticsEventRow parses full backend event metrics', () {
@@ -76,4 +131,70 @@ void main() {
     expect(row.chatStartedCount, 5);
     expect(row.repeatAttendeeCount, 6);
   });
+
+  test(
+    'preset providers reuse cached reports until explicitly invalidated',
+    () async {
+      final repository = _CountingHostAnalyticsRepository();
+      final container = ProviderContainer(
+        overrides: [
+          hostAnalyticsRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      const queries = [
+        HostAnalyticsQuery(clubId: 'club-1', timezone: 'Asia/Kolkata'),
+        HostAnalyticsQuery(
+          clubId: 'club-1',
+          rangePreset: HostAnalyticsRangePreset.ninetyDays,
+          granularity: HostAnalyticsGranularity.week,
+          timezone: 'Asia/Kolkata',
+        ),
+        HostAnalyticsQuery(
+          clubId: 'club-1',
+          rangePreset: HostAnalyticsRangePreset.twelveMonths,
+          granularity: HostAnalyticsGranularity.month,
+          timezone: 'Asia/Kolkata',
+        ),
+      ];
+
+      Future<void> load(HostAnalyticsQuery query) async {
+        final provider = hostAnalyticsProvider(query);
+        final subscription = container.listen(provider, (_, _) {});
+        await container.read(provider.future);
+        subscription.close();
+        await flushTestEventQueue();
+      }
+
+      for (final query in queries) {
+        await load(query);
+      }
+      await load(queries.first);
+      expect(repository.callCount, 3);
+
+      container.invalidate(hostAnalyticsProvider(queries.first));
+      await load(queries.first);
+      expect(repository.callCount, 4);
+    },
+  );
+}
+
+class _CountingHostAnalyticsRepository implements HostAnalyticsRepository {
+  int callCount = 0;
+
+  @override
+  Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) async {
+    callCount += 1;
+    return HostAnalyticsReport.fromCallableData({
+      'generatedAt': '2026-06-18T12:00:00.000Z',
+      'timezone': query.timezone,
+      'summaryCards': const [],
+      'trend': const [],
+      'topEvents': const [],
+      'reviewSummary': const {},
+      'discoverySummary': const {},
+      'dataQuality': const [],
+    });
+  }
 }

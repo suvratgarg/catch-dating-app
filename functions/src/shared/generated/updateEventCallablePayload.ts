@@ -24,8 +24,8 @@ export interface UpdateEventCallablePayload {
       longitude: number;
       notes?: string | null;
     };
-    startingPointLat?: (number | null) | null;
-    startingPointLng?: (number | null) | null;
+    startingPointLat?: number;
+    startingPointLng?: number;
     locationDetails?: string | null;
     photoUrl?: string | null;
     /**

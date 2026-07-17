@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
+import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
@@ -12,13 +13,9 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_inline_edit_patch_factory.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart';
 import 'package:flutter/material.dart'
-    show
-        AutofillHints,
-        FormFieldValidator,
-        IconData,
-        TextCapitalization,
-        TextInputType;
+    show AutofillHints, IconData, TextCapitalization, TextInputType, ValueKey;
 
 class SelfProfileEditTabState {
   const SelfProfileEditTabState({
@@ -70,10 +67,7 @@ class SelfProfileEditTabState {
             definition: definition,
             answer: answer,
             usedPromptIds: usedPromptIds,
-            fieldName: l10n
-                .userProfileSelfProfileEditTabStateVisiblecopyProfilepromptIndex(
-                  index: index,
-                ),
+            fieldName: 'profilePrompt-$index',
             availablePromptIds: _availableProfilePromptIds(
               usedPromptIds: usedPromptIds,
               currentPromptId: currentPromptId,
@@ -106,12 +100,12 @@ class SelfProfileEditTabState {
   final SelfProfilePhotoGridState photoGrid;
   final int completedPromptCount;
   final List<SelfProfilePromptSlotState> promptSlots;
-  final List<SelfProfileFieldRowDescriptor> basicRows;
-  final List<SelfProfileFieldRowDescriptor> aboutRows;
+  final List<CatchFormRowDescriptor<UpdateUserProfilePatch>> basicRows;
+  final List<CatchFormRowDescriptor<UpdateUserProfilePatch>> aboutRows;
   final List<SelfProfileFieldRowDescriptor> runningRows;
   final List<SelfProfileFieldRowDescriptor> lifestyleRows;
 
-  List<SelfProfileFieldRowDescriptor> get aboutSectionRows => [
+  List<CatchFormRowDescriptor<UpdateUserProfilePatch>> get aboutSectionRows => [
     ...basicRows,
     ...aboutRows,
   ];
@@ -139,120 +133,10 @@ sealed class SelfProfileFieldRowDescriptor {
   final String label;
 
   R map<R>({
-    required R Function(SelfProfileReadOnlyFieldRowDescriptor descriptor)
-    readOnly,
-    required R Function(SelfProfileTextFieldRowDescriptor descriptor) text,
-    required R Function(SelfProfileHeightFieldRowDescriptor descriptor) height,
     required SelfProfileSingleChoiceFieldRowMapper<R> singleChoice,
     required SelfProfileMultiChoiceFieldRowMapper<R> multiChoice,
     required R Function(SelfProfileRangeFieldRowDescriptor descriptor) range,
   });
-}
-
-class SelfProfileReadOnlyFieldRowDescriptor
-    extends SelfProfileFieldRowDescriptor {
-  const SelfProfileReadOnlyFieldRowDescriptor({
-    required super.id,
-    required super.icon,
-    required super.label,
-    required this.body,
-    this.bodyMaxLines = 4,
-  });
-
-  final String body;
-  final int bodyMaxLines;
-
-  @override
-  R map<R>({
-    required R Function(SelfProfileReadOnlyFieldRowDescriptor descriptor)
-    readOnly,
-    required R Function(SelfProfileTextFieldRowDescriptor descriptor) text,
-    required R Function(SelfProfileHeightFieldRowDescriptor descriptor) height,
-    required SelfProfileSingleChoiceFieldRowMapper<R> singleChoice,
-    required SelfProfileMultiChoiceFieldRowMapper<R> multiChoice,
-    required R Function(SelfProfileRangeFieldRowDescriptor descriptor) range,
-  }) {
-    return readOnly(this);
-  }
-}
-
-class SelfProfileTextFieldRowDescriptor extends SelfProfileFieldRowDescriptor {
-  const SelfProfileTextFieldRowDescriptor({
-    required super.id,
-    required super.icon,
-    required super.label,
-    required this.currentValue,
-    required this.fieldName,
-    required this.patchForValue,
-    this.emptyValueText,
-    this.inputHint,
-    this.leadingUnit,
-    this.showClearButton = false,
-    this.currentFieldValue,
-    this.keyboardType,
-    this.textCapitalization = TextCapitalization.sentences,
-    this.autofillHints,
-    this.validator,
-    this.toFieldValue,
-  });
-
-  final String currentValue;
-  final String? emptyValueText;
-  final String? inputHint;
-  final String? leadingUnit;
-  final bool showClearButton;
-  final Object? currentFieldValue;
-  final String fieldName;
-  final TextInputType? keyboardType;
-  final TextCapitalization textCapitalization;
-  final Iterable<String>? autofillHints;
-  final FormFieldValidator<String>? validator;
-  final Object? Function(String value)? toFieldValue;
-  final UpdateUserProfilePatch Function(Object? value) patchForValue;
-
-  @override
-  R map<R>({
-    required R Function(SelfProfileReadOnlyFieldRowDescriptor descriptor)
-    readOnly,
-    required R Function(SelfProfileTextFieldRowDescriptor descriptor) text,
-    required R Function(SelfProfileHeightFieldRowDescriptor descriptor) height,
-    required SelfProfileSingleChoiceFieldRowMapper<R> singleChoice,
-    required SelfProfileMultiChoiceFieldRowMapper<R> multiChoice,
-    required R Function(SelfProfileRangeFieldRowDescriptor descriptor) range,
-  }) {
-    return text(this);
-  }
-}
-
-class SelfProfileHeightFieldRowDescriptor
-    extends SelfProfileFieldRowDescriptor {
-  const SelfProfileHeightFieldRowDescriptor({
-    required super.id,
-    required super.icon,
-    required super.label,
-    required this.value,
-    required this.currentValue,
-    required this.patchForValue,
-  });
-
-  final String value;
-  final int? currentValue;
-  final UpdateUserProfilePatch Function(int value) patchForValue;
-
-  bool get isAddAffordance => currentValue == null;
-
-  @override
-  R map<R>({
-    required R Function(SelfProfileReadOnlyFieldRowDescriptor descriptor)
-    readOnly,
-    required R Function(SelfProfileTextFieldRowDescriptor descriptor) text,
-    required R Function(SelfProfileHeightFieldRowDescriptor descriptor) height,
-    required SelfProfileSingleChoiceFieldRowMapper<R> singleChoice,
-    required SelfProfileMultiChoiceFieldRowMapper<R> multiChoice,
-    required R Function(SelfProfileRangeFieldRowDescriptor descriptor) range,
-  }) {
-    return height(this);
-  }
 }
 
 class SelfProfileSingleChoiceFieldRowDescriptor<T extends Labelled>
@@ -280,10 +164,6 @@ class SelfProfileSingleChoiceFieldRowDescriptor<T extends Labelled>
 
   @override
   R map<R>({
-    required R Function(SelfProfileReadOnlyFieldRowDescriptor descriptor)
-    readOnly,
-    required R Function(SelfProfileTextFieldRowDescriptor descriptor) text,
-    required R Function(SelfProfileHeightFieldRowDescriptor descriptor) height,
     required SelfProfileSingleChoiceFieldRowMapper<R> singleChoice,
     required SelfProfileMultiChoiceFieldRowMapper<R> multiChoice,
     required R Function(SelfProfileRangeFieldRowDescriptor descriptor) range,
@@ -322,10 +202,6 @@ class SelfProfileMultiChoiceFieldRowDescriptor<T extends Labelled>
 
   @override
   R map<R>({
-    required R Function(SelfProfileReadOnlyFieldRowDescriptor descriptor)
-    readOnly,
-    required R Function(SelfProfileTextFieldRowDescriptor descriptor) text,
-    required R Function(SelfProfileHeightFieldRowDescriptor descriptor) height,
     required SelfProfileSingleChoiceFieldRowMapper<R> singleChoice,
     required SelfProfileMultiChoiceFieldRowMapper<R> multiChoice,
     required R Function(SelfProfileRangeFieldRowDescriptor descriptor) range,
@@ -367,10 +243,6 @@ class SelfProfileRangeFieldRowDescriptor extends SelfProfileFieldRowDescriptor {
 
   @override
   R map<R>({
-    required R Function(SelfProfileReadOnlyFieldRowDescriptor descriptor)
-    readOnly,
-    required R Function(SelfProfileTextFieldRowDescriptor descriptor) text,
-    required R Function(SelfProfileHeightFieldRowDescriptor descriptor) height,
     required SelfProfileSingleChoiceFieldRowMapper<R> singleChoice,
     required SelfProfileMultiChoiceFieldRowMapper<R> multiChoice,
     required R Function(SelfProfileRangeFieldRowDescriptor descriptor) range,
@@ -379,14 +251,14 @@ class SelfProfileRangeFieldRowDescriptor extends SelfProfileFieldRowDescriptor {
   }
 }
 
-List<SelfProfileFieldRowDescriptor> _basicRows({
+List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
   required AppLocalizations l10n,
   required UserProfile user,
   required DateTime today,
   required SelfProfileInlineEditPatchFactory patchFactory,
 }) {
   return [
-    SelfProfileTextFieldRowDescriptor(
+    CatchFormTextRow<UpdateUserProfilePatch>(
       id: 'displayName',
       icon: CatchIcons.personOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelDisplayName,
@@ -402,7 +274,7 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
       toFieldValue: (value) => value.trim(),
       showClearButton: true,
     ),
-    SelfProfileReadOnlyFieldRowDescriptor(
+    CatchFormReadRow<UpdateUserProfilePatch>(
       id: 'dateOfBirth',
       icon: CatchIcons.cakeOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelDateOfBirth,
@@ -413,7 +285,7 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
         ageOn: user.ageOn(today),
       ),
     ),
-    SelfProfileReadOnlyFieldRowDescriptor(
+    CatchFormReadRow<UpdateUserProfilePatch>(
       id: 'gender',
       icon: CatchIcons.wcOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelGender,
@@ -421,13 +293,13 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
     ),
     // Phone is the OTP identity credential; editing requires Auth
     // re-verification before Firestore can safely change.
-    SelfProfileReadOnlyFieldRowDescriptor(
+    CatchFormReadRow<UpdateUserProfilePatch>(
       id: 'phoneNumber',
       icon: CatchIcons.phoneOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelPhone,
       body: user.phoneNumber,
     ),
-    SelfProfileTextFieldRowDescriptor(
+    CatchFormTextRow<UpdateUserProfilePatch>(
       id: 'email',
       icon: CatchIcons.emailOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelEmail,
@@ -439,7 +311,7 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
       autofillHints: const [AutofillHints.email],
       validator: validateOptionalEmail,
     ),
-    SelfProfileTextFieldRowDescriptor(
+    CatchFormTextRow<UpdateUserProfilePatch>(
       id: 'instagramHandle',
       icon: CatchIcons.alternateEmailOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelInstagram,
@@ -458,28 +330,42 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
         return handle.isEmpty ? null : handle;
       },
     ),
-    SelfProfileHeightFieldRowDescriptor(
+    CatchFormCustomRow<UpdateUserProfilePatch>(
       id: 'height',
       icon: CatchIcons.heightOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelHeight,
-      value: user.height != null
-          ? l10n.userProfileSelfProfileEditTabStateVisiblecopyHeightCm(
-              height: user.height!,
-            )
-          : l10n.userProfileSelfProfileEditTabStateVisiblecopyHeight,
-      currentValue: user.height,
-      patchForValue: patchFactory.height,
+      build: (context, scope) {
+        final value = user.height != null
+            ? l10n.userProfileSelfProfileEditTabStateVisiblecopyHeightCm(
+                height: user.height!,
+              )
+            : l10n.userProfileSelfProfileEditTabStateVisiblecopyHeight;
+        return ProfileInlineHeightEditor(
+          key: const ValueKey('inline-height-editor'),
+          icon: CatchIcons.heightOutlined,
+          label: l10n.userProfileSelfProfileEditTabStateLabelHeight,
+          value: value,
+          currentValue: user.height,
+          isExpanded: scope.isExpanded,
+          isAddAffordance: user.height == null,
+          patchForValue: patchFactory.height,
+          savePatch: scope.save,
+          onTap: scope.toggle,
+          onSaved: scope.collapse,
+          onCancel: scope.collapse,
+        );
+      },
     ),
   ];
 }
 
-List<SelfProfileFieldRowDescriptor> _aboutRows({
+List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
   required AppLocalizations l10n,
   required UserProfile user,
   required SelfProfileInlineEditPatchFactory patchFactory,
 }) {
   return [
-    SelfProfileSingleChoiceFieldRowDescriptor<CityOption>(
+    CatchFormSingleChoiceRow<UpdateUserProfilePatch, CityOption>(
       id: 'city',
       icon: CatchIcons.locationOnOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelCity,
@@ -490,7 +376,7 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyCity,
       patchForValue: patchFactory.city,
     ),
-    SelfProfileTextFieldRowDescriptor(
+    CatchFormTextRow<UpdateUserProfilePatch>(
       id: 'occupation',
       icon: CatchIcons.workOutline,
       label: l10n.userProfileSelfProfileEditTabStateLabelJobTitle,
@@ -502,7 +388,7 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
         label: l10n.userProfileSelfProfileEditTabStateLabelJobTitle,
       ),
     ),
-    SelfProfileTextFieldRowDescriptor(
+    CatchFormTextRow<UpdateUserProfilePatch>(
       id: 'company',
       icon: CatchIcons.businessOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelCompany,
@@ -515,7 +401,7 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
         label: l10n.userProfileSelfProfileEditTabStateLabelCompany,
       ),
     ),
-    SelfProfileSingleChoiceFieldRowDescriptor<EducationLevel>(
+    CatchFormSingleChoiceRow<UpdateUserProfilePatch, EducationLevel>(
       id: 'education',
       icon: CatchIcons.schoolOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelEducation,
@@ -524,7 +410,7 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyEducation,
       patchForValue: patchFactory.education,
     ),
-    SelfProfileSingleChoiceFieldRowDescriptor<Religion>(
+    CatchFormSingleChoiceRow<UpdateUserProfilePatch, Religion>(
       id: 'religion',
       icon: CatchIcons.volunteerActivismOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelReligion,
@@ -534,7 +420,7 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
       patchForValue: patchFactory.religion,
       showOptionalLabel: true,
     ),
-    SelfProfileMultiChoiceFieldRowDescriptor<Language>(
+    CatchFormMultiChoiceRow<UpdateUserProfilePatch, Language>(
       id: 'languages',
       icon: CatchIcons.languageOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelLanguages,
@@ -543,7 +429,7 @@ List<SelfProfileFieldRowDescriptor> _aboutRows({
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyLanguages,
       patchForValues: patchFactory.languages,
     ),
-    SelfProfileSingleChoiceFieldRowDescriptor<RelationshipGoal>(
+    CatchFormSingleChoiceRow<UpdateUserProfilePatch, RelationshipGoal>(
       id: 'relationshipGoal',
       icon: CatchIcons.favoriteOutline,
       label: l10n.userProfileSelfProfileEditTabStateLabelLookingFor,

@@ -14,7 +14,7 @@ import {
   type ActivityMeta,
   type FeaturedOrganizerCardItem,
 } from "../shared/ui/primitives";
-import {memberLoop} from "../features/marketing/content";
+import {memberLoop} from "@content/marketing";
 
 const appStoreItems = [
   {
@@ -134,7 +134,7 @@ export const MarketingConsentBannerShellStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_marketing_consent_banner_shell",
-      routeIds: ["home", "host", "host_preview", "claim", "claim_lookup", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
+      routeIds: ["home", "host", "claim", "claim_lookup", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
       states: ["action-row"],
     },
   },
@@ -156,7 +156,7 @@ export const AppDownloadCtaGroupStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_app_download_shell",
-      routeIds: ["home", "host_preview", "organizer_listing_canonical", "organizer_listing_legacy"],
+      routeIds: ["home", "organizer_listing_canonical", "organizer_listing_legacy"],
       states: ["default", "panel", "pending-status"],
     },
   },

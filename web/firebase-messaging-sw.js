@@ -3,12 +3,12 @@ importScripts('https://www.gstatic.com/firebasejs/12.12.0/firebase-messaging-com
 
 firebase.initializeApp({
   apiKey: 'AIzaSyAl271K9YGiYZOEcNgoEwZiOQV0ydpWfrg',
-  appId: '1:619661127800:web:b0673ad370947b2f077d8d',
+  appId: '1:619661127800:web:e347eaab416c5f20077d8d',
   messagingSenderId: '619661127800',
   projectId: 'catchdates-dev',
   authDomain: 'catchdates-dev.firebaseapp.com',
   storageBucket: 'catchdates-dev.firebasestorage.app',
-  measurementId: 'G-TCR62QJVH9',
+  measurementId: 'G-R05TM26KKB',
 });
 
 const messaging = firebase.messaging();

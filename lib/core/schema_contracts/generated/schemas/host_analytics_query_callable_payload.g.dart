@@ -46,6 +46,7 @@ const schemaHostAnalyticsQueryCallablePayloadSchema = <String, Object?>{
         '7d',
         '30d',
         '90d',
+        '12m',
         'month',
         'custom',
       ],
@@ -71,6 +72,11 @@ const schemaHostAnalyticsQueryCallablePayloadSchema = <String, Object?>{
         'week',
         'month',
       ],
+    },
+    'timezone': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 64,
     },
   },
 };

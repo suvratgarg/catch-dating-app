@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_analytics_snapshots.schema.json",
+  "title": "HostAnalyticsSnapshotDocument",
+  "description": "Server-owned 15-minute response cache stored at hostAnalyticsSnapshots/{uid}_{scopeHash}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostAnalyticsSnapshots",
+  "x-firestore-path": "hostAnalyticsSnapshots/{snapshotId}",
+  "x-document-id-field": "snapshotId",
+  "x-owner": "getHostAnalytics callable",
+  "required": [
+    "uid",
+    "scopeHash",
+    "response",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "scopeHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "response": {
+      "$ref": "../callable_responses/host_analytics_response.schema.json",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

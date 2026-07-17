@@ -306,7 +306,7 @@ export function ListingSourceLedger({
         <article key={item.key ?? (typeof item.label === "string" ? item.label : index)}>
           <div>
             <strong>{item.label}</strong>
-            <span>{item.confidence}{"confidence"}</span>
+            <span>{item.confidence}{" confidence"}</span>
           </div>
           <p>{item.detail}</p>
           {item.href ? (

@@ -126,6 +126,7 @@ test(
       height: 168,
       occupation: "Designer",
       company: "Stride Labs",
+      city: "in-dl-delhi-ncr",
       relationshipGoal: "relationship",
     } as Partial<UserProfileDocument>));
 
@@ -148,6 +149,7 @@ test(
     assert.equal(profile.height, 168);
     assert.equal(profile.occupation, "Designer");
     assert.equal(profile.company, "Stride Labs");
+    assert.equal(profile.city, "in-dl-delhi-ncr");
     assert.equal(profile.relationshipGoal, "relationship");
     assert.deepEqual(
       profile.activityPreferences.running.preferredRunTimes,

@@ -85,6 +85,13 @@ export function scanSourceForSectionDividers({relativePath, source}) {
       expression,
     });
     if (finding != null) findings.push(finding);
+    const rowDividerFinding = classifyFeatureRowDividerOwnership({
+      relativePath,
+      className,
+      line: lineForOffset(source, start),
+      expression,
+    });
+    if (rowDividerFinding != null) findings.push(rowDividerFinding);
   }
 
   rawDividerPattern.lastIndex = 0;
@@ -117,6 +124,37 @@ export function scanSourceForSectionDividers({relativePath, source}) {
   }
 
   return findings.filter(Boolean);
+}
+
+function classifyFeatureRowDividerOwnership({
+  relativePath,
+  className,
+  line,
+  expression,
+}) {
+  if (wrapperAllowedPathPrefixes.some((prefix) => relativePath.startsWith(prefix))) {
+    return null;
+  }
+  if (!className.endsWith("Rows")) return null;
+  if (!/\bCatchField\.(?:content|input|nav|read)\s*\(/u.test(expression)) {
+    return null;
+  }
+  if (
+    !/\bdivider\s*:\s*(?:[A-Za-z_]\w*\s*!=\s*[A-Za-z_]\w*\.first|[A-Za-z_]\w*\s*(?:>|!=)\s*0)\b/u.test(
+      expression,
+    )
+  ) {
+    return null;
+  }
+  return {
+    path: relativePath,
+    line,
+    level: "high",
+    rule: "SECTION-DIVIDER-002",
+    reason:
+      "Feature-local *Rows manually assigns sibling CatchField dividers; pass the rows directly to CatchSection.fieldRows so the section owns a single fieldSection divider role.",
+    expression: `${className} owns per-sibling CatchField divider flags`,
+  };
 }
 
 function classifyThinSectionWrapper({relativePath, className, line, expression}) {

@@ -149,18 +149,16 @@ class LabHero extends StatelessWidget {
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s2,
                   children: [
-                    CatchBadge(
+                    CatchBadge.onDarkStatus(
                       label: context
                           .l10n
                           .eventSuccessEventSuccessLabScreenLabelWorkInProgress,
-                      tone: CatchBadgeTone.live,
                       icon: CatchIcons.constructionRounded,
                     ),
-                    CatchBadge(
+                    CatchBadge.onDarkStatus(
                       label: context
                           .l10n
                           .eventSuccessEventSuccessLabScreenLabelPreviewOnly,
-                      tone: CatchBadgeTone.solid,
                       icon: CatchIcons.visibilityOutlined,
                     ),
                   ],
@@ -189,23 +187,23 @@ class LabHero extends StatelessWidget {
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s2,
                   children: [
-                    EventSuccessDarkPill(
+                    CatchBadge.onDark(
                       label: context.l10n
                           .eventSuccessEventSuccessLabScreenLabelPlaybookcountPlaybooks(
                             playbookCount: playbookCount,
                           ),
                     ),
-                    EventSuccessDarkPill(
+                    CatchBadge.onDark(
                       label: context
                           .l10n
                           .eventSuccessEventSuccessLabScreenLabelDevStagingRoute,
                     ),
-                    EventSuccessDarkPill(
+                    CatchBadge.onDark(
                       label: context
                           .l10n
                           .eventSuccessEventSuccessLabScreenLabelNoFirestoreWrites,
                     ),
-                    EventSuccessDarkPill(
+                    CatchBadge.onDark(
                       label: context
                           .l10n
                           .eventSuccessEventSuccessLabScreenLabelNoBookingChanges,

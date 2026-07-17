@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
@@ -75,19 +74,6 @@ class HostClubCreateFooterState {
 }
 
 @immutable
-class HostClubEditScaffoldState {
-  const HostClubEditScaffoldState({
-    required this.mediaEnabled,
-    required this.cityPickerEnabled,
-    required this.footer,
-  });
-
-  final bool mediaEnabled;
-  final bool cityPickerEnabled;
-  final HostClubCreateFooterState footer;
-}
-
-@immutable
 class HostClubCreateMediaState {
   const HostClubCreateMediaState({
     required this.enabled,
@@ -99,18 +85,15 @@ class HostClubCreateMediaState {
 
   factory HostClubCreateMediaState.resolve({
     required bool enabled,
-    required Club? initialClub,
     required List<OrderedPhotoPreview> clubPhotoPreviews,
     required PickedClubProfileImage? profileImage,
   }) {
     return HostClubCreateMediaState(
       enabled: enabled,
       clubPhotoPreviews: List.unmodifiable(clubPhotoPreviews),
-      existingCoverImageUrl: clubPhotoPreviews.isEmpty
-          ? initialClub?.imageUrl
-          : null,
+      existingCoverImageUrl: null,
       profileImageBytes: profileImage?.bytes,
-      existingProfileImageUrl: initialClub?.profileImageUrl,
+      existingProfileImageUrl: null,
     );
   }
 
@@ -131,11 +114,10 @@ class HostClubCreateFieldDisplayState {
   });
 
   factory HostClubCreateFieldDisplayState.resolve({
-    required bool mediaOnly,
     required String? selectedCityName,
   }) {
     return HostClubCreateFieldDisplayState(
-      detailsEnabled: !mediaOnly,
+      detailsEnabled: true,
       selectedCity: cityOptionByName(selectedCityName),
       rawCityName: selectedCityName,
       currencyCode: currencyCodeForCityName(selectedCityName),
@@ -146,45 +128,6 @@ class HostClubCreateFieldDisplayState {
   final CityOption? selectedCity;
   final String? rawCityName;
   final String currencyCode;
-}
-
-@immutable
-class HostClubEditValidationState {
-  const HostClubEditValidationState({
-    required this.shouldShowErrors,
-    required this.autovalidateMode,
-    required this.identityHasError,
-  });
-
-  factory HostClubEditValidationState.resolve({
-    required bool editSubmitAttempted,
-    required AutovalidateMode formAutovalidateMode,
-    required String name,
-    required String? selectedCity,
-    required String area,
-    required String description,
-  }) {
-    final shouldShowErrors =
-        editSubmitAttempted ||
-        formAutovalidateMode != AutovalidateMode.disabled;
-    return HostClubEditValidationState(
-      shouldShowErrors: shouldShowErrors,
-      autovalidateMode: editSubmitAttempted
-          ? AutovalidateMode.always
-          : formAutovalidateMode,
-      identityHasError:
-          shouldShowErrors &&
-          (name.trim().isEmpty ||
-              selectedCity == null ||
-              selectedCity.trim().isEmpty ||
-              area.trim().isEmpty ||
-              description.trim().isEmpty),
-    );
-  }
-
-  final bool shouldShowErrors;
-  final AutovalidateMode autovalidateMode;
-  final bool identityHasError;
 }
 
 @immutable
@@ -253,7 +196,6 @@ class HostClubCreateSubmitRequest {
     required this.location,
     required this.area,
     required this.description,
-    required this.existingClub,
     required this.clubPhotoInputs,
     required this.profileImage,
     required this.instagramHandle,
@@ -267,7 +209,6 @@ class HostClubCreateSubmitRequest {
     required String? selectedCity,
     required String area,
     required String description,
-    required Club? existingClub,
     required List<ClubPhotoInput>? clubPhotoInputs,
     required PickedClubProfileImage? profileImage,
     required String instagramHandle,
@@ -284,7 +225,6 @@ class HostClubCreateSubmitRequest {
       location: location,
       area: area.trim(),
       description: description.trim(),
-      existingClub: existingClub,
       clubPhotoInputs: clubPhotoInputs,
       profileImage: profileImage,
       instagramHandle: _trimmedTextOrNull(instagramHandle),
@@ -298,7 +238,6 @@ class HostClubCreateSubmitRequest {
   final String location;
   final String area;
   final String description;
-  final Club? existingClub;
   final List<ClubPhotoInput>? clubPhotoInputs;
   final PickedClubProfileImage? profileImage;
   final String? instagramHandle;
@@ -310,51 +249,35 @@ class HostClubCreateSubmitRequest {
 @immutable
 class HostClubCreateState {
   const HostClubCreateState({
-    required this.isEditing,
-    required this.mediaOnly,
     required this.currentStep,
     required this.totalSteps,
     required this.title,
-    required this.subtitle,
-    required this.showEditScaffold,
-    required this.isLastStep,
-    required this.canPickMedia,
     required this.footer,
-    required this.editScaffold,
     required this.media,
     required this.fields,
-    required this.editValidation,
     required this.draftRestore,
     required this.mutationError,
   });
 
-  final bool isEditing;
-  final bool mediaOnly;
   final int currentStep;
   final int totalSteps;
   final String title;
-  final String? subtitle;
-  final bool showEditScaffold;
-  final bool isLastStep;
-  final bool canPickMedia;
   final HostClubCreateFooterState footer;
-  final HostClubEditScaffoldState? editScaffold;
   final HostClubCreateMediaState media;
   final HostClubCreateFieldDisplayState fields;
-  final HostClubEditValidationState editValidation;
   final HostClubCreateDraftRestoreState draftRestore;
   final String? mutationError;
 
+  String? get subtitle => null;
+  bool get isLastStep => footer.isLastStep;
+  bool get canPickMedia => media.enabled;
   bool get canSaveDraft => footer.canSaveDraft;
   String get lastStepLabel => footer.lastStepLabel;
   bool get isLoading => footer.isLoading;
 
   factory HostClubCreateState.resolve({
-    required bool isEditing,
-    required bool mediaOnly,
     required int currentStep,
     required List<CatchFormStepSpec> activeSteps,
-    required Club? initialClub,
     required bool submitPending,
     required bool saveDraftPending,
     required String? mutationError,
@@ -363,7 +286,6 @@ class HostClubCreateState {
     bool draftRestoreEnabled = true,
     List<OrderedPhotoPreview> clubPhotoPreviews = const [],
     PickedClubProfileImage? profileImage,
-    bool editSubmitAttempted = false,
     AutovalidateMode formAutovalidateMode = AutovalidateMode.disabled,
     String name = '',
     String? selectedCity,
@@ -374,82 +296,42 @@ class HostClubCreateState {
     final clampedStep = totalSteps == 0
         ? 0
         : currentStep.clamp(0, totalSteps - 1).toInt();
-    final showEditScaffold = isEditing && !mediaOnly;
-    final isLastStep =
-        showEditScaffold || totalSteps == 0 || clampedStep == totalSteps - 1;
-    final isLoading = showEditScaffold
-        ? submitPending
-        : submitPending || saveDraftPending;
-    final canPickMedia = !submitPending;
-    final lastStepLabel = mediaOnly
-        ? 'Save photos'
-        : isEditing
-        ? 'Save changes'
-        : 'Create club';
+    final isLastStep = totalSteps == 0 || clampedStep == totalSteps - 1;
+    final isLoading = submitPending || saveDraftPending;
     final footer = HostClubCreateFooterState(
       isLastStep: isLastStep,
       isLoading: isLoading,
       primaryEnabled: !isLoading,
-      primaryLabel: isLastStep ? lastStepLabel : 'Next',
-      lastStepLabel: lastStepLabel,
+      primaryLabel: isLastStep ? 'Create club' : 'Next',
+      lastStepLabel: 'Create club',
       primaryIntent: isLastStep
           ? HostClubCreatePrimaryIntent.submit
           : HostClubCreatePrimaryIntent.nextStep,
-      saveDraftIntent: !isEditing && !mediaOnly
-          ? HostClubCreateSaveDraftIntent.saveDraft
-          : null,
-    );
-    final media = HostClubCreateMediaState.resolve(
-      enabled: canPickMedia,
-      initialClub: initialClub,
-      clubPhotoPreviews: clubPhotoPreviews,
-      profileImage: profileImage,
-    );
-    final fields = HostClubCreateFieldDisplayState.resolve(
-      mediaOnly: mediaOnly,
-      selectedCityName: selectedCity,
-    );
-    final editValidation = HostClubEditValidationState.resolve(
-      editSubmitAttempted: editSubmitAttempted,
-      formAutovalidateMode: formAutovalidateMode,
-      name: name,
-      selectedCity: selectedCity,
-      area: area,
-      description: description,
-    );
-    final draftRestore = HostClubCreateDraftRestoreState.resolve(
-      enabled: draftRestoreEnabled && !isEditing,
-      loadPending: draftLoadPending,
-      loadError: draftLoadError,
+      saveDraftIntent: HostClubCreateSaveDraftIntent.saveDraft,
     );
     return HostClubCreateState(
-      isEditing: isEditing,
-      mediaOnly: mediaOnly,
       currentStep: clampedStep,
       totalSteps: totalSteps,
       title: totalSteps == 0 ? '' : formTitleForStep(activeSteps, clampedStep),
-      subtitle: isEditing ? initialClub!.name : null,
-      showEditScaffold: showEditScaffold,
-      isLastStep: isLastStep,
-      canPickMedia: canPickMedia,
       footer: footer,
-      editScaffold: showEditScaffold
-          ? HostClubEditScaffoldState(
-              mediaEnabled: canPickMedia,
-              cityPickerEnabled: canPickMedia,
-              footer: footer,
-            )
-          : null,
-      media: media,
-      fields: fields,
-      editValidation: editValidation,
-      draftRestore: draftRestore,
+      media: HostClubCreateMediaState.resolve(
+        enabled: !submitPending,
+        clubPhotoPreviews: clubPhotoPreviews,
+        profileImage: profileImage,
+      ),
+      fields: HostClubCreateFieldDisplayState.resolve(
+        selectedCityName: selectedCity,
+      ),
+      draftRestore: HostClubCreateDraftRestoreState.resolve(
+        enabled: draftRestoreEnabled,
+        loadPending: draftLoadPending,
+        loadError: draftLoadError,
+      ),
       mutationError: mutationError,
     );
   }
 }
 
-@immutable
 class HostClubSubmitOutcomeState {
   const HostClubSubmitOutcomeState({required this.shouldCloseRoute});
 

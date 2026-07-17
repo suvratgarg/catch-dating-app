@@ -6,7 +6,10 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const sectionCallPattern =
-  /\bCatchSection\.(?:divided|fieldRows|contained|plain)\s*\(/gu;
+  /\bCatchSection\.(?:divided|fieldRows|contained|containedFieldRows|plain)\s*\(/gu;
+const sectionHeaderCallPattern = /\bCatchSectionHeader\s*\(/gu;
+const adjacentSectionCallPattern =
+  /^(?:const\s+)?CatchSection\.(?:divided|fieldRows|contained|containedFieldRows|plain)\s*\(/u;
 const widgetClassPattern =
   /\bclass\s+([A-Za-z_]\w*)\s+extends\s+(?:StatelessWidget|ConsumerWidget|StatefulWidget|ConsumerStatefulWidget)\s*\{/gu;
 const headerTextPattern =
@@ -110,12 +113,77 @@ export function scanSourceForSectionHeaders({
     }
   }
 
+  sectionHeaderCallPattern.lastIndex = 0;
+  for (const match of commentStripped.matchAll(sectionHeaderCallPattern)) {
+    const start = match.index ?? 0;
+    const openParen = commentStripped.indexOf("(", start);
+    const end = findBalancedClose(commentStripped, openParen);
+    if (end == null) continue;
+
+    const adjacentSection = findAdjacentUntitledSection({
+      source,
+      commentStripped,
+      cursor: end + 1,
+    });
+    if (adjacentSection == null) continue;
+
+    findings.push({
+      path: relativePath,
+      line: lineForOffset(source, start),
+      level: "high",
+      rule: "SECTION-HEADER-004",
+      reason:
+        "A standalone CatchSectionHeader immediately followed by an untitled CatchSection hand-rolls section title and spacing ownership; move title, trailing, and count into the CatchSection constructor.",
+      expression: `CatchSectionHeader followed by ${adjacentSection.constructor} without title`,
+    });
+  }
+
   for (const info of collectWidgetClasses({relativePath, source})) {
-    if (isPrimitiveImplementation(relativePath)) continue;
+    if (
+      info.className.endsWith("Card") &&
+      !isPrimitiveImplementation(relativePath) &&
+      /\bCatchSurface(?:\.card|\.message|\.tinted)?\s*\(/u.test(info.source) &&
+      /\bCatchSectionHeader\s*\(/u.test(info.source) &&
+      /\b(?:CatchButton|CatchField|CatchErrorState|CatchErrorBanner|Text)\s*(?:\.|\()/u.test(
+        info.source,
+      )
+    ) {
+      findings.push({
+        path: relativePath,
+        line: info.line,
+        level: "medium",
+        rule: "SECTION-HEADER-005",
+        reason:
+          "Feature-local *Card hand-rolls a CatchSurface plus CatchSectionHeader around section-like body or actions; verify the card is an object, or move title, trailing, body, and actions into CatchSection.contained.",
+        expression: `${info.className} owns CatchSurface and CatchSectionHeader chrome`,
+      });
+    }
+
     if (!info.className.endsWith("Section")) continue;
-    if (/\bCatchSection\.(?:divided|fieldRows|contained|plain)\s*\(/u.test(info.source)) {
+    if (
+      /\bCatchSection\.(?:divided|fieldRows|contained|containedFieldRows|plain)\s*\(/u.test(
+        info.source,
+      )
+    ) {
       continue;
     }
+    const ownsParallelSectionShell =
+      /\bfinal\s+String\??\s+(?:label|title)\s*;/u.test(info.source) &&
+      /\bfinal\s+Widget\s+child\s*;/u.test(info.source) &&
+      /\bCatchKicker\s*\(/u.test(info.source);
+    if (ownsParallelSectionShell) {
+      findings.push({
+        path: relativePath,
+        line: info.line,
+        level: "high",
+        rule: "SECTION-HEADER-003",
+        reason:
+          "A thin label-plus-child section shell owns CatchKicker chrome outside CatchSection; absorb the shell into the canonical CatchSection contract.",
+        expression: `${info.className} duplicates CatchSection label and body ownership`,
+      });
+      continue;
+    }
+    if (isPrimitiveImplementation(relativePath)) continue;
     if (!/\bCatchSurface(?:\.card|\.message|\.tinted)?\s*\(/u.test(info.source)) {
       continue;
     }
@@ -135,6 +203,52 @@ export function scanSourceForSectionHeaders({
   }
 
   return dedupeFindings(findings);
+}
+
+function findAdjacentUntitledSection({source, commentStripped, cursor}) {
+  cursor = skipSiblingSeparators(commentStripped, cursor);
+  while (true) {
+    const gapMatch = commentStripped
+      .slice(cursor)
+      .match(/^gapH[A-Za-z0-9_]*\b/u);
+    if (gapMatch != null) {
+      cursor += gapMatch[0].length;
+      cursor = skipSiblingSeparators(commentStripped, cursor);
+      continue;
+    }
+
+    const sizedBoxMatch = commentStripped
+      .slice(cursor)
+      .match(/^(?:const\s+)?SizedBox\s*\(/u);
+    if (sizedBoxMatch == null) break;
+    const openParen = commentStripped.indexOf("(", cursor);
+    const end = findBalancedClose(commentStripped, openParen);
+    if (end == null) break;
+    const expression = source.slice(cursor, end + 1);
+    if (
+      !hasTopLevelNamedArgument(expression, "height") ||
+      hasTopLevelNamedArgument(expression, "child")
+    ) {
+      break;
+    }
+    cursor = skipSiblingSeparators(commentStripped, end + 1);
+  }
+
+  const sectionMatch = commentStripped.slice(cursor).match(adjacentSectionCallPattern);
+  if (sectionMatch == null) return null;
+  const openParen = commentStripped.indexOf("(", cursor);
+  const end = findBalancedClose(commentStripped, openParen);
+  if (end == null) return null;
+  const expression = source.slice(cursor, end + 1);
+  if (hasTopLevelNamedArgument(expression, "title")) return null;
+
+  const constructor = sectionMatch[0].trim().replace(/\s*\($/u, "");
+  return {constructor};
+}
+
+function skipSiblingSeparators(source, cursor) {
+  while (cursor < source.length && /[\s,]/u.test(source[cursor])) cursor += 1;
+  return cursor;
 }
 
 function collectDuplicateHeaders({
@@ -356,6 +470,34 @@ function extractTopLevelStringArgument(expression, name) {
   return null;
 }
 
+function hasTopLevelNamedArgument(expression, name) {
+  const openParen = expression.indexOf("(");
+  const closeParen = expression.lastIndexOf(")");
+  if (openParen < 0 || closeParen < openParen) return false;
+
+  let depth = 0;
+  let quote = null;
+  for (let index = openParen + 1; index < closeParen; index += 1) {
+    const char = expression[index];
+    if (quote != null) {
+      if (char === "\\" && index + 1 < closeParen) {
+        index += 1;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (char === "\"" || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === "(" || char === "[" || char === "{") depth += 1;
+    if (char === ")" || char === "]" || char === "}") depth -= 1;
+    if (depth === 0 && startsNamedArgument(expression, index, name)) return true;
+  }
+  return false;
+}
+
 function startsNamedArgument(expression, index, name) {
   if (expression.slice(index, index + name.length) !== name) return false;
   const previous = expression[index - 1];
@@ -444,7 +586,7 @@ function printSummary(result, {maxRows, includeLow}) {
   };
   console.log("Section header ownership advisory:");
   console.log(`Files scanned: ${result.filesScanned}`);
-  console.log(`High-confidence duplicate headers: ${result.counts.high}`);
+  console.log(`High-confidence section ownership violations: ${result.counts.high}`);
   console.log(`Medium section/card review candidates: ${result.counts.medium}`);
   console.log(`Low inventory items: ${result.counts.low}`);
   console.log(`Header flag widget classes: ${headerFlagInventory.count}`);
@@ -479,9 +621,9 @@ function printHelp() {
   node tool/design/check_section_headers.mjs --summary [--max 40]
   node tool/design/check_section_headers.mjs --json
 
-Reports duplicate section headers and feature-local titled section/card shells
-that should route title ownership through CatchSection or a documented card
-primitive.
+Reports duplicate section headers, standalone header-plus-section shells, and
+feature-local titled section/card shells that should route title ownership
+through CatchSection or a documented card primitive.
 `);
 }
 

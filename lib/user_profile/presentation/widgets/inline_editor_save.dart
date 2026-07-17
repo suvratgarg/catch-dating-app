@@ -53,6 +53,10 @@ mixin InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     );
   }
 
+  /// Runs an injected descriptor-layer save through the same field-local
+  /// pending/error state as the legacy profile save helpers.
+  Future<bool> saveWith(Future<void> Function() save) => _save(save);
+
   Future<bool> saveFieldsFromLatest(LatestProfilePatchBuilder buildPatch) {
     return _save(
       () => ProfileEditController.saveFieldsMutation.run(

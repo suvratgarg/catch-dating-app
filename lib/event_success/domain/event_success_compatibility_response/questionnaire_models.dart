@@ -55,14 +55,17 @@ final class EventSuccessCompatibilityQuestion {
       id: id ?? this.id,
       prompt: prompt ?? this.prompt,
       options: options ?? this.options,
-    ).normalized();
+    );
   }
 
-  Map<String, Object?> toJson() => {
-    'id': id,
-    'prompt': prompt,
-    'options': options.map((option) => option.toJson()).toList(),
-  };
+  Map<String, Object?> toJson() {
+    final persisted = normalized();
+    return {
+      'id': persisted.id,
+      'prompt': persisted.prompt,
+      'options': persisted.options.map((option) => option.toJson()).toList(),
+    };
+  }
 }
 
 final class EventSuccessCompatibilityOption {
@@ -91,11 +94,17 @@ final class EventSuccessCompatibilityOption {
         id ?? this.id,
         fallback: _slugFrom(label ?? this.label, 'option'),
       ),
-      label: _normalizedText(label ?? this.label, fallback: this.label),
+      label: label ?? this.label,
     );
   }
 
-  Map<String, Object?> toJson() => {'id': id, 'label': label};
+  Map<String, Object?> toJson() {
+    final normalizedLabel = _normalizedText(label, fallback: 'Option');
+    return {
+      'id': _normalizedId(id, fallback: _slugFrom(normalizedLabel, 'option')),
+      'label': normalizedLabel,
+    };
+  }
 }
 
 final class EventSuccessQuestionnairePack {

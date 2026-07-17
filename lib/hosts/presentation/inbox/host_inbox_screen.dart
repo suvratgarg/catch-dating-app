@@ -21,7 +21,8 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -145,6 +146,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     return Scaffold(
       backgroundColor: t.bg,
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
@@ -158,8 +160,6 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
                 hostUnreadCount: 0,
                 onHostFilterChanged: null,
                 showHostSubtitle: false,
-                height: CatchLayout.hostInboxHeaderHeight,
-                contentPadding: CatchInsets.hostInboxHeader,
               ),
             ),
             if (failed != null)
@@ -171,11 +171,12 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             else if (loading || workspace == null)
               const ChatsListSkeleton()
             else ...[
-              HostInboxScopeSelector(
-                workspace: workspace,
-                now: now,
-                onChanged: _selectScope,
-              ),
+              if (workspace.scopeOptions.length > 1)
+                HostInboxScopeSelector(
+                  workspace: workspace,
+                  now: now,
+                  onChanged: _selectScope,
+                ),
               if (!workspace.isGeneral)
                 HostInboxAudienceRail(
                   workspace: workspace,
@@ -189,6 +190,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
                 onBroadcastSelected: _openBroadcast,
               ),
             ],
+            const CatchSliverTerminalPadding(),
           ],
         ),
       ),
@@ -360,10 +362,12 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
   }
 
   String _scopeTriggerLabel(HostInboxScope scope, Event? event) {
-    if (scope.isGeneral)
+    if (scope.isGeneral) {
       return context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries;
-    if (event == null)
+    }
+    if (event == null) {
       return context.l10n.hostsHostInboxScreenVisiblecopyEventInquiry;
+    }
     final eventName = context.l10n
         .hostsHostInboxScreenVisiblecopyLongweekdayEventtitlelabel(
           longWeekday: AppTimeFormatters.longWeekday(event.startTime),
@@ -384,11 +388,13 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
   }
 
   String _scopeMenuLabel(HostInboxScope scope, Map<String, Event> eventsById) {
-    if (scope.isGeneral)
+    if (scope.isGeneral) {
       return context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries;
+    }
     final event = eventsById[scope.eventId];
-    if (event == null)
+    if (event == null) {
       return context.l10n.hostsHostInboxScreenVisiblecopyEventInquiry;
+    }
     return context.l10n
         .hostsHostInboxScreenVisiblecopyTitleShortdatelabelCompacttimerangelabel(
           title: event.title,
@@ -413,17 +419,17 @@ class HostInboxAudienceRail extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: CatchInsets.pageHorizontal,
-        child: CatchSegmentedControl<HostInboxAudienceSegment>(
+        child: CatchOptionGroup<HostInboxAudienceSegment>(
           selected: workspace.selectedSegment,
-          segments: [
-            CatchSegment(
+          options: [
+            CatchOption(
               value: HostInboxAudienceSegment.booked,
               label: context.l10n
                   .hostsHostInboxScreenLabelBookedBookedthreadcount(
                     bookedThreadCount: workspace.bookedThreadCount,
                   ),
             ),
-            CatchSegment(
+            CatchOption(
               value: HostInboxAudienceSegment.prospective,
               label: context.l10n
                   .hostsHostInboxScreenLabelProspectiveProspectivethreadcount(
@@ -431,10 +437,7 @@ class HostInboxAudienceRail extends StatelessWidget {
                   ),
             ),
           ],
-          expanded: true,
-          style: CatchSegmentedControlStyle.surface,
-          size: CatchSegmentedControlSize.compact,
-          labelStyle: CatchSegmentedControlLabelStyle.mono,
+          variant: CatchOptionGroupVariant.mono,
           onChanged: onChanged,
         ),
       ),
@@ -536,7 +539,6 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
                         .hostsHostInboxScreenMessagePersonalQuestionsAppearHere,
                   ),
           ),
-        const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
       ],
     );
   }

@@ -80,6 +80,42 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets(
+    'ProfileSurface resolves canonical city ids in every profile mode',
+    (tester) async {
+      final profile = buildPublicProfile(
+        name: 'Suvrat',
+        age: 26,
+      ).copyWith(city: 'in-dl-delhi-ncr', occupation: 'Product designer');
+
+      for (final mode in ProfileSurfaceMode.values) {
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(
+                body: SizedBox(
+                  width: 390,
+                  height: 844,
+                  child: ProfileSurface(profile: profile, mode: mode),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(
+          find.text('PRODUCT DESIGNER · DELHI NCR'),
+          findsOneWidget,
+          reason: mode.name,
+        );
+        expect(find.text('IN-DL-DELHI-NCR'), findsNothing, reason: mode.name);
+        expect(tester.takeException(), isNull, reason: mode.name);
+      }
+    },
+  );
+
   testWidgets('ProfileSurface tolerates text scale 1.5 in light and dark', (
     tester,
   ) async {
@@ -455,7 +491,5 @@ void main() {
 }
 
 Finder _chip(String label) {
-  return find.byWidgetPredicate(
-    (widget) => widget is CatchChip && widget.label == label,
-  );
+  return find.widgetWithText(CatchChip, label);
 }

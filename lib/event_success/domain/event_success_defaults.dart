@@ -21,11 +21,20 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     @Default(false) bool enabled,
     @Default('social_run_light') String playbookId,
     @Default(<String>[]) List<String> selectedModuleIds,
+    @Default(false) bool moduleSelectionConfigured,
     @Default(EventSuccessStructureConfig.legacyDefault())
     EventSuccessStructureConfig structureConfig,
     @Default('Help attendees meet at least two new people.') String hostGoal,
-    @Default(true) bool wingmanRequestsEnabled,
-    @Default(true) bool contextualOpenersEnabled,
+    @Deprecated(
+      'Platform-owned and always true; retained only for stored-schema compatibility.',
+    )
+    @Default(true)
+    bool wingmanRequestsEnabled,
+    @Deprecated(
+      'Platform-owned and always true; retained only for stored-schema compatibility.',
+    )
+    @Default(true)
+    bool contextualOpenersEnabled,
     @Default(false) bool compatibilityAffectsRanking,
     @Default(EventSuccessQuestionnaireConfig.defaultTemplate())
     EventSuccessQuestionnaireConfig questionnaireConfig,
@@ -40,18 +49,17 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     bool enabled = true,
     String? attendeePrompt,
   }) {
+    final selectedModuleIds = draft.playbook.effectiveModuleSelection(
+      draft.selectedModuleIds,
+    );
     return EventSuccessDefaults(
       enabled: enabled,
       playbookId: draft.playbook.id,
-      selectedModuleIds: draft.selectedModuleIds.toList()..sort(),
+      selectedModuleIds: selectedModuleIds.toList()..sort(),
+      moduleSelectionConfigured: true,
       structureConfig: draft.structureConfig,
       hostGoal: draft.hostGoal,
-      wingmanRequestsEnabled: draft.isModuleSelected(
-        EventSuccessModuleCatalog.wingmanRequests.id,
-      ),
-      contextualOpenersEnabled: draft.isModuleSelected(
-        EventSuccessModuleCatalog.contextualOpeners.id,
-      ),
+      // Legacy flags intentionally use their hardcoded `true` defaults.
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
       questionnaireConfig: draft.questionnaireConfig,
       attendeePrompt: _trimToNull(attendeePrompt),
@@ -95,21 +103,21 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     final selectedIds = selectedModuleIds
         .where(playbook.moduleIds.contains)
         .toSet();
-    final resolvedSelectedIds = selectedIds.isEmpty
-        ? defaultDraft.selectedModuleIds
-        : selectedIds;
+    final hasExplicitSelection =
+        moduleSelectionConfigured || selectedModuleIds.isNotEmpty;
+    final configuredSelectedIds = hasExplicitSelection
+        ? selectedIds
+        : defaultDraft.selectedModuleIds;
+    final resolvedSelectedIds = playbook.effectiveModuleSelection(
+      configuredSelectedIds,
+    );
     return defaultDraft.copyWith(
       selectedModuleIds: resolvedSelectedIds,
       structureConfig: structureConfig.isLegacyDefault
           ? defaultDraft.structureConfig
           : structureConfig,
       hostGoal: hostGoal.trim().isEmpty ? defaultDraft.hostGoal : hostGoal,
-      wingmanRequestsEnabled: resolvedSelectedIds.contains(
-        EventSuccessModuleCatalog.wingmanRequests.id,
-      ),
-      contextualOpenersEnabled: resolvedSelectedIds.contains(
-        EventSuccessModuleCatalog.contextualOpeners.id,
-      ),
+      // Legacy flags intentionally use their hardcoded `true` defaults.
       compatibilityAffectsRanking: compatibilityAffectsRanking,
       questionnaireConfig: questionnaireConfig,
     );
@@ -148,12 +156,15 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
         .where(profile.isSelectable)
         .toSet();
     final useCurrentSelectedIds =
-        currentSelectedIds.isNotEmpty &&
+        (moduleSelectionConfigured || selectedModuleIds.isNotEmpty) &&
         currentPlaybook.id == profile.playbook.id;
     final playbookChanged = currentPlaybook.id != profile.playbook.id;
-    final selectedIds = useCurrentSelectedIds
+    final configuredSelectedIds = useCurrentSelectedIds
         ? currentSelectedIds
         : recommendedDraft.selectedModuleIds;
+    final selectedIds = profile.playbook.effectiveModuleSelection(
+      configuredSelectedIds,
+    );
     final compatibilitySelected = selectedIds.contains(
       EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
     );
@@ -173,12 +184,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
         hostGoal: hostGoal.trim().isEmpty
             ? recommendedDraft.hostGoal
             : hostGoal,
-        wingmanRequestsEnabled: selectedIds.contains(
-          EventSuccessModuleCatalog.wingmanRequests.id,
-        ),
-        contextualOpenersEnabled: selectedIds.contains(
-          EventSuccessModuleCatalog.contextualOpeners.id,
-        ),
+        // Legacy flags intentionally use their hardcoded `true` defaults.
         compatibilityAffectsRanking:
             compatibilitySelected &&
             (useCurrentSelectedIds

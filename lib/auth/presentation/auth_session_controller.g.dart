@@ -57,7 +57,7 @@ final class AuthSessionControllerProvider
 }
 
 String _$authSessionControllerHash() =>
-    r'de617a2ad9c543002373b083216daec676e82dc3';
+    r'e204d4602bf8e8e67c860f81bf62f5babc07f9b5';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

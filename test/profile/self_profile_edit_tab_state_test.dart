@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
@@ -150,45 +151,43 @@ void main() {
         'Children',
       ]);
 
-      final displayName =
-          state.basicRows.first as SelfProfileTextFieldRowDescriptor;
+      final displayName = state.basicRows.first as CatchFormTextRow;
       expect(displayName.fieldName, 'displayName');
       expect(displayName.currentValue, 'S.');
       expect(displayName.currentFieldValue, 'S.');
 
       final phone =
           state.basicRows.singleWhere((row) => row.id == 'phoneNumber')
-              as SelfProfileReadOnlyFieldRowDescriptor;
+              as CatchFormReadRow;
       expect(phone.body, '+919876543210');
 
       final instagram =
           state.basicRows.singleWhere((row) => row.id == 'instagramHandle')
-              as SelfProfileTextFieldRowDescriptor;
+              as CatchFormTextRow;
       expect(instagram.currentValue, 'suvrat_events');
       expect(instagram.currentFieldValue, 'suvrat_events');
       expect(instagram.leadingUnit, '@');
 
       final height =
           state.basicRows.singleWhere((row) => row.id == 'height')
-              as SelfProfileHeightFieldRowDescriptor;
-      expect(height.value, '178 cm');
-      expect(height.isAddAffordance, isFalse);
+              as CatchFormCustomRow;
+      expect(height.accordionKey, 'height');
 
       final education =
           state.aboutRows.singleWhere((row) => row.id == 'education')
-              as SelfProfileSingleChoiceFieldRowDescriptor;
+              as CatchFormSingleChoiceRow;
       expect(education.allowEmptySelection, isTrue);
       expect(education.showOptionalLabel, isFalse);
 
       final religion =
           state.aboutRows.singleWhere((row) => row.id == 'religion')
-              as SelfProfileSingleChoiceFieldRowDescriptor;
+              as CatchFormSingleChoiceRow;
       expect(religion.allowEmptySelection, isTrue);
       expect(religion.showOptionalLabel, isTrue);
 
       final languages =
           state.aboutRows.singleWhere((row) => row.id == 'languages')
-              as SelfProfileMultiChoiceFieldRowDescriptor;
+              as CatchFormMultiChoiceRow;
       expect(languages.allowEmptySelection, isTrue);
       expect(languages.showOptionalLabel, isFalse);
 

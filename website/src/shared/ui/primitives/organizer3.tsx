@@ -319,7 +319,7 @@ export function ReviewSignalLane({
     <section className="review-signal-lane" aria-label={title}>
       <div className="review-signal-lane__head">
         <div>
-          <UiLabel>{reviews.length}{"visible"}</UiLabel>
+          <UiLabel>{reviews.length}{" visible"}</UiLabel>
           <h3>{title}</h3>
         </div>
         <p>{body}</p>
@@ -361,7 +361,7 @@ export function ReviewSignalCard({review}: {review: PublicReviewCardModel}) {
       {review.comment ? <p>{review.comment}</p> : null}
       {review.ownerResponse ? (
         <div className="listing-owner-response">
-          <span>{"Host response ·"}{review.ownerResponse.hostName}</span>
+          <span>{"Host response · "}{review.ownerResponse.hostName}</span>
           <p>{review.ownerResponse.message}</p>
           <small>{review.ownerResponse.updatedAtLabel}</small>
         </div>

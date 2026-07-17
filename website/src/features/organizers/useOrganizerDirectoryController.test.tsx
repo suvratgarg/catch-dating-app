@@ -1,0 +1,51 @@
+import {act, renderHook, waitFor} from "@testing-library/react";
+import type {PropsWithChildren} from "react";
+import {MemoryRouter} from "react-router";
+import {describe, expect, it, vi} from "vitest";
+
+const trackMarketingEvent = vi.hoisted(() => vi.fn());
+const trackOrganizerSearchAppearance = vi.hoisted(() => vi.fn());
+
+vi.mock("../../analytics", () => ({trackMarketingEvent}));
+vi.mock("./analytics", () => ({trackOrganizerSearchAppearance}));
+
+import {useOrganizerDirectoryController} from "./useOrganizerDirectoryController";
+
+function wrapper(initialEntry = "/organizers/") {
+  return function Wrapper({children}: PropsWithChildren) {
+    return <MemoryRouter initialEntries={[initialEntry]}>{children}</MemoryRouter>;
+  };
+}
+
+describe("useOrganizerDirectoryController", () => {
+  it("hydrates filters from the URL and composes functional updates", async () => {
+    const {result} = renderHook(() => useOrganizerDirectoryController(), {
+      wrapper: wrapper("/organizers/?status=unclaimed&q=after"),
+    });
+
+    expect(result.current.statusFilter).toBe("unclaimed");
+    expect(result.current.query).toBe("after");
+    expect(result.current.results.length).toBeGreaterThan(0);
+    act(() => result.current.setQuery((current) => `${current} fly`));
+    await waitFor(() => expect(result.current.query).toBe("after fly"));
+    expect(result.current.results.every((listing) => listing.status.toLowerCase() === "unclaimed"))
+      .toBe(true);
+  });
+
+  it("tracks submitted result appearances and resets the URL-owned filters", async () => {
+    const {result} = renderHook(() => useOrganizerDirectoryController(), {
+      wrapper: wrapper("/organizers/?status=unclaimed&q=after"),
+    });
+
+    act(() => result.current.handleSearch({preventDefault: vi.fn()} as never));
+    expect(trackMarketingEvent).toHaveBeenCalledWith(
+      "organizer_search_submitted",
+      expect.objectContaining({query: "after", status_filter: "unclaimed"})
+    );
+    expect(trackOrganizerSearchAppearance).toHaveBeenCalled();
+
+    act(() => result.current.clearFilters());
+    await waitFor(() => expect(result.current.query).toBe(""));
+    expect(result.current.statusFilter).toBe("all");
+  });
+});

@@ -20,14 +20,17 @@ class DashboardLoadingScreen extends StatelessWidget {
                   constraints: const BoxConstraints(
                     maxWidth: CatchLayout.maxContentWidth,
                   ),
-                  child: const CatchSectionStack(
-                    padding: CatchInsets.pageBodyUnderHeader,
+                  child: CatchSectionStack(
+                    padding: CatchInsets.pageBodyUnderHeader.copyWith(
+                      bottom: 0,
+                    ),
                     gap: CatchSpacing.micro18,
-                    children: [DashboardFocusLoadingCard()],
+                    children: const [DashboardFocusLoadingCard()],
                   ),
                 ),
               ),
             ),
+            const CatchSliverTerminalPadding(),
           ],
         ),
       ),

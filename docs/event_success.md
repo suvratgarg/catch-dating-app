@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.2.0
-updated: 2026-06-30
+version: 1.3.3
+updated: 2026-07-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -201,6 +201,12 @@ Check:
 - pre-arrival attendee state without live prompt/reveal/partner leakage;
 - checked-in attendee moment sync;
 - questionnaire, opt-out, wingman request, feedback, and report states;
+- organizer questionnaire configuration stays compact: reusable packs show a
+  one-row title, description, and question count summary, while detailed
+  question inputs appear only when the host selects a custom pack;
+- organizer structure configuration stays flat: flow fields are direct section
+  rows, whole-group mode omits irrelevant size/count controls, and Match clue
+  mode has one disclosure owner inside a full-width structural field section;
 - host-help candidate filtering by attendance and interested-in/cohort
   eligibility.
 
@@ -259,29 +265,57 @@ into this source-of-truth doc. Durable outcomes from that pass:
 - companion auto-open/post-event runtime regressions have focused coverage;
 - local simulator phone-auth test bypass is guarded to non-production builds.
 
-## Recent Setup And Companion Ergonomics Pass
+## Setup Configuration Contract
 
-The 2026-05-24 ergonomics pass reshaped both the host setup wizard and the
-attendee companion. The work was split into four phases; durable outcomes:
+The 2026-07-16 modernization replaces the original pre-design-system setup
+wizard with a compact shared form. Durable outcomes:
 
 - **Phase 1 — surface unification.** `EventSuccessSetupBody` is the shared
   setup widget consumed by both `EventSuccessDefaultsPanel` (create-event last
   step) and the Host Manage setup tab. The two surfaces stay in sync
   automatically — no copy or behaviour drift.
-- **Phase 2 — lifecycle stages and inline pickers.** Setup body groups modules
-  into Arrival foundation, During event, and After event stage cards (plus
-  Advanced). Rotation cadence and reveal countdown live inline in the During
-  card; the questionnaire collapses three controls (module toggle, ranking
-  switch, content editor) into one Off / Clues only / Clues + soft pairing
-  three-state chooser, with custom prompts in a bottom sheet.
-- **Phase 3 — copy and dirty-state polish.** Module titles use host-readable
-  names (Synchronized partner reveal, Small starter groups, Timed partner
-  rotations, "Help me say hi" requests, Welcome script, Suggested first-message
-  openers, After-event attendee feedback, Booking balance preview). Frozen
-  state explains exactly what can still be edited. Save button surfaces an
-  unsaved-changes pill driven by a `_isDirty` getter that diffs the resolved
-  draft against the saved plan.
-- **Phase 4 — companion ergonomics.** Hero re-frames around "what now". Live
+- **Stage-based live guide.** The shared body groups selectable tools by their
+  domain stage: Before the event, When people arrive, During the event, and
+  After the event. Catalog order remains stable inside each stage, and
+  recommendation or advanced guidance stays on the relevant toggle row.
+- **Contained configuration.** Rotation cadence, reveal countdown, and match
+  clue configuration appear directly beneath the tool that enables them in
+  `CatchSection.containedFieldRows`. Room grouping appears only when a grouping
+  tool or non-whole-group structure makes it relevant. Host goal and attendee
+  prompt remain direct editable fields.
+- **Inline questions.** Template and custom-question editing stays in the form;
+  there is no secondary bottom sheet. Raw text remains editable until save,
+  where normalization and validation run once.
+- **Immediate switches.** In Organizer defaults, Event Success enablement and
+  live-tool switches persist as soon as they change through functional updates
+  and the serialized `HostClubDefaultsSaver` queue. Text, numeric, and choice
+  fields keep field-local explicit actions so partial input is never saved
+  accidentally.
+- **Spoke ownership.** Club-level Event Success defaults live on the dedicated
+  Live event guide spoke reached from the four-row Club settings section. The
+  Edit tab no longer embeds the form alongside profile, payout, and team UI.
+- **Platform boundary.** Attendance/check-in, safety controls, crowd balance,
+  wingman requests, contextual openers, attendee feedback, and host analytics
+  are event-platform primitives. Catalog metadata hides them from host setup;
+  effective reads and new defaults/plans include every platform-owned id that
+  the active playbook contains, while untouched legacy JSON remains unchanged.
+  The two legacy boolean fields stay serialized as `true` until a later schema
+  migration. First Hello remains the only Event Success arrival ritual.
+- **Gated Phase 4 prototype.** Widgetbook contains an owner-review-only
+  `EventSuccessModuleConsolidationPrototype` under
+  `Event Success / Phase 4 owner review`. It demonstrates the proposed single
+  How people mix choice, conditional size/count/cadence/repeat row order,
+  recommendation copy, and a five-decision visible tool set. Its grouping
+  derivation exists as an explicit draft projection, but the prototype has no
+  writer and production still uses the pair-only backend-safe interaction.
+  Wiring the composite control remains blocked on explicit owner approval.
+- **Guarded persistence.** Setup saves are transactionally revision checked,
+  reject frozen or stale plans, and update only setup-owned fields. A newer
+  remote snapshot never silently replaces local unsaved edits.
+- **Topology parity.** Guided rotations normalize to two-person pairs, and
+  client structure estimates clamp fixed group counts using the same bound as
+  the assignment backend.
+- **Companion ergonomics.** Hero re-frames around "what now". Live
   cards use Switch-based include/skip toggles instead of buttons. Pre-arrival
   is informational only — no opt-out levers before the event starts. Three-tier
   privacy badges (Private to you / Host can see / Catch private) appear on

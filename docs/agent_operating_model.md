@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 1.2.2
-updated: 2026-07-02
+version: 1.4.0
+updated: 2026-07-16
 owner: agent_operating_model
 status: active
 ---
@@ -97,6 +97,52 @@ implementing a repeated app architecture pattern, the agent must:
 This makes migration quality ratchet forward: the file edited at the start of a
 round must remain comparable to the file edited at the end of the round.
 
+## Git Preservation And Reconciliation Contract
+
+Working branches are single-use, pushed preservation units. Create the upstream
+when the branch is created (`push.autoSetupRemote=true`), and push every bounded
+commit. If an agent session ends with intended dirty work, make a scoped
+`chore(wip)` commit on that session branch and push it. Do not leave unique work
+only in a working tree, stash, reflog, or unpushed local branch.
+
+Long-running omnibus branches must stop accumulating changes as soon as one of
+their slices is re-derived into another PR. On the same day, either reconcile
+the branch onto the merged result or freeze its current tip under a pushed
+`backup/` ref and replace it with focused branches. A frozen backup is evidence,
+not a new integration source.
+
+Before any rebase, reset, amend, history rewrite, or merge expected to require
+manual conflict resolution:
+
+1. fetch the remote and record the current branch, HEAD, upstream, and status;
+2. create a dated `backup/<branch>-<date>` ref at the pre-operation HEAD and
+   push it when the source branch is shared or holds unique work;
+3. keep `rerere.enabled=true` so repeated conflict resolutions are stable; and
+4. never rewrite a branch that has a shared upstream. Use a fresh branch and
+   cherry-pick reviewed commits instead.
+
+After any reconciliation touching more than 50 paths, run the exact four-tree
+classifier and keep its JSON plus a reason for every discarded side:
+
+```sh
+node tool/git/audit_merge_drops.mjs \
+  --base <merge-base> --ours <pre-merge-ours> \
+  --theirs <integrated-tip> --merged <result> \
+  --receipt <receipt.json> --strict --json
+```
+
+`both-diverged` paths still require semantic review; exact blob classification
+cannot prove that one side's behavior was incorporated. Governed document
+versions must also move monotonically:
+
+```sh
+node tool/docs/check_doc_version_monotonic.mjs --base origin/main
+```
+
+After a squash/merge is proven on `origin/main`, delete its remote branch,
+remove its disposable worktree, and prune local tracking refs. Do not reuse it
+for the next slice.
+
 ## Parallel Worktree Delegation Contract
 
 Parallel agents may speed up Catch work only when they preserve a single
@@ -119,7 +165,10 @@ single file set and later reviews the result.
 
 ### Git Protocol
 
-Use Git worktrees as the isolation boundary:
+Use Git worktrees as the isolation boundary. Create durable local worktrees
+under the repository's ignored `.claude/worktrees/` directory; never use
+`/tmp` or `/private/tmp`, because system cleanup can leave stale Git
+registrations or destroy active work.
 
 1. Parent records the current branch and HEAD before delegation.
 2. Parent creates or asks for a disposable subagent branch from that HEAD.

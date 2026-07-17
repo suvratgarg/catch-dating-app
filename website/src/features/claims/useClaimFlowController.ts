@@ -1,3 +1,4 @@
+import {websiteCopy} from "@content/generated";
 import {type FormEvent, useCallback, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
@@ -102,7 +103,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
   async function handleClaimSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!listing) {
-      setStatus({message: "Choose a listing before submitting.", tone: "is-error"});
+      setStatus({message: websiteCopy["useclaimflowcontroller_0102"], tone: "is-error"});
       setStep("listing");
       return;
     }
@@ -130,13 +131,13 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
     if (!claimFirebaseConfigured) {
       setStatus({
         message:
-          "Claim submission needs the website Firebase/App Check config. The operating packet is ready, but this local build cannot submit it.",
+          websiteCopy["useclaimflowcontroller_0104"],
         tone: "is-error",
       });
       return;
     }
     if (!user) {
-      setStatus({message: "Sign in before submitting this claim.", tone: "is-error"});
+      setStatus({message: websiteCopy["useclaimflowcontroller_0105"], tone: "is-error"});
       return;
     }
 
@@ -165,7 +166,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
       });
       setRequestId(response.requestId);
       setStatus({
-        message: "Claim request received. Catch will review ownership before tools unlock.",
+        message: websiteCopy["useclaimflowcontroller_0103"],
         tone: "is-success",
       });
       setStep("submitted");

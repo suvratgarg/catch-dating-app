@@ -246,7 +246,7 @@ Finder _promptAnswerEditableText(int index) => find.descendant(
   matching: find.byType(EditableText),
 );
 
-Finder _profileOptionGroup() => find.byType(CatchOptionGroup<int>);
+Finder _profileOptionGroup() => find.byType(CatchOptionGroup<SelfProfileTab>);
 
 Finder _catchChip(String label) => find.byWidgetPredicate(
   (widget) => widget is CatchFieldChoiceChip && widget.label == label,
@@ -475,6 +475,32 @@ void main() {
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
     expect(find.byType(PreviewTab), findsNothing);
     expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
+  });
+
+  testWidgets('ProfileScreen accepts a typed initial tab', (tester) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(_profilePreviewScrollFixture()),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ProfileScreen(initialTab: SelfProfileTab.insights),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(ProfileInsightsTabSliverBody), findsOneWidget);
+    expect(find.byType(ProfileTabSliverBody), findsNothing);
+    expect(find.byType(PreviewTab), findsNothing);
   });
 
   testWidgets('ProfileScreen preserves NestedScrollView overlap contract', (
@@ -899,9 +925,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final user = buildUser(
-      email: '',
-    ).copyWith(phoneNumber: '+919876543210', occupation: 'Engineer');
+    final user = buildUser(email: '').copyWith(phoneNumber: '+919876543210');
 
     await tester.pumpWidget(
       ProviderScope(
@@ -924,6 +948,8 @@ void main() {
     for (final (label, emptyValue) in [
       ('Email', 'Add email'),
       ('Instagram', 'Add instagram'),
+      ('Job title', 'Add job title'),
+      ('Company', 'Add company'),
     ]) {
       final tile = _profileInfoTile(label);
       await _dragProfileTabUntilVisible(tester, tile);
@@ -931,11 +957,12 @@ void main() {
         find.descendant(of: tile, matching: find.text(emptyValue)),
         findsOneWidget,
       );
+      expect(
+        find.descendant(of: tile, matching: find.text(label)),
+        findsNothing,
+      );
       expect(find.text('+ $label'), findsNothing);
     }
-
-    await _dragProfileTabUntilVisible(tester, find.text('Engineer'));
-    expect(find.text('Engineer'), findsOneWidget);
 
     final workoutTile = _profileInfoTile('Workout');
     await _dragProfileTabUntilVisible(tester, workoutTile);
@@ -1067,8 +1094,7 @@ void main() {
       of: aboutSection,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider &&
-            widget.role == CatchDividerRole.fieldSection,
+            widget is CatchDivider && widget.role == CatchDividerRole.fieldRow,
       ),
     );
     expect(dividers, findsWidgets);
@@ -1513,11 +1539,46 @@ void main() {
         )
         .length;
 
+    Rect highlightedPromptFieldRect() {
+      final overlays = find.descendant(
+        of: card,
+        matching: find.byKey(
+          const ValueKey<String>('catch-field-active-overlay'),
+        ),
+      );
+      final activeIndex =
+          List.generate(
+            overlays.evaluate().length,
+            (index) => index,
+          ).singleWhere((index) {
+            final overlay = tester.widget<AnimatedContainer>(
+              overlays.at(index),
+            );
+            return (overlay.decoration! as BoxDecoration).border != null;
+          });
+      return tester.getRect(overlays.at(activeIndex));
+    }
+
+    Rect promptSurfaceRect() => tester.getRect(
+      find.descendant(
+        of: card,
+        matching: find.byType(CatchSectionFocusSurface),
+      ),
+    );
+
+    void expectPromptEdgesShareGeometry() {
+      final surfaceRect = promptSurfaceRect();
+      final fieldRect = highlightedPromptFieldRect();
+      expect(fieldRect.left, closeTo(surfaceRect.left, 0.1));
+      expect(fieldRect.right, closeTo(surfaceRect.right, 0.1));
+    }
+
     expect(
       promptSurfaceDecoration().border,
       Border.all(color: CatchTokens.editorialLight.line2),
     );
     expect(highlightedPromptFields(), 1);
+    expectPromptEdgesShareGeometry();
 
     await tester.tap(_promptAnswerEditableText(0));
     await _pumpProfileSheet(tester);
@@ -1527,6 +1588,7 @@ void main() {
       Border.all(color: CatchTokens.editorialLight.line2),
     );
     expect(highlightedPromptFields(), 1);
+    expectPromptEdgesShareGeometry();
     expect(find.byKey(const ValueKey('catch-field-cancel')), findsNothing);
     expect(find.byKey(const ValueKey('catch-field-done')), findsNothing);
     expect(_promptAnswerEditableText(0), findsOneWidget);
@@ -1673,25 +1735,11 @@ void main() {
         );
       }
       expect(
-        find.byKey(const ValueKey('inline-profilePrompt:3-entry-editor')),
+        find.byKey(const ValueKey('inline-profilePrompt-3-entry-editor')),
         findsNothing,
       );
     },
   );
-
-  testWidgets('profile keeps all three prompt slots available when empty', (
-    tester,
-  ) async {
-    await _pumpProfileTab(
-      tester,
-      buildUser(name: 'Suvrat Garg', profilePrompts: const []),
-    );
-
-    expect(
-      find.byType(ProfileInlinePromptEntryEditor),
-      findsNWidgets(maxProfilePromptAnswers),
-    );
-  });
 
   testWidgets('inline prompt choices exclude questions used by other cards', (
     tester,
@@ -1715,7 +1763,7 @@ void main() {
     await _pumpEditableProfileTab(tester, user, repository);
 
     final promptEditor = find.byKey(
-      const ValueKey('inline-profilePrompt:2-entry-editor'),
+      const ValueKey('inline-profilePrompt-2-entry-editor'),
     );
     await _dragProfileTabUntilVisible(tester, promptEditor);
     tester.widget<ProfileInlinePromptEntryEditor>(promptEditor).onTap();
@@ -1858,6 +1906,7 @@ void main() {
     expect(repository.updatedFields, {'height': 173});
     expect(find.byTooltip('Increase height'), findsOneWidget);
     expect(_loadingCatchButtonCount(tester), 1);
+    expect(find.byType(CatchFieldSpinner), findsOneWidget);
 
     repository.updateCompleter!.complete();
     await _pumpProfileSheet(tester);
@@ -2325,6 +2374,7 @@ void main() {
       'education': EducationLevel.values.first.name,
     });
     expect(_loadingCatchButtonCount(tester), 1);
+    expect(find.byType(CatchFieldSpinner), findsOneWidget);
     expect(
       tester
           .widget<CatchFieldChoiceChip>(
@@ -2499,7 +2549,10 @@ class _ProfileHeaderHarnessState extends State<_ProfileHeaderHarness>
   @override
   void initState() {
     super.initState();
-    _controller = TabController(length: 3, vsync: this);
+    _controller = TabController(
+      length: SelfProfileTab.values.length,
+      vsync: this,
+    );
   }
 
   @override

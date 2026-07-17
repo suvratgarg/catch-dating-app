@@ -24,6 +24,7 @@ class ProfileInlineHeightEditor extends ConsumerStatefulWidget {
     required this.onSaved,
     required this.onCancel,
     required this.patchForValue,
+    this.savePatch,
     this.isAddAffordance = false,
   });
 
@@ -36,6 +37,7 @@ class ProfileInlineHeightEditor extends ConsumerStatefulWidget {
   final InlineSaveCallback onSaved;
   final VoidCallback onCancel;
   final UpdateUserProfilePatch Function(int value) patchForValue;
+  final Future<bool> Function(UpdateUserProfilePatch patch)? savePatch;
   final bool isAddAffordance;
 
   @override
@@ -79,7 +81,15 @@ class _ProfileInlineHeightEditorState
       _cancel();
       return;
     }
-    final saved = await saveFields(widget.patchForValue(_heightCm));
+    final patch = widget.patchForValue(_heightCm);
+    final savePatch = widget.savePatch;
+    final saved = savePatch == null
+        ? await saveFields(patch)
+        : await saveWith(() async {
+            if (!await savePatch(patch)) {
+              throw StateError('Profile field save was not accepted.');
+            }
+          });
     if (saved && mounted) {
       _showSaved();
       widget.onSaved();

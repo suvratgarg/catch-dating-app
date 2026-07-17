@@ -2,38 +2,123 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'device_location.g.dart';
 
+abstract interface class DeviceLocationGateway {
+  Future<bool> isLocationServiceEnabled();
+
+  Future<LocationPermission> checkPermission();
+
+  Future<LocationPermission> requestPermission();
+
+  Future<Position> getCurrentPosition();
+
+  Future<bool> openAppSettings();
+
+  Future<bool> openLocationSettings();
+}
+
+enum DeviceLocationFailure {
+  servicesDisabled,
+  permissionDenied,
+  permissionDeniedForever,
+  unavailable,
+}
+
+class GeolocatorDeviceLocationGateway implements DeviceLocationGateway {
+  const GeolocatorDeviceLocationGateway();
+
+  @override
+  Future<LocationPermission> checkPermission() => Geolocator.checkPermission();
+
+  @override
+  Future<Position> getCurrentPosition() => Geolocator.getCurrentPosition(
+    locationSettings: const LocationSettings(
+      accuracy: LocationAccuracy.low,
+      timeLimit: Duration(seconds: 10),
+    ),
+  );
+
+  @override
+  Future<bool> isLocationServiceEnabled() =>
+      Geolocator.isLocationServiceEnabled();
+
+  @override
+  Future<bool> openAppSettings() => Geolocator.openAppSettings();
+
+  @override
+  Future<bool> openLocationSettings() => Geolocator.openLocationSettings();
+
+  @override
+  Future<LocationPermission> requestPermission() =>
+      Geolocator.requestPermission();
+}
+
+final deviceLocationGatewayProvider = Provider<DeviceLocationGateway>(
+  (ref) => const GeolocatorDeviceLocationGateway(),
+);
+
 // keepalive: device location should be resolved once and reused by discovery
 // surfaces instead of re-prompting across route rebuilds.
 @Riverpod(keepAlive: true)
 class DeviceLocation extends _$DeviceLocation {
-  @override
-  Future<LocationCoordinate?> build() async {
-    try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return null;
+  DeviceLocationFailure? _lastFailure;
 
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
+  DeviceLocationFailure? get lastFailure => _lastFailure;
+
+  @override
+  Future<LocationCoordinate?> build() => _resolve(requestIfDenied: false);
+
+  /// Resolves location after an explicit user action and may show the native
+  /// permission prompt. Passive consumers only call [build], which never asks.
+  Future<LocationCoordinate?> request() async {
+    state = const AsyncLoading<LocationCoordinate?>();
+    final next = await AsyncValue.guard(() => _resolve(requestIfDenied: true));
+    state = next;
+    return next.asData?.value;
+  }
+
+  Future<bool> openRecoverySettings() {
+    final gateway = ref.read(deviceLocationGatewayProvider);
+    return switch (_lastFailure) {
+      DeviceLocationFailure.servicesDisabled => gateway.openLocationSettings(),
+      DeviceLocationFailure.permissionDeniedForever =>
+        gateway.openAppSettings(),
+      _ => Future<bool>.value(false),
+    };
+  }
+
+  Future<LocationCoordinate?> _resolve({required bool requestIfDenied}) async {
+    _lastFailure = null;
+    try {
+      final gateway = ref.read(deviceLocationGatewayProvider);
+      final serviceEnabled = await gateway.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _lastFailure = DeviceLocationFailure.servicesDisabled;
         return null;
       }
 
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.low,
-          timeLimit: Duration(seconds: 10),
-        ),
-      );
+      var permission = await gateway.checkPermission();
+      if (permission == LocationPermission.denied && requestIfDenied) {
+        permission = await gateway.requestPermission();
+      }
+      if (permission == LocationPermission.denied) {
+        _lastFailure = DeviceLocationFailure.permissionDenied;
+        return null;
+      }
+      if (permission == LocationPermission.deniedForever) {
+        _lastFailure = DeviceLocationFailure.permissionDeniedForever;
+        return null;
+      }
+
+      final position = await gateway.getCurrentPosition();
       return LocationCoordinate(position.latitude, position.longitude);
     } catch (error, stackTrace) {
+      _lastFailure = DeviceLocationFailure.unavailable;
       ref
           .read(errorLoggerProvider)
           .logAppException(

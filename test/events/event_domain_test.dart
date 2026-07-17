@@ -24,6 +24,13 @@ void main() {
       startTime: start,
       endTime: endTime ?? start.add(const Duration(hours: 1)),
       meetingPoint: 'Carter Road',
+      meetingLocation: const EventMeetingLocation(
+        name: 'Carter Road',
+        latitude: 19.0608,
+        longitude: 72.8365,
+      ),
+      startingPointLat: 19.0608,
+      startingPointLng: 72.8365,
       eventFormat: eventFormat,
       distanceKm: 5.0,
       pace: PaceLevel.easy,
@@ -170,6 +177,34 @@ void main() {
     test('converts kilometres to miles', () {
       final event = buildEvent();
       expect(event.distanceMiles, closeTo(3.106855, 0.000001));
+    });
+  });
+
+  group('Event meeting location contract', () {
+    test('reads a valid legacy pair through the compatibility view', () {
+      final source = buildEvent();
+      final json = <String, dynamic>{...source.toJson(), 'id': source.id}
+        ..remove('meetingLocation');
+
+      final decoded = Event.fromJson(json);
+
+      expect(decoded.meetingLocation, isNull);
+      expect(decoded.effectiveMeetingLocation?.name, source.meetingPoint);
+      expect(decoded.effectiveStartingPointLat, source.startingPointLat);
+      expect(decoded.effectiveStartingPointLng, source.startingPointLng);
+    });
+
+    test('keeps a coordinate-less legacy event readable until repair', () {
+      final source = buildEvent();
+      final json = <String, dynamic>{...source.toJson(), 'id': source.id}
+        ..remove('meetingLocation')
+        ..remove('startingPointLat')
+        ..remove('startingPointLng');
+
+      final decoded = Event.fromJson(json);
+
+      expect(decoded.meetingLocation, isNull);
+      expect(decoded.hasExactStartingPoint, isFalse);
     });
   });
 }

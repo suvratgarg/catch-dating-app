@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
@@ -94,13 +94,12 @@ void main() {
     expect(find.text('18 – 60+'), findsOneWidget);
     expect(find.byKey(SwipeKeys.ageRangeSlider), findsOneWidget);
     expect(find.byType(CatchRangeSlider), findsOneWidget);
-    expect(find.byType(CatchSelectChip), findsNWidgets(Gender.values.length));
+    expect(find.byType(CatchChip), findsNWidgets(Gender.values.length));
     expect(
-      tester
-          .widget<CatchSelectChip>(
-            find.byKey(SwipeKeys.genderFilterChip(Gender.woman.name)),
-          )
-          .active,
+      _chipSelected(
+        tester,
+        find.byKey(SwipeKeys.genderFilterChip(Gender.woman.name)),
+      ),
       isTrue,
     );
 
@@ -111,11 +110,10 @@ void main() {
     await tester.pump();
     expect(find.text('20 – 60+'), findsOneWidget);
     expect(
-      tester
-          .widget<CatchSelectChip>(
-            find.byKey(SwipeKeys.genderFilterChip(Gender.man.name)),
-          )
-          .active,
+      _chipSelected(
+        tester,
+        find.byKey(SwipeKeys.genderFilterChip(Gender.man.name)),
+      ),
       isTrue,
     );
 
@@ -135,6 +133,21 @@ void main() {
       'interestedInGenders': ['woman', 'man'],
     });
   });
+}
+
+bool _chipSelected(WidgetTester tester, Finder chip) {
+  final semantics = tester.widget<Semantics>(
+    find
+        .descendant(
+          of: chip,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is Semantics && widget.properties.selected != null,
+          ),
+        )
+        .first,
+  );
+  return semantics.properties.selected!;
 }
 
 class _FakeFiltersUserProfileRepository extends Fake

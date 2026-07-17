@@ -30,7 +30,7 @@ final class CreateEventCallableRequest {
     required this.startTimeMillis,
     required this.endTimeMillis,
     required this.meetingPoint,
-    this.meetingLocation,
+    required this.meetingLocation,
     required this.startingPointLat,
     required this.startingPointLng,
     this.locationDetails,
@@ -54,7 +54,7 @@ final class CreateEventCallableRequest {
   final int startTimeMillis;
   final int endTimeMillis;
   final String meetingPoint;
-  final EventMeetingLocation? meetingLocation;
+  final EventMeetingLocation meetingLocation;
   final double startingPointLat;
   final double startingPointLng;
   final String? locationDetails;
@@ -78,7 +78,7 @@ final class CreateEventCallableRequest {
     'startTimeMillis': startTimeMillis,
     'endTimeMillis': endTimeMillis,
     'meetingPoint': meetingPoint,
-    'meetingLocation': ?meetingLocation?.toJson(),
+    'meetingLocation': meetingLocation.toJson(),
     'startingPointLat': startingPointLat,
     'startingPointLng': startingPointLng,
     'locationDetails': ?locationDetails,

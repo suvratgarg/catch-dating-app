@@ -2,8 +2,16 @@ part of '../host_operations_screen.dart';
 
 mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
     on ConsumerState<T> {
+  bool _ownsClubMutation = false;
+
   bool get isSaving =>
       ref.read(HostClubEditController.updateClubMutation).isPending;
+
+  bool get ownsClubMutation => _ownsClubMutation;
+
+  void clearClubMutationOwnership() {
+    _ownsClubMutation = false;
+  }
 
   Future<bool> saveClubPatch({
     required String clubId,
@@ -12,6 +20,7 @@ mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
     if (isSaving) return false;
     if (patch.isEmpty) return true;
 
+    _ownsClubMutation = true;
     try {
       await HostClubEditController.updateClubMutation.run(
         ref,
@@ -19,6 +28,7 @@ mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
             .get(hostClubEditControllerProvider)
             .updateClub(clubId: clubId, patch: patch),
       );
+      _ownsClubMutation = false;
       return true;
     } catch (_) {
       return false;
@@ -100,6 +110,10 @@ class _HostInlineTextEntryEditorState
     if (oldWidget.fieldName != widget.fieldName ||
         oldWidget.currentValue != widget.currentValue) {
       _controller.text = widget.currentValue;
+      clearClubMutationOwnership();
+    }
+    if (oldWidget.isExpanded && !widget.isExpanded) {
+      clearClubMutationOwnership();
     }
   }
 
@@ -111,12 +125,16 @@ class _HostInlineTextEntryEditorState
   }
 
   void _clearValidationError() {
-    if (_validationError == null) return;
-    setState(() => _validationError = null);
+    if (_validationError == null && !ownsClubMutation) return;
+    setState(() {
+      _validationError = null;
+      clearClubMutationOwnership();
+    });
   }
 
   void _cancel() {
     _controller.text = widget.currentValue;
+    clearClubMutationOwnership();
     widget.onCancel();
   }
 
@@ -161,36 +179,40 @@ class _HostInlineTextEntryEditorState
   Widget build(BuildContext context) {
     final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
     final saving = saveMutation.isPending;
-    return CatchField.actions(
+    final inputFormatters = <TextInputFormatter>[
+      if (widget.maxLines != 1) const _HostStackedBlankLinesFormatter(),
+      if (widget.maxLength != null)
+        LengthLimitingTextInputFormatter(widget.maxLength),
+    ];
+    return CatchField.inputActions(
       icon: widget.icon,
       title: widget.label,
-      body: widget.value,
-      initiallyExpanded: widget.isExpanded,
-      onTap: widget.onTap,
+      controller: _controller,
+      placeholder: widget.placeholder ?? widget.value,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (expanded != widget.isExpanded) widget.onTap();
+      },
       isLoading: saving,
+      enabled: !saving,
       error:
           _validationError ??
-          mutationErrorMessage(
-            saveMutation,
-            l10n: context.l10n,
-            context: AppErrorContext.club,
-          ),
-      control: ProfileInlineTextValue(
-        label: widget.label,
-        displayValue: widget.value,
-        placeholder: widget.placeholder,
-        controller: _controller,
-        isEditing: widget.isExpanded,
-        enabled: !saving,
-        keyboardType: widget.keyboardType,
-        textCapitalization: widget.textCapitalization,
-        maxLines: widget.maxLines,
-        minLines: widget.minLines,
-        maxLength: widget.maxLength,
-        collapseStackedBlankLines: widget.maxLines != 1,
-        onSubmitted: (_) => _submit(),
-      ),
-      actionLeading: widget.showCounter && widget.maxLength != null
+          (ownsClubMutation
+              ? mutationErrorMessage(
+                  saveMutation,
+                  l10n: context.l10n,
+                  context: AppErrorContext.club,
+                )
+              : null),
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.maxLines == 1
+          ? TextInputAction.done
+          : TextInputAction.newline,
+      textCapitalization: widget.textCapitalization,
+      inputFormatters: inputFormatters.isEmpty ? null : inputFormatters,
+      maxLines: widget.maxLines,
+      minLines: widget.minLines,
+      supporting: widget.showCounter && widget.maxLength != null
           ? AnimatedBuilder(
               animation: _controller,
               builder: (context, _) => Text(
@@ -202,6 +224,7 @@ class _HostInlineTextEntryEditorState
               ),
             )
           : null,
+      onSubmitted: (_) => _submit(),
       onCancel: _cancel,
       onSubmit: _submit,
     );
@@ -268,11 +291,18 @@ class _HostInlineOptionEditorState<T>
     if (oldWidget.fieldName != widget.fieldName ||
         oldWidget.currentValue != widget.currentValue) {
       _selected = widget.currentValue;
+      clearClubMutationOwnership();
+    }
+    if (oldWidget.isExpanded && !widget.isExpanded) {
+      clearClubMutationOwnership();
     }
   }
 
   void _cancel() {
-    setState(() => _selected = widget.currentValue);
+    setState(() {
+      _selected = widget.currentValue;
+      clearClubMutationOwnership();
+    });
     widget.onCancel();
   }
 
@@ -298,18 +328,24 @@ class _HostInlineOptionEditorState<T>
     final displayValue = widget.isExpanded
         ? _labelFor(_selected)
         : widget.value;
-    return CatchField.actions(
+    // TODO(edit-spec-p3): Migrate this staged editor to CatchField.choices
+    // once the Host option save model becomes immediate-commit.
+    return CatchField.control(
       icon: widget.icon,
       title: widget.label,
       body: displayValue,
-      initiallyExpanded: widget.isExpanded,
-      onTap: widget.onTap,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (expanded != widget.isExpanded) widget.onTap();
+      },
       isLoading: saving,
-      error: mutationErrorMessage(
-        saveMutation,
-        l10n: context.l10n,
-        context: AppErrorContext.club,
-      ),
+      error: ownsClubMutation
+          ? mutationErrorMessage(
+              saveMutation,
+              l10n: context.l10n,
+              context: AppErrorContext.club,
+            )
+          : null,
       control: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -325,12 +361,15 @@ class _HostInlineOptionEditorState<T>
             runSpacing: CatchSpacing.s2,
             children: [
               for (final option in widget.options)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: option.label,
-                  active: _selected == option.value,
-                  accentColor: option.accentColor,
+                  selected: _selected == option.value,
+                  accent: option.accentColor,
                   enabled: !saving,
-                  onTap: () => setState(() => _selected = option.value),
+                  onChanged: (_) => setState(() {
+                    _selected = option.value;
+                    clearClubMutationOwnership();
+                  }),
                 ),
             ],
           ),
@@ -410,6 +449,10 @@ class _HostInlineAgeRangeEditorState
         oldWidget.hostDefaults.eventPolicy.maxAge != _policy.maxAge) {
       _minAgeController.text = _optionalMinAgeText(_policy.minAge);
       _maxAgeController.text = _optionalMaxAgeText(_policy.maxAge);
+      clearClubMutationOwnership();
+    }
+    if (oldWidget.isExpanded && !widget.isExpanded) {
+      clearClubMutationOwnership();
     }
   }
 
@@ -423,13 +466,17 @@ class _HostInlineAgeRangeEditorState
   }
 
   void _clearValidationError() {
-    if (_validationError == null) return;
-    setState(() => _validationError = null);
+    if (_validationError == null && !ownsClubMutation) return;
+    setState(() {
+      _validationError = null;
+      clearClubMutationOwnership();
+    });
   }
 
   void _cancel() {
     _minAgeController.text = _optionalMinAgeText(_policy.minAge);
     _maxAgeController.text = _optionalMaxAgeText(_policy.maxAge);
+    clearClubMutationOwnership();
     widget.onCancel();
   }
 
@@ -467,20 +514,25 @@ class _HostInlineAgeRangeEditorState
     final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
     final saving = saveMutation.isPending;
     final displayValue = widget.isExpanded ? _draftValue : widget.value;
-    return CatchField.actions(
+    // Composite exception: two coordinated inputs commit one age-range patch.
+    return CatchField.control(
       icon: widget.icon,
       title: widget.label,
       body: displayValue,
-      initiallyExpanded: widget.isExpanded,
-      onTap: widget.onTap,
+      open: widget.isExpanded,
+      onOpenChanged: (expanded) {
+        if (expanded != widget.isExpanded) widget.onTap();
+      },
       isLoading: saving,
       error:
           _validationError ??
-          mutationErrorMessage(
-            saveMutation,
-            l10n: context.l10n,
-            context: AppErrorContext.club,
-          ),
+          (ownsClubMutation
+              ? mutationErrorMessage(
+                  saveMutation,
+                  l10n: context.l10n,
+                  context: AppErrorContext.club,
+                )
+              : null),
       control: Row(
         children: [
           Expanded(
@@ -519,4 +571,36 @@ class _HostInlineAgeRangeEditorState
       maxAge: maxAge,
     );
   }
+}
+
+class _HostStackedBlankLinesFormatter extends TextInputFormatter {
+  const _HostStackedBlankLinesFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final collapsed = _collapseHostStackedBlankLines(newValue.text);
+    if (collapsed == newValue.text) return newValue;
+
+    final selectionEnd = newValue.selection.end;
+    final normalizedOffset = selectionEnd < 0
+        ? collapsed.length
+        : _collapseHostStackedBlankLines(
+            newValue.text.substring(0, selectionEnd),
+          ).length;
+    final offset = normalizedOffset.clamp(0, collapsed.length);
+    return TextEditingValue(
+      text: collapsed,
+      selection: TextSelection.collapsed(offset: offset),
+    );
+  }
+}
+
+String _collapseHostStackedBlankLines(String value) {
+  return value
+      .replaceAll('\r\n', '\n')
+      .replaceAll('\r', '\n')
+      .replaceAll(RegExp(r'\n[ \t]*\n(?:[ \t]*\n)+'), '\n\n');
 }

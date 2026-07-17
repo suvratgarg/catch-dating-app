@@ -7,6 +7,14 @@ cd "$repo_root"
 
 max_lines="${WIDGET_CLEANUP_SCAN_MAX_LINES:-80}"
 
+if [[ "${1:-}" == "--check" ]]; then
+  summary="$(bash "$0" --summary)"
+  printf '%s\n' "$summary"
+  printf '%s\n' "$summary" | node tool/lib/widget_cleanup_ratchet.mjs \
+    --baseline tool/audit/widget_cleanup_baseline.json
+  exit 0
+fi
+
 if [[ "${1:-}" == "--summary" && "${WIDGET_CLEANUP_SCAN_FORCE_FULL:-}" != "1" ]]; then
   summary_key_for() {
     case "$1" in
@@ -235,6 +243,7 @@ scan_raw_text_inputs() {
     '(^|[^A-Za-z])(TextField|TextFormField)\(' \
     lib/core lib/*/presentation \
     --glob '!lib/core/widgets/catch_field.dart' \
+    --glob '!lib/core/widgets/catch_field_*.dart' \
     --glob '!lib/core/widgets/catch_search_field.dart' \
     --glob '!lib/core/widgets/catch_otp_code_field.dart' || true)"
 

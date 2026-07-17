@@ -8,8 +8,9 @@
 export interface HostAnalyticsQueryCallablePayload {
   clubId?: string | null;
   eventId?: string | null;
-  rangePreset?: "7d" | "30d" | "90d" | "month" | "custom";
+  rangePreset?: "7d" | "30d" | "90d" | "12m" | "month" | "custom";
   startDate?: string | null;
   endDate?: string | null;
   granularity?: "day" | "week" | "month";
+  timezone?: string;
 }

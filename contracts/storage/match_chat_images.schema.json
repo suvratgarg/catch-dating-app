@@ -2,11 +2,14 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/storage/match_chat_images.schema.json",
   "title": "MatchChatImagesStoragePath",
-  "description": "Chat images uploaded inside a match conversation. Stored at matches/{matchId}/images/{fileName}. Read and write require active match participation.",
+  "description": "Chat images uploaded inside a match conversation. Stored at matches/{matchId}/images/{fileName}. Read requires match participation; create and owner cleanup require an active match.",
   "type": "object",
   "x-storage-rules-match": "match /matches/{matchId}/images/{fileName}",
   "x-storage-read": "active match participant",
-  "x-storage-write": "active match participant (uploader)",
+  "x-storage-write": "create by active match participant with uploaderUid metadata; delete by that uploader; updates denied",
+  "x-storage-custom-metadata": {
+    "uploaderUid": "required Firebase Auth uid; immutable object owner"
+  },
   "x-storage-content-type-pattern": "image/.*",
   "x-storage-file-name-pattern": "[A-Za-z0-9_-]{1,180}_[0-9]+\\.(jpg|jpeg|png)",
   "x-storage-max-bytes": 8388608,
@@ -25,6 +28,10 @@
     "fileName": {
       "type": "string",
       "description": "Required pattern: {messageId}_{timestamp}.{ext}, with ext jpg/jpeg/png."
+    },
+    "uploaderUid": {
+      "type": "string",
+      "description": "Required custom Storage metadata; must match request.auth.uid when the object is created or deleted."
     }
   }
 }

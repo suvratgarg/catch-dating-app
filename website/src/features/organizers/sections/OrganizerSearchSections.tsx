@@ -1,3 +1,5 @@
+import {websiteCopy} from "@content/generated";
+import {websiteTemplates} from "@content/templates";
 import {SectionHeader} from "../../../shared/site";
 import {useEffect} from "react";
 import {
@@ -70,94 +72,92 @@ export function OrganizerSearchHeroSection({
   return (
     <OrganizerSearchSection variant="hero" aria-labelledby="organizer-search-title">
       <SectionHeader
-        eyebrow="Organizer search"
+        eyebrow={websiteCopy["organizersearchsections_0469"]}
         headingLevel="h1"
         id="organizer-search-title"
-        title="Every club, host, and venue running real events."
-        body="Search source-backed seed listings and Catch-created clubs by name, city, format, reviews, upcoming events, and claim state."
+        title={websiteCopy["organizersearchsections_0462"]}
+        body={websiteCopy["organizersearchsections_0478"]}
         wide />
       <OrganizerSearchStats
         reveal
         items={[
-          {label: " profiles tracked", value: summary.profileCount},
-          {label: " verified on Catch", value: summary.verifiedCount},
-          {label: " claimable seed pages", value: summary.unclaimedCount},
-          {label: " event-backed pages", value: summary.eventBackedCount},
+          {label: websiteCopy["organizersearchsections_0470"], value: summary.profileCount},
+          {label: websiteCopy["organizersearchsections_0487"], value: summary.verifiedCount},
+          {label: websiteCopy["organizersearchsections_0458"], value: summary.unclaimedCount},
+          {label: websiteCopy["organizersearchsections_0461"], value: summary.eventBackedCount},
         ]}
       />
       <SearchFormShell variant="organizer" onSubmit={handleSearch} reveal>
         <TextField
           id="organizer-search-query"
-          label="Search organizers"
+          label={websiteCopy["organizersearchsections_0477"]}
           name="q"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Try Sunday Table, Indore, run club, dinner"
+          placeholder={websiteCopy["organizersearchsections_0484"]}
         />
-        <Button type="submit">Search</Button>
+        <Button type="submit">{websiteCopy["organizersearchsections_0476"]}</Button>
       </SearchFormShell>
       <FilterRail reveal>
         <SelectField
           id="organizer-status-filter"
-          label="Status"
+          label={websiteCopy["organizersearchsections_0482"]}
           name="status"
           value={statusFilter}
           onChange={(event) => setStatusFilter(event.target.value as OrganizerStatusFilter)}
         >
-          <option value="all">Any status</option>
-          <option value="verified">Verified on Catch</option>
-          <option value="claimed">Claimed</option>
-          <option value="unclaimed">Unclaimed</option>
+          <option value="all">{websiteCopy["organizersearchsections_0454"]}</option>
+          <option value="verified">{websiteCopy["organizersearchsections_0488"]}</option>
+          <option value="claimed">{websiteCopy["organizersearchsections_0459"]}</option>
+          <option value="unclaimed">{websiteCopy["organizersearchsections_0485"]}</option>
         </SelectField>
         <SelectField
           id="organizer-city-filter"
-          label="City"
+          label={websiteCopy["organizersearchsections_0455"]}
           name="city"
           value={cityFilter}
           onChange={(event) => setCityFilter(event.target.value)}
         >
-          <option value="all">Any city</option>
+          <option value="all">{websiteCopy["organizersearchsections_0451"]}</option>
           {cityOptions.map((city) => <option key={city}>{city}</option>)}
         </SelectField>
         <SelectField
           id="organizer-format-filter"
-          label="Format"
+          label={websiteCopy["organizersearchsections_0463"]}
           name="format"
           value={formatFilter}
           onChange={(event) => setFormatFilter(event.target.value)}
         >
-          <option value="all">Any format</option>
+          <option value="all">{websiteCopy["organizersearchsections_0452"]}</option>
           {formatOptions.map((format) => <option key={format}>{format}</option>)}
         </SelectField>
         <SelectField
           id="organizer-rating-filter"
-          label="Rating"
+          label={websiteCopy["organizersearchsections_0473"]}
           name="rating"
           value={minRating}
           onChange={(event) => setMinRating(Number(event.target.value))}
         >
-          <option value={0}>Any rating</option>
+          <option value={0}>{websiteCopy["organizersearchsections_0453"]}</option>
           <option value={4}>4.0+</option>
           <option value={4.5}>4.5+</option>
         </SelectField>
         <ToggleChipButton
           selected={upcomingOnly}
           onClick={() => setUpcomingOnly((current) => !current)}
-        >
-          Has upcoming events
-        </ToggleChipButton>
+        >{websiteCopy["organizersearchsections_0464"]}</ToggleChipButton>
         <SelectField
           id="organizer-sort"
-          label="Sort"
+          label={websiteCopy["organizersearchsections_0480"]}
           name="sort"
           value={sort}
           onChange={(event) => setSort(event.target.value as OrganizerSort)}
         >
-          <option value="relevance">Relevance</option>
-          <option value="reviews">Most reviewed</option>
-          <option value="rating">Rating</option>
-          <option value="upcoming">Upcoming first</option>
-          <option value="confidence">Source confidence</option>
+          <option value="relevance">{websiteCopy["organizersearchsections_0474"]}</option>
+          <option value="reviews">{websiteCopy["organizersearchsections_0465"]}</option>
+          <option value="rating">{websiteCopy["organizersearchsections_0473"]}</option>
+          <option value="upcoming">{websiteCopy["organizersearchsections_0486"]}</option>
+          <option value="confidence">{websiteCopy["organizersearchsections_0481"]}</option>
         </SelectField>
       </FilterRail>
       <OrganizerResultSummary>
@@ -165,9 +165,7 @@ export function OrganizerSearchHeroSection({
           {results.length} {results.length === 1 ? "profile" : "profiles"}
           {normalizedQuery ? ` for "${query.trim()}"` : ""}
         </p>
-        <TextActionButton onClick={clearFilters}>
-          Clear filters
-        </TextActionButton>
+        <TextActionButton onClick={clearFilters}>{websiteCopy["organizersearchsections_0460"]}</TextActionButton>
       </OrganizerResultSummary>
     </OrganizerSearchSection>
   );
@@ -185,17 +183,13 @@ export function DirectoryClaimPressureStrip({
   return (
     <OrganizerSearchSection variant="claim-pressure" aria-labelledby="directory-claim-title">
       <DirectoryClaimPressureCopy>
-        <UiLabel>Claim pressure</UiLabel>
-        <h2 id="directory-claim-title">Public pages work harder when the owner steps in.</h2>
-        <p>
-          Seed pages expose source evidence and proof gaps. Claimed pages can add
-          official details, publish Catch events, separate verified attendee
-          reviews, and respond as the host.
-        </p>
+        <UiLabel>{websiteCopy["organizersearchsections_0456"]}</UiLabel>
+        <h2 id="directory-claim-title">{websiteCopy["organizersearchsections_0472"]}</h2>
+        <p>{websiteCopy["organizersearchsections_0479"]}</p>
         <DirectoryClaimPressureStats
           items={[
-            {label: " claimable pages", value: unclaimedCount},
-            {label: " event-backed pages", value: eventBackedCount},
+            {label: websiteCopy["organizersearchsections_0457"], value: unclaimedCount},
+            {label: websiteCopy["organizersearchsections_0461"], value: eventBackedCount},
           ]}
         />
       </DirectoryClaimPressureCopy>
@@ -205,14 +199,15 @@ export function DirectoryClaimPressureStrip({
             <ActivityMark listing={listing} size="sm" />
             <span>
               <strong>{listing.name}</strong>
-              <small>{listing.city} · {listing.missingEvidence.length} proof gaps</small>
+              <small>
+                {listing.city} · {listing.missingEvidence.length}{" "}
+                {websiteCopy["organizersearchsections_0471"]}
+              </small>
             </span>
             <StatusBadge listing={listing} compact />
           </PlainLink>
         ))}
-        <DirectoryClaimPressureCta href="/claim/">
-          Open claim flow
-        </DirectoryClaimPressureCta>
+        <DirectoryClaimPressureCta href="/claim/">{websiteCopy["organizersearchsections_0467"]}</DirectoryClaimPressureCta>
       </DirectoryClaimPressureList>
     </OrganizerSearchSection>
   );
@@ -230,7 +225,7 @@ export function OrganizerResultsSection({
   results: HostListing[];
 }) {
   return (
-    <OrganizerSearchSection variant="results" aria-label="Organizer results">
+    <OrganizerSearchSection variant="results" aria-label={websiteCopy["organizersearchsections_0468"]}>
       {results.length ? (
         results.map((listing) => (
           <OrganizerResultCard
@@ -242,11 +237,9 @@ export function OrganizerResultsSection({
         ))
       ) : (
         <EmptyState variant="organizer-results" reveal>
-          <h2>No organizer profiles match those filters.</h2>
-          <p>Try a wider city, format, or status filter.</p>
-          <Button variant="ghost" type="button" onClick={clearFilters}>
-            Reset directory
-          </Button>
+          <h2>{websiteCopy["organizersearchsections_0466"]}</h2>
+          <p>{websiteCopy["organizersearchsections_0483"]}</p>
+          <Button variant="ghost" type="button" onClick={clearFilters}>{websiteCopy["organizersearchsections_0475"]}</Button>
         </EmptyState>
       )}
     </OrganizerSearchSection>
@@ -288,8 +281,8 @@ function OrganizerResultCard({
           <BadgeRow
             items={[
               {label: listing.category},
-              ...(rating ? [{label: `${rating.toFixed(1)} rating`}] : []),
-              ...(reviewCount ? [{label: `${reviewCount} reviews`}] : []),
+              ...(rating ? [{label: websiteTemplates.ratingLabel(rating)}] : []),
+              ...(reviewCount ? [{label: websiteTemplates.reviewCountLabel(reviewCount)}] : []),
               {
                 label: nextEvent ?
                   nextEvent.title :

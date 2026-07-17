@@ -91,6 +91,7 @@ export interface UpdateClubCallablePayload {
          * @maxItems 24
          */
         selectedModuleIds?: string[];
+        moduleSelectionConfigured?: boolean;
         structureConfig?: {
           unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
           unitSize: number;
@@ -141,6 +142,7 @@ export interface UpdateClubCallablePayload {
            * @maxItems 24
            */
           selectedModuleIds?: string[];
+          moduleSelectionConfigured?: boolean;
           structureConfig?: {
             unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
             unitSize: number;

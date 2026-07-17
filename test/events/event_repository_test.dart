@@ -394,7 +394,7 @@ void main() {
           photoUrl: 'https://img.example/events/event-42.jpg',
           constraints: const EventConstraints(minAge: 21, maxAge: 35),
         );
-        final meetingLocation = event.effectiveMeetingLocation!;
+        final meetingLocation = event.effectiveMeetingLocation;
 
         await repository.createEvent(event: event);
 
@@ -405,7 +405,7 @@ void main() {
             'startTimeMillis': event.startTime.millisecondsSinceEpoch,
             'endTimeMillis': event.endTime.millisecondsSinceEpoch,
             'meetingPoint': event.meetingPoint,
-            'meetingLocation': meetingLocation.toJson(),
+            'meetingLocation': meetingLocation!.toJson(),
             'startingPointLat': event.startingPointLat,
             'startingPointLng': event.startingPointLng,
             'photoUrl': event.photoUrl,
@@ -436,7 +436,7 @@ void main() {
           startingPointLng: 72.8777,
           photoUrl: 'https://img.example/events/event-42.jpg',
         );
-        final meetingLocation = event.effectiveMeetingLocation!;
+        final meetingLocation = event.effectiveMeetingLocation;
 
         await repository.updateEventDetails(event: event);
 
@@ -447,7 +447,7 @@ void main() {
               'startTimeMillis': event.startTime.millisecondsSinceEpoch,
               'endTimeMillis': event.endTime.millisecondsSinceEpoch,
               'meetingPoint': event.meetingPoint,
-              'meetingLocation': meetingLocation.toJson(),
+              'meetingLocation': meetingLocation!.toJson(),
               'startingPointLat': event.startingPointLat,
               'startingPointLng': event.startingPointLng,
               'locationDetails': event.locationDetails,

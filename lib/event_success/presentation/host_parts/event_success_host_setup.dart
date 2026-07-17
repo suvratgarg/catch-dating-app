@@ -29,17 +29,25 @@ class _SetupTabState extends State<SetupTab> {
   );
   late int _targetAttendeeCount = widget.plan.targetAttendeeCount;
   late String _attendeePromptText = widget.plan.attendeePrompt ?? '';
+  bool _remotePlanChanged = false;
 
   @override
   void didUpdateWidget(covariant SetupTab oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.plan != widget.plan) {
-      _draft = widget.plan.hostDraft.normalizeForFormat(
-        widget.event.eventFormat,
-      );
-      _targetAttendeeCount = widget.plan.targetAttendeeCount;
-      _attendeePromptText = widget.plan.attendeePrompt ?? '';
+      if (_hasLocalChangesAgainst(oldWidget.plan)) {
+        _remotePlanChanged = true;
+      } else {
+        _syncFromPlan(widget.plan);
+      }
     }
+  }
+
+  void _syncFromPlan(EventSuccessPlan plan) {
+    _draft = plan.hostDraft.normalizeForFormat(widget.event.eventFormat);
+    _targetAttendeeCount = plan.targetAttendeeCount;
+    _attendeePromptText = plan.attendeePrompt ?? '';
+    _remotePlanChanged = false;
   }
 
   /// Draft as actually presented to the body and used on save: target-attendee
@@ -56,13 +64,14 @@ class _SetupTabState extends State<SetupTab> {
   /// itself already communicates "you haven't saved yet."
   bool get _isDirty {
     if (!widget.planIsPersisted) return false;
-    final saved = widget.plan.hostDraft.normalizeForFormat(
-      widget.event.eventFormat,
-    );
+    return _hasLocalChangesAgainst(widget.plan);
+  }
+
+  bool _hasLocalChangesAgainst(EventSuccessPlan plan) {
+    final saved = plan.hostDraft.normalizeForFormat(widget.event.eventFormat);
     final resolved = _resolvedDraft;
-    if (_targetAttendeeCount != widget.plan.targetAttendeeCount) return true;
-    if (_attendeePromptText.trim() !=
-        (widget.plan.attendeePrompt ?? '').trim()) {
+    if (_targetAttendeeCount != plan.targetAttendeeCount) return true;
+    if (_attendeePromptText.trim() != (plan.attendeePrompt ?? '').trim()) {
       return true;
     }
     if (resolved.playbook.id != saved.playbook.id) return true;
@@ -88,7 +97,10 @@ class _SetupTabState extends State<SetupTab> {
         widget.event.waitlistCount > 0 ||
         widget.event.attendedCount > 0;
     final eventHasStarted = !widget.event.startTime.isAfter(DateTime.now());
-    final setupFrozen = hasParticipantActivity || eventHasStarted;
+    final planFrozen =
+        widget.plan.status != EventSuccessPlanStatus.setup ||
+        widget.plan.frozenAt != null;
+    final setupFrozen = hasParticipantActivity || eventHasStarted || planFrozen;
     final unsavedFrozen = !widget.planIsPersisted && setupFrozen;
     final profile = EventSuccessActivityProfile.forFormat(
       widget.event.eventFormat,
@@ -153,6 +165,19 @@ class _SetupTabState extends State<SetupTab> {
           ),
           gapH16,
         ],
+        if (_remotePlanChanged) ...[
+          CatchSurface.message(
+            title: context
+                .l10n
+                .eventSuccessEventSuccessHostSetupTitleSettingsAreLocked,
+            message: context
+                .l10n
+                .eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs,
+            messageIcon: CatchIcons.errorOutlineRounded,
+            messageTone: CatchSurfaceMessageTone.warning,
+          ),
+          gapH16,
+        ],
         CatchSurface(
           borderColor: t.line,
           padding: CatchInsets.content,
@@ -162,9 +187,8 @@ class _SetupTabState extends State<SetupTab> {
               CatchSectionHeader(
                 heavy: true,
                 padding: EdgeInsets.zero,
-                title: context
-                    .l10n
-                    .eventSuccessEventSuccessHostSetupTitleRecommendedSetup,
+                title:
+                    context.l10n.eventSuccessEventSuccessHostSetupTitleYourPlan,
                 subtitle: context
                     .l10n
                     .eventSuccessEventSuccessHostSetupSubtitleReviewTheEssentialsFirst,
@@ -197,8 +221,8 @@ class _SetupTabState extends State<SetupTab> {
                 targetAttendeeCount: _targetAttendeeCount,
                 attendeePrompt: _attendeePromptText,
                 editable: !setupFrozen,
-                onDraftChanged: (nextDraft) {
-                  setState(() => _draft = nextDraft);
+                onChanged: (update) {
+                  setState(() => _draft = update(_draft));
                 },
                 onAttendeePromptChanged: (value) {
                   setState(() => _attendeePromptText = value);
@@ -208,7 +232,15 @@ class _SetupTabState extends State<SetupTab> {
           ),
         ),
         gapH16,
-        if (_isDirty && !setupFrozen) ...[const UnsavedChangesPill(), gapH8],
+        if (_isDirty && !setupFrozen) ...[
+          CatchInlineStatus(
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostSetupTextUnsavedChanges,
+            tone: CatchInlineStatusTone.warning,
+          ),
+          gapH8,
+        ],
         CatchButton(
           label: !widget.planIsPersisted && setupFrozen
               ? context
@@ -229,6 +261,7 @@ class _SetupTabState extends State<SetupTab> {
           onPressed:
               widget.actionState.isSaving ||
                   setupFrozen ||
+                  _remotePlanChanged ||
                   widget.onSaveSetup == null
               ? null
               : () => unawaited(
@@ -358,7 +391,7 @@ class ReadinessIssues extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            context.l10n.eventSuccessEventSuccessHostSetupTextBeforeLaunch,
+            context.l10n.eventSuccessEventSuccessHostSetupTitleBeforeLaunch,
             style: CatchTextStyles.sectionTitle(context),
           ),
           gapH6,
@@ -396,30 +429,6 @@ EventRunOfShowStep? _activeRunOfShowStep(EventSuccessRuntime runtime) {
   if (index <= 0) return steps.first;
   if (index >= steps.length) return steps.last;
   return steps[index];
-}
-
-class UnsavedChangesPill extends StatelessWidget {
-  const UnsavedChangesPill({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          CatchIcons.fiberManualRecord,
-          size: CatchIcon.unsavedDot,
-          color: t.warning,
-        ),
-        gapW6,
-        Text(
-          context.l10n.eventSuccessEventSuccessHostSetupTextUnsavedChanges,
-          style: CatchTextStyles.supporting(context, color: t.warning),
-        ),
-      ],
-    );
-  }
 }
 
 class NoticeCard extends StatelessWidget {

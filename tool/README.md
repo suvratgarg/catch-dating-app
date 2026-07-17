@@ -61,6 +61,13 @@ Use `--summary` for review-friendly output, `--count` for cheap automated
 checks that only need a numeric debt signal, and
 `tool/check_catch_ui_lint_drift.sh --all --json <path>` when a cleanup pass
 needs a reusable drift snapshot artifact with analyzer completion status.
+The drift helper parses the machine analyzer diagnostic-code field; it must not
+count `catch_*` text from filenames, symbol names, or diagnostic messages.
+
+`bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup ratchet.
+Its baseline stores current maximum counts rather than claiming that the repo is
+globally clean; new categories and count increases fail until they are fixed or
+reviewed in an explicit baseline update.
 
 ## Analyzer Plugin Lints
 
@@ -100,6 +107,67 @@ standalone scanners:
 
 New scanners must ship with a manifest `role`, `rules`, `vacuityProof`, and a
 test containing a known-bad fixture.
+
+## Riverpod Provider Graph
+
+`tool/architecture/provider_graph.dart` parses every handwritten Dart AST under
+`lib/` and generates the durable provider topology under
+`docs/generated/provider_graph/`. The JSON includes generated and handwritten
+providers, aliases, families, consumers, provider operations, overrides, and
+Riverpod experimental Mutations. The HTML supports feature exploration and
+one-hop provider inspection; the Mermaid file is the aggregated feature map.
+
+```sh
+dart run tool/architecture/provider_graph.dart --write
+dart run tool/architecture/provider_graph.dart --check
+dart run tool/architecture/provider_graph.dart --summary
+```
+
+Architecture candidates are exhaustively reviewed in
+`tool/architecture/provider_graph_reviews.json`. The gate rejects stale output,
+cycles, unresolved provider-internal references, new unreviewed relationships,
+and obsolete review entries.
+
+## Repository Hygiene
+
+`tool/repository_root_manifest.json` is the exact ownership contract for every
+repository-root entry. The gate rejects unclassified or multiply classified
+entries, prohibited roots, unsafe cleanup targets, and machine-local Markdown
+links. The cleaner is dry-run by default and refuses tracked, protected,
+symlinked, or path-escaping targets; mutation additionally requires an explicit
+scope.
+
+```sh
+node tool/check_repository_root_hygiene.mjs
+node --test tool/check_repository_root_hygiene.test.mjs
+node tool/repository_hygiene.mjs --scope evidence --json
+# Apply only after reviewing the dry-run output:
+node tool/repository_hygiene.mjs --scope evidence --apply --json
+```
+
+## Git Reconciliation And Document-Version Gates
+
+Large reconciliation merges use an exact four-tree classifier. It distinguishes
+discarded sides from equivalent resolutions and requires a reasoned receipt for
+every exact discard in strict mode:
+
+```sh
+node tool/git/audit_merge_drops.mjs \
+  --base <merge-base> --ours <pre-merge-ours> \
+  --theirs <integrated-tip> --merged <result> \
+  --receipt <receipt.json> --strict --json
+node --test tool/git/audit_merge_drops.test.mjs
+```
+
+Governed document versions may increase or remain unchanged, but may not
+decrease or silently lose their catalog entry/path metadata. The target defaults
+to the working tree:
+
+```sh
+node tool/docs/check_doc_version_monotonic.mjs --base origin/main
+node tool/docs/check_doc_version_monotonic.mjs --self-test
+node --test tool/docs/check_doc_version_monotonic.test.mjs
+```
 
 ## Remote Ops Manifest
 
@@ -268,9 +336,17 @@ node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:react-query-state
 node tool/run.mjs check web:shared-ui-adoption
 node tool/run.mjs check web:react-controller-test-targets
+node tool/run.mjs check web:react-dependency-graph
 npm run web:ui:test
 npm run web:ui:typecheck
 ```
+
+`web:react-dependency-graph` generates the reviewable website/admin/web-ui
+topology under `docs/generated/react_dependency_graph/`. It blocks unresolved
+repo-local imports, direct website-to-admin dependencies, and stale generated
+artifacts while keeping current strongly connected components visible as
+report-only debt. Refresh deliberately with
+`node tool/web/react_dependency_graph.mjs --write`.
 
 `web:shared-ui-adoption` reconciles the cross-surface decision tracker with
 website/admin runtime exports and `@catch/web-ui`. Adopted entries must be used
@@ -421,6 +497,21 @@ Short Flutter UI copy is owned by `lib/l10n/app_en.arb`. Structured content
 that must remain usable by synchronous domain models is owned by locale JSON
 under `copy/` and generates deterministic Dart. For Event Success
 questionnaires:
+
+`tool/copy/check_mobile_copy_catalog.mjs` also rejects new ARB identifiers that
+contain the generated `Visiblecopy` marker. Reviewed legacy exceptions live in
+`tool/copy/mobile_copy_identifier_allowlist.json`; additions require an explicit
+review instead of silently expanding the catalog.
+
+```sh
+node tool/copy/check_l10n_key_usage.mjs --write-inventory
+node tool/run.mjs check copy:l10n-key-usage
+node --test tool/copy/check_l10n_key_usage.test.mjs
+```
+
+The key-usage inventory records exact handwritten Dart references, excludes
+generated Dart/comments/string contents, and fails on any new orphan or stale
+checked evidence. Baseline reductions pass; baseline growth is rejected.
 
 ```sh
 node tool/copy/sync_event_success_questionnaires.mjs --write

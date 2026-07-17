@@ -953,10 +953,7 @@ const schemaEventDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'discoveryGeoCell': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
+      'type': 'string',
       'pattern': '^-?\\d+:-?\\d+\$',
       'x-catch-ownership': 'callable-owned',
     },

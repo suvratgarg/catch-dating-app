@@ -39,7 +39,6 @@ if (knownBad && registry.components?.[0]) {
 
 for (const component of registry.components ?? []) {
   const surfaces = component.surfaces;
-  if (surfaces === undefined) continue;
   if (!surfaces || typeof surfaces !== "object" || Array.isArray(surfaces)) {
     failures.push(`${component.id}: surfaces must be an object`);
     continue;

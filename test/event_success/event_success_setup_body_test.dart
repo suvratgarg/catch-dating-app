@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('setup body uses CatchSelectChip for live guide choices', (
+  testWidgets('setup body uses CatchField choices for live guide choices', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -19,6 +19,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     var attendeePrompt = '';
+    var draftChanges = 0;
     var draft =
         EventSuccessHostDraft.fromActivity(
               ActivityKind.pickleball,
@@ -55,7 +56,10 @@ void main() {
                   ),
                   targetAttendeeCount: 16,
                   attendeePrompt: attendeePrompt,
-                  onDraftChanged: (next) => setState(() => draft = next),
+                  onChanged: (update) {
+                    draftChanges += 1;
+                    setState(() => draft = update(draft));
+                  },
                   onAttendeePromptChanged: (next) =>
                       setState(() => attendeePrompt = next),
                 );
@@ -66,8 +70,45 @@ void main() {
       ),
     );
 
-    expect(_selectChip('15 min', active: true), findsOneWidget);
-    expect(_selectChip('10s', active: true), findsOneWidget);
+    expect(_section('Before the event'), findsOneWidget);
+    expect(_section('When people arrive'), findsOneWidget);
+    expect(_section('During the event'), findsOneWidget);
+    expect(_section('After the event'), findsNothing);
+    expect(
+      tester.getTopLeft(_section('Before the event')).dy,
+      lessThan(tester.getTopLeft(_section('When people arrive')).dy),
+    );
+    expect(
+      tester.getTopLeft(_section('When people arrive')).dy,
+      lessThan(tester.getTopLeft(_section('During the event')).dy),
+    );
+    for (final title in [
+      EventSuccessModuleCatalog.crowdBalance.title,
+      EventSuccessModuleCatalog.checkIn.title,
+      EventSuccessModuleCatalog.wingmanRequests.title,
+      EventSuccessModuleCatalog.contextualOpeners.title,
+      EventSuccessModuleCatalog.decomposedFeedback.title,
+      EventSuccessModuleCatalog.hostAnalytics.title,
+      EventSuccessModuleCatalog.safetyControls.title,
+    ]) {
+      expect(_field(title), findsNothing);
+    }
+
+    expect(
+      tester.widget<CatchField>(_field('Switch partners every')).initiallyOpen,
+      isFalse,
+    );
+    expect(
+      find.ancestor(
+        of: _field('Switch partners every'),
+        matching: find.byKey(const ValueKey('eventSuccessRotationConfig')),
+      ),
+      findsOneWidget,
+    );
+    await _openField(tester, 'Switch partners every');
+    expect(_choice('15 min', selected: true), findsOneWidget);
+    await _openField(tester, 'Reveal countdown');
+    expect(_choice('10s', selected: true), findsOneWidget);
     expect(
       _fieldToggle(EventSuccessModuleCatalog.liveReveal.title),
       findsOneWidget,
@@ -87,24 +128,42 @@ void main() {
       draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id),
       isTrue,
     );
+    expect(draftChanges, 2);
 
-    await _tapSelectChip(tester, '20 min');
+    await _openField(tester, 'Switch partners every');
+    await _tapChoice(tester, '20 min');
     await tester.pump();
     expect(draft.structureConfig.rotationIntervalMinutes, 20);
-    expect(_selectChip('20 min', active: true), findsOneWidget);
+    expect(_choice('20 min', selected: true), findsOneWidget);
 
-    await _tapSelectChip(tester, '15s');
+    await _openField(tester, 'Reveal countdown');
+    await _tapChoice(tester, '15s');
     await tester.pump();
     expect(draft.structureConfig.revealCountdownSeconds, 15);
-    expect(_selectChip('15s', active: true), findsOneWidget);
+    expect(_choice('15s', selected: true), findsOneWidget);
 
-    await tester.tap(find.text('Advanced'));
-    await tester.pump(kThemeAnimationDuration);
-    await tester.pump();
+    expect(_field('How the room is grouped'), findsNothing);
+    expect(_field('Group people into'), findsOneWidget);
+    expect(_field('Match clue questions'), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: _field('Match clue questions'),
+        matching: find.byType(CatchSection),
+      ),
+      findsOneWidget,
+    );
+    final flowFieldBounds = tester.getRect(_field('Group people into'));
+    final matchClueBounds = tester.getRect(_field('Match clue questions'));
+    expect(matchClueBounds.left, flowFieldBounds.left);
+    expect(matchClueBounds.right, flowFieldBounds.right);
+    await _openField(tester, 'Match clue questions');
+    expect(_choice('Clues only', selected: true), findsOneWidget);
 
-    expect(_selectChip('Clues only', active: true), findsOneWidget);
-
-    _invokeSelectChip(tester, 'Clues + soft pairing');
+    _invokeChoiceInField(
+      tester,
+      'Match clue questions',
+      'Clues + soft pairing',
+    );
     await tester.pump();
     expect(
       draft.isModuleSelected(
@@ -113,9 +172,9 @@ void main() {
       isTrue,
     );
     expect(draft.compatibilityAffectsRanking, isTrue);
-    expect(_selectChip('Clues + soft pairing', active: true), findsOneWidget);
+    expect(_choice('Clues + soft pairing', selected: true), findsOneWidget);
 
-    _invokeSelectChip(tester, 'Off');
+    _invokeChoiceInField(tester, 'Match clue questions', 'Off');
     await tester.pump();
     expect(
       draft.isModuleSelected(
@@ -124,19 +183,91 @@ void main() {
       isFalse,
     );
     expect(draft.compatibilityAffectsRanking, isFalse);
-    expect(_selectChip('Off', active: true), findsOneWidget);
+    expect(_choice('Off', selected: true), findsOneWidget);
   });
+
+  testWidgets(
+    'grouping stays hidden for a whole-group guide without grouping tools',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(360, 1600);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      var draft = EventSuccessHostDraft.fromActivity(
+        ActivityKind.socialRun,
+        targetAttendeeCount: 20,
+      );
+      for (final module in [
+        EventSuccessModuleCatalog.microPods,
+        EventSuccessModuleCatalog.guidedRotations,
+        EventSuccessModuleCatalog.liveReveal,
+      ]) {
+        draft = draft.withModuleSelection(module.id, false);
+      }
+      draft = draft.copyWith(
+        structureConfig: const EventSuccessStructureConfig(
+          unitKind: EventSuccessUnitKind.wholeGroup,
+          unitSize: 20,
+          unitCount: 1,
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: EventSuccessSetupBody(
+                draft: draft,
+                eventFormat: EventFormatSnapshot.fromActivityKind(
+                  ActivityKind.socialRun,
+                ),
+                targetAttendeeCount: 20,
+                attendeePrompt: null,
+                onChanged: (_) {},
+                onAttendeePromptChanged: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('How the room is grouped'), findsNothing);
+      expect(_field('Group people into'), findsNothing);
+      expect(_field('Switch partners every'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
 
-Future<void> _tapSelectChip(WidgetTester tester, String label) async {
-  final finder = _selectChip(label);
+Future<void> _tapChoice(WidgetTester tester, String label) async {
+  final finder = _choice(label);
   await tester.ensureVisible(finder);
   await tester.pump();
-  await tester.tap(find.descendant(of: finder, matching: find.text(label)));
+  tester.widgetList<CatchFieldChoiceChip>(finder).last.onPressed();
 }
 
-void _invokeSelectChip(WidgetTester tester, String label) {
-  tester.widgetList<CatchSelectChip>(_selectChip(label)).last.onTap!();
+void _invokeChoiceInField(
+  WidgetTester tester,
+  String fieldTitle,
+  String label,
+) {
+  final choice = find.descendant(
+    of: _field(fieldTitle),
+    matching: _choice(label),
+  );
+  tester.widgetList<CatchFieldChoiceChip>(choice).last.onPressed();
+}
+
+Future<void> _openField(WidgetTester tester, String title) async {
+  final field = find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == title,
+  );
+  await tester.ensureVisible(field.last);
+  await tester.tap(field.last);
+  await tester.pump(kThemeAnimationDuration);
+  await tester.pump();
 }
 
 Future<void> _tapToggle(WidgetTester tester, String label) async {
@@ -147,16 +278,27 @@ Future<void> _tapToggle(WidgetTester tester, String label) async {
 }
 
 Finder _fieldToggle(String label) {
+  return _field(label);
+}
+
+Finder _field(String label) {
   return find.byWidgetPredicate(
     (widget) => widget is CatchField && widget.title == label,
   );
 }
 
-Finder _selectChip(String label, {bool? active}) {
+Finder _section(String title) {
+  return find.byWidgetPredicate(
+    (widget) => widget is CatchSection && widget.title == title,
+  );
+}
+
+Finder _choice(String label, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchSelectChip &&
+        widget is CatchFieldChoiceChip &&
         widget.label == label &&
-        (active == null || widget.active == active),
+        (selected == null || widget.selected == selected),
+    skipOffstage: false,
   );
 }

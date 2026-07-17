@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -48,11 +49,13 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
     return Scaffold(
       backgroundColor: t.bg,
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           slivers: [
             ...CatchSliverHeader(
               title: const SizedBox.shrink(),
               bottomHeight: chatsBrowseHeaderHeight(
+                context: context,
                 hasHostFilter: screenState.hostFilter != null,
                 hasHeaderSubtitle: isHostApp,
               ),
@@ -75,6 +78,7 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
                   ? _showHostBroadcastComposer
                   : null,
             ),
+            const CatchSliverTerminalPadding(),
           ],
         ),
       ),

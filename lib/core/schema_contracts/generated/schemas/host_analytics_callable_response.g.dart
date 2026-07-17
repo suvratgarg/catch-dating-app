@@ -157,6 +157,12 @@ const schemaHostAnalyticsCallableResponseSchema = <String, Object?>{
             ],
             'maxLength': 160,
           },
+          'previousValue': <String, Object?>{
+            'type': <Object?>[
+              'number',
+              'null',
+            ],
+          },
         },
       },
     },
@@ -516,6 +522,12 @@ const schemaHostAnalyticsCallableResponseSchema = <String, Object?>{
             'null',
           ],
           'maxLength': 160,
+        },
+        'previousValue': <String, Object?>{
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
         },
       },
     },

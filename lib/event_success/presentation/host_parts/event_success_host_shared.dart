@@ -93,7 +93,7 @@ class PlanSummary extends StatelessWidget {
           label: planIsPersisted
               ? plan.status.hostLabel
               : context.l10n.eventSuccessEventSuccessHostSharedLabelNotSaved,
-          tone: planIsPersisted ? CatchBadgeTone.live : CatchBadgeTone.warning,
+          tone: planIsPersisted ? CatchBadgeTone.brand : CatchBadgeTone.warning,
         ),
       ],
     );
@@ -424,7 +424,7 @@ class WingmanRequestsHostCard extends StatelessWidget {
                     ),
                 tone: activeRequests.isEmpty
                     ? CatchBadgeTone.neutral
-                    : CatchBadgeTone.live,
+                    : CatchBadgeTone.brand,
                 icon: CatchIcons.visibilityOutlined,
               ),
             ],
@@ -498,10 +498,10 @@ class WingmanRequestHostRow extends StatelessWidget {
                 ),
           ),
           avatarSize: 40,
-          trailing: CatchBadge(
+          trailing: CatchBadge.functional(
             label:
                 context.l10n.eventSuccessEventSuccessHostSharedLabelHostVisible,
-            tone: CatchBadgeTone.live,
+            tone: CatchBadgeTone.brand,
             icon: CatchIcons.visibilityOutlined,
           ),
         ),

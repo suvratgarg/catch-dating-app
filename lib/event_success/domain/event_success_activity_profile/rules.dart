@@ -32,9 +32,9 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
 ) {
   final base = <String, EventSuccessRecommendationLevel>{
     EventSuccessModuleCatalog.crowdBalance.id:
-        EventSuccessRecommendationLevel.recommended,
+        EventSuccessRecommendationLevel.unsupported,
     EventSuccessModuleCatalog.checkIn.id:
-        EventSuccessRecommendationLevel.defaultOn,
+        EventSuccessRecommendationLevel.unsupported,
     EventSuccessModuleCatalog.firstHelloCheckIn.id:
         EventSuccessRecommendationLevel.optional,
     EventSuccessModuleCatalog.hostScript.id:
@@ -58,7 +58,7 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
     EventSuccessModuleCatalog.hostAnalytics.id:
         EventSuccessRecommendationLevel.defaultOn,
     EventSuccessModuleCatalog.safetyControls.id:
-        EventSuccessRecommendationLevel.defaultOn,
+        EventSuccessRecommendationLevel.unsupported,
   };
 
   switch (interactionModel) {

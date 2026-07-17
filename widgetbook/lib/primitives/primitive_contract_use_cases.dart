@@ -1,21 +1,21 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
@@ -29,7 +29,9 @@ import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
@@ -55,7 +57,6 @@ import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
@@ -63,6 +64,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -73,6 +75,8 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -144,29 +148,77 @@ Widget catchBadgeContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchBadge',
     contractId: 'catch.badge',
-    states: const ['default', 'live', 'with-icon', 'truncated'],
+    states: const [
+      'metadata',
+      'functional',
+      'semantic-tones',
+      'solid',
+      'live',
+      'on-dark',
+      'privacy',
+      'truncated',
+    ],
     children: [
       _StateCard(
-        label: 'default',
+        label: 'metadata / sentence case',
         child: _InlineWrap(
           children: const [
             CatchBadge(label: 'Queued'),
-            CatchBadge(label: 'Brand', tone: CatchBadgeTone.brand),
-            CatchBadge(label: 'Gold', tone: CatchBadgeTone.gold),
             CatchBadge(label: 'Action', size: CatchBadgeSize.action),
           ],
         ),
       ),
       _StateCard(
-        label: 'live',
-        child: const CatchBadge(label: 'Live now', tone: CatchBadgeTone.live),
+        label: 'functional / uppercase mono',
+        child: const _InlineWrap(
+          children: [
+            CatchBadge.functional(label: 'Ready', tone: CatchBadgeTone.success),
+            CatchBadge.solidStatus(label: 'Owner'),
+          ],
+        ),
       ),
       _StateCard(
-        label: 'with-icon',
-        child: CatchBadge(
-          label: 'Verified',
-          tone: CatchBadgeTone.success,
-          icon: CatchIcons.checkCircle,
+        label: 'semantic-tones',
+        child: const _InlineWrap(
+          children: [
+            CatchBadge(label: 'Brand', tone: CatchBadgeTone.brand),
+            CatchBadge(label: 'Success', tone: CatchBadgeTone.success),
+            CatchBadge(label: 'Warning', tone: CatchBadgeTone.warning),
+            CatchBadge(label: 'Danger', tone: CatchBadgeTone.danger),
+            CatchBadge(label: 'Gold', tone: CatchBadgeTone.gold),
+          ],
+        ),
+      ),
+      const _StateCard(
+        label: 'solid metadata',
+        child: CatchBadge.solid(label: '412 members'),
+      ),
+      const _StateCard(
+        label: 'live status',
+        child: CatchBadge.live(label: 'Live now'),
+      ),
+      _StateCard(
+        label: 'on-dark metadata / status',
+        child: CatchSurface(
+          backgroundColor: t.ink,
+          borderWidth: 0,
+          padding: CatchInsets.content,
+          child: _InlineWrap(
+            children: [
+              CatchBadge.onDark(label: 'Starts in 2 hours'),
+              CatchBadge.onDarkStatus(
+                label: 'Preview only',
+                icon: CatchIcons.visibilityOutlined,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'privacy',
+        child: CatchBadge.privacy(
+          label: 'Private to you',
+          icon: CatchIcons.lockOutline,
         ),
       ),
       _StateCard(
@@ -194,7 +246,13 @@ Widget catchCountBadgeContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchCountBadge',
     contractId: 'catch.badge.count_badge',
-    states: const ['hidden', 'count', 'overflow-count'],
+    states: const [
+      'hidden',
+      'count',
+      '99-boundary',
+      'overflow-count',
+      'standalone',
+    ],
     children: [
       _StateCard(
         label: 'hidden',
@@ -211,11 +269,22 @@ Widget catchCountBadgeContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: '99-boundary',
+        child: CatchCountBadge(
+          count: 99,
+          child: Icon(CatchIcons.notificationsOutlined),
+        ),
+      ),
+      _StateCard(
         label: 'overflow-count',
         child: CatchCountBadge(
           count: 104,
           child: Icon(CatchIcons.notificationsOutlined),
         ),
+      ),
+      const _StateCard(
+        label: 'standalone',
+        child: CatchCountBadge.label(count: 12),
       ),
     ],
   );
@@ -223,51 +292,57 @@ Widget catchCountBadgeContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchIconBadge,
+  type: CatchInlineStatus,
   path: '[Core primitives]/Status',
 )
-Widget catchIconBadgeContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
+Widget catchInlineStatusContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchIconBadge',
-    contractId: 'catch.badge.icon_badge',
-    states: const ['count', 'overflow-count', 'hidden', 'custom-colors'],
+    title: 'CatchInlineStatus',
+    contractId: 'catch.badge.inline_status',
+    states: const ['neutral', 'success', 'warning', 'danger', 'live', 'scaled'],
     children: [
-      _StateCard(
-        label: 'count',
-        child: _InlineWrap(
+      const _StateCard(
+        label: 'semantic tones',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchIconBadge(
-              label: '3',
-              child: Icon(CatchIcons.chatBubbleOutlineRounded),
+            CatchInlineStatus(label: 'Draft saved locally'),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Changes saved',
+              tone: CatchInlineStatusTone.success,
             ),
-            CatchIconBadge(label: '9', child: Icon(CatchIcons.group)),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Unsaved changes',
+              tone: CatchInlineStatusTone.warning,
+            ),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Connection lost',
+              tone: CatchInlineStatusTone.danger,
+            ),
+            gapH8,
+            CatchInlineStatus(
+              label: 'Updating live',
+              tone: CatchInlineStatusTone.live,
+            ),
           ],
         ),
       ),
       _StateCard(
-        label: 'overflow-count',
-        child: CatchIconBadge(
-          label: '99+',
-          child: Icon(CatchIcons.notificationsOutlined),
-        ),
-      ),
-      _StateCard(
-        label: 'hidden',
-        child: CatchIconBadge(
-          label: '0',
-          isLabelVisible: false,
-          child: Icon(CatchIcons.savedOutlined),
-        ),
-      ),
-      _StateCard(
-        label: 'custom-colors',
-        child: CatchIconBadge(
-          label: '!',
-          backgroundColor: t.danger,
-          foregroundColor: t.surface,
-          child: Icon(CatchIcons.warningAmberRounded, color: t.ink),
+        label: '2x text / wrapped copy',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: const SizedBox(
+            width: 220,
+            child: CatchInlineStatus(
+              label: 'Unsaved changes with longer localized supporting copy',
+              tone: CatchInlineStatusTone.warning,
+            ),
+          ),
         ),
       ),
     ],
@@ -953,47 +1028,6 @@ Widget catchNoticeContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchCornerSash,
-  path: '[Core primitives]/Status',
-)
-Widget catchCornerSashContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchCornerSash',
-    contractId: 'catch.badge.corner_sash',
-    states: const ['brand', 'success', 'solid', 'surface', 'top-end'],
-    children: [
-      _StateCard(
-        label: 'tones',
-        child: _InlineWrap(
-          children: [
-            CatchCornerSash(label: "You're in", icon: CatchIcons.checkCircle),
-            CatchCornerSash(
-              label: 'Hosted',
-              tone: CatchSashTone.success,
-              icon: CatchIcons.hosted,
-            ),
-            CatchCornerSash(label: 'Saved', tone: CatchSashTone.solid),
-            CatchCornerSash(label: 'Private', tone: CatchSashTone.surface),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'top-end',
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: CatchCornerSash(
-            label: 'Featured',
-            icon: CatchIcons.sparkle,
-            alignment: CatchSashAlignment.topEnd,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchButton,
   path: '[Core primitives]/Actions',
 )
@@ -1160,80 +1194,126 @@ Widget catchChipContractStates(BuildContext context) {
     title: 'CatchChip',
     contractId: 'catch.chip',
     states: const [
-      'default',
-      'active',
-      'disabled',
-      'with-icon',
+      'tag',
+      'selectable-resting',
+      'selectable-selected',
+      'selectable-disabled',
+      'selectable-accented',
+      'selectable-with-leading',
       'removable',
-      'activity-tinted',
+      'activity-soft',
+      'activity-solid',
+      'activity-tappable',
+      'truncated',
     ],
     children: [
       _StateCard(
-        label: 'default',
+        label: 'tag',
+        description: 'Passive metadata: neutral, tinted, and icon-leading.',
         child: _InlineWrap(
           children: [
-            CatchChip(label: 'Tonight', onTap: _noop),
-            CatchChip(label: 'Low key', onTap: _noop),
+            const CatchChip.tag(label: 'Tonight'),
+            CatchChip.tag(
+              label: 'Low key',
+              tintColor: t.primarySoft,
+              inkColor: t.primary,
+            ),
+            CatchChip.tag(label: 'Weekend', leading: Icon(CatchIcons.weekend)),
           ],
         ),
       ),
       _StateCard(
-        label: 'active',
-        child: CatchChip(label: 'Selected', active: true, onTap: _noop),
+        label: 'selectable states',
+        description: 'Resting, selected, and disabled shown side by side.',
+        child: _InlineWrap(
+          children: [
+            CatchChip.selectable(
+              label: 'Resting',
+              selected: false,
+              onChanged: _ignoreBool,
+            ),
+            CatchChip.selectable(
+              label: 'Selected',
+              selected: true,
+              onChanged: _ignoreBool,
+            ),
+            CatchChip.selectable(
+              label: 'Disabled',
+              selected: false,
+              enabled: false,
+              onChanged: _ignoreBool,
+            ),
+          ],
+        ),
       ),
       _StateCard(
-        label: 'disabled',
-        child: const CatchChip(label: 'Sold out', enabled: false),
-      ),
-      _StateCard(
-        label: 'with-icon',
-        child: CatchChip(
-          label: 'Weekend',
-          icon: Icon(CatchIcons.weekend),
-          onTap: _noop,
+        label: 'selectable options',
+        description: 'Optional accent and leading icon stay semantic.',
+        child: _InlineWrap(
+          children: [
+            CatchChip.selectable(
+              label: 'Accent',
+              selected: true,
+              accent: t.like,
+              onChanged: _ignoreBool,
+            ),
+            CatchChip.selectable(
+              label: 'With icon',
+              selected: false,
+              leading: Icon(CatchIcons.favoriteOutlineRounded),
+              onChanged: _ignoreBool,
+            ),
+          ],
         ),
       ),
       _StateCard(
         label: 'removable',
-        child: CatchChip(
-          label: 'Rooftop',
-          icon: Icon(CatchIcons.pinOutlined),
-          onRemove: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'activity-tinted',
-        child: CatchChip(
-          label: 'Run club',
-          tintColor: t.like.withValues(alpha: CatchOpacity.subtleFill),
-          inkColor: t.like,
-          icon: Icon(CatchIcons.directionsRunRounded),
-          onTap: _noop,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchChipRemoveButton,
-  path: '[Core primitives]/Selection',
-)
-Widget catchChipRemoveButtonContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return _ContractScreen(
-    title: 'CatchChipRemoveButton',
-    contractId: 'catch.chip.remove_button',
-    states: const ['enabled', 'disabled'],
-    children: [
-      _StateCard(
-        label: 'remove affordance',
+        description: 'One full-chip removal action; disabled is visibly inert.',
         child: _InlineWrap(
           children: [
-            CatchChipRemoveButton(color: t.ink, onRemove: _noop),
-            CatchChipRemoveButton(color: t.ink3),
+            CatchChip.removable(
+              label: 'Rooftop',
+              leading: Icon(CatchIcons.pinOutlined),
+              onRemove: _noop,
+            ),
+            CatchChip.removable(
+              label: 'Disabled',
+              enabled: false,
+              onRemove: _noop,
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'activity emphasis',
+        description: 'Soft, solid, and tappable activity identity.',
+        child: _InlineWrap(
+          children: [
+            const CatchChip.activity(activityKind: ActivityKind.socialRun),
+            const CatchChip.activity(
+              activityKind: ActivityKind.pickleball,
+              emphasis: CatchChipEmphasis.solid,
+            ),
+            CatchChip.activity(activityKind: ActivityKind.dinner, onTap: _noop),
+          ],
+        ),
+      ),
+      const _StateCard(
+        label: 'truncated',
+        description: 'Long labels ellipsize inside constrained hosts.',
+        child: _InlineWrap(
+          children: [
+            SizedBox(
+              width: 150,
+              child: CatchChip.tag(label: 'A very long passive metadata label'),
+            ),
+            SizedBox(
+              width: 160,
+              child: CatchChip.activity(
+                activityKind: ActivityKind.strengthTraining,
+                label: 'Strength training after work',
+              ),
+            ),
           ],
         ),
       ),
@@ -1368,11 +1448,13 @@ Widget catchFieldContractStates(BuildContext context) {
     states: const [
       'row-value',
       'row-title',
+      'custom-leading',
       'content-row-2-3-clamp',
       'value-line',
       'chevron',
       'toggle-on',
       'toggle-off',
+      'toggle-helper-badge',
       'control-collapsed',
       'control-open',
       'disclosure-active-pressed',
@@ -1381,6 +1463,7 @@ Widget catchFieldContractStates(BuildContext context) {
       'choices-retain-final-selection',
       'choices-derived-summary',
       'choices-explicit-summary',
+      'choices-helper-accent',
       'stepper-open',
       'direct-input-one-tap',
       'direct-input-focused-cursor',
@@ -1390,9 +1473,11 @@ Widget catchFieldContractStates(BuildContext context) {
       'saved',
       'explicit-save-collapsed',
       'explicit-save-focused',
+      'explicit-save-saving',
       'explicit-save-error',
       'editable-empty-at-rest',
       'editable-empty-focused',
+      'empty-add-capability-matrix',
       'edit-empty',
       'edit-filled',
       'edit-focused',
@@ -1418,6 +1503,28 @@ Widget catchFieldContractStates(BuildContext context) {
           title: 'Host',
           body: 'Catch Hosts',
           icon: CatchIcons.hosted,
+        ),
+      ),
+      fieldState(
+        label: 'custom-leading',
+        description:
+            'Caller-owned semantic leading content stays inside canonical field geometry.',
+        child: CatchField.nav(
+          leading: Semantics(
+            label: '27 May',
+            excludeSemantics: true,
+            child: const SizedBox(
+              width: 48,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [Text('27'), Text('MAY')],
+              ),
+            ),
+          ),
+          title: 'Wednesday Evening Run',
+          body: '2 attended · 20% full · free',
+          emphasis: CatchFieldEmphasis.title,
+          onTap: _noop,
         ),
       ),
       fieldState(
@@ -1451,6 +1558,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'chevron',
+        description:
+            'The trailing affordance uses one caption reserve and stays centered on the value line.',
         child: CatchField.nav(
           title: 'Location',
           body: 'Fort Greene Park',
@@ -1463,10 +1572,31 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'toggle-off',
         child: const _ToggleFieldDemo(initialValue: false),
       ),
-      fieldState(label: 'control-collapsed', child: const _ChoiceFieldDemo()),
+      fieldState(
+        label: 'toggle-helper-badge',
+        description:
+            'Recommendation metadata stays in the title row while guidance uses the canonical support lane.',
+        child: CatchField.toggle(
+          title: 'Live guide',
+          body: 'Enable the run-of-show companion.',
+          helperText: 'You can change this before the event.',
+          badgeLabel: 'Recommended',
+          badgeTone: CatchBadgeTone.success,
+          value: true,
+          onChanged: (_) {},
+        ),
+      ),
+      fieldState(
+        label: 'control-collapsed',
+        description:
+            'At rest, the caption uses semantic ink3 and the caret stays centered on the value line with canonical divider clearance.',
+        child: const _ChoiceFieldDemo(),
+      ),
       fieldState(
         label: 'control-open',
-        child: const _ChoiceFieldDemo(initiallyOpen: true),
+        description:
+            'Opening promotes the field-name caption to semantic ink while Optional copy stays ink3; the caret keeps the same value-line center and only rotates.',
+        child: const _ChoiceFieldDemo(initiallyOpen: true, isOptional: true),
       ),
       fieldState(
         label: 'disclosure-active-pressed',
@@ -1512,9 +1642,25 @@ Widget catchFieldContractStates(BuildContext context) {
         child: const _ChoiceFieldDemo(body: 'Three languages selected'),
       ),
       fieldState(
+        label: 'choices-helper-accent',
+        description:
+            'Choice guidance uses the support lane and product-owned option color is forwarded to the canonical selectable chip.',
+        child: CatchField.choices<String>(
+          title: 'Run format',
+          helperText: 'Pick the format guests will see.',
+          values: const ['Social', 'Competitive'],
+          itemLabel: (value) => value,
+          itemAccent: (value) =>
+              value == 'Social' ? CatchTokens.of(context).primary : null,
+          selected: const {'Social'},
+          initiallyOpen: true,
+          onSelectionChanged: (_) {},
+        ),
+      ),
+      fieldState(
         label: 'stepper-open',
         description:
-            'The 44px repeat targets flank one centered value without a nested tile.',
+            'The 44px repeat targets flank one centered value without a nested tile; the shared open state promotes its caption to semantic ink while its caret remains in the value-line trailing lane.',
         child: const _StepperFieldDemo(),
       ),
       fieldState(
@@ -1550,7 +1696,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'saving',
-        description: 'The trailing lane owns the in-flight save indicator.',
+        description:
+            'Auto-save fields without a visible commit bar use one 16px in-flight indicator in the value-line trailing lane.',
         child: CatchField.read(
           title: 'Display name',
           body: 'Suvrat',
@@ -1560,7 +1707,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'saved',
-        description: 'The trailing lane owns the transient saved tick.',
+        description:
+            'The value-line trailing lane owns and centers the transient saved tick.',
         child: CatchField.read(
           title: 'Display name',
           body: 'Suvrat',
@@ -1575,8 +1723,17 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'explicit-save-focused',
         description:
-            'Answer, counter, secondary action, and commit footer keep one order.',
+            'The root active label uses semantic ink while answer, counter, secondary action, and commit footer keep one order.',
         child: const _ExplicitSaveFieldDemo(initiallyExpanded: true),
+      ),
+      fieldState(
+        label: 'explicit-save-saving',
+        description:
+            'The visible commit bar owns the sole 13px saving indicator inside Done; the header keeps its disclosure caret.',
+        child: const _ExplicitSaveFieldDemo(
+          initiallyExpanded: true,
+          isLoading: true,
+        ),
       ),
       fieldState(
         label: 'explicit-save-error',
@@ -1588,7 +1745,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'editable-empty-at-rest',
         description:
-            'The stable label and localized add value render before focus.',
+            'One localized Add line replaces the inactive caption while the same native TextField stays mounted.',
         child: const CatchField.input(
           title: 'Public name',
           inputHint: 'e.g. Aanya',
@@ -1597,11 +1754,36 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'editable-empty-focused',
         description:
-            'The add value gives way to an input-only hint without moving the label.',
+            'The initiating tap expands the same input, restores its caption, and gives the Add line to the input-only hint.',
         child: const CatchField.input(
           title: 'Public name',
           inputHint: 'e.g. Aanya',
           focused: true,
+        ),
+      ),
+      fieldState(
+        label: 'empty-add-capability-matrix',
+        description:
+            'Empty direct inputs and addable disclosures share one-line Add typography, Optional composition, row height, and leading-slot centering.',
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CatchField.input(
+              title: 'Job title',
+              icon: CatchIcons.workOutline,
+              isOptional: true,
+            ),
+            CatchField.choices<String>(
+              title: 'Workout',
+              values: const ['Never', 'Often'],
+              itemLabel: (value) => value,
+              selected: const {},
+              onSelectionChanged: (_) {},
+              addable: true,
+              isOptional: true,
+              icon: CatchIcons.fitnessCenterOutlined,
+            ),
+          ],
         ),
       ),
       fieldState(
@@ -1621,6 +1803,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'edit-focused',
+        description:
+            'Native text focus uses the same root semantic-ink label state as an open disclosure.',
         child: CatchField.input(
           title: 'Search',
           initialValue: 'social run',
@@ -1713,6 +1897,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'select',
+        description:
+            'The menu trigger shares the same caption reserve and value-line-centered caret geometry.',
         child: CatchField.select<String>(
           title: 'Activity',
           values: const ['Run', 'Dinner', 'Pickleball'],
@@ -2798,6 +2984,7 @@ Widget catchIconButtonContractStates(BuildContext context) {
       'bordered',
       'float',
       'plain',
+      'counted',
     ],
     children: [
       _StateCard(
@@ -2849,6 +3036,31 @@ Widget catchIconButtonContractStates(BuildContext context) {
           icon: CatchIcons.tuneRounded,
           variant: CatchIconButtonVariant.plain,
           onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'counted / zero / overflow',
+        child: _InlineWrap(
+          children: [
+            CatchIconButton.counted(
+              icon: CatchIcons.notificationsNoneRounded,
+              count: 0,
+              tooltip: 'Notifications',
+              onTap: _noop,
+            ),
+            CatchIconButton.counted(
+              icon: CatchIcons.notificationsRounded,
+              count: 3,
+              tooltip: 'Notifications, 3 unread',
+              onTap: _noop,
+            ),
+            CatchIconButton.counted(
+              icon: CatchIcons.notificationsRounded,
+              count: 124,
+              tooltip: 'Notifications, 124 unread',
+              onTap: _noop,
+            ),
+          ],
         ),
       ),
     ],
@@ -3106,153 +3318,6 @@ Widget catchOptionCardContractStates(BuildContext context) {
           child: CatchOptionCard(
             title: 'Application only',
             description: 'Visible but not currently selectable.',
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchSegmentedControl,
-  path: '[Core primitives]/Selection',
-)
-Widget catchSegmentedControlContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchSegmentedControl',
-    contractId: 'catch.segmented_control',
-    states: const [
-      'default',
-      'selected',
-      'expanded',
-      'with-icons',
-      'surface-style',
-      'compact-mono',
-    ],
-    children: [
-      _StateCard(
-        label: 'default / selected',
-        child: _SegmentedControlDemo<String>(
-          initialValue: 'day',
-          segments: const [
-            CatchSegment(value: 'day', label: 'Day'),
-            CatchSegment(value: 'agenda', label: 'Agenda'),
-            CatchSegment(value: 'list', label: 'List'),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'expanded',
-        child: const _SegmentedWidth(
-          child: _SegmentedControlDemo<String>(
-            initialValue: 'hosts',
-            expanded: true,
-            segments: [
-              CatchSegment(value: 'hosts', label: 'Hosts'),
-              CatchSegment(value: 'guests', label: 'Guests'),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'with-icons',
-        child: _SegmentedControlDemo<String>(
-          initialValue: 'grid',
-          segments: [
-            CatchSegment(
-              value: 'grid',
-              label: 'Grid',
-              icon: CatchIcons.gridViewRounded,
-            ),
-            CatchSegment(
-              value: 'list',
-              label: 'List',
-              icon: CatchIcons.listRounded,
-            ),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'surface-style',
-        child: const _SegmentedControlDemo<String>(
-          initialValue: 'now',
-          style: CatchSegmentedControlStyle.surface,
-          segments: [
-            CatchSegment(value: 'now', label: 'Now'),
-            CatchSegment(value: 'later', label: 'Later'),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'compact-mono',
-        child: const _SegmentedWidth(
-          child: _SegmentedControlDemo<String>(
-            initialValue: 'booked',
-            expanded: true,
-            style: CatchSegmentedControlStyle.surface,
-            size: CatchSegmentedControlSize.compact,
-            labelStyle: CatchSegmentedControlLabelStyle.mono,
-            segments: [
-              CatchSegment(value: 'booked', label: 'BOOKED · 24'),
-              CatchSegment(value: 'prospective', label: 'PROSPECTIVE · 9'),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchSegmentButton,
-  path: '[Core primitives]/Selection',
-)
-Widget catchSegmentButtonContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchSegmentButton',
-    contractId: 'catch.segmented_control.button',
-    states: const ['selected', 'unselected', 'expanded-surface'],
-    children: [
-      _StateCard(
-        label: 'selected',
-        child: CatchSegmentButton<String>(
-          segment: const CatchSegment(value: 'day', label: 'Day'),
-          selected: true,
-          expanded: false,
-          style: CatchSegmentedControlStyle.filled,
-          onTap: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'unselected',
-        child: CatchSegmentButton<String>(
-          segment: const CatchSegment(value: 'agenda', label: 'Agenda'),
-          selected: false,
-          expanded: false,
-          style: CatchSegmentedControlStyle.filled,
-          onTap: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'expanded-surface',
-        child: SizedBox(
-          width: 260,
-          child: Row(
-            children: [
-              CatchSegmentButton<String>(
-                segment: CatchSegment(
-                  value: 'grid',
-                  label: 'Grid',
-                  icon: CatchIcons.gridViewRounded,
-                ),
-                selected: true,
-                expanded: true,
-                style: CatchSegmentedControlStyle.surface,
-                onTap: _noop,
-              ),
-            ],
           ),
         ),
       ),
@@ -4712,56 +4777,6 @@ Widget catchNetworkImageFallbackContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchActivityChip,
-  path: '[Core primitives]/Activity',
-)
-Widget catchActivityChipContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchActivityChip',
-    contractId: 'catch.activity_chip',
-    states: const ['soft', 'primary', 'tappable', 'custom-label', 'truncated'],
-    children: [
-      const _StateCard(
-        label: 'soft',
-        child: CatchActivityChip(activityKind: ActivityKind.socialRun),
-      ),
-      const _StateCard(
-        label: 'primary',
-        child: CatchActivityChip(
-          activityKind: ActivityKind.pickleball,
-          primary: true,
-        ),
-      ),
-      _StateCard(
-        label: 'tappable',
-        child: CatchActivityChip(
-          activityKind: ActivityKind.dinner,
-          onTap: _noop,
-        ),
-      ),
-      const _StateCard(
-        label: 'custom-label',
-        child: CatchActivityChip(
-          activityKind: ActivityKind.openActivity,
-          label: 'Anything social',
-        ),
-      ),
-      const _StateCard(
-        label: 'truncated',
-        child: SizedBox(
-          width: 160,
-          child: CatchActivityChip(
-            activityKind: ActivityKind.strengthTraining,
-            label: 'Strength training after work',
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchDistanceRing,
   path: '[Core primitives]/Activity',
 )
@@ -5986,43 +6001,49 @@ Widget catchCountPillContractStates(BuildContext context) {
     title: 'CatchCountPill',
     contractId: 'catch.count_pill',
     states: const [
-      'icon-only',
       'label',
       'label-with-icon',
-      'with-badge',
+      'label-with-value',
+      'with-count',
       'semantic-label',
       'text-scale-truncation',
     ],
     children: [
       _StateCard(
-        label: 'icon-only',
-        child: CatchCountPill(icon: CatchIcons.mapOutlined, onPressed: _noop),
-      ),
-      _StateCard(
         label: 'label',
-        child: CatchCountPill(label: '24 places', onPressed: _noop),
+        child: CatchCountPill.label(label: '24 places', onPressed: _noop),
       ),
       _StateCard(
         label: 'label-with-icon',
-        child: CatchCountPill(
+        child: CatchCountPill.label(
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
           onPressed: _noop,
         ),
       ),
       _StateCard(
-        label: 'with-badge',
-        child: CatchCountPill(
+        label: 'label-with-value',
+        child: CatchCountPill.label(
+          icon: CatchIcons.map,
+          label: 'Map',
+          value: '12 events',
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'with-count',
+        child: CatchCountPill.label(
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
-          badge: '3',
+          count: 3,
           onPressed: _noop,
         ),
       ),
       _StateCard(
         label: 'semantic-label',
-        child: CatchCountPill(
+        child: CatchCountPill.label(
           icon: CatchIcons.listRounded,
+          label: 'List',
           semanticLabel: 'Show list view',
           onPressed: _noop,
         ),
@@ -6031,10 +6052,10 @@ Widget catchCountPillContractStates(BuildContext context) {
         label: 'text-scale-truncation',
         child: SizedBox(
           width: 160,
-          child: CatchCountPill(
+          child: CatchCountPill.label(
             icon: CatchIcons.tuneRounded,
             label: 'Very specific active filters',
-            badge: '12',
+            count: 12,
             onPressed: _noop,
           ),
         ),
@@ -6091,6 +6112,245 @@ Widget catchPageDotsContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: ChatInputBar,
+  path: '[Core primitives]/Product composites',
+)
+Widget chatInputBarContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'ChatInputBar',
+    contractId: 'catch.chat_composer',
+    states: [
+      'empty-unfocused',
+      'empty-focused',
+      'draft-unfocused',
+      'draft-focused',
+      'multiline',
+      'sending-text',
+      'uploading-image',
+      'disabled',
+      'text-only',
+    ],
+    children: [
+      _StateCard(
+        label: 'empty-unfocused',
+        child: _ChatComposerContractPreview(),
+      ),
+      _StateCard(
+        label: 'draft-unfocused',
+        child: _ChatComposerContractPreview(
+          initialText: 'That last loop was fun.',
+        ),
+      ),
+      _StateCard(
+        label: 'multiline',
+        child: _ChatComposerContractPreview(
+          initialText: 'A message that can wrap onto more than one line.',
+        ),
+      ),
+      _StateCard(
+        label: 'sending-text',
+        child: _ChatComposerContractPreview(
+          initialText: 'Sending this now...',
+          sending: true,
+        ),
+      ),
+      _StateCard(
+        label: 'uploading-image',
+        child: _ChatComposerContractPreview(sendingImage: true),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _ChatComposerContractPreview(
+          disabledReason: 'This chat is closed.',
+        ),
+      ),
+      _StateCard(
+        label: 'text-only',
+        child: _ChatComposerContractPreview(showImageButton: false),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Focused empty',
+  type: ChatInputBar,
+  path: '[Core primitives]/Product composites',
+)
+Widget chatInputBarFocusedEmpty(BuildContext context) {
+  return const Scaffold(
+    body: Align(
+      alignment: Alignment.bottomCenter,
+      child: _ChatComposerContractPreview(autofocus: true),
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Focused draft',
+  type: ChatInputBar,
+  path: '[Core primitives]/Product composites',
+)
+Widget chatInputBarFocusedDraft(BuildContext context) {
+  return const Scaffold(
+    body: Align(
+      alignment: Alignment.bottomCenter,
+      child: _ChatComposerContractPreview(
+        initialText: 'That last loop was fun.',
+        autofocus: true,
+      ),
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchTabbedScreenScaffold,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchTabbedScreenContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+@widgetbook.UseCase(
+  name: 'Shared tabbed page',
+  type: CatchTabbedPageScrollView,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchTabbedPageContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+@widgetbook.UseCase(
+  name: 'Controller-backed rail',
+  type: CatchTabControllerRail,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchTabControllerRailContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+class _TabbedScreenContractUseCase extends StatelessWidget {
+  const _TabbedScreenContractUseCase();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _ContractScreen(
+      title: 'CatchTabbedScreenScaffold',
+      contractId: 'catch.tabbed_screen',
+      states: [
+        'title-expanded',
+        'title-collapsed',
+        'tab-rail-pinned',
+        'tab-page-restored',
+      ],
+      children: [
+        _StateCard(
+          label: 'shared shell',
+          child: AspectRatio(
+            aspectRatio: 9 / 16,
+            child: _TabbedScreenContractDemo(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchHostRow,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchHostRowContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchHostRow',
+    contractId: 'catch.host_row',
+    states: [
+      'identity-only',
+      'navigable',
+      'message-enabled',
+      'verified',
+      'divider',
+      'long-copy',
+    ],
+    children: [
+      _StateCard(
+        label: 'identity-only',
+        child: CatchHostRow(
+          activityKind: ActivityKind.socialRun,
+          name: 'Sunday sea-face crew',
+          meta: 'HOSTING SINCE FEB 2026',
+        ),
+      ),
+      _StateCard(
+        label: 'navigable / message / verified / divider',
+        child: CatchHostRow(
+          activityKind: ActivityKind.dinner,
+          name: 'Catch supper club',
+          meta: 'HOSTING SINCE MAR 2026 · REPLIES FAST',
+          verified: true,
+          divider: true,
+          messageTooltip: 'Message host',
+          onMessage: _noop,
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'long-copy',
+        child: CatchHostRow(
+          activityKind: ActivityKind.openActivity,
+          name: 'A deliberately long organizer identity for text-scale review',
+          meta: 'LONG LOCATION AND RESPONSE METADATA',
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchMapPreview,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchMapPreviewContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchMapPreview',
+    contractId: 'catch.map_preview',
+    states: [
+      'exact-location',
+      'missing-coordinate',
+      'network-disabled',
+      'android-lite-mode',
+    ],
+    children: [
+      _StateCard(
+        label: 'exact-location / network-disabled',
+        child: SizedBox(
+          height: 180,
+          child: CatchMapPreview(
+            coordinate: LocationCoordinate(19.076, 72.8777),
+            fallbackLabel: 'Bandra meeting point',
+            enableNetworkTiles: false,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'missing-coordinate',
+        child: SizedBox(
+          height: 180,
+          child: CatchMapPreview(
+            coordinate: null,
+            fallbackLabel: 'Location unavailable',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchBottomDock,
   path: '[Core primitives]/Product composites',
 )
@@ -6098,16 +6358,7 @@ Widget catchBottomDockContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchBottomDock',
     contractId: 'catch.bottom_dock',
-    states: const [
-      'custom',
-      'custom-no-safe-area',
-      'cta',
-      'cta-leading-content',
-      'cta-catch-line',
-      'cta-footnote',
-      'loading',
-      'disabled',
-    ],
+    states: const ['custom', 'custom-no-safe-area'],
     children: [
       _StateCard(
         label: 'custom',
@@ -6126,83 +6377,39 @@ Widget catchBottomDockContractStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
-        label: 'cta',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(label: 'Book your spot', onPressed: _noop),
-        ),
-      ),
-      _StateCard(
-        label: 'cta-leading-content',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(
-            label: 'Join waitlist',
-            leadingContent: const CatchBadge(label: '4 left'),
-            onPressed: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'cta-catch-line',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(
-            label: 'Book free',
-            catchLine: 'FREE TO JOIN',
-            onPressed: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'cta-footnote',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(
-            label: 'Confirm',
-            footnote: 'No charge until the host approves.',
-            onPressed: _noop,
-          ),
-        ),
-      ),
-      const _StateCard(
-        label: 'loading',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(
-            label: 'Saving',
-            isLoading: true,
-            onPressed: null,
-          ),
-        ),
-      ),
-      const _StateCard(
-        label: 'disabled',
-        child: _DockFrame(
-          child: CatchBottomDock.cta(label: 'Sold out', onPressed: null),
-        ),
-      ),
     ],
   );
 }
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchBottomDockCta,
+  type: CatchBottomAction,
   path: '[Core primitives]/Product composites',
 )
-Widget catchBottomDockCtaContractStates(BuildContext context) {
+Widget catchBottomActionContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchBottomDockCta',
-    contractId: 'catch.bottom_dock.cta',
-    states: const ['default', 'leading-content', 'catch-line-footnote'],
+    title: 'CatchBottomAction',
+    contractId: 'catch.bottom_action',
+    states: const [
+      'ios-floating',
+      'android-anchored',
+      'leading-content',
+      'catch-line',
+      'footnote',
+      'loading',
+      'disabled',
+    ],
     children: [
       _StateCard(
         label: 'default',
         child: _DockFrame(
-          child: CatchBottomDockCta(label: 'Book your spot', onPressed: _noop),
+          child: CatchBottomAction(label: 'Book your spot', onPressed: _noop),
         ),
       ),
       _StateCard(
         label: 'leading-content',
         child: _DockFrame(
-          child: CatchBottomDockCta(
+          child: CatchBottomAction(
             label: 'Join waitlist',
             leadingContent: const CatchBadge(label: '4 left'),
             onPressed: _noop,
@@ -6212,12 +6419,28 @@ Widget catchBottomDockCtaContractStates(BuildContext context) {
       _StateCard(
         label: 'catch-line-footnote',
         child: _DockFrame(
-          child: CatchBottomDockCta(
+          child: CatchBottomAction(
             label: 'Confirm',
             catchLine: 'FREE TO JOIN',
             footnote: 'No charge until the host approves.',
             onPressed: _noop,
           ),
+        ),
+      ),
+      const _StateCard(
+        label: 'loading',
+        child: _DockFrame(
+          child: CatchBottomAction(
+            label: 'Saving',
+            isLoading: true,
+            onPressed: null,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'disabled',
+        child: _DockFrame(
+          child: CatchBottomAction(label: 'Sold out', onPressed: null),
         ),
       ),
     ],
@@ -7645,6 +7868,8 @@ Widget notificationRowContractStates(BuildContext context) {
 
 void _noop() {}
 
+void _ignoreBool(bool _) {}
+
 void _ignoreString(String value) {}
 
 final _contractTabBarItems = [
@@ -7803,7 +8028,7 @@ class _BehaviorScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchBadge(label: behaviorId, uppercase: true),
+                CatchBadge.functional(label: behaviorId),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(title, style: CatchTextStyles.headlineS(context)),
                 const SizedBox(height: CatchSpacing.s3),
@@ -7909,7 +8134,7 @@ class _ContractScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchBadge(label: contractId, uppercase: true),
+                CatchBadge.functional(label: contractId),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(title, style: CatchTextStyles.headlineS(context)),
                 const SizedBox(height: CatchSpacing.s3),
@@ -7965,7 +8190,7 @@ class _StateCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchBadge(label: label, uppercase: true),
+              CatchBadge.functional(label: label),
               if (description != null) ...[
                 const SizedBox(width: CatchSpacing.s3),
                 Expanded(
@@ -8006,7 +8231,7 @@ class _CatchFieldStatePreview extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchBadge(label: label, uppercase: true),
+            CatchBadge.functional(label: label),
             if (description != null) ...[
               const SizedBox(width: CatchSpacing.s3),
               Expanded(
@@ -8060,17 +8285,6 @@ class _OptionWidth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(width: 360, child: child);
-  }
-}
-
-class _SegmentedWidth extends StatelessWidget {
-  const _SegmentedWidth({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(width: 420, child: child);
   }
 }
 
@@ -8201,59 +8415,6 @@ class _BodySpec extends StatelessWidget {
   }
 }
 
-class _SegmentedControlDemo<T> extends StatefulWidget {
-  const _SegmentedControlDemo({
-    required this.initialValue,
-    required this.segments,
-    this.expanded = false,
-    this.style = CatchSegmentedControlStyle.filled,
-    this.size = CatchSegmentedControlSize.regular,
-    this.labelStyle = CatchSegmentedControlLabelStyle.standard,
-  });
-
-  final T initialValue;
-  final List<CatchSegment<T>> segments;
-  final bool expanded;
-  final CatchSegmentedControlStyle style;
-  final CatchSegmentedControlSize size;
-  final CatchSegmentedControlLabelStyle labelStyle;
-
-  @override
-  State<_SegmentedControlDemo<T>> createState() =>
-      _SegmentedControlDemoState<T>();
-}
-
-class _SegmentedControlDemoState<T> extends State<_SegmentedControlDemo<T>> {
-  late T _value;
-
-  @override
-  void initState() {
-    super.initState();
-    _value = widget.initialValue;
-  }
-
-  @override
-  void didUpdateWidget(covariant _SegmentedControlDemo<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialValue != widget.initialValue) {
-      _value = widget.initialValue;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSegmentedControl<T>(
-      segments: widget.segments,
-      selected: _value,
-      expanded: widget.expanded,
-      style: widget.style,
-      size: widget.size,
-      labelStyle: widget.labelStyle,
-      onChanged: (value) => setState(() => _value = value),
-    );
-  }
-}
-
 class _ToggleFieldDemo extends StatefulWidget {
   const _ToggleFieldDemo({this.initialValue = true});
 
@@ -8323,12 +8484,14 @@ class _ChoiceFieldDemo extends StatefulWidget {
     this.allowEmptySelection = false,
     this.initialSelection = const {'English', 'Hindi', 'Marathi'},
     this.body,
+    this.isOptional = false,
   });
 
   final bool initiallyOpen;
   final bool allowEmptySelection;
   final Set<String> initialSelection;
   final String? body;
+  final bool isOptional;
 
   @override
   State<_ChoiceFieldDemo> createState() => _ChoiceFieldDemoState();
@@ -8363,6 +8526,7 @@ class _ChoiceFieldDemoState extends State<_ChoiceFieldDemo> {
       selected: _selected,
       multi: true,
       allowEmptySelection: widget.allowEmptySelection,
+      isOptional: widget.isOptional,
       initiallyOpen: widget.initiallyOpen,
       onSelectionChanged: (selection) {
         setState(() => _selected = selection);
@@ -8404,9 +8568,14 @@ class _StepperFieldDemoState extends State<_StepperFieldDemo> {
 }
 
 class _ExplicitSaveFieldDemo extends StatefulWidget {
-  const _ExplicitSaveFieldDemo({this.initiallyExpanded = false, this.error});
+  const _ExplicitSaveFieldDemo({
+    this.initiallyExpanded = false,
+    this.isLoading = false,
+    this.error,
+  });
 
   final bool initiallyExpanded;
+  final bool isLoading;
   final String? error;
 
   @override
@@ -8445,6 +8614,7 @@ class _ExplicitSaveFieldDemoState extends State<_ExplicitSaveFieldDemo> {
         padding: EdgeInsets.zero,
       ),
       error: widget.error,
+      isLoading: widget.isLoading,
       onCancel: () => setState(() => _expanded = false),
       onSubmit: _noop,
       maxLines: null,
@@ -8483,6 +8653,122 @@ class _SelectErrorFieldDemoState extends State<_SelectErrorFieldDemo> {
         prefixIcon: Icon(CatchIcons.eventOutlined),
         validator: (value) => value == null ? 'Choose an activity.' : null,
         onChanged: (_) {},
+      ),
+    );
+  }
+}
+
+class _ChatComposerContractPreview extends StatefulWidget {
+  const _ChatComposerContractPreview({
+    this.initialText = '',
+    this.sending = false,
+    this.sendingImage = false,
+    this.disabledReason,
+    this.showImageButton = true,
+    this.autofocus = false,
+  });
+
+  final String initialText;
+  final bool sending;
+  final bool sendingImage;
+  final String? disabledReason;
+  final bool showImageButton;
+  final bool autofocus;
+
+  @override
+  State<_ChatComposerContractPreview> createState() =>
+      _ChatComposerContractPreviewState();
+}
+
+class _ChatComposerContractPreviewState
+    extends State<_ChatComposerContractPreview> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialText);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChatInputBar(
+      controller: _controller,
+      sending: widget.sending,
+      sendingImage: widget.sendingImage,
+      disabledReason: widget.disabledReason,
+      showImageButton: widget.showImageButton,
+      autofocus: widget.autofocus,
+      onSend: widget.disabledReason == null ? _noop : null,
+      onSendImage: widget.disabledReason == null ? _noop : null,
+    );
+  }
+}
+
+class _TabbedScreenContractDemo extends StatefulWidget {
+  const _TabbedScreenContractDemo();
+
+  @override
+  State<_TabbedScreenContractDemo> createState() =>
+      _TabbedScreenContractDemoState();
+}
+
+class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
+    with SingleTickerProviderStateMixin {
+  late final TabController _controller = TabController(length: 2, vsync: this);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchTabbedScreenScaffold(
+      eyebrow: 'YOUR SPACE',
+      title: 'Tabbed workspace',
+      subtitle: 'Independent page scroll state',
+      semanticsLabel: 'Tabbed screen contract preview',
+      tabRail: CatchTabControllerRail<String>(
+        controller: _controller,
+        options: const [
+          CatchOption(value: 'edit', label: 'Edit'),
+          CatchOption(value: 'preview', label: 'Preview'),
+        ],
+      ),
+      body: TabBarView(
+        controller: _controller,
+        children: const [
+          CatchTabbedPageScrollView(
+            scrollKey: PageStorageKey<String>('contract-tab-edit'),
+            slivers: [
+              SliverPadding(
+                padding: CatchInsets.pageBody,
+                sliver: SliverToBoxAdapter(
+                  child: Text('Edit owns this scroll position.'),
+                ),
+              ),
+            ],
+          ),
+          CatchTabbedPageScrollView(
+            scrollKey: PageStorageKey<String>('contract-tab-preview'),
+            slivers: [
+              SliverPadding(
+                padding: CatchInsets.pageBody,
+                sliver: SliverToBoxAdapter(
+                  child: Text('Preview owns a separate scroll position.'),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

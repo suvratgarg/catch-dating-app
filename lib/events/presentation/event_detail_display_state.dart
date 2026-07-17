@@ -25,18 +25,6 @@ class EventDetailCompanionState {
   final Object? error;
 }
 
-/// One value/label data pair in an Event Detail host stat strip.
-///
-/// [value] and [label] are pre-formatted; the host card renders [label]
-/// uppercased mono.
-@immutable
-class EventDetailHostStat {
-  const EventDetailHostStat({required this.value, required this.label});
-
-  final String value;
-  final String label;
-}
-
 enum EventDetailHostStatus { hidden, loading, content, error }
 
 @immutable
@@ -50,7 +38,6 @@ class EventDetailHostState {
     this.photoUrl,
     this.meta,
     this.verified = false,
-    this.stats = const <EventDetailHostStat>[],
     this.canMessage = false,
   });
 
@@ -70,7 +57,6 @@ class EventDetailHostState {
     String? photoUrl,
     String? meta,
     bool verified = false,
-    List<EventDetailHostStat> stats = const <EventDetailHostStat>[],
     bool canMessage = false,
   }) : this._(
          status: EventDetailHostStatus.content,
@@ -80,7 +66,6 @@ class EventDetailHostState {
          photoUrl: photoUrl,
          meta: meta,
          verified: verified,
-         stats: stats,
          canMessage: canMessage,
        );
 
@@ -92,7 +77,6 @@ class EventDetailHostState {
   final String? photoUrl;
   final String? meta;
   final bool verified;
-  final List<EventDetailHostStat> stats;
   final bool canMessage;
 }
 
@@ -151,7 +135,7 @@ class EventDetailSocialState {
   const EventDetailSocialState({
     required this.showMemberContext,
     required this.renderAsHost,
-    required this.hasReviewAccess,
+    required this.reviews,
     this.isLoading = false,
   });
 
@@ -159,30 +143,92 @@ class EventDetailSocialState {
     : this(
         showMemberContext: false,
         renderAsHost: false,
-        hasReviewAccess: false,
+        reviews: const EventDetailReviewsState.hidden(),
         isLoading: true,
       );
 
   final bool showMemberContext;
   final bool renderAsHost;
-  final bool hasReviewAccess;
+  final EventDetailReviewsState reviews;
   final bool isLoading;
+}
+
+enum EventDetailReviewsMode { hidden, content, emptyWritePrompt }
+
+/// Capability-derived review presentation for Event Detail.
+///
+/// Call sites cannot independently request an empty review tile or expose a
+/// write/respond action to an ineligible viewer. The route resolver owns those
+/// combinations and the section simply renders the resulting mode.
+@immutable
+class EventDetailReviewsState {
+  const EventDetailReviewsState._({
+    required this.mode,
+    required this.canWrite,
+    required this.canRespond,
+  });
+
+  const EventDetailReviewsState.hidden()
+    : this._(
+        mode: EventDetailReviewsMode.hidden,
+        canWrite: false,
+        canRespond: false,
+      );
+
+  const EventDetailReviewsState.content({
+    required bool canWrite,
+    required bool canRespond,
+  }) : this._(
+         mode: EventDetailReviewsMode.content,
+         canWrite: canWrite,
+         canRespond: canRespond,
+       );
+
+  const EventDetailReviewsState.emptyWritePrompt()
+    : this._(
+        mode: EventDetailReviewsMode.emptyWritePrompt,
+        canWrite: true,
+        canRespond: false,
+      );
+
+  final EventDetailReviewsMode mode;
+  final bool canWrite;
+  final bool canRespond;
+
+  bool get visible => mode != EventDetailReviewsMode.hidden;
 }
 
 EventDetailSocialState eventDetailSocialStateFrom({
   required Event event,
+  required bool hasReviews,
   required UserProfile? userProfile,
   required bool isAuthenticated,
   required bool renderAsHost,
   required EventParticipation? participation,
   required DateTime now,
 }) {
+  final isMember = isAuthenticated && userProfile != null;
   final reviewAccessStarted = !event.endTime.isAfter(now);
+  final canWrite =
+      isMember &&
+      !renderAsHost &&
+      participation?.status == EventParticipationStatus.attended &&
+      reviewAccessStarted;
+  final canRespond = isMember && renderAsHost && hasReviews;
+  final reviews = !isMember
+      ? const EventDetailReviewsState.hidden()
+      : hasReviews
+      ? EventDetailReviewsState.content(
+          canWrite: canWrite,
+          canRespond: canRespond,
+        )
+      : canWrite
+      ? const EventDetailReviewsState.emptyWritePrompt()
+      : const EventDetailReviewsState.hidden();
+
   return EventDetailSocialState(
-    showMemberContext: isAuthenticated && userProfile != null,
+    showMemberContext: isMember,
     renderAsHost: renderAsHost,
-    hasReviewAccess:
-        participation?.status == EventParticipationStatus.attended &&
-        reviewAccessStarted,
+    reviews: reviews,
   );
 }

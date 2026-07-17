@@ -2,11 +2,11 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -280,20 +280,13 @@ class CatchPersonUnreadCountPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final label = catchCountLabel(count);
 
     return Semantics(
       label: count == 1
           ? context.l10n.coreCatchPersonRowLabelUnreadChat
           : context.l10n.coreCatchPersonRowLabelLabelUnreadChats(label: label),
-      child: CatchBadge(
-        label: label,
-        tone: CatchBadgeTone.brand,
-        backgroundColor: t.primary,
-        foregroundColor: t.primaryInk,
-        borderColor: t.primary,
-      ),
+      child: ExcludeSemantics(child: CatchCountBadge.label(count: count)),
     );
   }
 }
@@ -305,10 +298,10 @@ class CatchPersonNewMatchDot extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: context.l10n.coreCatchPersonRowLabelNewMatch,
-      child: ClipOval(
-        child: ColoredBox(
+      child: ExcludeSemantics(
+        child: CatchStatusDot(
           color: CatchTokens.of(context).primary,
-          child: const SizedBox.square(dimension: CatchSpacing.s2),
+          size: CatchSpacing.s2,
         ),
       ),
     );

@@ -34,6 +34,7 @@ import 'package:catch_dating_app/force_update/data/app_version_config_provider.d
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -73,12 +74,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 const _viewerUid = UtilitySurfaceFixtures.viewerUid;
 final _viewer = UtilitySurfaceFixtures.viewer;
 final _event = UtilitySurfaceFixtures.event;
-final _eventWithoutCoordinate = UtilitySurfaceFixtures.eventWithoutCoordinate;
 final _payments = UtilitySurfaceFixtures.payments;
 final _reviews = UtilitySurfaceFixtures.reviews;
 final _notifications = UtilitySurfaceFixtures.notifications;
@@ -126,8 +127,8 @@ final _calendarSummary = CalendarEventSummary.from(
   savedEvents: _calendarSavedEvents,
   now: _calendarNow,
 );
-const _calendarWeekHeaderPreviewHeight = 150.0;
-const _calendarMonthHeaderPreviewHeight = 360.0;
+const _calendarWeekHeaderPreviewHeight = 92.0;
+const _calendarMonthHeaderPreviewHeight = 320.0;
 const _calendarClubNames = {'design-club': 'Sea Face Social'};
 const double _utilityDeviceFrameMaxWidth = 390;
 const double _utilityDeviceFrameHeight = 720;
@@ -755,15 +756,13 @@ Widget profilePhotoEditorScreenStates(BuildContext context) {
     contractId: 'screen.image_uploads.profile_photo_editor',
     children: [
       _StateCard(
-        label: 'existing photo editor',
+        label: 'interactive existing photo editor',
         child: _DeviceFrame(
-          child: IgnorePointer(
-            child: _ProfilePhotoEditorScope(
-              child: ProfilePhotoEditorScreen(
-                index: 0,
-                photo: _profilePhotos.first,
-                canDelete: true,
-              ),
+          child: _ProfilePhotoEditorScope(
+            child: ProfilePhotoEditorScreen(
+              index: 0,
+              photo: _profilePhotos.first,
+              canDelete: true,
             ),
           ),
         ),
@@ -1184,7 +1183,6 @@ Widget calendarDateHeaderStates(BuildContext context) {
             selectedDate: _calendarSummary.anchorDate,
             expanded: false,
             onDateSelected: (_) {},
-            onTodayPressed: _noop,
             onVerticalDragDelta: (_) {},
           ),
         ),
@@ -1198,7 +1196,6 @@ Widget calendarDateHeaderStates(BuildContext context) {
             selectedDate: _calendarSummary.anchorDate,
             expanded: true,
             onDateSelected: (_) {},
-            onTodayPressed: _noop,
             onVerticalDragDelta: (_) {},
           ),
         ),
@@ -1233,24 +1230,6 @@ Widget calendarWeekStripSkeletonStates(BuildContext context) {
     contractId: 'component.calendar.week_strip_skeleton',
     children: const [
       _StateCard(label: 'loading', child: CalendarWeekStripSkeleton()),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Title row state',
-  type: CalendarTitleRow,
-  path: '[P3 utility surfaces]/Calendar/Components',
-)
-Widget calendarTitleRowStates(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'CalendarTitleRow',
-    contractId: 'component.calendar.title_row',
-    children: [
-      _StateCard(
-        label: 'current month',
-        child: CalendarTitleRow(title: 'July 2026', onTodayPressed: _noop),
-      ),
     ],
   );
 }
@@ -1721,18 +1700,6 @@ Widget eventLocationMapScreenStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
-        label: 'no exact coordinate',
-        child: _DeviceFrame(
-          child: EventLocationMapScreen(
-            state: EventLocationMapState.fromEvent(
-              _eventWithoutCoordinate,
-              enableNetworkTiles: false,
-            ),
-            onGetDirections: () {},
-          ),
-        ),
-      ),
     ],
   );
 }
@@ -1854,7 +1821,6 @@ Widget notificationRowStates(BuildContext context) {
           title: 'You are booked',
           time: '5h',
           body: 'Your spot is confirmed for Wednesday evening.',
-          divider: true,
           onTap: _noop,
         ),
       ),
@@ -1867,7 +1833,6 @@ Widget notificationRowStates(BuildContext context) {
           body:
               'The host posted pacing notes, regroup points, and cafe timing for members returning after a break.',
           unread: true,
-          divider: true,
           onTap: _noop,
         ),
       ),
@@ -1878,7 +1843,6 @@ Widget notificationRowStates(BuildContext context) {
           title: 'Morning run was cancelled',
           time: 'mon',
           body: 'Heavy rain moved the session to next week.',
-          divider: true,
         ),
       ),
     ],
@@ -2176,7 +2140,7 @@ Widget reviewsPreviewSectionStates(BuildContext context) {
         child: const ReviewsPreviewSection(
           reviews: [],
           currentUid: _viewerUid,
-          compactEmptyState: true,
+          emptyPresentation: ReviewsEmptyPresentation.contained,
         ),
       ),
       _StateCard(
@@ -3558,15 +3522,38 @@ class _ProfilePhotoEditorScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       overrides: [
+        uidProvider.overrideWith((ref) => Stream<String?>.value(_viewerUid)),
         watchUserProfileProvider.overrideWith(
           (ref) => Stream<UserProfile?>.value(
             _viewer.copyWith(profilePhotos: _profilePhotos),
           ),
         ),
+        userProfileRepositoryProvider.overrideWithValue(
+          ProfileFixtureUserProfileRepository(
+            profile: _viewer.copyWith(profilePhotos: _profilePhotos),
+          ),
+        ),
+        imageUploadRepositoryProvider.overrideWithValue(
+          const _ProfilePhotoEditorPreviewImageRepository(),
+        ),
       ],
-      child: child,
+      child: PopScope(canPop: false, child: child),
     );
   }
+}
+
+class _ProfilePhotoEditorPreviewImageRepository
+    implements ImageUploadRepository {
+  const _ProfilePhotoEditorPreviewImageRepository();
+
+  @override
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) async => null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _CalendarScope extends StatelessWidget {
@@ -4135,8 +4122,8 @@ Event _utilityEvent({
   required String id,
   required String meetingPoint,
   required String? notes,
-  required double? latitude,
-  required double? longitude,
+  required double latitude,
+  required double longitude,
 }) => UtilitySurfaceFixtures.eventFixture(
   id: id,
   meetingPoint: meetingPoint,

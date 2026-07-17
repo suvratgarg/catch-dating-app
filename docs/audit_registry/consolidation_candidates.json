@@ -1,7 +1,30 @@
 {
-  "generated_at": "2026-07-10T10:51:53.603666+00:00",
-  "total_candidates": 1,
+  "generated_at": "2026-07-17T07:01:58.757816+00:00",
+  "total_candidates": 2,
   "candidates": [
+    {
+      "match_type": "name_collision_needs_triage",
+      "severity": "medium",
+      "name": "HostBroadcastComposerSheet",
+      "kind": "class",
+      "is_widget": true,
+      "sites": [
+        {
+          "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+          "line": 116,
+          "signature": "class HostBroadcastComposerSheet extends StatelessWidget {",
+          "body_hash": "b2911b1cc86eea3a"
+        },
+        {
+          "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
+          "line": 63,
+          "signature": "class HostBroadcastComposerSheet extends ConsumerStatefulWidget {",
+          "body_hash": "273193774a287ac5"
+        }
+      ],
+      "suggestion": "Same class 'HostBroadcastComposerSheet' appears in 2 files with different implementations. Triage before consolidation.",
+      "id": "C-001"
+    },
     {
       "match_type": "name_collision_needs_triage",
       "severity": "medium",
@@ -11,7 +34,7 @@
       "sites": [
         {
           "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-          "line": 209,
+          "line": 217,
           "signature": "class ProfilePhoto extends StatelessWidget {",
           "body_hash": "b4a62e0adb852bed"
         },
@@ -23,7 +46,7 @@
         }
       ],
       "suggestion": "Same class 'ProfilePhoto' appears in 2 files with different implementations. Triage before consolidation.",
-      "id": "C-001"
+      "id": "C-002"
     }
   ]
 }

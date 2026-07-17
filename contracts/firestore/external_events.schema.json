@@ -55,16 +55,10 @@
         "address": {"type": ["string", "null"], "maxLength": 500},
         "placeId": {"type": ["string", "null"], "minLength": 1, "maxLength": 256},
         "latitude": {
-          "anyOf": [
-            {"$ref": "../shared/event_common.schema.json#/definitions/latitude"},
-            {"type": "null"}
-          ]
+          "$ref": "../shared/event_common.schema.json#/definitions/latitude"
         },
         "longitude": {
-          "anyOf": [
-            {"$ref": "../shared/event_common.schema.json#/definitions/longitude"},
-            {"type": "null"}
-          ]
+          "$ref": "../shared/event_common.schema.json#/definitions/longitude"
         },
         "notes": {"type": ["string", "null"], "maxLength": 1000}
       }

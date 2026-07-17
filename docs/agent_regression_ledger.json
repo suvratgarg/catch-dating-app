@@ -1,8 +1,34 @@
 {
-  "version": 14,
-  "updated": "2026-07-15",
+  "version": 24,
+  "updated": "2026-07-17",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-HOST-CLUB-EDITOR-001",
+      "title": "Club editing fragments across organizer and standalone screens",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "lib/hosts/presentation/host_operations/**",
+        "lib/hosts/presentation/club_management/**",
+        "test/hosts/host_operations_screen_test.dart",
+        "test/routing/router_redirect_test.dart",
+        "tool/ui_capture/capture_coverage.json",
+        "design/screens/catch.screens.json"
+      ],
+      "symptom": "Club identity, contact, media, policy, or Event Success defaults acquire a second edit route or create-wizard edit mode, so capabilities, navigation, top-bar behavior, and capture contracts drift between two editors.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/clubs/clubs_controllers_test.dart test/hosts/host_operations_screen_test.dart test/routing/router_redirect_test.dart && node tool/run.mjs check ui:capture-coverage",
+        "guardEvidence": "focused tests cover owner and co-host organizer capabilities, media-only controller authorization, advanced defaults, and the legacy edit-route redirect while capture policy classifies the retired route as an organizer alias"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/host_tooling_consolidation_tracker.md",
+        "design/screens/catch.screens.json"
+      ],
+      "notes": "The organizer Edit tab is the only canonical club editor. Keep /host/clubs/:clubId/edit only as a compatibility redirect unless product explicitly replaces the canonical surface."
+    },
     {
       "id": "REG-IOS-CI-SIGNING-001",
       "title": "Ephemeral iOS release runners leak Apple Development certificates",
@@ -559,24 +585,25 @@
     },
     {
       "id": "REG-MAP-001",
-      "title": "Explore map blanks when native Google Maps key validation fails",
+      "title": "Explore silently falls back to fake geography or blank native tiles",
       "status": "active",
       "applies_to": [
         "lib/explore/presentation/explore_map_screen.dart",
         "lib/events/presentation/widgets/event_pins_map.dart",
+        "lib/locations/shared/catch_google_map.dart",
         "test/explore/explore_widgets_test.dart",
         "tool/firebase/validate_google_maps_config.mjs"
       ],
-      "symptom": "The Explore map route opens but renders a blank native Google map canvas when the iOS SDK rejects the configured API key at runtime, even though static local config validation passes.",
+      "symptom": "The Explore map route either renders painted fake geography or a blank native Google map canvas, masking an iOS SDK key/runtime failure.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/explore/explore_widgets_test.dart --plain-name 'ExploreMapScreen default uses resilient Catch pin map'"
+        "command": "flutter test test/explore/explore_widgets_test.dart --plain-name 'ExploreMapScreen defaults to the native Google map' && node tool/firebase/validate_google_maps_config.mjs --env prod --platform ios"
       },
       "owner_docs": [
         "docs/widget_catalog.md",
         "docs/location_stack_plan.md"
       ],
-      "notes": "Keep Explore's primary event-pin selection path on the resilient Catch placeholder map unless native Maps key acceptance is verified in a runtime device loop."
+      "notes": "Production defaults to real Google tiles. Runtime proof on 2026-07-13 used an iPhone 17 simulator on iOS 26.5 and confirmed muted native tiles, custom pins, selection, the geographic distance circle, its projected Catch label, and accessible event marker descriptions. Tests, Widgetbook, and captures may explicitly select the neutral no-network pin/ring fixture; it must never paint substitute map geography."
     },
     {
       "id": "REG-APP-TARGET-001",
@@ -1161,6 +1188,29 @@
       "notes": "Native Flutter bundles Archivo-Roman-VF.ttf and its OFL; web surfaces may retain WOFF2. Tracking is zero by default, with named uppercase roles and the welcome reel exception owned by CatchTextStyles."
     },
     {
+      "id": "REG-SCREEN-CHROME-001",
+      "title": "Screens bypass canonical app-bar ownership or render under shell chrome",
+      "status": "active",
+      "applies_to": [
+        "lib/**/*.dart",
+        "lib/core/widgets/catch_top_bar.dart",
+        "lib/image_uploads/shared/profile_photo_editor_screen.dart",
+        "tool/design/check_screen_top_bar_contracts.mjs",
+        "tool/design/screen_top_bar_contracts.json"
+      ],
+      "symptom": "A screen introduces a raw, helper-owned, or wrong-role app bar; a pushed route uses the correct primitive but suppresses its only back affordance; a feature Screen, Scaffold, Header, TopBar, HeaderContent, or delegated State silently owns route-title typography; a media hero is blessed by a broad allowlist; or a full-screen editor is pushed on a branch navigator and leaves persistent shell navigation covering its body.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:screen-top-bar-contracts",
+        "guardEvidence": "the exhaustive handwritten-Dart inventory requires every Scaffold appBar, route-specific required back affordance, raw navigation bar, shell-covering route launcher, aligned root-chrome surface, and feature-owned header symbol to match a reviewed role and canonical owner; known-bad fixtures prove wrong roles, suppressed pushed-route back actions, raw Material and sliver chrome, workspace/hero escape hatches, state-delegated drift, multiple surfaces hidden behind one aligned adopter, unregistered app bars/manual headers, and branch-navigator editors fail"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Compact edit/detail navigation remains a canonical CatchTopBar use, but pushed routes may declare leading back so the correct primitive cannot hide a navigation dead end. Root presentation is independently enforced for editors that must cover tab-shell chrome. Exact legacy manual-header classifications are migration debt and must not be widened into feature or file allowlists."
+    },
+    {
       "id": "REG-FIELD-001",
       "title": "CatchField editability and explicit-editor states drift by call site",
       "status": "active",
@@ -1178,17 +1228,17 @@
         "test/profile/profile_widgets_test.dart",
         "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
       ],
-      "symptom": "Static fields display edit affordances, editable fields lose them, direct inputs add a duplicate keyboard Tab stop, pointer-down and focus require separate taps, secondary pointers or drags leave press chrome behind, tap-away cancels before pointer-up or during a scroll, blank drawer taps or descendant keyboard events toggle the row, local Done does not close after submit, saving fields still cancel or submit, disclosure height snaps or remounts draft state, automatic reveal continues after rapid close or fights a direct user scroll, reduced motion still animates the viewport, expanded commit controls remain under an overlaid shell bar, a final field cannot consume enough terminal extent to clear that bar, a populated 24 px clear target increases the canonical collapsed row height or sits off the editable value line, an equal profile refresh resets a staged multi-choice draft, focus changes label typography/supporting-content order, an Optional suffix absorbs the field name instead of leaving it as a distinct text descendant, a hidden label also suppresses its same-name input hint, toggle anatomy falls off-axis or bypasses CatchToggle, choice summaries drift into feature-formatted comma lists, Optional copy is used as the final-selection policy, or empty editable rows mix bare labels, plus-prefixed values, and input instructions.",
+      "symptom": "Static fields display edit affordances, editable fields lose them, direct inputs add a duplicate keyboard Tab stop, pointer-down and focus require separate taps, secondary pointers or drags leave press chrome behind, tap-away cancels before pointer-up or during a scroll, blank drawer taps or descendant keyboard events toggle the row, local Done does not close after submit, saving fields still cancel or submit or render simultaneous trailing and commit-button progress spinners, disclosure height snaps or remounts draft state, automatic reveal continues after rapid close or fights a direct user scroll, reduced motion still animates the viewport, expanded commit controls remain under an overlaid shell bar, a final field cannot consume enough terminal extent to clear that bar, a populated 24 px clear target increases the canonical collapsed row height or sits off the editable value line, a disclosure chevron applies the caption reserve twice and clips into the following divider, an equal profile refresh resets a staged multi-choice draft, an active non-text disclosure leaves its field label tertiary, focus changes label typography/supporting-content order, an Optional suffix absorbs the field name instead of leaving it as a distinct text descendant, a hidden label also suppresses its same-name input hint, toggle anatomy falls off-axis or bypasses CatchToggle, choice summaries drift into feature-formatted comma lists, Optional copy is used as the final-selection policy, or empty inactive inputs and addable disclosures diverge between one- and two-line Add geometry, remount the native input, expose input-only units at rest, or recreate Add copy in feature adapters.",
       "guard": {
         "type": "command",
         "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/chats/chat_input_bar_test.dart test/events/location_picker_screen_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/hosts/host_create_event_screen_test.dart test/event_success/event_success_live_screens_test.dart test/reviews/reviews_widgets_test.dart",
-        "guardEvidence": "single-gesture press-to-focus/open behavior, one native keyboard focus stop per direct input, field-to-field handoff, primary-pointer press filtering, drag exit cleanup, pointer-up tap-away timing, drawer tap and keyboard propagation barriers, local-versus-controlled Done ownership, loading cancellation/submit guards, native cursor placement, onBlur delivery, persistent disclosure identity, equal clear/no-clear populated row height with the 24 px clear target centered on the editable value line, midpoint frame-driven reveal progress, rapid-close cancellation, direct-drag handoff, immediate reduced-motion reveal, final commit-bar clearance above a 102 px shell obstruction on a 393 by 852 profile viewport, final-Children terminal clearance without a visible end snap, Edit-only terminal-sliver ownership with Preview and Insights unchanged, equal-refresh multi-choice draft preservation, centered toggle anatomy through canonical CatchToggle composition, distinct optional-label text with combined semantics, retained same-name hints when labels are hidden, affordance matrix, localized empty-value fallback, midpoint expansion/collapse height, stable label metrics, explicit-save content ordering, source-option-order choice summaries joined with a middle dot, explicit body override, and clearability independent from visible Optional copy"
+        "guardEvidence": "single-gesture press-to-focus/open behavior, one native keyboard focus stop per direct input, field-to-field handoff, primary-pointer press filtering, drag exit cleanup, pointer-up tap-away timing, drawer tap and keyboard propagation barriers, local-versus-controlled Done ownership, loading cancellation/submit guards, mutually exclusive saving progress ownership between a visible 13 px commit-button indicator and a fallback 16 px trailing indicator across explicit, implicit, and closed disclosure paths, native cursor placement, onBlur delivery, persistent disclosure identity, shared single-line empty Add height and 14/600 plus Optional typography across direct input and addable disclosure constructors, same native TextField element before and after focus, input-only unit suppression at rest, combined Add semantics, equal clear/no-clear populated row height with the 24 px clear target centered on the editable value line, one caption reserve with disclosure and select chevrons centered on the 18.9 px value line and retaining canonical divider clearance, midpoint frame-driven reveal progress, rapid-close cancellation, direct-drag handoff, immediate reduced-motion reveal, final commit-bar clearance above a 102 px shell obstruction on a 393 by 852 profile viewport, final-Children terminal clearance without a visible end snap, Edit-only terminal-sliver ownership with Preview and Insights unchanged, equal-refresh multi-choice draft preservation, root-owned inactive ink3 to active semantic-ink label transitions across disclosure and select paths in light and dark themes, danger precedence for actual errors, tertiary Optional suffix copy while active, centered toggle anatomy through canonical CatchToggle composition, distinct optional-label text with combined semantics, retained same-name hints when labels are hidden, affordance matrix, localized empty-value fallback, midpoint expansion/collapse height, stable label metrics, explicit-save content ordering, source-option-order choice summaries joined with a middle dot, explicit body override, and clearability independent from visible Optional copy"
       },
       "owner_docs": [
         "docs/widget_catalog.md",
         "design/components/catch.components.json"
       ],
-      "notes": "New code derives affordances structurally; showChevron and the deprecated expanding/actions constructors remain source-compatible adapters to the canonical renderer. Non-text disclosure editors use CatchField.control; explicit-save text editors use CatchField.inputActions instead of nesting a second field primitive. Press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up. Explicit-save tap-away waits for pointer-up, ignores drag/scroll, and cannot cancel while saving. Disclosure children remain mounted while closed. A labeled clear target is overlaid with reserved width so its hit box cannot alter row height. CatchFieldVisibilityScope publishes obstruction only; fields reuse the nearest existing vertical scroll position and never create a second controller. Automatic reveal shares the disclosure duration and curve, advances frame by frame as scroll extent grows, yields to direct user scrolling, cancels on rapid close, jumps under reduced motion, and uses only a zero-duration final correction. CatchField.choices derives collapsed summaries in source option order with ' · ' unless an explicit body override is supplied. isOptional is visible/semantic copy only; allowEmptySelection independently governs whether the final selection may be removed. Editable empty display copy is primitive-derived and must not be recreated with feature-local plus strings."
+      "notes": "New code derives affordances structurally; showChevron and the deprecated expanding/actions constructors remain source-compatible adapters to the canonical renderer. Non-text disclosure editors use CatchField.control; explicit-save text editors use CatchField.inputActions instead of nesting a second field primitive. Empty inactive editable rows share one root-localized Add value lane across direct inputs and addable disclosures. Direct inputs suppress their caption and input-only units only visually while preserving the same native TextField element; focus, value, read-only, or error restores normal geometry. CatchField resolves caption color once for all render paths: actual error, then active focus/open, then inactive tone/ink3; disabled appearance remains root opacity and Optional suffix copy remains ink3. Press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up. Explicit-save tap-away waits for pointer-up, ignores drag/scroll, and cannot cancel while saving. Disclosure children remain mounted while closed. Non-centered trailing affordances share one root-owned lane after a single caption reserve and are centered within valueLineExtent; opening rotates the disclosure caret without moving its lane. Saving interaction locks remain aggregate and backward-compatible, while visual progress has exactly one capability-owned placement: a visible explicit commit bar uses its 13 px Done spinner and retains the header caret; auto-save, no-bar, or closed fields use the 16 px trailing spinner. A labeled clear target is overlaid with reserved width so its hit box cannot alter row height. CatchFieldVisibilityScope publishes obstruction only; fields reuse the nearest existing vertical scroll position and never create a second controller. Automatic reveal shares the disclosure duration and curve, advances frame by frame as scroll extent grows, yields to direct user scrolling, cancels on rapid close, jumps under reduced motion, and uses only a zero-duration final correction. CatchField.choices derives collapsed summaries in source option order with ' · ' unless an explicit body override is supplied. isOptional is visible/semantic copy only; allowEmptySelection independently governs whether the final selection may be removed. Editable empty display copy is primitive-derived and must not be recreated with feature-local plus strings."
     },
     {
       "id": "REG-APP-SHELL-KEYBOARD-001",
@@ -1224,25 +1274,444 @@
         "lib/core/widgets/catch_toggle.dart",
         "lib/core/theme/catch_tokens.dart",
         "lib/dashboard/presentation/widgets/activity_section.dart",
+        "lib/hosts/presentation/host_operations/host_events_list.dart",
         "lib/user_profile/presentation/widgets/inline_editor_*.dart",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
         "test/core/catch_field_focus_semantics_test.dart",
         "test/core/catch_primitives_test.dart",
         "test/dashboard/dashboard_screen_test.dart",
+        "test/hosts/host_operations_screen_test.dart",
         "test/profile/profile_widgets_test.dart"
       ],
-      "symptom": "A field requires one tap for an outline and another for focus or text editing; a collapsed disclosure has a dead bottom-padding strip; disclosure content flickers, clips focus paint, lets nested controls trigger the header pressed state, or places validation above its drawer/action bar; Cancel/Done leaves the trailing lane or wraps into a second row; content rows reuse legacy value semantics or globally widen legacy 1/2-line clamps; multiline input typography drifts; chip, stepper, commit, or toggle controls lose exact geometry, centered hit ownership, keyboard activation, immediate focus chrome, repeat cancellation, spinner/status/error anatomy, or reviewed motion; Photos or a headerless FieldSection loses its top rule; divided and contained headers/footer metrics diverge; wrapped adapter rows lose text-lane dividers; Profile choice summaries bypass the primitive; Optional copy changes selection policy; or Profile prompt cards draw competing outer/child borders or collapse back into one divided explicit-save row with a modal question picker.",
+      "symptom": "A field requires one tap for an outline and another for focus or text editing; a collapsed disclosure has a dead bottom-padding strip; disclosure content flickers, clips focus paint, lets nested controls trigger the header pressed state, or places validation above its drawer/action bar; Cancel/Done leaves the trailing lane or wraps into a second row; content rows reuse legacy value semantics or globally widen legacy 1/2-line clamps; multiline input typography drifts; chip, stepper, commit, or toggle controls lose exact geometry, centered hit ownership, keyboard activation, immediate focus chrome, repeat cancellation, spinner/status/error anatomy, or reviewed motion; Photos or a headerless FieldSection loses its top rule; sibling field rows use the full-strength fieldSection tone instead of the muted fieldRow separator; divided and contained headers/footer metrics diverge; wrapped adapter rows lose text-lane dividers; Profile choice summaries bypass the primitive; Optional copy changes selection policy; Profile prompt cards paint adjacent outer/child vertical borders that read as a 2 px edge; or prompts collapse back into one divided explicit-save row with a modal question picker.",
       "guard": {
         "type": "command",
-        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/dashboard/dashboard_screen_test.dart test/profile/profile_widgets_test.dart test/profile/self_profile_edit_tab_state_test.dart && node tool/run.mjs check design:component-contracts && node tool/run.mjs check design:widgetbook-contract-refs",
-        "guardEvidence": "focused tests cover one-gesture press-to-focus/open and native cursor ownership; a tappable collapsed bottom-padding boundary; full-row sibling disclosure with descendant press isolation, unclipped focus paint, and validation after the drawer/action bar; dedicated natural-height 2/3-line content rows beside unchanged legacy 1/2 value rows; exact single- and multiline typography; wrapped choice spacing; centered 32 px stepper visuals inside complete 44 px targets, pointer-up/drag-exit repeat cancellation, and acceleration cadence; a non-wrapping compact Cancel/Done row; immediate layout-neutral chip/stepper/commit focus rings; inset toggle focus chrome with one keyboard stop and one switch semantics node; exact spinner/status/error, underline, reveal, and press motion; contained/divided header and footer metrics; source-order summaries and clearability independent from Optional copy; Photos and headerless section rules; prompt question/answer composition; and dashboard content action alignment"
+        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/core/catch_primitives_test.dart test/dashboard/dashboard_screen_test.dart test/hosts/host_operations_screen_test.dart test/profile/profile_widgets_test.dart test/profile/self_profile_edit_tab_state_test.dart && node tool/run.mjs check design:component-contracts && node tool/run.mjs check design:widgetbook-contract-refs",
+        "guardEvidence": "focused tests cover one-gesture press-to-focus/open and native cursor ownership; a tappable collapsed bottom-padding boundary; full-row sibling disclosure with descendant press isolation, unclipped focus paint, and validation after the drawer/action bar; dedicated natural-height 2/3-line content rows beside unchanged legacy 1/2 value rows; exact single- and multiline typography; wrapped choice spacing; centered 32 px stepper visuals inside complete 44 px targets, pointer-up/drag-exit repeat cancellation, and acceleration cadence; a non-wrapping compact Cancel/Done row; immediate layout-neutral chip/stepper/commit focus rings; inset toggle focus chrome with one keyboard stop and one switch semantics node; exact spinner/status/error, underline, reveal, and press motion; muted fieldRow separators between sibling fields while outer section rules stay full-strength; contained/divided header and footer metrics; source-order summaries and clearability independent from Optional copy; Photos and headerless section rules; direct focus-surface composition, contained first/last active rows, and production prompt question/answer focus sharing the exact section-perimeter left/right geometry; prompt question/answer composition; and dashboard content action alignment"
       },
       "owner_docs": [
         "docs/widget_catalog.md",
         "design/components/catch.components.json",
         "docs/design_parity/state_matrix.json"
       ],
-      "notes": "The Flutter canonical primitives implement the implementation-safe tranche of handoff revision field-sys-20260714-195933-640b9906. CatchField.content maps React title/supporting-copy semantics without changing legacy Flutter body-as-value rows. Disclosure drawers are full-row siblings below the header; contained-section ordinary focus remains child-owned, while explicit section focus/error alone may change the outer perimeter. Existing semantic colors already matched and were not changed. DP-PROFILE-SELF-005 is closed for the approved primitive tranche. DP-PROFILE-SELF-006 remains the sole owner/product/schema boundary: direct-input empty-label policy; single-choice persistence, clearability, deselection, and save behavior; DOB helper/mono formatting; pace visibility; lifestyle footer; enum workout control; production three prompts/300 characters versus six/140; and profile icon/order changes must not be silently promoted."
+      "notes": "The Flutter canonical primitives implement the implementation-safe tranche of handoff revision field-sys-20260714-195933-640b9906. CatchField.content maps React title/supporting-copy semantics without changing legacy Flutter body-as-value rows. Disclosure drawers are full-row siblings below the header; contained-section ordinary focus remains child-owned, while explicit section focus/error alone may change the outer perimeter. CatchFieldInsetScope independently publishes content flushing and active-overlay bleed; CatchSectionFocusSurface field-row mode owns the one-hairline overlap so both canonical and direct compositions reclaim the section's layout inset, child and section chrome paint one shared edge, and the section foreground remains the final perimeter owner. Existing semantic colors already matched and were not changed. DP-PROFILE-SELF-005 is closed for the approved primitive tranche. The direct-input empty-label portion of DP-PROFILE-SELF-006 was explicitly approved on 2026-07-16 and is now root-owned as the single-line Add presentation. DP-PROFILE-SELF-006 remains the sole owner/product/schema boundary for single-choice persistence, clearability, deselection, and save behavior; DOB helper/mono formatting; pace visibility; lifestyle footer; enum workout control; production three prompts/300 characters versus six/140; and profile icon/order changes, which must not be silently promoted."
+    },
+    {
+      "id": "REG-SECTION-OWNERSHIP-001",
+      "title": "Section titles drift into standalone header-plus-body shells",
+      "status": "active",
+      "applies_to": [
+        "lib/hosts/presentation/host_operations/host_organizer.dart",
+        "lib/core/widgets/catch_section_header.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "tool/design/check_section_headers.mjs",
+        "tool/design/check_section_headers.test.mjs"
+      ],
+      "symptom": "A screen composes CatchSectionHeader, caller-owned vertical spacing, and an untitled CatchSection as separate siblings, or a feature-local card rebuilds CatchSurface plus CatchSectionHeader around section-like body/actions, even though CatchSection can own the title and body contract directly.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:section-headers",
+        "guardEvidence": "SECTION-HEADER-004 rejects a standalone CatchSectionHeader followed only by vertical spacing and an untitled CatchSection; SECTION-HEADER-005 advises on feature-local Card shells that combine CatchSurface, CatchSectionHeader, and section-like body/actions. Known-bad fixtures cover both shapes."
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "The Host Organizer Manage block and HostPaymentAccountContentCard exposed the missing enforcement shapes on 2026-07-16. The scanner classifies the standalone shell as high and the broader card shell as a medium advisory without auto-rewriting title styling or trailing actions, which remain normal CatchSection constructor inputs."
+    },
+    {
+      "id": "REG-ANALYTICS-SECTION-001",
+      "title": "Analytics groups drift into a parallel section and row system",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_analytics_kit.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/user_analytics/shared/user_analytics_panel.dart",
+        "lib/hosts/presentation/host_operations/host_analytics.dart",
+        "lib/hosts/presentation/widgets/host_loading_skeletons.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/user_analytics/user_analytics_panel_test.dart",
+        "test/hosts/host_operations_screen_test.dart",
+        "tool/design/check_section_headers.mjs",
+        "widgetbook/lib/primitives/analytics_kit_use_cases.dart",
+        "widgetbook/lib/user_analytics/user_analytics_use_cases.dart"
+      ],
+      "symptom": "Profile or Host analytics introduces a label-plus-gap section shell outside CatchSection; loaded and loading reports use different inter-section rhythm; Suggestions or Data coverage return to custom CatchSurface rows; backend coverage detail replaces a stable field label; or section headings lose header semantics during consolidation.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:section-headers && flutter test --concurrency=1 test/core/catch_primitives_test.dart test/user_analytics/user_analytics_panel_test.dart test/hosts/host_operations_screen_test.dart",
+        "guardEvidence": "SECTION-HEADER-003 rejects parallel dynamic kicker shells; core semantics coverage requires titled CatchSection headings; Profile report tests require zero-gap canonical sections plus CatchField content rows and stable known/unknown data-source labels; Host loaded and loading panels require canonical divided-section ownership."
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/design_parity/widget_consolidation/decisions.json"
+      ],
+      "notes": "The 2026-07-16 user-reviewed correction supersedes only WO-018's CatchAnalyticsSection decision. CatchAnalyticsMetricGrid, CatchAnalyticsMetricTile, CatchAnalyticsDataQualityList, CatchAnalyticsBar, and CatchStatColumn remain valid display-data primitives. Profile Insights deliberately uses CatchSection.fieldRows and CatchField.content for Suggestions and Data coverage so those editorial groups inherit the same formatting contract as the rest of Profile."
+    },
+    {
+      "id": "REG-MAP-002",
+      "title": "Event map becomes empty or bypasses proximity when location data is missing",
+      "status": "active",
+      "applies_to": [
+        "contracts/firestore/events.schema.json",
+        "lib/events/domain/event.dart",
+        "lib/events/domain/external_event.dart",
+        "lib/events/presentation/event_map_view_model.dart",
+        "lib/explore/presentation/explore_map_screen.dart",
+        "functions/src/events/eventDiscoveryProjection.ts",
+        "functions/src/events/selfCheckInAttendance.ts",
+        "tool/data/backfill_event_meeting_locations.mjs",
+        "test/events/event_domain_test.dart",
+        "test/events/event_map_screen_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "symptom": "A nullable or partial event coordinate suppresses a pin, writes a null discovery geo cell, bypasses check-in distance, or causes a zero-radius result to replace the map and ring with a dead-end empty page.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/events/event_domain_test.dart test/events/event_map_screen_test.dart test/explore/explore_widgets_test.dart",
+        "guardEvidence": "keeps a coordinate-less legacy event readable until repair"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/location_stack_plan.md",
+        "contracts/migrations/event_meeting_location.json"
+      ],
+      "notes": "Exact named coordinates are an event-domain invariant. Legacy reads may promote only a complete in-range pair; repair tooling never fabricates coordinates. Explore keeps the canvas and distance ring mounted for progressive radius recovery, and check-in fails closed on corrupt data."
+    },
+    {
+      "id": "REG-LOCATION-001",
+      "title": "Canonical market ids leak into visible city copy or are replaced by labels at rest",
+      "status": "active",
+      "applies_to": [
+        "lib/core/city_catalog.dart",
+        "lib/swipes/shared/profile_surface/profile_surface.dart",
+        "lib/hosts/presentation/host_operations_screen.dart",
+        "lib/hosts/presentation/host_operations/host_club_profile.dart",
+        "lib/hosts/presentation/host_operations/host_events_list.dart",
+        "lib/hosts/presentation/host_operations/host_organizer.dart",
+        "functions/src/shared/profileProjection.ts",
+        "functions/src/shared/profileProjection.test.ts",
+        "contracts/firestore/users.schema.json",
+        "contracts/firestore/public_profiles.schema.json",
+        "test/core/city_catalog_test.dart",
+        "test/swipes/profile_card_widget_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "symptom": "A canonical value such as in-dl-delhi-ncr is uppercased or title-cased into visible copy, or a presentation fix stores Delhi NCR where queries and projections require the canonical market id.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/shared/profileProjection.test.js && flutter test --concurrency=1 test/core/city_catalog_test.dart test/swipes/profile_card_widget_test.dart test/hosts/host_operations_screen_test.dart",
+        "guardEvidence": "canonical market/city/alias resolution plus shared-profile and host-surface assertions that labels render while raw ids do not"
+      },
+      "owner_docs": [
+        "docs/location_stack_plan.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "Keep marketId at persistence, query, projection, and editor-submit boundaries. Resolve CityData.label or cityLabel only when building human-facing copy; Google Places is not the market-label resolver."
+    },
+    {
+      "id": "REG-EVENT-DETAIL-001",
+      "title": "Event Detail drifts back to nested policy cards and feature-owned chrome",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_bottom_action.dart",
+        "lib/core/widgets/catch_host_row.dart",
+        "lib/events/presentation/event_detail_information_state.dart",
+        "lib/events/presentation/widgets/event_detail_*.dart",
+        "lib/reviews/shared/reviews_section.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/events/event_detail_widgets_test.dart",
+        "test/events/events_widgets_test.dart",
+        "test/reviews/reviews_widgets_test.dart"
+      ],
+      "symptom": "Event Detail repeats booking facts across sections, exposes settlement copy, restores nested policy/empty-review/host cards, duplicates catch-window messaging, or uses iOS floating action chrome on Android.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/events/event_detail_widgets_test.dart test/events/events_widgets_test.dart test/reviews/reviews_widgets_test.dart test/core/catch_primitives_test.dart"
+      },
+      "owner_docs": [
+        "design/components/catch.components.json",
+        "design/screens/catch.screens.json",
+        "docs/design_parity/event_detail_composition_tracker.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Keep sign-up and good-to-know facts inside EventDetailInformationState, review actions inside EventDetailReviewsState, host affordances callback-derived through CatchHostRow, and primary action platform selection inside CatchBottomAction."
+    },
+    {
+      "id": "REG-AGENT-009",
+      "title": "Stored cleanup snapshots claim zero while live scanners report debt",
+      "status": "active",
+      "applies_to": [
+        "tool/widget_cleanup_scan.sh",
+        "tool/check_catch_ui_lint_drift.sh",
+        "tool/tools_manifest.json",
+        "tool/audit/widget_cleanup_baseline.json",
+        "docs/audit_registry/backlog.json"
+      ],
+      "symptom": "A syntax-only or regex-overbroad scanner stays green, a stored snapshot says zero, and the live working tree contains cleanup findings.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check audit:widget-cleanup lint:catch-ui-drift",
+        "guardEvidence": "widget cleanup ratchet plus machine diagnostic-code parser self-test"
+      },
+      "owner_docs": [
+        "docs/audit_registry/README.md",
+        "tool/README.md"
+      ],
+      "notes": "Zero is scanner-specific. The widget inventory ratchets live category maxima, and analyzer aggregation reads only the machine diagnostic-code field."
+    },
+    {
+      "id": "REG-SHELL-001",
+      "title": "Floating tab chrome obscures terminal scroll content",
+      "status": "active",
+      "applies_to": [
+        "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
+        "lib/core/presentation/app_shell_active_tab.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/**/presentation/**",
+        "lib/routing/go_router.dart",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "symptom": "A tab-root screen reaches maximum scroll while its last field, action, or nested preview content remains behind the floating iOS tab bar, or Android receives duplicate tab-bar padding.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check && flutter test test/core/semantic_layout_contracts_test.dart test/core/app_shell_test.dart",
+        "guardEvidence": "known-bad missing-terminal and unregistered-branch fixtures plus iOS floating, Android anchored, no-bar, and safe-area geometry tests"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "notes": "Overlay-control and scroll-terminal clearance are separate contracts. Keyboard viewInsets are never added; Scaffold resize behavior owns keyboard space."
+    },
+    {
+      "id": "REG-CHAT-COMPOSER-001",
+      "title": "Chat composer focus, geometry, semantics, and pending states drift apart",
+      "status": "active",
+      "applies_to": [
+        "lib/chats/presentation/widgets/chat_input_bar.dart",
+        "lib/core/widgets/catch_field.dart",
+        "lib/core/widgets/catch_icon_button.dart",
+        "test/chats/chat_input_bar_test.dart",
+        "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+        "design/components/catch.components.json"
+      ],
+      "symptom": "The chat actions use unequal targets or edge insets, empty Send appears enabled, focus changes no shared chrome, pending attachment work disables the editor, or duplicate field/button semantics return.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/core/catch_field_focus_semantics_test.dart test/chats/chat_input_bar_test.dart && node tool/design/check_component_contracts.mjs",
+        "guardEvidence": "exact 60px/44px geometry, draft-derived sendability, retained native focus, independent busy actions, and one editable semantics node"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json"
+      ],
+      "notes": "ChatInputBar is the catch.chat_composer contract. Call sites provide capabilities and async state only; they do not configure action geometry or draft validity."
+    },
+    {
+      "id": "REG-STORAGE-RULES-001",
+      "title": "Deployed Storage rules lose Firestore IAM or client cleanup capability",
+      "status": "active",
+      "applies_to": [
+        "storage.rules",
+        "contracts/storage/match_chat_images.schema.json",
+        "lib/image_uploads/data/image_upload_repository.dart",
+        "tool/firebase/storage_rules_firestore_iam.mjs",
+        "tool/firebase/probe_chat_storage_rules.mjs",
+        "tool/deploy_firebase_targets.sh"
+      ],
+      "symptom": "Emulator tests pass while live chat uploads return unauthorized, a rule evaluation exceeds cross-service document limits, or a failed message write cannot delete its uploaded object.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/firebase/storage_rules_firestore_iam.test.mjs tool/firebase/probe_chat_storage_rules.test.mjs && node tool/firebase/storage_rules_firestore_iam.mjs --all",
+        "guardEvidence": "known-bad missing-role fixture, policy-preserving apply, uploader-owned create/delete contract, and authenticated live upload/delete probe"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "docs/data_contracts.md",
+        "firebase/README.md"
+      ],
+      "notes": "Do not weaken chat images to any signed-in writer. Provision roles/firebaserules.firestoreServiceAgent, keep match status as the one-document block projection, and retain immutable uploaderUid object metadata."
+    },
+    {
+      "id": "REG-REPO-ROOT-001",
+      "title": "Repository residue returns without an owner or safe recovery path",
+      "status": "active",
+      "applies_to": [
+        "*",
+        "tool/repository_root_manifest.json",
+        "artifacts/**",
+        "docs/**/*.md"
+      ],
+      "symptom": "A root entry is unexplained, tracked output has no consumer, local paths leak into Markdown, or cleanup guidance can remove tracked or protected state.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/check_repository_root_hygiene.mjs && node --test tool/check_repository_root_hygiene.test.mjs",
+        "guardEvidence": "seeded tests prove unknown and ambiguous classifications plus non-portable links are detected"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "artifacts/README.md",
+        "docs/plans/repository_root_hygiene_spec.md"
+      ],
+      "notes": "The cleaner is allowlist-only, dry-run by default, and never invokes git clean."
+    },
+    {
+      "id": "REG-HOST-UTILITY-ROUTE-001",
+      "title": "Legacy Host clubs redirect swallows nested event and club operations",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "test/routing/router_redirect_test.dart"
+      ],
+      "symptom": "Tapping New event, an event row, Edit, or another /host/clubs child route opens the Organizer tab because the legacy /host/clubs alias redirect evaluates a partial matchedLocation instead of the full requested URI.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/routing/router_redirect_test.dart",
+        "guardEvidence": "GoRouter keeps the create-event child route"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "Exact legacy-alias redirects must compare state.uri.path. A route-level matchedLocation may represent the parent match and must not decide whether a nested Host utility route is preserved. Payout readiness is not part of this navigation boundary."
+    },
+    {
+      "id": "REG-HOST-CLUB-TABBED-WORKSPACE-001",
+      "title": "Host Clubs tab pages lose shared chrome or leak scroll state",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_tab_rail.dart",
+        "lib/core/widgets/catch_tabbed_screen.dart",
+        "lib/user_profile/presentation/profile_screen.dart",
+        "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+        "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+        "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+        "test/profile/profile_widgets_test.dart",
+        "test/hosts/host_operations_screen_test.dart",
+        "test/clubs/clubs_controllers_test.dart",
+        "test/clubs/club_hero_app_bar_test.dart",
+        "test/clubs/club_detail_read_only_preview_test.dart"
+      ],
+      "symptom": "Organizer scroll position leaks into Edit, Insights, or Preview; shared identity chrome or the option rail disappears; horizontal paging disagrees with the selected option; Preview requires a second CTA/route, exposes Back, Share, membership, or host-only HOSTED affordances; or Preview keeps the prior club after switching clubs.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/clubs/clubs_controllers_test.dart test/clubs/club_hero_app_bar_test.dart test/clubs/club_detail_read_only_preview_test.dart",
+        "guardEvidence": "focused suites cover typed native paging, persistent shared chrome, independent/restored vertical offsets, Prefill-to-Edit top position, direct consumer Club Detail composition, read-only route-chrome suppression, consumer schedule visuals, and selected-club hydration"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json"
+      ],
+      "notes": "Profile is the reference adopter for the nested shell and retains its specialized two-way Preview bridge. Host Clubs uses the same shell with typed HostClubTab pages and the canonical consumer Club Detail slivers; route actions, membership docks, and interaction effects remain outside the embedded read-only preview."
+    },
+    {
+      "id": "REG-AGENT-010",
+      "title": "Reconciliation ancestry hides dropped conflict-resolution intent",
+      "status": "active",
+      "applies_to": [
+        "lib/user_profile/presentation/profile_screen.dart",
+        "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+        "test/profile/profile_widgets_test.dart",
+        "design/website/**",
+        "website/**",
+        "tool/marketing/**",
+        "tool/web/website_copy_*.json",
+        "docs/audit_registry/reconciliation_*.json"
+      ],
+      "symptom": "A preserved branch is an ancestor of the reconciliation merge, but manual conflict resolution silently restores raw tab indices, stale route/component owners, or copy baseline debt while Git reports every source commit as merged.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart && npm --prefix website run typecheck",
+        "guardEvidence": "typed consumer and Host tab APIs plus the complete route, component, copy, architecture, and TypeScript contract loop"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/app_architecture.md",
+        "docs/marketing_website_architecture.md"
+      ],
+      "notes": "For future non-trivial merges, audit unique source commits with range-diff and patch identity, inspect remerge conflict resolutions, classify exact/equivalent/partial/missing intent, and retain a reconciliation receipt. Ancestry is necessary but not sufficient proof."
+    },
+    {
+      "id": "REG-SELECTION-CONTROL-001",
+      "title": "Peer mode selectors drift back into parallel pill and underline architectures",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_option_group.dart",
+        "lib/hosts/presentation/host_operations/host_events_list.dart",
+        "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+        "lib/hosts/presentation/host_operations/host_analytics.dart",
+        "lib/hosts/presentation/host_event_manage_screen.dart",
+        "design/components/catch.components.json",
+        "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
+      ],
+      "symptom": "A lifecycle, audience, granularity, or workspace-mode selector recreates a filled segmented pill, imports a second shared selector, or documents a separate conceptual contract instead of using the Organizer-tab CatchOptionGroup.",
+      "guard": {
+        "type": "command",
+        "command": "dart analyze lib/core/widgets/catch_option_group.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/inbox/host_inbox_screen.dart lib/hosts/presentation/host_event_manage_screen.dart && node tool/design/check_component_contracts.mjs",
+        "guardEvidence": "the retired segmented-control library is deleted, all four production adopter surfaces compile against CatchOptionGroup, and the formal component registry exposes one canonical scope/mode selector"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json",
+        "docs/design_parity/widget_consolidation/decisions.json"
+      ],
+      "notes": "The 2026-07-16 user-reviewed decision supersedes the earlier separate-concepts comparison. New selector behavior should extend CatchOptionGroup or escalate a real interaction-contract mismatch instead of restoring CatchSegmentedControl."
+    },
+    {
+      "id": "REG-EVENT-SUCCESS-SETUP-001",
+      "title": "Event Success setup regrows forced-open legacy cards or overwrites concurrent edits",
+      "status": "active",
+      "applies_to": [
+        "lib/event_success/presentation/event_success_setup_body.dart",
+        "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
+        "lib/event_success/presentation/event_success_structure_config_editor.dart",
+        "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
+        "lib/event_success/domain/event_success_defaults.dart",
+        "lib/event_success/domain/event_success_feature_state.dart",
+        "lib/event_success/domain/event_success_models.dart",
+        "lib/event_success/domain/event_success_plan.dart",
+        "lib/event_success/domain/event_success_runtime.dart",
+        "lib/event_success/data/event_success_repository/plan.dart"
+      ],
+      "symptom": "The shared setup form adds feature-local card chrome, forces disclosures open, launches a second questionnaire sheet, flattens every lifecycle stage into one tool list, separates a tool from its dependent configuration, exposes a platform-owned module as a host toggle, drops platform-owned ids from an effective read or new write, rewrites a legacy stored selection during hydration, automatically applies the How people mix projection outside an explicit host edit, filters platform-owned steps out of the runtime run of show, normalizes raw text during typing, or full-overwrites a stale/frozen plan.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/event_success/event_success_setup_body_test.dart test/event_success/event_success_structure_config_editor_test.dart test/event_success/event_success_questionnaire_config_editor_test.dart test/event_success/event_success_playbooks_test.dart test/event_success/event_success_repository_test.dart test/event_success/event_success_runtime_test.dart && ./tool/check_data_contract.sh",
+        "guardEvidence": "setup body uses CatchField choices for live guide choices"
+      },
+      "owner_docs": [
+        "docs/event_success.md",
+        "docs/widget_catalog.md",
+        "docs/backend_operation_catalog.md"
+      ],
+      "notes": "Keep selectable tools grouped by their domain stage and place rotation, reveal, and questionnaire configuration directly beneath the owning row with CatchSection.containedFieldRows. Catalog metadata is the source of truth for platform ownership: qr_check_in, safety_controls, crowd_balance, wingman_requests, contextual_openers, decomposed_feedback, and host_analytics stay hidden from hosts, are unioned into effective reads and all new draft/default/plan writes, and remain absent from untouched legacy JSON until an explicit save. Preserve every legacy selected id in the read projection. The How people mix API derives micro_pods or guided_rotations only when the host explicitly changes the composite control; never run it automatically while hydrating or serializing an existing draft. Runtime step eligibility must treat platform capabilities as enabled without shifting older run-of-show behavior. First Hello remains the sole Event Success arrival ritual."
+    },
+    {
+      "id": "REG-COPY-IDENTIFIER-001",
+      "title": "Runtime identifiers drift into the localization catalog",
+      "status": "active",
+      "applies_to": [
+        "lib/l10n/app_en.arb",
+        "lib/hosts/presentation/host_operations/host_analytics.dart",
+        "lib/routing/go_router.dart",
+        "tool/copy/check_mobile_copy_catalog.mjs",
+        "tool/copy/mobile_copy_identifier_allowlist.json"
+      ],
+      "symptom": "A wire-map key, path/query parameter, route section value, or other lowercase identifier is migrated into ARB and later translation or copy editing silently breaks analytics lookup or navigation.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/copy/check_mobile_copy_catalog_test.mjs && node tool/copy/check_mobile_copy_catalog.mjs --check && flutter test test/hosts/host_analytics_repository_test.dart test/routing/router_redirect_test.dart",
+        "guardEvidence": "the copy scanner rejects identifier-shaped Visiblecopy values outside the narrow allowlist, while trend wire keys and Host route literals stay pinned by focused tests"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "tool/README.md"
+      ],
+      "notes": "Localization owns visible prose only. Runtime identifiers remain typed constants or routing literals at their contract owner; allowlist entries require an exact key and reason."
     }
   ]
 }

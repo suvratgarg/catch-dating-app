@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-11",
+  "updated": "2026-07-17",
   "references": [
     {
       "id": "screen.dashboard.home.full_dashboard",
@@ -851,7 +851,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Host Organizer reference. The 2026-07-10 full-shell capture renders the production HostAppShell and its four-tab navigation; advisory comparison is within threshold at mismatch 12.02%, meanDelta 7.79, maxDelta 240, masked 260416."
+      "notes": "Canonical Claude Host Organizer reference. The 2026-07-17 full-shell capture renders the production HostAppShell and its four-tab navigation; strict advisory comparison is within threshold at mismatch 12.87%, meanDelta 9.39, maxDelta 240, masked 260416."
     },
     {
       "id": "screen.host.event.create.basics_default",
@@ -1310,48 +1310,6 @@
       "notes": "Canonical Host Create Club basics Claude template reference for advisory comparison against create_club_basics light captures rendered on the design-phone device. 2026-06-25 host reference batch: within advisory threshold; mismatch 9.11%, meanDelta 10.55, maxDelta 240, masked 148988."
     },
     {
-      "id": "screen.host.club.edit.prefilled_owner_edit",
-      "screenId": "screen.host.club.edit",
-      "stateId": "prefilled_owner_edit",
-      "captureId": "edit_club_basics",
-      "theme": "light",
-      "textScale": 1,
-      "device": {
-        "id": "claude-phone-390x812",
-        "width": 390,
-        "height": 812,
-        "pixelRatio": 1
-      },
-      "chromePolicy": "full-shell",
-      "referencePath": "design/reference_screens/screen.host.club.edit/prefilled_owner_edit.png",
-      "maskPath": "design/reference_screens/screen.host.club.edit/masks.json",
-      "source": {
-        "kind": "claude",
-        "id": "claude.host-club-edit",
-        "path": "design/source_packs/host-v2/templates/hosts-edit-club/HostEditClub.dc.html",
-        "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "af93223c607361297ed48f7205a4a2ac9d3d88054ed4d3e3cefb1d4a869612b6",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + CDP clip",
-        "viewport": {
-          "width": 900,
-          "height": 920
-        },
-        "crop": {
-          "x": 255,
-          "y": 40,
-          "width": 390,
-          "height": 812
-        }
-      },
-      "thresholds": {
-        "perChannelDelta": 16,
-        "maxMismatchRatio": 0.18,
-        "maxMeanDelta": 18
-      },
-      "notes": "Canonical Host Edit Club prefilled owner edit Claude template reference for advisory comparison against edit_club_basics light captures rendered on the design-phone device. 2026-06-25 host reference batch: above advisory threshold; mismatch 15.31%, meanDelta 19.08, maxDelta 240, masked 174324. 2026-06-25 Host Edit Club pass: owner edit now uses a reference-specific Sunday sea-face fixture, compact logo/photo-strip media variants, grouped CatchField identity/contact rows, and a fixed CatchField floating-label edit layout; advisory comparison is within threshold at mismatch 7.92%, meanDelta 8.64, maxDelta 240, masked 174324."
-    },
-    {
       "id": "screen.host.event.edit.prefilled_event",
       "screenId": "screen.host.event.edit",
       "stateId": "prefilled_event",
@@ -1391,7 +1349,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Host Edit Event prefilled event Claude template reference for advisory comparison against edit_hosted_event light captures rendered on the design-phone device. 2026-06-25 host reference batch: above advisory threshold; mismatch 19.30%, meanDelta 29.59, maxDelta 240, masked 160248. 2026-06-25 Host Edit Event refresh: fresh capture now compares within threshold at mismatch 9.25%, meanDelta 10.93, maxDelta 240, masked 160248; remaining work is state-specific references and adapter ownership, not first-pass owner-edit visual parity."
+      "notes": "Canonical Host Edit Event prefilled event Claude template reference for advisory comparison against edit_hosted_event light captures rendered on the design-phone device. After the 2026-07-16 CatchField/CatchSection migration, a fresh capture computes within thresholds at mismatch 8.84%, meanDelta 11.09, maxDelta 240, masked 160248 using the repository comparator algorithm. The canonical comparison command is currently blocked before diffing by unrelated host-v2 source-pack hash drift for host-coverage-manifest.json."
     },
     {
       "id": "screen.start.welcome.landed_direct",

@@ -30,6 +30,7 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -153,7 +154,7 @@ void main() {
                 const SizedBox(height: 16),
                 EventDetailItinerary(event: event),
                 const SizedBox(height: 16),
-                EventDetailMapCard(event: event),
+                EventDetailMapCard(event: event, enableNetworkTiles: false),
                 const SizedBox(height: 16),
                 SizedBox(height: 320, child: EventPhotoHeader(event: event)),
               ],
@@ -175,7 +176,7 @@ void main() {
         expect(find.text('7:45 AM'), findsOneWidget);
         expect(find.text('Gather at Bandra Fort'), findsOneWidget);
         expect(find.text('Bandra Fort'), findsOneWidget);
-        expect(find.text('PIN DROPS MORNING-OF'), findsOneWidget);
+        expect(find.text('PIN DROPS MORNING-OF'), findsNothing);
         expect(find.text('Wednesday Morning Run'), findsNothing);
         expect(find.text('3/20 spots'), findsNothing);
         expect(find.text('5.5km'), findsNothing);
@@ -206,7 +207,7 @@ void main() {
       expect(find.text('km'), findsNothing);
     });
 
-    testWidgets('location card opens map only when exact coordinates exist', (
+    testWidgets('location card uses the event required exact coordinates', (
       tester,
     ) async {
       var tapped = false;
@@ -222,11 +223,17 @@ void main() {
           body: EventDetailMapCard(
             event: mappedRun,
             onTap: () => tapped = true,
+            enableNetworkTiles: false,
           ),
         ),
       );
 
       expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+      final preview = tester.widget<CatchMapPreview>(
+        find.byType(CatchMapPreview),
+      );
+      expect(preview.coordinate, const LocationCoordinate(22.7196, 75.8577));
+      expect(preview.enableNetworkTiles, isFalse);
 
       await tester.tap(find.text('Race Course Road main gate'));
       await tester.pump();
@@ -234,7 +241,7 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('location card hides map affordance without coordinates', (
+    testWidgets('location card always exposes map for a valid event', (
       tester,
     ) async {
       var tapped = false;
@@ -245,16 +252,17 @@ void main() {
           body: EventDetailMapCard(
             event: buildEvent(meetingPoint: 'Race Course Road main gate'),
             onTap: () => tapped = true,
+            enableNetworkTiles: false,
           ),
         ),
       );
 
-      expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
+      expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
 
       await tester.tap(find.text('Race Course Road main gate'));
       await tester.pump();
 
-      expect(tapped, isFalse);
+      expect(tapped, isTrue);
     });
 
     testWidgets('event location map centers a pinned event and labels it', (
@@ -310,33 +318,6 @@ void main() {
         expect(find.text('Get directions'), findsNothing);
       },
     );
-
-    testWidgets('event location map shows branded empty state without a pin', (
-      tester,
-    ) async {
-      await pumpEventsTestApp(
-        tester,
-        EventLocationMapScreen(
-          state: EventLocationMapState.fromEvent(
-            buildEvent(
-              meetingPoint: 'Secret start line',
-              locationDetails: 'Host will add the exact pin shortly.',
-            ),
-            enableNetworkTiles: false,
-          ),
-          onGetDirections: () {},
-        ),
-      );
-
-      expect(find.text('Location unavailable'), findsOneWidget);
-      expect(
-        find.text(
-          'This event does not have an exact pinned starting point yet.',
-        ),
-        findsOneWidget,
-      );
-      expect(find.text('Get directions'), findsNothing);
-    });
 
     testWidgets('event location map keeps directions as an explicit action', (
       tester,
@@ -418,49 +399,6 @@ void main() {
       );
     });
 
-    testWidgets('event location route owns unavailable coordinate state', (
-      tester,
-    ) async {
-      final event = buildEvent(
-        id: 'missing-coordinate-event',
-        meetingPoint: 'Secret start line',
-        locationDetails: 'Host will add the exact pin shortly.',
-      );
-
-      await pumpEventsTestApp(
-        tester,
-        EventLocationMapRouteScreen(
-          eventId: event.id,
-          enableNetworkTiles: false,
-        ),
-        overrides: [
-          eventDetailViewModelProvider(event.id).overrideWithValue(
-            AsyncData<EventDetailViewModel?>(
-              EventDetailViewModel(
-                event: event,
-                userProfile: null,
-                reviews: const [],
-                isAuthenticated: false,
-                isHost: false,
-                isSaved: false,
-                participation: null,
-              ),
-            ),
-          ),
-        ],
-      );
-
-      expect(find.byTooltip('Back'), findsOneWidget);
-      expect(find.text('Location unavailable'), findsOneWidget);
-      expect(
-        find.text(
-          'This event does not have an exact pinned starting point yet.',
-        ),
-        findsOneWidget,
-      );
-      expect(find.text('Get directions'), findsNothing);
-    });
-
     test('event location state derives map and directions data', () {
       final event = buildEvent(
         meetingPoint: 'Race Course Road main gate',
@@ -487,19 +425,6 @@ void main() {
         state.directionsUri.toString(),
         'https://www.google.com/maps/dir/?api=1&destination=22.7196%2C75.8577&travelmode=walking',
       );
-    });
-
-    test('event location state records missing coordinate separately', () {
-      final state = EventLocationMapState.fromEvent(
-        buildEvent(
-          meetingPoint: 'Secret start line',
-          locationDetails: 'Host will add the exact pin shortly.',
-        ),
-        enableNetworkTiles: false,
-      );
-
-      expect(state.startingPoint, isNull);
-      expect(state.hasExactStartingPoint, isFalse);
     });
 
     testWidgets('requirements row hides itself when there are no constraints', (
@@ -620,9 +545,12 @@ void main() {
 
       expect(find.text('TODAY'), findsOneWidget);
       expect(find.text('CARTER ROAD'), findsOneWidget);
-      expect(find.text(event.title), findsOneWidget);
-      expect(find.text('8:00 AM · Free'), findsOneWidget);
-      expect(find.text('2 going · 18 left'), findsOneWidget);
+      expect(find.text(event.eventFormat.label), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('event_date_rail_card.decision')),
+        findsOneWidget,
+      );
+      expect(find.text('FREE'), findsOneWidget);
       expect(find.text('VIEW'), findsNothing);
       expect(find.text('Next'), findsOneWidget);
       expect(find.text('Schedule event'), findsNothing);
@@ -633,7 +561,7 @@ void main() {
         findsOneWidget,
       );
 
-      await tester.tap(find.text(event.title));
+      await tester.tap(find.text(event.eventFormat.label));
       await tester.tap(find.text('Next'));
       await tester.pump();
 
@@ -732,6 +660,13 @@ void main() {
       await tester.pump();
 
       expect(tappedEventId, 'event-sooner');
+      final tickets = tester
+          .widgetList<EventDateRailCard>(find.byType(EventDateRailCard))
+          .toList(growable: false);
+      expect(tickets.map((ticket) => ticket.stripPosition), [
+        EventDateRailCardStripPosition.first,
+        EventDateRailCardStripPosition.last,
+      ]);
     });
 
     testWidgets('agenda list renders provided club names in global context', (
@@ -761,7 +696,7 @@ void main() {
 
       expect(find.text('GLOBAL SURFACE START'), findsNothing);
       expect(find.text('STRIDE SOCIAL'), findsOneWidget);
-      expect(find.text(event.title), findsOneWidget);
+      expect(find.text(event.eventFormat.label), findsOneWidget);
     });
 
     testWidgets('event action card renders badges, meta, and actions', (

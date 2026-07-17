@@ -37,7 +37,8 @@ class CatchTabBar<T> extends StatelessWidget {
   final T active;
   final ValueChanged<T>? onChanged;
 
-  static bool floatsFor(BuildContext context) => prefersCupertinoControls();
+  static bool floatsFor(BuildContext context) =>
+      prefersCupertinoControls(platform: Theme.of(context).platform);
 
   static double reservedBottomInset(BuildContext context) {
     if (!floatsFor(context)) return 0;
@@ -273,6 +274,15 @@ class CatchTabBarIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final glyph = Icon(icon, size: CatchLayout.tabBarIconSize, color: color);
-    return CatchCountBadge(count: badgeCount, child: glyph);
+    return SizedBox(
+      width: CatchLayout.appShellNavigationBadgeWidth,
+      height: CatchLayout.appShellNavigationBadgeHeight,
+      child: CatchCountBadge(
+        count: badgeCount,
+        alignment: Alignment.topRight,
+        offset: const Offset(-1, 2),
+        child: Align(alignment: Alignment.bottomCenter, child: glyph),
+      ),
+    );
   }
 }

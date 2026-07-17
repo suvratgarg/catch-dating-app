@@ -437,7 +437,11 @@ class LiveNowConsole extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  LiveNowPill(foreground: fg, accent: t.gold),
+                  CatchBadge.live(
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessHostLiveTextLiveNow,
+                  ),
                   gapW8,
                   Expanded(
                     child: Text(
@@ -699,43 +703,6 @@ class LiveCheckInQrCard extends StatelessWidget {
           ),
           gapH12,
           HostCheckInQrPanel(event: event),
-        ],
-      ),
-    );
-  }
-}
-
-/// The "LIVE NOW" status pill of the live console — a gold dot on a dim-fill
-/// pill, per the design-system `LiveConsole` header.
-class LiveNowPill extends StatelessWidget {
-  const LiveNowPill({
-    super.key,
-    required this.foreground,
-    required this.accent,
-  });
-
-  final Color foreground;
-  final Color accent;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      padding: CatchInsets.compactLabelContent,
-      backgroundColor: foreground.withValues(
-        alpha: CatchOpacity.photoScrimMedium,
-      ),
-      borderColor: foreground.withValues(alpha: CatchOpacity.subtleBorder),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CatchStatusDot(color: accent, size: CatchSpacing.micro6),
-          gapW6,
-          Text(
-            context.l10n.eventSuccessEventSuccessHostLiveTextLiveNow
-                .toUpperCase(),
-            style: CatchTextStyles.badge(context, color: foreground),
-          ),
         ],
       ),
     );

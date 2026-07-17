@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "generatedOnly": "Generated only",
+  "@generatedOnly": {"description": "Fixture"},
+  "knownOrphan": "Known orphan",
+  "@knownOrphan": {"description": "Fixture"},
+  "newOrphan": "New orphan",
+  "@newOrphan": {"description": "Fixture"},
+  "stringOnly": "String only",
+  "@stringOnly": {"description": "Fixture"},
+  "usedInInterpolation": "Used in interpolation",
+  "@usedInInterpolation": {"description": "Fixture"},
+  "usedKey": "Used key",
+  "@usedKey": {"description": "Fixture"}
+}

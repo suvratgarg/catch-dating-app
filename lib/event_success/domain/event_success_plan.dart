@@ -87,19 +87,21 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     DateTime? completedAt,
     String? attendeePrompt,
   }) {
+    final selectedModuleIds = draft.playbook.effectiveModuleSelection(
+      draft.selectedModuleIds,
+    );
     return EventSuccessPlan(
       id: id,
       eventId: eventId,
       clubId: clubId,
       playbookId: draft.playbook.id,
-      selectedModuleIds: _stableModuleIds(draft.selectedModuleIds),
+      selectedModuleIds: _stableModuleIds(selectedModuleIds),
       targetAttendeeCount: draft.targetAttendeeCount,
       structureConfig: draft.structureConfig,
-      hostGoal: draft.hostGoal,
-      wingmanRequestsEnabled: draft.wingmanRequestsEnabled,
-      contextualOpenersEnabled: draft.contextualOpenersEnabled,
+      hostGoal: _persistedHostGoal(draft),
+      // Legacy flags intentionally use their hardcoded `true` defaults.
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
-      questionnaireConfig: draft.questionnaireConfig,
+      questionnaireConfig: draft.questionnaireConfig.normalized(),
       activeStepIndex: activeStepIndex,
       status: status,
       attendeePrompt: attendeePrompt,
@@ -113,25 +115,25 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
   EventSuccessPlaybook get playbook =>
       EventSuccessPlaybookLibrary.byIdOrDefault(playbookId);
 
+  Set<String> get effectiveSelectedModuleIds =>
+      playbook.effectiveModuleSelection(selectedModuleIds);
+
   EventSuccessHostDraft get hostDraft => EventSuccessHostDraft(
     playbook: playbook,
-    selectedModuleIds: selectedModuleIds
-        .where(playbook.moduleIds.contains)
-        .toSet(),
+    selectedModuleIds: effectiveSelectedModuleIds,
     targetAttendeeCount: targetAttendeeCount,
     structureConfig: structureConfig,
     hostGoal: hostGoal,
-    wingmanRequestsEnabled: wingmanRequestsEnabled,
-    contextualOpenersEnabled: contextualOpenersEnabled,
     compatibilityAffectsRanking: compatibilityAffectsRanking,
     questionnaireConfig: questionnaireConfig,
   );
 
   List<EventSuccessModule> get selectedModules => playbook.modules
-      .where((module) => selectedModuleIds.contains(module.id))
+      .where((module) => effectiveSelectedModuleIds.contains(module.id))
       .toList(growable: false);
 
-  bool hasModule(String moduleId) => selectedModuleIds.contains(moduleId);
+  bool hasModule(String moduleId) =>
+      effectiveSelectedModuleIds.contains(moduleId);
 
   bool get liveRevealConfigured =>
       hasModule(EventSuccessModuleCatalog.liveReveal.id);
@@ -202,16 +204,19 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     EventSuccessHostDraft draft, {
     required DateTime updatedAt,
   }) {
+    final selectedModuleIds = draft.playbook.effectiveModuleSelection(
+      draft.selectedModuleIds,
+    );
     return copyWith(
       playbookId: draft.playbook.id,
-      selectedModuleIds: _stableModuleIds(draft.selectedModuleIds),
+      selectedModuleIds: _stableModuleIds(selectedModuleIds),
       targetAttendeeCount: draft.targetAttendeeCount,
       structureConfig: draft.structureConfig,
-      hostGoal: draft.hostGoal,
-      wingmanRequestsEnabled: draft.wingmanRequestsEnabled,
-      contextualOpenersEnabled: draft.contextualOpenersEnabled,
+      hostGoal: _persistedHostGoal(draft),
+      wingmanRequestsEnabled: true,
+      contextualOpenersEnabled: true,
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
-      questionnaireConfig: draft.questionnaireConfig,
+      questionnaireConfig: draft.questionnaireConfig.normalized(),
       updatedAt: updatedAt,
     );
   }
@@ -270,6 +275,15 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       ),
     );
   }
+}
+
+String _persistedHostGoal(EventSuccessHostDraft draft) {
+  final normalized = draft.hostGoal.trim();
+  if (normalized.isNotEmpty) return normalized;
+  return EventSuccessHostDraft.fromPlaybook(
+    draft.playbook,
+    targetAttendeeCount: draft.targetAttendeeCount,
+  ).hostGoal;
 }
 
 Set<String> _assignmentParticipantUids(

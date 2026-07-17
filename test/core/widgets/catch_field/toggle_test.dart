@@ -1,0 +1,291 @@
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  testWidgets(
+    'CatchField choice toggle and stepper atoms activate from hardware keys',
+    (tester) async {
+      final previousHighlightStrategy = FocusManager.instance.highlightStrategy;
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(
+        () =>
+            FocusManager.instance.highlightStrategy = previousHighlightStrategy,
+      );
+      var selected = <String>{'English'};
+      var height = 168;
+      var visible = false;
+
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CatchField.choices<String>(
+                  title: 'Languages',
+                  values: const ['English', 'Hindi'],
+                  itemLabel: (value) => value,
+                  selected: selected,
+                  multi: true,
+                  initiallyOpen: true,
+                  onSelectionChanged: (next) => setState(() => selected = next),
+                  onCancel: () {},
+                  onSubmit: () {},
+                ),
+                CatchField.stepper(
+                  title: 'Height',
+                  value: height,
+                  min: 160,
+                  max: 180,
+                  initiallyOpen: true,
+                  decreaseSemanticLabel: 'Decrease height',
+                  increaseSemanticLabel: 'Increase height',
+                  onChanged: (next) => setState(() => height = next.toInt()),
+                  onCancel: () {},
+                  onSubmit: () {},
+                ),
+                CatchField.toggle(
+                  title: 'Show my pace',
+                  value: visible,
+                  onChanged: (next) => setState(() => visible = next),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final chipOutline = find.byKey(
+        const ValueKey('catch-field-choice-Hindi-focus-outline'),
+      );
+      Focus.of(tester.element(chipOutline)).requestFocus();
+      await tester.pump();
+      expect(
+        find.descendant(
+          of: chipOutline,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is CustomPaint &&
+                widget.painter.runtimeType.toString() ==
+                    '_CatchFieldFocusOutlinePainter',
+          ),
+        ),
+        findsOneWidget,
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(selected, {'English', 'Hindi'});
+
+      final stepperOutline = find.byKey(
+        const ValueKey('catch-field-stepper-Increase height-focus-outline'),
+      );
+      Focus.of(tester.element(stepperOutline)).requestFocus();
+      await tester.pump();
+      expect(
+        find.descendant(
+          of: stepperOutline,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is CustomPaint &&
+                widget.painter.runtimeType.toString() ==
+                    '_CatchFieldFocusOutlinePainter',
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester.getSize(stepperOutline),
+        const Size.square(CatchFieldTokens.stepperHitExtent),
+      );
+      expect(
+        tester.getSize(
+          find.byKey(
+            const ValueKey('catch-field-stepper-Increase height-visual'),
+          ),
+        ),
+        const Size.square(CatchFieldTokens.stepperVisualExtent),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(height, 169);
+
+      final toggleFinder = find.byKey(const ValueKey('catch-field-toggle'));
+      final toggleRectBeforeFocus = tester.getRect(toggleFinder);
+      Focus.of(tester.element(toggleFinder)).requestFocus();
+      await tester.pump();
+      final focusDecoration =
+          tester
+                  .widget<DecoratedBox>(
+                    find.byKey(
+                      const ValueKey('catch-field-toggle-focus-outline'),
+                    ),
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect(
+        focusDecoration.border?.top.width,
+        CatchFieldTokens.focusRingWidth,
+      );
+      expect(tester.getRect(toggleFinder), toggleRectBeforeFocus);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(visible, isTrue);
+    },
+  );
+
+  testWidgets('CatchField control blank space does not toggle its row', (
+    tester,
+  ) async {
+    final openChanges = <bool>[];
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchField.control(
+          title: 'Height',
+          initiallyOpen: true,
+          onOpenChanged: openChanges.add,
+          control: const SizedBox(height: 80, child: Text('Height control')),
+          onCancel: () {},
+          onSubmit: () {},
+        ),
+      ),
+    );
+
+    final barrierRect = tester.getRect(
+      find.byKey(const ValueKey('catch-field-control-tap-barrier')),
+    );
+    await tester.tapAt(Offset(barrierRect.left + 4, barrierRect.top + 60));
+    await _pumpCatchFieldMotion(tester);
+
+    expect(openChanges, isEmpty);
+    expect(find.text('Height control'), findsOneWidget);
+  });
+
+  testWidgets('CatchField control keyboard events do not toggle its row', (
+    tester,
+  ) async {
+    final controlFocus = FocusNode();
+    addTearDown(controlFocus.dispose);
+    final openChanges = <bool>[];
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchField.control(
+          title: 'Height',
+          open: true,
+          onOpenChanged: openChanges.add,
+          control: Focus(
+            focusNode: controlFocus,
+            child: const SizedBox(height: 44, child: Text('Height control')),
+          ),
+        ),
+      ),
+    );
+
+    controlFocus.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await _pumpCatchFieldMotion(tester);
+
+    expect(openChanges, isEmpty);
+    expect(find.text('Height control'), findsOneWidget);
+  });
+
+  testWidgets(
+    'CatchField.toggle pins value, callback, disabled semantics, and tone',
+    (tester) async {
+      var value = false;
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CatchField.toggle(
+                  title: 'Show pace',
+                  body: 'Visible on your profile',
+                  value: value,
+                  emphasis: CatchFieldEmphasis.title,
+                  tone: CatchFieldTone.danger,
+                  onChanged: (next) => setState(() => value = next),
+                ),
+                const CatchField.toggle(
+                  title: 'Locked preference',
+                  value: true,
+                  onChanged: null,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      Semantics toggleSemantics(String label) => tester.widget<Semantics>(
+        find
+            .byWidgetPredicate(
+              (widget) =>
+                  widget is Semantics &&
+                  widget.properties.label == label &&
+                  widget.properties.toggled != null,
+            )
+            .first,
+      );
+
+      expect(toggleSemantics('Show pace').properties.toggled, isFalse);
+      await tester.tap(find.text('Show pace'));
+      await tester.pump();
+      expect(value, isTrue);
+      expect(toggleSemantics('Show pace').properties.toggled, isTrue);
+
+      final title = tester.widget<Text>(find.text('Show pace'));
+      expect(title.style?.color, CatchTokens.editorialLight.danger);
+      expect(toggleSemantics('Locked preference').properties.enabled, isFalse);
+    },
+  );
+
+  testWidgets('CatchField.toggle renders helper and badge slots', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchField.toggle(
+          title: 'Live guide',
+          body: 'Enable the run-of-show companion.',
+          helperText: 'You can change this before the event.',
+          badgeLabel: 'Recommended',
+          badgeTone: CatchBadgeTone.success,
+          value: true,
+          onChanged: null,
+        ),
+      ),
+    );
+
+    expect(find.text('You can change this before the event.'), findsOneWidget);
+    final badge = tester.widget<CatchBadge>(
+      find.widgetWithText(CatchBadge, 'Recommended'),
+    );
+    expect(badge.tone, CatchBadgeTone.success);
+  });
+}
+
+Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
+  return MaterialApp(
+    theme: theme ?? AppTheme.light,
+    home: MediaQuery(
+      data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+      child: Scaffold(body: Center(child: child)),
+    ),
+  );
+}
+
+Future<void> _pumpCatchFieldMotion(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(CatchFieldTokens.reveal);
+  await tester.pump();
+}

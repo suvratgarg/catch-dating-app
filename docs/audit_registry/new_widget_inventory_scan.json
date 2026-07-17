@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-15T17:11:14.921Z",
-  "baseRef": "HEAD",
+  "generatedAt": "2026-07-16T23:01:46.412Z",
+  "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
   "current": "working tree",
@@ -10,20 +10,398 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 0,
-    "addedPublicWidgetClasses": 0,
+    "addedWidgetClasses": 5,
+    "addedPublicWidgetClasses": 5,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
-    "movedWidgetClasses": 0,
-    "movedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 0,
+    "movedWidgetClasses": 15,
+    "movedWidgetReturningHelpers": 11,
+    "coveredNewWidgets": 5,
     "unresolved": 0,
-    "widgetsByStatus": {},
+    "widgetsByStatus": {
+      "covered": 5
+    },
     "helpersByStatus": {},
     "issues": {}
   },
-  "movedWidgets": [],
-  "movedWidgetHelpers": [],
-  "addedWidgets": [],
+  "movedWidgets": [
+    {
+      "name": "CatchFieldChoiceControl",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 35,
+      "file": "lib/core/widgets/catch_field_control.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldChoiceControl::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldChoiceChip",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 104,
+      "file": "lib/core/widgets/catch_field_control.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldChoiceChip::StatefulWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldFocusOutline",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 126,
+      "file": "lib/core/widgets/catch_field_control.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldFocusOutline::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldStepper",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 342,
+      "file": "lib/core/widgets/catch_field_control.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldStepper::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldRepeatButton",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 430,
+      "file": "lib/core/widgets/catch_field_control.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldRepeatButton::StatefulWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldContentRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 5,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldContentRow::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 66,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldRow::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldTrailing",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 179,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldTrailing::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldSupportRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 394,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldSupportRow::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldExplicitSaveControl",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 471,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldExplicitSaveControl::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldActionBar",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 511,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldActionBar::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldDisclosureDrawer",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 571,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldDisclosureDrawer::StatelessWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldSpinner",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 667,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldSpinner::StatefulWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldCommitButton",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 709,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldCommitButton::StatefulWidget"
+      ]
+    },
+    {
+      "name": "CatchFieldToggle",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 823,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::CatchFieldToggle::StatelessWidget"
+      ]
+    }
+  ],
+  "movedWidgetHelpers": [
+    {
+      "name": "_buildTextEntryField",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 4,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_edit.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildTextEntryField"
+      ]
+    },
+    {
+      "name": "_buildTextEntryInput",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 162,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_edit.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildTextEntryInput"
+      ]
+    },
+    {
+      "name": "_buildTextEntryMotion",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 323,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_edit.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildTextEntryMotion"
+      ]
+    },
+    {
+      "name": "_buildSelectField",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 336,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_edit.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildSelectField"
+      ]
+    },
+    {
+      "name": "_buildSelectTrigger",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 378,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_edit.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildSelectTrigger"
+      ]
+    },
+    {
+      "name": "_buildFieldChrome",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 500,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_edit.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildFieldChrome"
+      ]
+    },
+    {
+      "name": "_buildAdd",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 4,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_row_modes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildAdd"
+      ]
+    },
+    {
+      "name": "_buildRow",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 23,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_row_modes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildRow"
+      ]
+    },
+    {
+      "name": "_buildBody",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 500,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_row_modes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildBody"
+      ]
+    },
+    {
+      "name": "_buildTextEntryBody",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 600,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_row_modes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildTextEntryBody"
+      ]
+    },
+    {
+      "name": "_buildFieldContent",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 610,
+      "scope": "top-level",
+      "file": "lib/core/widgets/catch_field_row_modes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
+      "previousKeys": [
+        "lib/core/widgets/catch_field.dart::_CatchFieldState::_buildFieldContent"
+      ]
+    }
+  ],
+  "addedWidgets": [
+    {
+      "name": "CatchFormRowList",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 283,
+      "file": "lib/core/forms/catch_form_descriptors.dart",
+      "library": "lib/core/forms/catch_form_descriptors.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "CatchFormTextRowEditor",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 411,
+      "file": "lib/core/forms/catch_form_descriptors.dart",
+      "library": "lib/core/forms/catch_form_descriptors.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "CatchFormSingleChoiceRowEditor",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 574,
+      "file": "lib/core/forms/catch_form_descriptors.dart",
+      "library": "lib/core/forms/catch_form_descriptors.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "CatchFormMultiChoiceRowEditor",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 698,
+      "file": "lib/core/forms/catch_form_descriptors.dart",
+      "library": "lib/core/forms/catch_form_descriptors.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "CatchFormRangeRowEditor",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 825,
+      "file": "lib/core/forms/catch_form_descriptors.dart",
+      "library": "lib/core/forms/catch_form_descriptors.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    }
+  ],
   "addedWidgetHelpers": []
 }

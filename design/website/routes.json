@@ -1,6 +1,6 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 5,
+  "version": 6,
   "updated": "2026-07-12",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -49,37 +49,15 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Public host acquisition page.",
+      "notes": "Canonical public host acquisition page. Legacy /host/preview and nested paths redirect permanently to /host/.",
       "review": {
         "priority": "p0",
         "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "host-application", "capture-placeholders"],
+        "states": ["default", "founding-host-offer", "host-application", "capture-placeholders"],
         "stateCoverage": {
           "storybook": ["default"],
-          "manual": ["host-application", "capture-placeholders"]
-        }
-      }
-    },
-    {
-      "id": "host_preview",
-      "kind": "clientDynamic",
-      "path": "/host/preview/",
-      "pageKey": "host",
-      "source": "website/src/features/host/HostPreviewPage.tsx",
-      "metaKey": "host",
-      "staticOutput": "spa-rewrite",
-      "indexing": "index",
-      "sitemap": "excluded",
-      "notes": "Client-only founding-host preview under the host page shell; not emitted as separate static HTML yet.",
-      "review": {
-        "priority": "p1",
-        "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["default", "founding-host-offer", "create-flow"],
-        "stateCoverage": {
-          "storybook": ["default"],
-          "manual": ["founding-host-offer", "create-flow"]
+          "manual": ["founding-host-offer", "host-application", "capture-placeholders"]
         }
       }
     },
@@ -215,6 +193,20 @@
           "manual": ["legacy-noindex", "canonical-preserved"]
         }
       }
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/host/preview",
+      "destination": "/host/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/preview/**",
+      "destination": "/host/",
+      "status": 301,
+      "preserveQuery": true
     }
   ]
 }

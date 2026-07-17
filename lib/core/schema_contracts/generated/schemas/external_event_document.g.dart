@@ -163,34 +163,20 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
           'maxLength': 256,
         },
         'latitude': <String, Object?>{
-          'anyOf': <Object?>[
-            <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
-              'minimum': -90,
-              'maximum': 90,
-            },
-            <String, Object?>{
-              'type': 'null',
-            },
+          'type': <Object?>[
+            'number',
+            'null',
           ],
+          'minimum': -90,
+          'maximum': 90,
         },
         'longitude': <String, Object?>{
-          'anyOf': <Object?>[
-            <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
-              'minimum': -180,
-              'maximum': 180,
-            },
-            <String, Object?>{
-              'type': 'null',
-            },
+          'type': <Object?>[
+            'number',
+            'null',
           ],
+          'minimum': -180,
+          'maximum': 180,
         },
         'notes': <String, Object?>{
           'type': <Object?>[

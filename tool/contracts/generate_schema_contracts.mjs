@@ -288,6 +288,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/rateLimitDocument.ts",
   },
   {
+    name: "HostAnalyticsSnapshotDocument",
+    source: "firestore/host_analytics_snapshots.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/hostAnalyticsSnapshotDocument.ts",
+  },
+  {
     name: "FunctionEventReceiptDocument",
     source: "firestore/function_event_receipts.schema.json",
     typeOutput:
@@ -1065,7 +1071,7 @@ const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
 const FIRESTORE_ADMIN_FIELD_OVERRIDES = new Map([
   ["ClubDocument.hostProfiles", "ClubHostProfile[]"],
   ["ClubDocument.hostDefaults", "ClubHostDefaults"],
-  ["EventDocument.meetingLocation", "EventMeetingLocation | null"],
+  ["EventDocument.meetingLocation", "EventMeetingLocation"],
   ["EventDocument.eventFormat", "EventFormatSnapshot"],
   ["EventDocument.constraints", "EventConstraints"],
   ["EventDocument.eventPolicy", "EventPolicyBundleDocument | null"],
@@ -1105,8 +1111,6 @@ const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
   [
     "EventDocument",
     [
-      "startingPointLat",
-      "startingPointLng",
       "locationDetails",
       "bookedCount",
       "checkedInCount",
@@ -1410,7 +1414,16 @@ async function renderTsFirestoreAdminTypes({schemaSpecs, profilePhotoPolicy}) {
     ));
   }
 
-  return `${tsGeneratedHeader()}` +
+  const sectionSource = sections.join("\n\n");
+  const externalImports = schemaSpecs
+    .filter((spec) => !allAdminTypeNames.includes(spec.name))
+    .filter((spec) => new RegExp(`\\b${spec.name}\\b`).test(sectionSource))
+    .map((spec) => `import {${spec.name}} from "${typeImportPath(spec)}";`)
+    .join("\n");
+  const importBlock = externalImports.length === 0 ?
+    "" : `${externalImports}\n\n`;
+
+  return `${tsGeneratedHeader()}${importBlock}` +
 `/**
  * Schema-derived Admin SDK Firestore document types.
  *
@@ -1424,7 +1437,7 @@ async function renderTsFirestoreAdminTypes({schemaSpecs, profilePhotoPolicy}) {
 // FirebaseFirestore.Timestamp is available globally through firebase-admin's
 // @google-cloud/firestore dependency.
 
-${sections.join("\n\n")}\n`;
+${sectionSource}\n`;
 }
 
 async function compileFirestoreAdminType(schema, name, allAdminTypeNames) {

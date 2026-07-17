@@ -41,14 +41,13 @@ class ClubContactSection extends StatelessWidget {
           for (final action in actions)
             Padding(
               padding: CatchInsets.detailInlineRowBottomGap,
-              child: CatchField.nav(
+              child: CatchField.action(
                 icon: _contactActionIcon(action.kind),
                 iconColor: t.ink,
                 title: action.label,
                 onTap: onContactSelected != null
                     ? () => unawaited(onContactSelected!(action))
                     : null,
-                showChevron: false,
                 action: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
               ),
             ),

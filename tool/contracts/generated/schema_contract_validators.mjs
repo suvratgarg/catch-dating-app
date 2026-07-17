@@ -54,6 +54,7 @@ import {
   moderationFlagDocumentSchema,
   deletedUserTombstoneDocumentSchema,
   rateLimitDocumentSchema,
+  hostAnalyticsSnapshotDocumentSchema,
   functionEventReceiptDocumentSchema,
   publicRouteReservationDocumentSchema,
   seedEventManifestDocumentSchema,
@@ -233,6 +234,7 @@ export const validateReportDocument = ajv.compile(reportDocumentSchema);
 export const validateModerationFlagDocument = ajv.compile(moderationFlagDocumentSchema);
 export const validateDeletedUserTombstoneDocument = ajv.compile(deletedUserTombstoneDocumentSchema);
 export const validateRateLimitDocument = ajv.compile(rateLimitDocumentSchema);
+export const validateHostAnalyticsSnapshotDocument = ajv.compile(hostAnalyticsSnapshotDocumentSchema);
 export const validateFunctionEventReceiptDocument = ajv.compile(functionEventReceiptDocumentSchema);
 export const validatePublicRouteReservationDocument = ajv.compile(publicRouteReservationDocumentSchema);
 export const validateSeedEventManifestDocument = ajv.compile(seedEventManifestDocumentSchema);

@@ -272,6 +272,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaRateLimitDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'HostAnalyticsSnapshotDocument',
+    source: 'firestore/host_analytics_snapshots.schema.json',
+    schema: schemaHostAnalyticsSnapshotDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'FunctionEventReceiptDocument',
     source: 'firestore/function_event_receipts.schema.json',
     schema: schemaFunctionEventReceiptDocumentSchema,
@@ -845,6 +850,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ModerationFlagDocument': schemaModerationFlagDocumentSchema,
   'DeletedUserTombstoneDocument': schemaDeletedUserTombstoneDocumentSchema,
   'RateLimitDocument': schemaRateLimitDocumentSchema,
+  'HostAnalyticsSnapshotDocument': schemaHostAnalyticsSnapshotDocumentSchema,
   'FunctionEventReceiptDocument': schemaFunctionEventReceiptDocumentSchema,
   'PublicRouteReservationDocument': schemaPublicRouteReservationDocumentSchema,
   'SeedEventManifestDocument': schemaSeedEventManifestDocumentSchema,
@@ -1003,6 +1009,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/moderation_flags.schema.json': schemaModerationFlagDocumentSchema,
   'firestore/deleted_users.schema.json': schemaDeletedUserTombstoneDocumentSchema,
   'firestore/rate_limits.schema.json': schemaRateLimitDocumentSchema,
+  'firestore/host_analytics_snapshots.schema.json': schemaHostAnalyticsSnapshotDocumentSchema,
   'firestore/function_event_receipts.schema.json': schemaFunctionEventReceiptDocumentSchema,
   'firestore/public_route_reservations.schema.json': schemaPublicRouteReservationDocumentSchema,
   'firestore/seed_events.schema.json': schemaSeedEventManifestDocumentSchema,

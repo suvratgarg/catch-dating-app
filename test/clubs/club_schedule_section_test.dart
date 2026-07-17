@@ -42,7 +42,11 @@ void main() {
         EventDateRailCardStripPosition.last,
       ]);
 
-      await tester.tap(find.text('6:00 AM · Free'));
+      final morningCard = find.byWidgetPredicate(
+        (widget) => widget is EventDateRailCard && widget.event.id == 'morning',
+        description: 'morning event date rail card',
+      );
+      await tester.tap(morningCard);
       await tester.pump();
 
       expect(selected, same(events.first));
@@ -66,7 +70,10 @@ void main() {
           .widgetList<EventDateRailCard>(find.byType(EventDateRailCard))
           .toList(growable: false);
       expect(cards.map((card) => card.statusLabel), ['HOSTED', 'HOSTED']);
-      expect(find.text('HOSTED'), findsNWidgets(2));
+      expect(
+        find.textContaining('HOSTED', findRichText: true),
+        findsNWidgets(2),
+      );
     });
 
     testWidgets('preserves the inline empty state', (tester) async {

@@ -114,8 +114,14 @@ enum Routes {
   hostHomeScreen('/host', AppRouteAudience.host),
   hostEventsScreen('/host/events', AppRouteAudience.host),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
-  hostInsightsScreen('/host/organizer/:clubId/insights', AppRouteAudience.host),
   hostClubsScreen('/host/clubs', AppRouteAudience.host),
+  hostClubEventDefaultsScreen(
+    '/host/clubs/event-defaults',
+    AppRouteAudience.host,
+  ),
+  hostClubLiveGuideScreen('/host/clubs/live-guide', AppRouteAudience.host),
+  hostClubTeamScreen('/host/clubs/team', AppRouteAudience.host),
+  hostClubPaymentsScreen('/host/clubs/payments', AppRouteAudience.host),
   hostClubDetailScreen('/host/clubs/:clubId', AppRouteAudience.host),
   hostCreateClubScreen('/host/clubs/create-club', AppRouteAudience.host),
   hostEditClubScreen('/host/clubs/:clubId/edit', AppRouteAudience.host),
@@ -181,6 +187,18 @@ HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
   };
 }
 
+@visibleForTesting
+HostClubsScreen hostOrganizerScreenForUri(Uri uri) {
+  return HostClubsScreen(
+    initialClubId: uri.queryParameters['clubId'],
+    initialExpandedEditField: uri.queryParameters['editField'],
+    initialTab: HostClubTab.values.firstWhere(
+      (tab) => tab.name == uri.queryParameters['tab'],
+      orElse: () => HostClubTab.edit,
+    ),
+  );
+}
+
 Event? _eventDetailInitialEvent(GoRouterState state) {
   return switch (state.extra) {
     EventDetailRouteExtra(:final initialEvent) => initialEvent,
@@ -243,9 +261,22 @@ Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
     key: state.pageKey,
     name: state.name,
     child: _clubDetailScreen(state),
-    transitionDuration: CatchMotion.slow,
+    transitionDuration: CatchMotion.calendarScroll,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: catchFadeScalePageTransition,
+  );
+}
+
+Page<void> _exploreMapPage(BuildContext _, GoRouterState state) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    name: state.name,
+    child: const ExploreMapScreen(),
+    transitionDuration: CatchMotion.slow,
+    reverseTransitionDuration: CatchMotion.base,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return CatchMapRevealTransition(animation: animation, child: child);
+    },
   );
 }
 
@@ -533,7 +564,7 @@ GoRouter goRouter(Ref ref) {
                       path: 'map',
                       name: Routes.exploreMapScreen.name,
                       parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => const ExploreMapScreen(),
+                      pageBuilder: _exploreMapPage,
                     ),
                     GoRoute(
                       path: ':clubId',
@@ -647,18 +678,41 @@ class _RouteLoadingScreen extends StatelessWidget {
 List<RouteBase> _hostUtilityRoutes() {
   return [
     GoRoute(
-      path: Routes.hostInsightsScreen.path,
-      name: Routes.hostInsightsScreen.name,
+      path: '/host/organizer/:clubId/insights',
+      redirect: (context, state) =>
+          hostInsightsLegacyRedirect(state.pathParameters['clubId']!),
+    ),
+    GoRoute(
+      path: Routes.hostClubEventDefaultsScreen.path,
+      name: Routes.hostClubEventDefaultsScreen.name,
+      builder: (context, state) => HostClubEventDefaultsScreen(
+        clubId: state.uri.queryParameters['clubId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostClubLiveGuideScreen.path,
+      name: Routes.hostClubLiveGuideScreen.name,
+      builder: (context, state) => HostClubLiveGuideScreen(
+        clubId: state.uri.queryParameters['clubId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostClubTeamScreen.path,
+      name: Routes.hostClubTeamScreen.name,
       builder: (context, state) =>
-          HostInsightsScreen(clubId: state.pathParameters['clubId']!),
+          HostClubTeamScreen(clubId: state.uri.queryParameters['clubId'] ?? ''),
+    ),
+    GoRoute(
+      path: Routes.hostClubPaymentsScreen.path,
+      name: Routes.hostClubPaymentsScreen.name,
+      builder: (context, state) => HostClubPaymentsScreen(
+        clubId: state.uri.queryParameters['clubId'] ?? '',
+      ),
     ),
     GoRoute(
       path: Routes.hostClubsScreen.path,
       name: Routes.hostClubsScreen.name,
-      redirect: (context, state) =>
-          state.matchedLocation == Routes.hostClubsScreen.path
-          ? Routes.hostOrganizerScreen.path
-          : null,
+      redirect: (context, state) => hostClubsLegacyRedirect(state.uri),
       routes: [
         GoRoute(
           path: 'create-club',
@@ -674,13 +728,8 @@ List<RouteBase> _hostUtilityRoutes() {
             GoRoute(
               path: 'edit',
               name: Routes.hostEditClubScreen.name,
-              builder: (context, state) => HostEditClubRouteScreen(
-                clubId: state.pathParameters['clubId']!,
-                initialClub: switch (state.extra) {
-                  final Club club => club,
-                  _ => null,
-                },
-              ),
+              redirect: (context, state) =>
+                  hostEditClubLegacyRedirect(state.pathParameters['clubId']!),
             ),
             GoRoute(
               path: 'create-event',
@@ -780,6 +829,30 @@ List<RouteBase> _hostUtilityRoutes() {
   ];
 }
 
+@visibleForTesting
+String? hostClubsLegacyRedirect(Uri uri) {
+  return uri.path == Routes.hostClubsScreen.path
+      ? Uri(
+          path: Routes.hostOrganizerScreen.path,
+          queryParameters: uri.queryParameters.isEmpty
+              ? null
+              : uri.queryParameters,
+        ).toString()
+      : null;
+}
+
+@visibleForTesting
+String hostInsightsLegacyRedirect(String clubId) => Uri(
+  path: Routes.hostClubsScreen.path,
+  queryParameters: {'clubId': clubId, 'tab': HostClubTab.insights.name},
+).toString();
+
+@visibleForTesting
+String hostEditClubLegacyRedirect(String clubId) => Uri(
+  path: Routes.hostOrganizerScreen.path,
+  queryParameters: {'clubId': clubId, 'tab': HostClubTab.edit.name},
+).toString();
+
 StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
   return StatefulShellRoute.indexedStack(
     builder: (context, state, navigationShell) =>
@@ -851,7 +924,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
           GoRoute(
             path: Routes.hostOrganizerScreen.path,
             name: Routes.hostOrganizerScreen.name,
-            builder: (context, state) => const HostClubsScreen(),
+            builder: (context, state) => hostOrganizerScreenForUri(state.uri),
           ),
         ],
       ),

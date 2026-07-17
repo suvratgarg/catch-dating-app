@@ -146,11 +146,15 @@ PhotoPromptAnswer? _normalizeEmbeddedPhotoPrompt(
   int position,
 ) {
   if (prompt == null) return null;
-  final definition = photoPromptDefinition(prompt.promptId.trim());
+  final promptId = prompt.promptId.trim();
+  final storedPrompt = prompt.prompt.trim();
   return PhotoPromptAnswer(
     photoIndex: position,
-    promptId: definition.id,
-    prompt: definition.title,
+    promptId: promptId,
+    prompt: photoPromptTitle(
+      promptId,
+      fallback: storedPrompt.isEmpty ? null : storedPrompt,
+    ),
     caption: normalizePhotoPromptCaption(prompt.caption),
   );
 }

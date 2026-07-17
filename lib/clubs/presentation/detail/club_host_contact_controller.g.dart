@@ -42,7 +42,7 @@ final class ClubHostContactControllerProvider
 }
 
 String _$clubHostContactControllerHash() =>
-    r'7055d9c7253851031a915f40e42dd1d030f845ac';
+    r'601b6a83411314db341cc06d2bdede621db65380';
 
 abstract class _$ClubHostContactController extends $Notifier<void> {
   void build();

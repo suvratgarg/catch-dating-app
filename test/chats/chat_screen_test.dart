@@ -14,6 +14,7 @@ import 'package:catch_dating_app/chats/presentation/chat_scroll_coordinator.dart
 import 'package:catch_dating_app/chats/presentation/chat_thread_action_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/external_share.dart';
@@ -1391,6 +1392,7 @@ void main() {
       await pumpFeatureUi(tester);
 
       await tester.enterText(find.byType(TextField), '  Hello Taylor  ');
+      await tester.pump();
       await tester.tap(find.byIcon(CatchIcons.sendRounded));
       await pumpFeatureUi(tester);
 
@@ -1405,7 +1407,7 @@ void main() {
     });
 
     testWidgets(
-      'disables composer while sending and retains draft on failure',
+      'keeps composer usable while sending and retains a newer draft on failure',
       (tester) async {
         final sendCompleter = Completer<void>();
         final conversationRepository = FakeConversationRepository(
@@ -1422,6 +1424,7 @@ void main() {
         );
 
         await tester.enterText(find.byType(TextField), '  Still here  ');
+        await tester.pump();
         await tester.tap(find.byIcon(CatchIcons.sendRounded));
         await tester.pump();
 
@@ -1430,10 +1433,14 @@ void main() {
         expect(find.byType(CatchLoadingIndicator), findsOneWidget);
         expect(
           tester.widget<TextField>(find.byType(TextField)).enabled,
-          isFalse,
+          isTrue,
         );
+        expect(find.byTooltip('Send an image'), findsOneWidget);
 
-        await tester.tap(find.byTooltip('Send message'));
+        await tester.enterText(find.byType(TextField), 'Next thought');
+        await tester.pump();
+
+        await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
         await tester.pump();
 
         expect(conversationRepository.sendCalls, hasLength(1));
@@ -1443,7 +1450,7 @@ void main() {
 
         expect(
           tester.widget<TextField>(find.byType(TextField)).controller?.text,
-          '  Still here  ',
+          'Next thought',
         );
         expect(
           tester.widget<TextField>(find.byType(TextField)).enabled,

@@ -36,8 +36,8 @@ Event buildEvent({
   DateTime? endTime,
   String meetingPoint = 'Carter Road',
   EventMeetingLocation? meetingLocation,
-  double? startingPointLat,
-  double? startingPointLng,
+  double startingPointLat = 19.0608,
+  double startingPointLng = 72.8365,
   String? locationDetails,
   String? photoUrl,
   EventFormatSnapshot eventFormat = const EventFormatSnapshot.socialRun(),
@@ -58,23 +58,24 @@ Event buildEvent({
   Map<String, int> waitlistedCohortCounts = const {},
 }) {
   final start = startTime ?? DateTime.now().add(const Duration(hours: 2));
+  final resolvedLocation =
+      meetingLocation?.normalized() ??
+      EventMeetingLocation(
+        name: meetingPoint,
+        latitude: startingPointLat,
+        longitude: startingPointLng,
+        notes: locationDetails,
+      );
   return Event(
     id: id,
     clubId: clubId,
     startTime: start,
     endTime: endTime ?? start.add(const Duration(hours: 1)),
-    meetingPoint: meetingPoint,
-    meetingLocation:
-        meetingLocation ??
-        EventMeetingLocation.legacy(
-          name: meetingPoint,
-          latitude: startingPointLat,
-          longitude: startingPointLng,
-          notes: locationDetails,
-        ),
-    startingPointLat: startingPointLat,
-    startingPointLng: startingPointLng,
-    locationDetails: locationDetails,
+    meetingPoint: resolvedLocation.name,
+    meetingLocation: resolvedLocation,
+    startingPointLat: resolvedLocation.latitude,
+    startingPointLng: resolvedLocation.longitude,
+    locationDetails: resolvedLocation.notes,
     photoUrl: photoUrl,
     eventFormat: eventFormat,
     distanceKm: distanceKm,

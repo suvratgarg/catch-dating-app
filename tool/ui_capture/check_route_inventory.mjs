@@ -2,25 +2,33 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const routerPath = fromRepo("lib/routing/go_router.dart");
 const inventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
+const isCliEntrypoint =
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
-if (command === "--help" || command === "-h" || command === "help") {
-  printHelp();
-} else if (command === "--update" || command === "update") {
-  updateInventory();
-} else if (command === "--check" || command === "check") {
-  checkInventory();
-} else if (command === "--list" || command === "list") {
-  listInventory();
-} else {
-  console.error(`Unknown command: ${command}`);
-  printHelp();
-  process.exit(64);
+if (isCliEntrypoint) runCli();
+
+function runCli() {
+  if (command === "--help" || command === "-h" || command === "help") {
+    printHelp();
+  } else if (command === "--update" || command === "update") {
+    updateInventory();
+  } else if (command === "--check" || command === "check") {
+    checkInventory();
+  } else if (command === "--list" || command === "list") {
+    listInventory();
+  } else {
+    console.error(`Unknown command: ${command}`);
+    printHelp();
+    process.exit(64);
+  }
 }
 
 function updateInventory() {
@@ -279,7 +287,30 @@ function extractRuntimeRouteEntries(routeGraphText, enumRoutes) {
       block.body,
       "name"
     );
-    const id = parseRouteNameExpression(nameExpression);
+    const redirectExpression = extractTopLevelNamedArgumentExpression(
+      block.body,
+      "redirect"
+    );
+    const builderExpression = extractTopLevelNamedArgumentExpression(
+      block.body,
+      "builder"
+    );
+    const pageBuilderExpression = extractTopLevelNamedArgumentExpression(
+      block.body,
+      "pageBuilder"
+    );
+    const id = normalizeExpression(nameExpression)
+      ? parseRouteNameExpression(nameExpression)
+      : null;
+    if (id === null && !isUnnamedRedirectOnly({
+      redirectExpression,
+      builderExpression,
+      pageBuilderExpression,
+    })) {
+      throw new Error(
+        "An unnamed GoRoute is allowed only as a redirect-only legacy path."
+      );
+    }
     const path = parseRoutePathExpression(pathExpression, enumRoutesById);
     return {
       ...block,
@@ -298,14 +329,26 @@ function extractRuntimeRouteEntries(routeGraphText, enumRoutes) {
     node.runtimePath = composeRuntimePath(parent?.runtimePath ?? null, node.path);
   }
 
-  return nodes.map((node) => ({
-    id: node.id,
-    path: node.path,
-    runtimePath: node.runtimePath,
-    parentId: node.parentId,
-    pathExpression: node.pathExpression,
-    nameExpression: node.nameExpression,
-  }));
+  return nodes
+    .filter((node) => node.id !== null)
+    .map((node) => ({
+      id: node.id,
+      path: node.path,
+      runtimePath: node.runtimePath,
+      parentId: node.parentId,
+      pathExpression: node.pathExpression,
+      nameExpression: node.nameExpression,
+    }));
+}
+
+export function isUnnamedRedirectOnly({
+  redirectExpression,
+  builderExpression,
+  pageBuilderExpression,
+}) {
+  return Boolean(normalizeExpression(redirectExpression)) &&
+    !normalizeExpression(builderExpression) &&
+    !normalizeExpression(pageBuilderExpression);
 }
 
 function extractCallBlocks(source, functionName) {

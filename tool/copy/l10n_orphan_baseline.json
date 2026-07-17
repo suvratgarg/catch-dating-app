@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "generatedBy": "node tool/copy/check_l10n_key_usage.mjs --write-baseline",
+  "checkCommand": "node tool/copy/check_l10n_key_usage.mjs --check --check-inventory",
+  "refreshCommand": "node tool/copy/check_l10n_key_usage.mjs --write-baseline",
+  "description": "Existing orphaned Flutter ARB keys. Normal checks fail only when a newly orphaned key is not listed here; this list may only shrink.",
+  "allowedOrphanedKeys": []
+}

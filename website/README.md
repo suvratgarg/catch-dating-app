@@ -9,8 +9,8 @@ pull requests and deploys the production Firebase Hosting `marketing` target
 after matching changes land on `main`.
 
 The validation job checks generated design-token CSS, app-derived marketing
-media, screenshot design-context drift, route-contract drift, and the Vite
-production build.
+media, screenshot design-context drift, route-contract drift, unit/a11y tests,
+registry-backed Storybook visual baselines, and the Vite production build.
 
 The marketing target serves generated static routes and keeps only the
 explicit `/host/**`, `/claim/**`, and API rewrites. It deliberately has no
@@ -18,6 +18,8 @@ catch-all rewrite, allowing the generated `dist/404.html` to retain Firebase's
 HTTP 404 status. The route checker enforces that configuration and the deploy
 workflow probes a unique unknown production URL after deployment. The local
 Hosting emulator uses port 5050 because macOS commonly reserves port 5000.
+The retired `/host/preview{,/**}` family is a contract-backed permanent Hosting
+redirect to `/host/`; there is no client route or duplicate page owner.
 
 Organizer listing pages include a Firebase-backed claim form. Production builds
 must set the Firebase web config and `VITE_WEBSITE_APPCHECK_SITE_KEY` from
@@ -76,16 +78,20 @@ contract check before TypeScript.
 
 ## Content Contracts
 
-Static marketing-authored content lives under `src/content/`. Metadata is the
-first migrated owner: `src/content/meta.json` is validated against
+Static marketing-authored content lives under `src/content/`. The copy scanner
+has an empty migration baseline and blocks new authored strings outside this
+directory. `src/content/generated.ts` is the mechanically centralized legacy
+projection from the completed migration; new edits belong in page-owned files
+such as `host.ts`, `site.ts`, and `marketing.ts`, not new generated keys.
+`src/content/meta.json` is validated against
 `src/content/meta.schema.json` through the shared browser-safe
 `src/content/metaContract.ts`; both the client metadata adapter and static
 postbuild execute that validator, and tests assert parity with the JSON Schema
 over valid and invalid fixtures. `src/content/markets/in.ts` owns India-specific
 cities, currency, geo labels, and comparison columns; features read it through
 `src/content/markets/index.ts`. Keep route-specific page copy in direct
-page-specific modules as it moves; do not add a global content barrel that
-would pull unrelated copy into lazy route chunks.
+page-specific modules; do not add a new global content barrel that would pull
+unrelated copy into lazy route chunks.
 `src/content/interpolate.ts` is the sole template formatter and rejects both
 missing and extra values at runtime while literal templates infer exact keys at
 compile time. The copy ratchet scans production TypeScript and TSX, including

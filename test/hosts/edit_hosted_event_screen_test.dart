@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -459,7 +460,25 @@ void main() {
 
     expect(find.text('Edit event'), findsOneWidget);
     _expectBuiltText('Published event');
-    _expectBuiltText('Schedule');
+    expect(find.byType(CatchSection, skipOffstage: false), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchField &&
+            widget.key == CreateEventFormKeys.datePicker &&
+            widget.mode == CatchFieldMode.nav,
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchField &&
+            widget.key == CreateEventFormKeys.timePicker &&
+            widget.mode == CatchFieldMode.nav,
+      ),
+      findsOneWidget,
+    );
     expect(
       find.text(
         'You can edit schedule, location, event details, capacity, pricing, admission policy, and invite setup until the first booking or waitlist join.',
@@ -467,7 +486,6 @@ void main() {
       ),
       findsOneWidget,
     );
-    await _expectVisibleText(tester, 'Where');
     expect(find.text('Save changes'), findsOneWidget);
 
     await _enterText(tester, CreateEventFormKeys.meetingPoint, 'New gate');
@@ -475,13 +493,31 @@ void main() {
       tester,
       find.byKey(CreateEventFormKeys.distance, skipOffstage: false),
     );
-    expect(find.byType(CatchSelectChip, skipOffstage: false), findsWidgets);
+    expect(
+      find.byType(CatchFieldChoiceChip, skipOffstage: false),
+      findsWidgets,
+    );
     expect(
       find.byWidgetPredicate(
         (widget) => widget is CatchField && widget.title == 'Cohort caps',
       ),
       findsOneWidget,
     );
+
+    final fastPace = find.byWidgetPredicate(
+      (widget) =>
+          widget is CatchFieldChoiceChip &&
+          widget.label == PaceLevel.fast.label,
+    );
+    await _scrollToFinder(tester, fastPace);
+    await tester.tap(fastPace);
+    await tester.pump();
+
+    final durationStepper = tester.widget<CatchFieldStepper>(
+      find.byType(CatchFieldStepper),
+    );
+    durationStepper.onChanged?.call(75);
+    await tester.pump();
 
     await _enterText(tester, CreateEventFormKeys.distance, '7.5');
     await _enterText(
@@ -497,7 +533,12 @@ void main() {
     expect(repository.updatedEvent!.id, 'hosted-event');
     expect(repository.updatedEvent!.meetingPoint, 'New gate');
     expect(repository.updatedEvent!.distanceKm, 7.5);
+    expect(repository.updatedEvent!.pace, PaceLevel.fast);
     expect(repository.updatedEvent!.description, 'Updated route notes');
+    expect(
+      repository.updatedEvent!.endTime,
+      repository.updatedEvent!.startTime.add(const Duration(minutes: 75)),
+    );
     expect(repository.updatedEvent!.startingPointLat, 19.076);
     expect(repository.updatedEvent!.startingPointLng, 72.8777);
   });
@@ -539,12 +580,69 @@ void main() {
       find.byKey(CreateEventFormKeys.datePicker, skipOffstage: false),
       findsNothing,
     );
+    expect(
+      find.byType(ReadOnlyHostedEventScheduleCard, skipOffstage: false),
+      findsOneWidget,
+    );
+    expect(
+      find.byType(ReadOnlyHostedEventPolicyCard, skipOffstage: false),
+      findsOneWidget,
+    );
     await _expectVisibleText(tester, event.timeRangeLabel);
     await _scrollToFinder(
       tester,
       find.byKey(CreateEventFormKeys.meetingPoint, skipOffstage: false),
     );
     expect(find.byKey(CreateEventFormKeys.meetingPoint), findsOneWidget);
+  });
+
+  testWidgets('disables canonical edit fields and save for cancelled events', (
+    tester,
+  ) async {
+    _setTallViewport(tester);
+
+    final start = DateTime(2026, 5, 22, 7);
+    final event =
+        buildEvent(
+          startTime: start,
+          endTime: start.add(const Duration(hours: 1)),
+          startingPointLat: 19.076,
+          startingPointLng: 72.8777,
+        ).copyWith(
+          status: EventLifecycleStatus.cancelled,
+          cancelledAt: start.subtract(const Duration(days: 1)),
+        );
+
+    await pumpEventsTestApp(
+      tester,
+      EditHostedEventScreen(
+        club: buildClub(id: event.clubId),
+        event: event,
+        now: () => DateTime(2026, 5, 21, 9),
+      ),
+      signedInUid: 'host-1',
+    );
+
+    final meetingPoint = tester.widget<CatchField>(
+      find.byKey(CreateEventFormKeys.meetingPoint, skipOffstage: false),
+    );
+    final mapPicker = tester.widget<CatchField>(
+      find.byKey(CreateEventFormKeys.mapPicker, skipOffstage: false),
+    );
+    final paceField = tester.widget<CatchField>(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchField && widget.title == 'Pace level',
+      ),
+    );
+    final saveButton = tester.widget<CatchButton>(
+      find.byKey(EditHostedEventKeys.saveButton),
+    );
+
+    expect(meetingPoint.enabled, isFalse);
+    expect(mapPicker.mode, CatchFieldMode.nav);
+    expect(mapPicker.onTap, isNull);
+    expect(paceField.enabled, isFalse);
+    expect(saveButton.onPressed, isNull);
   });
 
   testWidgets('validates required host-editable event fields before saving', (

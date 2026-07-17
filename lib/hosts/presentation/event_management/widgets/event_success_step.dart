@@ -1,8 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventSuccessDefaultsPanel;
@@ -32,24 +31,26 @@ class EventSuccessStep extends StatelessWidget {
     return ListView(
       padding: CatchInsets.formStepBodyRelaxed,
       children: [
-        CatchSurface(
-          padding: CatchInsets.contentDense,
-          tone: CatchSurfaceTone.primarySoft,
-          radius: CatchRadius.md,
-          borderWidth: 0,
-          child: Text(
-            context.l10n.hostsEventSuccessStepTextPrepareTheHostGuide,
-            style: CatchTextStyles.supporting(context, color: t.primary),
-          ),
-        ),
-        gapH20,
-        EventSuccessDefaultsPanel(
-          defaults: eventSuccessDefaults,
-          activityKind: activityKind,
-          eventFormat: eventFormat,
-          targetAttendeeCount: targetAttendeeCount,
-          onChanged: onEventSuccessDefaultsChanged,
-          subtitle: context.l10n.hostsEventSuccessStepSubtitleSaveASimplePlan,
+        CatchSectionList(
+          children: [
+            CatchSection.plain(
+              child: Text(
+                context.l10n.hostsEventSuccessStepTextPrepareTheHostGuide,
+                style: CatchTextStyles.supporting(context, color: t.primary),
+              ),
+            ),
+            EventSuccessDefaultsPanel(
+              defaults: eventSuccessDefaults,
+              activityKind: activityKind,
+              eventFormat: eventFormat,
+              targetAttendeeCount: targetAttendeeCount,
+              onChanged: (update) =>
+                  onEventSuccessDefaultsChanged(update(eventSuccessDefaults)),
+              title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
+              subtitle:
+                  context.l10n.hostsEventSuccessStepSubtitleSaveASimplePlan,
+            ),
+          ],
         ),
       ],
     );

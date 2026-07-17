@@ -19,6 +19,13 @@ deploy_target() {
   shift
   shift
 
+  if [[ "$phase" == "storage" ]]; then
+    echo "::group::Verify Storage rules cross-service IAM"
+    node "$repo_root/tool/firebase/storage_rules_firestore_iam.mjs" \
+      --env "$environment"
+    echo "::endgroup::"
+  fi
+
   echo "::group::Deploy Firebase target: $phase"
   "$repo_root/tool/firebase_with_env.sh" \
     "$environment" deploy --only "$deploy_only" --non-interactive "$@"

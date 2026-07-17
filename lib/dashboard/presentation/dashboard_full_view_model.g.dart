@@ -247,4 +247,4 @@ final class DashboardHomeScreenStateProvider
 }
 
 String _$dashboardHomeScreenStateHash() =>
-    r'04bb6f45693f913bced08eb06b0d9d27da690327';
+    r'78954ae2db9869be1b1f5cdfbc2d3f866ffa4fac';

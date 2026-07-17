@@ -775,6 +775,34 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps host analytics snapshots server-only", async () => {
+      const snapshotId = `host-1_${"a".repeat(64)}`;
+      await seed(["hostAnalyticsSnapshots", snapshotId], {
+        uid: "host-1",
+        scopeHash: "a".repeat(64),
+        response: {},
+        expiresAt: Timestamp.fromDate(new Date("2026-07-17T00:15:00.000Z")),
+      });
+
+      await assertFails(
+        getDoc(doc(authedDb("host-1"), "hostAnalyticsSnapshots", snapshotId)),
+      );
+      await assertFails(
+        getDocs(collection(authedDb("host-1"), "hostAnalyticsSnapshots")),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("host-1"), "hostAnalyticsSnapshots", snapshotId),
+          {uid: "host-1"},
+        ),
+      );
+      await assertFails(
+        deleteDoc(
+          doc(authedDb("host-1"), "hostAnalyticsSnapshots", snapshotId),
+        ),
+      );
+    });
+
     it("allows authenticated users to query active event rosters", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event());

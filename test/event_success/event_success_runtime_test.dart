@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,17 +34,17 @@ void main() {
 
       expect(runtime.checkInEnabled, isTrue);
       expect(runtime.attendeePromptEnabled, isTrue);
-      expect(runtime.wingmanRequestsEnabled, isFalse);
-      expect(runtime.contextualOpenersConfigured, isFalse);
+      expect(runtime.wingmanRequestsEnabled, isTrue);
+      expect(runtime.contextualOpenersConfigured, isTrue);
       expect(runtime.liveRevealEnabled, isFalse);
       expect(runtime.compatibilityQuestionnaireEnabled, isFalse);
       expect(runtime.compatibilityCanAffectRanking, isFalse);
-      expect(runtime.hostReportEnabled, isFalse);
+      expect(runtime.hostReportEnabled, isTrue);
       expect(runtime.canShowSelfCheckIn(checkInOpen: true), isTrue);
       expect(runtime.canShowLiveReveal(attended: true), isFalse);
       expect(
         runtime.canShowWingmanRequest(attended: true, eventEnded: false),
-        isFalse,
+        isTrue,
       );
       expect(runtime.canShowFeedback(attended: true, eventEnded: true), isTrue);
     });
@@ -248,7 +248,11 @@ void main() {
     });
 
     test('gates live reveal behind assignment modules', () {
-      final event = buildEvent();
+      final event = buildEvent(
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.pickleball,
+        ),
+      );
       final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
           .copyWith(
             selectedModuleIds: [
@@ -342,7 +346,10 @@ void main() {
               EventSuccessModuleCatalog.guidedRotations.id,
               EventSuccessModuleCatalog.liveReveal.id,
             ],
-            activeStepIndex: 0,
+            // Platform-owned arrival remains the first live step even though
+            // it is no longer configurable in setup. The opening step is the
+            // first reveal-capable step.
+            activeStepIndex: 1,
           );
       final runtime = EventSuccessRuntime(
         plan: plan,
@@ -388,15 +395,17 @@ void main() {
       );
 
       expect(runtime.runOfShowSteps.map((step) => step.title), [
+        'Check in and pace sort',
         'Run in pace pods',
+        'Host-help last call',
       ]);
       expect(
         runtime.livePlan(bookedCount: 12, checkedInCount: 8)?.steps,
-        hasLength(1),
+        hasLength(3),
       );
     });
 
-    test('returns no live plan when selected modules have no live steps', () {
+    test('keeps platform-owned live steps when host tools are absent', () {
       final event = buildEvent();
       final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
           .copyWith(
@@ -408,8 +417,13 @@ void main() {
         now: event.startTime,
       );
 
-      expect(runtime.runOfShowSteps, isEmpty);
-      expect(runtime.livePlan(bookedCount: 12, checkedInCount: 8), isNull);
+      expect(runtime.runOfShowSteps.map((step) => step.title), [
+        'Host-help last call',
+      ]);
+      expect(
+        runtime.livePlan(bookedCount: 12, checkedInCount: 8)?.steps,
+        hasLength(1),
+      );
     });
 
     test('gates live prompts and post-match openers separately', () {
@@ -458,7 +472,7 @@ void main() {
       );
     });
 
-    test('returns post-event attendee moment only when a surface exists', () {
+    test('always exposes the platform-owned post-event surface', () {
       final event = buildEvent();
       final basePlan = EventSuccessPlan.defaultForEvent(
         event,
@@ -494,7 +508,7 @@ void main() {
             eventEnded: true,
           );
 
-      expect(withoutSurface.kind, EventSuccessAttendeeMomentKind.none);
+      expect(withoutSurface.kind, EventSuccessAttendeeMomentKind.postEvent);
       expect(withSurface.kind, EventSuccessAttendeeMomentKind.postEvent);
       expect(withSurface.showPostEventOpeners, isTrue);
       expect(withSurface.showFeedback, isTrue);

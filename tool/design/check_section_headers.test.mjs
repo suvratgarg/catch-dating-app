@@ -115,6 +115,129 @@ test("does not flag contained CatchSection card titles", () => {
   assert.equal(findings.length, 0);
 });
 
+test("flags feature-local card shells with a section header and actions", () => {
+  const findings = scanSourceForSectionHeaders({
+    relativePath:
+      "lib/hosts/presentation/payments/host_payment_account_card.dart",
+    source: [
+      "class HostPaymentAccountContentCard extends StatelessWidget {",
+      "  const HostPaymentAccountContentCard({super.key});",
+      "  @override",
+      "  Widget build(BuildContext context) {",
+      "    return CatchSurface(",
+      "      child: Column(children: [",
+      "        CatchSectionHeader(title: 'Payouts'),",
+      "        const Text('Set up international payouts'),",
+      "        CatchButton(label: 'Set up payouts', onPressed: () {}),",
+      "      ]),",
+      "    );",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "medium");
+  assert.equal(findings[0].rule, "SECTION-HEADER-005");
+  assert.match(findings[0].expression, /HostPaymentAccountContentCard/u);
+});
+
+test("allows feature-local cards to delegate chrome to CatchSection", () => {
+  const findings = scanSourceForSectionHeaders({
+    relativePath:
+      "lib/hosts/presentation/payments/host_payment_account_card.dart",
+    source: [
+      "class HostPaymentAccountContentCard extends StatelessWidget {",
+      "  const HostPaymentAccountContentCard({super.key});",
+      "  @override",
+      "  Widget build(BuildContext context) {",
+      "    return CatchSection.contained(",
+      "      title: 'Payouts',",
+      "      child: CatchButton(label: 'Set up payouts', onPressed: () {}),",
+      "    );",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 0);
+});
+
+test("flags standalone section headers followed by untitled CatchSection shells", () => {
+  const findings = scanSourceForSectionHeaders({
+    relativePath: "lib/hosts/presentation/host_operations/host_organizer.dart",
+    source: [
+      "Column(children: [",
+      "  CatchSectionHeader(",
+      "    title: context.l10n.hostsHostOrganizerTitleManage,",
+      "    trailing: const Text('Manage'),",
+      "  ),",
+      "  gapH10,",
+      "  CatchSection.contained(",
+      "    children: [CatchField.nav(title: 'Payouts')],",
+      "  ),",
+      "]);",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "high");
+  assert.equal(findings[0].rule, "SECTION-HEADER-004");
+  assert.match(findings[0].expression, /CatchSection\.contained without title/u);
+});
+
+test("allows CatchSection to own a dynamic title directly", () => {
+  const findings = scanSourceForSectionHeaders({
+    relativePath: "lib/hosts/presentation/host_operations/host_organizer.dart",
+    source: [
+      "CatchSection.contained(",
+      "  title: context.l10n.hostsHostOrganizerTitleManage,",
+      "  children: [CatchField.nav(title: 'Payouts')],",
+      ");",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 0);
+});
+
+test("does not join a section header to a section across intervening content", () => {
+  const findings = scanSourceForSectionHeaders({
+    relativePath: "lib/hosts/presentation/example.dart",
+    source: [
+      "Column(children: [",
+      "  const CatchSectionHeader(title: 'Team'),",
+      "  gapH10,",
+      "  const TeamCard(),",
+      "  CatchSection.contained(children: const []),",
+      "]);",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 0);
+});
+
+test("flags thin dynamic kicker shells even inside core widgets", () => {
+  const findings = scanSourceForSectionHeaders({
+    relativePath: "lib/core/widgets/catch_analytics_kit.dart",
+    source: [
+      "class CatchAnalyticsSection extends StatelessWidget {",
+      "  const CatchAnalyticsSection({required this.label, required this.child});",
+      "  final String label;",
+      "  final Widget child;",
+      "  Widget build(context) => Column(children: [",
+      "    CatchKicker(label: label),",
+      "    child,",
+      "  ]);",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "high");
+  assert.equal(findings[0].rule, "SECTION-HEADER-003");
+  assert.match(findings[0].expression, /CatchAnalyticsSection/u);
+});
+
 test("scanSectionHeaders covers lib, test, and widgetbook sources", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-headers-"));
   writeFile(

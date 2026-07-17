@@ -1,12 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -14,10 +11,8 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
@@ -31,14 +26,15 @@ class HostTeamManagementSection extends ConsumerWidget {
     super.key,
     required this.club,
     required this.currentUid,
+    required this.canManage,
   });
 
   final Club club;
   final String currentUid;
+  final bool canManage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
     final hosts = club.displayHostProfiles;
     final addMutation = ref.watch(HostTeamManagementController.addHostMutation);
     final removeMutation = ref.watch(
@@ -150,49 +146,45 @@ class HostTeamManagementSection extends ConsumerWidget {
       showCatchSnackBar(context, confirmation.successMessage(context.l10n));
     }
 
-    return CatchSection.contained(
+    return CatchSection.fieldRows(
       title: context.l10n.hostsHostTeamManagementSectionTitleHostTeam,
-      borderColor: t.line,
-      elevation: CatchSurfaceElevation.none,
-      padding: CatchInsets.tileContentCompact,
-      trailing: Tooltip(
-        message: context.l10n.hostsHostTeamManagementSectionMessageAddHost,
-        child: CatchIconButton(
-          onTap: actionPending ? null : () => unawaited(showAddHostSheet()),
-          child: Icon(
-            CatchIcons.personAddAlt1Rounded,
-            size: CatchIcon.md,
-            color: actionPending ? t.ink3 : t.ink,
-          ),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (actionError != null) ...[
-            CatchErrorBanner(
-              message: mutationErrorMessage(
-                actionError,
-                l10n: context.l10n,
-                context: AppErrorContext.club,
-              ),
+      children: [
+        if (canManage && actionError != null)
+          CatchField.content(
+            title: context.l10n.hostsHostTeamManagementSectionTitleHostTeam,
+            body: mutationErrorMessage(
+              actionError,
+              l10n: context.l10n,
+              context: AppErrorContext.club,
             ),
-            gapH12,
-          ],
-          for (final host in hosts) ...[
+            icon: CatchIcons.errorOutlineRounded,
+            tone: CatchFieldTone.danger,
+          ),
+        if (hosts.isEmpty)
+          CatchField.read(
+            title: context
+                .l10n
+                .hostsHostTeamManagementSectionTextNoHostTeamMembers,
+            icon: CatchIcons.groups3Outlined,
+          )
+        else
+          for (final host in hosts)
             HostTeamOwnerHostRow(
               host: host,
-              canManage: host.uid != currentUid && !actionPending,
+              canManage: canManage && host.uid != currentUid && !actionPending,
               onTransfer: () => unawaited(
                 confirmHostAction(HostTeamHostAction.transferOwnership, host),
               ),
               onRemove: () =>
                   unawaited(confirmHostAction(HostTeamHostAction.remove, host)),
             ),
-            if (host != hosts.last) gapH10,
-          ],
-        ],
-      ),
+        if (canManage)
+          CatchField.add(
+            title: context.l10n.hostsHostTeamManagementSectionTitleAddHost,
+            icon: CatchIcons.personAddAlt1Rounded,
+            onTap: actionPending ? null : () => unawaited(showAddHostSheet()),
+          ),
+      ],
     );
   }
 }
@@ -308,63 +300,59 @@ class HostTeamOwnerHostRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        CatchPersonAvatar(
-          name: host.displayName,
-          imageUrl: host.avatarUrl,
-          size: 42,
-        ),
-        gapW10,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                host.displayName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.sectionTitle(context),
-              ),
-              gapH4,
-              ClubHostRoleBadge(role: host.role),
-            ],
-          ),
-        ),
-        CatchActionMenu<String>(
-          key: ValueKey('host-team-actions-${host.uid}'),
-          tooltip:
-              context.l10n.hostsHostTeamManagementSectionTooltipHostActions,
-          enabled: canManage,
-          icon: CatchIcons.moreHorizRounded,
-          onSelected: (value) {
-            if (value ==
-                context.l10n.hostsHostTeamManagementSectionVisiblecopyTransfer)
-              onTransfer();
-            if (value ==
-                context.l10n.hostsHostTeamManagementSectionVisiblecopyRemove)
-              onRemove();
-          },
-          items: [
-            CatchActionMenuItem(
-              value: context
-                  .l10n
-                  .hostsHostTeamManagementSectionVisiblecopyTransfer,
-              label: context
-                  .l10n
-                  .hostsHostTeamManagementSectionLabelTransferOwnership,
-              icon: CatchIcons.adminPanelSettingsOutlined,
-            ),
-            CatchActionMenuItem(
-              value:
-                  context.l10n.hostsHostTeamManagementSectionVisiblecopyRemove,
-              label: context.l10n.hostsHostTeamManagementSectionLabelRemoveHost,
-              icon: CatchIcons.personOffOutlined,
-              isDestructive: true,
-            ),
-          ],
-        ),
-      ],
+    return CatchField.content(
+      title: host.displayName,
+      body: host.role == ClubHostRole.owner
+          ? context.l10n.clubsClubIdentityAtomsLabelOwner
+          : context.l10n.clubsClubIdentityAtomsLabelHost,
+      leading: CatchPersonAvatar(
+        name: host.displayName,
+        imageUrl: host.avatarUrl,
+        size: 42,
+      ),
+      action: canManage
+          ? CatchActionMenu<String>(
+              key: ValueKey('host-team-actions-${host.uid}'),
+              tooltip:
+                  context.l10n.hostsHostTeamManagementSectionTooltipHostActions,
+              icon: CatchIcons.moreHorizRounded,
+              onSelected: (value) {
+                if (value ==
+                    context
+                        .l10n
+                        .hostsHostTeamManagementSectionVisiblecopyTransfer) {
+                  onTransfer();
+                }
+                if (value ==
+                    context
+                        .l10n
+                        .hostsHostTeamManagementSectionVisiblecopyRemove) {
+                  onRemove();
+                }
+              },
+              items: [
+                CatchActionMenuItem(
+                  value: context
+                      .l10n
+                      .hostsHostTeamManagementSectionVisiblecopyTransfer,
+                  label: context
+                      .l10n
+                      .hostsHostTeamManagementSectionLabelTransferOwnership,
+                  icon: CatchIcons.adminPanelSettingsOutlined,
+                ),
+                CatchActionMenuItem(
+                  value: context
+                      .l10n
+                      .hostsHostTeamManagementSectionVisiblecopyRemove,
+                  label: context
+                      .l10n
+                      .hostsHostTeamManagementSectionLabelRemoveHost,
+                  icon: CatchIcons.personOffOutlined,
+                  isDestructive: true,
+                ),
+              ],
+            )
+          : null,
     );
   }
 }

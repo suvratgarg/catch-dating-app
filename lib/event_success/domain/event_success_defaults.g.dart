@@ -16,6 +16,8 @@ _EventSuccessDefaults _$EventSuccessDefaultsFromJson(
           ?.map((e) => e as String)
           .toList() ??
       const <String>[],
+  moduleSelectionConfigured:
+      json['moduleSelectionConfigured'] as bool? ?? false,
   structureConfig: json['structureConfig'] == null
       ? const EventSuccessStructureConfig.legacyDefault()
       : EventSuccessStructureConfig.fromJson(
@@ -42,6 +44,7 @@ Map<String, dynamic> _$EventSuccessDefaultsToJson(
   'enabled': instance.enabled,
   'playbookId': instance.playbookId,
   'selectedModuleIds': instance.selectedModuleIds,
+  'moduleSelectionConfigured': instance.moduleSelectionConfigured,
   'structureConfig': instance.structureConfig.toJson(),
   'hostGoal': instance.hostGoal,
   'wingmanRequestsEnabled': instance.wingmanRequestsEnabled,

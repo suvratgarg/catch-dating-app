@@ -54,6 +54,7 @@
         "kind",
         "summary",
         "dart",
+        "surfaces",
         "design",
         "contract",
         "governance",

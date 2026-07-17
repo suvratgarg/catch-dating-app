@@ -16,6 +16,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_models.dart'
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
@@ -141,6 +142,7 @@ void main() {
                     catchRate: 1 / 3,
                     feedbackResponseCount: 4,
                   ),
+                  embedded: false,
                 ),
               ),
             ),
@@ -152,31 +154,25 @@ void main() {
     expect(find.text('Setup'), findsWidgets);
     expect(find.byType(CatchOptionGroup<EventSuccessHostTab>), findsOneWidget);
     expect(find.text('Target attendees'), findsOneWidget);
-    expect(find.text('Group flow'), findsWidgets);
-    expect(find.text('Host goal'), findsOneWidget);
-    expect(find.text('Attendee prompt'), findsOneWidget);
-    expect(find.text('Recommended setup'), findsOneWidget);
-    expect(find.text('When people arrive'), findsOneWidget);
-    expect(find.text('During the event'), findsOneWidget);
-    expect(find.text('After the event'), findsOneWidget);
-    expect(find.text('Advanced'), findsOneWidget);
+    expect(find.text('How the room is grouped'), findsNothing);
+    expect(find.text('Your goal for the event'), findsOneWidget);
+    expect(find.text('Your plan'), findsOneWidget);
+    expect(find.text('WHEN PEOPLE ARRIVE'), findsOneWidget);
+    expect(find.text('DURING THE EVENT'), findsOneWidget);
+    expect(find.text('AFTER THE EVENT'), findsNothing);
     expect(find.text('Save setup'), findsOneWidget);
-    // Foundation lines and stage-card toggles are inline (no disclosure tap).
-    expect(find.text('Check attendees in and confirm groups'), findsOneWidget);
-    expect(find.text('Read a brief welcome script'), findsOneWidget);
-    expect(find.text('Collect quick attendee feedback'), findsOneWidget);
-    expect(find.text('Host coaching summary'), findsOneWidget);
-    expect(find.text('"Help me say hi" requests'), findsWidgets);
-    expect(find.text('Suggested first-message openers'), findsWidgets);
-    expect(
-      find.text('Safety, blocking, and report tools always on.'),
-      findsOneWidget,
-    );
-    // Match clue questions lives inside the collapsed Advanced disclosure.
-    expect(find.text('Match clue questions'), findsNothing);
-
-    await tester.tap(find.text('Advanced'));
-    await pumpFeatureUi(tester);
+    // Only host-configurable modules are shown. Platform-owned attendance,
+    // safety, balancing, follow-up, and reporting stay active without
+    // duplicate setup controls.
+    expect(find.text('Attendance and live roster'), findsNothing);
+    expect(find.text('Safety layer'), findsNothing);
+    expect(find.text('Booking balance preview'), findsNothing);
+    expect(find.text('Welcome script'), findsOneWidget);
+    expect(find.text('Attendee feedback'), findsNothing);
+    expect(find.text('Host recap'), findsNothing);
+    expect(find.text('"Help me say hi" requests'), findsNothing);
+    expect(find.text('Suggested first-message openers'), findsNothing);
+    // Match clue questions is a first-class field, not nested in Advanced.
     expect(find.text('Match clue questions'), findsOneWidget);
 
     await tester.tap(find.text('Live'));
@@ -213,15 +209,14 @@ void main() {
       checkedInCount: 0,
       waitlistedCount: 0,
     );
-    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    final repository = EventSuccessRepository(firestore);
+    final plan = await repository.ensurePlanForEvent(event);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          eventSuccessRepositoryProvider.overrideWithValue(
-            EventSuccessRepository(firestore),
-          ),
+          eventSuccessRepositoryProvider.overrideWithValue(repository),
         ],
         child: Consumer(
           builder: (context, ref, _) {
@@ -268,7 +263,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    final saved = await EventSuccessRepository(firestore).fetchPlan(event.id);
+    final saved = await repository.fetchPlan(event.id);
     expect(saved, isNotNull);
     expect(saved!.playbookId, EventSuccessPlaybookLibrary.pickleball.id);
     expect(
@@ -660,7 +655,7 @@ void main() {
     expect(failed.retryIntent, EventSuccessCompanionRetryIntent.preference);
   });
 
-  testWidgets('host report is hidden when host analytics is disabled', (
+  testWidgets('host report remains available for legacy module selections', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -699,8 +694,8 @@ void main() {
       ),
     );
 
-    expect(find.text('Post-event insights are off'), findsOneWidget);
-    expect(find.text('Post-event host report'), findsNothing);
+    expect(find.text('Post-event insights are off'), findsNothing);
+    expect(find.text('Waiting for attendee feedback'), findsOneWidget);
   });
 
   testWidgets('host report summarizes live signal quality', (tester) async {
@@ -1224,7 +1219,15 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(minutes: 30)),
     );
-    final plan = _racketPlan(event).copyWith(activeStepIndex: 2);
+    final plan = _racketPlan(
+      event,
+    ).copyWith(activeStepIndex: 2, status: EventSuccessPlanStatus.live);
+    final runtime = EventSuccessRuntime(plan: plan, event: event, now: start);
+    expect(runtime.liveRevealEnabled, isTrue);
+    expect(
+      runtime.livePlan(bookedCount: 2, checkedInCount: 2)!.activeStep.moduleIds,
+      contains(EventSuccessModuleCatalog.liveReveal.id),
+    );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -1235,6 +1238,7 @@ void main() {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: EventSuccessHostPanel(
+                  embedded: false,
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -1269,8 +1273,13 @@ void main() {
       ),
     );
 
-    expect(find.text('Synchronized partner reveal'), findsOneWidget);
-    expect(find.text('Rotation reveal'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('SYNCHRONIZED PARTNER REVEAL'),
+      700,
+      scrollable: findPrimaryScrollable(),
+    );
+    expect(find.text('SYNCHRONIZED PARTNER REVEAL'), findsOneWidget);
+    expect(find.text('ROTATION REVEAL'), findsOneWidget);
     expect(find.text('LIVE NOW'), findsOneWidget);
     expect(find.text('Controls for this step'), findsOneWidget);
     expect(find.textContaining('Attendees at'), findsOneWidget);
@@ -1799,6 +1808,21 @@ void main() {
       now: start,
       roundCount: 1,
     );
+    final completedArrivalMission = EventSuccessArrivalMission(
+      id: eventSuccessArrivalMissionId(eventId: event.id, uid: 'runner-1'),
+      eventId: event.id,
+      clubId: event.clubId,
+      observerUid: 'runner-1',
+      targetUid: 'runner-2',
+      targetDisplayName: 'Rhea',
+      targetContext: 'Completed before the reveal.',
+      question: 'What made the event easy to join?',
+      answerOptions: const [],
+      status: EventSuccessArrivalMissionStatus.completed,
+      createdAt: start.subtract(const Duration(minutes: 10)),
+      updatedAt: start,
+      completedAt: start,
+    );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -1813,6 +1837,7 @@ void main() {
               uid: 'runner-1',
             ),
             wingmanRequestCandidates: const [],
+            arrivalMission: completedArrivalMission,
             rotationAssignment: assignment,
             rotationPeerProfiles: [
               buildPublicProfile(
@@ -2568,7 +2593,7 @@ void main() {
               buildPublicProfile(uid: 'runner-4', name: 'Kabir'),
               buildPublicProfile(uid: 'runner-5', name: 'Dev'),
             ],
-            now: start.subtract(const Duration(hours: 1)),
+            now: start,
           ),
         ),
       ),
@@ -2693,15 +2718,13 @@ void main() {
                 gender: Gender.woman,
               ),
             ],
-            now: start.subtract(const Duration(hours: 1)),
+            now: start,
           ),
         ),
       ),
     );
 
-    expect(find.text('Rotation reveal'), findsWidgets);
-    expect(find.text('Room hold'), findsOneWidget);
-    expect(find.text('The room is holding together.'), findsOneWidget);
+    expect(find.text('ROTATION REVEAL'), findsWidgets);
     expect(find.text('No names shown yet'), findsWidgets);
     expect(find.textContaining('Next reveal in'), findsOneWidget);
     expect(find.textContaining('Rhea'), findsNothing);
@@ -3111,7 +3134,7 @@ void main() {
   });
 
   testWidgets(
-    'companion hides post-event sections when their modules are disabled',
+    'companion keeps always-on post-event sections for legacy selections',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(430, 1600);
@@ -3155,8 +3178,8 @@ void main() {
       );
 
       expect(find.text('Ask host for help'), findsNothing);
-      expect(find.text('How did it feel?'), findsNothing);
-      expect(find.text('The host is running the room'), findsOneWidget);
+      expect(find.text('How did it feel?'), findsOneWidget);
+      expect(find.text('The host is running the room'), findsNothing);
     },
   );
 

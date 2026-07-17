@@ -129,15 +129,39 @@ void main() {
     expect(find.text('Catches'), findsNothing);
     expect(find.text('Chats'), findsNothing);
     expect(find.text('Profile'), findsNothing);
+    expect(
+      tester
+          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .bottomBarPlacement,
+      AppShellBottomBarPlacement.anchored,
+    );
 
     tester.view.viewInsets = const FakeViewPadding(bottom: 318);
     addTearDown(tester.view.resetViewInsets);
     await tester.pump();
     expect(find.text('Continue with phone'), findsNothing);
+    expect(
+      tester
+          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .bottomBarPlacement,
+      AppShellBottomBarPlacement.none,
+    );
+    expect(
+      tester
+          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .bottomOverlayInset,
+      0,
+    );
 
     tester.view.resetViewInsets();
     await tester.pump();
     expect(find.text('Continue with phone'), findsOneWidget);
+    expect(
+      tester
+          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .bottomBarPlacement,
+      AppShellBottomBarPlacement.anchored,
+    );
 
     await tester.tap(find.text('Continue with phone'));
     await tester.pump();
@@ -191,7 +215,10 @@ void main() {
             ),
           ),
         ],
-        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.light.copyWith(platform: TargetPlatform.android),
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pump();
@@ -216,6 +243,18 @@ void main() {
           .bottomNavigationBar,
       isNotNull,
     );
+    expect(
+      tester
+          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .bottomBarPlacement,
+      AppShellBottomBarPlacement.anchored,
+    );
+    expect(
+      tester
+          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .bottomOverlayInset,
+      0,
+    );
 
     tester.view.viewInsets = const FakeViewPadding(bottom: 318);
     addTearDown(tester.view.resetViewInsets);
@@ -227,6 +266,18 @@ void main() {
           .bottomNavigationBar,
       isNull,
     );
+    expect(
+      tester
+          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .bottomBarPlacement,
+      AppShellBottomBarPlacement.none,
+    );
+    expect(
+      tester
+          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .bottomOverlayInset,
+      0,
+    );
 
     tester.view.resetViewInsets();
     await tester.pump();
@@ -236,6 +287,12 @@ void main() {
           .widget<Scaffold>(find.byKey(AppShellKeys.scaffold))
           .bottomNavigationBar,
       isNotNull,
+    );
+    expect(
+      tester
+          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .bottomBarPlacement,
+      AppShellBottomBarPlacement.anchored,
     );
   });
 
@@ -283,7 +340,7 @@ void main() {
       await tester.pumpWidget(
         _authenticatedShellProviderScope(
           child: MaterialApp.router(
-            theme: AppTheme.light,
+            theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
             routerConfig: router,
           ),
         ),
@@ -306,6 +363,12 @@ void main() {
             .bottomOverlayInset,
         greaterThan(0),
       );
+      expect(
+        tester
+            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .bottomBarPlacement,
+        AppShellBottomBarPlacement.floating,
+      );
 
       final editor = find.byKey(
         const ValueKey('shell-focus-continuity-editor'),
@@ -316,6 +379,16 @@ void main() {
         ..text = 'Runner One'
         ..selection = const TextSelection.collapsed(offset: 6);
       final editorElement = tester.element(editor);
+
+      // Focus with zero viewInsets models a hardware keyboard.
+      expect(tester.view.viewInsets.bottom, 0);
+      expect(find.byType(AppShellNavigationBar), findsOneWidget);
+      expect(
+        tester
+            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .bottomBarPlacement,
+        AppShellBottomBarPlacement.floating,
+      );
 
       tester.view.viewInsets = const FakeViewPadding(bottom: 318);
       addTearDown(tester.view.resetViewInsets);
@@ -341,6 +414,12 @@ void main() {
             .bottomOverlayInset,
         0,
       );
+      expect(
+        tester
+            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .bottomBarPlacement,
+        AppShellBottomBarPlacement.none,
+      );
 
       tester.view.resetViewInsets();
       await tester.pump();
@@ -350,6 +429,12 @@ void main() {
             .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
             .bottomOverlayInset,
         greaterThan(0),
+      );
+      expect(
+        tester
+            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .bottomBarPlacement,
+        AppShellBottomBarPlacement.floating,
       );
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatformOverride;

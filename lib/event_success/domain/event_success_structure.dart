@@ -59,7 +59,7 @@ enum EventSuccessUnitKind implements Labelled {
 
 enum EventSuccessRotationRepeatStrategy implements Labelled {
   avoid('Avoid repeats'),
-  allowWhenExhausted('Fill extra rounds');
+  allowWhenExhausted('Allow when rounds run long');
 
   const EventSuccessRotationRepeatStrategy(this.label);
 
@@ -261,9 +261,10 @@ class EventSuccessStructureConfig {
         unitCount: 1,
       );
     }
-    final estimatedCount =
-        unitCount ??
-        (safeAttendeeCount / unitSize).ceil().clamp(1, 200).toInt();
+    final maxGroupCount = (safeAttendeeCount / 2).ceil().clamp(1, 200).toInt();
+    final estimatedCount = (unitCount ?? (safeAttendeeCount / unitSize).ceil())
+        .clamp(1, maxGroupCount)
+        .toInt();
     return EventSuccessStructureEstimate(
       attendeeCount: safeAttendeeCount,
       unitCount: estimatedCount,

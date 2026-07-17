@@ -8,11 +8,12 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
@@ -29,6 +30,7 @@ import 'package:catch_dating_app/events/data/event_check_in_location_service.dar
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -135,6 +137,36 @@ void main() {
   });
 
   group('DashboardScreen', () {
+    testWidgets(
+      'notification action uses the counted icon app-bar contract directly',
+      (tester) async {
+        final user = buildUser();
+        final notifications = [
+          _activityNotification(id: 'unread-1', uid: user.uid),
+          _activityNotification(id: 'unread-2', uid: user.uid),
+        ];
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [_activityNotificationsOverride(user, notifications)],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(body: NotificationsAction(uid: user.uid)),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        final button = tester.widget<CatchIconButton>(
+          find.byType(CatchIconButton),
+        );
+        expect(button.size, CatchIconButton.navSize);
+        expect(find.byIcon(CatchIcons.notificationsRounded), findsOneWidget);
+        expect(find.text('2'), findsOneWidget);
+        expect(find.byTooltip('Notifications'), findsOneWidget);
+      },
+    );
+
     testWidgets('shows a loading state while booked events are loading', (
       tester,
     ) async {
@@ -385,7 +417,7 @@ void main() {
             watchReviewsByUserProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Review>>([])),
-            dashboardRecommendedEventsProvider(
+            exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
@@ -435,7 +467,7 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
-            dashboardRecommendedEventsProvider(
+            exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(noRecommendationCandidates),
             watchClubsByIdsProvider(
@@ -724,7 +756,8 @@ void main() {
       expect(field.title, 'Event starts tomorrow');
       expect(field.body, 'Sundowner 5K meets at Carter Road Jetty.');
       expect(field.emphasis, CatchFieldEmphasis.title);
-      expect(field.showChevron, isFalse);
+      expect(field.mode, CatchFieldMode.nav);
+      expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
 
       expect(find.text('2H'), findsOneWidget);
       final titleRect = tester.getRect(find.text('Event starts tomorrow'));
@@ -852,7 +885,7 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncLoading<List<Event>>()),
-            dashboardRecommendedEventsProvider(
+            exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
@@ -893,10 +926,10 @@ void main() {
             watchAttendedEventsProvider(user.uid).overrideWithValue(
               AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
             ),
-            dashboardRecommendedEventsProvider(
+            exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWith(
-              (ref) async => const <DashboardEventRecommendationCandidate>[],
+              (ref) async => const <ExploreEventRecommendationCandidate>[],
             ),
             ..._dashboardHostOverrides(user),
           ],
@@ -988,7 +1021,7 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
-            dashboardRecommendedEventsProvider(
+            exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
@@ -1050,7 +1083,7 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
-            dashboardRecommendedEventsProvider(
+            exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(noRecommendationCandidates),
             ..._dashboardHostOverrides(user),
@@ -1089,7 +1122,7 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
-            dashboardRecommendedEventsProvider(
+            exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
@@ -1146,7 +1179,7 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
-            dashboardRecommendedEventsProvider(
+            exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(events),
@@ -1203,7 +1236,7 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
-            dashboardRecommendedEventsProvider(
+            exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(noRecommendationCandidates),
             externalUrlLauncherProvider.overrideWithValue((
@@ -1289,7 +1322,7 @@ void main() {
               watchAttendedEventsProvider(
                 user.uid,
               ).overrideWithValue(const AsyncData<List<Event>>([])),
-              dashboardRecommendedEventsProvider(
+              exploreRecommendedEventsProvider(
                 recommendationsQueryFor(user.uid, const []),
               ).overrideWithValue(noRecommendationCandidates),
               ..._dashboardHostOverrides(user),
@@ -1357,7 +1390,7 @@ void main() {
               watchReviewsByUserProvider(
                 user.uid,
               ).overrideWithValue(const AsyncData<List<Review>>([])),
-              dashboardRecommendedEventsProvider(
+              exploreRecommendedEventsProvider(
                 recommendationsQueryFor(user.uid, const []),
               ).overrideWithValue(noRecommendationCandidates),
               ..._dashboardHostOverrides(user),

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_membership_contr
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
+import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
@@ -15,9 +16,11 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
@@ -39,7 +42,7 @@ import 'package:go_router/go_router.dart';
 /// A single scrolling feed: the browse header (city + search) and filter rail
 /// sit above day-grouped event tickets, club polaroids, and the editorial
 /// spotlight. The map is no longer an always-on canvas — it is a focused route
-/// reached from the floating bottom-left map pill ([ExploreMapScreen]).
+/// reached from the centered floating map pill ([ExploreMapScreen]).
 class ExploreScreen extends ConsumerStatefulWidget {
   const ExploreScreen({super.key});
 
@@ -208,10 +211,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
     final bodySlivers = switch (bodyState.kind) {
       ExploreScreenBodyKind.loading => <Widget>[
-        const SliverToBoxAdapter(
+        SliverToBoxAdapter(
           child: Padding(
-            padding: CatchInsets.pageBody,
-            child: ExploreSkeletonList(),
+            padding: CatchInsets.pageBody.copyWith(bottom: 0),
+            child: const ExploreSkeletonList(),
           ),
         ),
       ],
@@ -321,9 +324,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     onTimeFilterSelected: (filter) => ref
                         .read(exploreFiltersProvider.notifier)
                         .setTimeFilter(filter),
-                    onDistanceFilterSelected: (filter) => ref
-                        .read(exploreFiltersProvider.notifier)
-                        .setDistanceFilter(filter),
+                    onDistanceFilterSelected: (filter) =>
+                        unawaited(_applyDistanceFilter(filter)),
                     onToggleJoinedOnly: () => ref
                         .read(exploreFiltersProvider.notifier)
                         .toggleJoinedOnly(),
@@ -341,27 +343,76 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   ),
                 ),
                 ...bodySlivers,
+                const CatchSliverTerminalPadding(),
               ],
             ),
           ),
-          Positioned(
-            left: CatchSpacing.s5,
-            bottom: _mapLauncherBottomOffset(context),
-            child: SafeArea(
-              top: false,
-              child: CatchCountPill(
-                label: screenState.mapLauncherState.label,
-                icon: CatchIcons.map,
-                semanticLabel: screenState.mapLauncherState.label,
-                onPressed: () {
-                  catchSelectionHaptic();
-                  context.pushNamed(Routes.exploreMapScreen.name);
-                },
+          if (screenState.mapLauncherState.isVisible)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: _mapLauncherBottomOffset(context),
+              child: SafeArea(
+                top: false,
+                child: Center(
+                  child: CatchCountPill.label(
+                    label: screenState.mapLauncherState.actionLabel,
+                    count:
+                        int.tryParse(
+                          screenState.mapLauncherState.countLabel ?? '',
+                        ) ??
+                        0,
+                    icon: CatchIcons.map,
+                    semanticLabel: screenState.mapLauncherState.semanticLabel,
+                    onPressed: () {
+                      catchTransitionHaptic();
+                      context.pushNamed(Routes.exploreMapScreen.name);
+                    },
+                  ),
+                ),
               ),
             ),
-          ),
         ],
       ),
+    );
+  }
+
+  Future<void> _applyDistanceFilter(ExploreDistanceFilter filter) async {
+    final failure = await ref
+        .read(exploreFiltersProvider.notifier)
+        .applyDistanceFilter(filter);
+    if (!mounted || failure == null) return;
+    _showLocationFailure(failure);
+  }
+
+  void _showLocationFailure(DeviceLocationFailure failure) {
+    final canOpenSettings =
+        failure == DeviceLocationFailure.servicesDisabled ||
+        failure == DeviceLocationFailure.permissionDeniedForever;
+    final message = switch (failure) {
+      DeviceLocationFailure.servicesDisabled =>
+        context.l10n.exploreExploreMapScreenMessageLocationServicesDisabled,
+      DeviceLocationFailure.permissionDeniedForever =>
+        context
+            .l10n
+            .exploreExploreMapScreenMessageLocationPermissionDeniedForever,
+      _ => context.l10n.exploreExploreMapScreenMessageLocationUnavailable,
+    };
+    showCatchSnackBar(
+      context,
+      message,
+      action: canOpenSettings
+          ? SnackBarAction(
+              label: context.l10n.exploreExploreMapScreenActionOpenSettings,
+              onPressed: () {
+                unawaited(
+                  ref
+                      .read(deviceLocationProvider.notifier)
+                      .openRecoverySettings(),
+                );
+              },
+            )
+          : null,
     );
   }
 }

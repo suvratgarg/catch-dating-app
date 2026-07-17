@@ -288,6 +288,41 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
 });
 
 test(
+  "cancelEventSignUpHandler still refunds when promotion push fails",
+  async () => {
+    const h = harness({
+      "events/event-1": event({bookedCount: 1, waitlistedCount: 1}),
+      "users/runner-1": user(),
+      "users/runner-2": user({
+        fcmToken: "token-2",
+        gender: "woman",
+        interestedInGenders: ["man"],
+      }),
+      "eventParticipations/event-1_runner-1": participation(
+        "runner-1",
+        "signedUp"
+      ),
+      "eventParticipations/event-1_runner-2": participation(
+        "runner-2",
+        "waitlisted"
+      ),
+      "payments/pay-1": payment(),
+    }, {
+      sendNotificationError: new Error("FCM unavailable"),
+    });
+
+    await cancelEventSignUpHandler(request("runner-1"), h.deps);
+
+    assert.equal(h.notifications.length, 1);
+    assert.deepEqual(h.refunds, [{
+      paymentId: "pay_123",
+      amountInPaise: 25000,
+    }]);
+    assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
+  }
+);
+
+test(
   "cancelEventSignUpHandler honors the no-refund cancellation window",
   async () => {
     const h = harness({
@@ -317,7 +352,7 @@ test(
 
 function harness(
   initialDocs: Record<string, FakeData | undefined>,
-  options: {nowMillis?: number} = {}
+  options: {nowMillis?: number; sendNotificationError?: Error} = {}
 ) {
   const firestore = new FakeFirestore(initialDocs);
   const refunds: Array<{paymentId: string; amountInPaise: number}> = [];
@@ -349,6 +384,9 @@ function harness(
         clubId: string;
       }) => {
         notifications.push(push);
+        if (options.sendNotificationError) {
+          throw options.sendNotificationError;
+        }
       },
     },
   };
@@ -373,6 +411,13 @@ function event(overrides: FakeData = {}): FakeData {
       Date.parse("2026-05-02T02:30:00.000Z")
     ),
     meetingPoint: "Carter Road",
+    meetingLocation: {
+      name: "Carter Road",
+      latitude: 19.0608,
+      longitude: 72.8365,
+    },
+    startingPointLat: 19.0608,
+    startingPointLng: 72.8365,
     distanceKm: 5,
     pace: "easy",
     capacityLimit: 20,

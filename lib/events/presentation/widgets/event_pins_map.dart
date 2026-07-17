@@ -2,14 +2,17 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
-import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
@@ -21,6 +24,7 @@ class EventPinsMap extends StatefulWidget {
   const EventPinsMap({
     super.key,
     required this.items,
+    this.externalItems = const [],
     required this.initialCenter,
     this.initialZoom = 12.5,
     this.selectedEventId,
@@ -28,13 +32,18 @@ class EventPinsMap extends StatefulWidget {
     this.enableNetworkTiles = true,
     this.userLocation,
     this.distanceRingRadiusKm,
+    this.distanceRingLabel,
+    this.distanceRingSemanticHint,
+    this.showOverviewControl = false,
     this.onEventSelected,
+    this.onExternalEventSelected,
     this.onMapTapped,
     this.onCameraCenterChanged,
     this.onDistanceRingTapped,
   });
 
   final List<EventMapItem> items;
+  final List<ExternalEventMapItem> externalItems;
   final LocationCoordinate initialCenter;
   final double initialZoom;
   final String? selectedEventId;
@@ -42,7 +51,11 @@ class EventPinsMap extends StatefulWidget {
   final bool enableNetworkTiles;
   final LocationCoordinate? userLocation;
   final double? distanceRingRadiusKm;
+  final String? distanceRingLabel;
+  final String? distanceRingSemanticHint;
+  final bool showOverviewControl;
   final ValueChanged<Event>? onEventSelected;
+  final ValueChanged<ExternalEvent>? onExternalEventSelected;
   final VoidCallback? onMapTapped;
   final ValueChanged<LocationCoordinate>? onCameraCenterChanged;
   final VoidCallback? onDistanceRingTapped;
@@ -57,11 +70,18 @@ class _EventPinsMapState extends State<EventPinsMap> {
       <_EventMapPinIconKey, CatchMapMarkerBitmap>{};
   final Set<_EventMapPinIconKey> _pendingPinBitmapKeys =
       <_EventMapPinIconKey>{};
+  final Set<_EventMapPinIconKey> _failedPinBitmapKeys = <_EventMapPinIconKey>{};
+  final Map<int, CatchMapMarkerBitmap> _clusterBitmaps =
+      <int, CatchMapMarkerBitmap>{};
+  final Set<int> _pendingClusterBitmapCounts = <int>{};
+  final Set<int> _failedClusterBitmapCounts = <int>{};
   late LocationCoordinate _lastAppliedCenter;
   late double _cameraZoom;
   LocationCoordinate? _pendingCameraCenter;
   double? _pendingCameraZoom;
   LocationCoordinate? _lastReportedCameraCenter;
+  Offset? _distanceRingLabelOffset;
+  int _distanceRingProjectionGeneration = 0;
 
   @override
   void initState() {
@@ -77,6 +97,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
 
   @override
   void dispose() {
+    _distanceRingProjectionGeneration += 1;
     _mapController = null;
     super.dispose();
   }
@@ -86,19 +107,35 @@ class _EventPinsMapState extends State<EventPinsMap> {
     super.didChangeDependencies();
     _pinBitmaps.clear();
     _pendingPinBitmapKeys.clear();
+    _clusterBitmaps.clear();
+    _pendingClusterBitmapCounts.clear();
   }
 
   @override
   void didUpdateWidget(covariant EventPinsMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final nextCenter = _effectiveCameraCenter;
-    if (!_samePoint(_lastAppliedCenter, nextCenter)) {
-      _lastAppliedCenter = nextCenter;
-      _lastReportedCameraCenter = nextCenter;
+    final nextSelectedCenter = widget.selectedEventCenter;
+    if (nextSelectedCenter != null &&
+        !_samePoint(_lastAppliedCenter, nextSelectedCenter)) {
+      _lastAppliedCenter = nextSelectedCenter;
+      _lastReportedCameraCenter = nextSelectedCenter;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        widget.onCameraCenterChanged?.call(nextCenter);
-        _moveCameraTo(nextCenter, animate: true);
+        widget.onCameraCenterChanged?.call(nextSelectedCenter);
+        _moveCameraTo(nextSelectedCenter, animate: !_reduceMotion);
+      });
+    }
+    if (!_sameEventMapCoordinates(
+          [...oldWidget.items, ...oldWidget.externalItems],
+          [...widget.items, ...widget.externalItems],
+        ) ||
+        oldWidget.userLocation != widget.userLocation ||
+        oldWidget.distanceRingRadiusKm != widget.distanceRingRadiusKm ||
+        oldWidget.distanceRingLabel != widget.distanceRingLabel) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        unawaited(_fitOverview(animate: !_reduceMotion));
+        unawaited(_updateDistanceRingLabelOffset());
       });
     }
   }
@@ -106,6 +143,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
   @override
   Widget build(BuildContext context) {
     final onEventSelected = widget.onEventSelected;
+    final onExternalEventSelected = widget.onExternalEventSelected;
     final pinnedItems = _pinnedItems;
 
     if (!widget.enableNetworkTiles) {
@@ -114,34 +152,96 @@ class _EventPinsMapState extends State<EventPinsMap> {
         selectedEventId: widget.selectedEventId,
         userLocation: widget.userLocation,
         distanceRingRadiusKm: widget.distanceRingRadiusKm,
+        distanceRingLabel: widget.distanceRingLabel,
+        distanceRingSemanticHint: widget.distanceRingSemanticHint,
         onEventSelected: onEventSelected,
+        onExternalEventSelected: onExternalEventSelected,
         onMapTapped: widget.onMapTapped,
+        onDistanceRingTapped: widget.onDistanceRingTapped,
       );
     }
 
-    final markerGroups = _markerGroups(pinnedItems);
+    final markerGroups = _eventMapMarkerGroups(pinnedItems, _cameraZoom);
     _ensureMapPinBitmaps(markerGroups);
 
-    return CatchGoogleMap(
-      initialCenter: widget.initialCenter,
-      initialZoom: widget.initialZoom,
-      markers: {
-        for (final group in markerGroups) _markerFor(group, onEventSelected),
-      },
-      circles: _mapCircles(context),
-      onTap: widget.onMapTapped == null ? null : (_) => widget.onMapTapped!(),
-      onCameraMove: _handleCameraMove,
-      onCameraIdle: _handleCameraIdle,
-      onMapCreated: (controller) {
-        _mapController = controller;
-        _moveCameraTo(_lastAppliedCenter, animate: false);
-      },
+    final ringLabel = widget.distanceRingLabel?.trim();
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: CatchGoogleMap(
+            initialCenter: widget.initialCenter,
+            initialZoom: widget.initialZoom,
+            markers: _markersFor(markerGroups).toSet(),
+            circles: _mapCircles(context),
+            rotateGesturesEnabled: false,
+            tiltGesturesEnabled: false,
+            onTap: widget.onMapTapped == null
+                ? null
+                : (_) => widget.onMapTapped!(),
+            onCameraMove: _handleCameraMove,
+            onCameraIdle: _handleCameraIdle,
+            onMapCreated: (controller) {
+              _mapController = controller;
+              final selectedCenter = widget.selectedEventCenter;
+              if (selectedCenter != null) {
+                _moveCameraTo(selectedCenter, animate: false);
+              } else {
+                unawaited(_fitOverview(animate: false));
+              }
+              unawaited(_updateDistanceRingLabelOffset());
+            },
+          ),
+        ),
+        if (_distanceRingLabelOffset case final offset?
+            when ringLabel != null && ringLabel.isNotEmpty)
+          AnimatedPositioned(
+            duration: _mapOverlayMotionDuration(context),
+            curve: CatchMotion.standardCurve,
+            left: offset.dx,
+            top: offset.dy,
+            child: FractionalTranslation(
+              translation: const Offset(-0.5, -0.5),
+              child: CatchDistanceRingLabel(
+                label: ringLabel,
+                semanticHint: widget.distanceRingSemanticHint,
+                onTap: widget.onDistanceRingTapped,
+              ),
+            ),
+          ),
+        if (widget.showOverviewControl)
+          Positioned(
+            top: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: CatchSpacing.s16,
+                  right: CatchSpacing.s5,
+                ),
+                child: CatchIconButton(
+                  variant: CatchIconButtonVariant.float,
+                  tooltip: context
+                      .l10n
+                      .eventsEventPinsMapTooltipShowAllEventsAndDistance,
+                  onTap: _restoreOverview,
+                  child: Icon(CatchIcons.fitMap),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
-  List<EventMapItem> get _pinnedItems => widget.items
-      .where((item) => item.event.hasExactStartingPoint)
-      .toList(growable: false);
+  Iterable<CatchMapMarker> _markersFor(List<_MapMarkerGroup> groups) sync* {
+    for (final group in groups) {
+      final marker = _markerFor(group);
+      if (marker != null) yield marker;
+    }
+  }
+
+  List<EventMapPinItem> get _pinnedItems =>
+      List.unmodifiable([...widget.items, ...widget.externalItems]);
 
   Set<CatchMapCircle> _mapCircles(BuildContext context) {
     final userLocation = widget.userLocation;
@@ -155,12 +255,8 @@ class _EventPinsMapState extends State<EventPinsMap> {
           center: userLocation,
           radiusMeters: ringRadiusKm * 1000,
           strokeWidth: 2,
-          strokeColor: t.primary.withValues(
-            alpha: CatchOpacity.mapDistanceRingStroke,
-          ),
-          fillColor: t.primary.withValues(
-            alpha: CatchOpacity.mapDistanceRingFill,
-          ),
+          strokeColor: t.ink.withValues(alpha: CatchOpacity.distanceRing),
+          fillColor: Colors.transparent,
           consumeTapEvents: widget.onDistanceRingTapped != null,
           onTap: widget.onDistanceRingTapped,
         ),
@@ -177,70 +273,49 @@ class _EventPinsMapState extends State<EventPinsMap> {
     };
   }
 
-  CatchMapMarker _markerFor(
-    _MapMarkerGroup group,
-    ValueChanged<Event>? onEventSelected,
-  ) {
+  CatchMapMarker? _markerFor(_MapMarkerGroup group) {
     if (group.isCluster) {
+      final bitmap = _clusterBitmaps[group.items.length];
+      if (bitmap == null &&
+          !_failedClusterBitmapCounts.contains(group.items.length)) {
+        return null;
+      }
       return CatchMapMarker(
         id: group.id,
         position: group.center,
-        hue: CatchMapMarkerHue.azure,
-        infoTitle: context.l10n.eventsEventPinsMapVisiblecopyLengthEventsNearby(
-          length: group.items.length,
+        bitmap: bitmap,
+        anchor: bitmap == null ? const Offset(0.5, 1) : const Offset(0.5, 0.5),
+        zIndex: 3,
+        infoTitle: context.l10n.eventsEventPinsMapSemanticsEventCluster(
+          count: group.items.length,
         ),
-        infoSnippet: context.l10n.eventsEventPinsMapVisiblecopyTapToZoomIn,
+        consumeTapEvents: true,
         onTap: () => _zoomToCluster(group),
       );
     }
     final item = group.items.single;
-    final tileData = item.tileData;
     final iconKey = _eventMapPinIconKey(item);
-    final isSelected = item.event.id == widget.selectedEventId;
-    return CatchMapMarker(
-      id: item.event.id,
-      position: LocationCoordinate(
-        item.event.effectiveStartingPointLat!,
-        item.event.effectiveStartingPointLng!,
-      ),
-      hue: _markerHueFor(item.status),
-      bitmap: _pinBitmaps[iconKey],
-      zIndex: isSelected ? 2 : 1,
-      infoTitle: context.l10n.eventsEventPinsMapVisiblecopyTimelabelTitle(
-        timeLabel: tileData.timeLabel,
-        title: tileData.title,
-      ),
-      infoSnippet: tileData.meetingPoint,
-      onTap: onEventSelected == null ? null : () => onEventSelected(item.event),
+    final isSelected = item.mapId == widget.selectedEventId;
+    final restingKey = _EventMapPinIconKey(
+      activityKindName: item.activityKind.name,
+      selected: false,
+      label: null,
     );
-  }
-
-  List<_MapMarkerGroup> _markerGroups(List<EventMapItem> pinnedItems) {
-    if (pinnedItems.length < 6 || _cameraZoom >= 14) {
-      return [for (final item in pinnedItems) _MapMarkerGroup.single(item)];
-    }
-    final cellDegrees = _clusterCellDegrees(_cameraZoom);
-    final buckets = <String, List<EventMapItem>>{};
-    for (final item in pinnedItems) {
-      final lat = item.event.effectiveStartingPointLat!;
-      final lng = item.event.effectiveStartingPointLng!;
-      final key = context.l10n.eventsEventPinsMapVisiblecopyFloorFloor2(
-        floor: (lat / cellDegrees).floor(),
-        floor2: (lng / cellDegrees).floor(),
-      );
-      buckets.putIfAbsent(key, () => <EventMapItem>[]).add(item);
-    }
-
-    return [
-      for (final entry in buckets.entries)
-        if (entry.value.length == 1)
-          _MapMarkerGroup.single(entry.value.single)
-        else
-          _MapMarkerGroup.cluster(
-            id: 'cluster-${entry.key}-${entry.value.length}',
-            items: entry.value,
-          ),
-    ];
+    final bitmapState = eventMapPinBitmapState(
+      selectedBitmap: _pinBitmaps[iconKey],
+      restingBitmap: _pinBitmaps[restingKey],
+      rasterFailed: _failedPinBitmapKeys.contains(iconKey),
+    );
+    if (!bitmapState.publish) return null;
+    return CatchMapMarker(
+      id: item.mapId,
+      position: item.coordinate,
+      bitmap: bitmapState.bitmap,
+      zIndex: isSelected ? 2 : 1,
+      infoTitle: eventMapMarkerSemanticLabel(item),
+      consumeTapEvents: true,
+      onTap: _canSelect(item) ? () => _select(item) : null,
+    );
   }
 
   void _moveCameraTo(LocationCoordinate center, {required bool animate}) {
@@ -260,9 +335,56 @@ class _EventPinsMapState extends State<EventPinsMap> {
     unawaited(controller.animateTo(group.center, zoom: nextZoom));
   }
 
+  bool get _reduceMotion =>
+      MediaQuery.maybeOf(context)?.disableAnimations == true;
+
+  void _restoreOverview() {
+    catchTransitionHaptic();
+    unawaited(_fitOverview(animate: !_reduceMotion));
+  }
+
+  Future<void> _fitOverview({required bool animate}) async {
+    final controller = _mapController;
+    if (controller == null) return;
+    final coordinates = <LocationCoordinate>[
+      for (final item in _pinnedItems) item.coordinate,
+    ];
+    final userLocation = widget.userLocation;
+    final radiusKm = widget.distanceRingRadiusKm;
+    if (userLocation != null && radiusKm != null && radiusKm > 0) {
+      coordinates.addAll(
+        eventMapRingBoundsCoordinates(
+          userLocation,
+          distanceMeters: radiusKm * 1000,
+        ),
+      );
+    }
+    if (coordinates.isEmpty) coordinates.add(widget.initialCenter);
+    try {
+      await controller.fitCoordinates(
+        coordinates,
+        padding: CatchSpacing.s16,
+        animate: animate,
+      );
+    } catch (error, stackTrace) {
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stackTrace,
+          library: 'Catch event map',
+          context: ErrorDescription('fitting the event map overview'),
+        ),
+      );
+      _moveCameraTo(widget.initialCenter, animate: animate);
+    }
+  }
+
   void _handleCameraMove(CatchMapCameraPosition position) {
     _pendingCameraCenter = position.center;
     _pendingCameraZoom = position.zoom;
+    if (_distanceRingLabelOffset != null) {
+      setState(() => _distanceRingLabelOffset = null);
+    }
   }
 
   void _handleCameraIdle() {
@@ -277,6 +399,51 @@ class _EventPinsMapState extends State<EventPinsMap> {
     if (nextZoom != null && (nextZoom - _cameraZoom).abs() >= 0.05) {
       setState(() => _cameraZoom = nextZoom);
     }
+    unawaited(_updateDistanceRingLabelOffset());
+  }
+
+  Future<void> _updateDistanceRingLabelOffset() async {
+    final generation = ++_distanceRingProjectionGeneration;
+    final controller = _mapController;
+    final center = widget.userLocation;
+    final radiusKm = widget.distanceRingRadiusKm;
+    final label = widget.distanceRingLabel?.trim();
+    if (controller == null ||
+        center == null ||
+        radiusKm == null ||
+        radiusKm <= 0 ||
+        label == null ||
+        label.isEmpty) {
+      if (mounted && _distanceRingLabelOffset != null) {
+        setState(() => _distanceRingLabelOffset = null);
+      }
+      return;
+    }
+
+    try {
+      final edge = eventMapCoordinateNorthOf(
+        center,
+        distanceMeters: radiusKm * 1000,
+      );
+      final pixelRatio = MediaQuery.maybeDevicePixelRatioOf(context) ?? 1;
+      final offset = await controller.screenOffsetFor(
+        edge,
+        devicePixelRatio: pixelRatio,
+      );
+      if (!mounted || generation != _distanceRingProjectionGeneration) return;
+      setState(() => _distanceRingLabelOffset = offset);
+    } catch (error, stackTrace) {
+      if (!mounted || generation != _distanceRingProjectionGeneration) return;
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stackTrace,
+          library: 'Catch event map',
+          context: ErrorDescription('projecting the distance-ring label'),
+        ),
+      );
+      setState(() => _distanceRingLabelOffset = null);
+    }
   }
 
   LocationCoordinate get _effectiveCameraCenter =>
@@ -286,18 +453,62 @@ class _EventPinsMapState extends State<EventPinsMap> {
     final pixelRatio = MediaQuery.maybeDevicePixelRatioOf(context) ?? 1;
     final t = CatchTokens.of(context);
     final textStyle = CatchTextStyles.badge(context, color: t.primaryInk);
+    final clusterTextStyle = CatchTextStyles.badge(context, color: t.bg);
+    final mapLibraryLabel =
+        context.l10n.eventsEventPinsMapVisiblecopyCatchEventMap;
+    final buildingPinLabel =
+        context.l10n.eventsEventPinsMapVisiblecopyBuildingEventMapPin;
 
     for (final group in markerGroups) {
-      if (group.isCluster) continue;
-      final item = group.items.single;
-      final key = _eventMapPinIconKey(item);
-      if (_pinBitmaps.containsKey(key) || _pendingPinBitmapKeys.contains(key)) {
+      if (group.isCluster) {
+        final count = group.items.length;
+        if (_clusterBitmaps.containsKey(count) ||
+            _pendingClusterBitmapCounts.contains(count) ||
+            _failedClusterBitmapCounts.contains(count)) {
+          continue;
+        }
+        _pendingClusterBitmapCounts.add(count);
+        unawaited(
+          buildEventMapClusterPinBitmap(
+                count: count,
+                fillColor: t.ink,
+                borderColor: t.surface,
+                pixelRatio: pixelRatio,
+                textStyle: clusterTextStyle,
+              )
+              .then((bitmap) {
+                if (!mounted) return;
+                setState(() {
+                  _pendingClusterBitmapCounts.remove(count);
+                  _clusterBitmaps[count] = bitmap;
+                });
+              })
+              .catchError((Object error, StackTrace stackTrace) {
+                FlutterError.reportError(
+                  FlutterErrorDetails(
+                    exception: error,
+                    stack: stackTrace,
+                    library: 'Catch event map',
+                    context: ErrorDescription('building event cluster marker'),
+                  ),
+                );
+                if (!mounted) return;
+                setState(() {
+                  _pendingClusterBitmapCounts.remove(count);
+                  _failedClusterBitmapCounts.add(count);
+                });
+              }),
+        );
         continue;
       }
-      final activity = ActivityPalette.resolve(
-        context,
-        item.event.activityKind,
-      );
+      final item = group.items.single;
+      final key = _eventMapPinIconKey(item);
+      if (_pinBitmaps.containsKey(key) ||
+          _pendingPinBitmapKeys.contains(key) ||
+          _failedPinBitmapKeys.contains(key)) {
+        continue;
+      }
+      final activity = ActivityPalette.resolve(context, item.activityKind);
       _pendingPinBitmapKeys.add(key);
       unawaited(
         _buildEventMapPinBitmap(
@@ -323,35 +534,110 @@ class _EventPinsMapState extends State<EventPinsMap> {
                 FlutterErrorDetails(
                   exception: error,
                   stack: stackTrace,
-                  library:
-                      context.l10n.eventsEventPinsMapVisiblecopyCatchEventMap,
-                  context: ErrorDescription(
-                    context
-                        .l10n
-                        .eventsEventPinsMapVisiblecopyBuildingEventMapPin,
-                  ),
+                  library: mapLibraryLabel,
+                  context: ErrorDescription(buildingPinLabel),
                 ),
               );
               if (!mounted) return;
-              setState(() => _pendingPinBitmapKeys.remove(key));
+              setState(() {
+                _pendingPinBitmapKeys.remove(key);
+                _failedPinBitmapKeys.add(key);
+              });
             }),
       );
     }
   }
 
-  _EventMapPinIconKey _eventMapPinIconKey(EventMapItem item) {
-    final selected = item.event.id == widget.selectedEventId;
+  _EventMapPinIconKey _eventMapPinIconKey(EventMapPinItem item) {
+    final selected = item.mapId == widget.selectedEventId;
     return _EventMapPinIconKey(
-      activityKindName: item.event.activityKind.name,
+      activityKindName: item.activityKind.name,
       selected: selected,
       label: selected ? eventMapPinFlagLabel(item) : null,
     );
   }
+
+  bool _canSelect(EventMapPinItem item) => switch (item) {
+    EventMapItem() => widget.onEventSelected != null,
+    ExternalEventMapItem() => widget.onExternalEventSelected != null,
+  };
+
+  void _select(EventMapPinItem item) {
+    switch (item) {
+      case EventMapItem(:final event):
+        widget.onEventSelected?.call(event);
+      case ExternalEventMapItem(:final event):
+        widget.onExternalEventSelected?.call(event);
+    }
+  }
 }
 
 @visibleForTesting
-String eventMapPinFlagLabel(EventMapItem item) {
-  return '${item.event.activityKind.label.toUpperCase()} · ${item.tileData.timeLabel.toUpperCase()}';
+LocationCoordinate eventMapCoordinateNorthOf(
+  LocationCoordinate center, {
+  required double distanceMeters,
+}) {
+  const earthRadiusMeters = 6371008.8;
+  final latitudeDeltaDegrees =
+      (distanceMeters / earthRadiusMeters) * (180 / math.pi);
+  return LocationCoordinate(
+    (center.latitude + latitudeDeltaDegrees).clamp(-90.0, 90.0),
+    center.longitude,
+  );
+}
+
+@visibleForTesting
+List<LocationCoordinate> eventMapRingBoundsCoordinates(
+  LocationCoordinate center, {
+  required double distanceMeters,
+}) {
+  const earthRadiusMeters = 6371008.8;
+  final latitudeRadians = center.latitude * math.pi / 180;
+  final latitudeDelta = (distanceMeters / earthRadiusMeters) * (180 / math.pi);
+  final longitudeScale = math.max(math.cos(latitudeRadians).abs(), 0.01);
+  final longitudeDelta =
+      (distanceMeters / (earthRadiusMeters * longitudeScale)) * (180 / math.pi);
+  return <LocationCoordinate>[
+    LocationCoordinate(
+      (center.latitude + latitudeDelta).clamp(-90.0, 90.0),
+      center.longitude,
+    ),
+    LocationCoordinate(
+      center.latitude,
+      (center.longitude + longitudeDelta).clamp(-180.0, 180.0),
+    ),
+    LocationCoordinate(
+      (center.latitude - latitudeDelta).clamp(-90.0, 90.0),
+      center.longitude,
+    ),
+    LocationCoordinate(
+      center.latitude,
+      (center.longitude - longitudeDelta).clamp(-180.0, 180.0),
+    ),
+  ];
+}
+
+Duration _mapOverlayMotionDuration(BuildContext context) {
+  return MediaQuery.maybeOf(context)?.disableAnimations == true
+      ? Duration.zero
+      : CatchMotion.calendarScroll;
+}
+
+@visibleForTesting
+String eventMapPinFlagLabel(EventMapPinItem item) => item.pinFlagLabel;
+
+@visibleForTesting
+String eventMapMarkerSemanticLabel(EventMapPinItem item) =>
+    item.markerSemanticLabel;
+
+@visibleForTesting
+({CatchMapMarkerBitmap? bitmap, bool publish}) eventMapPinBitmapState({
+  required CatchMapMarkerBitmap? selectedBitmap,
+  required CatchMapMarkerBitmap? restingBitmap,
+  required bool rasterFailed,
+}) {
+  final bitmap = selectedBitmap ?? restingBitmap;
+  return (bitmap: bitmap, publish: bitmap != null || rasterFailed);
 }
 
 class _EventMapPinIconKey {
@@ -497,6 +783,55 @@ Future<CatchMapMarkerBitmap> _buildEventMapPinBitmap({
   );
 }
 
+@visibleForTesting
+Future<CatchMapMarkerBitmap> buildEventMapClusterPinBitmap({
+  required int count,
+  required Color fillColor,
+  required Color borderColor,
+  required double pixelRatio,
+  required TextStyle textStyle,
+}) async {
+  const logicalSize = CatchSpacing.s10;
+  final recorder = ui.PictureRecorder();
+  final canvas = Canvas(recorder)..scale(pixelRatio);
+  const center = Offset(logicalSize / 2, logicalSize / 2);
+  canvas.drawCircle(center, logicalSize / 2, Paint()..color = borderColor);
+  canvas.drawCircle(
+    center,
+    logicalSize / 2 - CatchStroke.selection,
+    Paint()..color = fillColor,
+  );
+  final painter = TextPainter(
+    text: TextSpan(text: '$count', style: textStyle),
+    textDirection: TextDirection.ltr,
+    textScaler: TextScaler.noScaling,
+  )..layout(maxWidth: logicalSize);
+  painter.paint(
+    canvas,
+    Offset(
+      (logicalSize - painter.width) / 2,
+      (logicalSize - painter.height) / 2,
+    ),
+  );
+  final picture = recorder.endRecording();
+  final image = await picture.toImage(
+    (logicalSize * pixelRatio).ceil(),
+    (logicalSize * pixelRatio).ceil(),
+  );
+  final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  image.dispose();
+  picture.dispose();
+  final bytes = byteData?.buffer.asUint8List();
+  if (bytes == null || bytes.isEmpty) {
+    throw StateError('Unable to render event cluster marker bitmap');
+  }
+  return CatchMapMarkerBitmap(
+    bytes: bytes,
+    logicalSize: const Size.square(logicalSize),
+    imagePixelRatio: pixelRatio,
+  );
+}
+
 class _MapMarkerGroup {
   _MapMarkerGroup._({
     required this.id,
@@ -505,30 +840,27 @@ class _MapMarkerGroup {
     required this.isCluster,
   });
 
-  factory _MapMarkerGroup.single(EventMapItem item) {
+  factory _MapMarkerGroup.single(EventMapPinItem item) {
     return _MapMarkerGroup._(
-      id: item.event.id,
+      id: item.mapId,
       items: [item],
-      center: LocationCoordinate(
-        item.event.effectiveStartingPointLat!,
-        item.event.effectiveStartingPointLng!,
-      ),
+      center: item.coordinate,
       isCluster: false,
     );
   }
 
   factory _MapMarkerGroup.cluster({
     required String id,
-    required List<EventMapItem> items,
+    required List<EventMapPinItem> items,
   }) {
     final lat =
         items
-            .map((item) => item.event.effectiveStartingPointLat!)
+            .map((item) => item.coordinate.latitude)
             .reduce((left, right) => left + right) /
         items.length;
     final lng =
         items
-            .map((item) => item.event.effectiveStartingPointLng!)
+            .map((item) => item.coordinate.longitude)
             .reduce((left, right) => left + right) /
         items.length;
     return _MapMarkerGroup._(
@@ -540,10 +872,47 @@ class _MapMarkerGroup {
   }
 
   final String id;
-  final List<EventMapItem> items;
+  final List<EventMapPinItem> items;
   final LocationCoordinate center;
   final bool isCluster;
 }
+
+List<_MapMarkerGroup> _eventMapMarkerGroups(
+  List<EventMapPinItem> pinnedItems,
+  double cameraZoom,
+) {
+  if (pinnedItems.length < 6 || cameraZoom >= 14) {
+    return [for (final item in pinnedItems) _MapMarkerGroup.single(item)];
+  }
+  final cellDegrees = _clusterCellDegrees(cameraZoom);
+  final buckets = <String, List<EventMapPinItem>>{};
+  for (final item in pinnedItems) {
+    final lat = item.coordinate.latitude;
+    final lng = item.coordinate.longitude;
+    final key = '${(lat / cellDegrees).floor()}:${(lng / cellDegrees).floor()}';
+    buckets.putIfAbsent(key, () => <EventMapPinItem>[]).add(item);
+  }
+
+  return [
+    for (final entry in buckets.entries)
+      if (entry.value.length == 1)
+        _MapMarkerGroup.single(entry.value.single)
+      else
+        _MapMarkerGroup.cluster(
+          id: 'cluster-${entry.key}-${entry.value.length}',
+          items: entry.value,
+        ),
+  ];
+}
+
+@visibleForTesting
+List<int> eventMapMarkerGroupSizes(
+  List<EventMapPinItem> pinnedItems, {
+  required double cameraZoom,
+}) => _eventMapMarkerGroups(
+  pinnedItems,
+  cameraZoom,
+).map((group) => group.items.length).toList(growable: false);
 
 class EventPinsMapPlaceholder extends StatelessWidget {
   const EventPinsMapPlaceholder({
@@ -552,16 +921,24 @@ class EventPinsMapPlaceholder extends StatelessWidget {
     required this.selectedEventId,
     required this.userLocation,
     required this.distanceRingRadiusKm,
+    this.distanceRingLabel,
+    this.distanceRingSemanticHint,
     required this.onEventSelected,
+    this.onExternalEventSelected,
     this.onMapTapped,
+    this.onDistanceRingTapped,
   });
 
-  final List<EventMapItem> items;
+  final List<EventMapPinItem> items;
   final String? selectedEventId;
   final LocationCoordinate? userLocation;
   final double? distanceRingRadiusKm;
+  final String? distanceRingLabel;
+  final String? distanceRingSemanticHint;
   final ValueChanged<Event>? onEventSelected;
+  final ValueChanged<ExternalEvent>? onExternalEventSelected;
   final VoidCallback? onMapTapped;
+  final VoidCallback? onDistanceRingTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -576,6 +953,10 @@ class EventPinsMapPlaceholder extends StatelessWidget {
           final markerTop = constraints.maxHeight * 0.32;
           final markerWidth = constraints.maxWidth / (items.length + 1);
 
+          final fallbackRingSize = eventMapFixtureRingSize(
+            radiusKm: ringRadiusKm,
+            viewport: constraints.biggest,
+          );
           return Semantics(
             container: true,
             explicitChildNodes: true,
@@ -590,44 +971,16 @@ class EventPinsMapPlaceholder extends StatelessWidget {
                     onPointerUp: onMapTapped == null
                         ? null
                         : (_) => onMapTapped!(),
-                    child: CustomPaint(
-                      painter: _EventPinsMapPlaceholderPainter(
-                        backgroundColor: t.primarySoft,
-                        waterColor: t.primary.withValues(
-                          alpha: CatchOpacity.mapDistanceRingFill,
-                        ),
-                        parkColor: t.success.withValues(
-                          alpha: CatchOpacity.photoScrimLight,
-                        ),
-                        roadColor: t.ink.withValues(
-                          alpha: CatchOpacity.photoScrimMedium,
-                        ),
-                        minorRoadColor: t.ink.withValues(
-                          alpha: CatchOpacity.photoScrimLight,
-                        ),
-                        routeColor: t.primary.withValues(
-                          alpha: CatchOpacity.mapDistanceRingStroke,
-                        ),
-                        dotColor: t.ink.withValues(
-                          alpha: CatchOpacity.warningFill,
-                        ),
-                      ),
-                    ),
+                    child: const SizedBox.expand(),
                   ),
                 ),
                 if (showDistanceRing)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: CustomPaint(
-                        painter: _EventPinsMapDistanceRingPainter(
-                          fillColor: t.primary.withValues(
-                            alpha: CatchOpacity.mapDistanceRingFill,
-                          ),
-                          strokeColor: t.primary.withValues(
-                            alpha: CatchOpacity.mapDistanceRingStroke,
-                          ),
-                        ),
-                      ),
+                  Center(
+                    child: CatchDistanceRing(
+                      size: fallbackRingSize,
+                      label: distanceRingLabel,
+                      semanticHint: distanceRingSemanticHint,
+                      onTap: onDistanceRingTapped,
                     ),
                   ),
                 for (final indexed in items.indexed)
@@ -639,33 +992,52 @@ class EventPinsMapPlaceholder extends StatelessWidget {
                         markerTop +
                         (indexed.$1.isEven ? 0 : CatchSpacing.s6) -
                         _placeholderPinAnchorOffset(
-                          selectedEventId == indexed.$2.event.id,
+                          selectedEventId == indexed.$2.mapId,
                         ),
                     width: _placeholderPinSlotWidth,
                     child: Semantics(
-                      button: onEventSelected != null,
-                      selected: selectedEventId == indexed.$2.event.id,
-                      label: onEventSelected == null
+                      button: _canSelectMapItem(
+                        indexed.$2,
+                        onEventSelected: onEventSelected,
+                        onExternalEventSelected: onExternalEventSelected,
+                      ),
+                      selected: selectedEventId == indexed.$2.mapId,
+                      label:
+                          !_canSelectMapItem(
+                            indexed.$2,
+                            onEventSelected: onEventSelected,
+                            onExternalEventSelected: onExternalEventSelected,
+                          )
                           ? context.l10n
                                 .eventsEventPinsMapLabelLocationnameLocation(
-                                  locationName: indexed.$2.event.locationName,
+                                  locationName: indexed.$2.locationName,
                                 )
                           : context.l10n
                                 .eventsEventPinsMapLabelSelectLocationname(
-                                  locationName: indexed.$2.event.locationName,
+                                  locationName: indexed.$2.locationName,
                                 ),
                       child: GestureDetector(
-                        onTap: onEventSelected == null
+                        onTap:
+                            !_canSelectMapItem(
+                              indexed.$2,
+                              onEventSelected: onEventSelected,
+                              onExternalEventSelected: onExternalEventSelected,
+                            )
                             ? null
-                            : () => onEventSelected!(indexed.$2.event),
+                            : () => _selectMapItem(
+                                indexed.$2,
+                                onEventSelected: onEventSelected,
+                                onExternalEventSelected:
+                                    onExternalEventSelected,
+                              ),
                         child: Center(
                           child: CatchActivityMapPin(
-                            activityKind: indexed.$2.event.activityKind,
-                            selected: selectedEventId == indexed.$2.event.id,
-                            label: selectedEventId == indexed.$2.event.id
+                            activityKind: indexed.$2.activityKind,
+                            selected: selectedEventId == indexed.$2.mapId,
+                            label: selectedEventId == indexed.$2.mapId
                                 ? eventMapPinFlagLabel(indexed.$2)
                                 : null,
-                            size: selectedEventId == indexed.$2.event.id
+                            size: selectedEventId == indexed.$2.mapId
                                 ? CatchLayout.activityMapPinSelectedSize
                                 : CatchLayout.activityMapPinRestingSize,
                           ),
@@ -682,207 +1054,68 @@ class EventPinsMapPlaceholder extends StatelessWidget {
   }
 }
 
+@visibleForTesting
+double eventMapFixtureRingSize({
+  required double? radiusKm,
+  required Size viewport,
+}) {
+  final requested = switch (radiusKm) {
+    null => CatchLayout.distanceRingDefaultSize,
+    <= 1 => 150.0,
+    <= 3 => 290.0,
+    <= 5 => 460.0,
+    _ => 640.0,
+  };
+  final available = math.min(viewport.width, viewport.height) * 0.9;
+  return math.min(requested, available);
+}
+
 double _placeholderPinAnchorOffset(bool selected) {
   if (!selected) return CatchLayout.activityMapPinRestingSize / 2;
   return CatchLayout.activityMapPinSelectedSize + CatchSpacing.s5;
 }
 
-class _EventPinsMapDistanceRingPainter extends CustomPainter {
-  const _EventPinsMapDistanceRingPainter({
-    required this.fillColor,
-    required this.strokeColor,
-  });
+bool _canSelectMapItem(
+  EventMapPinItem item, {
+  required ValueChanged<Event>? onEventSelected,
+  required ValueChanged<ExternalEvent>? onExternalEventSelected,
+}) => switch (item) {
+  EventMapItem() => onEventSelected != null,
+  ExternalEventMapItem() => onExternalEventSelected != null,
+};
 
-  final Color fillColor;
-  final Color strokeColor;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final radius = math.min(size.width, size.height) * 0.26;
-    final center = Offset(size.width * 0.5, size.height * 0.56);
-    canvas.drawCircle(center, radius, Paint()..color = fillColor);
-    canvas.drawCircle(
-      center,
-      radius,
-      Paint()
-        ..color = strokeColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
-    );
+void _selectMapItem(
+  EventMapPinItem item, {
+  required ValueChanged<Event>? onEventSelected,
+  required ValueChanged<ExternalEvent>? onExternalEventSelected,
+}) {
+  switch (item) {
+    case EventMapItem(:final event):
+      onEventSelected?.call(event);
+    case ExternalEventMapItem(:final event):
+      onExternalEventSelected?.call(event);
   }
-
-  @override
-  bool shouldRepaint(covariant _EventPinsMapDistanceRingPainter oldDelegate) {
-    return oldDelegate.fillColor != fillColor ||
-        oldDelegate.strokeColor != strokeColor;
-  }
-}
-
-class _EventPinsMapPlaceholderPainter extends CustomPainter {
-  const _EventPinsMapPlaceholderPainter({
-    required this.backgroundColor,
-    required this.waterColor,
-    required this.parkColor,
-    required this.roadColor,
-    required this.minorRoadColor,
-    required this.routeColor,
-    required this.dotColor,
-  });
-
-  final Color backgroundColor;
-  final Color waterColor;
-  final Color parkColor;
-  final Color roadColor;
-  final Color minorRoadColor;
-  final Color routeColor;
-  final Color dotColor;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final basePaint = Paint()..color = backgroundColor;
-    canvas.drawRect(Offset.zero & size, basePaint);
-
-    final waterPaint = Paint()
-      ..color = waterColor
-      ..style = PaintingStyle.fill;
-    final waterPath = Path()
-      ..moveTo(size.width * 0.58, 0)
-      ..quadraticBezierTo(
-        size.width * 0.88,
-        size.height * 0.08,
-        size.width,
-        size.height * 0.22,
-      )
-      ..lineTo(size.width, size.height)
-      ..quadraticBezierTo(
-        size.width * 0.76,
-        size.height * 0.78,
-        size.width * 0.64,
-        size.height * 0.52,
-      )
-      ..quadraticBezierTo(
-        size.width * 0.50,
-        size.height * 0.26,
-        size.width * 0.58,
-        0,
-      )
-      ..close();
-    canvas.drawPath(waterPath, waterPaint);
-
-    final parkPaint = Paint()
-      ..color = parkColor
-      ..style = PaintingStyle.fill;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          size.width * 0.07,
-          size.height * 0.14,
-          size.width * 0.26,
-          size.height * 0.20,
-        ),
-        const Radius.circular(CatchRadius.md),
-      ),
-      parkPaint,
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          size.width * 0.22,
-          size.height * 0.58,
-          size.width * 0.32,
-          size.height * 0.22,
-        ),
-        const Radius.circular(CatchRadius.lg),
-      ),
-      parkPaint,
-    );
-
-    final roadPaint = Paint()
-      ..color = roadColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-    final minorRoadPaint = Paint()
-      ..color = minorRoadColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-    for (var i = -2; i < 8; i += 1) {
-      final y = size.height * (i * 0.16);
-      canvas.drawLine(
-        Offset(-size.width * 0.1, y),
-        Offset(size.width * 1.1, y + size.height * 0.34),
-        i.isEven ? roadPaint : minorRoadPaint,
-      );
-    }
-    for (var i = 0; i < 7; i += 1) {
-      final x = size.width * (i * 0.18);
-      canvas.drawLine(
-        Offset(x, -size.height * 0.08),
-        Offset(x - size.width * 0.22, size.height * 1.08),
-        minorRoadPaint,
-      );
-    }
-
-    final routePaint = Paint()
-      ..color = routeColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..strokeCap = StrokeCap.round;
-    final routePath = Path()
-      ..moveTo(size.width * 0.12, size.height * 0.74)
-      ..cubicTo(
-        size.width * 0.32,
-        size.height * 0.66,
-        size.width * 0.45,
-        size.height * 0.80,
-        size.width * 0.60,
-        size.height * 0.68,
-      )
-      ..cubicTo(
-        size.width * 0.72,
-        size.height * 0.58,
-        size.width * 0.78,
-        size.height * 0.38,
-        size.width * 0.92,
-        size.height * 0.32,
-      );
-    canvas.drawPath(routePath, routePaint);
-
-    final dotPaint = Paint()..color = dotColor;
-    for (var i = 0; i < 12; i += 1) {
-      final x = size.width * ((i * 0.19) % 1.0);
-      final y = size.height * (0.12 + ((i * 0.31) % 0.74));
-      canvas.drawCircle(Offset(x, y), 3, dotPaint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _EventPinsMapPlaceholderPainter oldDelegate) =>
-      oldDelegate.backgroundColor != backgroundColor ||
-      oldDelegate.waterColor != waterColor ||
-      oldDelegate.parkColor != parkColor ||
-      oldDelegate.roadColor != roadColor ||
-      oldDelegate.minorRoadColor != minorRoadColor ||
-      oldDelegate.routeColor != routeColor ||
-      oldDelegate.dotColor != dotColor;
 }
 
 bool _samePoint(LocationCoordinate a, LocationCoordinate b) =>
     a.latitude == b.latitude && a.longitude == b.longitude;
 
-CatchMapMarkerHue _markerHueFor(EventTileStatus status) {
-  return switch (status) {
-    EventTileStatus.joined ||
-    EventTileStatus.hosted ||
-    EventTileStatus.attended => CatchMapMarkerHue.green,
-    EventTileStatus.saved => CatchMapMarkerHue.azure,
-    EventTileStatus.waitlisted ||
-    EventTileStatus.full => CatchMapMarkerHue.orange,
-    EventTileStatus.ineligible ||
-    EventTileStatus.cancelled => CatchMapMarkerHue.rose,
-    EventTileStatus.past => CatchMapMarkerHue.yellow,
-    EventTileStatus.recommended ||
-    EventTileStatus.open => CatchMapMarkerHue.red,
+bool _sameEventMapCoordinates(
+  List<EventMapPinItem> previous,
+  List<EventMapPinItem> next,
+) {
+  if (identical(previous, next)) return true;
+  if (previous.length != next.length) return false;
+  final previousCoordinates = {
+    for (final item in previous)
+      '${item.mapId}:${item.coordinate.latitude}:${item.coordinate.longitude}',
   };
+  final nextCoordinates = {
+    for (final item in next)
+      '${item.mapId}:${item.coordinate.latitude}:${item.coordinate.longitude}',
+  };
+  return previousCoordinates.length == nextCoordinates.length &&
+      previousCoordinates.containsAll(nextCoordinates);
 }
 
 double _clusterCellDegrees(double zoom) {

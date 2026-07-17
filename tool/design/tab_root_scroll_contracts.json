@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 2,
+  "logicalName": "catch-tab-root-scroll-clearance",
+  "routerPath": "lib/routing/go_router.dart",
+  "shells": [
+    {
+      "path": "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
+      "requires": [
+        {"text": "final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0", "minimumOccurrences": 1},
+        {"text": "final candidateTabBarFloats =", "minimumOccurrences": 1},
+        {"text": "body: candidateTabBarFloats", "minimumOccurrences": 1},
+        {"text": "AppShellBottomBarPlacement.none", "minimumOccurrences": 1}
+      ],
+      "forbids": [
+        {"text": "body: tabBarFloats"},
+        {"text": "final anchoredBar = tabBarFloats ?"}
+      ]
+    },
+    {
+      "path": "lib/core/presentation/app_shell.dart",
+      "requires": [
+        {"text": "return CatchAdaptiveTabScaffold(", "minimumOccurrences": 1},
+        {"text": "navigationBar: authenticatedNavigationBar", "minimumOccurrences": 1},
+        {"text": "anchoredFallback: showGuestAuthCta ? const GuestAuthCtaBar() : null", "minimumOccurrences": 1}
+      ],
+      "forbids": [
+        {"text": "CatchTabBar.floatsFor(context)"},
+        {"text": "AppShellActiveTab("}
+      ]
+    },
+    {
+      "path": "lib/core/presentation/host_app_shell.dart",
+      "requires": [
+        {"text": "return CatchAdaptiveTabScaffold(", "minimumOccurrences": 1},
+        {"text": "navigationBar: authenticatedNavigationBar", "minimumOccurrences": 1}
+      ],
+      "forbids": [
+        {"text": "CatchTabBar.floatsFor(context)"},
+        {"text": "AppShellActiveTab("}
+      ]
+    }
+  ],
+  "branches": [
+    {
+      "branchKey": "_dashboardShellKey",
+      "routeName": "Routes.dashboardScreen.name",
+      "owners": [
+        {
+          "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/dashboard/presentation/dashboard_empty_home_screen.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/dashboard/presentation/dashboard_loading_screen.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/dashboard/presentation/dashboard_error_screen.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        }
+      ]
+    },
+    {
+      "branchKey": "_exploreShellKey",
+      "routeName": "Routes.exploreScreen.name",
+      "owners": [
+        {
+          "path": "lib/explore/presentation/explore_screen.dart",
+          "requires": [
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        }
+      ]
+    },
+    {
+      "branchKey": "_chatsShellKey",
+      "routeName": "Routes.matchesListScreen.name",
+      "owners": [
+        {
+          "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        }
+      ]
+    },
+    {
+      "branchKey": "_profileShellKey",
+      "routeName": "Routes.profileScreen.name",
+      "owners": [
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "NestedScrollView", "minimumOccurrences": 1},
+            {"text": "ProfileTabScrollView", "minimumOccurrences": 1},
+            {"text": "managesFieldVisibility: true", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+          "requires": [
+            {"text": "if (includeTerminalPadding)", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/swipes/shared/profile_surface/profile_surface.dart",
+          "requires": [
+            {"text": "if (includeTerminalPadding)", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/user_profile/presentation/widgets/preview_tab.dart",
+          "requires": [
+            {"text": "includeTerminalPadding: true", "minimumOccurrences": 1}
+          ]
+        }
+      ]
+    },
+    {
+      "branchKey": "_hostTodayShellKey",
+      "routeName": "Routes.hostHomeScreen.name",
+      "owners": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 2},
+            {"text": "CatchScrollTerminalPadding", "minimumOccurrences": 2}
+          ]
+        }
+      ]
+    },
+    {
+      "branchKey": "_hostEventsShellKey",
+      "routeName": "Routes.hostEventsScreen.name",
+      "owners": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 2},
+            {"text": "CatchScrollTerminalPadding", "minimumOccurrences": 2}
+          ]
+        }
+      ]
+    },
+    {
+      "branchKey": "_hostInboxShellKey",
+      "routeName": "Routes.hostInboxScreen.name",
+      "owners": [
+        {
+          "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        }
+      ]
+    },
+    {
+      "branchKey": "_hostOrganizerShellKey",
+      "routeName": "Routes.hostOrganizerScreen.name",
+      "owners": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "requires": [
+            {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 1},
+            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
+            {"text": "CatchScrollTerminalPadding", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/core/widgets/catch_tabbed_screen.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "if (widget.includeTerminalPadding)", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        }
+      ]
+    }
+  ]
+}

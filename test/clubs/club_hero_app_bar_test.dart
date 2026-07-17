@@ -81,6 +81,39 @@ void main() {
       expect(find.byType(ClubPolaroidArtwork), findsNothing);
       expect(find.text('Stride Social'), findsOneWidget);
     });
+
+    testWidgets('embedded preview renders the hero without route chrome', (
+      tester,
+    ) async {
+      final club = buildClub();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                ClubHeroAppBar(
+                  club: club,
+                  isHost: false,
+                  presentationMode:
+                      ClubHeroPresentationMode.embeddedReadOnlyPreview,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(const ValueKey('club-detail-hero-module')),
+        findsOneWidget,
+      );
+      expect(find.byType(SliverAppBar), findsNothing);
+      expect(find.byTooltip('Back'), findsNothing);
+      expect(find.byTooltip('Share club'), findsNothing);
+    });
   });
 }
 

@@ -460,7 +460,9 @@ BackendErrorMapper _paymentErrorMapper({required String fallbackMessage}) {
       );
     }
     return PaymentFailedException(
-      error.toString().isEmpty ? fallbackMessage : error.toString(),
+      // Unexpected SDK/runtime errors may contain implementation details or
+      // user data. Keep those diagnostics off the user-facing message.
+      fallbackMessage,
       debugMessage: '${error.runtimeType}: $error',
       cause: error,
       stackTrace: stackTrace,

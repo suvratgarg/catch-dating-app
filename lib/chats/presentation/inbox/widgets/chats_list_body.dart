@@ -50,7 +50,6 @@ class ChatsListBody extends StatelessWidget {
             matches: threads,
             onThreadSelected: onThreadSelected,
           ),
-        const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
       ],
     );
   }

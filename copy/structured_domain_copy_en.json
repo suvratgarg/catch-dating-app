@@ -2,6 +2,15 @@
   "version": 1,
   "locale": "en",
   "owner": "marketing",
+  "eventSuccessModuleMetadata": {
+    "crowdBalance": { "hostConfigurable": false },
+    "checkIn": { "hostConfigurable": false },
+    "wingmanRequests": { "hostConfigurable": false },
+    "contextualOpeners": { "hostConfigurable": false },
+    "decomposedFeedback": { "hostConfigurable": false },
+    "hostAnalytics": { "hostConfigurable": false },
+    "safetyControls": { "hostConfigurable": false }
+  },
   "constants": {
     "eventTitleMorning": {
       "value": "Morning",
@@ -718,7 +727,7 @@
       "description": "Event Success modules copy for checkIn.riskControls."
     },
     "modules.firstHelloCheckIn.title.1": {
-      "value": "First Hello check-in",
+      "value": "Arrival icebreaker",
       "description": "Event Success modules copy for firstHelloCheckIn.title."
     },
     "modules.firstHelloCheckIn.attendeePromise.1": {
@@ -978,7 +987,7 @@
       "description": "Event Success modules copy for contextualOpeners.riskControls."
     },
     "modules.decomposedFeedback.title.1": {
-      "value": "After-event attendee feedback",
+      "value": "Attendee feedback",
       "description": "Event Success modules copy for decomposedFeedback.title."
     },
     "modules.decomposedFeedback.attendeePromise.1": {

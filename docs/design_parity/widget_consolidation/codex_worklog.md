@@ -1283,6 +1283,19 @@ class CatchAnalyticsSection extends StatelessWidget {
 - [x] mappers + migrations + deletions
 - [x] regen + registries + receipts
 
+### 2026-07-16 user-reviewed correction
+
+The WO-018 metric/data adapters remain valid, but its new
+`CatchAnalyticsSection` shell no longer does. Once `CatchSection` became the
+handoff owner for dividers, section rhythm, heading semantics, and field-row
+composition, the analytics-only label-plus-gap wrapper created visible drift
+in Profile Insights and Host analytics. The reviewed correction absorbs that
+shell into `CatchSection`, removes caller-owned inter-section gaps, migrates
+loaded and loading analytics structures together, and restores Profile
+Suggestions/Data coverage content to `CatchSection.fieldRows` plus
+`CatchField.content`. The superseding decision is recorded as
+`drift: CatchAnalyticsSection/CatchSection` in `decisions.json`.
+
 ## WO-019 — Pill merge + privacy badge unification
 
 1. **DarkPill → EventSuccessDarkPill** (ledger: absorb): move

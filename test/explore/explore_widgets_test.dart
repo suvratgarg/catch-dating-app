@@ -17,28 +17,30 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -64,6 +66,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/creat
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -76,6 +79,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart' show LaunchMode;
 
 import '../clubs/clubs_test_helpers.dart';
 import '../events/events_test_helpers.dart' as event_test;
@@ -118,6 +122,19 @@ ExploreCityPickerState _testCityPickerState({
 class _NoDeviceLocation extends DeviceLocation {
   @override
   Future<LocationCoordinate?> build() async => null;
+
+  @override
+  Future<LocationCoordinate?> request() async => null;
+}
+
+class _FixedDeviceLocation extends DeviceLocation {
+  @override
+  Future<LocationCoordinate?> build() async =>
+      const LocationCoordinate(19.0608, 72.8365);
+
+  @override
+  Future<LocationCoordinate?> request() async =>
+      const LocationCoordinate(19.0608, 72.8365);
 }
 
 Future<void> _pumpClubsSlivers(
@@ -595,9 +612,11 @@ void main() {
       expect(find.textContaining('COMING UP'), findsNothing);
       expect(find.textContaining('2 PLANS'), findsOneWidget);
       expect(find.byType(CatchCoverStory), findsNothing);
-      expect(find.textContaining(featuredEvent.title), findsWidgets);
-      expect(find.textContaining(bodyEvent.title), findsWidgets);
-      expect(find.text('8 going · 4 spots left'), findsNWidgets(2));
+      expect(find.text('Social run'), findsOneWidget);
+      expect(
+        find.textContaining('8 GOING · 4 SPOTS LEFT', findRichText: true),
+        findsNWidgets(2),
+      );
     });
 
     testWidgets(
@@ -827,8 +846,14 @@ void main() {
       }
 
       expect(find.text('Club directory'), findsOneWidget);
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -500));
-      await tester.pump();
+      for (
+        var index = 0;
+        index < 10 && dayHeader.hitTestable().evaluate().isNotEmpty;
+        index += 1
+      ) {
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -300));
+        await tester.pump();
+      }
       expect(dayHeader.hitTestable(), findsNothing);
       expect(tester.takeException(), isNull);
     });
@@ -886,7 +911,7 @@ void main() {
         ),
       ]);
 
-      expect(find.textContaining(bodyEvent.title), findsWidgets);
+      expect(find.text('Social run'), findsWidgets);
       expect(find.bySubtype<CatchInlineErrorState>(), findsOneWidget);
     });
 
@@ -1384,11 +1409,11 @@ void main() {
         expect(find.text('This week'), findsOneWidget);
         expect(find.text('COMING UP · 6'), findsOneWidget);
         expect(find.textContaining('Long Table'), findsOneWidget);
-        expect(find.textContaining('Run'), findsOneWidget);
+        expect(find.textContaining('Social run'), findsOneWidget);
         expect(find.textContaining('Sketching Strangers'), findsOneWidget);
         expect(find.textContaining('Dinner'), findsWidgets);
         expect(find.textContaining('Pickleball'), findsWidgets);
-        expect(find.textContaining('Pub Quiz'), findsWidgets);
+        expect(find.textContaining('Pub quiz'), findsWidgets);
         expect(find.byType(EventDateRailCard), findsNWidgets(6));
         expect(find.byType(CatchCoverStory), findsNothing);
       },
@@ -1458,8 +1483,11 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('6 going · full'), findsOneWidget);
-      expect(find.text('FULL'), findsNothing);
+      expect(
+        find.textContaining('6 GOING · FULL', findRichText: true),
+        findsOneWidget,
+      );
+      expect(find.byType(EventStatusPill), findsNothing);
     });
 
     testWidgets('Explore event type browse index updates the activity filter', (
@@ -1691,7 +1719,9 @@ void main() {
                   slivers: [
                     ...CatchSliverHeader(
                       title: const SizedBox.shrink(),
-                      bottomHeight: CatchLayout.topBarHeight,
+                      bottomHeight: CatchScreenTopBar.heightFor(
+                        context: context,
+                      ),
                       bottom: ExploreBrowseHeaderContent(
                         query: container.read(exploreSearchQueryProvider),
                         onQueryChanged: (value) => container
@@ -1721,7 +1751,7 @@ void main() {
       final initialTitleTop = tester.getTopLeft(find.text('Explore')).dy;
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -220));
-      await tester.pump();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Explore').hitTestable(), findsOneWidget);
       expect(find.byType(ExploreCityPicker).hitTestable(), findsOneWidget);
@@ -1871,10 +1901,10 @@ void main() {
             builder: (_, _) => Scaffold(
               body: Builder(
                 builder: (context) => CustomScrollView(
-                  slivers: const CatchSliverHeader(
-                    title: SizedBox.shrink(),
-                    bottomHeight: CatchLayout.topBarHeight,
-                    bottom: ExploreBrowseHeaderContent(),
+                  slivers: CatchSliverHeader(
+                    title: const SizedBox.shrink(),
+                    bottomHeight: CatchScreenTopBar.heightFor(context: context),
+                    bottom: const ExploreBrowseHeaderContent(),
                   ).buildSlivers(context),
                 ),
               ),
@@ -2587,7 +2617,7 @@ void main() {
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -700));
       await _pumpClubUi(tester);
-      expect(find.text('HOSTED'), findsOneWidget);
+      expect(find.textContaining('HOSTED', findRichText: true), findsOneWidget);
     });
 
     testWidgets(
@@ -2858,13 +2888,16 @@ void main() {
         );
         await _pumpClubUi(tester);
 
-        final scrollView = tester.widget<CustomScrollView>(
-          find.byType(CustomScrollView),
+        final detailGroup = tester.widget<SliverMainAxisGroup>(
+          find.descendant(
+            of: find.byType(ClubDetailBody),
+            matching: find.byType(SliverMainAxisGroup),
+          ),
         );
-        expect(scrollView.slivers[2], isA<ClubScheduleSection>());
-        expect(scrollView.slivers[3], isA<CatchDetailSliverSectionList>());
+        expect(detailGroup.children[2], isA<ClubScheduleSection>());
+        expect(detailGroup.children[3], isA<CatchDetailSliverSectionList>());
         final trailingSections =
-            scrollView.slivers[3] as CatchDetailSliverSectionList;
+            detailGroup.children[3] as CatchDetailSliverSectionList;
         expect(
           trailingSections.sections.whereType<CatchSection>().map(
             (section) => section.title,
@@ -3183,7 +3216,13 @@ void main() {
 
         expect(find.byType(CatchCoverStory), findsNothing);
         expect(find.byType(EventDateRailCard), findsOneWidget);
-        expect(find.text(event.title), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(EventDateRailCard),
+            matching: find.text('Social run'),
+          ),
+          findsOneWidget,
+        );
         expect(find.textContaining('1 PLAN'), findsOneWidget);
 
         await tester.tap(find.byTooltip('Close search'));
@@ -3247,7 +3286,14 @@ void main() {
 
       expect(find.text(event.title), findsOneWidget);
       expect(find.byType(CatchCoverStory), findsOneWidget);
-      expect(find.text('Map · 1'), findsOneWidget);
+      expect(find.text('Map'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(CatchCountPill),
+          matching: find.text('1'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('No clubs in Mumbai yet'), findsNothing);
     });
 
@@ -3350,7 +3396,11 @@ void main() {
       );
       expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
       expect(find.text('Filters'), findsNothing);
-      expect(find.byType(CatchCountPill), findsOneWidget);
+      expect(
+        find.byType(CatchCountPill),
+        findsNothing,
+        reason: 'The map launcher stays hidden without mapped event supply.',
+      );
       expect(find.text('3 km'), findsNothing);
       expect(find.text('Joined clubs'), findsNothing);
       expect(find.text('Rated 4.5+'), findsNothing);
@@ -3493,6 +3543,10 @@ void main() {
 
     testWidgets('ExploreScreen map pill opens the map route', (tester) async {
       final club = buildClub(id: 'club-map-pill', name: 'Bandra Pacers');
+      final event = event_test.buildEvent(
+        id: 'event-map-pill',
+        clubId: club.id,
+      );
       final router = GoRouter(
         initialLocation: '/',
         routes: [
@@ -3500,7 +3554,8 @@ void main() {
           GoRoute(
             path: '/map',
             name: Routes.exploreMapScreen.name,
-            builder: (_, _) => const ExploreMapScreen(),
+            builder: (_, _) =>
+                const ExploreMapScreen(enableNetworkTiles: false),
           ),
         ],
       );
@@ -3514,7 +3569,19 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value([club])),
-            _emptyExploreFeedOverride,
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: event,
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
           child: MaterialApp.router(
             theme: AppTheme.light,
@@ -3548,6 +3615,10 @@ void main() {
           CatchLayout.tabBarFloatingBottomInset +
           bottomSafeArea;
       final club = buildClub(id: 'club-map-clearance', name: 'Bandra Pacers');
+      final event = event_test.buildEvent(
+        id: 'event-map-clearance',
+        clubId: club.id,
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -3558,7 +3629,19 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value([club])),
-            _emptyExploreFeedOverride,
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: event,
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -3589,6 +3672,7 @@ void main() {
         mapPillRect.bottom,
         lessThanOrEqualTo(tabBarTop - CatchSpacing.s5 + 0.5),
       );
+      expect(mapPillRect.center.dx, closeTo(393 / 2, 0.5));
     });
 
     testWidgets('ExploreMapScreen can seed selected pin for captures', (
@@ -3599,8 +3683,6 @@ void main() {
         id: 'event-map-selected',
         clubId: club.id,
         meetingPoint: 'Selected Pin Point',
-        startingPointLat: 19.0608,
-        startingPointLng: 72.8365,
         startTime: DateTime.now().add(const Duration(days: 1)),
       );
 
@@ -3626,6 +3708,7 @@ void main() {
           child: MaterialApp(
             theme: AppTheme.light,
             home: const ExploreMapScreen(
+              enableNetworkTiles: false,
               initialSelectedEventId: 'event-map-selected',
             ),
           ),
@@ -3643,7 +3726,7 @@ void main() {
       expect(find.text('BANDRA MAP CLUB'), findsOneWidget);
     });
 
-    testWidgets('ExploreMapScreen default uses resilient Catch pin map', (
+    testWidgets('ExploreMapScreen defaults to the native Google map', (
       tester,
     ) async {
       final club = buildClub(id: 'club-map-default', name: 'Default Map Club');
@@ -3651,8 +3734,6 @@ void main() {
         id: 'event-map-default',
         clubId: club.id,
         meetingPoint: 'Default Pin Point',
-        startingPointLat: 19.0608,
-        startingPointLng: 72.8365,
         startTime: DateTime.now().add(const Duration(days: 1)),
       );
 
@@ -3683,10 +3764,252 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
-      expect(find.byType(gmaps.GoogleMap), findsNothing);
-      expect(find.bySemanticsLabel('Select Default Pin Point'), findsOneWidget);
+      expect(find.byType(EventPinsMapPlaceholder), findsNothing);
+      expect(find.byType(gmaps.GoogleMap), findsOneWidget);
     });
+
+    testWidgets('ExploreMapScreen keeps Any until distance is activated', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'club-map-ring', name: 'Ring Map Club');
+      final event = event_test.buildEvent(
+        id: 'event-map-ring',
+        clubId: club.id,
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_FixedDeviceLocation.new),
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: event,
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreMapScreen(enableNetworkTiles: false),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+      await tester.pump();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(ExploreMapScreen)),
+      );
+      expect(
+        container.read(exploreFiltersProvider).distanceFilter,
+        ExploreDistanceFilter.any,
+      );
+      expect(find.text('Distance'), findsOneWidget);
+      expect(find.text('ANY'), findsOneWidget);
+      expect(find.byType(CatchDistanceRing), findsNothing);
+
+      await tester.tap(find.text('Distance'));
+      await tester.pump();
+      expect(
+        container.read(exploreFiltersProvider).distanceFilter,
+        ExploreDistanceFilter.oneKm,
+      );
+      expect(find.text('WITHIN 1 KM'), findsOneWidget);
+
+      await tester.tap(find.text('WITHIN 1 KM'));
+      await tester.pump();
+      expect(
+        container.read(exploreFiltersProvider).distanceFilter,
+        ExploreDistanceFilter.threeKm,
+      );
+      expect(find.text('WITHIN 3 KM'), findsOneWidget);
+
+      await tester.tap(find.text('WITHIN 3 KM'));
+      await tester.pump();
+      expect(
+        container.read(exploreFiltersProvider).distanceFilter,
+        ExploreDistanceFilter.fiveKm,
+      );
+      expect(find.text('WITHIN 5 KM'), findsOneWidget);
+
+      await tester.tap(find.text('WITHIN 5 KM'));
+      await tester.pump();
+      expect(
+        container.read(exploreFiltersProvider).distanceFilter,
+        ExploreDistanceFilter.tenKm,
+      );
+      expect(find.text('WITHIN 10 KM'), findsOneWidget);
+
+      await tester.tap(find.text('WITHIN 10 KM'));
+      await tester.pump();
+      expect(
+        container.read(exploreFiltersProvider).distanceFilter,
+        ExploreDistanceFilter.any,
+      );
+      expect(find.text('WITHIN 10 KM'), findsNothing);
+      expect(find.text('ANY'), findsOneWidget);
+    });
+
+    testWidgets(
+      'ExploreMapScreen keeps the ring on zero results and offers recovery',
+      (tester) async {
+        final club = buildClub(
+          id: 'club-map-recovery',
+          name: 'Map Recovery Club',
+        );
+        final event = event_test.buildEvent(
+          id: 'event-map-recovery',
+          clubId: club.id,
+          meetingPoint: 'Recovery Pin Point',
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              cityListProvider.overrideWith((ref) async => _testCities),
+              deviceLocationProvider.overrideWith(_FixedDeviceLocation.new),
+              exploreFeedViewModelProvider.overrideWith((ref) {
+                final distance = ref
+                    .watch(exploreFiltersProvider)
+                    .distanceFilter;
+                final isEmpty =
+                    distance == ExploreDistanceFilter.oneKm ||
+                    distance == ExploreDistanceFilter.tenKm;
+                return AsyncData(
+                  ExploreFeedViewModel(
+                    items: isEmpty
+                        ? const []
+                        : [
+                            ExploreEventItem(
+                              event: event,
+                              club: club,
+                              status: EventTileStatus.open,
+                            ),
+                          ],
+                  ),
+                );
+              }),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ExploreMapScreen(enableNetworkTiles: false),
+            ),
+          ),
+        );
+        await _pumpClubUi(tester);
+
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(ExploreMapScreen)),
+        );
+        await tester.tap(find.text('Distance'));
+        await _pumpClubUi(tester);
+
+        expect(find.text('No events within 1 km'), findsOneWidget);
+        expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
+        expect(find.byType(CatchDistanceRing), findsOneWidget);
+        expect(find.text('Expand to 3 km'), findsOneWidget);
+
+        await tester.tap(find.text('Expand to 3 km'));
+        await _pumpClubUi(tester);
+
+        expect(
+          container.read(exploreFiltersProvider).distanceFilter,
+          ExploreDistanceFilter.threeKm,
+        );
+        expect(find.text('No events within 1 km'), findsNothing);
+        expect(
+          find.bySemanticsLabel('Select Recovery Pin Point'),
+          findsOneWidget,
+        );
+
+        container
+            .read(exploreFiltersProvider.notifier)
+            .setDistanceFilter(ExploreDistanceFilter.tenKm);
+        await _pumpClubUi(tester);
+
+        expect(find.text('No events within 10 km'), findsOneWidget);
+        expect(find.textContaining('Expand to'), findsNothing);
+        expect(find.text('Show all'), findsOneWidget);
+
+        await tester.tap(find.text('Show all'));
+        await _pumpClubUi(tester);
+
+        expect(
+          container.read(exploreFiltersProvider).distanceFilter,
+          ExploreDistanceFilter.any,
+        );
+        expect(find.byType(CatchDistanceRing), findsNothing);
+        expect(
+          find.bySemanticsLabel('Select Recovery Pin Point'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'ExploreMapScreen keeps browsing after location is unavailable',
+      (tester) async {
+        final club = buildClub(
+          id: 'club-map-location-denied',
+          name: 'Location Optional Club',
+        );
+        final event = event_test.buildEvent(
+          id: 'event-map-location-denied',
+          clubId: club.id,
+        );
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              cityListProvider.overrideWith((ref) async => _testCities),
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+              exploreFeedViewModelProvider.overrideWithValue(
+                AsyncData(
+                  ExploreFeedViewModel(
+                    items: [
+                      ExploreEventItem(
+                        event: event,
+                        club: club,
+                        status: EventTileStatus.open,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ExploreMapScreen(enableNetworkTiles: false),
+            ),
+          ),
+        );
+        await _pumpClubUi(tester);
+
+        await tester.tap(find.text('Use my location'));
+        await tester.pump();
+
+        expect(
+          find.text('Location is unavailable. You can still browse the map.'),
+          findsOneWidget,
+        );
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(ExploreMapScreen)),
+        );
+        expect(
+          container.read(exploreFiltersProvider).distanceFilter,
+          ExploreDistanceFilter.any,
+        );
+        expect(find.byType(CatchDistanceRing), findsNothing);
+        expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
+        expect(find.bySemanticsLabel('Select Carter Road'), findsOneWidget);
+      },
+    );
 
     testWidgets('ExploreMapScreen selects pin before navigating from card', (
       tester,
@@ -3696,14 +4019,16 @@ void main() {
         id: 'event-map-nav',
         clubId: club.id,
         meetingPoint: 'Race Course Road main gate',
-        startingPointLat: 19.0608,
-        startingPointLng: 72.8365,
         startTime: DateTime.now().add(const Duration(days: 1)),
       );
       final router = GoRouter(
         initialLocation: '/',
         routes: [
-          GoRoute(path: '/', builder: (_, _) => const ExploreMapScreen()),
+          GoRoute(
+            path: '/',
+            builder: (_, _) =>
+                const ExploreMapScreen(enableNetworkTiles: false),
+          ),
           GoRoute(
             path: '/events/:clubId/:eventId',
             name: Routes.eventDetailScreen.name,
@@ -3758,17 +4083,76 @@ void main() {
       await tester.pump(CatchMotion.fast);
 
       expect(find.byType(EventDateRailCard), findsOneWidget);
-      expect(find.text(event.title), findsOneWidget);
+      expect(find.text('Social run'), findsOneWidget);
       expect(find.textContaining('Event event-map-nav'), findsNothing);
 
-      await tester.tap(find.text(event.title));
-      await tester.pumpAndSettle();
+      await tester.tap(find.text('Social run'));
+      await _pumpClubUi(tester);
 
       expect(
         find.text(
           'Event event-map-nav · mapSelectedCard · event-ticket-map-event-map-nav',
         ),
         findsOneWidget,
+      );
+    });
+
+    testWidgets('ExploreMapScreen opens selected external event source', (
+      tester,
+    ) async {
+      final externalEvent = _buildExternalExploreEvent(
+        id: 'external-map-outbound',
+        title: 'Bandra mixer night',
+      );
+      Uri? openedUri;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            appAnalyticsProvider.overrideWithValue(
+              AppAnalytics(shouldCollect: false),
+            ),
+            externalUrlLauncherProvider.overrideWithValue((
+              Uri uri, {
+              LaunchMode mode = LaunchMode.platformDefault,
+            }) async {
+              openedUri = uri;
+              return true;
+            }),
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: const [],
+                  externalItems: [
+                    ExploreExternalEventItem(event: externalEvent),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreMapScreen(enableNetworkTiles: false),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      await tester.tap(find.bySemanticsLabel('Select Bandra Amphitheatre'));
+      await tester.pump(CatchMotion.fast);
+
+      expect(find.text('Bandra mixer night'), findsOneWidget);
+      final outboundAction = find.widgetWithText(CatchButton, 'Open');
+      expect(outboundAction, findsOneWidget);
+
+      await tester.tap(outboundAction);
+      await tester.pump();
+
+      expect(
+        openedUri,
+        Uri.parse('https://district.example/events/external-event-only'),
       );
     });
 
@@ -3780,8 +4164,6 @@ void main() {
         id: 'event-map-clear',
         clubId: club.id,
         meetingPoint: 'Clearable Pin Point',
-        startingPointLat: 19.0608,
-        startingPointLng: 72.8365,
         startTime: DateTime.now().add(const Duration(days: 1)),
       );
 
@@ -3806,7 +4188,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: const ExploreMapScreen(),
+            home: const ExploreMapScreen(enableNetworkTiles: false),
           ),
         ),
       );
@@ -3817,7 +4199,7 @@ void main() {
       expect(find.byType(EventDateRailCard), findsOneWidget);
 
       await tester.tapAt(const Offset(24, 220));
-      await tester.pumpAndSettle();
+      await _pumpClubUi(tester);
 
       expect(find.byType(EventDateRailCard), findsNothing);
     });
@@ -3834,8 +4216,6 @@ void main() {
           id: 'event-map-refresh',
           clubId: club.id,
           meetingPoint: 'Refresh Pin Point',
-          startingPointLat: 19.0608,
-          startingPointLng: 72.8365,
           startTime: DateTime.now().add(const Duration(days: 1)),
         );
 
@@ -3862,7 +4242,7 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: const ExploreMapScreen(),
+              home: const ExploreMapScreen(enableNetworkTiles: false),
             ),
           ),
         );
@@ -3878,7 +4258,7 @@ void main() {
         showSelectedEvent = false;
         container.invalidate(exploreFeedViewModelProvider);
         await tester.pump();
-        await tester.pumpAndSettle();
+        await _pumpClubUi(tester);
 
         expect(find.byType(EventDateRailCard), findsNothing);
       },
@@ -3893,16 +4273,12 @@ void main() {
           id: 'event-map-pin-loss',
           clubId: club.id,
           meetingPoint: 'Pin Loss Point',
-          startingPointLat: 19.0608,
-          startingPointLng: 72.8365,
           startTime: DateTime.now().add(const Duration(days: 1)),
         );
-        final unpinnedEvent = event_test.buildEvent(
-          id: pinnedEvent.id,
-          clubId: club.id,
-          meetingPoint: pinnedEvent.meetingPoint,
-          startTime: pinnedEvent.startTime,
-          endTime: pinnedEvent.endTime,
+        final unpinnedEvent = pinnedEvent.copyWith(
+          meetingLocation: null,
+          startingPointLat: null,
+          startingPointLng: null,
         );
 
         await tester.pumpWidget(
@@ -3926,7 +4302,7 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: const ExploreMapScreen(),
+              home: const ExploreMapScreen(enableNetworkTiles: false),
             ),
           ),
         );
@@ -3936,14 +4312,15 @@ void main() {
         await tester.pump(CatchMotion.fast);
         expect(find.byType(EventDateRailCard), findsOneWidget);
 
-        final ProviderContainer container = ProviderScope.containerOf(
+        final container = ProviderScope.containerOf(
           tester.element(find.byType(ExploreMapScreen)),
         );
         showExactPin = false;
         container.invalidate(exploreFeedViewModelProvider);
         await tester.pump();
-        await tester.pumpAndSettle();
+        await _pumpClubUi(tester);
 
+        expect(find.bySemanticsLabel('Select Pin Loss Point'), findsNothing);
         expect(find.byType(EventDateRailCard), findsNothing);
       },
     );
@@ -4328,108 +4705,6 @@ void main() {
       );
     });
 
-    testWidgets('CreateClubScreen pre-fills fields in edit mode', (
-      tester,
-    ) async {
-      SharedPreferences.setMockInitialValues({});
-      final club = buildClub(
-        ownerUserId: 'host-1',
-        name: 'Morning Miles',
-        area: 'Palasia',
-        location: 'in-mp-indore',
-        description: 'Indore morning loops.',
-      );
-      final container = ProviderContainer(
-        overrides: [uidProvider.overrideWith((ref) => Stream.value('host-1'))],
-      );
-      addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: CreateClubScreen(initialClub: club),
-          ),
-        ),
-      );
-      await _pumpClubUi(tester);
-
-      expect(find.text('Edit club'), findsOneWidget);
-      expect(find.text('Identity'), findsOneWidget);
-      expect(find.text('Contact'), findsOneWidget);
-      expect(find.text('Event defaults'), findsOneWidget);
-      expect(find.text('Next'), findsNothing);
-      expect(find.widgetWithText(TextField, 'Morning Miles'), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Palasia'), findsOneWidget);
-      expect(find.text('Indore'), findsOneWidget);
-      expect(
-        find.widgetWithText(TextField, 'Indore morning loops.'),
-        findsOneWidget,
-      );
-      expect(find.text('Default event policy'), findsOneWidget);
-      expect(find.text('Save changes'), findsOneWidget);
-      expect(find.text('Default event success'), findsOneWidget);
-    });
-
-    testWidgets(
-      'CreateClubScreen clears optional contact fields in edit mode',
-      (tester) async {
-        SharedPreferences.setMockInitialValues({});
-        final fakeRepository = FakeClubsRepository();
-        final club = buildClub(
-          ownerUserId: 'host-1',
-          instagramHandle: '@morningmiles',
-          phoneNumber: '9876543210',
-          email: 'hello@morningmiles.test',
-        );
-        final container = ProviderContainer(
-          overrides: [
-            clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
-            uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          ],
-        );
-        addTearDown(container.dispose);
-        final uidSubscription = container.listen(
-          uidProvider,
-          (_, _) {},
-          fireImmediately: true,
-        );
-        addTearDown(uidSubscription.close);
-        await container.pump();
-
-        await tester.pumpWidget(
-          UncontrolledProviderScope(
-            container: container,
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: CreateClubScreen(initialClub: club),
-            ),
-          ),
-        );
-        await _pumpClubUi(tester);
-
-        await _enterCreateClubText(tester, 'Instagram', '');
-        await _enterCreateClubText(tester, 'Phone', '');
-        await _enterCreateClubText(tester, 'Email', '');
-
-        await tester.tap(find.text('Save changes'));
-        await _pumpClubUi(tester);
-
-        expect(fakeRepository.lastUpdatedClubId, club.id);
-        expect(fakeRepository.lastUpdatedFields!['instagramHandle'], isNull);
-        expect(fakeRepository.lastUpdatedFields!['phoneNumber'], isNull);
-        expect(fakeRepository.lastUpdatedFields!['email'], isNull);
-      },
-    );
-
     testWidgets(
       'CreateClubScreen validates and pops after a successful submit',
       (tester) async {
@@ -4509,11 +4784,11 @@ void main() {
 
         tester.testTextInput.hide();
         await tester.pump();
-        final cityDropdownIcon = find.byIcon(CatchIcons.expandMoreRounded);
-        await tester.ensureVisible(cityDropdownIcon);
-        await tester.tap(cityDropdownIcon);
+        final cityField = _field('City');
+        await tester.ensureVisible(cityField);
+        await tester.tap(cityField);
         await _pumpClubUi(tester);
-        await tester.tap(find.text('Mumbai').hitTestable());
+        await tester.tap(_fieldChoice('Mumbai'));
         await _pumpClubUi(tester);
 
         await tester.tap(find.text('Next'));
@@ -4534,15 +4809,15 @@ void main() {
         await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
 
-        expect(find.text('Default event policy'), findsOneWidget);
+        expect(find.text('DEFAULT EVENT POLICY'), findsOneWidget);
         expect(_field('Cohort caps'), findsOneWidget);
-        expect(_selectChip('OPEN', active: true), findsOneWidget);
+        expect(_fieldChoice('OPEN', selected: true), findsOneWidget);
 
         await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
 
-        expect(find.text('Default event success'), findsOneWidget);
-        expect(_field('Default event success'), findsOneWidget);
+        expect(find.text('Live event guide'), findsOneWidget);
+        expect(_field('Live event guide'), findsOneWidget);
 
         await tester.tap(find.text('Create club'));
         await _pumpClubUi(tester);
@@ -4571,9 +4846,9 @@ Finder _topLevelSearchField() {
 Finder _selectChip(String label, {bool? active}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchSelectChip &&
+        widget is CatchChip &&
         widget.label == label &&
-        (active == null || widget.active == active),
+        (active == null || widget.selected == active),
   );
 }
 
@@ -4591,6 +4866,8 @@ ExternalEvent _buildExternalExploreEvent({
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 2)),
     meetingPoint: 'Bandra Amphitheatre',
+    latitude: 19.0435,
+    longitude: 72.8204,
     activityKind: ActivityKind.singlesMixer,
     interactionModel: EventInteractionModel.freeFormMixer,
     status: 'active',
@@ -4615,16 +4892,11 @@ Finder _field(String label) {
   );
 }
 
-Future<void> _enterCreateClubText(
-  WidgetTester tester,
-  String label,
-  String value,
-) async {
-  final field = find.byWidgetPredicate(
-    (widget) => widget is CatchField && widget.title == label,
+Finder _fieldChoice(String label, {bool? selected}) {
+  return find.byWidgetPredicate(
+    (widget) =>
+        widget is CatchFieldChoiceChip &&
+        widget.label == label &&
+        (selected == null || widget.selected == selected),
   );
-  await tester.ensureVisible(field);
-  await tester.pump();
-  await tester.enterText(field, value);
-  await tester.pump();
 }

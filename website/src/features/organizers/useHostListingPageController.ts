@@ -1,3 +1,5 @@
+import {websiteCopy} from "@content/generated";
+import {websiteTemplates} from "@content/templates";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import type {SiteNavItem} from "../../shared/site";
@@ -26,20 +28,20 @@ export function useHostListingPageController(listing: HostListing) {
   }, [listing.id]);
 
   const nav = useMemo<SiteNavItem[]>(() => [
-    {href: "#profile", label: "Profile"},
-    ...(hasEventSupply ? [{href: "#events", label: "Events"}] : []),
-    {href: "#reviews", label: "Reviews"},
+    {href: "#profile", label: websiteCopy["usehostlistingpagecontroller_0495"]},
+    ...(hasEventSupply ? [{href: "#events", label: websiteCopy["usehostlistingpagecontroller_0493"]}] : []),
+    {href: "#reviews", label: websiteCopy["usehostlistingpagecontroller_0496"]},
     {href: "#fit", label: isAppCreated ? "Format" : "Fit"},
-    ...(!isAppCreated ? [{href: "#sources", label: "Sources"}] : []),
-    {href: "/organizers/", label: "Search"},
-    {href: "/host/", label: "For hosts"},
+    ...(!isAppCreated ? [{href: "#sources", label: websiteCopy["usehostlistingpagecontroller_0498"]}] : []),
+    {href: "/organizers/", label: websiteCopy["usehostlistingpagecontroller_0497"]},
+    {href: "/host/", label: websiteCopy["usehostlistingpagecontroller_0494"]},
   ], [hasEventSupply, isAppCreated]);
 
   const footerLinks = useMemo<SiteNavItem[]>(() => [
-    {href: "/host/", label: "For hosts"},
-    {href: "#profile", label: "Profile"},
-    {href: "#sources", label: "Sources"},
-    {href: claimHref, label: "Claim"},
+    {href: "/host/", label: websiteCopy["usehostlistingpagecontroller_0494"]},
+    {href: "#profile", label: websiteCopy["usehostlistingpagecontroller_0495"]},
+    {href: "#sources", label: websiteCopy["usehostlistingpagecontroller_0498"]},
+    {href: claimHref, label: websiteCopy["usehostlistingpagecontroller_0492"]},
   ], [claimHref]);
 
   const handleSaveListing = useCallback(() => {
@@ -54,7 +56,7 @@ export function useHostListingPageController(listing: HostListing) {
   const handleShareListing = useCallback(async () => {
     const shareUrl = absoluteListingUrl(listing);
     const shareData = {
-      title: `${listing.name} on Catch`,
+      title: websiteTemplates.listingShareTitle(listing.name),
       text: listing.headline,
       url: shareUrl,
     };

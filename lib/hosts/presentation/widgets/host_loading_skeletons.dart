@@ -105,15 +105,24 @@ class HostAnalyticsReportSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return const CatchSectionStack(
       padding: EdgeInsets.zero,
-      gap: CatchSpacing.s4,
       children: [
-        HostAnalyticsMetricGridSkeleton(),
-        HostChartSkeleton(),
-        CatchSkeletonRows(
-          leading: CatchSkeletonRowLeading.mediaTile,
-          divided: true,
+        CatchSection.divided(
+          first: true,
+          child: HostAnalyticsMetricGridSkeleton(),
         ),
-        CatchSkeletonRows(leading: CatchSkeletonRowLeading.icon, divided: true),
+        CatchSection.divided(child: HostChartSkeleton()),
+        CatchSection.divided(
+          child: CatchSkeletonRows(
+            leading: CatchSkeletonRowLeading.mediaTile,
+            divided: true,
+          ),
+        ),
+        CatchSection.divided(
+          child: CatchSkeletonRows(
+            leading: CatchSkeletonRowLeading.icon,
+            divided: true,
+          ),
+        ),
       ],
     );
   }

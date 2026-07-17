@@ -33,7 +33,10 @@ void main() {
       expect(plan.clubId, event.clubId);
       expect(plan.targetAttendeeCount, 28);
       expect(plan.playbookId, EventSuccessPlaybookLibrary.socialRun.id);
-      expect(plan.selectedModuleIds, contains('qr_check_in'));
+      expect(
+        plan.selectedModuleIds,
+        containsAll(plan.playbook.nonConfigurableModuleIds),
+      );
       expect(samePlan.createdAt, plan.createdAt);
     });
 
@@ -53,10 +56,14 @@ void main() {
     test('saves host setup and live step updates', () async {
       final event = buildEvent();
       final plan = await repository.ensurePlanForEvent(event);
-      final draft = plan.hostDraft.toggleModule('wingman_requests');
+      final draft = plan.hostDraft.withModuleSelection(
+        'wingman_requests',
+        false,
+      );
 
       await repository.savePlan(
         plan.copyWithDraft(draft, updatedAt: plan.updatedAt),
+        expectedUpdatedAt: plan.updatedAt,
       );
       await repository.updateActiveStep(eventId: event.id, activeStepIndex: 2);
 
@@ -64,7 +71,7 @@ void main() {
       expect(saved, isNotNull);
       expect(saved!.activeStepIndex, 2);
       expect(saved.status, EventSuccessPlanStatus.live);
-      expect(saved.hasModule('wingman_requests'), isFalse);
+      expect(saved.hasModule('wingman_requests'), isTrue);
     });
 
     test('persists host-controlled live reveal state', () async {

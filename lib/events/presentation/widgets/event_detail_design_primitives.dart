@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
@@ -7,18 +5,15 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailTicketStubBand extends StatelessWidget {
@@ -172,23 +167,25 @@ class EventDetailMapCard extends StatelessWidget {
     this.onTap,
     this.surfaceColor,
     this.borderColor,
+    this.enableNetworkTiles = true,
   });
 
   final Event event;
   final VoidCallback? onTap;
   final Color? surfaceColor;
   final Color? borderColor;
+  final bool enableNetworkTiles;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final activity = ActivityPalette.resolve(context, event.activityKind);
-    final canOpen = event.hasExactStartingPoint && onTap != null;
-    final note = event.hasExactStartingPoint
-        ? context.l10n.eventsEventDetailDesignPrimitivesVisiblecopyPinReady
-        : context
-              .l10n
-              .eventsEventDetailDesignPrimitivesVisiblecopyPinDropsMorningOf;
+    final coordinate = LocationCoordinate.fromNullable(
+      latitude: event.effectiveStartingPointLat,
+      longitude: event.effectiveStartingPointLng,
+    );
+    final canOpen = coordinate != null && onTap != null;
+    final trailingLabel =
+        context.l10n.eventsEventDetailDesignPrimitivesActionViewMap;
 
     return Semantics(
       button: canOpen,
@@ -201,49 +198,63 @@ class EventDetailMapCard extends StatelessWidget {
           child: Ink(
             height: CatchLayout.eventDetailMapCardHeight,
             decoration: BoxDecoration(
-              color: surfaceColor ?? activity.soft,
+              color: surfaceColor ?? t.surface,
               border: Border.all(color: borderColor ?? t.line),
               borderRadius: BorderRadius.circular(CatchRadius.md),
             ),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: CustomPaint(
-                    painter: _MapGridPainter(
-                      lineColor: t.surface.withValues(alpha: 0.52),
-                      routeColor: activity.accent.withValues(alpha: 0.24),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(CatchRadius.md - 1),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: CatchMapPreview(
+                      coordinate: coordinate,
+                      fallbackLabel:
+                          context.l10n.eventsEventPinsMapLabelEventMapPreview,
+                      enableNetworkTiles: enableNetworkTiles,
                     ),
                   ),
-                ),
-                Center(
-                  child: CatchActivityMapPin(
-                    activityKind: event.activityKind,
-                    selected: true,
-                  ),
-                ),
-                Positioned(
-                  left: CatchSpacing.s2,
-                  right: CatchSpacing.s2,
-                  bottom: CatchSpacing.s2,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: MapPill(text: event.locationName, color: t.ink),
-                      ),
-                      gapW8,
-                      MapPill(text: note, color: t.ink2),
-                      if (canOpen) ...[
-                        gapW8,
-                        Icon(
-                          CatchIcons.chevronRightRounded,
-                          color: t.ink2,
-                          size: CatchIcon.xs,
+                  CatchDivider.fieldRow(indent: 0, color: borderColor),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CatchSpacing.s3,
+                      vertical: CatchSpacing.s2,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            event.locationName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: CatchTextStyles.labelL(
+                              context,
+                              color: t.ink,
+                            ),
+                          ),
                         ),
+                        gapW8,
+                        Text(
+                          trailingLabel.toUpperCase(),
+                          maxLines: 1,
+                          style: CatchTextStyles.monoLabelS(
+                            context,
+                            color: t.ink2,
+                          ),
+                        ),
+                        if (canOpen) ...[
+                          gapW4,
+                          Icon(
+                            CatchIcons.chevronRightRounded,
+                            color: t.ink2,
+                            size: CatchIcon.xs,
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -255,32 +266,198 @@ class EventDetailMapCard extends StatelessWidget {
 class EventDetailMechanismList extends StatelessWidget {
   const EventDetailMechanismList({
     super.key,
-    required this.event,
+    required this.rows,
+    required this.activityKind,
     this.dividerColor,
+    this.titleColor,
+    this.bodyColor,
   });
 
-  final Event event;
+  final List<EventDetailFactRow> rows;
+  final ActivityKind activityKind;
   final Color? dividerColor;
+  final Color? titleColor;
+  final Color? bodyColor;
 
   @override
   Widget build(BuildContext context) {
-    final rows = _mechanismsFor(event, context.l10n);
-    final activity = ActivityPalette.resolve(context, event.activityKind);
+    return EventDetailFactList.stacked(
+      rows: rows,
+      activityKind: activityKind,
+      dividerColor: dividerColor,
+      titleColor: titleColor,
+      bodyColor: bodyColor,
+    );
+  }
+}
+
+class EventDetailGoodToKnowList extends StatelessWidget {
+  const EventDetailGoodToKnowList({
+    super.key,
+    required this.rows,
+    required this.activityKind,
+    this.dividerColor,
+    this.titleColor,
+    this.bodyColor,
+  });
+
+  final List<EventDetailFactRow> rows;
+  final ActivityKind activityKind;
+  final Color? dividerColor;
+  final Color? titleColor;
+  final Color? bodyColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return EventDetailFactList.inline(
+      rows: rows,
+      activityKind: activityKind,
+      dividerColor: dividerColor,
+      titleColor: titleColor,
+      bodyColor: bodyColor,
+    );
+  }
+}
+
+/// Flat Event Detail fact rows with structural stacked and inline modes.
+///
+/// Callers supply only rows resolved by [EventDetailInformationState]. The
+/// named constructors keep typography and icon treatment tied to the section
+/// role rather than exposing independent visual switches.
+class EventDetailFactList extends StatelessWidget {
+  const EventDetailFactList.stacked({
+    super.key,
+    required this.rows,
+    required this.activityKind,
+    this.dividerColor,
+    this.titleColor,
+    this.bodyColor,
+  }) : _inline = false,
+       _useActivityColor = true;
+
+  const EventDetailFactList.inline({
+    super.key,
+    required this.rows,
+    required this.activityKind,
+    this.dividerColor,
+    this.titleColor,
+    this.bodyColor,
+  }) : _inline = true,
+       _useActivityColor = false;
+
+  final List<EventDetailFactRow> rows;
+  final ActivityKind activityKind;
+  final Color? dividerColor;
+  final Color? titleColor;
+  final Color? bodyColor;
+  final bool _inline;
+  final bool _useActivityColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final activity = ActivityPalette.resolve(context, activityKind);
 
     return HairlineList(
       itemCount: rows.length,
       dividerColor: dividerColor,
       itemBuilder: (context, index) {
         final row = rows[index];
-        return CatchField.read(
-          icon: row.icon,
-          iconColor: activity.deep,
-          title: row.title,
-          body: row.detail.isEmpty ? null : row.detail,
+        final resolvedTitleColor = titleColor ?? t.ink;
+        final resolvedBodyColor = bodyColor ?? t.ink2;
+        final iconColor = _useActivityColor ? activity.deep : resolvedBodyColor;
+
+        return Padding(
+          padding: EdgeInsets.only(
+            top: index == 0 ? 0 : CatchSpacing.s3,
+            bottom: index == rows.length - 1 ? 0 : CatchSpacing.s3,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: CatchIcon.row,
+                child: Icon(
+                  _eventDetailFactIcon(row.icon, activityIcon: activity.glyph),
+                  size: CatchIcon.md,
+                  color: iconColor,
+                ),
+              ),
+              gapW8,
+              Expanded(
+                child: _inline
+                    ? Text.rich(
+                        TextSpan(
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: resolvedBodyColor,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: _inlineFactLead(row.title),
+                              style: CatchTextStyles.fieldRowTitle(
+                                context,
+                                color: resolvedTitleColor,
+                              ),
+                            ),
+                            TextSpan(text: row.body),
+                          ],
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            row.title,
+                            style: CatchTextStyles.fieldRowTitle(
+                              context,
+                              color: resolvedTitleColor,
+                            ),
+                          ),
+                          gapH2,
+                          Text(
+                            row.body,
+                            style: CatchTextStyles.supporting(
+                              context,
+                              color: resolvedBodyColor,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ],
+          ),
         );
       },
     );
   }
+}
+
+String _inlineFactLead(String title) {
+  final trimmed = title.trim();
+  final hasTerminalPunctuation =
+      trimmed.endsWith('.') || trimmed.endsWith('?') || trimmed.endsWith('!');
+  return '$trimmed${hasTerminalPunctuation ? ' ' : '. '}';
+}
+
+IconData _eventDetailFactIcon(
+  EventDetailFactIcon icon, {
+  required IconData activityIcon,
+}) {
+  return switch (icon) {
+    EventDetailFactIcon.openSignup => CatchIcons.personAddAlt1Outlined,
+    EventDetailFactIcon.inviteOnly => CatchIcons.keyOutlined,
+    EventDetailFactIcon.hostApproval => CatchIcons.personSearchOutlined,
+    EventDetailFactIcon.cohortCaps => CatchIcons.groupsOutlined,
+    EventDetailFactIcon.balancedBooking => CatchIcons.balanceOutlined,
+    EventDetailFactIcon.membersOnly => CatchIcons.cardMembershipOutlined,
+    EventDetailFactIcon.waitlist => CatchIcons.hourglassEmptyRounded,
+    EventDetailFactIcon.pricing => CatchIcons.priceChangeOutlined,
+    EventDetailFactIcon.requirements => CatchIcons.ruleOutlined,
+    EventDetailFactIcon.activity => activityIcon,
+    EventDetailFactIcon.attendance => CatchIcons.qrCode2Outlined,
+    EventDetailFactIcon.cancellation => CatchIcons.refreshRounded,
+  };
 }
 
 const _photoStripTileCount = 3;
@@ -602,46 +779,6 @@ class ItineraryRow extends StatelessWidget {
   }
 }
 
-class MapPill extends StatelessWidget {
-  const MapPill({super.key, required this.text, required this.color});
-
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialWhite.withValues(
-        alpha: CatchOpacity.overlayPillFill,
-      ),
-      borderWidth: 0,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
-      child: Text(
-        text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: CatchTextStyles.monoLabelS(context, color: color),
-      ),
-    );
-  }
-}
-
-class _MechanismRow {
-  const _MechanismRow({
-    required this.icon,
-    required this.title,
-    required this.detail,
-  });
-
-  final IconData icon;
-  final String title;
-  final String detail;
-}
-
 class _TicketStubNotchPainter extends CustomPainter {
   const _TicketStubNotchPainter({required this.color});
 
@@ -681,56 +818,6 @@ class _VerticalDashedPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _VerticalDashedPainter oldDelegate) =>
       oldDelegate.color != color;
-}
-
-class _MapGridPainter extends CustomPainter {
-  const _MapGridPainter({required this.lineColor, required this.routeColor});
-
-  final Color lineColor;
-  final Color routeColor;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final linePaint = Paint()
-      ..color = lineColor
-      ..strokeWidth = 1;
-    for (var x = 18.0; x < size.width; x += 34) {
-      canvas.drawLine(Offset(x, 0), Offset(x - 22, size.height), linePaint);
-    }
-    for (var y = 16.0; y < size.height; y += 30) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y + 18), linePaint);
-    }
-
-    final routePaint = Paint()
-      ..color = routeColor
-      ..strokeWidth = 7
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-    final path = Path()
-      ..moveTo(size.width * 0.08, size.height * 0.72)
-      ..cubicTo(
-        size.width * 0.26,
-        size.height * 0.34,
-        size.width * 0.52,
-        size.height * 0.80,
-        size.width * 0.70,
-        size.height * 0.40,
-      )
-      ..cubicTo(
-        size.width * 0.78,
-        size.height * 0.22,
-        size.width * 0.90,
-        size.height * 0.32,
-        size.width * 0.94,
-        size.height * 0.24,
-      );
-    canvas.drawPath(path, routePaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _MapGridPainter oldDelegate) =>
-      oldDelegate.lineColor != lineColor ||
-      oldDelegate.routeColor != routeColor;
 }
 
 List<TicketStubCellData> _ticketStubCells(Event event, AppLocalizations l10n) {
@@ -801,41 +888,6 @@ List<ItineraryStep> _itineraryFor(Event event, AppLocalizations l10n) {
   ];
 }
 
-List<_MechanismRow> _mechanismsFor(Event event, AppLocalizations l10n) {
-  final policy = event.effectiveEventPolicy;
-  final rows = <_MechanismRow>[
-    _MechanismRow(
-      icon: policy.admissionPolicy.manualApprovalRequired
-          ? CatchIcons.pendingActionsOutlined
-          : CatchIcons.groupOutlined,
-      title: _admissionTitle(policy.admissionPolicy, l10n),
-      detail: _admissionSummary(policy.admissionPolicy, l10n),
-    ),
-  ];
-
-  if (policy.admissionPolicy.waitlistPolicy.isEnabled || event.isFull) {
-    rows.add(
-      _MechanismRow(
-        icon: CatchIcons.pendingActionsOutlined,
-        title: l10n.eventsEventDetailDesignPrimitivesTitleIfItFillsA,
-        detail: l10n.eventsEventDetailDesignPrimitivesDetailSpotsFreeUpIn,
-      ),
-    );
-  }
-
-  rows.add(
-    _MechanismRow(
-      icon: CatchIcons.receiptLongOutlined,
-      title: l10n.eventsEventDetailDesignPrimitivesTitleTitleCancellation(
-        title: policy.cancellationPolicy.title,
-      ),
-      detail: policy.cancellationPolicy.attendeeSummary,
-    ),
-  );
-
-  return rows;
-}
-
 String _interactionHint(EventInteractionModel model, AppLocalizations l10n) {
   return switch (model) {
     EventInteractionModel.pacePods =>
@@ -900,272 +952,4 @@ String _levelLabelFor(ActivityKind activityKind, AppLocalizations l10n) {
     ActivityKind.openActivity =>
       l10n.eventsEventDetailDesignPrimitivesVisiblecopyEnergy,
   };
-}
-
-String _admissionTitle(EventAdmissionPolicy policy, AppLocalizations l10n) {
-  return switch (policy.format) {
-    EventAdmissionFormat.open =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyOpenSignUp,
-    EventAdmissionFormat.inviteOnly =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyInviteOnly,
-    EventAdmissionFormat.manualApproval =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyHostApproval,
-    EventAdmissionFormat.fixedCohortCaps =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyCohortCaps,
-    EventAdmissionFormat.balancedRatio =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyBalancedSingles,
-    EventAdmissionFormat.membersOnly =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyMembersOnly,
-  };
-}
-
-String _admissionSummary(EventAdmissionPolicy policy, AppLocalizations l10n) {
-  return switch (policy.format) {
-    EventAdmissionFormat.open =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyNoApprovalNeededRsvp(
-        capacityLimit: policy.capacityLimit,
-      ),
-    EventAdmissionFormat.fixedCohortCaps =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyBookWithinTotalCapacity,
-    EventAdmissionFormat.balancedRatio =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyStraightMenAndWomen,
-    EventAdmissionFormat.inviteOnly =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyOnlyAttendeesWithThe,
-    EventAdmissionFormat.manualApproval =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyRequestASpotFirst,
-    EventAdmissionFormat.membersOnly =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveClubMembers,
-  };
-}
-
-/// Design-system "your hosts" card (`components/events/HostCard`): a graded
-/// avatar on the activity gradient, the condensed host name with a pigment
-/// verified seal, a mono meta line, an optional three-up stat strip, and two
-/// hairline secondary actions (Message host / View club).
-class EventDetailHostCard extends StatelessWidget {
-  const EventDetailHostCard({
-    super.key,
-    required this.activityKind,
-    required this.hostName,
-    this.photoUrl,
-    this.meta,
-    this.verified = true,
-    this.stats = const <EventDetailHostStat>[],
-    this.messageLabel = 'Message host',
-    this.clubLabel = 'View club',
-    this.onMessage,
-    this.onViewClub,
-    this.surfaceColor,
-    this.borderColor,
-    this.nameColor,
-    this.metaColor,
-    this.statValueColor,
-    this.statLabelColor,
-    this.dividerColor,
-  });
-
-  /// Colors the verified seal and the avatar gradient fallback.
-  final ActivityKind activityKind;
-  final String hostName;
-
-  /// Graded avatar photo; omit for the pigment-gradient fallback.
-  final String? photoUrl;
-
-  /// Mono meta line, already uppercased (e.g. `HOSTING SINCE FEB 2026`).
-  final String? meta;
-  final bool verified;
-  final List<EventDetailHostStat> stats;
-  final String messageLabel;
-  final String clubLabel;
-  final VoidCallback? onMessage;
-  final VoidCallback? onViewClub;
-
-  /// Optional surface-style overrides so the card can sit on the dark spotlight
-  /// detail surface; each falls back to the light token when null.
-  final Color? surfaceColor;
-  final Color? borderColor;
-  final Color? nameColor;
-  final Color? metaColor;
-  final Color? statValueColor;
-  final Color? statLabelColor;
-  final Color? dividerColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final activity = ActivityPalette.resolve(context, activityKind);
-    final hasActions = onMessage != null || onViewClub != null;
-
-    return CatchSurface(
-      backgroundColor: surfaceColor,
-      borderColor: borderColor ?? t.line2,
-      radius: CatchRadius.md,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              HostAvatar(activity: activity, photoUrl: photoUrl),
-              const SizedBox(width: CatchSpacing.s3),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            hostName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style:
-                                CatchTextStyles.name(
-                                  context,
-                                  color: nameColor,
-                                ).copyWith(
-                                  fontSize: CatchLayout.eventDetailHostNameSize,
-                                ),
-                          ),
-                        ),
-                        if (verified) ...[
-                          const SizedBox(width: CatchSpacing.micro6),
-                          Icon(
-                            CatchIcons.sealCheck,
-                            size: CatchLayout.eventDetailHostSealSize,
-                            color: activity.accent,
-                          ),
-                        ],
-                      ],
-                    ),
-                    if (meta != null && meta!.isNotEmpty) ...[
-                      const SizedBox(height: CatchSpacing.s1),
-                      Text(
-                        meta!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.monoLabelS(
-                          context,
-                          color: metaColor,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (stats.isNotEmpty) ...[
-            const SizedBox(height: CatchSpacing.s3),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: dividerColor ?? t.line)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: CatchSpacing.s3),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (final stat in stats)
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              stat.value,
-                              style:
-                                  CatchTextStyles.numericLarge(
-                                    context,
-                                    color: statValueColor,
-                                  ).copyWith(
-                                    fontSize: CatchLayout
-                                        .eventDetailHostStatValueSize,
-                                  ),
-                            ),
-                            const SizedBox(height: CatchSpacing.s1),
-                            Text(
-                              stat.label.toUpperCase(),
-                              style:
-                                  CatchTextStyles.monoLabel(
-                                    context,
-                                    color: statLabelColor ?? t.ink3,
-                                  ).copyWith(
-                                    fontSize: CatchLayout
-                                        .eventDetailHostStatLabelSize,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-          if (hasActions) ...[
-            const SizedBox(height: CatchSpacing.s3),
-            Row(
-              children: [
-                if (onMessage != null)
-                  Expanded(
-                    child: CatchButton(
-                      label: messageLabel,
-                      onPressed: onMessage,
-                      variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
-                      fullWidth: true,
-                      icon: Icon(CatchIcons.chatCircle),
-                    ),
-                  ),
-                if (onMessage != null && onViewClub != null)
-                  const SizedBox(width: CatchSpacing.s2),
-                if (onViewClub != null)
-                  Expanded(
-                    child: CatchButton(
-                      label: clubLabel,
-                      onPressed: onViewClub,
-                      variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
-                      fullWidth: true,
-                      icon: Icon(CatchIcons.arrowUpRight),
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-/// The 46px host avatar — a graded photo over the activity-pigment gradient,
-/// or the bare gradient when no photo is supplied.
-class HostAvatar extends StatelessWidget {
-  const HostAvatar({super.key, required this.activity, this.photoUrl});
-
-  final CatchActivity activity;
-  final String? photoUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final url = photoUrl;
-    return SizedBox.square(
-      dimension: CatchLayout.eventDetailHostAvatarExtent,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            transform: const GradientRotation(150 * math.pi / 180),
-            colors: [activity.accent, activity.deep],
-          ),
-        ),
-        child: url == null || url.isEmpty
-            ? null
-            : ClipOval(child: CatchGradedImage(child: CatchNetworkImage(url))),
-      ),
-    );
-  }
 }

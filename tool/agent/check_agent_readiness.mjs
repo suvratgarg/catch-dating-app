@@ -64,6 +64,21 @@ function runCli() {
     "Operating model requires pattern_delta in subagent results.",
   );
   checkContains(
+    "docs/agent_operating_model.md",
+    "Git Preservation And Reconciliation Contract",
+    "Operating model defines Git preservation and reconciliation safety.",
+  );
+  checkContains(
+    "docs/agent_operating_model.md",
+    "tool/git/audit_merge_drops.mjs",
+    "Operating model requires mechanical merge-drop audits.",
+  );
+  checkContains(
+    "docs/agent_operating_model.md",
+    "tool/docs/check_doc_version_monotonic.mjs",
+    "Operating model requires monotonic governed document versions.",
+  );
+  checkContains(
     "docs/README.md",
     "agent_operating_model.md",
     "Docs index includes the operating model.",
@@ -88,7 +103,12 @@ function runCli() {
   }
 
   const toolIds = new Set((toolsManifest?.tools ?? []).map((tool) => tool.id));
-  for (const id of ["agent:context-pack", "agent:readiness"]) {
+  for (const id of [
+    "agent:context-pack",
+    "agent:readiness",
+    "git:audit-merge-drops",
+    "docs:version-monotonic",
+  ]) {
     check(toolIds.has(id), `Tool manifest includes ${id}.`);
   }
   check(
@@ -351,7 +371,7 @@ function extractCommandPaths(command) {
     .map((token) => token.replace(/^\.\//, ""))
     .filter((token) => {
       if (!token || token.includes("*")) return false;
-      return /^(AGENTS\.md|docs\/|tool\/|lib\/|test\/|functions\/|contracts\/|widgetbook\/|website\/|packages\/web-config\/|design\/website\/|\.github\/|ios\/|android\/|firebase\.json|\.firebaserc|firestore\.rules|storage\.rules)/.test(token);
+      return /^(AGENTS\.md|docs\/|tool\/|operations\/|lib\/|test\/|functions\/|contracts\/|widgetbook\/|website\/|packages\/web-config\/|design\/website\/|\.github\/|ios\/|android\/|firebase\.json|\.firebaserc|firestore\.rules|storage\.rules)/.test(token);
     });
 }
 

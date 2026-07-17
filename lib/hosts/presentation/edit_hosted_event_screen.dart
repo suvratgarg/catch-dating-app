@@ -17,14 +17,11 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -36,7 +33,6 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
-import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
@@ -44,7 +40,6 @@ import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_picker_tile.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
@@ -251,12 +246,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     _selectedDate = DateUtils.dateOnly(event.startTime);
     _selectedStartTime = TimeOfDay.fromDateTime(event.startTime);
     _durationMinutes = event.endTime.difference(event.startTime).inMinutes;
-    _startingPoint = event.hasExactStartingPoint
-        ? LocationCoordinate(
-            event.effectiveStartingPointLat!,
-            event.effectiveStartingPointLng!,
-          )
-        : null;
+    _startingPoint = LocationCoordinate.fromNullable(
+      latitude: event.effectiveStartingPointLat,
+      longitude: event.effectiveStartingPointLng,
+    );
     _meetingLocationAddress = meetingLocation?.address;
     _meetingLocationPlaceId = meetingLocation?.placeId;
     _selectedPace = event.pace;
@@ -397,245 +390,263 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           child: ListView(
             padding: CatchInsets.pageBody,
             children: [
-              EditHostedEventScopeNotice(
-                isCancelled: widget.event.isCancelled,
-                scheduleLocked: screenState.scheduleLocked,
-                policyLocked: screenState.policyLocked,
-              ),
-              if (screenState.hasSaveError) ...[
-                gapH12,
-                CatchErrorBanner.fromError(
-                  screenState.saveError!,
-                  context: AppErrorContext.event,
-                ),
-              ],
-              gapH20,
-              CatchFormFieldLabel(
-                label: context.l10n.hostsEditHostedEventScreenLabelSchedule,
-                large: true,
-              ),
-              gapH8,
-              if (screenState.scheduleLocked)
-                ReadOnlyHostedEventScheduleCard(event: widget.event)
-              else ...[
-                HostPickerTile(
-                  key: CreateEventFormKeys.datePicker,
-                  icon: CatchIcons.calendarTodayOutlined,
-                  value: scheduleFields.dateValue,
-                  placeholder: context
-                      .l10n
-                      .hostsEditHostedEventScreenPlaceholderSelectADate,
-                  onTap: () =>
-                      _handleIntent(const HostEventEditPickDateIntent()),
-                ),
-                gapH12,
-                HostPickerTile(
-                  key: CreateEventFormKeys.timePicker,
-                  icon: CatchIcons.scheduleOutlined,
-                  value: scheduleFields.startTimeValue,
-                  placeholder: context
-                      .l10n
-                      .hostsEditHostedEventScreenPlaceholderSelectStartTime,
-                  onTap: () =>
-                      _handleIntent(const HostEventEditPickStartTimeIntent()),
-                ),
-                if (scheduleFields.hasError) ...[
-                  gapH6,
-                  Text(
-                    scheduleFields.errorText!,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: t.primary,
+              CatchSectionList(
+                gap: 0,
+                children: [
+                  CatchSection.plain(
+                    child: EditHostedEventScopeNotice(
+                      isCancelled: widget.event.isCancelled,
+                      scheduleLocked: screenState.scheduleLocked,
+                      policyLocked: screenState.policyLocked,
                     ),
                   ),
-                ],
-                gapH12,
-                CatchFormFieldLabel(
-                  label: context.l10n.hostsEditHostedEventScreenLabelDuration,
-                  large: true,
-                ),
-                gapH8,
-                CatchNumberStepper(
-                  value: scheduleFields.durationMinutes,
-                  min: CatchBusinessRules.eventMinDurationMinutes,
-                  max: CatchBusinessRules.eventMaxDurationMinutes,
-                  step: CatchBusinessRules.eventDurationStepMinutes,
-                  decreaseTooltip: context
-                      .l10n
-                      .hostsEditHostedEventScreenBodyDecreaseDuration,
-                  increaseTooltip: context
-                      .l10n
-                      .hostsEditHostedEventScreenBodyIncreaseDuration,
-                  formatValue: (value) =>
-                      EventFormatters.durationMinutes(value.round()),
-                  onChanged: (duration) => _handleIntent(
-                    HostEventEditDurationChangedIntent(duration.round()),
-                  ),
-                ),
-              ],
-              gapH24,
-              CatchFormFieldLabel(
-                label: context.l10n.hostsEditHostedEventScreenLabelWhere,
-                large: true,
-              ),
-              gapH8,
-              CatchField.input(
-                key: CreateEventFormKeys.meetingPoint,
-                title: context.l10n.hostsEditHostedEventScreenTitleLocationName,
-                controller: _meetingPointController,
-                enabled: screenState.canEdit,
-                placeholder: context
-                    .l10n
-                    .hostsEditHostedEventScreenPlaceholderEGBandstandPromenade,
-                helperText: context
-                    .l10n
-                    .hostsEditHostedEventScreenHelpertextThisIsWhatAttendees,
-                prefixIcon: Icon(CatchIcons.locationOnOutlined),
-                textCapitalization: TextCapitalization.words,
-                textInputAction: TextInputAction.next,
-                onChanged: (value) => _handleIntent(
-                  HostEventEditMeetingPointChangedIntent(value),
-                ),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? context.l10n.hostsEditHostedEventScreenBodyRequired
-                    : null,
-              ),
-              gapH16,
-              MapPinTile(
-                key: CreateEventFormKeys.mapPicker,
-                startingPoint: locationState.startingPoint,
-                selectedLabel: locationState.selectedLabel,
-                enabled: locationState.canPick,
-                onTap: () =>
-                    _handleIntent(const HostEventEditPickLocationIntent()),
-              ),
-              gapH16,
-              CatchField.input(
-                key: CreateEventFormKeys.locationDetails,
-                title:
-                    context.l10n.hostsEditHostedEventScreenTitleExtraDirections,
-                isOptional: true,
-                controller: _locationDetailsController,
-                enabled: screenState.canEdit,
-                placeholder: context
-                    .l10n
-                    .hostsEditHostedEventScreenPlaceholderEGMeetOutside,
-                prefixIcon: Icon(CatchIcons.infoOutline),
-                maxLines: 3,
-                textCapitalization: TextCapitalization.sentences,
-                textInputAction: TextInputAction.next,
-              ),
-              if (detailsFields.isDistanceBased) ...[
-                gapH24,
-                CatchFormFieldLabel(
-                  label:
-                      context.l10n.hostsEditHostedEventScreenLabelEventDetails,
-                  large: true,
-                ),
-                gapH8,
-                CatchField.input(
-                  key: CreateEventFormKeys.distance,
-                  title: context.l10n.hostsEditHostedEventScreenTitleDistanceKm,
-                  controller: _distanceController,
-                  enabled: screenState.canEdit,
-                  placeholder: '10',
-                  prefixIcon: Icon(CatchIcons.straightenOutlined),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(context.l10n.hostsEditHostedEventScreenBodyDD),
+                  if (screenState.hasSaveError)
+                    CatchSection.plain(
+                      padding: const EdgeInsets.only(top: CatchSpacing.s3),
+                      child: CatchErrorBanner.fromError(
+                        screenState.saveError!,
+                        context: AppErrorContext.event,
+                      ),
                     ),
-                  ],
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return context
-                          .l10n
-                          .hostsEditHostedEventScreenBodyRequired;
-                    }
-                    final distance = double.tryParse(value.trim());
-                    if (distance == null)
-                      return context.l10n.hostsEditHostedEventScreenBodyInvalid;
-                    if (distance <= 0)
-                      return context.l10n.hostsEditHostedEventScreenBodyMustBe0;
-                    return null;
-                  },
-                ),
-                gapH16,
-                Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s2,
-                  children: PaceLevel.values
-                      .map(
-                        (pace) => CatchSelectChip(
-                          label: pace.label,
-                          active: detailsFields.selectedPace == pace,
+                  if (screenState.scheduleLocked)
+                    ReadOnlyHostedEventScheduleCard(event: widget.event)
+                  else
+                    CatchSection.fieldRows(
+                      title:
+                          context.l10n.hostsEditHostedEventScreenLabelSchedule,
+                      children: [
+                        CatchField.nav(
+                          key: CreateEventFormKeys.datePicker,
+                          title: context
+                              .l10n
+                              .hostsEditHostedEventScreenTitleEventDate,
+                          body: scheduleFields.dateValue,
+                          icon: CatchIcons.calendarTodayOutlined,
+                          onTap: () => _handleIntent(
+                            const HostEventEditPickDateIntent(),
+                          ),
+                        ),
+                        CatchField.nav(
+                          key: CreateEventFormKeys.timePicker,
+                          title: context
+                              .l10n
+                              .hostsEditHostedEventScreenTitleStartTime,
+                          body: scheduleFields.startTimeValue,
+                          icon: CatchIcons.scheduleOutlined,
+                          error: scheduleFields.errorText,
+                          onTap: () => _handleIntent(
+                            const HostEventEditPickStartTimeIntent(),
+                          ),
+                        ),
+                        CatchField.stepper(
+                          title: context
+                              .l10n
+                              .hostsEditHostedEventScreenLabelDuration,
+                          body: EventFormatters.durationMinutes(
+                            scheduleFields.durationMinutes,
+                          ),
+                          value: scheduleFields.durationMinutes,
+                          min: CatchBusinessRules.eventMinDurationMinutes,
+                          max: CatchBusinessRules.eventMaxDurationMinutes,
+                          step: CatchBusinessRules.eventDurationStepMinutes,
+                          formatter: (value) =>
+                              EventFormatters.durationMinutes(value.round()),
+                          decreaseSemanticLabel: context
+                              .l10n
+                              .hostsEditHostedEventScreenBodyDecreaseDuration,
+                          increaseSemanticLabel: context
+                              .l10n
+                              .hostsEditHostedEventScreenBodyIncreaseDuration,
+                          onChanged: (duration) => _handleIntent(
+                            HostEventEditDurationChangedIntent(
+                              duration.round(),
+                            ),
+                          ),
+                          initiallyOpen: true,
+                          icon: CatchIcons.timerOutlined,
+                        ),
+                      ],
+                    ),
+                  CatchSection.fieldRows(
+                    title: context.l10n.hostsEditHostedEventScreenLabelWhere,
+                    children: [
+                      CatchField.input(
+                        key: CreateEventFormKeys.meetingPoint,
+                        title: context
+                            .l10n
+                            .hostsEditHostedEventScreenTitleLocationName,
+                        controller: _meetingPointController,
+                        enabled: screenState.canEdit,
+                        inputHint: context
+                            .l10n
+                            .hostsEditHostedEventScreenPlaceholderEGBandstandPromenade,
+                        helperText: context
+                            .l10n
+                            .hostsEditHostedEventScreenHelpertextThisIsWhatAttendees,
+                        icon: CatchIcons.locationOnOutlined,
+                        textCapitalization: TextCapitalization.words,
+                        textInputAction: TextInputAction.next,
+                        onChanged: (value) => _handleIntent(
+                          HostEventEditMeetingPointChangedIntent(value),
+                        ),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                            ? context
+                                  .l10n
+                                  .hostsEditHostedEventScreenBodyRequired
+                            : null,
+                      ),
+                      CatchField.nav(
+                        key: CreateEventFormKeys.mapPicker,
+                        title: context.l10n.hostsWhereStepLabelMeetingLocation,
+                        body: locationState.hasStartingPoint
+                            ? (locationState.selectedLabel.isEmpty
+                                  ? context
+                                        .l10n
+                                        .eventsMapPinTileTitlePinnedLocation
+                                  : locationState.selectedLabel)
+                            : context.l10n.eventsMapPinTileTitleChooseOnMap,
+                        icon: locationState.hasStartingPoint
+                            ? CatchIcons.editLocationAltOutlined
+                            : CatchIcons.mapOutlined,
+                        onTap: locationState.canPick
+                            ? () => _handleIntent(
+                                const HostEventEditPickLocationIntent(),
+                              )
+                            : null,
+                      ),
+                      CatchField.input(
+                        key: CreateEventFormKeys.locationDetails,
+                        title: context
+                            .l10n
+                            .hostsEditHostedEventScreenTitleExtraDirections,
+                        isOptional: true,
+                        controller: _locationDetailsController,
+                        enabled: screenState.canEdit,
+                        inputHint: context
+                            .l10n
+                            .hostsEditHostedEventScreenPlaceholderEGMeetOutside,
+                        icon: CatchIcons.infoOutline,
+                        maxLines: 3,
+                        textCapitalization: TextCapitalization.sentences,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ],
+                  ),
+                  CatchSection.fieldRows(
+                    title: context
+                        .l10n
+                        .hostsEditHostedEventScreenLabelEventDetails,
+                    children: [
+                      if (detailsFields.isDistanceBased) ...[
+                        CatchField.input(
+                          key: CreateEventFormKeys.distance,
+                          title: context
+                              .l10n
+                              .hostsEditHostedEventScreenTitleDistanceKm,
+                          controller: _distanceController,
                           enabled: screenState.canEdit,
-                          semanticsLabel: context.l10n
-                              .hostsEditHostedEventScreenBodySelectLabelPace(
-                                label: pace.label,
+                          inputHint: '10',
+                          icon: CatchIcons.straightenOutlined,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(
+                                context.l10n.hostsEditHostedEventScreenBodyDD,
                               ),
-                          onTap: screenState.canEdit
-                              ? () => _handleIntent(
-                                  HostEventEditPaceChangedIntent(pace),
+                            ),
+                          ],
+                          textInputAction: TextInputAction.next,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return context
+                                  .l10n
+                                  .hostsEditHostedEventScreenBodyRequired;
+                            }
+                            final distance = double.tryParse(value.trim());
+                            if (distance == null) {
+                              return context
+                                  .l10n
+                                  .hostsEditHostedEventScreenBodyInvalid;
+                            }
+                            if (distance <= 0) {
+                              return context
+                                  .l10n
+                                  .hostsEditHostedEventScreenBodyMustBe0;
+                            }
+                            return null;
+                          },
+                        ),
+                        CatchField.choices<PaceLevel>(
+                          title:
+                              context.l10n.hostsEventDetailsStepLabelPaceLevel,
+                          body: detailsFields.selectedPace.label,
+                          values: PaceLevel.values,
+                          itemLabel: (pace) => pace.label,
+                          selected: <PaceLevel>{detailsFields.selectedPace},
+                          onSelectionChanged: screenState.canEdit
+                              ? (selection) => _handleIntent(
+                                  HostEventEditPaceChangedIntent(
+                                    selection.single,
+                                  ),
                                 )
                               : null,
+                          initiallyOpen: true,
+                          enabled: screenState.canEdit,
+                          icon: CatchIcons.speedOutlined,
                         ),
-                      )
-                      .toList(),
-                ),
-              ],
-              gapH24,
-              CatchField.input(
-                key: CreateEventFormKeys.description,
-                title: context.l10n.hostsEditHostedEventScreenTitleDescription,
-                isOptional: true,
-                controller: _descriptionController,
-                enabled: screenState.canEdit,
-                placeholder: context
-                    .l10n
-                    .hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect,
-                prefixIcon: Icon(CatchIcons.editNoteOutlined),
-                maxLines: 4,
-                textCapitalization: TextCapitalization.sentences,
-                textInputAction: TextInputAction.newline,
+                      ],
+                      CatchField.input(
+                        key: CreateEventFormKeys.description,
+                        title: context
+                            .l10n
+                            .hostsEditHostedEventScreenTitleDescription,
+                        isOptional: true,
+                        controller: _descriptionController,
+                        enabled: screenState.canEdit,
+                        inputHint: context
+                            .l10n
+                            .hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect,
+                        icon: CatchIcons.editNoteOutlined,
+                        maxLines: 4,
+                        textCapitalization: TextCapitalization.sentences,
+                        textInputAction: TextInputAction.newline,
+                      ),
+                    ],
+                  ),
+                  if (screenState.policyLocked)
+                    ReadOnlyHostedEventPolicyCard(event: widget.event)
+                  else
+                    EditableHostedEventPolicyCard(
+                      state: fields.policy,
+                      capacityController: _capacityController,
+                      priceController: _priceController,
+                      minAgeController: _minAgeController,
+                      maxAgeController: _maxAgeController,
+                      maxMenController: _maxMenController,
+                      maxWomenController: _maxWomenController,
+                      inviteCodeController: _inviteCodeController,
+                      dynamicPricingStepController:
+                          _dynamicPricingStepController,
+                      dynamicPricingMaxController: _dynamicPricingMaxController,
+                      onAdmissionPresetChanged: (preset) => _handleIntent(
+                        HostEventEditAdmissionPresetChangedIntent(preset),
+                      ),
+                      onCohortCapsEnabledChanged: (value) => _handleIntent(
+                        HostEventEditCohortCapsChangedIntent(value),
+                      ),
+                      onDynamicPricingChanged: (value) => _handleIntent(
+                        HostEventEditDynamicPricingChangedIntent(value),
+                      ),
+                      onCancellationPolicyChanged: (policyId) => _handleIntent(
+                        HostEventEditCancellationPolicyChangedIntent(policyId),
+                      ),
+                      privateAccessAsync: privateAccessState.privateAccess,
+                    ),
+                ],
               ),
-              gapH24,
-              CatchFormFieldLabel(
-                label: context.l10n.hostsEditHostedEventScreenLabelEventPolicy,
-                large: true,
-              ),
-              gapH8,
-              if (screenState.policyLocked)
-                ReadOnlyHostedEventPolicyCard(event: widget.event)
-              else
-                EditableHostedEventPolicyCard(
-                  state: fields.policy,
-                  capacityController: _capacityController,
-                  priceController: _priceController,
-                  minAgeController: _minAgeController,
-                  maxAgeController: _maxAgeController,
-                  maxMenController: _maxMenController,
-                  maxWomenController: _maxWomenController,
-                  inviteCodeController: _inviteCodeController,
-                  dynamicPricingStepController: _dynamicPricingStepController,
-                  dynamicPricingMaxController: _dynamicPricingMaxController,
-                  onAdmissionPresetChanged: (preset) => _handleIntent(
-                    HostEventEditAdmissionPresetChangedIntent(preset),
-                  ),
-                  onCohortCapsEnabledChanged: (value) => _handleIntent(
-                    HostEventEditCohortCapsChangedIntent(value),
-                  ),
-                  onDynamicPricingChanged: (value) => _handleIntent(
-                    HostEventEditDynamicPricingChangedIntent(value),
-                  ),
-                  onCancellationPolicyChanged: (policyId) => _handleIntent(
-                    HostEventEditCancellationPolicyChangedIntent(policyId),
-                  ),
-                  privateAccessAsync: privateAccessState.privateAccess,
-                ),
             ],
           ),
         ),
@@ -979,264 +990,217 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.hostsEditHostedEventScreenTextEditableUntilTheFirst,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+    return CatchSection.fieldRows(
+      title: context.l10n.hostsEditHostedEventScreenLabelEventPolicy,
+      footer: Padding(
+        padding: const EdgeInsets.only(top: CatchSpacing.s2),
+        child: Text(
+          context.l10n.hostsEditHostedEventScreenTextEditableUntilTheFirst,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+      ),
+      children: [
+        CatchField.input(
+          key: CreateEventFormKeys.capacity,
+          title: context.l10n.hostsEditHostedEventScreenTitleMaxAttendees,
+          controller: capacityController,
+          inputHint: '20',
+          icon: CatchIcons.peopleOutline,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          textInputAction: TextInputAction.next,
+          validator: positiveRequiredValidator,
+        ),
+        CatchField.input(
+          key: CreateEventFormKeys.price,
+          title: context.l10n
+              .hostsEditHostedEventScreenTitleBasePriceCurrencycode(
+                currencyCode: state.currencyCode,
+              ),
+          controller: priceController,
+          inputHint: '0',
+          icon: CatchIcons.paymentsOutlined,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(
+              RegExp(context.l10n.hostsEditHostedEventScreenVisiblecopyDD),
+            ),
+          ],
+          textInputAction: TextInputAction.next,
+          validator: (value) =>
+              _moneyRequiredValidator(value, currencyCode: state.currencyCode),
+        ),
+        CatchField.choices<EventAdmissionPreset>(
+          title: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
+          body: state.admissionPreset.description(context.l10n),
+          values: EventAdmissionPreset.values,
+          itemLabel: (preset) => preset.label(context.l10n),
+          selected: <EventAdmissionPreset>{state.admissionPreset},
+          onSelectionChanged: (selection) {
+            onAdmissionPresetChanged(selection.single);
+          },
+          initiallyOpen: true,
+          icon: CatchIcons.howToRegOutlined,
+        ),
+        if (state.showInviteCode)
+          CatchField.input(
+            key: CreateEventFormKeys.inviteCode,
+            title: context.l10n.hostsEditHostedEventScreenTitleInviteCode,
+            controller: inviteCodeController,
+            inputHint:
+                context.l10n.hostsEditHostedEventScreenPlaceholderCatchDelhi,
+            helperText: privateAccessAsync.status == CatchAsyncStatus.loading
+                ? context
+                      .l10n
+                      .hostsEditHostedEventScreenTextLoadingCurrentInviteCode
+                : null,
+            icon: CatchIcons.lockOutlineRounded,
+            textInputAction: TextInputAction.next,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(
+                RegExp(
+                  context.l10n.hostsEditHostedEventScreenVisiblecopyAZaZ09,
+                ),
+              ),
+            ],
+            validator: inviteCodeValidator,
           ),
-          gapH16,
-          Row(
-            children: [
-              Expanded(
-                child: CatchField.input(
-                  title:
-                      context.l10n.hostsEditHostedEventScreenTitleMaxAttendees,
-                  controller: capacityController,
+        if (state.showCohortCapsToggle) ...[
+          CatchField.toggle(
+            key: CreateEventFormKeys.cohortCapsToggle,
+            title: context.l10n.hostsEditHostedEventScreenTitleCohortCaps,
+            body: context
+                .l10n
+                .hostsEditHostedEventScreenBodyOptionallyCapStraightMen,
+            bodyMaxLines: 5,
+            value: state.cohortCapsEnabled,
+            onChanged: onCohortCapsEnabledChanged,
+          ),
+          if (state.showCohortCapsFields)
+            CatchSection.containedFieldRows(
+              children: [
+                CatchField.input(
+                  key: CreateEventFormKeys.maxMen,
+                  title: context
+                      .l10n
+                      .hostsEditHostedEventScreenTitleMaxStraightMen,
+                  isOptional: true,
+                  controller: maxMenController,
+                  icon: CatchIcons.maleOutlined,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: positiveRequiredValidator,
+                  textInputAction: TextInputAction.next,
+                  validator: positiveOptionalValidator,
                 ),
-              ),
-              gapW12,
-              Expanded(
-                child: CatchField.input(
-                  title: context.l10n
-                      .hostsEditHostedEventScreenTitleBasePriceCurrencycode(
-                        currencyCode: state.currencyCode,
-                      ),
-                  controller: priceController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(
-                        context.l10n.hostsEditHostedEventScreenVisiblecopyDD,
-                      ),
-                    ),
-                  ],
-                  validator: (value) => _moneyRequiredValidator(
-                    value,
-                    currencyCode: state.currencyCode,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          gapH18,
-          CatchFormFieldLabel(
-            label: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
-            large: true,
-          ),
-          gapH8,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final preset in EventAdmissionPreset.values)
-                CatchSelectChip(
-                  label: preset.label(context.l10n),
-                  active: state.admissionPreset == preset,
-                  semanticsLabel: preset.title(context.l10n),
-                  onTap: () => onAdmissionPresetChanged(preset),
-                ),
-            ],
-          ),
-          gapH8,
-          Text(
-            state.admissionPreset.description(context.l10n),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          if (state.showInviteCode) ...[
-            gapH16,
-            if (privateAccessAsync.status == CatchAsyncStatus.loading)
-              Text(
-                context
-                    .l10n
-                    .hostsEditHostedEventScreenTextLoadingCurrentInviteCode,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            gapH8,
-            CatchField.input(
-              title: context.l10n.hostsEditHostedEventScreenTitleInviteCode,
-              controller: inviteCodeController,
-              placeholder:
-                  context.l10n.hostsEditHostedEventScreenPlaceholderCatchDelhi,
-              prefixIcon: Icon(CatchIcons.lockOutlineRounded),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                  RegExp(
-                    context.l10n.hostsEditHostedEventScreenVisiblecopyAZaZ09,
-                  ),
+                CatchField.input(
+                  key: CreateEventFormKeys.maxWomen,
+                  title: context
+                      .l10n
+                      .hostsEditHostedEventScreenTitleMaxStraightWomen,
+                  isOptional: true,
+                  controller: maxWomenController,
+                  icon: CatchIcons.femaleOutlined,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  textInputAction: TextInputAction.next,
+                  validator: positiveOptionalValidator,
                 ),
               ],
-              validator: state.showInviteCode ? inviteCodeValidator : null,
             ),
-          ],
-          if (state.showCohortCapsToggle) ...[
-            gapH12,
-            CatchField.toggle(
-              title: context.l10n.hostsEditHostedEventScreenTitleCohortCaps,
-              body: context
-                  .l10n
-                  .hostsEditHostedEventScreenBodyOptionallyCapStraightMen,
-              value: state.cohortCapsEnabled,
-              onChanged: onCohortCapsEnabledChanged,
-            ),
-            if (state.showCohortCapsFields) ...[
-              gapH12,
-              Row(
-                children: [
-                  Expanded(
-                    child: CatchField.input(
-                      title: context
-                          .l10n
-                          .hostsEditHostedEventScreenTitleMaxStraightMen,
-                      isOptional: true,
-                      controller: maxMenController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: positiveOptionalValidator,
-                    ),
-                  ),
-                  gapW12,
-                  Expanded(
-                    child: CatchField.input(
-                      title: context
-                          .l10n
-                          .hostsEditHostedEventScreenTitleMaxStraightWomen,
-                      isOptional: true,
-                      controller: maxWomenController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: positiveOptionalValidator,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-          if (state.showRequestToJoinCopy) ...[
-            gapH12,
-            Text(
-              context.l10n.hostsEditHostedEventScreenTextRequestsAppearInHost,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ],
-          if (state.showDynamicPricingToggle) ...[
-            gapH12,
-            CatchField.toggle(
-              title: context.l10n.hostsEditHostedEventScreenTitleDemandPricing,
-              body: context
-                  .l10n
-                  .hostsEditHostedEventScreenBodyIncreasePriceForThe,
-              value: state.dynamicPricingEnabled,
-              onChanged: onDynamicPricingChanged,
-            ),
-            if (state.showDynamicPricingFields) ...[
-              gapH12,
-              Row(
-                children: [
-                  Expanded(
-                    child: CatchField.input(
-                      title: context.l10n
-                          .hostsEditHostedEventScreenTitleStepCurrencycode(
-                            currencyCode: state.currencyCode,
-                          ),
-                      controller: dynamicPricingStepController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: positiveRequiredValidator,
-                    ),
-                  ),
-                  gapW12,
-                  Expanded(
-                    child: CatchField.input(
-                      title: context.l10n
-                          .hostsEditHostedEventScreenTitleMaxCurrencycode(
-                            currencyCode: state.currencyCode,
-                          ),
-                      controller: dynamicPricingMaxController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: positiveRequiredValidator,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-          gapH18,
-          CatchFormFieldLabel(
-            label: context.l10n.hostsEditHostedEventScreenLabelAgeRange,
-            large: true,
-          ),
-          gapH8,
-          Row(
-            children: [
-              Expanded(
-                child: CatchField.input(
-                  title: context.l10n.hostsEditHostedEventScreenTitleMinAge,
-                  isOptional: true,
-                  controller: minAgeController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) => validateAge(
-                    value,
-                    siblingController: maxAgeController,
-                    isMinimum: true,
-                  ),
-                ),
-              ),
-              gapW12,
-              Expanded(
-                child: CatchField.input(
-                  title: context.l10n.hostsEditHostedEventScreenTitleMaxAge,
-                  isOptional: true,
-                  controller: maxAgeController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) => validateAge(
-                    value,
-                    siblingController: minAgeController,
-                    isMinimum: false,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          gapH18,
-          CatchFormFieldLabel(
-            label:
-                context.l10n.hostsEditHostedEventScreenLabelCancellationPolicy,
-            large: true,
-          ),
-          gapH8,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final policyId in EventCancellationPolicyId.values)
-                CatchSelectChip(
-                  label: policyFor(policyId).title.toUpperCase(),
-                  active: state.cancellationPolicyId == policyId,
-                  semanticsLabel: policyFor(policyId).title,
-                  onTap: () => onCancellationPolicyChanged(policyId),
-                ),
-            ],
-          ),
-          gapH8,
-          Text(
-            state.cancellationSummary,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
         ],
-      ),
+        if (state.showRequestToJoinCopy)
+          CatchField.read(
+            title: state.admissionPreset.title(context.l10n),
+            body:
+                context.l10n.hostsEditHostedEventScreenTextRequestsAppearInHost,
+            bodyMaxLines: 3,
+            icon: CatchIcons.howToRegOutlined,
+          ),
+        if (state.showDynamicPricingToggle) ...[
+          CatchField.toggle(
+            key: CreateEventFormKeys.dynamicPricingToggle,
+            title: context.l10n.hostsEditHostedEventScreenTitleDemandPricing,
+            body:
+                context.l10n.hostsEditHostedEventScreenBodyIncreasePriceForThe,
+            value: state.dynamicPricingEnabled,
+            onChanged: onDynamicPricingChanged,
+          ),
+          if (state.showDynamicPricingFields)
+            CatchSection.containedFieldRows(
+              children: [
+                CatchField.input(
+                  key: CreateEventFormKeys.dynamicPricingStep,
+                  title: context.l10n
+                      .hostsEditHostedEventScreenTitleStepCurrencycode(
+                        currencyCode: state.currencyCode,
+                      ),
+                  controller: dynamicPricingStepController,
+                  inputHint: '250',
+                  icon: CatchIcons.trendingUpRounded,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  textInputAction: TextInputAction.next,
+                  validator: positiveRequiredValidator,
+                ),
+                CatchField.input(
+                  key: CreateEventFormKeys.dynamicPricingMax,
+                  title: context.l10n
+                      .hostsEditHostedEventScreenTitleMaxCurrencycode(
+                        currencyCode: state.currencyCode,
+                      ),
+                  controller: dynamicPricingMaxController,
+                  inputHint: '1500',
+                  icon: CatchIcons.priceChangeOutlined,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  textInputAction: TextInputAction.next,
+                  validator: positiveRequiredValidator,
+                ),
+              ],
+            ),
+        ],
+        CatchField.input(
+          key: CreateEventFormKeys.minAge,
+          title: context.l10n.hostsEditHostedEventScreenTitleMinAge,
+          isOptional: true,
+          controller: minAgeController,
+          icon: CatchIcons.cakeOutlined,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          textInputAction: TextInputAction.next,
+          validator: (value) => validateAge(
+            value,
+            siblingController: maxAgeController,
+            isMinimum: true,
+          ),
+        ),
+        CatchField.input(
+          key: CreateEventFormKeys.maxAge,
+          title: context.l10n.hostsEditHostedEventScreenTitleMaxAge,
+          isOptional: true,
+          controller: maxAgeController,
+          icon: CatchIcons.cakeOutlined,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          textInputAction: TextInputAction.next,
+          validator: (value) => validateAge(
+            value,
+            siblingController: minAgeController,
+            isMinimum: false,
+          ),
+        ),
+        CatchField.choices<EventCancellationPolicyId>(
+          title: context.l10n.hostsEditHostedEventScreenLabelCancellationPolicy,
+          body: state.cancellationSummary,
+          values: EventCancellationPolicyId.values,
+          itemLabel: (policyId) => policyFor(policyId).title.toUpperCase(),
+          selected: <EventCancellationPolicyId>{state.cancellationPolicyId},
+          onSelectionChanged: (selection) {
+            onCancellationPolicyChanged(selection.single);
+          },
+          icon: CatchIcons.ruleOutlined,
+        ),
+      ],
     );
   }
 }
@@ -1248,91 +1212,46 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final policy = event.effectiveEventPolicy;
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.hostsEditHostedEventScreenTextPolicyLocked,
-            style: CatchTextStyles.sectionTitle(context),
-          ),
-          gapH4,
-          Text(
-            context
-                .l10n
-                .hostsEditHostedEventScreenTextCapacityPricingAdmissionAnd,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          gapH12,
-          ReadOnlyHostedEventPolicyRow(
-            label: context.l10n.hostsEditHostedEventScreenLabelCapacity,
-            value: context.l10n
-                .hostsEditHostedEventScreenVisiblecopyCapacitylimit(
-                  capacityLimit: event.capacityLimit,
-                ),
-          ),
-          ReadOnlyHostedEventPolicyRow(
-            label: context.l10n.hostsEditHostedEventScreenLabelPrice,
-            value: event.isFree
-                ? context.l10n.hostsEditHostedEventScreenVisiblecopyFree
-                : EventFormatters.priceInPaise(
-                    event.priceInPaise,
-                    currencyCode: event.currency,
-                  ),
-          ),
-          ReadOnlyHostedEventPolicyRow(
-            label: context.l10n.hostsEditHostedEventScreenLabelAdmission,
-            value: _admissionPresetFor(policy).title(context.l10n),
-          ),
-          ReadOnlyHostedEventPolicyRow(
-            label: context.l10n.hostsEditHostedEventScreenLabelCancellation,
-            value: policy.cancellationPolicy.title,
-            showDivider: false,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ReadOnlyHostedEventPolicyRow extends StatelessWidget {
-  const ReadOnlyHostedEventPolicyRow({
-    super.key,
-    required this.label,
-    required this.value,
-    this.showDivider = true,
-  });
-
-  final String label;
-  final String value;
-  final bool showDivider;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
+    return CatchSection.fieldRows(
+      title: context.l10n.hostsEditHostedEventScreenLabelEventPolicy,
       children: [
-        Row(
-          children: [
-            Text(
-              label,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-            gapW16,
-            Expanded(
-              child: Text(
-                value,
-                style: CatchTextStyles.labelL(context),
-                textAlign: TextAlign.right,
-              ),
-            ),
-          ],
+        CatchField.read(
+          title: context.l10n.hostsEditHostedEventScreenTextPolicyLocked,
+          body: context
+              .l10n
+              .hostsEditHostedEventScreenTextCapacityPricingAdmissionAnd,
+          bodyMaxLines: 3,
+          icon: CatchIcons.lockOutlineRounded,
         ),
-        if (showDivider) ...[gapH10, const CatchDivider.section(), gapH10],
+        CatchField.read(
+          title: context.l10n.hostsEditHostedEventScreenLabelCapacity,
+          valueText: context.l10n
+              .hostsEditHostedEventScreenVisiblecopyCapacitylimit(
+                capacityLimit: event.capacityLimit,
+              ),
+          icon: CatchIcons.peopleOutline,
+        ),
+        CatchField.read(
+          title: context.l10n.hostsEditHostedEventScreenLabelPrice,
+          valueText: event.isFree
+              ? context.l10n.hostsEditHostedEventScreenVisiblecopyFree
+              : EventFormatters.priceInPaise(
+                  event.priceInPaise,
+                  currencyCode: event.currency,
+                ),
+          icon: CatchIcons.paymentsOutlined,
+        ),
+        CatchField.read(
+          title: context.l10n.hostsEditHostedEventScreenLabelAdmission,
+          valueText: _admissionPresetFor(policy).title(context.l10n),
+          icon: CatchIcons.howToRegOutlined,
+        ),
+        CatchField.read(
+          title: context.l10n.hostsEditHostedEventScreenLabelCancellation,
+          valueText: policy.cancellationPolicy.title,
+          icon: CatchIcons.ruleOutlined,
+        ),
       ],
     );
   }
@@ -1345,28 +1264,22 @@ class ReadOnlyHostedEventScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            event.shortDateLabel,
-            style: CatchTextStyles.sectionTitle(context),
-          ),
-          gapH4,
-          Text(event.timeRangeLabel, style: CatchTextStyles.bodyLead(context)),
-          gapH8,
-          Text(
-            context
-                .l10n
-                .hostsEditHostedEventScreenTextScheduleChangesAreBlocked,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-        ],
-      ),
+    return CatchSection.fieldRows(
+      title: context.l10n.hostsEditHostedEventScreenLabelSchedule,
+      children: [
+        CatchField.read(
+          title: event.shortDateLabel,
+          body: event.timeRangeLabel,
+          icon: CatchIcons.calendarTodayOutlined,
+        ),
+        CatchField.read(
+          body: context
+              .l10n
+              .hostsEditHostedEventScreenTextScheduleChangesAreBlocked,
+          bodyMaxLines: 3,
+          icon: CatchIcons.lockOutlineRounded,
+        ),
+      ],
     );
   }
 }

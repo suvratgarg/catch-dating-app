@@ -28,7 +28,26 @@ const resolutionQueuePath = path.join(
   repoRoot,
   "docs/design_parity/widgetbook_compare_resolution_queue.md",
 );
+const patternFamiliesPath = path.join(
+  repoRoot,
+  "docs/design_parity/widget_consolidation/pattern_families.json",
+);
 const DEDUPE_REVIEW_LIMIT = 80;
+const REVIEW_WORDS = ["canonical", "repair", "unify", "register", "discard"];
+const FAMILY_PRIORITIES = new Set(["P0", "P1", "P2"]);
+const FAMILY_STATUSES = new Set([
+  "draft",
+  "review",
+  "approved",
+  "implemented",
+  "blocked",
+]);
+const DECIDED_FAMILY_STATUSES = new Set(["approved", "implemented"]);
+const FAMILY_PREVIEW_MODES = new Set([
+  "required",
+  "source-only",
+  "not-applicable",
+]);
 
 const candidateSectionMap = new Map([
   ["field-row-mode-consolidation", "Field System"],
@@ -278,6 +297,160 @@ function loadWidgetSimilarityRegistry() {
   return readJson(registryPath);
 }
 
+function loadPatternFamilyRegistry() {
+  const registry = readJson(patternFamiliesPath);
+  if (registry.schemaVersion !== 1) {
+    throw new Error(
+      `Unsupported pattern family schemaVersion: ${registry.schemaVersion}`,
+    );
+  }
+  if (!Array.isArray(registry.families)) {
+    throw new Error("Pattern family registry must contain a families array.");
+  }
+
+  const familyIds = new Set();
+  for (const family of registry.families) {
+    requireRegistryString(family.id, "family.id");
+    if (familyIds.has(family.id)) {
+      throw new Error(`Duplicate pattern family id: ${family.id}`);
+    }
+    familyIds.add(family.id);
+    requireRegistryString(family.title, `${family.id}.title`);
+    requireRegistryString(family.intent, `${family.id}.intent`);
+    requireRegistryEnum(
+      family.priority,
+      FAMILY_PRIORITIES,
+      `${family.id}.priority`,
+    );
+    requireRegistryEnum(
+      family.status,
+      FAMILY_STATUSES,
+      `${family.id}.status`,
+    );
+    requireRegistryString(
+      family.targetContract,
+      `${family.id}.targetContract`,
+    );
+    requireRegistryString(
+      family.qualityReference,
+      `${family.id}.qualityReference`,
+    );
+    requireRegistryString(
+      family.decisionSource,
+      `${family.id}.decisionSource`,
+    );
+    if (!Array.isArray(family.acceptedVisualDelta)) {
+      throw new Error(`${family.id}.acceptedVisualDelta must be an array.`);
+    }
+    validateRegistryReviewQuestions(family);
+    if (!Array.isArray(family.members) || family.members.length === 0) {
+      throw new Error(`${family.id}.members must be a non-empty array.`);
+    }
+
+    const memberSymbols = new Set();
+    for (const member of family.members) {
+      requireRegistryString(member.symbol, `${family.id}.member.symbol`);
+      if (memberSymbols.has(member.symbol)) {
+        throw new Error(
+          `Duplicate member ${member.symbol} in pattern family ${family.id}.`,
+        );
+      }
+      memberSymbols.add(member.symbol);
+      requireRegistryEnum(
+        member.disposition,
+        new Set(REVIEW_WORDS),
+        `${family.id}.${member.symbol}.disposition`,
+      );
+      requireRegistryEnum(
+        member.preview,
+        FAMILY_PREVIEW_MODES,
+        `${family.id}.${member.symbol}.preview`,
+      );
+      requireRegistryString(
+        member.rationale,
+        `${family.id}.${member.symbol}.rationale`,
+      );
+      if (member.disposition === "unify") {
+        requireRegistryString(
+          member.target,
+          `${family.id}.${member.symbol}.target`,
+        );
+      }
+    }
+  }
+  return registry;
+}
+
+function requireRegistryString(value, field) {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`Pattern family ${field} must be a non-empty string.`);
+  }
+}
+
+function requireRegistryEnum(value, allowed, field) {
+  if (!allowed.has(value)) {
+    throw new Error(
+      `Pattern family ${field} must be one of: ${[...allowed].join(", ")}.`,
+    );
+  }
+}
+
+function validateRegistryReviewQuestions(family) {
+  if (!Array.isArray(family.reviewQuestions)) {
+    if (family.status === "review") {
+      throw new Error(
+        `Pattern family ${family.id}.reviewQuestions must be a non-empty array while in review.`,
+      );
+    }
+    return;
+  }
+  if (family.status === "review" && family.reviewQuestions.length === 0) {
+    throw new Error(
+      `Pattern family ${family.id}.reviewQuestions must be a non-empty array while in review.`,
+    );
+  }
+  const ids = new Set();
+  for (const question of family.reviewQuestions) {
+    requireRegistryString(question?.id, `${family.id}.reviewQuestion.id`);
+    requireRegistryString(question?.prompt, `${family.id}.${question?.id}.prompt`);
+    requireRegistryString(
+      question?.recommendation,
+      `${family.id}.${question?.id}.recommendation`,
+    );
+    if (ids.has(question.id)) {
+      throw new Error(
+        `Duplicate review question ${question.id} in pattern family ${family.id}.`,
+      );
+    }
+    ids.add(question.id);
+    if (!Array.isArray(question.options) || question.options.length < 2) {
+      throw new Error(
+        `Pattern family ${family.id}.${question.id}.options must contain at least two choices.`,
+      );
+    }
+    for (const option of question.options) {
+      requireRegistryString(option, `${family.id}.${question.id}.option`);
+    }
+    const hasSelectedOption = Object.hasOwn(question, "selectedOption");
+    if (DECIDED_FAMILY_STATUSES.has(family.status) && !hasSelectedOption) {
+      throw new Error(
+        `Pattern family ${family.id}.${question.id}.selectedOption is required while ${family.status}.`,
+      );
+    }
+    if (hasSelectedOption) {
+      requireRegistryString(
+        question.selectedOption,
+        `${family.id}.${question.id}.selectedOption`,
+      );
+      if (!question.options.includes(question.selectedOption)) {
+        throw new Error(
+          `Pattern family ${family.id}.${question.id}.selectedOption must match a declared choice.`,
+        );
+      }
+    }
+  }
+}
+
 function sourcePaneForName(name, classificationByName, label = "Source only") {
   const classification = classificationByName.get(name);
   return {
@@ -335,6 +508,60 @@ function paneForName(name, byName, contractsByName, coverageByName, classificati
     };
   }
   return pane;
+}
+
+function buildPatternFamilyCandidates({
+  registry,
+  pane,
+  classificationByName,
+}) {
+  return registry.families.map((family, registryIndex) => {
+    const previewPanes = family.members.map((member) => {
+      const memberPane =
+        member.preview === "required"
+          ? pane(member.symbol)
+          : sourcePaneForName(
+              member.symbol,
+              classificationByName,
+              member.preview === "source-only"
+                ? "Source-only registry member"
+                : "Preview not applicable",
+            );
+      const previewStatus =
+        member.preview === "required"
+          ? memberPane.url
+            ? "available"
+            : "missing-required"
+          : member.preview;
+      return {
+        ...memberPane,
+        previewRequirement: member.preview,
+        previewStatus,
+        memberDisposition: member.disposition,
+        memberTarget: member.target ?? "",
+        memberRationale: member.rationale,
+      };
+    });
+
+    return {
+      id: family.id,
+      title: family.title,
+      bucket: "pattern-family",
+      priority: family.priority,
+      reason: family.intent,
+      recommended: family.targetContract,
+      tags: ["pattern-family", family.status],
+      left: previewPanes[0] ?? null,
+      right: previewPanes[1] ?? null,
+      related: previewPanes,
+      previewPanes,
+      reviewDecisionOptions: REVIEW_WORDS,
+      patternFamily: {
+        ...family,
+        registryIndex,
+      },
+    };
+  });
 }
 
 function findFirst(byName, ...names) {
@@ -770,6 +997,7 @@ function buildCandidates() {
   const classificationByName = loadClassificationByName();
   const variantReviewCandidates = loadVariantReviewCandidates();
   const similarity = loadWidgetSimilarityRegistry();
+  const patternFamilyRegistry = loadPatternFamilyRegistry();
 
   const candidates = [];
   const pane = (name) =>
@@ -865,6 +1093,11 @@ function buildCandidates() {
   };
 
   candidates.push(
+    ...buildPatternFamilyCandidates({
+      registry: patternFamilyRegistry,
+      pane,
+      classificationByName,
+    }),
     ...buildDedupeCandidates({
       similarity,
       pane,
@@ -1101,13 +1334,13 @@ function buildCandidates() {
     tags: ["selection"],
   });
   add({
-    id: "select-chip-vs-option-card",
-    title: "SelectChip vs OptionCard",
+    id: "chip-selectable-vs-option-card",
+    title: "CatchChip.selectable vs OptionCard",
     bucket: "unify",
     reason:
       "Both are selectable option affordances. Decide whether chip/card are variants of one option primitive or remain separate size/form-factor primitives.",
     recommended: "catch.option",
-    left: findFirst(byName, "CatchSelectChip"),
+    left: findFirst(byName, "CatchChip"),
     right: findFirst(byName, "CatchOptionCard"),
     priority: "P1",
     tags: ["selection"],
@@ -1235,7 +1468,6 @@ function buildCandidates() {
       tags: ["header", "chrome"],
       names: [
         "CatchTopBar",
-        "HostOperationsTopBar",
         "ChatEventContextHeader",
         "CatchStatusBar",
       ],
@@ -1437,44 +1669,6 @@ function buildCandidates() {
         "ClubHostAvatar",
         "HostTodayAvatarDot",
         "ClubHostIdentityLine",
-      ],
-    },
-    {
-      id: "app-badge-status-family",
-      title: "Badge and status family",
-      reason:
-        "Badges, icon badges, privacy badges, role badges, and status pills overlap on compact metadata/status display.",
-      recommended: "catch.badge",
-      tags: ["badge", "status"],
-      names: [
-        "CatchBadge",
-        "CatchIconBadge",
-        "CatchPrivacyBadge",
-        "PrivacyBadge",
-        "AppShellNavigationBadge",
-        "ClubHostRoleBadge",
-        "CatchStatusDot",
-        "EventStatusPill",
-      ],
-    },
-    {
-      id: "app-pill-chip-family",
-      title: "Pill and chip family",
-      reason:
-        "Pills and chips repeat compact rounded labels with optional count, tone, timer, and activity context.",
-      recommended: "catch.chip",
-      tags: ["chip", "metadata"],
-      names: [
-        "CatchChip",
-        "CatchActivityChip",
-        "CatchCountPill",
-        "ClubRatingPill",
-        "DarkPill",
-        "EventSuccessDarkPill",
-        "LiveNowPill",
-        "HostTodayClubPill",
-        "HostTodayCountdownPill",
-        "CountdownBeatPill",
       ],
     },
     {
@@ -1861,7 +2055,7 @@ function buildCandidates() {
       tags: ["selection", "forms"],
       names: [
         "CatchOptionCard",
-        "CatchSelectChip",
+        "CatchChip",
         "IncludeMeToggle",
         "RecommendationSwitch",
         "CatchToggle",
@@ -1963,11 +2157,10 @@ function buildCandidates() {
       tags: ["analytics", "host"],
       names: [
         "HostAnalyticsReportView",
-        "HostAnalyticsSection",
-        "HostAnalyticsControls",
-        "HostAnalyticsBar",
         "HostAnalyticsTrendPanel",
-        "HostAnalyticsDataQualityPanel",
+        "HostAnalyticsDualBar",
+        "HostAnalyticsEventList",
+        "HostAnalyticsReviewsPanel",
         "UserAnalyticsPanel",
       ],
     },
@@ -2002,7 +2195,6 @@ function buildCandidates() {
         "LiveArrivalRing",
         "LiveStepContextCard",
         "LiveStepNavigation",
-        "LiveNowPill",
       ],
     },
     {
@@ -2097,25 +2289,26 @@ function buildCandidates() {
     });
 
   const priorityRank = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  const queueClassRank = (candidate) => {
+    if (candidate.tags?.includes("pattern-family")) return 0;
+    if (candidate.tags?.includes("decision-preview")) return 1;
+    if (candidate.tags?.includes("variant-prune")) return 2;
+    if (candidate.tags?.includes("app-consolidation")) return 3;
+    if (candidate.tags?.includes("dedupe")) return 5;
+    return 4;
+  };
   candidates.sort((a, b) => {
-    const aDedupe = a.tags?.includes("dedupe") ? 0 : 1;
-    const bDedupe = b.tags?.includes("dedupe") ? 0 : 1;
-    if (aDedupe !== bDedupe) return aDedupe - bDedupe;
-    if (aDedupe === 0 && bDedupe === 0) {
+    const byQueueClass = queueClassRank(a) - queueClassRank(b);
+    if (byQueueClass !== 0) return byQueueClass;
+    if (a.patternFamily && b.patternFamily) {
+      return a.patternFamily.registryIndex - b.patternFamily.registryIndex;
+    }
+    if (a.tags?.includes("dedupe") && b.tags?.includes("dedupe")) {
       return (
         (a.dedupeReview?.queueRank ?? 9999) -
         (b.dedupeReview?.queueRank ?? 9999)
       );
     }
-    const aFocused = a.tags?.includes("decision-preview") ? 0 : 1;
-    const bFocused = b.tags?.includes("decision-preview") ? 0 : 1;
-    if (aFocused !== bFocused) return aFocused - bFocused;
-    const aVariant = a.tags?.includes("variant-prune") ? 0 : 1;
-    const bVariant = b.tags?.includes("variant-prune") ? 0 : 1;
-    if (aVariant !== bVariant) return aVariant - bVariant;
-    const aApp = a.tags?.includes("app-consolidation") ? 0 : 1;
-    const bApp = b.tags?.includes("app-consolidation") ? 0 : 1;
-    if (aApp !== bApp) return aApp - bApp;
     const byPriority =
       (priorityRank[a.priority] ?? 9) - (priorityRank[b.priority] ?? 9);
     if (byPriority !== 0) return byPriority;
@@ -2170,6 +2363,9 @@ function buildCandidates() {
       totalConflicts: candidatesWithState.length,
       decided: decidedCandidates.length,
       resolved: resolvedCandidates.length,
+      patternFamilies: candidatesWithState.filter((candidate) =>
+        candidate.tags?.includes("pattern-family"),
+      ).length,
       dedupe: pendingCandidates.filter((candidate) =>
         candidate.tags?.includes("dedupe"),
       ).length,
@@ -2199,11 +2395,12 @@ function withReviewState(item, decisionsById, resolvedIds) {
   );
   const implemented =
     decision?.status === "implemented" || decision?.implemented === true;
+  const registryImplemented = item.patternFamily?.status === "implemented";
   return {
     ...item,
     reviewState: {
       decided: hasDecision,
-      resolved: resolvedIds.has(item.id) || implemented,
+      resolved: resolvedIds.has(item.id) || implemented || registryImplemented,
       status: decision?.status ?? "",
       decision: decision?.decision ?? "",
       note: decision?.note ?? "",
@@ -2602,7 +2799,7 @@ function appHtml() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Catch Rendering Conflict Review</title>
+  <title>Catch Pattern Family Review</title>
   <style>
     :root {
       --bg: #eee9df;
@@ -2771,6 +2968,13 @@ function appHtml() {
       gap: 8px;
       min-width: min(100%, 528px);
     }
+    .render-grid.pattern-family-lineup {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 420px;
+      width: max-content;
+      min-width: 100%;
+    }
     .render-card, .notes-card, .code-card, .register-card, .related-card {
       border: 1px solid var(--line);
       background: var(--paper);
@@ -2900,6 +3104,31 @@ function appHtml() {
       color: var(--muted);
     }
     .why-list li + li { margin-top: 4px; }
+    .review-question-grid {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .review-question {
+      border: 1px solid var(--line);
+      background: #fffdf8;
+      padding: 10px;
+    }
+    .review-question p {
+      margin-top: 6px;
+      color: var(--ink);
+    }
+    .review-recommendation {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .review-question-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+    }
     .action-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -3095,12 +3324,13 @@ function appHtml() {
 <body>
   <div class="app">
     <aside>
-      <h1>Rendering Conflict Review</h1>
-      <p>Unresolved candidates first. Save a decision to move it out of the default queue.</p>
+      <h1>Pattern Family Review</h1>
+      <p>Pattern families are the default queue. Choose another bucket when you explicitly want decision previews, variant pruning, or dedupe discovery evidence.</p>
       <div class="stats" id="stats"></div>
       <div class="filters">
-        <input id="search" type="search" placeholder="Search conflicts">
+        <input id="search" type="search" placeholder="Search review queue">
         <select id="bucket">
+          <option value="pattern-family" selected>pattern families</option>
           <option value="">All buckets</option>
           <option value="dedupe">dedupe</option>
           <option value="needs-decision">needs-decision</option>
@@ -3141,7 +3371,7 @@ function appHtml() {
     const priority = document.getElementById("priority");
     const showDecided = document.getElementById("showDecided");
     const showResolved = document.getElementById("showResolved");
-    const defaultDecisions = ["left canonical", "right canonical", "merge", "separate concepts", "visual repair", "rename", "discard"];
+    const defaultDecisions = ["canonical", "repair", "unify", "register", "discard"];
 
     function esc(value) {
       return String(value ?? "")
@@ -3165,6 +3395,12 @@ function appHtml() {
         candidate.dedupeReview?.detectors?.join(" "),
         candidate.dedupeReview?.whySimilar?.join(" "),
         candidate.dedupeReview?.members?.map((member) => [member.name, member.file, member.role].join(" ")).join(" "),
+        candidate.patternFamily?.status,
+        candidate.patternFamily?.targetContract,
+        candidate.patternFamily?.qualityReference,
+        candidate.patternFamily?.decisionSource,
+        candidate.patternFamily?.reviewQuestions?.map((question) => [question.id, question.prompt, question.recommendation, question.selectedOption, question.options?.join(" ")].join(" ")).join(" "),
+        candidate.patternFamily?.members?.map((member) => [member.symbol, member.disposition, member.target, member.preview, member.rationale].join(" ")).join(" "),
         ...(candidate.tags || []),
         ...(candidate.previewPanes || []).map((pane) => pane.component),
         ...(candidate.related || []).map((pane) => pane.component),
@@ -3175,13 +3411,36 @@ function appHtml() {
       return data.candidates;
     }
 
+    function syncSelectionFromHash() {
+      const nextId =
+        decodeURIComponent(window.location.hash.replace(/^#/u, "")) || null;
+      const candidate = allCandidates().find((item) => item.id === nextId);
+      if (!candidate) return false;
+      selectedId = candidate.id;
+      selectedDecision = "";
+      selectedCodeFile = "";
+      const hasBucketOption = [...bucket.options].some(
+        (option) => option.value === candidate.bucket,
+      );
+      bucket.value = hasBucketOption ? candidate.bucket : "";
+      if (candidate.reviewState?.resolved) {
+        showResolved.checked = true;
+      } else if (candidate.reviewState?.decided) {
+        showDecided.checked = true;
+      }
+      return true;
+    }
+
     function filteredCandidates() {
       const q = search.value.trim().toLowerCase();
       return allCandidates().filter((candidate) => {
         if (bucket.value && candidate.bucket !== bucket.value) return false;
         if (priority.value && candidate.priority !== priority.value) return false;
-        if (!showDecided.checked && candidate.reviewState?.decided) return false;
-        if (!showResolved.checked && candidate.reviewState?.resolved) return false;
+        if (candidate.reviewState?.resolved) {
+          if (!showResolved.checked) return false;
+        } else if (!showDecided.checked && candidate.reviewState?.decided) {
+          return false;
+        }
         if (q && !candidateText(candidate).includes(q)) return false;
         return true;
       });
@@ -3189,6 +3448,7 @@ function appHtml() {
 
     function renderStats() {
       const stats = [
+        [data.stats.patternFamilies, "families"],
         [data.stats.conflicts, "open"],
         [data.stats.decided, "decided"],
         [data.stats.resolved, "resolved"],
@@ -3209,6 +3469,9 @@ function appHtml() {
       ];
       if (state.resolved) pills.push('<span class="pill">resolved</span>');
       if (state.decided) pills.push('<span class="pill">' + esc(state.decision || "decided") + '</span>');
+      if (candidate.patternFamily) {
+        pills.push('<span class="pill">' + esc(candidate.patternFamily.status) + '</span>');
+      }
       if (candidate.dedupeReview) {
         pills.push('<span class="pill">dedupe #' + esc(candidate.dedupeReview.queueRank) + '</span>');
       }
@@ -3244,12 +3507,14 @@ function appHtml() {
           document.querySelector("main").scrollTo({ top: 0 });
         });
       });
-      const registerItems = data.registerList.slice(0, 12);
-      document.getElementById("registerList").innerHTML =
-        '<p style="margin:14px 0 8px">Register-only queue</p>' +
-        registerItems.map((item) =>
-          '<div class="register-card"><strong>' + esc(item.title) + '</strong><span>' + esc(item.recommended) + '</span></div>'
-        ).join("");
+      const showRegisterQueue = bucket.value === "" || bucket.value === "register";
+      const registerItems = showRegisterQueue ? data.registerList.slice(0, 12) : [];
+      document.getElementById("registerList").innerHTML = registerItems.length
+        ? '<p style="margin:14px 0 8px">Register-only queue</p>' +
+          registerItems.map((item) =>
+            '<div class="register-card"><strong>' + esc(item.title) + '</strong><span>' + esc(item.recommended) + '</span></div>'
+          ).join("")
+        : "";
     }
 
     function renderPane(label, pane) {
@@ -3260,9 +3525,22 @@ function appHtml() {
       const previewUrl = pane.url
         ? previewShellUrl + "?v=" + encodeURIComponent(data.generatedAt) + "&target=" + encodeURIComponent(pane.url)
         : "";
+      const missingMessage = pane.previewStatus === "missing-required"
+        ? "Required Widgetbook preview is missing. Add coverage before approving this member."
+        : pane.previewStatus === "source-only"
+          ? "Source-only member. Inspect its implementation below until a standalone preview is added."
+          : pane.previewStatus === "not-applicable"
+            ? "The registry marks a standalone preview as not applicable."
+            : "No Widgetbook URL available.";
       const frame = pane.url
         ? '<iframe src="' + esc(previewUrl) + '" data-base-src="' + esc(previewUrl) + '" loading="eager"></iframe>'
-        : '<div class="missing">No Widgetbook URL available.</div>';
+        : '<div class="missing">' + esc(missingMessage) + '</div>';
+      const memberMeta = pane.memberDisposition
+        ? '<br><strong>' + esc(pane.memberDisposition) + '</strong>' +
+          (pane.memberTarget ? ' → <code>' + esc(pane.memberTarget) + '</code>' : '') +
+          ' · preview: ' + esc(pane.previewRequirement || pane.previewStatus || "unknown") +
+          '<br>' + esc(pane.memberRationale || "")
+        : '';
       return '<section class="render-card">' +
         '<div class="card-head"><strong>' + esc(label + ": " + pane.component) + '</strong>' +
         '<div class="card-actions">' +
@@ -3270,7 +3548,7 @@ function appHtml() {
         '</div>' +
         '</div>' +
         frame +
-        '<div class="meta">' + esc(pane.location) + ' / ' + esc(pane.useCase) + '<br><code>' + esc(pane.path) + '</code></div>' +
+        '<div class="meta">' + esc(pane.location) + ' / ' + esc(pane.useCase) + '<br><code>' + esc(pane.path) + '</code>' + memberMeta + '</div>' +
         '</section>';
     }
 
@@ -3297,7 +3575,7 @@ function appHtml() {
       const context = selectedReviewContext(candidate);
       const panes = candidate.previewPanes?.length
         ? candidate.previewPanes.map((pane, index) => ({
-            label: "Preview " + (index + 1),
+            label: pane.memberDisposition || "Preview " + (index + 1),
             pane,
           }))
         : context && candidate.left
@@ -3316,8 +3594,11 @@ function appHtml() {
             { label: "Left", pane: candidate.left },
             { label: "Right", pane: candidate.right },
           ];
+      const gridClass = candidate.patternFamily
+        ? "render-grid pattern-family-lineup"
+        : "render-grid";
       return renderReviewContextControls(candidate) +
-        '<div class="preview-scroll"><div class="render-grid">' +
+        '<div class="preview-scroll"><div class="' + gridClass + '">' +
         panes.map(({ label, pane }) => renderPane(label, pane)).join("") +
         '</div></div>';
     }
@@ -3500,6 +3781,50 @@ function appHtml() {
         '</div></section>';
     }
 
+    function renderPatternFamily(candidate) {
+      const family = candidate.patternFamily;
+      if (!family) return "";
+      const deltas = (family.acceptedVisualDelta || []).map((item) =>
+        '<li>' + esc(item) + '</li>'
+      ).join("");
+      const members = (family.members || []).map((member) =>
+        '<tr><td><strong>' + esc(member.symbol) + '</strong></td>' +
+        '<td><span class="pill">' + esc(member.disposition) + '</span></td>' +
+        '<td>' + (member.target ? '<code>' + esc(member.target) + '</code>' : '—') + '</td>' +
+        '<td>' + esc(member.preview) + '</td>' +
+        '<td>' + esc(member.rationale) + '</td></tr>'
+      ).join("");
+      const questions = (family.reviewQuestions || []).map((question) =>
+        '<article class="review-question">' +
+        '<div><strong>' + esc(question.id) + '</strong></div>' +
+        '<p>' + esc(question.prompt) + '</p>' +
+        '<div class="review-recommendation"><strong>' +
+        (question.selectedOption ? 'Approved' : 'Recommended') + '</strong> ' +
+        esc(question.selectedOption || question.recommendation) + '</div>' +
+        '<div class="review-question-options">' +
+        question.options.map((option) => '<span class="pill">' +
+          (option === question.selectedOption ? '✓ ' : '') + esc(option) + '</span>').join("") +
+        '</div></article>'
+      ).join("");
+      const questionHeading = (family.reviewQuestions || []).some(
+        (question) => question.selectedOption,
+      ) ? 'Owner decisions' : 'Owner questions';
+      return '<section class="evidence-card">' +
+        '<div class="evidence-top"><div><strong>Pattern family contract</strong><p>' +
+        esc(family.id) + ' · ' + esc(family.status) + ' · ' + esc(family.decisionSource) +
+        '</p></div><div><span class="pill">' + esc(family.priority) + '</span><span class="pill">' + esc(family.status) + '</span></div></div>' +
+        '<div class="evidence-grid">' +
+        '<div class="evidence-metric"><strong>' + esc(family.targetContract) + '</strong><span>target contract</span></div>' +
+        '<div class="evidence-metric"><strong>' + esc(family.qualityReference) + '</strong><span>quality reference</span></div>' +
+        '<div class="evidence-metric"><strong>' + esc(family.members?.length || 0) + '</strong><span>review members</span></div>' +
+        '</div>' +
+        (deltas ? '<strong>Accepted visual delta</strong><ul class="why-list">' + deltas + '</ul>' : '<p class="context-note">No visual delta is accepted while this family remains in review.</p>') +
+        (questions ? '<strong>' + questionHeading + '</strong><div class="review-question-grid">' + questions + '</div>' : '') +
+        '<table class="member-table"><thead><tr><th>Widget</th><th>disposition</th><th>target</th><th>preview</th><th>rationale</th></tr></thead><tbody>' +
+        members +
+        '</tbody></table><p class="context-note">Member dispositions are read-only here and come from <code>pattern_families.json</code>.</p></section>';
+    }
+
     function renderDedupeReview(candidate) {
       const review = candidate.dedupeReview;
       if (!review) return "";
@@ -3564,6 +3889,13 @@ function appHtml() {
       const noteValue = draftNotes.has(candidate.id)
         ? draftNotes.get(candidate.id)
         : state.note || "";
+      const decisionHeading = candidate.patternFamily ? "Family review note" : "Decision";
+      const decisionScope = candidate.patternFamily
+        ? '<p>Saving records a family-level note only. It does not mutate the registry-owned member dispositions.</p>'
+        : "";
+      const implementedButton = candidate.patternFamily
+        ? ""
+        : '<button class="save secondary" id="markImplemented">Mark implemented</button>';
       document.getElementById("detail").innerHTML =
         '<div class="topbar"><div><h2>' + esc(candidate.title) + '</h2><p>' + esc(candidate.reason) + '</p></div>' +
         '<div class="detail-actions"><span class="pill">' + esc(candidateIndex + 1) + ' of ' + esc(candidates.length) + '</span>' +
@@ -3573,11 +3905,12 @@ function appHtml() {
         '<button class="small-button" type="button" id="nextCandidate">Next</button>' +
         '<button class="small-button" type="button" id="reloadPreviews">Reload previews</button>' +
         '</div></div>' +
+        renderPatternFamily(candidate) +
         renderDedupeReview(candidate) +
         renderPreviewGrid(candidate) +
         renderRelated(candidate) +
         '<div class="below">' +
-        '<section class="notes-card"><strong>Decision</strong><p>Recommended: <code>' + esc(candidate.recommended) + '</code></p><div class="decision-grid" id="decisionGrid">' + renderDecisionButtons() + '</div><textarea id="note" placeholder="Write the instruction you want Codex to act on. Example: left is canonical but keep right spacing, rename to CatchSection, or these are separate concepts.">' + esc(noteValue) + '</textarea><div class="save-row"><button class="save" id="save">Save note</button><button class="save secondary" id="markImplemented">Mark implemented</button></div><p id="saveStatus" style="margin-top:8px"></p><div class="log" id="log"></div></section>' +
+        '<section class="notes-card"><strong>' + esc(decisionHeading) + '</strong><p>Recommended: <code>' + esc(candidate.recommended) + '</code></p>' + decisionScope + '<div class="decision-grid" id="decisionGrid">' + renderDecisionButtons() + '</div><textarea id="note" placeholder="Write the instruction you want Codex to act on.">' + esc(noteValue) + '</textarea><div class="save-row"><button class="save" id="save">Save note</button>' + implementedButton + '</div><p id="saveStatus" style="margin-top:8px"></p><div class="log" id="log"></div></section>' +
         '<section class="code-card"><strong>Implementation code</strong><div class="code-tabs" id="codeTabs"></div><pre id="code">Select a file.</pre></section>' +
         '</div>';
       document.querySelectorAll("#decisionGrid button").forEach((button) => {
@@ -3598,7 +3931,7 @@ function appHtml() {
         draftNotes.set(candidate.id, event.target.value);
       });
       document.getElementById("save").addEventListener("click", () => saveCurrent(candidate));
-      document.getElementById("markImplemented").addEventListener("click", () => saveCurrent(candidate, "implemented"));
+      document.getElementById("markImplemented")?.addEventListener("click", () => saveCurrent(candidate, "implemented"));
       document.getElementById("prevCandidate").addEventListener("click", () => selectRelative(-1));
       document.getElementById("nextCandidate").addEventListener("click", () => selectRelative(1));
       document.querySelectorAll(".context-button").forEach((button) => {
@@ -3623,7 +3956,7 @@ function appHtml() {
     async function boot() {
       const response = await fetch("/api/data");
       data = await response.json();
-      selectedId = decodeURIComponent(window.location.hash.replace(/^#/u, "")) || null;
+      syncSelectionFromHash();
       renderStats();
       render();
       search.addEventListener("input", render);
@@ -3631,6 +3964,11 @@ function appHtml() {
       priority.addEventListener("change", render);
       showDecided.addEventListener("change", render);
       showResolved.addEventListener("change", render);
+      window.addEventListener("hashchange", () => {
+        if (!syncSelectionFromHash()) return;
+        render();
+        document.querySelector("main").scrollTo({top: 0});
+      });
       window.addEventListener("keydown", (event) => {
         const tag = event.target?.tagName?.toLowerCase();
         if (tag === "input" || tag === "textarea" || tag === "select") return;

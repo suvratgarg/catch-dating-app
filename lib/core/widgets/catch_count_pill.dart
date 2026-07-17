@@ -1,49 +1,89 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-/// Floating CountPill from the handoff.
+/// Labelled floating action from the handoff's compact-control family.
 ///
-/// Used for Explore map/list toggles and filter affordances: raised surface,
-/// hairline border, optional icon, optional mono label, and optional corner
-/// badge for active counts.
+/// The required label and callback keep this distinct from icon-only
+/// [CatchIconButton] actions and prevent an action-looking passive surface.
+/// Counts stay typed and render through [CatchCountBadge].
 class CatchCountPill extends StatelessWidget {
-  const CatchCountPill({
+  CatchCountPill.label({
     super.key,
     this.icon,
-    this.label,
-    this.badge,
-    this.onPressed,
+    required this.label,
+    this.value,
+    this.count = 0,
+    required this.onPressed,
     this.semanticLabel,
-  });
+  }) : assert(label.trim().isNotEmpty, 'label must not be empty'),
+       assert(count >= 0, 'count must not be negative'),
+       assert(
+         semanticLabel == null || semanticLabel.trim().isNotEmpty,
+         'semanticLabel must not be empty when provided',
+       );
 
   final IconData? icon;
-  final String? label;
-  final String? badge;
-  final VoidCallback? onPressed;
+  final String label;
+  final String? value;
+  final int count;
+  final VoidCallback onPressed;
   final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final hasLabel = label != null && label!.isNotEmpty;
-    final content = Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (icon != null)
-          Icon(icon, size: CatchLayout.countPillIconSize, color: t.ink),
-        if (icon != null && hasLabel) gapW8,
-        if (hasLabel)
-          Text(
-            label!,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.monoLabel(context, color: t.ink),
+    final content = LayoutBuilder(
+      builder: (context, constraints) {
+        final labelText = Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.monoLabel(context, color: t.ink),
+        );
+        final valueText = value == null || value!.isEmpty
+            ? null
+            : Text(
+                value!.toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.monoCapsLabel(context, color: t.ink),
+              );
+        return ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: CatchIconButton.defaultSize,
           ),
-      ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null)
+                Icon(icon, size: CatchLayout.countPillIconSize, color: t.ink),
+              if (icon != null) gapW8,
+              if (constraints.hasBoundedWidth)
+                Flexible(child: labelText)
+              else
+                labelText,
+              if (valueText != null) ...[
+                gapW6,
+                Text(
+                  '·',
+                  style: CatchTextStyles.buttonSm(context, color: t.ink3),
+                ),
+                gapW6,
+                if (constraints.hasBoundedWidth)
+                  Flexible(child: valueText)
+                else
+                  valueText,
+              ],
+            ],
+          ),
+        );
+      },
     );
 
     final pill = CatchSurface(
@@ -51,59 +91,28 @@ class CatchCountPill extends StatelessWidget {
       elevation: CatchSurfaceElevation.raised,
       backgroundColor: t.surface.withValues(alpha: 0.94),
       borderColor: t.line2,
-      padding: hasLabel
-          ? const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.s4,
-              vertical: CatchLayout.countPillLabelVerticalPadding,
-            )
-          : EdgeInsets.zero,
-      width: hasLabel ? null : 38,
-      height: hasLabel ? null : 38,
+      padding: EdgeInsets.only(
+        left: CatchSpacing.s4,
+        right: count > 0 ? CatchSpacing.s5 : CatchSpacing.s4,
+      ),
       onTap: onPressed,
       child: content,
     );
 
-    final badgeLabel = badge;
-    final wrapped = badgeLabel == null || badgeLabel.isEmpty
-        ? pill
-        : Stack(
-            clipBehavior: Clip.none,
-            children: [
-              pill,
-              Positioned(
-                top: -CatchSpacing.s1,
-                right: -CatchSpacing.s1,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: t.ink,
-                    borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CatchSpacing.micro3,
-                    ),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        minWidth: CatchSpacing.micro14,
-                        minHeight: CatchSpacing.micro14,
-                      ),
-                      child: Center(
-                        child: Text(
-                          badgeLabel,
-                          style: CatchTextStyles.statusLabel(
-                            context,
-                            color: t.primaryInk,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
+    final countedPill = CatchCountBadge(
+      count: count,
+      offset: const Offset(CatchSpacing.s1, -CatchSpacing.s1),
+      child: pill,
+    );
 
-    if (semanticLabel == null) return wrapped;
-    return Semantics(label: semanticLabel, child: wrapped);
+    if (semanticLabel == null) return countedPill;
+    return Semantics(
+      container: true,
+      button: true,
+      enabled: true,
+      label: semanticLabel,
+      excludeSemantics: true,
+      child: countedPill,
+    );
   }
 }

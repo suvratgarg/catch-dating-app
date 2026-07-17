@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
+
 /**
  * Schema-derived Admin SDK Firestore document types.
  *
@@ -247,6 +249,7 @@ export interface EventSuccessDefaults {
    * @maxItems 24
    */
   selectedModuleIds?: string[];
+  moduleSelectionConfigured?: boolean;
   structureConfig?: EventSuccessStructureConfig;
   hostGoal?: string;
   wingmanRequestsEnabled?: boolean;
@@ -994,9 +997,9 @@ export interface EventDocument {
   startTime: FirebaseFirestore.Timestamp;
   endTime: FirebaseFirestore.Timestamp;
   meetingPoint: string;
-  meetingLocation: EventMeetingLocation | null;
-  startingPointLat?: number;
-  startingPointLng?: number;
+  meetingLocation: EventMeetingLocation;
+  startingPointLat: number;
+  startingPointLng: number;
   locationDetails?: string | null;
   photoUrl?: string | null;
   /**
@@ -1046,7 +1049,7 @@ export interface EventDocument {
     | "dinner"
     | "singlesMixer"
     | "openActivity";
-  discoveryGeoCell: string | null;
+  discoveryGeoCell: string;
   discoveryHasOpenSpots: boolean;
   discoveryAvailability: "open" | "waitlist" | "gated" | "full" | "cancelled";
   /**
@@ -1104,8 +1107,8 @@ export interface ExternalEventDocument {
     name: string;
     address: string | null;
     placeId: string | null;
-    latitude: (number | null) | null;
-    longitude: (number | null) | null;
+    latitude: number | null;
+    longitude: number | null;
     notes: string | null;
   };
   locationDetails: string | null;
@@ -2026,6 +2029,17 @@ export interface RateLimitDocument {
   action: string;
   windowKey: number;
   count: number;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned 15-minute response cache stored at hostAnalyticsSnapshots/{uid}_{scopeHash}.
+ */
+export interface HostAnalyticsSnapshotDocument {
+  uid: string;
+  scopeHash: string;
+  response: HostAnalyticsCallableResponse;
+  createdAt: FirebaseFirestore.Timestamp;
   expiresAt: FirebaseFirestore.Timestamp;
 }
 

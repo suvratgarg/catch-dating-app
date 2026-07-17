@@ -2,11 +2,9 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -98,7 +96,6 @@ class CreateClubController extends _$CreateClubController {
     required String location,
     required String area,
     required String description,
-    Club? existingClub,
     List<ClubPhotoInput>? clubPhotoInputs,
     String? instagramHandle,
     String? phoneNumber,
@@ -107,103 +104,6 @@ class CreateClubController extends _$CreateClubController {
     XFile? profileImage,
   }) async {
     final uid = requireSignedInUid(ref, action: 'create a club');
-
-    if (existingClub != null) {
-      if (!existingClub.isHostedBy(uid)) {
-        throw const BackendOperationException(
-          code: 'club-host-edit-required',
-          message: 'Only a club host can edit this club.',
-          context: BackendErrorContext(
-            service: BackendService.local,
-            action: 'edit club',
-          ),
-        );
-      }
-
-      var imageUrl = existingClub.imageUrl;
-      var profileImageUrl = existingClub.profileImageUrl;
-      var clubPhotos = existingClub.clubPhotos;
-      var logoPhoto = existingClub.logoPhoto;
-      var clubPhotosChanged = false;
-      var logoChanged = false;
-      final selectedClubPhotoInputs = clubPhotoInputs;
-      if (selectedClubPhotoInputs != null) {
-        clubPhotos = await _resolveClubPhotoInputs(
-          uid: uid,
-          clubId: existingClub.id,
-          inputs: selectedClubPhotoInputs,
-        );
-        imageUrl = _primaryPhotoUrl(clubPhotos);
-        clubPhotosChanged = true;
-      }
-      if (profileImage != null) {
-        final upload = await ref
-            .read(imageUploadRepositoryProvider)
-            .uploadClubLogo(
-              uid: uid,
-              clubId: existingClub.id,
-              image: profileImage,
-            );
-        logoPhoto = UploadedPhoto.fromUpload(
-          url: upload.url,
-          storagePath: upload.storagePath,
-          position: 0,
-        );
-        profileImageUrl = logoPhoto.thumbnailOrUrl;
-        logoChanged = true;
-      }
-
-      final clubsRepo = ref.read(clubsRepositoryProvider);
-      if (!existingClub.isOwnedBy(uid)) {
-        if (!clubPhotosChanged && !logoChanged) {
-          throw const BackendOperationException(
-            code: 'club-owner-edit-required',
-            message: 'Only the club owner can edit club details.',
-            context: BackendErrorContext(
-              service: BackendService.local,
-              action: 'edit club details',
-            ),
-          );
-        }
-        final patch = <String, Object?>{};
-        if (clubPhotosChanged) {
-          patch['imageUrl'] = imageUrl;
-          patch['clubPhotos'] = clubPhotos
-              .map((photo) => photo.toJson())
-              .toList(growable: false);
-        }
-        if (logoChanged) {
-          patch['profileImageUrl'] = profileImageUrl;
-          patch['logoPhoto'] = logoPhoto?.toJson();
-        }
-        await clubsRepo.updateClub(
-          clubId: existingClub.id,
-          patch: UpdateClubPatch.raw(patch),
-        );
-        return;
-      }
-
-      await clubsRepo.updateClub(
-        clubId: existingClub.id,
-        patch: UpdateClubPatch.raw({
-          'name': name,
-          'description': description,
-          'location': location,
-          'area': area,
-          'imageUrl': imageUrl,
-          'profileImageUrl': profileImageUrl,
-          'clubPhotos': clubPhotos
-              .map((photo) => photo.toJson())
-              .toList(growable: false),
-          'logoPhoto': logoPhoto?.toJson(),
-          'hostDefaults': hostDefaults.toJson(),
-          'instagramHandle': instagramHandle,
-          'phoneNumber': phoneNumber,
-          'email': email,
-        }),
-      );
-      return;
-    }
 
     final clubsRepo = ref.read(clubsRepositoryProvider);
     final selectedClubPhotoInputs = clubPhotoInputs ?? const <ClubPhotoInput>[];

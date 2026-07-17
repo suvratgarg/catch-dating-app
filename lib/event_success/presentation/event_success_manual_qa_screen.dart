@@ -10,8 +10,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -512,18 +512,16 @@ class ManualQaHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: context
                     .l10n
                     .eventSuccessEventSuccessManualQaScreenLabelManualQa,
-                tone: CatchBadgeTone.live,
                 icon: CatchIcons.factCheckOutlined,
               ),
-              CatchBadge(
+              CatchBadge.onDarkStatus(
                 label: context
                     .l10n
                     .eventSuccessEventSuccessManualQaScreenLabelFixtureData,
-                tone: CatchBadgeTone.solid,
                 icon: CatchIcons.dataObjectRounded,
               ),
             ],
@@ -553,26 +551,26 @@ class ManualQaHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label: context.l10n
                     .eventSuccessEventSuccessManualQaScreenLabelBookedcountBooked(
                       bookedCount: data.roster.bookedCount,
                     ),
               ),
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label: context.l10n
                     .eventSuccessEventSuccessManualQaScreenLabelCheckedincountCheckedIn(
                       checkedInCount: data.roster.checkedInCount,
                     ),
               ),
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label: context.l10n
                     .eventSuccessEventSuccessManualQaScreenLabelRevealcountdownsecondsSReveal(
                       revealCountdownSeconds:
                           data.plan.structureConfig.revealCountdownSeconds,
                     ),
               ),
-              EventSuccessDarkPill(
+              CatchBadge.onDark(
                 label:
                     !data.plan.hasModule(
                       EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
@@ -630,10 +628,10 @@ class ManualQaControls extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final value in _ManualQaScenario.values)
-                CatchSelectChip(
+                CatchChip.selectable(
                   label: value.label,
-                  active: scenario == value,
-                  onTap: () => onScenarioChanged(value),
+                  selected: scenario == value,
+                  onChanged: (_) => onScenarioChanged(value),
                 ),
             ],
           ),
@@ -964,7 +962,7 @@ class AttendeeQaControls extends StatelessWidget {
                           .eventSuccessEventSuccessManualQaScreenLabelFirstHelloPending,
                 tone: firstHelloCompleted
                     ? CatchBadgeTone.success
-                    : CatchBadgeTone.live,
+                    : CatchBadgeTone.brand,
                 icon: CatchIcons.wavingHandOutlined,
               ),
           ],
@@ -1520,6 +1518,13 @@ class _ManualQaFixtures {
       startTime: _eventStart,
       endTime: _eventStart.add(const Duration(minutes: 90)),
       meetingPoint: scenario.meetingPoint,
+      meetingLocation: EventMeetingLocation(
+        name: scenario.meetingPoint,
+        latitude: 19.0608,
+        longitude: 72.8365,
+      ),
+      startingPointLat: 19.0608,
+      startingPointLng: 72.8365,
       eventFormat: EventFormatSnapshot.fromActivityKind(scenario.activityKind),
       distanceKm: scenario.activityKind.isDistanceBased ? 5 : 0,
       pace: PaceLevel.easy,

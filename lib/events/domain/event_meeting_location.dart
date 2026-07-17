@@ -8,9 +8,10 @@ part 'event_meeting_location.g.dart';
 /// `eventMeetingLocation` definition in
 /// `contracts/shared/event_common.schema.json`.
 ///
-/// The legacy meeting-point/string + nullable lat/lng fields on Event remain
-/// for back-compat reads; new writes use [EventMeetingLocation] and
-/// `event.effectiveMeetingLocation` for unified consumption.
+/// The legacy meeting-point/string + scalar coordinate fields remain as
+/// synchronized mirrors for released-client compatibility. New writes use
+/// [EventMeetingLocation] as the canonical value, and the Event decoder may
+/// promote only a complete, valid legacy mirror pair.
 @freezed
 abstract class EventMeetingLocation with _$EventMeetingLocation {
   const EventMeetingLocation._();
@@ -27,8 +28,9 @@ abstract class EventMeetingLocation with _$EventMeetingLocation {
   factory EventMeetingLocation.fromJson(Map<String, dynamic> json) =>
       _$EventMeetingLocationFromJson(json);
 
-  /// Reconstructs a meeting location from legacy `meetingPoint` + `startingPoint{Lat,Lng}`
-  /// fields on Event. Returns null if there's no usable name or coordinates.
+  /// Reconstructs a meeting location from legacy `meetingPoint` plus
+  /// `startingPoint{Lat,Lng}` fields. Returns null if the legacy record cannot
+  /// satisfy the required named exact-location invariant.
   static EventMeetingLocation? legacy({
     required String name,
     required double? latitude,

@@ -33,7 +33,6 @@ class EventAgendaList extends StatelessWidget {
       CatchLayout.agendaListBottomPadding,
     ),
     this.dayLabelBottomGap = CatchLayout.agendaDayLabelBottomGap,
-    this.itemGap = CatchLayout.agendaItemGap,
     this.groupGap = CatchLayout.agendaGroupGap,
   });
 
@@ -50,7 +49,6 @@ class EventAgendaList extends StatelessWidget {
   final EventAgendaDayKeyBuilder? dayKeyBuilder;
   final EdgeInsetsGeometry padding;
   final double dayLabelBottomGap;
-  final double itemGap;
   final double groupGap;
 
   @override
@@ -71,7 +69,6 @@ class EventAgendaList extends StatelessWidget {
           dayKeyBuilder: dayKeyBuilder,
           padding: padding,
           dayLabelBottomGap: dayLabelBottomGap,
-          itemGap: itemGap,
           groupGap: groupGap,
         ),
       ],
@@ -100,7 +97,6 @@ class EventAgendaSliverList extends StatelessWidget {
       CatchLayout.agendaListBottomPadding,
     ),
     this.dayLabelBottomGap = CatchLayout.agendaDayLabelBottomGap,
-    this.itemGap = CatchLayout.agendaItemGap,
     this.groupGap = CatchLayout.agendaGroupGap,
   });
 
@@ -117,7 +113,6 @@ class EventAgendaSliverList extends StatelessWidget {
   final EventAgendaDayKeyBuilder? dayKeyBuilder;
   final EdgeInsetsGeometry padding;
   final double dayLabelBottomGap;
-  final double itemGap;
   final double groupGap;
 
   @override
@@ -141,7 +136,6 @@ class EventAgendaSliverList extends StatelessWidget {
             onEventSelected: onEventSelected,
             showClubName: showClubName,
             dayLabelBottomGap: dayLabelBottomGap,
-            itemGap: itemGap,
           ),
         ),
         if (groupIndex < entries.length - 1) SizedBox(height: groupGap),
@@ -332,7 +326,6 @@ class AgendaDayGroup extends StatelessWidget {
     required this.onEventSelected,
     required this.showClubName,
     required this.dayLabelBottomGap,
-    required this.itemGap,
   });
 
   final DateTime date;
@@ -341,7 +334,6 @@ class AgendaDayGroup extends StatelessWidget {
   final ValueChanged<Event>? onEventSelected;
   final bool showClubName;
   final double dayLabelBottomGap;
-  final double itemGap;
 
   @override
   Widget build(BuildContext context) {
@@ -373,13 +365,16 @@ class AgendaDayGroup extends StatelessWidget {
                 ),
                 showClubName: showClubName,
                 badgeLabel: row.badgeLabel,
+                stripPosition: eventDateRailCardStripPositionFor(
+                  eventIndex,
+                  rows.length,
+                ),
                 onTap: onEventSelected == null
                     ? null
                     : () => onEventSelected!(event),
               );
             },
           ),
-          if (eventIndex < rows.length - 1) SizedBox(height: itemGap),
         ],
       ],
     );

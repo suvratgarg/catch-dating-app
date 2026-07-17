@@ -1,7 +1,7 @@
 ---
 doc_id: adaptive_tab_bar_spec
-version: 1.0.2
-updated: 2026-07-08
+version: 1.0.3
+updated: 2026-07-12
 owner: design_parity_review
 status: implemented
 depends_on: home_catches_unification_spec
@@ -11,8 +11,12 @@ depends_on: home_catches_unification_spec
 
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
 Touches: `lib/core/presentation/app_shell.dart`,
+`lib/core/presentation/host_app_shell.dart`,
+`lib/core/presentation/catch_adaptive_tab_scaffold.dart`,
+`lib/core/presentation/app_shell_active_tab.dart`,
 `lib/core/widgets/catch_tab_dock.dart` (retired), a new
-`lib/core/widgets/catch_tab_bar.dart`, tokens, widgetbook, tests.
+`lib/core/widgets/catch_tab_bar.dart`, terminal scroll primitives, tokens,
+Widgetbook, tests, and the tab-root scroll manifest.
 
 ## Why
 
@@ -131,7 +135,7 @@ production bar on a young shader package.
 
 ## Architecture / scaffold
 
-- New `CatchTabBar` (core widget) owns the adaptive behavior + chrome; takes
+- `CatchTabBar` (core widget) owns the adaptive behavior + chrome; takes
   the same `AppShellNavigationItem` list + `currentIndex` +
   `onDestinationSelected` contract `AppShellNavigationBar` uses today.
 - `AppShellNavigationBar` collapses to: build the 4-item consumer set, hand
@@ -149,6 +153,15 @@ production bar on a young shader package.
   `showCatchBottomSheet`, which presents on the root navigator by default and
   therefore sits above shell chrome. Android anchored bar keeps today's layout
   behavior (no body overlap).
+- `CatchAdaptiveTabScaffold` is the shared placement owner for consumer and
+  host shells. It publishes typed none/anchored/floating state through
+  `AppShellActiveTab`, overlays on iOS, and installs the bar through
+  `Scaffold.bottomNavigationBar` on Android.
+- Root scroll owners terminate with `CatchSliverTerminalPadding` or
+  `CatchScrollTerminalPadding`. These consume raw iOS obstruction, add no
+  duplicate Android bar inset, preserve no-bar/non-shell safe areas, and never
+  add keyboard `viewInsets`. `tool/design/tab_root_scroll_contracts.json`
+  makes a new shell branch fail until its true scroll owner is registered.
 - Verify every `StatefulShellBranch` index site after Catches is removed
   (this spec assumes `home_catches_unification_spec` U3 already dropped that
   branch — sequence after it).
@@ -186,7 +199,8 @@ finish to the tab consolidation.
 
 - No true liquid-glass shader dependency in v1 (optional later swap).
 - No change to the tab destinations/routing (that's the unification spec).
-- No host-app bar changes (this is the consumer shell).
+- No host-specific placement fork. Host and consumer shells share the same
+  adaptive scaffold while retaining separate destination sets.
 
 ## Completion checklist (goal mode)
 
@@ -204,6 +218,12 @@ Chats, You: the Catches branch was removed from the shell, `/catches` redirects
 home, and `/catches/:eventId` stays intact under the Home branch for deep
 links. Chrome proof now lives in `test/goldens/tab_bar_test.dart`, with paired
 light/dark baselines for the iOS floating glass bar and Android anchored bar.
+The follow-up clearance pass moved consumer and host placement into
+`CatchAdaptiveTabScaffold`, made both terminal-padding primitives shell-aware,
+adopted them at all eight direct shell branches (including Profile Preview's
+nested scroll), and added known-bad scanner fixtures for missing terminals and
+new unregistered branches. Widgetbook now exposes explicit iOS floating,
+Android anchored, and iOS keyboard-open states.
 The standalone Catches hub widgets/captures remain as Home+Catches U1/U2/U4
 absorption debt, not as a tab-bar blocker.
 

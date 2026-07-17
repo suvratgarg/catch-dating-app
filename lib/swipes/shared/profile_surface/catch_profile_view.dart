@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -32,6 +33,7 @@ class CatchProfileView extends StatelessWidget {
     this.scrollPhysics,
     this.onLeadingOverscroll,
     this.bottomPadding = CatchSpacing.s12,
+    this.includeTerminalPadding = false,
     this.reactionsEnabled = true,
     this.reactionsPending = false,
   });
@@ -47,6 +49,7 @@ class CatchProfileView extends StatelessWidget {
   final ScrollPhysics? scrollPhysics;
   final ValueChanged<double>? onLeadingOverscroll;
   final double bottomPadding;
+  final bool includeTerminalPadding;
   final bool reactionsEnabled;
   final bool reactionsPending;
 
@@ -90,6 +93,7 @@ class CatchProfileView extends StatelessWidget {
               ),
               sliver: SliverList.list(children: _body(context, activity)),
             ),
+            if (includeTerminalPadding) const CatchSliverTerminalPadding(),
           ],
         ),
       ),
@@ -371,7 +375,8 @@ class ProfileCompatibility extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              for (final signal in section.confidence) CatchChip(label: signal),
+              for (final signal in section.confidence)
+                CatchChip.tag(label: signal),
             ],
           ),
         ],
@@ -449,7 +454,7 @@ class ProfileRunning extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final tag in section.tags)
-                CatchChip(
+                CatchChip.tag(
                   label: tag,
                   tintColor: activity?.soft,
                   inkColor: activity?.deep,

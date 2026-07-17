@@ -396,6 +396,7 @@ void main() {
 
       final state = eventDetailSocialStateFrom(
         event: event,
+        hasReviews: false,
         userProfile: null,
         isAuthenticated: false,
         renderAsHost: false,
@@ -405,7 +406,7 @@ void main() {
 
       expect(state.showMemberContext, false);
       expect(state.renderAsHost, false);
-      expect(state.hasReviewAccess, false);
+      expect(state.reviews.mode, EventDetailReviewsMode.hidden);
     });
 
     test('unlocks reviews only for attended users after the event ends', () {
@@ -419,6 +420,7 @@ void main() {
 
       final beforeEnd = eventDetailSocialStateFrom(
         event: event,
+        hasReviews: false,
         userProfile: events.buildUser(),
         isAuthenticated: true,
         renderAsHost: false,
@@ -426,18 +428,32 @@ void main() {
         now: start.add(const Duration(minutes: 30)),
       );
       expect(beforeEnd.showMemberContext, true);
-      expect(beforeEnd.hasReviewAccess, false);
+      expect(beforeEnd.reviews.mode, EventDetailReviewsMode.hidden);
 
       final afterEnd = eventDetailSocialStateFrom(
         event: event,
+        hasReviews: false,
         userProfile: events.buildUser(),
         isAuthenticated: true,
-        renderAsHost: true,
+        renderAsHost: false,
         participation: attended,
         now: event.endTime.add(const Duration(minutes: 1)),
       );
-      expect(afterEnd.renderAsHost, true);
-      expect(afterEnd.hasReviewAccess, true);
+      expect(afterEnd.renderAsHost, false);
+      expect(afterEnd.reviews.mode, EventDetailReviewsMode.emptyWritePrompt);
+      expect(afterEnd.reviews.canWrite, true);
+
+      final hostWithReviews = eventDetailSocialStateFrom(
+        event: event,
+        hasReviews: true,
+        userProfile: events.buildUser(),
+        isAuthenticated: true,
+        renderAsHost: true,
+        participation: null,
+        now: event.endTime.add(const Duration(minutes: 1)),
+      );
+      expect(hostWithReviews.reviews.mode, EventDetailReviewsMode.content);
+      expect(hostWithReviews.reviews.canRespond, true);
     });
   });
 
@@ -497,14 +513,9 @@ void main() {
       expect(state.hostUid, 'host-1');
       expect(state.hostName, 'Mira');
       expect(state.photoUrl, 'https://example.com/mira.jpg');
-      expect(state.meta, 'HOSTING SINCE APR 2025 · BANDRA');
-      expect(state.verified, true);
+      expect(state.meta, 'BANDRA · 4.8 FROM 12 CLUB REVIEWS');
+      expect(state.verified, false);
       expect(state.canMessage, true);
-      expect(state.stats.map((item) => '${item.value}:${item.label}'), [
-        '42:Members',
-        '4.8:Rating',
-        '12:Reviews',
-      ]);
 
       final self = eventDetailHostStateFrom(
         l10n: _l10n,

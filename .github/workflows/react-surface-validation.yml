@@ -1,0 +1,207 @@
+name: React Surface Validation
+
+on:
+  workflow_call:
+    inputs:
+      surface:
+        description: React surface to validate (marketing or admin)
+        required: true
+        type: string
+      update_visual_baselines:
+        description: Capture Ubuntu visual baselines instead of comparing them
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate ${{ inputs.surface }} website
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validate requested surface
+        env:
+          REACT_SURFACE: ${{ inputs.surface }}
+        run: |
+          case "$REACT_SURFACE" in
+            marketing|admin) ;;
+            *) echo "Unsupported React surface: $REACT_SURFACE" >&2; exit 64 ;;
+          esac
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - uses: ./.github/actions/setup-flutter
+        if: ${{ inputs.surface == 'marketing' }}
+
+      - name: Resolve Flutter dependencies
+        if: ${{ inputs.surface == 'marketing' }}
+        run: flutter pub get
+
+      - run: npm ci
+
+      - name: Check React dependency topology
+        run: node tool/web/react_dependency_graph.mjs --check
+
+      - name: Check design tokens
+        if: ${{ inputs.surface == 'marketing' }}
+        run: npm run web:tokens:check
+
+      - name: Check cross-stack component lexicon
+        run: node tool/design/check_component_lexicon.mjs
+
+      - name: Check marketing media
+        if: ${{ inputs.surface == 'marketing' }}
+        run: node tool/marketing/sync_website_media.mjs --check
+
+      - name: Check marketing screenshot design context
+        if: ${{ inputs.surface == 'marketing' }}
+        run: node tool/marketing/export_app_screenshots.mjs --check-design-json
+
+      - name: Check generated organizer listings
+        if: ${{ inputs.surface == 'marketing' }}
+        run: npm --workspace catch-marketing run check:organizer-listings
+
+      - name: Check organizer promotion bridge
+        if: ${{ inputs.surface == 'marketing' }}
+        run: node tool/organizer_intake/check_promotion_bridge.mjs
+
+      - name: Check marketing route contracts
+        if: ${{ inputs.surface == 'marketing' }}
+        run: npm --workspace catch-marketing run check:routes
+
+      - name: Check organizer admin review bridge
+        if: ${{ inputs.surface == 'admin' }}
+        run: node tool/organizer_intake/check_admin_review_bridge.mjs
+
+      - name: Run admin unit tests
+        if: ${{ inputs.surface == 'admin' }}
+        run: npm --workspace catch-admin run test
+
+      - name: Check named React controller test targets
+        run: npm run web:controller-tests:check
+
+      - name: Run marketing unit tests
+        if: ${{ inputs.surface == 'marketing' }}
+        run: npm --workspace catch-marketing run test:unit
+
+      - name: Check shared web UI adoption
+        run: npm run web:shared-ui-adoption:check
+
+      - name: Run shared web UI tests and typecheck
+        run: npm run web:ui:test && npm run web:ui:typecheck
+
+      - name: Report admin unit-test coverage
+        if: ${{ inputs.surface == 'admin' }}
+        continue-on-error: true
+        run: npm --workspace catch-admin run test:coverage
+
+      - name: Report marketing unit-test coverage
+        if: ${{ inputs.surface == 'marketing' }}
+        continue-on-error: true
+        run: npm --workspace catch-marketing run test:unit:coverage
+
+      - name: Build marketing website
+        if: ${{ inputs.surface == 'marketing' }}
+        run: npm run web:marketing:build
+
+      - name: Build admin website
+        if: ${{ inputs.surface == 'admin' }}
+        run: npm run web:admin:build
+
+      - name: Install Storybook accessibility browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build marketing Storybook
+        if: ${{ inputs.surface == 'marketing' }}
+        run: npm --workspace catch-marketing run build:storybook
+
+      - name: Build admin Storybook
+        if: ${{ inputs.surface == 'admin' }}
+        run: npm --workspace catch-admin run build:storybook
+
+      - name: Run marketing and shared web UI visual regression
+        id: marketing-visual-check
+        if: ${{ inputs.surface == 'marketing' && !inputs.update_visual_baselines }}
+        run: npm --workspace catch-marketing run test:visual
+
+      - name: Run admin visual regression
+        id: admin-visual-check
+        if: ${{ inputs.surface == 'admin' && !inputs.update_visual_baselines }}
+        run: npm --workspace catch-admin run test:visual
+
+      - name: Capture marketing and shared web UI visual baselines
+        id: marketing-visual-update
+        if: ${{ inputs.surface == 'marketing' && inputs.update_visual_baselines }}
+        run: |
+          node tool/web/check_storybook_visuals.mjs --surface website --update
+          node tool/web/check_storybook_visuals.mjs --surface webui --update
+
+      - name: Capture admin visual baselines
+        id: admin-visual-update
+        if: ${{ inputs.surface == 'admin' && inputs.update_visual_baselines }}
+        run: node tool/web/check_storybook_visuals.mjs --surface admin --update
+
+      - name: Upload marketing visual diagnostics
+        if: ${{ always() && steps.marketing-visual-check.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketing-visual-diagnostics-${{ github.run_id }}
+          path: |
+            artifacts/visual-actuals/website
+            artifacts/visual-actuals/webui
+            artifacts/visual-diffs/website
+            artifacts/visual-diffs/webui
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload admin visual diagnostics
+        if: ${{ always() && steps.admin-visual-check.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-visual-diagnostics-${{ github.run_id }}
+          path: |
+            artifacts/visual-actuals/admin
+            artifacts/visual-diffs/admin
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload marketing visual baselines
+        if: ${{ steps.marketing-visual-update.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketing-visual-baselines-${{ github.run_id }}
+          path: |
+            design/visual_baselines/website/linux
+            design/visual_baselines/webui/linux
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload admin visual baselines
+        if: ${{ steps.admin-visual-update.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-visual-baselines-${{ github.run_id }}
+          path: design/visual_baselines/admin/linux
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Run marketing Storybook accessibility gate
+        if: ${{ inputs.surface == 'marketing' }}
+        run: npm --workspace catch-marketing run test:storybook:a11y
+
+      - name: Run admin Storybook accessibility gate
+        if: ${{ inputs.surface == 'admin' }}
+        run: npm --workspace catch-admin run test:storybook:a11y

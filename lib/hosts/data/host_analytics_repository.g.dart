@@ -9,6 +9,41 @@ part of 'host_analytics_repository.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(hostAnalyticsDeviceTimezone)
+final hostAnalyticsDeviceTimezoneProvider =
+    HostAnalyticsDeviceTimezoneProvider._();
+
+final class HostAnalyticsDeviceTimezoneProvider
+    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
+    with $FutureModifier<String?>, $FutureProvider<String?> {
+  HostAnalyticsDeviceTimezoneProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'hostAnalyticsDeviceTimezoneProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostAnalyticsDeviceTimezoneHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String?> create(Ref ref) {
+    return hostAnalyticsDeviceTimezone(ref);
+  }
+}
+
+String _$hostAnalyticsDeviceTimezoneHash() =>
+    r'de7eb756fa43a203715cfffbf4fb5a4658ec0162';
+
 @ProviderFor(hostAnalyticsRepository)
 final hostAnalyticsRepositoryProvider = HostAnalyticsRepositoryProvider._();
 
@@ -114,7 +149,7 @@ final class HostAnalyticsProvider
   }
 }
 
-String _$hostAnalyticsHash() => r'e2dd41ee99ff329dec45defbb969f8fefc4ee53f';
+String _$hostAnalyticsHash() => r'e671f4d7fbbdeba227b44170cfaa47158f046694';
 
 final class HostAnalyticsFamily extends $Family
     with

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-14",
+  "updated": "2026-07-16",
   "tools": [
     {
       "id": "tool:runner",
@@ -42,6 +42,57 @@
           "fails gate tools that only run count or syntax checks",
           "fails allowedFindings baselines without matching metric receipt",
           "fails broad flutter regression guards without plain-name or evidence"
+        ]
+      }
+    },
+    {
+      "id": "git:audit-merge-drops",
+      "category": "audit",
+      "path": "tool/git/audit_merge_drops.mjs",
+      "command": "node tool/git/audit_merge_drops.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Classifies exact four-tree merge outcomes and requires reasoned receipts for every discarded side in strict mode.",
+      "checks": [
+        "node --check tool/git/audit_merge_drops.mjs",
+        "node --test tool/git/audit_merge_drops.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/git/audit_merge_drops.test.mjs",
+        "contains": [
+          "classifyMergeTrees reports exact discards, divergence, equivalence, add, and delete",
+          "CLI audits temporary Git refs and strict mode rejects then accepts a receipt"
+        ]
+      }
+    },
+    {
+      "id": "docs:version-monotonic",
+      "category": "audit",
+      "path": "tool/docs/check_doc_version_monotonic.mjs",
+      "command": "node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Rejects semantic version decreases and removal inconsistencies in the governed document-version catalog.",
+      "checks": [
+        "node --check tool/docs/check_doc_version_monotonic.mjs",
+        "node --test tool/docs/check_doc_version_monotonic.test.mjs",
+        "node tool/docs/check_doc_version_monotonic.mjs --self-test"
+      ],
+      "role": "gate",
+      "rules": [
+        "DOC-HYGIENE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/docs/check_doc_version_monotonic.test.mjs",
+        "contains": [
+          "catalog comparator fails only semantic decreases and removal inconsistencies",
+          "known-bad self-test proves decrease and removal detection"
         ]
       }
     },
@@ -386,11 +437,24 @@
       "command": "bash tool/widget_cleanup_scan.sh",
       "safety": "local",
       "status": "active",
-      "description": "Scans widget/design-system cleanup candidates.",
+      "description": "Ratchets live widget/design-system cleanup candidates against checked maximum counts.",
       "checks": [
-        "bash -n tool/widget_cleanup_scan.sh"
+        "bash -n tool/widget_cleanup_scan.sh",
+        "node --test tool/lib/widget_cleanup_ratchet.test.mjs",
+        "bash tool/widget_cleanup_scan.sh --check"
       ],
-      "role": "finder"
+      "role": "ratchet",
+      "rules": [
+        "AUDIT-REGISTRY-001"
+      ],
+      "baseline": "tool/audit/widget_cleanup_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/lib/widget_cleanup_ratchet.test.mjs",
+        "contains": [
+          "ratchet flags increases, missing categories, and new categories"
+        ]
+      }
     },
     {
       "id": "remote-ops:manifest",
@@ -421,6 +485,33 @@
       "role": "finder"
     },
     {
+      "id": "web:react-dependency-graph",
+      "category": "audit",
+      "path": "tool/web/react_dependency_graph.mjs",
+      "command": "node tool/web/react_dependency_graph.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates and checks the deterministic website/admin/web-ui TypeScript dependency topology, unresolved local imports, and direct cross-surface boundaries.",
+      "checks": [
+        "node --check tool/web/react_dependency_graph.mjs",
+        "node --test tool/web/react_dependency_graph.test.mjs",
+        "node tool/web/react_dependency_graph.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-DEPENDENCY-TOPOLOGY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/web/react_dependency_graph.test.mjs",
+        "contains": [
+          "known-bad unresolved repo-local import makes graph health fail",
+          "direct website-to-admin dependency is rejected",
+          "known-bad stale artifact is reported deterministically"
+        ]
+      }
+    },
+    {
       "id": "web:website-copy-ownership",
       "category": "lint",
       "path": "tool/web/check_website_copy_ownership.mjs",
@@ -449,7 +540,7 @@
       "command": "node tool/copy/check_mobile_copy_catalog.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates typed Flutter ARB copy metadata and can export a marketing review CSV.",
+      "description": "Validates typed Flutter ARB copy metadata, rejects generated visibleCopy-style identifier keys unless explicitly allowlisted, and can export a marketing review CSV.",
       "checks": [
         "node --check tool/copy/check_mobile_copy_catalog.mjs",
         "node tool/copy/check_mobile_copy_catalog_test.mjs",
@@ -484,6 +575,33 @@
       "vacuityProof": {
         "type": "self-test",
         "command": "dart run tool/copy/check_mobile_copy_ownership.dart --self-test"
+      }
+    },
+    {
+      "id": "copy:l10n-key-usage",
+      "category": "lint",
+      "path": "tool/copy/check_l10n_key_usage.mjs",
+      "command": "node tool/copy/check_l10n_key_usage.mjs --check --check-inventory",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Inventories exact handwritten Flutter localization-key usage and fails on stale evidence or any new zero-use catalog key.",
+      "checks": [
+        "node --check tool/copy/check_l10n_key_usage.mjs",
+        "node --test tool/copy/check_l10n_key_usage.test.mjs",
+        "node tool/copy/check_l10n_key_usage.mjs --check --check-inventory"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "APP-COPY-001"
+      ],
+      "baseline": "tool/copy/l10n_orphan_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/copy/check_l10n_key_usage.test.mjs",
+        "contains": [
+          "known-bad fixture reports only the newly orphaned key",
+          "inventory generation is deterministic and exact-file checkable"
+        ]
       }
     },
     {
@@ -796,6 +914,7 @@
       "description": "Reports migrated Catch UI lint drift counts from dart analyze output, including optional JSON count artifacts.",
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
+        "bash tool/check_catch_ui_lint_drift.sh --self-test",
         "bash tool/check_catch_ui_lint_drift.sh --count"
       ],
       "role": "finder"
@@ -3006,12 +3125,37 @@
       "command": "node tool/ui_capture/check_route_inventory.mjs",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates and checks the route inventory that keeps UI captures aligned with go_router.dart, including semantic runtime path checks for nested GoRoute segments.",
+      "description": "Generates and checks the named route inventory that keeps UI captures aligned with go_router.dart, including semantic nested-path checks and a redirect-only exception for retired raw legacy paths.",
       "checks": [
         "node --check tool/ui_capture/check_route_inventory.mjs",
+        "node --test tool/ui_capture/check_route_inventory_test.mjs",
         "node tool/ui_capture/check_route_inventory.mjs --check"
       ],
-      "role": "finder"
+      "role": "finder",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ui_capture/check_route_inventory_test.mjs",
+        "contains": [
+          "rejects unnamed routes that can render a page"
+        ]
+      }
+    },
+    {
+      "id": "ui-capture:route-inventory-tests",
+      "category": "test",
+      "path": "tool/ui_capture/check_route_inventory_test.mjs",
+      "command": "node --test tool/ui_capture/check_route_inventory_test.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Pins the redirect-only exception for unnamed retired route paths.",
+      "checks": [
+        "node --test tool/ui_capture/check_route_inventory_test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ui_capture/check_route_inventory_test.mjs"
+      }
     },
     {
       "id": "ui-capture:coverage",
@@ -3092,6 +3236,33 @@
         "node tool/design/check_widget_classification.mjs"
       ],
       "role": "finder"
+    },
+    {
+      "id": "design:widget-pattern-families",
+      "category": "design",
+      "path": "tool/design/check_widget_pattern_families.mjs",
+      "command": "node tool/design/check_widget_pattern_families.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "role": "gate",
+      "description": "Validates stable visual-pattern family decisions, explicit member dispositions, constructor-qualified convergence targets, and required Widgetbook or source evidence.",
+      "checks": [
+        "node --check tool/design/check_widget_pattern_families.mjs",
+        "node --test tool/design/check_widget_pattern_families.test.mjs",
+        "node tool/design/check_widget_pattern_families.mjs --check"
+      ],
+      "rules": [
+        "WIDGET-PATTERN-FAMILY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_widget_pattern_families.test.mjs",
+        "contains": [
+          "rejects an invalid disposition",
+          "requires a target for unify",
+          "rejects a required preview missing from generated Widgetbook directories"
+        ]
+      }
     },
     {
       "id": "design:new-widget-inventory",
@@ -3222,7 +3393,7 @@
       "command": "node tool/design/widgetbook_compare_server.mjs",
       "safety": "local-server",
       "status": "active",
-      "description": "Serves the interactive Widgetbook comparison and decision logging UI for dedupe-assisted consolidation review.",
+      "description": "Serves the interactive Widgetbook comparison and decision logging UI with pattern-family review first and dedupe evidence available as a secondary queue.",
       "checks": [
         "node --check tool/design/widgetbook_compare_server.mjs"
       ]
@@ -3240,6 +3411,37 @@
         "node tool/design/check_screen_contract_hygiene.mjs --summary"
       ],
       "role": "finder"
+    },
+    {
+      "id": "design:screen-top-bar-contracts",
+      "category": "design",
+      "path": "tool/design/check_screen_top_bar_contracts.mjs",
+      "command": "node tool/design/check_screen_top_bar_contracts.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Gates every Flutter Scaffold app bar, required pushed-route back affordance, raw navigation-bar implementation, shell-covering editor presentation, and feature-owned header against an exact reviewed screen-chrome role.",
+      "checks": [
+        "node --check tool/design/check_screen_top_bar_contracts.mjs",
+        "node --test tool/design/check_screen_top_bar_contracts.test.mjs",
+        "node tool/design/check_screen_top_bar_contracts.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "SCREEN-CHROME-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_screen_top_bar_contracts.test.mjs",
+        "contains": [
+          "flags the known-bad screen fixture when compact chrome replaces the screen title voice",
+          "flags a new app bar until its screen-chrome role is registered",
+          "flags a raw Material app bar even when a manifest entry tries to bless it",
+          "flags a pushed compact route that suppresses its required back action",
+          "flags a shell-covering editor pushed on a branch navigator",
+          "flags an unregistered body-owned manual screen header",
+          "flags raw sliver chrome until a durable hero exception is registered"
+        ]
+      }
     },
     {
       "id": "design:screen-gutters",
@@ -3274,7 +3476,7 @@
       "command": "node tool/design/check_section_dividers.mjs --summary",
       "safety": "local",
       "status": "active",
-      "description": "Reports raw Divider inventory, high-confidence CatchSection row-divider misuse, and thin feature-local CatchSection wrappers so row and section hairlines route through CatchDivider roles.",
+      "description": "Reports raw Divider inventory, high-confidence CatchSection row-divider misuse, feature row groups that assign sibling divider flags, and thin feature-local CatchSection wrappers so row and section hairlines route through CatchDivider roles.",
       "checks": [
         "node --check tool/design/check_section_dividers.mjs",
         "node --test tool/design/check_section_dividers.test.mjs",
@@ -3292,7 +3494,8 @@
         "contains": [
           "flags caller-owned internalDividerColor on divided sections",
           "flags raw dividers using old row divider opacities",
-          "flags thin feature wrappers around CatchSection field rows"
+          "flags thin feature wrappers around CatchSection field rows",
+          "flags feature row groups that manually assign sibling field dividers"
         ]
       }
     },
@@ -3303,7 +3506,7 @@
       "command": "node tool/design/check_section_headers.mjs --summary",
       "safety": "local",
       "status": "active",
-      "description": "Reports duplicate CatchSection titles and feature-local titled section/card shells so section header ownership routes through CatchSection or an explicit content primitive.",
+      "description": "Reports duplicate CatchSection titles, standalone header-plus-section shells, parallel label-plus-child kicker shells, and feature-local titled section/card shells so section header ownership routes through CatchSection or an explicit content primitive.",
       "checks": [
         "node --check tool/design/check_section_headers.mjs",
         "node --test tool/design/check_section_headers.test.mjs",
@@ -3319,8 +3522,10 @@
         "path": "tool/design/check_section_headers.test.mjs",
         "contains": [
           "flags a CatchSection title duplicated by a nested component header",
+          "flags standalone section headers followed by untitled CatchSection shells",
           "honors explicit showHeader false on nested preview components",
-          "flags titled feature-local surface sections for review"
+          "flags titled feature-local surface sections for review",
+          "flags feature-local card shells with a section header and actions"
         ]
       }
     },
@@ -3891,6 +4096,215 @@
       "vacuityProof": {
         "type": "self-test",
         "command": "dart test tool/widget_dedupe/test/fingerprint_extractor_test.dart"
+      }
+    },
+    {
+      "id": "audit:provider-graph",
+      "category": "audit",
+      "path": "tool/architecture/provider_graph.dart",
+      "command": "dart run tool/architecture/provider_graph.dart --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Generates and drift-checks the complete static Riverpod provider, consumer, override, family, alias, and Mutation graph while requiring current architecture decisions for questionable relationships.",
+      "checks": [
+        "dart format --output=none --set-exit-if-changed tool/architecture/provider_graph.dart test/tool/provider_graph_test.dart",
+        "flutter test test/tool/provider_graph_test.dart",
+        "dart run tool/architecture/provider_graph.dart --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "DEPENDENCY-DIRECTION-001",
+        "PROVIDER-SEAM-001",
+        "PROVIDER-TOPOLOGY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "test/tool/provider_graph_test.dart",
+        "contains": [
+          "provider graph detects cycles and unresolved provider refs",
+          "provider graph artifacts are deterministic and drift checked",
+          "provider graph requires current architecture review decisions"
+        ]
+      }
+    },
+    {
+      "id": "data:backfill-event-meeting-locations",
+      "category": "data",
+      "path": "tool/data/backfill_event_meeting_locations.mjs",
+      "command": "node tool/data/backfill_event_meeting_locations.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Promotes exact legacy event coordinates into required structured meeting locations and synchronizes compatibility mirrors.",
+      "checks": [
+        "node --check tool/data/backfill_event_meeting_locations.mjs",
+        "node --test tool/data/backfill_event_meeting_locations.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "firebase:storage-rules-firestore-iam",
+      "category": "firebase",
+      "path": "tool/firebase/storage_rules_firestore_iam.mjs",
+      "command": "node tool/firebase/storage_rules_firestore_iam.mjs --all",
+      "safety": "remote-readonly-with-explicit-apply",
+      "status": "active",
+      "description": "Checks and idempotently provisions the Firebase Storage service-agent role required for Storage rules to read Firestore.",
+      "checks": [
+        "node --check tool/firebase/storage_rules_firestore_iam.mjs",
+        "node --test tool/firebase/storage_rules_firestore_iam.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "STORAGE-IAM-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/storage_rules_firestore_iam.test.mjs",
+        "contains": [
+          "known-bad missing binding is detected"
+        ]
+      }
+    },
+    {
+      "id": "firebase:probe-chat-storage-rules",
+      "category": "firebase",
+      "path": "tool/firebase/probe_chat_storage_rules.mjs",
+      "command": "node tool/firebase/probe_chat_storage_rules.mjs --help",
+      "safety": "remote-write-ephemeral-apply-guarded",
+      "status": "active",
+      "description": "Runs an authenticated chat-image upload/delete canary through deployed Storage rules and removes its bounded fixture.",
+      "checks": [
+        "node --check tool/firebase/probe_chat_storage_rules.mjs",
+        "node --test tool/firebase/probe_chat_storage_rules.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "STORAGE-IAM-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/probe_chat_storage_rules.test.mjs",
+        "contains": [
+          "unauthorized upload is reported at the upload stage"
+        ]
+      }
+    },
+    {
+      "id": "design:flutter-field-surface-inventory",
+      "category": "design",
+      "path": "tool/design/generate_flutter_field_surface_inventory.mjs",
+      "command": "node tool/design/generate_flutter_field_surface_inventory.mjs --check",
+      "safety": "local-writes-audit-json",
+      "status": "active",
+      "description": "Validates the ranked Flutter field-surface adoption ledger, proves every remaining legacy product callsite is classified, and checks its deterministic evidence snapshot.",
+      "checks": [
+        "node --check tool/design/generate_flutter_field_surface_inventory.mjs",
+        "node --test tool/design/generate_flutter_field_surface_inventory.test.mjs",
+        "node tool/design/generate_flutter_field_surface_inventory.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "DESIGN-PRIMITIVES-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/generate_flutter_field_surface_inventory.test.mjs",
+        "contains": [
+          "rejects an unclassified legacy callsite",
+          "rejects stale expected anchor counts",
+          "rejects duplicate callsite classifications"
+        ]
+      }
+    },
+    {
+      "id": "design:tab-root-scroll-contracts",
+      "category": "design",
+      "path": "tool/design/check_tab_root_scroll_contracts.mjs",
+      "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Requires every consumer and host StatefulShellBranch to declare semantic shell-aware terminal clearance at each real or shared tabbed-page scroll owner.",
+      "checks": [
+        "node --check tool/design/check_tab_root_scroll_contracts.mjs",
+        "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "node tool/design/check_tab_root_scroll_contracts.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "TAB-ROOT-SCROLL-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "contains": [
+          "flags the known-bad tab root fixture when terminal padding is missing",
+          "flags a new StatefulShellBranch until it is registered"
+        ]
+      }
+    },
+    {
+      "id": "meta:repository-root-hygiene",
+      "category": "meta",
+      "path": "tool/check_repository_root_hygiene.mjs",
+      "command": "node tool/check_repository_root_hygiene.mjs",
+      "safety": "local",
+      "status": "active",
+      "role": "gate",
+      "description": "Enforces manifest-backed repository-root ownership, Git expectations, protected cleanup boundaries, and portable Markdown links.",
+      "checks": [
+        "node --test tool/check_repository_root_hygiene.test.mjs",
+        "node tool/check_repository_root_hygiene.mjs"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/check_repository_root_hygiene.test.mjs"
+      },
+      "rules": [
+        "REPO-ROOT-HYGIENE-001"
+      ]
+    },
+    {
+      "id": "meta:repository-hygiene-cleaner",
+      "category": "meta",
+      "path": "tool/repository_hygiene.mjs",
+      "command": "node tool/repository_hygiene.mjs --json",
+      "safety": "local-write-explicit",
+      "status": "active",
+      "role": "operator",
+      "description": "Reports regenerable repository state and deletes only manifest-allowlisted paths after explicit apply and scope flags.",
+      "checks": [
+        "node --check tool/repository_hygiene.mjs"
+      ]
+    },
+    {
+      "id": "meta:test-inventory",
+      "category": "meta",
+      "path": "tool/test_inventory.mjs",
+      "command": "node tool/test_inventory.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "role": "generator",
+      "description": "Generates and drift-checks the Git-backed cross-surface test inventory.",
+      "checks": [
+        "node --test tool/test_inventory.test.mjs",
+        "node tool/test_inventory.mjs --check"
+      ]
+    },
+    {
+      "id": "firebase:functions-environment-wrapper",
+      "category": "firebase",
+      "path": "tool/firebase_functions.mjs",
+      "command": "node tool/firebase_functions.mjs deploy dev --print",
+      "safety": "remote-write-explicit",
+      "status": "active",
+      "role": "operator",
+      "description": "Requires an explicit Firebase environment for Functions deploy and log commands.",
+      "checks": [
+        "node --test tool/firebase_functions.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/firebase_functions.test.mjs"
       }
     }
   ]

@@ -4,11 +4,10 @@ Uri directionsUriForEvent(Event event) {
   final lat = event.effectiveStartingPointLat;
   final lng = event.effectiveStartingPointLng;
 
-  if (lat != null && lng != null) {
-    return _directionsUri(latitude: lat, longitude: lng);
+  if (lat == null || lng == null) {
+    return _searchUri(query: event.locationName);
   }
-
-  return _searchUri(query: event.locationName);
+  return _directionsUri(latitude: lat, longitude: lng);
 }
 
 Uri _directionsUri({required double latitude, required double longitude}) {

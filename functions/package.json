@@ -14,8 +14,8 @@
     "sync:callable-invokers": "node scripts/set-callable-invokers-public.cjs",
     "operations:import-projection": "npm run build && node scripts/operations/import-shadow-projection.cjs",
     "backfill:profile-thumbnails": "node scripts/backfill-profile-thumbnails.cjs",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "deploy": "node ../tool/firebase_functions.mjs deploy",
+    "logs": "node ../tool/firebase_functions.mjs logs"
   },
   "engines": {
     "node": "24"

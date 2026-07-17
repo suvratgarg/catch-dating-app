@@ -1907,11 +1907,11 @@
           "action": "absorb"
         }
       ],
-      "rationale": "No exact K/R match: the bodies are near-identical host picker tiles, but they live in separate create/edit event surfaces and merging requires a shared host picker-tile contract, file ownership decision, and empty-string behavior standardization. REVIEW (claude, 2026-07-03): identical params AND bodies across two host screens; one shared hosts widget. Later form-controls pass may fold into CatchField.nav.",
+      "rationale": "No exact K/R match: the bodies are near-identical host picker tiles, but they live in separate create/edit event surfaces and merging requires a shared host picker-tile contract, file ownership decision, and empty-string behavior standardization. REVIEW (claude, 2026-07-03): identical params AND bodies across two host screens; one shared hosts widget. The 2026-07-16 field-system pass completed the planned fold into CatchField.nav for both Create Event and Edit Event, then removed the now-unreferenced feature primitive and its standalone preview.",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "implemented-WO-020",
-      "canonicalSymbol": "HostPickerTile (feature-level)"
+      "status": "superseded-2026-07-16",
+      "canonicalSymbol": "CatchField.nav"
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendPanel",
@@ -4746,7 +4746,7 @@
         },
         {
           "name": "HostOrganizerTeamCard",
-          "action": "keep"
+          "action": "delete"
         },
         {
           "name": "HostPaymentAccountCard",
@@ -4773,10 +4773,10 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review: no duplication \u2014 the family mixes provider adapters (EventsClub/TodayDashboard -> *Section; EventToolCard -> EventActionCard), a layered payments stack (ControllerCard = providers, Card = dispatch + payout sheet, ContentCard = display surface: K1/K3), rich async orchestration (PrivateAccess), and distinct content cards (TodayTask, InboxBroadcast, OrganizerTeam, EventSummary). LEXICON: 'Card' currently spans controller/adapter/surface layers \u2014 reserve Card for visual card surfaces at ratification. D1 found: HostEventToolCard passes raw radius: 22 (exact token CatchRadius.heroCard exists) \u2014 WO-022.",
+      "rationale": "Name-family review: most members remain distinct provider adapters, orchestration layers, or content cards. HOST-CLUB-EDIT-CONSOLIDATION-001 supersedes the earlier HostOrganizerTeamCard keep because HostTeamManagementSection now owns both owner and co-host roster presentation. The payment ControllerCard, Card dispatcher/sheet, and ContentCard remain behaviorally separated, while every payout state delegates visual title/chrome ownership to one CatchSection.contained contract.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "recorded"
+      "status": "executed-HOST-CLUB-EDIT-CONSOLIDATION-001"
     },
     {
       "clusterId": "n004-event-card",
@@ -5010,13 +5010,13 @@
         },
         {
           "name": "HostOrganizerTeamRow",
-          "action": "keep"
+          "action": "delete"
         }
       ],
-      "rationale": "Name-family review: HostEventRow is an R2 thin wrapper over CatchField.nav (<=3 call sites) \u2014 inline and delete (WO-022). HostInviteLinkRow (stateful display resolution), HostMetaRow (badge/chip wrap with domain formatting; LEXICON: name collides with core CatchMetaRow's icon/text concept), HostOrganizerMetricRow (K1 over CatchStatColumn), and HostOrganizerTeamRow (person row) stay. TOKEN FIX (WO-022): HostOrganizerTeamRow sizes a REAL avatar with CatchLayout.skeletonAvatarCompactExtent \u2014 add semantic CatchLayout.avatarRowExtent; and add CatchLayout.avatarIdentityExtent = 64.0 to close the WO-020 HostOrganizerHeader raw-64 escalation.",
+      "rationale": "Name-family review: HostEventRow was deleted in WO-022; HostInviteLinkRow, HostMetaRow, and HostOrganizerMetricRow remain. HOST-CLUB-EDIT-CONSOLIDATION-001 supersedes the earlier HostOrganizerTeamRow keep because HostTeamOwnerHostRow now serves the single canonical roster for owners and co-hosts.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "executed-WO-022"
+      "status": "executed-HOST-CLUB-EDIT-CONSOLIDATION-001"
     },
     {
       "clusterId": "n011-loading-screen",
@@ -5608,13 +5608,13 @@
         },
         {
           "name": "HostOrganizerPayoutPromptController",
-          "action": "keep"
+          "action": "delete"
         }
       ],
-      "rationale": "Name-family review (batch 2): provider-wiring controller layers per the app controller pattern; architecture, not widget shape.",
+      "rationale": "Name-family review (batch 2): the surviving controllers remain provider-wiring architecture layers. HOST-CLUB-EDIT-CONSOLIDATION-001 deletes HostOrganizerPayoutPromptController because it watched the same payment account as HostPaymentAccountControllerCard and created a second payout owner.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "recorded"
+      "status": "executed-HOST-CLUB-EDIT-CONSOLIDATION-001"
     },
     {
       "clusterId": "n033-calendar-skeleton",
@@ -6001,6 +6001,80 @@
       "decidedBy": "claude-review -> codex",
       "date": "2026-07-06",
       "status": "executed-parity-handoff"
+    },
+    {
+      "clusterId": "drift: CatchAnalyticsSection/CatchSection",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSection",
+      "members": [
+        {
+          "name": "CatchAnalyticsSection",
+          "action": "delete"
+        },
+        {
+          "name": "CatchSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "The WO-018 label-plus-gap shell became a parallel section contract after CatchSection gained canonical divider, title, spacing, field-row, and focus-handoff behavior. User-reviewed correction absorbs every Profile and Host analytics group into CatchSection, preserves heading semantics at that root, and restores Profile Suggestions and Data coverage rows to CatchField.content.",
+      "decidedBy": "user-review -> codex",
+      "date": "2026-07-16",
+      "status": "executed-analytics-section-drift"
+    },
+    {
+      "clusterId": "drift: CatchSegmentedControl/CatchOptionGroup",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchOptionGroup",
+      "members": [
+        {
+          "name": "CatchSegmentedControl",
+          "action": "delete"
+        },
+        {
+          "name": "CatchSegmentButton",
+          "action": "delete"
+        },
+        {
+          "name": "CatchOptionGroup",
+          "action": "keep"
+        }
+      ],
+      "rationale": "User-reviewed correction makes the Organizer-tab OptionGroup the single Flutter contract for peer scope and mode selection. Host Events lifecycle, Host Inbox audience, Host Analytics granularity, and Host Event Manage section controls migrate together so the retired pill shell cannot continue as a parallel selection architecture.",
+      "decidedBy": "user-review -> codex",
+      "date": "2026-07-16",
+      "status": "executed-option-group-consolidation"
+    },
+    {
+      "clusterId": "drift: CatchBottomDock CTA/CatchBottomAction",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchBottomAction",
+      "members": [
+        {
+          "name": "CatchBottomDock",
+          "action": "keep",
+          "note": "generic anchored utility surface only"
+        },
+        {
+          "name": "CatchBottomDock.cta",
+          "action": "delete"
+        },
+        {
+          "name": "CatchBottomDockCta",
+          "action": "delete"
+        },
+        {
+          "name": "CatchBottomDockVariant",
+          "action": "delete"
+        },
+        {
+          "name": "CatchBottomAction",
+          "action": "keep"
+        }
+      ],
+      "rationale": "User-reviewed correction assigns primary-screen CTA geometry, safe-area behavior, platform adaptation, catch-line copy, footnotes, loading, and disabled states to CatchBottomAction. CatchBottomDock remains a required-child utility container for chat inputs and compact action strips; keeping a second CTA constructor and renderer would preserve parallel geometry ownership.",
+      "decidedBy": "user-review -> codex",
+      "date": "2026-07-16",
+      "status": "executed-bottom-action-drift"
     }
   ]
 }

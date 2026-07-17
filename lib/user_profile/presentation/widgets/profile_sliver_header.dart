@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -7,36 +8,34 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfileTabBar extends StatelessWidget {
+enum SelfProfileTab { edit, preview, insights }
+
+class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
   const ProfileTabBar({super.key, required this.controller});
 
   final TabController controller;
 
   @override
+  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
+  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller.animation!,
-      builder: (context, _) {
-        return CatchTabRail<int>(
-          selected: controller.index,
-          selectionPosition: controller.animation!.value,
-          onChanged: controller.animateTo,
-          options: [
-            CatchOption(
-              value: 0,
-              label: context.l10n.userProfileProfileSliverHeaderLabelEdit,
-            ),
-            CatchOption(
-              value: 1,
-              label: context.l10n.userProfileProfileSliverHeaderLabelPreview,
-            ),
-            CatchOption(
-              value: 2,
-              label: context.l10n.userProfileProfileSliverHeaderLabelInsights,
-            ),
-          ],
-        );
-      },
+    return CatchTabControllerRail<SelfProfileTab>(
+      controller: controller,
+      options: [
+        CatchOption(
+          value: SelfProfileTab.edit,
+          label: context.l10n.userProfileProfileSliverHeaderLabelEdit,
+        ),
+        CatchOption(
+          value: SelfProfileTab.preview,
+          label: context.l10n.userProfileProfileSliverHeaderLabelPreview,
+        ),
+        CatchOption(
+          value: SelfProfileTab.insights,
+          label: context.l10n.userProfileProfileSliverHeaderLabelInsights,
+        ),
+      ],
     );
   }
 }

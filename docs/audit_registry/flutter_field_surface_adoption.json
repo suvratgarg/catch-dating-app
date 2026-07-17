@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "version": 4,
+  "updated": "2026-07-17",
+  "owner": "design_system",
+  "goal": "Classify every remaining production Flutter field surface that should converge on CatchField and CatchSection while preserving specialized controls.",
+  "sourceDocs": [
+    "docs/widget_catalog.md",
+    "docs/design_language.md",
+    "design/screens/catch.screens.json"
+  ],
+  "legacySymbols": [
+    "CatchFormFieldLabel",
+    "CatchSelectChip",
+    "CatchChipField",
+    "CatchNumberStepper",
+    "HostPickerTile",
+    "MapPinTile"
+  ],
+  "scopeExclusions": [
+    {
+      "pathPrefix": "lib/core/widgets/",
+      "reason": "Canonical primitive implementations are target owners, not product field surfaces."
+    },
+    {
+      "pathPrefix": "lib/labs/",
+      "reason": "Design fixtures and prototypes are reviewed through their production owner before migration."
+    },
+    {
+      "pathPrefix": "lib/l10n/generated/",
+      "reason": "Generated localization output is not a field surface."
+    }
+  ],
+  "definitionFiles": [
+    "lib/events/shared/map_pin_tile.dart"
+  ],
+  "candidates": [
+    {
+      "id": "FIELD-SURFACE-HOST-EVENT-EDIT",
+      "rank": 1,
+      "status": "completed",
+      "completedAt": "2026-07-16",
+      "risk": "high",
+      "migrationKind": "full_field_section",
+      "reachability": "production_route",
+      "screenIds": ["screen.host.event.edit"],
+      "routeIds": ["hostAppEditEventScreen"],
+      "semanticFieldCount": 22,
+      "bindings": [
+        {
+          "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+          "symbol": "EditHostedEventScreen"
+        }
+      ],
+      "anchors": [
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchSection.fieldRows", "expected": 6},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchSection.containedFieldRows", "expected": 2},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.nav", "expected": 3},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.input", "expected": 13},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.choices", "expected": 3},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.stepper", "expected": 1},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.toggle", "expected": 2},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.read", "expected": 8}
+      ],
+      "targetModes": ["CatchSection.fieldRows", "CatchSection.containedFieldRows", "CatchField.nav", "CatchField.input", "CatchField.choices", "CatchField.stepper", "CatchField.toggle", "CatchField.read"],
+      "preserve": ["HostEventEditScreenState", "HostEventEditSaveRequest", "validation keys", "lock states", "picker side effects"],
+      "verification": [
+        "Focused edit-state, payload, editable, locked, cancelled, validation, choice, and stepper tests",
+        "Exact canonical constructor anchors with zero legacy calls on the screen"
+      ],
+      "recommendation": "Completed: Host Edit Event now mirrors the canonical field and section composition used by Create Event while retaining edit-only locks and side effects."
+    },
+    {
+      "id": "FIELD-SURFACE-CONSUMER-FILTERS",
+      "rank": 2,
+      "status": "approval_ready",
+      "risk": "low",
+      "migrationKind": "full_field_section",
+      "reachability": "production_route",
+      "screenIds": ["screen.filters.preferences"],
+      "routeIds": ["filtersScreen"],
+      "semanticFieldCount": 2,
+      "bindings": [
+        {"file": "lib/swipes/presentation/filters_screen.dart", "symbol": "FiltersScreen"}
+      ],
+      "anchors": [
+        {"file": "lib/swipes/presentation/filters_screen.dart", "symbol": "CatchChip.selectable", "expected": 1}
+      ],
+      "targetModes": ["CatchSection.fieldRows", "CatchField.control", "CatchField.choices"],
+      "preserve": ["staged filter state", "FiltersController apply and save behavior"],
+      "recommendation": "Approve as a small, low-risk follow-up."
+    },
+    {
+      "id": "FIELD-SURFACE-HOST-CLUB-INLINE-EDITORS",
+      "rank": 3,
+      "status": "approval_ready",
+      "risk": "medium",
+      "migrationKind": "choice_field_only",
+      "reachability": "production_embedded",
+      "screenIds": ["screen.host.clubs"],
+      "routeIds": ["hostClubsScreen"],
+      "semanticFieldCount": 6,
+      "bindings": [
+        {"file": "lib/hosts/presentation/host_operations/host_inline_editors.dart", "symbol": "HostInlineOptionEditor"},
+        {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "HostClubEditTab"},
+        {"file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart", "symbol": "HostClubEventDefaultsScreen"},
+        {"file": "lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart", "symbol": "HostClubLiveGuideScreen"}
+      ],
+      "anchors": [
+        {"file": "lib/hosts/presentation/host_operations/host_inline_editors.dart", "symbol": "CatchChip.selectable", "expected": 1}
+      ],
+      "targetModes": ["CatchField.choices"],
+      "preserve": ["inline expansion ownership", "UpdateClubPatch typing", "save and cancel behavior"],
+      "recommendation": "Approve with the remaining Host club edit pass, separate from create-club."
+    },
+    {
+      "id": "FIELD-SURFACE-HOST-PROFILE",
+      "rank": 4,
+      "status": "approval_ready",
+      "risk": "low",
+      "migrationKind": "section_shell",
+      "reachability": "production_route",
+      "screenIds": ["screen.host.profile"],
+      "routeIds": ["hostProfileScreen"],
+      "semanticFieldCount": 3,
+      "bindings": [
+        {"file": "lib/hosts/presentation/host_operations/host_profile_screen.dart", "symbol": "HostProfileFields"},
+        {"file": "lib/hosts/presentation/host_operations/host_account_screen.dart", "symbol": "HostSettingsProfileRows"}
+      ],
+      "anchors": [
+        {"file": "lib/hosts/presentation/host_operations/host_profile_screen.dart", "symbol": "CatchField.input", "expected": 3}
+      ],
+      "targetModes": ["CatchSection.fieldRows"],
+      "preserve": ["shared HostProfileForm", "controller reuse", "profile image side effects"],
+      "recommendation": "Approve as a shell-only cleanup; the inputs are already canonical."
+    },
+    {
+      "id": "FIELD-SURFACE-EXPLORE-FILTERS",
+      "rank": 5,
+      "status": "approval_ready",
+      "risk": "medium",
+      "migrationKind": "full_field_section",
+      "reachability": "production_embedded",
+      "screenIds": ["screen.explore.discovery"],
+      "routeIds": ["exploreScreen", "exploreMapScreen"],
+      "semanticFieldCount": 5,
+      "bindings": [
+        {"file": "lib/explore/presentation/widgets/explore_filter_rail.dart", "symbol": "ExploreFilterSheet"}
+      ],
+      "anchors": [
+        {"file": "lib/explore/presentation/widgets/explore_filter_rail.dart", "symbol": "CatchChip.selectable", "expected": 5}
+      ],
+      "targetModes": ["CatchSection.fieldRows", "CatchField.control", "CatchField.choices"],
+      "preserve": ["route-owned callbacks", "immediate filter updates", "map and list parity"],
+      "recommendation": "Approve after consumer Filters so both filter contracts converge together."
+    },
+    {
+      "id": "FIELD-SURFACE-EVENT-SUCCESS-COMPANION-FEEDBACK",
+      "rank": 6,
+      "status": "approval_ready",
+      "risk": "medium",
+      "migrationKind": "specialized_control_hosts",
+      "reachability": "production_route",
+      "screenIds": ["screen.event_success.companion"],
+      "routeIds": ["eventSuccessCompanionScreen"],
+      "semanticFieldCount": 5,
+      "bindings": [
+        {"file": "lib/event_success/presentation/event_success_companion_body_screen.dart", "symbol": "EventSuccessCompanionScreen"},
+        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart", "symbol": "EventSuccessFeedbackForm"}
+      ],
+      "anchors": [
+        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart", "symbol": "CatchField.toggle", "expected": 1},
+        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart", "symbol": "CatchField.input", "expected": 1}
+      ],
+      "targetModes": ["CatchField.control", "CatchField.choices", "CatchField.stepper"],
+      "preserve": ["privacy rules", "feedback state", "specialized rating interaction"],
+      "recommendation": "Approve as a focused specialized-control composition pass."
+    },
+    {
+      "id": "FIELD-SURFACE-EVENT-SUCCESS-HOST-TARGET",
+      "rank": 7,
+      "status": "needs_domain_approval",
+      "risk": "high",
+      "migrationKind": "stepper_only",
+      "reachability": "production_route",
+      "screenIds": [],
+      "routeIds": ["hostAppEventSuccessScreen"],
+      "semanticFieldCount": 1,
+      "bindings": [
+        {"file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart", "symbol": "TargetAttendeeControl"}
+      ],
+      "anchors": [
+        {"file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart", "symbol": "CatchNumberStepper", "expected": 1}
+      ],
+      "targetModes": ["CatchField.stepper"],
+      "preserve": ["Event Success plan constraints", "club defaults"],
+      "recommendation": "Confirm the domain contract before changing its one specialized stepper."
+    },
+    {
+      "id": "FIELD-SURFACE-HOST-BROADCAST",
+      "rank": 8,
+      "status": "approval_ready",
+      "risk": "medium",
+      "migrationKind": "specialized_control_hosts",
+      "reachability": "production_embedded",
+      "screenIds": ["screen.host.inbox"],
+      "routeIds": ["hostInboxScreen"],
+      "semanticFieldCount": 3,
+      "bindings": [
+        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "HostBroadcastComposerSheet"}
+      ],
+      "anchors": [
+        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchOptionGroup", "expected": 1},
+        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchOptionCard", "expected": 1},
+        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchField.input", "expected": 1}
+      ],
+      "targetModes": ["CatchField.choices", "CatchField.control", "CatchField.input"],
+      "preserve": ["recipient counts", "template cards", "mutation gating"],
+      "recommendation": "Keep template cards specialized while converging audience and message fields."
+    },
+    {
+      "id": "FIELD-SURFACE-AUTH-PHONE-OTP",
+      "rank": 9,
+      "status": "deferred_specialized",
+      "risk": "high",
+      "migrationKind": "section_shell",
+      "reachability": "production_route",
+      "screenIds": ["screen.auth.phone_entry"],
+      "routeIds": ["authScreen"],
+      "semanticFieldCount": 2,
+      "bindings": [
+        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "PhonePage"},
+        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "OtpPage"}
+      ],
+      "anchors": [
+        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "CatchFormFieldLabel", "expected": 1},
+        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "CatchOtpCodeField", "expected": 1}
+      ],
+      "targetModes": ["CatchSection.fieldRows", "CatchField.control"],
+      "preserve": ["country picker", "OTP semantics", "autofill", "auth timing and focus behavior"],
+      "recommendation": "Defer to an explicit auth pass; only the shell and label should converge."
+    },
+    {
+      "id": "FIELD-SURFACE-LAUNCH-ACCESS",
+      "rank": 10,
+      "status": "owner_decision",
+      "risk": "medium",
+      "migrationKind": "activate_or_retire_first",
+      "reachability": "widgetbook_only",
+      "screenIds": [],
+      "routeIds": [],
+      "semanticFieldCount": 9,
+      "bindings": [
+        {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "LaunchAccessApplicationForm"}
+      ],
+      "anchors": [
+        {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchChipField", "expected": 3},
+        {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchField.select", "expected": 1},
+        {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchField.toggle", "expected": 1},
+        {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchField.input", "expected": 4}
+      ],
+      "targetModes": ["CatchSection.fieldRows", "CatchField.choices", "CatchField.select", "CatchField.toggle", "CatchField.input"],
+      "preserve": ["remote access policy", "application draft state"],
+      "recommendation": "Decide whether to activate or retire this unrouted form before migrating it."
+    }
+  ],
+  "reviewedExclusions": [
+    {
+      "id": "FIELD-SURFACE-EXCLUSION-CREATE-CLUB-PHOTOS",
+      "reason": "The create-club photo widgets remain specialized children inside the completed CatchSection migration.",
+      "anchors": [
+        {"file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart", "symbol": "CatchFormFieldLabel", "expected": 2}
+      ]
+    },
+    {
+      "id": "FIELD-SURFACE-EXCLUSION-EVENT-SUCCESS-LAB",
+      "reason": "Developer lab and preview setup flow; production host setup is tracked separately.",
+      "anchors": [
+        {"file": "lib/event_success/presentation/event_success_feature_blocks.dart", "symbol": "CatchChip.selectable", "expected": 1}
+      ]
+    },
+    {
+      "id": "FIELD-SURFACE-EXCLUSION-EVENT-SUCCESS-MANUAL-QA",
+      "reason": "Developer-only manual QA surface; production ownership is tracked by the companion candidate.",
+      "anchors": [
+        {"file": "lib/event_success/presentation/event_success_manual_qa_screen.dart", "symbol": "CatchChip.selectable", "expected": 1}
+      ]
+    }
+  ]
+}

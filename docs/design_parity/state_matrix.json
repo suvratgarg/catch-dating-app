@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-15",
+  "updated": "2026-07-16",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -1183,7 +1183,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "Captured the Explore map route with deterministic feed pins, selected-pin seed, distance-ring seed, and network tiles disabled."
+              "notes": "Captured the Explore map route with deterministic feed pins, selected-pin seed, device-location-backed distance-ring seed, and the explicit neutral no-network fixture. Production uses native Google tiles."
             },
             {
               "id": "map_loading",
@@ -1587,7 +1587,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel and has deterministic ready, selected-card, and distance-ring captures."
+              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel, defaults production to native Google tiles, and has deterministic neutral-fixture ready, selected-card, and distance-ring captures."
             },
             {
               "id": "selected_pin",
@@ -1611,7 +1611,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "Distance-ring capture seeds user location plus an active distance filter in the deterministic map placeholder."
+              "notes": "Distance-ring capture seeds user location plus an active distance filter in the neutral fixture; native runtime uses a geographic circle and projected CatchDistanceRingLabel."
             },
             {
               "id": "no_exact_pins",
@@ -1620,7 +1620,19 @@
               "previewIds": [
                 "ExploreMapScreen/Map route states"
               ],
-              "notes": "Widgetbook covers the no-exact-pins route branch by feeding events without exact coordinates through ExploreMapScreen and EventMapView; no pixel capture is registered for this branch yet."
+              "notes": "ExploreMapScreen delegates feeds without exact coordinates to EventMapView's shared no-pins branch while keeping route chrome and the deterministic fixture mounted."
+            },
+            {
+              "id": "zero_radius_results",
+              "kind": "empty",
+              "status": "implemented",
+              "previewIds": [
+                "ExploreMapScreen/Map route states"
+              ],
+              "tests": [
+                "test/explore/explore_widgets_test.dart"
+              ],
+              "notes": "ExploreMapScreen preserves the canvas and distance ring when a radius returns zero events, then offers the next wider radius or Show all."
             },
             {
               "id": "map_loading",
@@ -1651,12 +1663,12 @@
             {
               "id": "DP-EXPLORE-MAP-001",
               "status": "closed",
-              "nextAction": "Explore map route now has the `explore_map` capture with network tiles disabled; global visual-diff mask files remain part of the pixel-comparison backlog."
+              "nextAction": "Explore map route has deterministic neutral-fixture captures while production defaults to real Google tiles; global visual-diff mask files remain part of the pixel-comparison backlog."
             },
             {
               "id": "DP-EXPLORE-MAP-002",
               "status": "closed",
-              "nextAction": "Closed by the selected EventDateRailCard route state, DS MapPin parity for deterministic placeholders and native marker bitmaps, Widgetbook coverage for ready/selected/loading/empty/no-exact-pins/error/distance-ring branches, and widget tests for preselect, pin-tap selection, card navigation, background dismissal, feed-drop clearing, lost-pin clearing, placeholder pin parity, and byte-backed marker support."
+              "nextAction": "Closed by the selected compact EventDateRailCard route state, DS MapPin parity for the neutral fixture and native marker bitmaps, geographic native distance circle plus projected branded label, Widgetbook route coverage, full distance-catalog tests, and 2026-07-13 iPhone 17 runtime proof of loaded muted tiles, accessible custom pins, selection, and the branded ring."
             }
           ]
         }
@@ -3213,7 +3225,7 @@
           "componentIds": [
             "catch.badge",
             "catch.field",
-            "catch.segmented_control",
+            "catch.option_group",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -3882,18 +3894,18 @@
           "id": "profile.self",
           "routeId": "profileScreen",
           "implementationPaths": [
-              "lib/user_profile/presentation/profile_screen.dart",
-              "lib/user_profile/presentation/profile_edit_controller.dart",
-              "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
-              "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-              "lib/user_profile/presentation/widgets/profile_tab.dart",
-              "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
-              "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
-              "lib/user_profile/presentation/widgets/inline_editor_height.dart",
-              "lib/user_profile/presentation/widgets/inline_editor_prompt.dart",
-              "lib/user_profile/presentation/widgets/inline_editor_range.dart",
-              "lib/user_profile/presentation/widgets/inline_editor_text.dart",
-              "lib/user_profile/presentation/widgets/preview_tab.dart",
+            "lib/user_profile/presentation/profile_screen.dart",
+            "lib/user_profile/presentation/profile_edit_controller.dart",
+            "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+            "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+            "lib/user_profile/presentation/widgets/profile_tab.dart",
+            "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
+            "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+            "lib/user_profile/presentation/widgets/inline_editor_height.dart",
+            "lib/user_profile/presentation/widgets/inline_editor_prompt.dart",
+            "lib/user_profile/presentation/widgets/inline_editor_range.dart",
+            "lib/user_profile/presentation/widgets/inline_editor_text.dart",
+            "lib/user_profile/presentation/widgets/preview_tab.dart",
             "lib/image_uploads/shared/photo_grid.dart",
             "lib/image_uploads/shared/photo_upload_controller.dart",
             "lib/swipes/shared/profile_surface/profile_surface.dart"
@@ -3902,11 +3914,11 @@
             "catch.button",
             "catch.chip",
             "catch.field",
-              "catch.icon_button",
-              "catch.range_slider",
-              "catch.segmented_control",
-              "catch.section",
-              "catch.surface",
+            "catch.icon_button",
+            "catch.range_slider",
+            "catch.option_group",
+            "catch.section",
+            "catch.surface",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -4034,7 +4046,7 @@
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "Each prompt renders as one CatchSection.containedFieldRows card with an inline CatchField.choices question editor and a separate multiline CatchField.input answer. Ordinary focus chrome is owned by exactly one child field while the outer perimeter stays neutral; section errors may still own the outer danger border. Question changes use staged Cancel/Done, answers save on blur, and production preserves the existing three-prompt and 300-character business limits. Widgetbook covers collapsed and question-expanded production compositions plus primitive focus ownership; deterministic route captures still need refreshing against the 2026-07-14 Field handoff.",
+              "notes": "Each prompt renders as one CatchSection.containedFieldRows card with an inline CatchField.choices question editor and a separate multiline CatchField.input answer. Ordinary focus state is owned by exactly one child field while CatchSectionFocusSurface publishes the CatchFieldInsetScope overlap that aligns the active field's left/right chrome with the neutral section perimeter; the section paints the shared edge last, and section errors may still own the outer danger border. Question changes use staged Cancel/Done, answers save on blur, and production preserves the existing three-prompt and 300-character business limits. Widgetbook covers collapsed and question-expanded production compositions plus primitive focus ownership; deterministic route captures still need refreshing against the 2026-07-14 Field handoff.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ]
@@ -4202,7 +4214,7 @@
             {
               "id": "DP-PROFILE-SELF-006",
               "status": "blocked",
-              "nextAction": "Owner/product/schema approval required. Preserve production behavior for empty direct-input label geometry; single-choice persistence, clearability, deselection, and save policy; DOB helper and mono formatting; pace visibility; lifestyle footer; enum-backed workout control; three prompts and 300-character answers rather than six/140; and profile icon/row ordering. Do not promote these differences as primitive parity without explicit approval."
+              "nextAction": "Owner/product/schema approval required. Preserve production behavior for single-choice persistence, clearability, deselection, and save policy; DOB helper and mono formatting; pace visibility; lifestyle footer; enum-backed workout control; three prompts and 300-character answers rather than six/140; and profile icon/row ordering. Empty direct-input geometry was explicitly approved on 2026-07-16 and now uses the root-owned single-line Add presentation. Do not promote the remaining differences as primitive parity without explicit approval."
             }
           ]
         },
@@ -4817,11 +4829,18 @@
           "routeIds": [
             "hostClubsScreen",
             "hostOrganizerScreen",
-            "hostInsightsScreen"
+            "hostEditClubScreen",
+            "hostClubEventDefaultsScreen",
+            "hostClubLiveGuideScreen",
+            "hostClubTeamScreen",
+            "hostClubPaymentsScreen"
           ],
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
-            "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+            "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+            "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+            "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
+            "lib/hosts/presentation/club_management/host_club_defaults_saver.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/payments/data/host_payment_account_repository.dart",
             "lib/hosts/data/host_analytics_repository.dart",
@@ -4834,7 +4853,7 @@
             "catch.chip",
             "catch.field",
             "catch.icon_button",
-            "catch.segmented_control",
+            "catch.option_group",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -4845,7 +4864,6 @@
             "host_clubs_offline",
             "host_clubs_empty",
             "host_clubs_cohost_edit",
-            "host_clubs_insights_reference",
             "host_clubs_insights_report",
             "host_clubs_preview_tab",
             "host_clubs_text_scale_2",
@@ -5017,6 +5035,81 @@
               ]
             },
             {
+              "id": "club_media_edit",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/clubs/clubs_controllers_test.dart",
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "notes": "The organizer Edit tab owns logo and ordered club-photo editing. Owners and co-hosts can save media through HostClubEditController.updateMediaMutation; the controller restricts the patch to media fields and rejects non-host identities.",
+              "previewIds": [
+                "HostClubsScreen/Route states"
+              ],
+              "captureIds": [
+                "host_clubs_management",
+                "host_clubs_cohost_edit"
+              ]
+            },
+            {
+              "id": "advanced_club_defaults_edit",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "notes": "Owner-only event-policy and activity-aware Event Success defaults now live on the Event defaults and Live event guide spokes. HostClubDefaultsSaver serializes optimistic functional updates and coalesces rapid changes before HostClubEditController.updateClubMutation persists the full ClubHostDefaults value.",
+              "previewIds": [
+                "HostClubEventDefaultsScreen/Owner loaded",
+                "HostClubLiveGuideScreen/Owner loaded"
+              ],
+              "captureIds": [
+                "host_clubs_management"
+              ]
+            },
+            {
+              "id": "club_settings_spokes_loaded",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart",
+                "test/routing/router_redirect_test.dart"
+              ],
+              "notes": "Event defaults, Live event guide, Host team, and owner-only Payments use thin CatchScreenTopBar spoke routes with the club name as eyebrow, capped content width, CatchSection composition, and terminal scroll padding.",
+              "previewIds": [
+                "HostClubEventDefaultsScreen/Owner loaded",
+                "HostClubLiveGuideScreen/Owner loaded",
+                "HostClubTeamScreen/Owner loaded",
+                "HostClubPaymentsScreen/Owner loaded"
+              ]
+            },
+            {
+              "id": "club_settings_spokes_loading_error",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "All four spokes resolve uid plus operable clubs through one adapter; uid/club loading uses HostLoadingScreen and failures use CatchErrorScaffold with typed retry invalidation. Add dedicated deterministic captures if the shared shell diverges visually.",
+              "previewIds": [
+                "HostClubEventDefaultsScreen/Owner loaded",
+                "HostClubLiveGuideScreen/Owner loaded",
+                "HostClubTeamScreen/Owner loaded",
+                "HostClubPaymentsScreen/Owner loaded"
+              ]
+            },
+            {
+              "id": "club_settings_spokes_read_only",
+              "kind": "permission",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "notes": "Co-hosts receive read-only Event defaults and Live event guide content, owner controls are suppressed in Host team, and Payments is omitted from the Edit-tab navigation while direct access remains non-mutating.",
+              "previewIds": [
+                "HostClubEventDefaultsScreen/Owner loaded",
+                "HostClubLiveGuideScreen/Owner loaded",
+                "HostClubTeamScreen/Owner loaded"
+              ]
+            },
+            {
               "id": "update_club_pending",
               "kind": "mutation",
               "status": "captured",
@@ -5125,24 +5218,12 @@
               ]
             },
             {
-              "id": "insights_unknown_club",
-              "kind": "permission",
-              "status": "tested",
-              "tests": [
-                "test/hosts/host_operations_screen_test.dart"
-              ],
-              "notes": "HostInsightsScreen requires an exact operated-club id and renders Insights unavailable instead of silently falling back to the first club. Back navigation returns to Organizer.",
-              "previewIds": [
-                "HostInsightsScreen/Dedicated route states"
-              ]
-            },
-            {
               "id": "insights_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "The dedicated Insights route watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load. A deterministic route capture covers this state without the legacy Clubs tab rail.",
+              "notes": "The Host Clubs Insights tab watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
               "previewIds": [
-                "HostInsightsScreen/Dedicated route states"
+                "HostClubInsightsPane/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_loading"
@@ -5152,13 +5233,21 @@
               "id": "insights_report",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostInsightsScreen renders exact organizer back/title/range chrome and HostAnalyticsReportView renders backend metrics, a real demand/bookings dual-series trend with adjacent granularity control, top events, reviews/saves, and data quality. The routed 390x812 capture and tall report capture are registered; reference export/comparison remains open under HOST-V2-INSIGHTS-REFERENCE-001.",
+              "notes": "HostAnalyticsReportView renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews. Labels are client-owned and incomplete metrics use compact localized status badges.",
               "previewIds": [
-                "HostInsightsScreen/Dedicated route states"
+                "HostClubInsightsPane/Insights scorecard states"
               ],
               "captureIds": [
-                "host_clubs_insights_reference",
                 "host_clubs_insights_report"
+              ]
+            },
+            {
+              "id": "insights_coach",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "HostAnalyticsReportView shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; Widgetbook and tests also pin the normal hidden state.",
+              "previewIds": [
+                "HostClubInsightsPane/Insights scorecard states"
               ]
             },
             {
@@ -5167,7 +5256,7 @@
               "status": "captured",
               "notes": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
               "previewIds": [
-                "HostInsightsScreen/Dedicated route states"
+                "HostClubInsightsPane/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_error",
@@ -5617,7 +5706,7 @@
             "catch.button",
             "catch.chip",
             "catch.field",
-            "catch.segmented_control",
+            "catch.option_group",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -6215,7 +6304,7 @@
             "catch.field",
             "catch.icon_button",
             "catch.option_card",
-            "catch.segmented_control",
+            "catch.option_group",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -6443,7 +6532,7 @@
               "id": "section_picker",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostEventManageScreen renders Setup / Guests / Live / Report through CatchSegmentedControl and accepts initialSection from route aliases or query state. Setup, Guests, Live, and Report selected states now have deterministic route captures; selected-section adapter ownership remains tracked by DP-HOST-EVENT-MANAGE-002.",
+              "notes": "HostEventManageScreen renders Setup / Guests / Live / Report through CatchOptionGroup and accepts initialSection from route aliases or query state. Setup, Guests, Live, and Report selected states now have deterministic route captures; selected-section adapter ownership remains tracked by DP-HOST-EVENT-MANAGE-002.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7307,7 +7396,7 @@
           "componentIds": [
             "catch.badge",
             "catch.field",
-            "catch.segmented_control",
+            "catch.option_group",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -8396,222 +8485,7 @@
             {
               "id": "DP-HOST-CLUB-CREATE-002",
               "status": "open",
-              "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, and typed primary/save-draft intents. HostClubCreateRouteIntent owns route callback dispatch, and HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction. Continue draft-load retry, then align with Claude/Figma references."
-            }
-          ]
-        },
-        {
-          "id": "host.club.edit",
-          "routeId": "hostEditClubScreen",
-          "implementationPaths": [
-            "lib/hosts/presentation/club_management/host_create_club_screen.dart",
-            "lib/hosts/presentation/club_management/create/create_club_screen.dart"
-          ],
-          "componentIds": [
-            "catch.button",
-            "catch.field",
-            "catch.top_bar"
-          ],
-          "captureIds": [
-            "edit_club_basics",
-            "edit_club_validation_error",
-            "edit_club_media_replacement",
-            "edit_club_submit_pending",
-            "edit_club_submit_error",
-            "edit_club_route_loading",
-            "edit_club_route_error",
-            "edit_club_route_offline",
-            "edit_club_not_found",
-            "edit_club_cohost_media",
-            "edit_club_forbidden",
-            "edit_club_text_scale_2",
-            "edit_club_reduced_motion",
-            "edit_club_light_dark"
-          ],
-          "designRefs": [
-            {
-              "id": "repo.create-club-widget-tests",
-              "kind": "repo",
-              "status": "available",
-              "path": "test/explore/explore_widgets_test.dart",
-              "notes": "Create club widget tests cover edit prefill and optional contact clearing."
-            },
-            {
-              "id": "host-club-edit-handoff",
-              "kind": "external",
-              "status": "available",
-              "notes": "Canonical Host Edit Club prefilled owner edit Claude template reference for advisory comparison against edit_club_basics light captures rendered on the design-phone device. Masked in design/reference_screens/screen.host.club.edit/masks.json. The 2026-06-25 grouped-field/media pass compares within threshold at 7.92% mismatch / 8.64 meanDelta.",
-              "path": "design/reference_screens/screen.host.club.edit/prefilled_owner_edit.png"
-            }
-          ],
-          "states": [
-            {
-              "id": "initial_club_extra",
-              "kind": "populated",
-              "status": "implemented"
-            },
-            {
-              "id": "club_fetch_loading",
-              "kind": "loading",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_route_loading"
-              ]
-            },
-            {
-              "id": "club_fetch_error",
-              "kind": "error",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_route_error"
-              ],
-              "notes": "Generic route fetch errors and offline route fetch errors are captured separately."
-            },
-            {
-              "id": "club_not_found",
-              "kind": "empty",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_not_found"
-              ]
-            },
-            {
-              "id": "prefilled_owner_edit",
-              "kind": "populated",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_basics"
-              ],
-              "tests": [
-                "test/explore/explore_widgets_test.dart"
-              ],
-              "notes": "Host Edit Club owner edit now has a manifest-registered design reference plus deterministic default, validation, media replacement, and submit-state captures. The reference-backed owner edit capture now uses the Sunday sea-face fixture, compact edit media variants, grouped CatchField rows, and compares within threshold at 7.92% / 8.64."
-            },
-            {
-              "id": "media_only_cohost_edit",
-              "kind": "permission",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_cohost_media"
-              ]
-            },
-            {
-              "id": "optional_contact_clearing",
-              "kind": "mutation",
-              "status": "tested",
-              "tests": [
-                "test/explore/explore_widgets_test.dart"
-              ]
-            },
-            {
-              "id": "image_replacement",
-              "kind": "mutation",
-              "status": "captured",
-              "tests": [
-                "test/explore/explore_widgets_test.dart",
-                "test/clubs/clubs_controllers_test.dart"
-              ],
-              "captureIds": [
-                "edit_club_media_replacement"
-              ],
-              "notes": "Picked replacement club/profile media now seeds through deterministic initial media hooks for Widgetbook and route captures."
-            },
-            {
-              "id": "validation_error",
-              "kind": "error",
-              "status": "captured",
-              "tests": [
-                "test/explore/explore_widgets_test.dart"
-              ],
-              "captureIds": [
-                "edit_club_validation_error"
-              ],
-              "notes": "Owner edit required fields now render deterministic validation errors through form autovalidation, grouped CatchField rows, and the edit city FormField adapter."
-            },
-            {
-              "id": "submit_pending",
-              "kind": "mutation",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_submit_pending"
-              ],
-              "notes": "CreateClubController.submitMutation now has an owner edit pending capture for disabled media controls and loading footer behavior."
-            },
-            {
-              "id": "submit_error",
-              "kind": "mutation",
-              "status": "captured",
-              "tests": [
-                "test/explore/explore_widgets_test.dart"
-              ],
-              "captureIds": [
-                "edit_club_submit_error"
-              ],
-              "notes": "Owner edit submit failures now have a deterministic CatchErrorBanner capture above the footer."
-            },
-            {
-              "id": "success_pop",
-              "kind": "mutation",
-              "status": "tested",
-              "tests": [
-                "test/explore/explore_widgets_test.dart"
-              ]
-            },
-            {
-              "id": "unauthorized_host_or_owner",
-              "kind": "permission",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_forbidden"
-              ],
-              "tests": [
-                "test/hosts/host_club_edit_state_test.dart"
-              ]
-            },
-            {
-              "id": "offline",
-              "kind": "offline",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_route_offline"
-              ],
-              "notes": "Route fetch offline errors use obviousOfflineException() and render retryable shared connection copy through CatchErrorScaffold.fromError."
-            },
-            {
-              "id": "text_scale_2",
-              "kind": "accessibility",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_text_scale_2"
-              ]
-            },
-            {
-              "id": "reduced_motion",
-              "kind": "accessibility",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_reduced_motion"
-              ]
-            },
-            {
-              "id": "light_dark",
-              "kind": "theme",
-              "status": "captured",
-              "captureIds": [
-                "edit_club_light_dark"
-              ]
-            }
-          ],
-          "gaps": [
-            {
-              "id": "DP-HOST-CLUB-EDIT-001",
-              "status": "open",
-              "nextAction": "Owner edit is reference-backed and within threshold; add remaining state-specific Widgetbook/capture variants only if design exports them."
-            },
-            {
-              "id": "DP-HOST-CLUB-EDIT-002",
-              "status": "closed",
-              "nextAction": "Closed. Owner edit compares within threshold at 7.92% / 8.64. HostClubEditState owns route identity/access mode, while shared Host Club Create/Edit adapter state owns field/media display values, validation, submit request data, route callback intents, and submit-success close policy."
+              "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media enabled state, media display values, field/city display state, mutation error copy, and typed primary/save-draft intents. HostClubCreateRouteIntent owns route callback dispatch, and HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction. Continue draft-load retry, then align with Claude/Figma references."
             }
           ]
         },
@@ -8868,7 +8742,7 @@
           ],
           "componentIds": [
             "catch.button",
-            "catch.segmented_control",
+            "catch.option_group",
             "catch.surface",
             "catch.field",
             "catch.top_bar"
@@ -8879,7 +8753,7 @@
               "kind": "repo",
               "status": "available",
               "path": "test/hosts/host_operations_screen_test.dart",
-              "notes": "Host operations tests cover account profile fallback and editor sheet behavior."
+              "notes": "Host operations tests cover account profile fallback, inline editing, section-owned club dividers, and back navigation."
             },
             {
               "id": "host-settings-handoff",
@@ -8905,7 +8779,7 @@
               "captureIds": [
                 "host_settings_profile_loading"
               ],
-              "nextAction": "Continue with editor sheet, accessibility, theme, and mutation captures.",
+              "nextAction": "Continue with inline editor, accessibility, theme, and mutation captures.",
               "previewIds": [
                 "HostAccountScreen/Route states"
               ]
@@ -8965,7 +8839,7 @@
               "captureIds": [
                 "host_settings_active_profile"
               ],
-              "nextAction": "Continue with fallback/no-profile, loading/error, editor sheet, accessibility, theme, and mutation captures.",
+              "nextAction": "Continue with fallback/no-profile, loading/error, inline editor, accessibility, theme, and mutation captures.",
               "previewIds": [
                 "HostAccountScreen/Route states",
                 "HostSettingsProfileSection/Profile summary states"
@@ -8981,15 +8855,15 @@
               ]
             },
             {
-              "id": "profile_editor_sheet",
+              "id": "inline_profile_editor",
               "kind": "mutation",
               "status": "captured",
-              "notes": "Host Settings editor sheet save failures stay on the mutation listener surface, and successful saves now show shared Catch snackbar feedback after the sheet closes.",
+              "notes": "Host Settings inline save failures stay on the mutation listener surface, and successful saves show shared Catch snackbar feedback without modal state.",
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
               "captureIds": [
-                "host_settings_profile_editor_sheet",
+                "host_settings_inline_profile_edit",
                 "host_settings_save_profile_pending",
                 "host_settings_save_profile_error",
                 "host_settings_save_profile_offline"
@@ -9019,7 +8893,7 @@
               "id": "save_profile_mutation",
               "kind": "mutation",
               "status": "captured",
-              "notes": "Account sheet save success feedback now uses the shared Catch snackbar helper while pending/error/offline states remain captured.",
+              "notes": "Inline profile save success feedback uses the shared Catch snackbar helper while pending/error/offline states remain captured.",
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
@@ -9166,7 +9040,7 @@
             "host_settings_clubs_loading",
             "host_settings_clubs_error",
             "host_settings_clubs_offline",
-            "host_settings_profile_editor_sheet",
+            "host_settings_inline_profile_edit",
             "host_settings_save_profile_pending",
             "host_settings_save_profile_error",
             "host_settings_save_profile_offline",

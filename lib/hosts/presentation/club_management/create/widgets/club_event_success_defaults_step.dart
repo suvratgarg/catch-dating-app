@@ -26,18 +26,19 @@ class ClubEventSuccessDefaultsStep extends StatelessWidget {
     final panel = EventSuccessDefaultsPanel(
       defaults: defaults.eventSuccessForActivity(defaults.primaryActivityKind),
       activityKind: defaults.primaryActivityKind,
-      onChanged: (eventSuccess) => onChanged(
-        defaults.copyWithEventSuccessForActivity(
-          activityKind: defaults.primaryActivityKind,
-          defaults: eventSuccess,
-        ),
-      ),
-      title: context
-          .l10n
-          .hostsClubEventSuccessDefaultsStepTitleDefaultEventSuccess,
+      onChanged: (update) {
+        final activityKind = defaults.primaryActivityKind;
+        onChanged(
+          defaults.copyWithEventSuccessForActivity(
+            activityKind: activityKind,
+            defaults: update(defaults.eventSuccessForActivity(activityKind)),
+          ),
+        );
+      },
+      title: context.l10n.hostsClubEventSuccessDefaultsStepTitleLiveEventGuide,
       subtitle: context
           .l10n
-          .hostsClubEventSuccessDefaultsStepSubtitleApplyActivityAwareRun,
+          .hostsClubEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity,
     );
 
     return Form(

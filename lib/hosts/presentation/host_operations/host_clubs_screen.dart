@@ -4,7 +4,7 @@ class HostClubsScreen extends ConsumerWidget {
   const HostClubsScreen({
     super.key,
     this.initialClubId,
-    this.initialTab = HostClubTab.organizer,
+    this.initialTab = HostClubTab.edit,
     this.initialExpandedEditField,
   });
 

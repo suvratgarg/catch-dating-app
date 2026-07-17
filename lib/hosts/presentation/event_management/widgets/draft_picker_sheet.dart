@@ -1,17 +1,15 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
@@ -181,23 +179,16 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 320),
               child: SingleChildScrollView(
-                child: CatchSurface(
-                  borderColor: CatchTokens.of(context).line2,
-                  padding: EdgeInsets.zero,
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    children: [
-                      for (var index = 0; index < _drafts.length; index++) ...[
-                        if (index > 0) const CatchDivider.fieldRow(indent: 0),
-                        DraftCard(
-                          draft: _drafts[index],
-                          isDeleting: _deletingDraftId == _drafts[index].id,
-                          onSelect: () => _onSelect(_drafts[index]),
-                          onDelete: () => _onDelete(_drafts[index]),
-                        ),
-                      ],
-                    ],
-                  ),
+                child: CatchSection.containedFieldRows(
+                  children: [
+                    for (final draft in _drafts)
+                      DraftCard(
+                        draft: draft,
+                        isDeleting: _deletingDraftId == draft.id,
+                        onSelect: () => _onSelect(draft),
+                        onDelete: () => _onDelete(draft),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -225,56 +216,25 @@ class DraftCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchField.nav(
+      title: draft.summary,
+      body: context.l10n.hostsDraftPickerSheetTextSavedTouppercase(
+        toUpperCase: _formatRelative(draft.savedAt).toUpperCase(),
+      ),
+      icon: CatchIcons.descriptionOutlined,
+      iconColor: t.ink3,
       onTap: isDeleting ? null : onSelect,
-      tone: CatchSurfaceTone.transparent,
-      borderWidth: 0,
-      radius: CatchRadius.none,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
-      child: Row(
-        children: [
-          Icon(CatchIcons.descriptionOutlined, size: 22, color: t.ink3),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  draft.summary,
-                  style: CatchTextStyles.labelL(context),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                gapH4,
-                Text(
-                  context.l10n.hostsDraftPickerSheetTextSavedTouppercase(
-                    toUpperCase: _formatRelative(draft.savedAt).toUpperCase(),
-                  ),
-                  style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-                ),
-              ],
-            ),
-          ),
-          gapW8,
-          Tooltip(
-            message: context.l10n.hostsDraftPickerSheetMessageDeleteDraft,
-            child: CatchIconButton(
-              key: CreateEventFormKeys.deleteDraft(draft.id),
-              onTap: isDeleting ? null : onDelete,
-              size: 36,
-              background: Colors.transparent,
-              child: isDeleting
-                  ? const HostInlineSkeletonIcon()
-                  : Icon(
-                      CatchIcons.deleteOutlineRounded,
-                      size: 20,
-                      color: t.ink2,
-                    ),
-            ),
-          ),
-          gapW8,
-          Icon(CatchIcons.chevronRightRounded, size: 16, color: t.ink3),
-        ],
+      action: Tooltip(
+        message: context.l10n.hostsDraftPickerSheetMessageDeleteDraft,
+        child: CatchIconButton(
+          key: CreateEventFormKeys.deleteDraft(draft.id),
+          onTap: isDeleting ? null : onDelete,
+          size: 36,
+          background: Colors.transparent,
+          child: isDeleting
+              ? const HostInlineSkeletonIcon()
+              : Icon(CatchIcons.deleteOutlineRounded, size: 20, color: t.ink2),
+        ),
       ),
     );
   }

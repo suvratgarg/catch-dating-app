@@ -81,18 +81,21 @@ final class EventSuccessQuestionnaireConfig {
           ? this.customTitle
           : customTitle as String?,
       customQuestions: customQuestions ?? this.customQuestions,
-    ).normalized();
+    );
   }
 
-  Map<String, Object?> toJson() => {
-    'templateId': templateId,
-    if (usesCustom) ...{
-      'customTitle': customTitle,
-      'customQuestions': customQuestions
-          .map((question) => question.toJson())
-          .toList(),
-    },
-  };
+  Map<String, Object?> toJson() {
+    final persisted = normalized();
+    return {
+      'templateId': persisted.templateId,
+      if (persisted.usesCustom) ...{
+        'customTitle': persisted.customTitle,
+        'customQuestions': persisted.customQuestions
+            .map((question) => question.toJson())
+            .toList(),
+      },
+    };
+  }
 
   @override
   bool operator ==(Object other) {

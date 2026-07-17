@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/actions/**"
       - ".github/workflows/admin-website.yml"
+      - ".github/workflows/react-surface-validation.yml"
       - ".firebaserc"
       - "admin/**"
       - "contracts/callables/**"
@@ -14,6 +15,7 @@ on:
       - "design/components/**"
       - "design/web-ui/**"
       - "docs/audit_registry/web_shared_primitive_adoption.json"
+      - "docs/generated/react_dependency_graph/**"
       - "firebase.json"
       - "package.json"
       - "package-lock.json"
@@ -26,12 +28,15 @@ on:
       - "tool/web/check_storybook_visuals.mjs"
       - "tool/web/check_react_controller_test_targets.mjs"
       - "tool/web/react_controller_test_targets.json"
+      - "tool/web/react_dependency_graph.mjs"
+      - "tool/web/react_dependency_graph.test.mjs"
       - "tool/organizer_intake/**"
   push:
     branches: [main]
     paths:
       - ".github/actions/**"
       - ".github/workflows/admin-website.yml"
+      - ".github/workflows/react-surface-validation.yml"
       - ".firebaserc"
       - "admin/**"
       - "contracts/callables/**"
@@ -41,6 +46,7 @@ on:
       - "design/components/**"
       - "design/web-ui/**"
       - "docs/audit_registry/web_shared_primitive_adoption.json"
+      - "docs/generated/react_dependency_graph/**"
       - "firebase.json"
       - "package.json"
       - "package-lock.json"
@@ -53,6 +59,8 @@ on:
       - "tool/web/check_storybook_visuals.mjs"
       - "tool/web/check_react_controller_test_targets.mjs"
       - "tool/web/react_controller_test_targets.json"
+      - "tool/web/react_dependency_graph.mjs"
+      - "tool/web/react_dependency_graph.test.mjs"
       - "tool/organizer_intake/**"
   workflow_dispatch:
     inputs:
@@ -72,86 +80,10 @@ permissions:
 jobs:
   validate:
     name: Validate admin website
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - run: npm ci
-
-      - name: Check cross-stack component lexicon
-        run: node tool/design/check_component_lexicon.mjs
-
-      - name: Check organizer admin review bridge
-        run: node tool/organizer_intake/check_admin_review_bridge.mjs
-
-      - name: Run admin unit tests
-        run: npm --workspace catch-admin run test
-
-      - name: Check named React controller test targets
-        run: npm run web:controller-tests:check
-
-      - name: Check shared web UI adoption
-        run: npm run web:shared-ui-adoption:check
-
-      - name: Run shared web UI tests and typecheck
-        run: npm run web:ui:test && npm run web:ui:typecheck
-
-      - name: Report admin unit-test coverage
-        continue-on-error: true
-        run: npm --workspace catch-admin run test:coverage
-
-      - name: Build admin website
-        run: npm run web:admin:build
-
-      - name: Install Storybook accessibility browser
-        run: npx playwright install --with-deps chromium
-
-      - name: Build admin Storybook
-        run: npm --workspace catch-admin run build:storybook
-
-      - name: Run admin visual regression
-        id: visual-check
-        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.update_visual_baselines }}
-        run: npm --workspace catch-admin run test:visual
-
-      - name: Capture admin visual baselines
-        id: visual-update
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines }}
-        run: node tool/web/check_storybook_visuals.mjs --surface admin --update
-
-      - name: Upload admin visual diagnostics
-        if: ${{ always() && steps.visual-check.outcome == 'failure' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: admin-visual-diagnostics-${{ github.run_id }}
-          path: |
-            artifacts/visual-actuals/admin
-            artifacts/visual-diffs/admin
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Upload admin visual baselines
-        if: ${{ steps.visual-update.outcome == 'success' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: admin-visual-baselines-${{ github.run_id }}
-          path: design/visual_baselines/admin/linux
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Run Storybook accessibility gate
-        run: npm --workspace catch-admin run test:storybook:a11y
+    uses: ./.github/workflows/react-surface-validation.yml
+    with:
+      surface: admin
+      update_visual_baselines: ${{ github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines }}
 
   deploy:
     name: Deploy admin Hosting

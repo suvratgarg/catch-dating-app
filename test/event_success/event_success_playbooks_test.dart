@@ -68,6 +68,29 @@ void main() {
       }
     });
 
+    test('catalog owns the complete non-configurable module set', () {
+      expect(
+        EventSuccessModuleCatalog.all
+            .where((module) => !module.hostConfigurable)
+            .map((module) => module.id)
+            .toSet(),
+        {
+          EventSuccessModuleCatalog.crowdBalance.id,
+          EventSuccessModuleCatalog.checkIn.id,
+          EventSuccessModuleCatalog.wingmanRequests.id,
+          EventSuccessModuleCatalog.contextualOpeners.id,
+          EventSuccessModuleCatalog.decomposedFeedback.id,
+          EventSuccessModuleCatalog.hostAnalytics.id,
+          EventSuccessModuleCatalog.safetyControls.id,
+        },
+      );
+      expect(EventSuccessModuleCatalog.microPods.hostConfigurable, isTrue);
+      expect(
+        EventSuccessModuleCatalog.compatibilityQuestionnaire.hostConfigurable,
+        isTrue,
+      );
+    });
+
     test('compatibility questionnaire is a reusable opt-in module', () {
       for (final playbook in EventSuccessPlaybookLibrary.all) {
         expect(
@@ -295,18 +318,203 @@ void main() {
       expect(roundTrip, config);
     });
 
-    test('module selection owns derived wingman and opener booleans', () {
+    test('legacy defaults hydrate platform-owned modules as always on', () {
       final defaults = EventSuccessDefaults(
         enabled: true,
         selectedModuleIds: [EventSuccessModuleCatalog.checkIn.id],
+        wingmanRequestsEnabled: false,
+        contextualOpenersEnabled: false,
       ).normalizedForActivity(ActivityKind.socialRun);
 
       expect(
         defaults.selectedModuleIds,
-        isNot(contains(EventSuccessModuleCatalog.wingmanRequests.id)),
+        containsAll(
+          EventSuccessPlaybookLibrary.socialRun.nonConfigurableModuleIds,
+        ),
       );
-      expect(defaults.wingmanRequestsEnabled, isFalse);
-      expect(defaults.contextualOpenersEnabled, isFalse);
+      expect(defaults.wingmanRequestsEnabled, isTrue);
+      expect(defaults.contextualOpenersEnabled, isTrue);
+    });
+
+    test(
+      'legacy stored defaults stay raw while their draft projection heals',
+      () {
+        const empty = EventSuccessDefaults(
+          enabled: true,
+          moduleSelectionConfigured: true,
+          wingmanRequestsEnabled: false,
+          contextualOpenersEnabled: false,
+        );
+        final legacyJson = empty.toJson();
+        final hydrated = EventSuccessDefaults.fromJson(legacyJson);
+        final draft = hydrated.toDraft();
+
+        expect(hydrated.selectedModuleIds, isEmpty);
+        expect(legacyJson['selectedModuleIds'], isEmpty);
+        expect(
+          draft.selectedModuleIds,
+          containsAll(draft.playbook.nonConfigurableModuleIds),
+        );
+
+        final recommended = EventSuccessDefaults.recommendedForActivity(
+          ActivityKind.socialRun,
+          enabled: true,
+        );
+        expect(
+          recommended.selectedModuleIds,
+          containsAll(
+            EventSuccessPlaybookLibrary.socialRun.nonConfigurableModuleIds,
+          ),
+        );
+        expect(recommended.wingmanRequestsEnabled, isTrue);
+        expect(recommended.contextualOpenersEnabled, isTrue);
+      },
+    );
+
+    test('draft write boundaries union platform-owned module ids', () {
+      final playbook = EventSuccessPlaybookLibrary.socialRun;
+      final draft = EventSuccessHostDraft(
+        playbook: playbook,
+        selectedModuleIds: const {},
+        targetAttendeeCount: 22,
+        structureConfig: const EventSuccessStructureConfig.legacyDefault(),
+        wingmanRequestsEnabled: false,
+        contextualOpenersEnabled: false,
+      );
+
+      final defaults = EventSuccessDefaults.fromDraft(draft);
+      final plan = EventSuccessPlan.fromDraft(
+        id: 'event-1',
+        eventId: 'event-1',
+        clubId: 'club-1',
+        draft: draft,
+        createdAt: DateTime(2026, 7, 17),
+        updatedAt: DateTime(2026, 7, 17),
+      );
+
+      expect(
+        defaults.selectedModuleIds,
+        containsAll(playbook.nonConfigurableModuleIds),
+      );
+      expect(
+        plan.selectedModuleIds,
+        containsAll(playbook.nonConfigurableModuleIds),
+      );
+      expect(defaults.wingmanRequestsEnabled, isTrue);
+      expect(defaults.contextualOpenersEnabled, isTrue);
+      expect(plan.wingmanRequestsEnabled, isTrue);
+      expect(plan.contextualOpenersEnabled, isTrue);
+    });
+
+    test('legacy plans project platform modules without rewriting ids', () {
+      final now = DateTime(2026, 7, 17);
+      final legacy = EventSuccessPlan.fromJson({
+        'id': 'event-1',
+        'eventId': 'event-1',
+        'clubId': 'club-1',
+        'playbookId': EventSuccessPlaybookLibrary.socialRun.id,
+        'selectedModuleIds': <String>[],
+        'targetAttendeeCount': 22,
+        'hostGoal': 'Help people meet.',
+        'wingmanRequestsEnabled': false,
+        'contextualOpenersEnabled': false,
+        'createdAt': now,
+        'updatedAt': now,
+      });
+
+      expect(legacy.selectedModuleIds, isEmpty);
+      expect(
+        legacy.hostDraft.selectedModuleIds,
+        containsAll(legacy.playbook.nonConfigurableModuleIds),
+      );
+      expect(legacy.hasModule(EventSuccessModuleCatalog.checkIn.id), isTrue);
+      expect(
+        legacy.hasModule(EventSuccessModuleCatalog.wingmanRequests.id),
+        isTrue,
+      );
+      expect(legacy.toJson()['selectedModuleIds'], isEmpty);
+    });
+
+    test('guided rotations normalize to the supported pair topology', () {
+      final draft =
+          EventSuccessHostDraft.fromActivity(ActivityKind.singlesMixer)
+              .copyWith(
+                structureConfig: const EventSuccessStructureConfig(
+                  unitKind: EventSuccessUnitKind.teams,
+                  unitSize: 6,
+                ),
+              )
+              .withModuleSelection(
+                EventSuccessModuleCatalog.guidedRotations.id,
+                true,
+              );
+
+      expect(draft.structureConfig.unitKind, EventSuccessUnitKind.pairs);
+      expect(draft.structureConfig.unitSize, 2);
+      expect(draft.structureConfig.rotationIntervalMinutes, 15);
+    });
+
+    test('people-mix projection derives grouping modules from structure', () {
+      final base = EventSuccessHostDraft.fromActivity(
+        ActivityKind.openActivity,
+        targetAttendeeCount: 30,
+      );
+
+      final whole = base.withPeopleMixUnitKind(EventSuccessUnitKind.wholeGroup);
+      final pods = base.withPeopleMixUnitKind(EventSuccessUnitKind.pods);
+      final pairs = base.withPeopleMixUnitKind(EventSuccessUnitKind.pairs);
+      final teams = base.withPeopleMixUnitKind(EventSuccessUnitKind.teams);
+      final tables = base.withPeopleMixUnitKind(EventSuccessUnitKind.tables);
+
+      for (final draft in [whole, pods]) {
+        expect(
+          draft.isModuleSelected(EventSuccessModuleCatalog.guidedRotations.id),
+          isFalse,
+        );
+      }
+      expect(
+        whole.isModuleSelected(EventSuccessModuleCatalog.microPods.id),
+        isFalse,
+      );
+      expect(
+        pods.isModuleSelected(EventSuccessModuleCatalog.microPods.id),
+        isTrue,
+      );
+      for (final draft in [pairs, teams, tables]) {
+        expect(
+          draft.isModuleSelected(EventSuccessModuleCatalog.microPods.id),
+          isFalse,
+        );
+        expect(
+          draft.isModuleSelected(EventSuccessModuleCatalog.guidedRotations.id),
+          isTrue,
+        );
+        expect(draft.structureConfig.rotationIntervalMinutes, isNotNull);
+      }
+    });
+
+    test('removing rotation cadence removes the legacy rotation module', () {
+      final rotating = EventSuccessHostDraft.fromActivity(
+        ActivityKind.openActivity,
+        targetAttendeeCount: 30,
+      ).withPeopleMixUnitKind(EventSuccessUnitKind.teams);
+
+      final staticTeams = rotating.withPeopleMixStructure(
+        rotating.structureConfig.copyWith(rotationIntervalMinutes: null),
+      );
+
+      expect(staticTeams.structureConfig.unitKind, EventSuccessUnitKind.teams);
+      expect(staticTeams.structureConfig.rotationIntervalMinutes, isNull);
+      expect(
+        staticTeams.isModuleSelected(
+          EventSuccessModuleCatalog.guidedRotations.id,
+        ),
+        isFalse,
+      );
+      expect(
+        staticTeams.isModuleSelected(EventSuccessModuleCatalog.microPods.id),
+        isFalse,
+      );
     });
 
     test('activity profiles keep impossible toggles out of defaults', () {

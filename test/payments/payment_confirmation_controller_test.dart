@@ -39,7 +39,11 @@ void main() {
   test(
     'builds directions URI from meeting point when coordinates are absent',
     () {
-      final event = buildEvent();
+      final event = buildEvent().copyWith(
+        meetingLocation: null,
+        startingPointLat: null,
+        startingPointLng: null,
+      );
 
       final uri = PaymentConfirmationController.directionsUri(event);
 

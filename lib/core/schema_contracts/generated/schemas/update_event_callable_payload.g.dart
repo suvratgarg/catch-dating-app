@@ -87,34 +87,14 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
           },
         },
         'startingPointLat': <String, Object?>{
-          'anyOf': <Object?>[
-            <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
-              'minimum': -90,
-              'maximum': 90,
-            },
-            <String, Object?>{
-              'type': 'null',
-            },
-          ],
+          'type': 'number',
+          'minimum': -90,
+          'maximum': 90,
         },
         'startingPointLng': <String, Object?>{
-          'anyOf': <Object?>[
-            <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
-              'minimum': -180,
-              'maximum': 180,
-            },
-            <String, Object?>{
-              'type': 'null',
-            },
-          ],
+          'type': 'number',
+          'minimum': -180,
+          'maximum': 180,
         },
         'locationDetails': <String, Object?>{
           'type': <Object?>[
