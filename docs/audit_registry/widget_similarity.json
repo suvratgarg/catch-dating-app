@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-17",
   "sourceOfTruth": {
     "generator": "tool/design/build_widget_similarity.mjs",
     "fingerprints": "artifacts/widget_dedupe/fingerprints.json",
@@ -1159,7 +1159,7 @@
       "simhash128": "2c9cff8b23f2f34b604ded7b73b557b5",
       "tokenStreamLength": 49,
       "coarseTokenStreamLength": 49,
-      "usageCountRaw": 205,
+      "usageCountRaw": 206,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1302,7 +1302,7 @@
       "simhash128": "d460cfae72cf983da26cac13f42df561",
       "tokenStreamLength": 150,
       "coarseTokenStreamLength": 150,
-      "usageCountRaw": 32,
+      "usageCountRaw": 33,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1900,7 +1900,7 @@
       "simhash128": "2e50c08b14761c72251ca049bf33c627",
       "tokenStreamLength": 913,
       "coarseTokenStreamLength": 913,
-      "usageCountRaw": 338,
+      "usageCountRaw": 360,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -1913,7 +1913,7 @@
       "simhash128": "2d31cc9fb5b210ca8718813afb25c4fc",
       "tokenStreamLength": 45,
       "coarseTokenStreamLength": 45,
-      "usageCountRaw": 6,
+      "usageCountRaw": 9,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1926,7 +1926,7 @@
       "simhash128": "a66cc98fe8e29f8a82afc6917732fb73",
       "tokenStreamLength": 122,
       "coarseTokenStreamLength": 122,
-      "usageCountRaw": 12,
+      "usageCountRaw": 17,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1939,7 +1939,7 @@
       "simhash128": "235968a7fc61b3b061202ae83c58fcf1",
       "tokenStreamLength": 30,
       "coarseTokenStreamLength": 30,
-      "usageCountRaw": 8,
+      "usageCountRaw": 10,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1952,7 +1952,7 @@
       "simhash128": "2cd96bea937b3cb78621cecdb5e1b7c3",
       "tokenStreamLength": 64,
       "coarseTokenStreamLength": 64,
-      "usageCountRaw": 7,
+      "usageCountRaw": 13,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1965,7 +1965,7 @@
       "simhash128": "23b9fb8257b61b2aa20886bc12b88097",
       "tokenStreamLength": 20,
       "coarseTokenStreamLength": 20,
-      "usageCountRaw": 6,
+      "usageCountRaw": 9,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1978,7 +1978,7 @@
       "simhash128": "a641fb0da3971ecba708b6e9e83375f5",
       "tokenStreamLength": 76,
       "coarseTokenStreamLength": 76,
-      "usageCountRaw": 4,
+      "usageCountRaw": 7,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1991,7 +1991,7 @@
       "simhash128": "c17be14645201e720e9a83d732fae107",
       "tokenStreamLength": 14,
       "coarseTokenStreamLength": 14,
-      "usageCountRaw": 5,
+      "usageCountRaw": 8,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2004,7 +2004,7 @@
       "simhash128": "1a0d45ba02ba546d8e9db8599a48aa2e",
       "tokenStreamLength": 10,
       "coarseTokenStreamLength": 10,
-      "usageCountRaw": 3,
+      "usageCountRaw": 8,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2017,7 +2017,7 @@
       "simhash128": "266dcdc7b8e38ecee2eaee94f73b7763",
       "tokenStreamLength": 96,
       "coarseTokenStreamLength": 96,
-      "usageCountRaw": 6,
+      "usageCountRaw": 13,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2030,7 +2030,7 @@
       "simhash128": "4f08fb69911622dc674a81b9fd534581",
       "tokenStreamLength": 40,
       "coarseTokenStreamLength": 40,
-      "usageCountRaw": 14,
+      "usageCountRaw": 25,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2043,7 +2043,7 @@
       "simhash128": "7e49759e8331849be0a29d2469ad74cd",
       "tokenStreamLength": 12,
       "coarseTokenStreamLength": 12,
-      "usageCountRaw": 4,
+      "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2056,7 +2056,7 @@
       "simhash128": "e393e29b69b69a10b600bde0f2d3c410",
       "tokenStreamLength": 53,
       "coarseTokenStreamLength": 53,
-      "usageCountRaw": 12,
+      "usageCountRaw": 15,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2069,7 +2069,7 @@
       "simhash128": "a9086ecf57f37f122609c8f173a7e9c4",
       "tokenStreamLength": 51,
       "coarseTokenStreamLength": 51,
-      "usageCountRaw": 8,
+      "usageCountRaw": 14,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2082,7 +2082,7 @@
       "simhash128": "ffffffffffffffffffffffffffffffff",
       "tokenStreamLength": 0,
       "coarseTokenStreamLength": 0,
-      "usageCountRaw": 7,
+      "usageCountRaw": 10,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2095,7 +2095,7 @@
       "simhash128": "4f0ffb7dbff66ff7474f77d5edf76fbc",
       "tokenStreamLength": 3,
       "coarseTokenStreamLength": 3,
-      "usageCountRaw": 12,
+      "usageCountRaw": 43,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2121,7 +2121,7 @@
       "simhash128": "2af1b8cf67da70993e50cc903ca993f5",
       "tokenStreamLength": 51,
       "coarseTokenStreamLength": 51,
-      "usageCountRaw": 14,
+      "usageCountRaw": 15,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2914,7 +2914,7 @@
       "simhash128": "269dbc8f73071636774e3c2fd4e355a4",
       "tokenStreamLength": 40,
       "coarseTokenStreamLength": 40,
-      "usageCountRaw": 12,
+      "usageCountRaw": 13,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3096,7 +3096,7 @@
       "simhash128": "8401595db0f9a199be08e45976489d15",
       "tokenStreamLength": 290,
       "coarseTokenStreamLength": 290,
-      "usageCountRaw": 180,
+      "usageCountRaw": 181,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -3980,7 +3980,7 @@
       "simhash128": "dcb76bfe7ffb3d3173e6825f0d28b1fb",
       "tokenStreamLength": 21,
       "coarseTokenStreamLength": 21,
-      "usageCountRaw": 4,
+      "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -7828,7 +7828,7 @@
       "simhash128": "ffffffffffffffffffffffffffffffff",
       "tokenStreamLength": 0,
       "coarseTokenStreamLength": 0,
-      "usageCountRaw": 1,
+      "usageCountRaw": 2,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -7906,7 +7906,7 @@
       "simhash128": "fead42bd914516f9ee7d80e7df796f5a",
       "tokenStreamLength": 19,
       "coarseTokenStreamLength": 19,
-      "usageCountRaw": 3,
+      "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -7958,7 +7958,7 @@
       "simhash128": "5cdbdc6fcfefff3dd7ffe7135eff7bfb",
       "tokenStreamLength": 5,
       "coarseTokenStreamLength": 5,
-      "usageCountRaw": 3,
+      "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -7984,7 +7984,7 @@
       "simhash128": "92e13b41ff7f93877fd8a845270b628d",
       "tokenStreamLength": 19,
       "coarseTokenStreamLength": 19,
-      "usageCountRaw": 1,
+      "usageCountRaw": 4,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -8036,7 +8036,7 @@
       "simhash128": "510663873e347018f9df46e32eefbf74",
       "tokenStreamLength": 4,
       "coarseTokenStreamLength": 4,
-      "usageCountRaw": 3,
+      "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -10701,7 +10701,7 @@
       "simhash128": "bd6f59de4adc7fc58f7f4fbf255faf5c",
       "tokenStreamLength": 17,
       "coarseTokenStreamLength": 17,
-      "usageCountRaw": 3,
+      "usageCountRaw": 0,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -10714,7 +10714,7 @@
       "simhash128": "22d3c6dde2aa98baad643c2894b7fd32",
       "tokenStreamLength": 4,
       "coarseTokenStreamLength": 4,
-      "usageCountRaw": 7,
+      "usageCountRaw": 6,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -12131,7 +12131,7 @@
       "simhash128": "4738f38d41145a763e0867bbf001c496",
       "tokenStreamLength": 20,
       "coarseTokenStreamLength": 20,
-      "usageCountRaw": 22,
+      "usageCountRaw": 21,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -18874,7 +18874,7 @@
         "HostOperationsHomeScreen",
         "HostProfileScreen"
       ],
-      "usageSum": 125,
+      "usageSum": 131,
       "scope": "screen"
     },
     {
@@ -19335,20 +19335,7 @@
       "scope": "widget"
     },
     {
-      "id": "n032-profile-entry",
-      "stem": "ProfileEntry",
-      "stemType": "outer",
-      "members": [
-        "ProfileDirectTextEntry",
-        "ProfileMultiEnumEntry",
-        "ProfilePromptEntry",
-        "ProfileSingleEnumEntry"
-      ],
-      "usageSum": 15,
-      "scope": "widget"
-    },
-    {
-      "id": "n033-calendar-skeleton",
+      "id": "n032-calendar-skeleton",
       "stem": "CalendarSkeleton",
       "stemType": "outer",
       "members": [
@@ -19361,7 +19348,7 @@
       "scope": "screen"
     },
     {
-      "id": "n034-payment-controller",
+      "id": "n033-payment-controller",
       "stem": "PaymentController",
       "stemType": "outer",
       "members": [
@@ -19372,6 +19359,19 @@
       ],
       "usageSum": 14,
       "scope": "screen"
+    },
+    {
+      "id": "n034-host-editor",
+      "stem": "HostEditor",
+      "stemType": "outer",
+      "members": [
+        "HostClubDefaultsEditor",
+        "HostInlineAgeRangeEditor",
+        "HostInlineOptionEditor",
+        "HostInlineTextEntryEditor"
+      ],
+      "usageSum": 13,
+      "scope": "widget"
     },
     {
       "id": "n035-user-panel",
@@ -19387,14 +19387,14 @@
       "scope": "widget"
     },
     {
-      "id": "n036-host-editor",
-      "stem": "HostEditor",
+      "id": "n036-profile-entry",
+      "stem": "ProfileEntry",
       "stemType": "outer",
       "members": [
-        "HostClubDefaultsEditor",
-        "HostInlineAgeRangeEditor",
-        "HostInlineOptionEditor",
-        "HostInlineTextEntryEditor"
+        "ProfileDirectTextEntry",
+        "ProfileMultiEnumEntry",
+        "ProfilePromptEntry",
+        "ProfileSingleEnumEntry"
       ],
       "usageSum": 12,
       "scope": "widget"
@@ -19926,7 +19926,18 @@
       "scope": "screen"
     },
     {
-      "id": "n081-count-pill",
+      "id": "n081-field-row",
+      "stem": "FieldRow",
+      "stemType": "final-two",
+      "members": [
+        "CatchFieldRow",
+        "ProfileFieldRow"
+      ],
+      "usageSum": 28,
+      "scope": "widget"
+    },
+    {
+      "id": "n082-count-pill",
       "stem": "CountPill",
       "stemType": "final-two",
       "members": [
@@ -19937,7 +19948,18 @@
       "scope": "widget"
     },
     {
-      "id": "n082-club-screen",
+      "id": "n083-field-button",
+      "stem": "FieldButton",
+      "stemType": "outer",
+      "members": [
+        "CatchFieldCommitButton",
+        "CatchFieldRepeatButton"
+      ],
+      "usageSum": 26,
+      "scope": "widget"
+    },
+    {
+      "id": "n084-club-screen",
       "stem": "ClubScreen",
       "stemType": "final-two",
       "members": [
@@ -19948,7 +19970,7 @@
       "scope": "screen"
     },
     {
-      "id": "n083-history-screen",
+      "id": "n085-history-screen",
       "stem": "HistoryScreen",
       "stemType": "final-two",
       "members": [
@@ -19959,7 +19981,7 @@
       "scope": "screen"
     },
     {
-      "id": "n084-detail-screen",
+      "id": "n086-detail-screen",
       "stem": "DetailScreen",
       "stemType": "final-two",
       "members": [
@@ -19970,7 +19992,18 @@
       "scope": "screen"
     },
     {
-      "id": "n085-mono-label",
+      "id": "n087-field-row",
+      "stem": "FieldRow",
+      "stemType": "outer",
+      "members": [
+        "CatchFieldContentRow",
+        "CatchFieldSupportRow"
+      ],
+      "usageSum": 23,
+      "scope": "widget"
+    },
+    {
+      "id": "n088-mono-label",
       "stem": "MonoLabel",
       "stemType": "final-two",
       "members": [
@@ -19981,7 +20014,7 @@
       "scope": "widget"
     },
     {
-      "id": "n086-club-dock",
+      "id": "n089-club-dock",
       "stem": "ClubDock",
       "stemType": "outer",
       "members": [
@@ -19992,7 +20025,7 @@
       "scope": "widget"
     },
     {
-      "id": "n087-edit-screen",
+      "id": "n090-edit-screen",
       "stem": "EditScreen",
       "stemType": "outer",
       "members": [
@@ -20003,7 +20036,7 @@
       "scope": "screen"
     },
     {
-      "id": "n088-section-header",
+      "id": "n091-section-header",
       "stem": "SectionHeader",
       "stemType": "final-two",
       "members": [
@@ -20014,7 +20047,7 @@
       "scope": "widget"
     },
     {
-      "id": "n089-terminal-padding",
+      "id": "n092-terminal-padding",
       "stem": "TerminalPadding",
       "stemType": "final-two",
       "members": [
@@ -20025,7 +20058,7 @@
       "scope": "widget"
     },
     {
-      "id": "n090-action-card",
+      "id": "n093-action-card",
       "stem": "ActionCard",
       "stemType": "final-two",
       "members": [
@@ -20036,7 +20069,7 @@
       "scope": "widget"
     },
     {
-      "id": "n091-section-label",
+      "id": "n094-section-label",
       "stem": "SectionLabel",
       "stemType": "final-two",
       "members": [
@@ -20047,7 +20080,7 @@
       "scope": "widget"
     },
     {
-      "id": "n092-composer-sheet",
+      "id": "n095-composer-sheet",
       "stem": "ComposerSheet",
       "stemType": "final-two",
       "members": [
@@ -20058,18 +20091,18 @@
       "scope": "mixed"
     },
     {
-      "id": "n093-field-row",
-      "stem": "FieldRow",
-      "stemType": "final-two",
+      "id": "n096-field-control",
+      "stem": "FieldControl",
+      "stemType": "outer",
       "members": [
-        "CatchFieldRow",
-        "ProfileFieldRow"
+        "CatchFieldChoiceControl",
+        "CatchFieldExplicitSaveControl"
       ],
-      "usageSum": 17,
+      "usageSum": 18,
       "scope": "widget"
     },
     {
-      "id": "n094-detail-body",
+      "id": "n097-detail-body",
       "stem": "DetailBody",
       "stemType": "final-two",
       "members": [
@@ -20080,7 +20113,7 @@
       "scope": "widget"
     },
     {
-      "id": "n095-map-screen",
+      "id": "n098-map-screen",
       "stem": "MapScreen",
       "stemType": "final-two",
       "members": [
@@ -20091,7 +20124,7 @@
       "scope": "screen"
     },
     {
-      "id": "n096-meta-row",
+      "id": "n099-meta-row",
       "stem": "MetaRow",
       "stemType": "final-two",
       "members": [
@@ -20102,7 +20135,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n097-club-artwork",
+      "id": "n100-club-artwork",
       "stem": "ClubArtwork",
       "stemType": "outer",
       "members": [
@@ -20113,7 +20146,7 @@
       "scope": "widget"
     },
     {
-      "id": "n098-event-panel",
+      "id": "n101-event-panel",
       "stem": "EventPanel",
       "stemType": "outer",
       "members": [
@@ -20124,18 +20157,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n099-field-row",
-      "stem": "FieldRow",
-      "stemType": "outer",
-      "members": [
-        "CatchFieldContentRow",
-        "CatchFieldSupportRow"
-      ],
-      "usageSum": 14,
-      "scope": "widget"
-    },
-    {
-      "id": "n100-host-section",
+      "id": "n102-host-section",
       "stem": "HostSection",
       "stemType": "final-two",
       "members": [
@@ -20146,7 +20168,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n101-tab-body",
+      "id": "n103-tab-body",
       "stem": "TabBody",
       "stemType": "final-two",
       "members": [
@@ -20157,7 +20179,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n102-top-action",
+      "id": "n104-top-action",
       "stem": "TopAction",
       "stemType": "outer",
       "members": [
@@ -20168,29 +20190,18 @@
       "scope": "widget"
     },
     {
-      "id": "n103-field-button",
-      "stem": "FieldButton",
-      "stemType": "outer",
+      "id": "n105-action-bar",
+      "stem": "ActionBar",
+      "stemType": "final-two",
       "members": [
-        "CatchFieldCommitButton",
-        "CatchFieldRepeatButton"
+        "CatchFieldActionBar",
+        "SuvbotActionBar"
       ],
       "usageSum": 13,
       "scope": "widget"
     },
     {
-      "id": "n104-field-control",
-      "stem": "FieldControl",
-      "stemType": "outer",
-      "members": [
-        "CatchFieldChoiceControl",
-        "CatchFieldExplicitSaveControl"
-      ],
-      "usageSum": 13,
-      "scope": "widget"
-    },
-    {
-      "id": "n105-activity-section",
+      "id": "n106-activity-section",
       "stem": "ActivitySection",
       "stemType": "final-two",
       "members": [
@@ -20201,7 +20212,7 @@
       "scope": "widget"
     },
     {
-      "id": "n106-app-bar",
+      "id": "n107-app-bar",
       "stem": "AppBar",
       "stemType": "final-two",
       "members": [
@@ -20212,7 +20223,7 @@
       "scope": "widget"
     },
     {
-      "id": "n107-person-layout",
+      "id": "n108-person-layout",
       "stem": "PersonLayout",
       "stemType": "outer",
       "members": [
@@ -20223,7 +20234,7 @@
       "scope": "widget"
     },
     {
-      "id": "n108-config-editor",
+      "id": "n109-config-editor",
       "stem": "ConfigEditor",
       "stemType": "final-two",
       "members": [
@@ -20234,7 +20245,7 @@
       "scope": "widget"
     },
     {
-      "id": "n109-event-card",
+      "id": "n110-event-card",
       "stem": "EventCard",
       "stemType": "final-two",
       "members": [
@@ -20245,7 +20256,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n110-photo-picker",
+      "id": "n111-photo-picker",
       "stem": "PhotoPicker",
       "stemType": "final-two",
       "members": [
@@ -20256,7 +20267,7 @@
       "scope": "widget"
     },
     {
-      "id": "n111-photo-strip",
+      "id": "n112-photo-strip",
       "stem": "PhotoStrip",
       "stemType": "final-two",
       "members": [
@@ -20267,7 +20278,7 @@
       "scope": "widget"
     },
     {
-      "id": "n112-reviews-section",
+      "id": "n113-reviews-section",
       "stem": "ReviewsSection",
       "stemType": "final-two",
       "members": [
@@ -20275,17 +20286,6 @@
         "EventReviewsSection"
       ],
       "usageSum": 11,
-      "scope": "widget"
-    },
-    {
-      "id": "n113-action-bar",
-      "stem": "ActionBar",
-      "stemType": "final-two",
-      "members": [
-        "CatchFieldActionBar",
-        "SuvbotActionBar"
-      ],
-      "usageSum": 10,
       "scope": "widget"
     },
     {
@@ -21081,18 +21081,7 @@
       "scope": "widget"
     },
     {
-      "id": "n186-text-entry",
-      "stem": "TextEntry",
-      "stemType": "final-two",
-      "members": [
-        "HostClubInlineTextEntry",
-        "ProfileDirectTextEntry"
-      ],
-      "usageSum": 5,
-      "scope": "widget"
-    },
-    {
-      "id": "n187-tile-skeleton",
+      "id": "n186-tile-skeleton",
       "stem": "TileSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21103,7 +21092,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n188-card-header",
+      "id": "n187-card-header",
       "stem": "CardHeader",
       "stemType": "final-two",
       "members": [
@@ -21114,7 +21103,7 @@
       "scope": "widget"
     },
     {
-      "id": "n189-error-screen",
+      "id": "n188-error-screen",
       "stem": "ErrorScreen",
       "stemType": "final-two",
       "members": [
@@ -21125,7 +21114,7 @@
       "scope": "screen"
     },
     {
-      "id": "n190-event-cta",
+      "id": "n189-event-cta",
       "stem": "EventCta",
       "stemType": "outer",
       "members": [
@@ -21136,7 +21125,7 @@
       "scope": "widget"
     },
     {
-      "id": "n191-loading-card",
+      "id": "n190-loading-card",
       "stem": "LoadingCard",
       "stemType": "final-two",
       "members": [
@@ -21147,7 +21136,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n192-profile-view",
+      "id": "n191-profile-view",
       "stem": "ProfileView",
       "stemType": "outer",
       "members": [
@@ -21158,7 +21147,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n193-screen-loading",
+      "id": "n192-screen-loading",
       "stem": "ScreenLoading",
       "stemType": "final-two",
       "members": [
@@ -21169,7 +21158,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n194-grid-skeleton",
+      "id": "n193-grid-skeleton",
       "stem": "GridSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21180,7 +21169,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n195-roster-cell",
+      "id": "n194-roster-cell",
       "stem": "RosterCell",
       "stemType": "outer",
       "members": [
@@ -21191,7 +21180,7 @@
       "scope": "widget"
     },
     {
-      "id": "n196-state-view",
+      "id": "n195-state-view",
       "stem": "StateView",
       "stemType": "final-two",
       "members": [
@@ -21202,7 +21191,7 @@
       "scope": "screen"
     },
     {
-      "id": "n197-stat-skeleton",
+      "id": "n196-stat-skeleton",
       "stem": "StatSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21211,6 +21200,17 @@
       ],
       "usageSum": 3,
       "scope": "screen"
+    },
+    {
+      "id": "n197-text-entry",
+      "stem": "TextEntry",
+      "stemType": "final-two",
+      "members": [
+        "HostClubInlineTextEntry",
+        "ProfileDirectTextEntry"
+      ],
+      "usageSum": 2,
+      "scope": "widget"
     },
     {
       "id": "n198-companion-skeleton",

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 2,
-  "updated": "2026-07-16",
+  "version": 3,
+  "updated": "2026-07-17",
   "owner": "design_system",
   "goal": "Classify every remaining production Flutter field surface that should converge on CatchField and CatchSection while preserving specialized controls.",
   "sourceDocs": [
@@ -104,7 +104,7 @@
         {"file": "lib/hosts/presentation/host_operations/host_inline_editors.dart", "symbol": "HostInlineOptionEditor"},
         {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "HostClubEditTab"},
         {"file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart", "symbol": "HostClubEventDefaultsScreen"},
-        {"file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart", "symbol": "HostClubLiveGuideScreen"}
+        {"file": "lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart", "symbol": "HostClubLiveGuideScreen"}
       ],
       "anchors": [
         {"file": "lib/hosts/presentation/host_operations/host_inline_editors.dart", "symbol": "CatchSelectChip", "expected": 1}

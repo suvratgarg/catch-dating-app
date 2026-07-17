@@ -1,5 +1,5 @@
 {
-  "version": "1.5.38",
+  "version": "1.5.39",
   "updated": "2026-07-17",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -468,10 +468,23 @@
           "lastReviewedPass": "2026-07-02-event-detail-display-state-ownership"
         },
         {
+          "path": "lib/events/presentation/event_detail_information_state.dart",
+          "role": "provider-free Event Detail information-section adapter for non-overlapping sign-up and good-to-know fact rows, localized activity expectations, and invariant validation",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-event-detail-information-state-registration"
+        },
+        {
           "path": "test/events/event_detail_screen_state_test.dart",
           "role": "EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState behavior coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-01-event-detail-booking-dock-state"
+        },
+        {
+          "path": "test/events/event_detail_information_state_test.dart",
+          "role": "EventDetailInformationState section ownership, row projection, and invariant behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-17-event-detail-information-state-registration"
         },
         {
           "path": "lib/swipes/presentation/catches_event_screen_state.dart",

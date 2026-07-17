@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.642
+version: 2.5.643
 updated: 2026-07-17
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.643
+
+- Split the Live Guide, Team, and Payments Host Club spoke routes into
+  individually discoverable part files while retaining their shared resolver,
+  scaffold, and defaults-editor composition.
 
 ### 2.5.642
 
@@ -6564,8 +6570,8 @@ Widgetbook callers.
 | `HostClubOrganizerOverview` | `lib/hosts/presentation/host_operations/host_organizer.dart:24` | Provider-free Host Clubs Insights summary. Owns only the two-row member/rating/event metric grid from explicit club/event-count props and renders before analytics controls; default activity remains in Event defaults instead of appearing as a duplicate summary badge. |
 | `HostClubEditTab` | `lib/hosts/presentation/host_operations/host_club_edit_tab.dart:3` | Canonical Host Clubs Edit-tab body. Owns exactly four `CatchSection.fieldRows` sections: Media, Identity, Contact, and Club settings. Identity/contact values use inline `CatchField` editors; media picker actions commit immediately with reorder debounce and failure rollback; the settings rows navigate to the four dedicated spokes. Payments is owner-only. |
 | `HostClubInlineTextEntry` | `lib/hosts/presentation/host_operations/host_club_edit_tab.dart:463` | Scanner-visible implementation component for one Identity or Contact row. It renders the canonical read row for co-hosts and delegates owner editing to `HostInlineTextEntryEditor`; its private constructor keeps composition owned by `HostClubEditTab`. |
-| `HostClubEventDefaultsScreen` / `HostClubLiveGuideScreen` / `HostClubTeamScreen` / `HostClubPaymentsScreen` | `lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:8` | Thin top-level club-settings spokes with a back `CatchScreenTopBar`, club-name eyebrow, capped content width, canonical sections, and terminal scroll padding. Event defaults combines activity and policy fields; Live event guide uses `EventSuccessDefaultsPanel`; Team and Payments reuse their existing canonical sections. Co-host access is read-only and Payments is omitted from Edit-tab navigation. |
-| `HostClubSpokeResolver` / `HostClubSpokeScaffold` / `HostClubDefaultsEditor` / `HostClubReadOnlyEventDefaults` | `lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:161` | Scanner-visible internal composition for the four settings spokes: provider resolution, canonical route scaffold, serialized optimistic defaults editing, and the co-host read-only policy rendering. Private constructors keep these pieces owned by the spoke screens. |
+| `HostClubEventDefaultsScreen` / `HostClubLiveGuideScreen` / `HostClubTeamScreen` / `HostClubPaymentsScreen` | `lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:3`; `host_club_live_guide_screen.dart:3`; `host_club_team_screen.dart:3`; `host_club_payments_screen.dart:3` | Thin, individually discoverable top-level club-settings spokes with a back `CatchScreenTopBar`, club-name eyebrow, capped content width, canonical sections, and terminal scroll padding. Event defaults combines activity and policy fields; Live event guide uses `EventSuccessDefaultsPanel`; Team and Payments reuse their existing canonical sections. Co-host access is read-only and Payments is omitted from Edit-tab navigation. |
+| `HostClubSpokeResolver` / `HostClubSpokeScaffold` / `HostClubDefaultsEditor` / `HostClubReadOnlyEventDefaults` | `lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:47` | Scanner-visible internal composition for the four settings spokes: provider resolution, canonical route scaffold, serialized optimistic defaults editing, and the co-host read-only policy rendering. Private constructors keep these pieces owned by the spoke screens. |
 | `HostClubDefaultsSaver` | `lib/hosts/presentation/club_management/host_club_defaults_saver.dart:8` | Serialized optimistic save queue for functional `ClubHostDefaults` updates. Applies switches immediately, coalesces rapid changes behind one in-flight write, reconciles stream snapshots, and reverts to the last confirmed value after terminal failure. |
 | `HostClubPreviewPane` | `lib/hosts/presentation/host_operations/host_club_preview.dart:3` | Host Clubs Preview tab body. Shows the selected club description and receives a typed public-preview route callback from `HostClubsScaffold` until the public club preview components are made embeddable inside the host tab. |
 | `HostEmptyActionCard` | `lib/hosts/presentation/widgets/host_empty_action_card.dart:8` | Host empty-state surface with section-title copy, supporting body, and optional caller-owned CTA actions. Host Home, Host Clubs, and Host Profile missing states now construct their action buttons at the route/section call site while sharing this visual shell. Widgetbook covers single-action, two-action, and pending-action states. |
