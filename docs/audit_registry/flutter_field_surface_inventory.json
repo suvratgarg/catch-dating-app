@@ -3,11 +3,11 @@
   "generatedBy": "tool/design/generate_flutter_field_surface_inventory.mjs",
   "source": {
     "manifest": "docs/audit_registry/flutter_field_surface_adoption.json",
-    "manifestSha256": "ca15a2089acc694c4b2844a7f63e863d337ff5ea2043d86eda494d4b5b0723b3",
+    "manifestSha256": "977a9c90ed870b54f00822b02f606b84a68ddef38b9d1b1587e10de708dcc2a9",
     "routeInventory": "tool/ui_capture/route_inventory.json",
-    "routeInventorySha256": "24f32cf7e7c43df89cf06581162d6a44a925e413b87276fa1d6ad49f120d38e3",
+    "routeInventorySha256": "e706df74321f44767c7bff9e0161de612b9e3d9cd38f898606a4e271d1d13599",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "59d050f1b5329cb5de509ccc2c2180669302bff12dee22d989156e5c612b4fa5"
+    "screenContractsSha256": "657bf530876589ccd13dac02dca160b866a931627f1a340a2b76205d70566576"
   },
   "summary": {
     "candidateCount": 10,
@@ -25,8 +25,8 @@
       "low": 2,
       "medium": 5
     },
-    "legacyCallsites": 16,
-    "reviewedExclusionCallsites": 4,
+    "legacyCallsites": 7,
+    "reviewedExclusionCallsites": 2,
     "unclassifiedLegacyCallsites": 0
   },
   "rankedCandidates": [
@@ -251,7 +251,7 @@
       "anchors": [
         {
           "file": "lib/swipes/presentation/filters_screen.dart",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 1
         }
       ],
@@ -269,7 +269,7 @@
         {
           "file": "lib/swipes/presentation/filters_screen.dart",
           "kind": "call",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 1,
           "observed": 1,
           "lines": [
@@ -300,12 +300,20 @@
         {
           "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
           "symbol": "HostClubEditTab"
+        },
+        {
+          "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+          "symbol": "HostClubEventDefaultsScreen"
+        },
+        {
+          "file": "lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart",
+          "symbol": "HostClubLiveGuideScreen"
         }
       ],
       "anchors": [
         {
           "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 1
         }
       ],
@@ -322,11 +330,11 @@
         {
           "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
           "kind": "call",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 1,
           "observed": 1,
           "lines": [
-            333
+            364
           ]
         }
       ]
@@ -352,7 +360,7 @@
         },
         {
           "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "symbol": "HostProfileEditorSheet"
+          "symbol": "HostSettingsProfileRows"
         }
       ],
       "anchors": [
@@ -410,7 +418,7 @@
       "anchors": [
         {
           "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 5
         }
       ],
@@ -429,15 +437,15 @@
         {
           "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
           "kind": "call",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 5,
           "observed": 5,
           "lines": [
-            240,
-            257,
-            263,
-            281,
-            300
+            190,
+            209,
+            216,
+            235,
+            258
           ]
         }
       ]
@@ -553,7 +561,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            302
+            335
           ]
         }
       ]
@@ -839,7 +847,7 @@
       "anchors": [
         {
           "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 1
         }
       ],
@@ -847,11 +855,11 @@
         {
           "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
           "kind": "call",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 1,
           "observed": 1,
           "lines": [
-            97
+            98
           ]
         }
       ]
@@ -862,7 +870,7 @@
       "anchors": [
         {
           "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 1
         }
       ],
@@ -870,11 +878,11 @@
         {
           "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
           "kind": "call",
-          "symbol": "CatchSelectChip",
+          "symbol": "CatchChip.selectable",
           "expected": 1,
           "observed": 1,
           "lines": [
-            633
+            631
           ]
         }
       ]

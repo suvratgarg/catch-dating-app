@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 3,
+  "version": 4,
   "updated": "2026-07-17",
   "owner": "design_system",
   "goal": "Classify every remaining production Flutter field surface that should converge on CatchField and CatchSection while preserving specialized controls.",
@@ -84,7 +84,7 @@
         {"file": "lib/swipes/presentation/filters_screen.dart", "symbol": "FiltersScreen"}
       ],
       "anchors": [
-        {"file": "lib/swipes/presentation/filters_screen.dart", "symbol": "CatchSelectChip", "expected": 1}
+        {"file": "lib/swipes/presentation/filters_screen.dart", "symbol": "CatchChip.selectable", "expected": 1}
       ],
       "targetModes": ["CatchSection.fieldRows", "CatchField.control", "CatchField.choices"],
       "preserve": ["staged filter state", "FiltersController apply and save behavior"],
@@ -107,7 +107,7 @@
         {"file": "lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart", "symbol": "HostClubLiveGuideScreen"}
       ],
       "anchors": [
-        {"file": "lib/hosts/presentation/host_operations/host_inline_editors.dart", "symbol": "CatchSelectChip", "expected": 1}
+        {"file": "lib/hosts/presentation/host_operations/host_inline_editors.dart", "symbol": "CatchChip.selectable", "expected": 1}
       ],
       "targetModes": ["CatchField.choices"],
       "preserve": ["inline expansion ownership", "UpdateClubPatch typing", "save and cancel behavior"],
@@ -125,7 +125,7 @@
       "semanticFieldCount": 3,
       "bindings": [
         {"file": "lib/hosts/presentation/host_operations/host_profile_screen.dart", "symbol": "HostProfileFields"},
-        {"file": "lib/hosts/presentation/host_operations/host_account_screen.dart", "symbol": "HostProfileEditorSheet"}
+        {"file": "lib/hosts/presentation/host_operations/host_account_screen.dart", "symbol": "HostSettingsProfileRows"}
       ],
       "anchors": [
         {"file": "lib/hosts/presentation/host_operations/host_profile_screen.dart", "symbol": "CatchField.input", "expected": 3}
@@ -148,7 +148,7 @@
         {"file": "lib/explore/presentation/widgets/explore_filter_rail.dart", "symbol": "ExploreFilterSheet"}
       ],
       "anchors": [
-        {"file": "lib/explore/presentation/widgets/explore_filter_rail.dart", "symbol": "CatchSelectChip", "expected": 5}
+        {"file": "lib/explore/presentation/widgets/explore_filter_rail.dart", "symbol": "CatchChip.selectable", "expected": 5}
       ],
       "targetModes": ["CatchSection.fieldRows", "CatchField.control", "CatchField.choices"],
       "preserve": ["route-owned callbacks", "immediate filter updates", "map and list parity"],
@@ -276,14 +276,14 @@
       "id": "FIELD-SURFACE-EXCLUSION-EVENT-SUCCESS-LAB",
       "reason": "Developer lab and preview setup flow; production host setup is tracked separately.",
       "anchors": [
-        {"file": "lib/event_success/presentation/event_success_feature_blocks.dart", "symbol": "CatchSelectChip", "expected": 1}
+        {"file": "lib/event_success/presentation/event_success_feature_blocks.dart", "symbol": "CatchChip.selectable", "expected": 1}
       ]
     },
     {
       "id": "FIELD-SURFACE-EXCLUSION-EVENT-SUCCESS-MANUAL-QA",
       "reason": "Developer-only manual QA surface; production ownership is tracked by the companion candidate.",
       "anchors": [
-        {"file": "lib/event_success/presentation/event_success_manual_qa_screen.dart", "symbol": "CatchSelectChip", "expected": 1}
+        {"file": "lib/event_success/presentation/event_success_manual_qa_screen.dart", "symbol": "CatchChip.selectable", "expected": 1}
       ]
     }
   ]
