@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
@@ -644,6 +645,74 @@ class CatchField extends StatefulWidget {
       iconColor: iconColor,
       tone: tone,
       emptyValueText: emptyValueText,
+      error: error,
+      errorText: errorText,
+      divider: divider,
+    );
+  }
+
+  /// Canonical single-select disclosure for choices that need both a title
+  /// and explanatory copy. Terse labels stay in [choices]; policy, admission,
+  /// and setup choices use the existing [CatchOptionCard] primitive through
+  /// this field-owned facade.
+  static CatchField optionCards<T>({
+    Key? key,
+    required String title,
+    String? body,
+    required List<T> values,
+    required String Function(T value) itemTitle,
+    required String Function(T value) itemDescription,
+    required T selected,
+    required ValueChanged<T>? onChanged,
+    bool? open,
+    bool initiallyOpen = false,
+    ValueChanged<bool>? onOpenChanged,
+    VoidCallback? onCancel,
+    VoidCallback? onSubmit,
+    bool isLoading = false,
+    CatchFieldStatus status = CatchFieldStatus.idle,
+    bool enabled = true,
+    String? helperText,
+    IconData? icon,
+    Color? iconColor,
+    CatchFieldTone tone = CatchFieldTone.normal,
+    String? error,
+    String? errorText,
+    bool divider = false,
+  }) {
+    assert(
+      values.isNotEmpty,
+      'CatchField.optionCards needs at least one value.',
+    );
+    assert(
+      values.contains(selected),
+      'CatchField.optionCards selected must be present in values.',
+    );
+    return CatchField.control(
+      key: key,
+      title: title,
+      body: body ?? itemTitle(selected),
+      control: CatchFieldOptionCardControl<T>(
+        values: values,
+        itemTitle: itemTitle,
+        itemDescription: itemDescription,
+        selected: selected,
+        autoClose: onSubmit == null,
+        enabled: enabled && !isLoading,
+        onChanged: onChanged,
+      ),
+      open: open,
+      initiallyOpen: initiallyOpen,
+      onOpenChanged: onOpenChanged,
+      onCancel: onCancel,
+      onSubmit: onSubmit,
+      isLoading: isLoading,
+      status: status,
+      enabled: enabled,
+      helperText: helperText,
+      icon: icon,
+      iconColor: iconColor,
+      tone: tone,
       error: error,
       errorText: errorText,
       divider: divider,

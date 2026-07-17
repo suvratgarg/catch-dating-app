@@ -10,33 +10,33 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1102,
-    "widgetClasses": 975,
+    "total": 1099,
+    "widgetClasses": 972,
     "stateClasses": 127,
-    "publicClasses": 970,
+    "publicClasses": 967,
     "privateClasses": 132,
     "byRole": {
       "atom": 53,
-      "composition": 349,
+      "composition": 350,
       "feature-adapter": 294,
       "pattern": 18,
-      "screen": 261,
+      "screen": 257,
       "widget-state": 127
     },
     "byDecision": {
-      "keep-canonical-contract": 189,
-      "keep-public-cataloged": 721,
+      "keep-canonical-contract": 190,
+      "keep-public-cataloged": 716,
       "keep-widget-state": 127,
-      "review-catalog-coverage": 43,
+      "review-catalog-coverage": 44,
       "review-promote-or-consolidate": 17,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
-      "cataloged": 682,
-      "contracted": 189,
+      "cataloged": 677,
+      "contracted": 190,
       "not-applicable": 127,
       "route-covered": 54,
-      "uncataloged": 50
+      "uncataloged": 51
     }
   },
   "widgets": [
@@ -3939,6 +3939,29 @@
       "publicApi": true,
       "catalogStatus": "contracted",
       "contractId": "catch.field.focus_outline",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchFieldOptionCardControl",
+      "file": "lib/core/widgets/catch_field_control.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.field",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.field.option_card_control",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
@@ -17297,29 +17320,6 @@
       "flags": []
     },
     {
-      "name": "EditClubPhotosLabel",
-      "file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.hosts.edit_club_photos_label",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "CreateClubStepHeader",
       "file": "lib/hosts/presentation/club_management/create/widgets/create_club_step_header.dart",
       "classKind": "widget",
@@ -17918,6 +17918,56 @@
       "flags": []
     },
     {
+      "name": "_EventAgeRangeFieldState",
+      "file": "lib/hosts/presentation/event_management/widgets/event_age_range_field.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<EventAgeRangeField>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.event_age_range_field",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "EventAgeRangeField",
+      "file": "lib/hosts/presentation/event_management/widgets/event_age_range_field.dart",
+      "classKind": "widget",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.hosts.event_age_range_field",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
       "name": "EventDetailsStep",
       "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
       "classKind": "widget",
@@ -18410,121 +18460,6 @@
       "canonicalFamily": "screen.host_private_access_shell",
       "publicApi": true,
       "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "_HostAccountScreenState",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "classKind": "widget-state",
-      "baseClass": "ConsumerState<HostAccountScreen>",
-      "visibility": "private",
-      "role": "widget-state",
-      "canonicalFamily": "state.host_account_screen",
-      "publicApi": false,
-      "catalogStatus": "not-applicable",
-      "contractId": null,
-      "allowedDependencyLevel": "owning-widget-state",
-      "stateOwnership": "owning-widget-state",
-      "asyncOwnership": "owning-widget-state",
-      "layoutOwnership": "owning-widget-state",
-      "actionOwnership": "owning-widget-state",
-      "decision": "keep-widget-state",
-      "remediationOptions": [
-        "moveStateToController",
-        "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostAccountScreen",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "classKind": "widget",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_account_screen",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostSettingsClubsSection",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_settings_clubs_section",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostSettingsProfileRows",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_settings_profile_rows",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostSettingsProfileSection",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_settings_profile_section",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19045,13 +18980,105 @@
       "flags": []
     },
     {
+      "name": "_HostClubTeamScreenState",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<HostClubTeamScreen>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.host_club_team_screen",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "HostClubTeamScreen",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.host_club_team_screen",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostTeamHostedClubsSection",
       "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
       "classKind": "widget",
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "screen",
-      "canonicalFamily": "screen.host_club_team_screen",
+      "canonicalFamily": "screen.host_team_hosted_clubs_section",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostTeamProfileRows",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.host_team_profile_rows",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostTeamProfileSection",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.host_team_profile_section",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -19557,98 +19584,6 @@
       "flags": [
         "public-widget-missing-widgetbook"
       ]
-    },
-    {
-      "name": "_HostProfileScreenState",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "classKind": "widget-state",
-      "baseClass": "ConsumerState<HostProfileScreen>",
-      "visibility": "private",
-      "role": "widget-state",
-      "canonicalFamily": "state.host_profile_screen",
-      "publicApi": false,
-      "catalogStatus": "not-applicable",
-      "contractId": null,
-      "allowedDependencyLevel": "owning-widget-state",
-      "stateOwnership": "owning-widget-state",
-      "asyncOwnership": "owning-widget-state",
-      "layoutOwnership": "owning-widget-state",
-      "actionOwnership": "owning-widget-state",
-      "decision": "keep-widget-state",
-      "remediationOptions": [
-        "moveStateToController",
-        "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostProfileFields",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_profile_fields",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostProfileForm",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_profile_form",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostProfileScreen",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "classKind": "widget",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_profile_screen",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
     },
     {
       "name": "HostTodayAvatarDot",

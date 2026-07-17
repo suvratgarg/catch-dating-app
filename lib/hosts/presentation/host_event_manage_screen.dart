@@ -13,7 +13,6 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -21,7 +20,9 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
@@ -37,6 +38,7 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
@@ -154,8 +156,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             sharePending: shareMutation.isPending,
           )
         : null;
-    const sectionPickerHeight = 62.0;
-
     return Scaffold(
       backgroundColor: t.bg,
       appBar: CatchTopBar(
@@ -187,25 +187,16 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             ],
           ],
         ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(sectionPickerHeight),
-          child: Padding(
-            padding: CatchInsets.pageBody.copyWith(
-              top: CatchSpacing.s0,
-              bottom: CatchSpacing.s2,
-            ),
-            child: HostManageSectionPicker(
-              selectedSection: screenState.selectedSection,
-              onChanged: (section) {
-                setState(
-                  () => _selectedSection = screenState
-                      .selectSection(section)
-                      .selectedSection,
-                );
-                widget.onSectionChanged?.call(section);
-              },
-            ),
-          ),
+        bottom: HostManageSectionPicker(
+          selectedSection: screenState.selectedSection,
+          onChanged: (section) {
+            setState(
+              () => _selectedSection = screenState
+                  .selectSection(section)
+                  .selectedSection,
+            );
+            widget.onSectionChanged?.call(section);
+          },
         ),
       ),
       body: ListView(
@@ -338,7 +329,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       HostEventManageSection.guests => [
         HostEventParticipantsPanel(
           eventId: event.id,
-          mode: HostEventParticipantsMode.setup,
+          mode:
+              hostEventAttendanceStateFor(event: event, now: DateTime.now()) ==
+                  HostEventAttendanceState.open
+              ? HostEventParticipantsMode.live
+              : HostEventParticipantsMode.setup,
           initialSearchQuery: widget.initialParticipantSearchQuery,
         ),
       ],
@@ -684,7 +679,8 @@ class HostManageMetaRow extends StatelessWidget {
   }
 }
 
-class HostManageSectionPicker extends StatelessWidget {
+class HostManageSectionPicker extends StatelessWidget
+    implements PreferredSizeWidget {
   const HostManageSectionPicker({
     super.key,
     required this.selectedSection,
@@ -695,8 +691,11 @@ class HostManageSectionPicker extends StatelessWidget {
   final ValueChanged<HostEventManageSection> onChanged;
 
   @override
+  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
+  @override
   Widget build(BuildContext context) {
-    return CatchOptionGroup<HostEventManageSection>(
+    return CatchTabRail<HostEventManageSection>(
       options: [
         for (final section in HostEventManageSection.values)
           CatchOption(
@@ -1494,79 +1493,74 @@ class HostEventActionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final privateLinkState = privateLinkActionState;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          context.l10n.hostsHostEventManageScreenTextHostActions,
-          style: CatchTextStyles.monoLabel(context, color: t.ink2),
+    final hostActions = <Widget>[
+      if (actionState.showEditAction)
+        HostActionRow(
+          label: context.l10n.hostsHostEventManageScreenLabelEditEventDetails,
+          detail: context.l10n.hostsHostEventManageScreenDetailScheduleLocation,
+          onTap: actionState.isMutating ? null : onEditEvent,
         ),
-        gapH10,
-        const CatchDivider.section(),
+      if (privateLinkState != null)
+        HostActionRow(
+          label: context.l10n.hostsHostEventManageScreenLabelSharePrivateLink,
+          detail: privateLinkState.shareDetail,
+          onTap: !privateLinkState.canShare
+              ? null
+              : () => onSharePrivateLink(privateLinkState.inviteLink!),
+        ),
+    ];
+    final dangerActions = <Widget>[
+      if (actionState.showCancelledState)
+        HostActionRow(
+          label: context.l10n.hostsHostEventManageScreenLabelEventCancelled,
+          detail:
+              context.l10n.hostsHostEventManageScreenDetailRecordsAreRetained,
+          destructive: true,
+        )
+      else ...[
+        if (actionState.showCancelAction)
+          HostActionRow(
+            label: context.l10n.hostsHostEventManageScreenLabelCancelEvent,
+            detail: actionState.cancelDetail,
+            destructive: true,
+            onTap: actionState.isMutating
+                ? null
+                : () => unawaited(onCancelEvent()),
+          ),
+        if (actionState.showDeleteAction)
+          HostActionRow(
+            label:
+                context.l10n.hostsHostEventManageScreenLabelDeleteUnusedEvent,
+            detail: actionState.deleteDetail,
+            destructive: true,
+            onTap: actionState.isMutating
+                ? null
+                : () => unawaited(onDeleteEvent()),
+          ),
+      ],
+    ];
+
+    return CatchSectionList(
+      gap: 0,
+      children: [
+        CatchSection.fieldRows(
+          first: true,
+          title: context.l10n.hostsHostEventManageScreenTextHostActions,
+          children: hostActions,
+        ),
         if (actionError != null) ...[
           gapH12,
           CatchErrorBanner.fromError(
             actionError!,
             context: AppErrorContext.event,
           ),
-          gapH8,
+          gapH4,
         ],
-        if (actionState.showEditAction)
-          HostActionRow(
-            label: context.l10n.hostsHostEventManageScreenLabelEditEventDetails,
-            detail:
-                context.l10n.hostsHostEventManageScreenDetailScheduleLocation,
-            onTap: actionState.isMutating ? null : onEditEvent,
-          ),
-        if (privateLinkState != null)
-          HostActionRow(
-            label: context.l10n.hostsHostEventManageScreenLabelSharePrivateLink,
-            detail: privateLinkState.shareDetail,
-            onTap: !privateLinkState.canShare
-                ? null
-                : () => onSharePrivateLink(privateLinkState.inviteLink!),
-            showDivider: false,
-          ),
-        gapH18,
-        Text(
-          context.l10n.hostsHostEventManageScreenTextDangerZone,
-          style: CatchTextStyles.monoLabel(context, color: t.ink2),
+        CatchSection.fieldRows(
+          title: context.l10n.hostsHostEventManageScreenTextDangerZone,
+          children: dangerActions,
         ),
-        gapH10,
-        if (actionState.showCancelledState)
-          HostActionRow(
-            label: context.l10n.hostsHostEventManageScreenLabelEventCancelled,
-            detail:
-                context.l10n.hostsHostEventManageScreenDetailRecordsAreRetained,
-            destructive: true,
-            showDivider: false,
-          )
-        else ...[
-          if (actionState.showCancelAction)
-            HostActionRow(
-              label: context.l10n.hostsHostEventManageScreenLabelCancelEvent,
-              detail: actionState.cancelDetail,
-              destructive: true,
-              onTap: actionState.isMutating
-                  ? null
-                  : () => unawaited(onCancelEvent()),
-              showDivider: actionState.showDeleteAction,
-            ),
-          if (actionState.showDeleteAction)
-            HostActionRow(
-              label:
-                  context.l10n.hostsHostEventManageScreenLabelDeleteUnusedEvent,
-              detail: actionState.deleteDetail,
-              destructive: true,
-              onTap: actionState.isMutating
-                  ? null
-                  : () => unawaited(onDeleteEvent()),
-              showDivider: false,
-            ),
-        ],
       ],
     );
   }
@@ -1579,76 +1573,21 @@ class HostActionRow extends StatelessWidget {
     required this.detail,
     this.onTap,
     this.destructive = false,
-    this.showDivider = true,
   });
 
   final String label;
   final String detail;
   final VoidCallback? onTap;
   final bool destructive;
-  final bool showDivider;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final labelColor = destructive ? t.danger : t.ink;
-    final detailColor = onTap == null ? t.ink3 : t.ink;
-
-    return Semantics(
-      button: onTap != null,
-      enabled: onTap != null,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s8,
-                CatchSpacing.s4,
-                CatchSpacing.s4,
-                CatchSpacing.s4,
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final labelText = Text(
-                    label,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.labelL(
-                      context,
-                      color: onTap == null ? t.ink3 : labelColor,
-                    ),
-                  );
-                  final detailText = Text(
-                    detail,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: detailColor,
-                    ),
-                  );
-                  if (constraints.maxWidth < 330) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [labelText, gapH4, detailText],
-                    );
-                  }
-                  return Row(
-                    children: [
-                      Expanded(flex: 5, child: labelText),
-                      gapW8,
-                      Expanded(flex: 6, child: detailText),
-                    ],
-                  );
-                },
-              ),
-            ),
-            if (showDivider)
-              const CatchDivider.fieldRow(indent: CatchSpacing.s8),
-          ],
-        ),
-      ),
+    return CatchField.action(
+      title: label,
+      body: detail,
+      titleMaxLines: 2,
+      tone: destructive ? CatchFieldTone.danger : CatchFieldTone.normal,
+      onTap: onTap,
     );
   }
 }
@@ -1665,7 +1604,6 @@ class HostEventSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final price = event.isFree
         ? context.l10n.hostsHostEventManageScreenVisiblecopyFree
         : EventFormatters.priceInPaise(
@@ -1673,34 +1611,30 @@ class HostEventSummaryCard extends StatelessWidget {
             currencyCode: event.currency,
           );
 
-    return CatchSurface(
-      padding: CatchInsets.listBody,
-      borderColor: t.line,
-      child: Column(
-        children: [
-          HostEventSummaryRow(
-            icon: CatchIcons.groupsRounded,
-            label: context.l10n.hostsHostEventManageScreenLabelClub,
-            value: club.name,
-          ),
-          HostEventSummaryRow(
-            icon: CatchIcons.locationOnOutlined,
-            label: context.l10n.hostsHostEventManageScreenLabelMeet,
-            value: event.locationName,
-          ),
-          HostEventSummaryRow(
-            icon: CatchIcons.routeRounded,
-            label: context.l10n.hostsHostEventManageScreenLabelEvent,
-            value: event.activitySummaryLabel,
-          ),
-          HostEventSummaryRow(
-            icon: CatchIcons.paymentsOutlined,
-            label: context.l10n.hostsHostEventManageScreenLabelPrice,
-            value: price,
-            showDivider: false,
-          ),
-        ],
-      ),
+    return CatchSection.fieldRows(
+      first: true,
+      children: [
+        CatchField.read(
+          icon: CatchIcons.groupsRounded,
+          title: context.l10n.hostsHostEventManageScreenLabelClub,
+          body: club.name,
+        ),
+        CatchField.read(
+          icon: CatchIcons.locationOnOutlined,
+          title: context.l10n.hostsHostEventManageScreenLabelMeet,
+          body: event.locationName,
+        ),
+        CatchField.read(
+          icon: CatchIcons.routeRounded,
+          title: context.l10n.hostsHostEventManageScreenLabelEvent,
+          body: event.activitySummaryLabel,
+        ),
+        CatchField.read(
+          icon: CatchIcons.paymentsOutlined,
+          title: context.l10n.hostsHostEventManageScreenLabelPrice,
+          body: price,
+        ),
+      ],
     );
   }
 }

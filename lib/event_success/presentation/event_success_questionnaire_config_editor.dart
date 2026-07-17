@@ -43,24 +43,29 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
     return CatchSectionList(
       gap: CatchGaps.formField,
       children: [
-        CatchField.choices<String>(
+        CatchField.optionCards<String>(
           title: context
               .l10n
               .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet,
-          body: context
-              .l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorTextChooseAReusableTemplate,
+          helperText: context.l10n
+              .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
+                length: pack.questions.length,
+              ),
           values: questionSetIds,
-          itemLabel: (id) => id == _customQuestionSetId
+          itemTitle: (id) => id == _customQuestionSetId
               ? context
                     .l10n
                     .eventSuccessEventSuccessQuestionnaireConfigEditorLabelCustom
               : templates.firstWhere((template) => template.id == id).title,
-          selected: {selectedQuestionSetId},
+          itemDescription: (id) => id == _customQuestionSetId
+              ? EventSuccessQuestionnairePackLibrary.resolve(
+                  const EventSuccessQuestionnaireConfig.customTemplate(),
+                ).subtitle
+              : templates.firstWhere((template) => template.id == id).subtitle,
+          selected: selectedQuestionSetId,
           enabled: enabled,
-          onSelectionChanged: enabled
-              ? (selection) {
-                  final id = selection.single;
+          onChanged: enabled
+              ? (id) {
                   onChanged(
                     id == _customQuestionSetId
                         ? (value.usesCustom
@@ -70,17 +75,6 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
                   );
                 }
               : null,
-        ),
-        CatchField.read(
-          title: pack.title,
-          body: pack.subtitle,
-          valueText: context.l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
-                length: pack.questions.length,
-              ),
-          icon: pack.custom
-              ? CatchIcons.editNoteRounded
-              : CatchIcons.styleOutlined,
         ),
         if (value.usesCustom)
           CustomQuestionnaireFields(

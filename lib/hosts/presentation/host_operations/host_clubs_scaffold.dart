@@ -124,15 +124,6 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
     return CatchTabbedScreenScaffold(
       title: selectedClub.name,
       actions: [
-        Semantics(
-          label: context.l10n.hostsHostClubsScaffoldTooltipSettings,
-          button: true,
-          child: CatchIconAction(
-            tooltip: context.l10n.hostsHostClubsScaffoldTooltipSettings,
-            icon: CatchIcons.settingsOutlined,
-            onPressed: _openHostSettings,
-          ),
-        ),
         if (_state.showClubPicker)
           CatchTopBarMenuAction<int>(
             tooltip: context.l10n.hostsHostClubsScaffoldTooltipSwitchClub,
@@ -280,10 +271,6 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
         _pageScrollControllers[tab]?.restoreOffset(_pageScrollOffsets[tab]);
       });
     }
-  }
-
-  void _openHostSettings() {
-    context.pushNamed(Routes.hostSettingsScreen.name);
   }
 
   void _scheduleInitialEditorReveal() {

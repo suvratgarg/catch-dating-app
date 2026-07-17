@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -252,7 +253,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         if (widget.activityKind case final activityKind?)
           CatchField.choices<ActivityKind>(
             title: context.l10n.hostsClubHostDefaultsStepTextDefaultActivity,
-            body: context.l10n.hostsClubHostDefaultsStepTextNewEventsStartFrom,
+            helperText:
+                context.l10n.hostsClubHostDefaultsStepTextNewEventsStartFrom,
             values: ActivityKind.eventCreationDefaults,
             itemLabel: (value) => value.label,
             selected: {activityKind},
@@ -262,18 +264,13 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             iconColor: ActivityPalette.resolve(context, activityKind).accent,
           ),
         if (!widget.advancedOnly)
-          CatchField.choices<EventAdmissionDefaultPreset>(
+          CatchField.optionCards<EventAdmissionDefaultPreset>(
             title: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
-            body: cohortCapsEnabled
-                ? context
-                      .l10n
-                      .hostsClubHostDefaultsStepTextAnyoneEligibleCanBook
-                : selectedAdmissionPreset.description(context.l10n),
             values: visibleAdmissionPresets,
-            itemLabel: (preset) => preset.label(context.l10n),
-            selected: {selectedAdmissionPreset},
-            onSelectionChanged: (selection) {
-              final preset = selection.single;
+            itemTitle: (preset) => preset.label(context.l10n),
+            itemDescription: (preset) => preset.description(context.l10n),
+            selected: selectedAdmissionPreset,
+            onChanged: (preset) {
               _emit(
                 (current) => current.copyWith(
                   admissionPreset: preset,
@@ -284,7 +281,6 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 ),
               );
             },
-            initiallyOpen: true,
             icon: CatchIcons.howToRegOutlined,
           ),
         if (selectedAdmissionPreset == EventAdmissionDefaultPreset.openCapacity)
@@ -479,87 +475,23 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             ),
         ],
         if (!widget.advancedOnly) ...[
-          Row(
-            children: [
-              Expanded(
-                child: CatchField.inputActions(
-                  title: context.l10n.hostsClubHostDefaultsStepTitleMinAge,
-                  controller: _minAgeController,
-                  open: _openNumericField == 'minAge',
-                  onOpenChanged: (open) => _setNumericFieldOpen('minAge', open),
-                  onCancel: () => _cancelNumericField(
-                    'minAge',
-                    _minAgeController,
-                    _optionalIntText(
-                      defaults.minAge == 0 ? null : defaults.minAge,
-                    ),
-                  ),
-                  onSubmit: () => _submitNumericField(
-                    field: 'minAge',
-                    validate: () => validateAge(
-                      _minAgeController.text,
-                      siblingController: _maxAgeController,
-                      isMinimum: true,
-                    ),
-                    update: (current) => current.copyWith(
-                      minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
-                    ),
-                  ),
-                  icon: CatchIcons.cakeOutlined,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  error: _numericErrors['minAge'],
-                  onChanged: (_) =>
-                      setState(() => _numericErrors['minAge'] = null),
-                ),
-              ),
-              gapW12,
-              Expanded(
-                child: CatchField.inputActions(
-                  title: context.l10n.hostsClubHostDefaultsStepTitleMaxAge,
-                  controller: _maxAgeController,
-                  open: _openNumericField == 'maxAge',
-                  onOpenChanged: (open) => _setNumericFieldOpen('maxAge', open),
-                  onCancel: () => _cancelNumericField(
-                    'maxAge',
-                    _maxAgeController,
-                    _optionalIntText(
-                      defaults.maxAge == 99 ? null : defaults.maxAge,
-                    ),
-                  ),
-                  onSubmit: () => _submitNumericField(
-                    field: 'maxAge',
-                    validate: () => validateAge(
-                      _maxAgeController.text,
-                      siblingController: _minAgeController,
-                      isMinimum: false,
-                    ),
-                    update: (current) => current.copyWith(
-                      maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
-                    ),
-                  ),
-                  icon: CatchIcons.cakeOutlined,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  error: _numericErrors['maxAge'],
-                  onChanged: (_) =>
-                      setState(() => _numericErrors['maxAge'] = null),
-                ),
-              ),
-            ],
+          EventAgeRangeField(
+            minAgeController: _minAgeController,
+            maxAgeController: _maxAgeController,
+            onChangeEnd: (minAge, maxAge) => _emit(
+              (current) => current.copyWith(minAge: minAge, maxAge: maxAge),
+            ),
           ),
-          CatchField.choices<EventCancellationPolicyId>(
+          CatchField.optionCards<EventCancellationPolicyId>(
             title:
                 context.l10n.hostsClubHostDefaultsStepLabelCancellationPolicy,
-            body: policyFor(defaults.cancellationPolicyId).attendeeSummary,
             values: EventCancellationPolicyId.values,
-            itemLabel: (policyId) => policyFor(policyId).title.toUpperCase(),
-            selected: {defaults.cancellationPolicyId},
-            onSelectionChanged: (selection) => _emit(
-              (current) =>
-                  current.copyWith(cancellationPolicyId: selection.single),
+            itemTitle: (policyId) => policyFor(policyId).title,
+            itemDescription: (policyId) => policyFor(policyId).attendeeSummary,
+            selected: defaults.cancellationPolicyId,
+            onChanged: (policyId) => _emit(
+              (current) => current.copyWith(cancellationPolicyId: policyId),
             ),
-            initiallyOpen: true,
             icon: CatchIcons.ruleOutlined,
           ),
         ],

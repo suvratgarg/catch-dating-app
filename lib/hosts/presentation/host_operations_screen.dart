@@ -4,13 +4,13 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
+import 'package:catch_dating_app/clubs/clubs.dart'
+    show ClubDetailReadOnlyPreviewSliver;
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/club_media_policy.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
-import 'package:catch_dating_app/clubs/clubs.dart'
-    show ClubDetailReadOnlyPreviewSliver;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
@@ -62,8 +62,8 @@ import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart'
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_empty_action_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
@@ -79,10 +79,8 @@ export 'package:catch_dating_app/hosts/presentation/host_operations_screen_state
 
 part 'host_operations/host_operations_home_screen.dart';
 part 'host_operations/host_clubs_screen.dart';
-part 'host_operations/host_account_screen.dart';
 part 'host_operations/host_auth_required_screen.dart';
 part 'host_operations/host_loading_screen.dart';
-part 'host_operations/host_profile_screen.dart';
 part 'host_operations/host_events_scaffold.dart';
 part 'host_operations/host_clubs_scaffold.dart';
 part 'host_operations/host_today.dart';
@@ -98,6 +96,6 @@ part 'host_operations/host_analytics.dart';
 part 'host_operations/host_inline_editors.dart';
 part 'host_operations/host_route_providers.dart';
 
-enum HostSettingsMode { edit, preview }
+enum HostTeamMode { edit, preview }
 
 const _hostClubTabRailKey = ValueKey('host-club-tab-rail');

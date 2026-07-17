@@ -69,7 +69,6 @@ class EventSuccessLiveActionState {
     this.isCompleting = false,
     this.stepError,
     this.completeError,
-    this.attendanceError,
   });
 
   factory EventSuccessLiveActionState.resolve({
@@ -77,14 +76,12 @@ class EventSuccessLiveActionState {
     required bool completePending,
     Object? stepError,
     Object? completeError,
-    Object? attendanceError,
   }) {
     return EventSuccessLiveActionState(
       isChangingStep: stepPending,
       isCompleting: completePending,
       stepError: stepError,
       completeError: completeError,
-      attendanceError: attendanceError,
     );
   }
 
@@ -92,7 +89,6 @@ class EventSuccessLiveActionState {
   final bool isCompleting;
   final Object? stepError;
   final Object? completeError;
-  final Object? attendanceError;
 }
 
 class EventSuccessAssignmentGenerationActionState {

@@ -1,15 +1,18 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_progress_cue.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -28,9 +31,6 @@ const EdgeInsets _conversationCueRowGap = EdgeInsets.only(
 );
 const EdgeInsets _conversationCueIconInset = EdgeInsets.only(
   top: CatchSpacing.micro3,
-);
-const EdgeInsets _recommendationTileGap = EdgeInsets.only(
-  bottom: CatchSpacing.s3,
 );
 const EdgeInsets _wingmanCandidateGap = EdgeInsets.only(
   bottom: CatchSpacing.s2,
@@ -350,96 +350,96 @@ class EventSuccessPostEventReport extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolvedBrief = brief ?? EventSuccessFeatureSamples.postEventBrief;
-    final t = CatchTokens.of(context);
+    final scorecard = resolvedBrief.scorecard;
 
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BlockHeader(
-            icon: CatchIcons.insightsOutlined,
-            title: context
-                .l10n
-                .eventSuccessEventSuccessFeatureBlocksTitlePostEventHostReport,
-            subtitle: context
-                .l10n
-                .eventSuccessEventSuccessFeatureBlocksSubtitleAConcreteReportSurface,
-            badge: CatchBadge(
-              label: context.l10n
-                  .eventSuccessEventSuccessFeatureBlocksLabelRound(
-                    round: (resolvedBrief.scorecard.experienceScore * 100)
-                        .round(),
-                  ),
-              tone: CatchBadgeTone.brand,
+    return CatchSectionList(
+      children: [
+        CatchSection.plain(
+          title: context
+              .l10n
+              .eventSuccessEventSuccessFeatureBlocksTitlePostEventHostReport,
+          subtitle: context
+              .l10n
+              .eventSuccessEventSuccessFeatureBlocksSubtitleAConcreteReportSurface,
+          trailing: CatchBadge(
+            label: context.l10n.eventSuccessEventSuccessFeatureBlocksLabelRound(
+              round: (scorecard.experienceScore * 100).round(),
             ),
+            tone: CatchBadgeTone.brand,
           ),
-          const SizedBox(height: CatchSpacing.s4),
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              EventSuccessMetricPill(
+          child: CatchAnalyticsMetricGrid(
+            metrics: [
+              CatchMetricCardData(
+                icon: CatchIcons.checkCircleOutlineRounded,
+                value: _eventSuccessFeaturePercent(scorecard.checkInRate),
                 label: context
                     .l10n
                     .eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104,
-                value: resolvedBrief.scorecard.checkInRate,
               ),
-              EventSuccessMetricPill(
+              CatchMetricCardData(
+                icon: CatchIcons.groups2Outlined,
+                value: _eventSuccessFeaturePercent(scorecard.introCoverageRate),
                 label: context
                     .l10n
                     .eventSuccessEventSuccessFeatureBlocksLabelIntroCoverage,
-                value: resolvedBrief.scorecard.introCoverageRate,
               ),
-              EventSuccessMetricPill(
+              CatchMetricCardData(
+                icon: CatchIcons.favoriteOutlineRounded,
+                value: _eventSuccessFeaturePercent(scorecard.caughtSomeoneRate),
                 label: context
                     .l10n
                     .eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone,
-                value: resolvedBrief.scorecard.caughtSomeoneRate,
               ),
-              EventSuccessMetricPill(
+              CatchMetricCardData(
+                icon: CatchIcons.volunteerActivismOutlined,
+                value: _eventSuccessFeaturePercent(
+                  scorecard.wingmanRequestRate,
+                ),
                 label: context
                     .l10n
                     .eventSuccessEventSuccessFeatureBlocksLabelHostHelp,
-                value: resolvedBrief.scorecard.wingmanRequestRate,
               ),
-              EventSuccessMetricPill(
+              CatchMetricCardData(
+                icon: CatchIcons.chatBubbleOutlineRounded,
+                value: _eventSuccessFeaturePercent(scorecard.chatStartRate),
                 label: context
                     .l10n
                     .eventSuccessEventSuccessFeatureBlocksLabelChatStart,
-                value: resolvedBrief.scorecard.chatStartRate,
               ),
             ],
           ),
-          if (resolvedBrief.strengths.isNotEmpty) ...[
-            const SizedBox(height: CatchSpacing.s4),
-            Text(
-              context.l10n.eventSuccessEventSuccessFeatureBlocksTextWorkingWell,
-              style: CatchTextStyles.sectionTitle(context),
-            ),
-            const SizedBox(height: CatchSpacing.s2),
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                for (final strength in resolvedBrief.strengths.take(4))
-                  CatchBadge(
-                    label: strength,
-                    tone: CatchBadgeTone.success,
-                    icon: CatchIcons.checkRounded,
-                  ),
-              ],
-            ),
-          ],
-          const SizedBox(height: CatchSpacing.s4),
-          for (final recommendation in resolvedBrief.recommendations.take(4))
-            EventSuccessRecommendationTile(recommendation: recommendation),
-        ],
-      ),
+        ),
+        if (resolvedBrief.strengths.isNotEmpty)
+          CatchSection.fieldRows(
+            title: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksTextWorkingWell,
+            children: [
+              for (final strength in resolvedBrief.strengths.take(4))
+                CatchField.read(
+                  title: strength,
+                  icon: CatchIcons.checkCircleOutlineRounded,
+                ),
+            ],
+          ),
+        if (resolvedBrief.recommendations.isNotEmpty)
+          CatchSection.fieldRows(
+            title: context
+                .l10n
+                .eventSuccessEventSuccessFeatureBlocksTextImproveNextTime,
+            children: [
+              for (final recommendation in resolvedBrief.recommendations.take(
+                4,
+              ))
+                EventSuccessRecommendationTile(recommendation: recommendation),
+            ],
+          ),
+      ],
     );
   }
 }
+
+String _eventSuccessFeaturePercent(double value) => '${(value * 100).round()}%';
 
 class BlockHeader extends StatelessWidget {
   const BlockHeader({
@@ -964,38 +964,10 @@ class EventSuccessRecommendationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: _recommendationTileGap,
-      child: CatchSurface(
-        tone: CatchSurfaceTone.raised,
-        radius: CatchRadius.sm,
-        borderColor: t.line,
-        padding: CatchInsets.contentDense,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: t.primary),
-            const SizedBox(width: CatchSpacing.s3),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    recommendation.title,
-                    style: CatchTextStyles.sectionTitle(context),
-                  ),
-                  const SizedBox(height: CatchSpacing.s1),
-                  Text(
-                    recommendation.rationale,
-                    style: CatchTextStyles.supporting(context),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+    return CatchField.content(
+      title: recommendation.title,
+      body: recommendation.rationale,
+      icon: icon,
     );
   }
 }

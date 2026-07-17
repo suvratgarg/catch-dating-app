@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
@@ -5,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -13,11 +16,16 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/events.dart'
     show attendeeProfilesProvider;
@@ -34,6 +42,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 enum HostEventParticipantsMode { setup, live, report }
 
@@ -687,6 +696,19 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
         section = Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            CatchSection.fieldRows(
+              first: true,
+              children: [
+                CatchField.control(
+                  title:
+                      context.l10n.hostsHostEventAttendancePanelTitleCheckInQr,
+                  body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
+                  icon: CatchIcons.qrCode2Rounded,
+                  control: HostEventCheckInQrPanel(event: viewModel.event),
+                ),
+              ],
+            ),
+            gapH12,
             HostRosterFilterHeader(
               title: showHeader
                   ? context.l10n.hostsHostEventAttendancePanelTitleCheckInBoard
@@ -744,7 +766,6 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
           ],
         );
       case HostEventParticipantsMode.report:
-        final t = CatchTokens.of(context);
         final reportSummary = HostReportSummaryDisplayState.resolve(
           totalCount: viewModel.totalCount,
           checkedInCount: viewModel.checkedInCount,
@@ -763,6 +784,8 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
           searchQuery: searchQuery,
           selectedFilter: selectedFilter,
         );
+        final hasParticipants =
+            viewModel.totalCount > 0 || viewModel.waitlistCount > 0;
         section = Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -776,71 +799,95 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                 filters: rosterState.filters,
                 selectedFilter: rosterState.activeFilter,
                 onFilterChanged: onFilterChanged,
+                trailing: hasParticipants
+                    ? CatchActionMenu<_HostReportExportAction>(
+                        tooltip: context
+                            .l10n
+                            .hostsHostEventAttendancePanelLabelExport,
+                        icon: CatchIcons.iosShareRounded,
+                        items: [
+                          CatchActionMenuItem(
+                            value: _HostReportExportAction.ops,
+                            label: context
+                                .l10n
+                                .hostsHostEventAttendancePanelLabelOpsCsv,
+                            icon: CatchIcons.tableRowsOutlined,
+                            enabled:
+                                !mutationState.opsReportExportPending &&
+                                !mutationState.revenueReportExportPending,
+                          ),
+                          CatchActionMenuItem(
+                            value: _HostReportExportAction.revenue,
+                            label: context
+                                .l10n
+                                .hostsHostEventAttendancePanelLabelRevenueCsv,
+                            icon: CatchIcons.paymentsOutlined,
+                            enabled:
+                                !mutationState.opsReportExportPending &&
+                                !mutationState.revenueReportExportPending,
+                          ),
+                        ],
+                        onSelected: (action) {
+                          switch (action) {
+                            case _HostReportExportAction.ops:
+                              unawaited(actions.shareOpsReport());
+                            case _HostReportExportAction.revenue:
+                              unawaited(actions.shareRevenueReport());
+                          }
+                        },
+                      )
+                    : null,
               ),
               gapH12,
             ],
-            HostRosterSearchBar(
-              value: searchQuery,
-              label:
-                  context.l10n.hostsHostEventAttendancePanelLabelSearchRoster,
-              onChanged: onSearchChanged,
-            ),
-            gapH14,
-            CatchRosterTable(
-              columns: [
-                context.l10n.hostsHostEventAttendancePanelVisiblecopyName,
-                context.l10n.hostsHostEventAttendancePanelVisiblecopyAttendance,
-                context.l10n.hostsHostEventAttendancePanelVisiblecopyPayment,
-              ],
-              showEmpty: rosterState.rowIds.isEmpty,
-              emptyTitle: rosterState.emptyTitle,
-              emptyMessage: rosterState.emptyMessage,
-              rows: [
-                for (final uid in rosterState.rowIds) _reportRow(context, uid),
-              ],
-            ),
-            gapH12,
-            CatchSurface(
-              padding: CatchInsets.compactControlContent,
-              borderColor: t.line,
-              radius: CatchRadius.md,
-              backgroundColor: t.raised,
-              child: Text(
-                reportSummary.summary(context.l10n),
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+            if (!hasParticipants)
+              CatchEmptyState(
+                icon: CatchIcons.groupsOutlined,
+                title: rosterState.emptyTitle,
+                message: rosterState.emptyMessage,
+                layout: CatchEmptyStateLayout.inline,
+                surface: true,
+                padding: CatchInsets.content,
+              )
+            else ...[
+              HostRosterSearchBar(
+                value: searchQuery,
+                label:
+                    context.l10n.hostsHostEventAttendancePanelLabelSearchRoster,
+                onChanged: onSearchChanged,
               ),
-            ),
-            gapH12,
-            if (mutationState.reportExportError != null) ...[
-              CatchErrorBanner.fromError(
-                mutationState.reportExportError!,
-                context: AppErrorContext.event,
+              gapH14,
+              CatchRosterTable(
+                columns: [
+                  context.l10n.hostsHostEventAttendancePanelVisiblecopyName,
+                  context
+                      .l10n
+                      .hostsHostEventAttendancePanelVisiblecopyAttendance,
+                  context.l10n.hostsHostEventAttendancePanelVisiblecopyPayment,
+                ],
+                showEmpty: rosterState.rowIds.isEmpty,
+                emptyTitle: rosterState.emptyTitle,
+                emptyMessage: rosterState.emptyMessage,
+                rows: [
+                  for (final uid in rosterState.rowIds)
+                    _reportRow(context, uid),
+                ],
               ),
               gapH12,
-            ],
-            Row(
-              children: [
-                Expanded(
-                  child: HostExportReportButton(
-                    label:
-                        context.l10n.hostsHostEventAttendancePanelLabelOpsCsv,
-                    isExporting: mutationState.opsReportExportPending,
-                    onExport: actions.shareOpsReport,
-                  ),
-                ),
-                gapW10,
-                Expanded(
-                  child: HostExportReportButton(
-                    label: context
-                        .l10n
-                        .hostsHostEventAttendancePanelLabelRevenueCsv,
-                    primary: true,
-                    isExporting: mutationState.revenueReportExportPending,
-                    onExport: actions.shareRevenueReport,
-                  ),
+              CatchField.content(
+                title:
+                    context.l10n.hostsHostEventAttendancePanelTitleEventReport,
+                body: reportSummary.summary(context.l10n),
+                icon: CatchIcons.receiptLongOutlined,
+              ),
+              if (mutationState.reportExportError != null) ...[
+                gapH12,
+                CatchErrorBanner.fromError(
+                  mutationState.reportExportError!,
+                  context: AppErrorContext.event,
                 ),
               ],
-            ),
+            ],
           ],
         );
     }
@@ -1006,9 +1053,37 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
   }
 }
 
+enum _HostReportExportAction { ops, revenue }
+
 Object? _mutationError(MutationState<dynamic> mutation) {
   if (!mutation.hasError) return null;
   return (mutation as MutationError).error;
+}
+
+class HostEventCheckInQrPanel extends StatelessWidget {
+  const HostEventCheckInQrPanel({super.key, required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    final payload = EventCheckInQrPayload(eventId: event.id).encode();
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: CatchSurface(
+        radius: CatchRadius.sm,
+        backgroundColor: CatchTokens.editorialWhite,
+        borderWidth: 0,
+        padding: CatchInsets.iconChipContent,
+        child: QrImageView(
+          data: payload,
+          size: 168,
+          padding: EdgeInsets.zero,
+          backgroundColor: CatchTokens.editorialWhite,
+        ),
+      ),
+    );
+  }
 }
 
 class HostRosterSearchBar extends StatelessWidget {
@@ -1025,20 +1100,13 @@ class HostRosterSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.contained(
-      padding: CatchInsets.inlineHorizontalRelaxed,
-      child: CatchField.input(
-        key: ValueKey('hostRosterSearch-$label'),
-        title: label,
-        showLabel: false,
-        initialValue: value,
-        placeholder: label,
-        size: CatchFieldSize.compact,
-        textInputAction: TextInputAction.search,
-        prefixIcon: Icon(CatchIcons.searchRounded),
-        showClearButton: true,
-        onChanged: onChanged,
-      ),
+    return CatchSearchField(
+      key: ValueKey('hostRosterSearch-$label'),
+      value: value,
+      placeholder: label,
+      semanticLabel: label,
+      textInputAction: TextInputAction.search,
+      onChanged: onChanged,
     );
   }
 }
@@ -1051,6 +1119,7 @@ class HostRosterFilterHeader extends StatelessWidget {
     required this.filters,
     required this.selectedFilter,
     required this.onFilterChanged,
+    this.trailing,
   });
 
   final String? title;
@@ -1058,41 +1127,45 @@ class HostRosterFilterHeader extends StatelessWidget {
   final List<HostRosterFilterSpec> filters;
   final HostRosterFilter selectedFilter;
   final ValueChanged<HostRosterFilter> onFilterChanged;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (title != null) ...[
-          Text(title!, style: CatchTextStyles.sectionTitle(context)),
-          if (subtitle != null) ...[
-            gapH4,
-            Text(
-              subtitle!,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+    final canFilter = filters.any((spec) => spec.value > 0);
+    return CatchSection.plain(
+      title: title,
+      subtitle: subtitle,
+      trailing: trailing,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchMetricStrip(
+            items: [
+              for (final spec in filters)
+                CatchMetricStripItem(
+                  value: context.l10n
+                      .hostsHostEventAttendancePanelVisiblecopyValue(
+                        value: spec.value,
+                      ),
+                  label: spec.label,
+                ),
+            ],
+          ),
+          if (canFilter) ...[
+            gapH12,
+            CatchOptionGroup<HostRosterFilter>(
+              options: [
+                for (final spec in filters)
+                  CatchOption(value: spec.filter, label: spec.label),
+              ],
+              selected: selectedFilter,
+              onChanged: onFilterChanged,
+              variant: CatchOptionGroupVariant.mono,
+              scrollable: true,
             ),
           ],
-          gapH12,
         ],
-        CatchRosterTiles(
-          items: [
-            for (final spec in filters)
-              CatchRosterTile(
-                id: spec.filter.name,
-                value: context.l10n
-                    .hostsHostEventAttendancePanelVisiblecopyValue(
-                      value: spec.value,
-                    ),
-                label: spec.label,
-                tone: spec.tone,
-              ),
-          ],
-          selected: selectedFilter.name,
-          onSelect: (id) => onFilterChanged(HostRosterFilter.values.byName(id)),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -1198,34 +1271,3 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
 }
 
 String _personNoun(int count) => count == 1 ? 'person' : 'people';
-
-class HostExportReportButton extends StatelessWidget {
-  const HostExportReportButton({
-    super.key,
-    required this.label,
-    required this.onExport,
-    required this.isExporting,
-    this.primary = false,
-  });
-
-  final String label;
-  final Future<void> Function() onExport;
-  final bool isExporting;
-  final bool primary;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchButton(
-      label: label,
-      onPressed: isExporting ? null : () => onExport(),
-      isLoading: isExporting,
-      variant: primary
-          ? CatchButtonVariant.primary
-          : CatchButtonVariant.secondary,
-      icon: Icon(
-        CatchIcons.platformShare(platform: Theme.of(context).platform),
-      ),
-      fullWidth: true,
-    );
-  }
-}

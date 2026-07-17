@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-17T07:01:58.593120+00:00",
+  "generated_at": "2026-07-17T12:18:19.565511+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
-  "total_files_scanned": 779,
-  "total_definitions": 3840,
+  "total_files_scanned": 777,
+  "total_definitions": 3827,
   "file_manifest": [
     {
       "file": "lib/activity/domain/activity_taxonomy.dart",
@@ -1206,7 +1206,7 @@
     },
     {
       "file": "lib/core/widgets/ordered_photo_picker.dart",
-      "line_count": 348,
+      "line_count": 347,
       "definition_count": 6
     },
     {
@@ -2556,8 +2556,8 @@
     },
     {
       "file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-      "line_count": 295,
-      "definition_count": 6
+      "line_count": 261,
+      "definition_count": 5
     },
     {
       "file": "lib/hosts/presentation/club_management/create/widgets/create_club_step_header.dart",
@@ -2681,7 +2681,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart",
-      "line_count": 41,
+      "line_count": 40,
       "definition_count": 1
     },
     {
@@ -2770,11 +2770,6 @@
       "definition_count": 3
     },
     {
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line_count": 484,
-      "definition_count": 5
-    },
-    {
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
       "line_count": 1116,
       "definition_count": 35
@@ -2791,7 +2786,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-      "line_count": 574,
+      "line_count": 577,
       "definition_count": 8
     },
     {
@@ -2811,12 +2806,12 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-      "line_count": 21,
-      "definition_count": 1
+      "line_count": 566,
+      "definition_count": 7
     },
     {
       "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-      "line_count": 333,
+      "line_count": 336,
       "definition_count": 2
     },
     {
@@ -2855,11 +2850,6 @@
       "definition_count": 7
     },
     {
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "line_count": 355,
-      "definition_count": 6
-    },
-    {
       "file": "lib/hosts/presentation/host_operations/host_route_providers.dart",
       "line_count": 7,
       "definition_count": 1
@@ -2871,7 +2861,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line_count": 104,
+      "line_count": 102,
       "definition_count": 2
     },
     {
@@ -2885,14 +2875,14 @@
       "definition_count": 1
     },
     {
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line_count": 164,
-      "definition_count": 20
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line_count": 134,
+      "definition_count": 14
     },
     {
-      "file": "lib/hosts/presentation/host_settings_view_model.dart",
-      "line_count": 135,
-      "definition_count": 6
+      "file": "lib/hosts/presentation/host_team_workspace_view_model.dart",
+      "line_count": 116,
+      "definition_count": 5
     },
     {
       "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
@@ -3011,12 +3001,12 @@
     },
     {
       "file": "lib/l10n/generated/app_localizations.dart",
-      "line_count": 17265,
+      "line_count": 17163,
       "definition_count": 3
     },
     {
       "file": "lib/l10n/generated/app_localizations_en.dart",
-      "line_count": 11103,
+      "line_count": 11043,
       "definition_count": 1
     },
     {
@@ -3541,7 +3531,7 @@
     },
     {
       "file": "lib/routing/go_router.dart",
-      "line_count": 1200,
+      "line_count": 1185,
       "definition_count": 51
     },
     {
@@ -12780,7 +12770,7 @@
       "signature": "class OrderedPhotoPicker extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
-      "body_hash": "6852bdbcc9096e5b"
+      "body_hash": "0a0ca0fb4113c179"
     },
     {
       "name": "_OrderedPhotoPickerState",
@@ -12790,13 +12780,13 @@
       "signature": "class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {",
       "superclass": "State<OrderedPhotoPicker>",
       "is_widget": false,
-      "body_hash": "5cfdc1f2f09f82d8"
+      "body_hash": "3a669bc7c3d045e4"
     },
     {
       "name": "OrderedPhotoTile",
       "kind": "class",
       "file": "lib/core/widgets/ordered_photo_picker.dart",
-      "line": 156,
+      "line": 155,
       "signature": "class OrderedPhotoTile extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -12806,7 +12796,7 @@
       "name": "OrderedPhotoAddTile",
       "kind": "class",
       "file": "lib/core/widgets/ordered_photo_picker.dart",
-      "line": 289,
+      "line": 288,
       "signature": "class OrderedPhotoAddTile extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -27005,7 +26995,7 @@
       "signature": "class CreateClubPhotosPicker extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "71a59a1456043a81"
+      "body_hash": "da6b77bf305f2c94"
     },
     {
       "name": "CreateClubProfileImagePickerVariant",
@@ -27023,23 +27013,13 @@
       "signature": "class CreateClubProfileImagePicker extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "3834601e888379be"
-    },
-    {
-      "name": "EditClubPhotosLabel",
-      "kind": "class",
-      "file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-      "line": 159,
-      "signature": "class EditClubPhotosLabel extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "f889d6f51e6157c7"
+      "body_hash": "9ce5c5da6a5feb61"
     },
     {
       "name": "ClubProfileImageTile",
       "kind": "class",
       "file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-      "line": 183,
+      "line": 149,
       "signature": "class ClubProfileImageTile extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -27982,7 +27962,7 @@
       "signature": "class CreateEventPhotoPicker extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "4eaeb54a6666308a"
+      "body_hash": "e40600d1b4495b80"
     },
     {
       "name": "CreateEventStepHeader",
@@ -29296,56 +29276,6 @@
       "body_hash": "9185e4306b125711"
     },
     {
-      "name": "HostAccountScreen",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 3,
-      "signature": "class HostAccountScreen extends ConsumerStatefulWidget {",
-      "superclass": "ConsumerStatefulWidget",
-      "is_widget": true,
-      "body_hash": "c8ab1556aa3dfa5a"
-    },
-    {
-      "name": "_HostAccountScreenState",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 10,
-      "signature": "class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {",
-      "superclass": "ConsumerState<HostAccountScreen>",
-      "is_widget": false,
-      "body_hash": "69af8d2380d5ef39"
-    },
-    {
-      "name": "HostSettingsProfileSection",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 245,
-      "signature": "class HostSettingsProfileSection extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "335fbe5718c06f6d"
-    },
-    {
-      "name": "HostSettingsProfileRows",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 323,
-      "signature": "class HostSettingsProfileRows extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "fa0dba068ffbeab7"
-    },
-    {
-      "name": "HostSettingsClubsSection",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "line": 430,
-      "signature": "class HostSettingsClubsSection extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "6ac87330f1651e62"
-    },
-    {
       "name": "HostClubInsightsRefreshController",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
@@ -29827,13 +29757,13 @@
       "signature": "class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {",
       "superclass": "ConsumerState<HostClubEditTab>",
       "is_widget": false,
-      "body_hash": "37f76adc5ad19cfd"
+      "body_hash": "3b786f8108c296f7"
     },
     {
       "name": "HostClubInlineTextEntry",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-      "line": 463,
+      "line": 466,
       "signature": "class HostClubInlineTextEntry extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29843,7 +29773,7 @@
       "name": "_HostClubMediaDraft",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-      "line": 539,
+      "line": 542,
       "signature": "sealed class _HostClubMediaDraft {",
       "is_widget": false,
       "body_hash": "35b4859d88176feb"
@@ -29852,7 +29782,7 @@
       "name": "_HostExistingClubMediaDraft",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-      "line": 546,
+      "line": 549,
       "signature": "final class _HostExistingClubMediaDraft extends _HostClubMediaDraft {",
       "superclass": "_HostClubMediaDraft",
       "is_widget": false,
@@ -29862,7 +29792,7 @@
       "name": "_HostPickedClubMediaDraft",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-      "line": 561,
+      "line": 564,
       "signature": "final class _HostPickedClubMediaDraft extends _HostClubMediaDraft {",
       "superclass": "_HostClubMediaDraft",
       "is_widget": false,
@@ -29952,10 +29882,68 @@
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
       "line": 3,
-      "signature": "class HostClubTeamScreen extends StatelessWidget {",
+      "signature": "class HostClubTeamScreen extends ConsumerStatefulWidget {",
+      "superclass": "ConsumerStatefulWidget",
+      "is_widget": true,
+      "body_hash": "dff4ed150fcdf177"
+    },
+    {
+      "name": "_HostClubTeamScreenState",
+      "kind": "class",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "line": 12,
+      "signature": "class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {",
+      "superclass": "ConsumerState<HostClubTeamScreen>",
+      "is_widget": false,
+      "body_hash": "346829e27ca0984c"
+    },
+    {
+      "name": "HostTeamProfileSection",
+      "kind": "class",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "line": 312,
+      "signature": "class HostTeamProfileSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "29fa74369f11f9e3"
+      "body_hash": "babd3eaa04df4bcf"
+    },
+    {
+      "name": "HostTeamProfileRows",
+      "kind": "class",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "line": 390,
+      "signature": "class HostTeamProfileRows extends StatelessWidget {",
+      "superclass": "StatelessWidget",
+      "is_widget": true,
+      "body_hash": "e650e22ba2b0f9e8"
+    },
+    {
+      "name": "HostTeamHostedClubsSection",
+      "kind": "class",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "line": 497,
+      "signature": "class HostTeamHostedClubsSection extends StatelessWidget {",
+      "superclass": "StatelessWidget",
+      "is_widget": true,
+      "body_hash": "01c7481862850c7d"
+    },
+    {
+      "name": "_requiredDisplayName",
+      "kind": "function",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "line": 552,
+      "signature": "String? _requiredDisplayName(String? value) {",
+      "return_type": "String?",
+      "body_hash": "488c697f50d5f725"
+    },
+    {
+      "name": "hostProfileStatusLabel",
+      "kind": "function",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "line": 559,
+      "signature": "String hostProfileStatusLabel(HostProfileStatus status) {",
+      "return_type": "String",
+      "body_hash": "582cac9ccc86dc69"
     },
     {
       "name": "HostClubsScaffold",
@@ -29975,7 +29963,7 @@
       "signature": "class _HostClubsScaffoldState extends State<HostClubsScaffold>",
       "superclass": "State<HostClubsScaffold>",
       "is_widget": false,
-      "body_hash": "5c9d1afdae0a5d82"
+      "body_hash": "270602102866db7a"
     },
     {
       "name": "HostClubsScreen",
@@ -30228,64 +30216,6 @@
       "body_hash": "96f75ebc6bfed0f6"
     },
     {
-      "name": "HostProfileScreen",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "line": 3,
-      "signature": "class HostProfileScreen extends ConsumerStatefulWidget {",
-      "superclass": "ConsumerStatefulWidget",
-      "is_widget": true,
-      "body_hash": "0f83598fbecf2905"
-    },
-    {
-      "name": "_HostProfileScreenState",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "line": 15,
-      "signature": "class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {",
-      "superclass": "ConsumerState<HostProfileScreen>",
-      "is_widget": false,
-      "body_hash": "2e9b245f29d079c5"
-    },
-    {
-      "name": "HostProfileForm",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "line": 227,
-      "signature": "class HostProfileForm extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "9ea600875d6aecf1"
-    },
-    {
-      "name": "HostProfileFields",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "line": 279,
-      "signature": "class HostProfileFields extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "337c70d72ca5e254"
-    },
-    {
-      "name": "_requiredDisplayName",
-      "kind": "function",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "line": 341,
-      "signature": "String? _requiredDisplayName(String? value) {",
-      "return_type": "String?",
-      "body_hash": "488c697f50d5f725"
-    },
-    {
-      "name": "hostProfileStatusLabel",
-      "kind": "function",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "line": 348,
-      "signature": "String hostProfileStatusLabel(HostProfileStatus status) {",
-      "return_type": "String",
-      "body_hash": "582cac9ccc86dc69"
-    },
-    {
       "name": "_hostClubsForUserProvider",
       "kind": "constant",
       "file": "lib/hosts/presentation/host_operations/host_route_providers.dart",
@@ -30439,18 +30369,18 @@
       "body_hash": "c7330016ce48a90b"
     },
     {
-      "name": "HostSettingsMode",
+      "name": "HostTeamMode",
       "kind": "enum",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 101,
-      "signature": "enum HostSettingsMode { edit, preview }",
-      "body_hash": "a50742f3ed93502e"
+      "line": 99,
+      "signature": "enum HostTeamMode { edit, preview }",
+      "body_hash": "ae9620dbae269787"
     },
     {
       "name": "_hostClubTabRailKey",
       "kind": "constant",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 103,
+      "line": 101,
       "signature": "const _hostClubTabRailKey = ValueKey('host-club-tab-rail');",
       "body_hash": "2f70e1e455312b61"
     },
@@ -30508,238 +30438,170 @@
       "body_hash": "92a8b6e24d09345a"
     },
     {
-      "name": "HostSettingsState",
+      "name": "HostTeamWorkspaceState",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
       "line": 4,
-      "signature": "final class HostSettingsState {",
+      "signature": "final class HostTeamWorkspaceState {",
       "is_widget": false,
-      "body_hash": "7a567a78f2696856"
+      "body_hash": "b64dc0e230138738"
     },
     {
-      "name": "HostSettingsActionState",
+      "name": "HostTeamWorkspaceActionState",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
       "line": 16,
-      "signature": "final class HostSettingsActionState {",
+      "signature": "final class HostTeamWorkspaceActionState {",
       "is_widget": false,
-      "body_hash": "a90be3a3342e02f4"
+      "body_hash": "8883b38fc2276d2b"
     },
     {
-      "name": "HostSettingsClubDestination",
+      "name": "HostTeamClubDestination",
       "kind": "enum",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 69,
+      "signature": "enum HostTeamClubDestination { edit, preview }",
+      "body_hash": "1f31807d4189d4d2"
+    },
+    {
+      "name": "HostTeamClubNavigationState",
+      "kind": "class",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
       "line": 71,
-      "signature": "enum HostSettingsClubDestination { edit, preview }",
-      "body_hash": "65628a4d6c8c59ab"
-    },
-    {
-      "name": "HostSettingsClubNavigationState",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 73,
-      "signature": "final class HostSettingsClubNavigationState {",
+      "signature": "final class HostTeamClubNavigationState {",
       "is_widget": false,
-      "body_hash": "0a76576987e2ea6a"
+      "body_hash": "9ca1cca3b1c7ab8c"
     },
     {
-      "name": "HostSettingsProfileState",
+      "name": "HostTeamProfileState",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 85,
-      "signature": "sealed class HostSettingsProfileState {",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 83,
+      "signature": "sealed class HostTeamProfileState {",
       "is_widget": false,
-      "body_hash": "b8e91d8634e2301f"
+      "body_hash": "67bb38b2b384adf8"
     },
     {
-      "name": "HostSettingsProfileLoading",
+      "name": "HostTeamProfileLoading",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 89,
-      "signature": "final class HostSettingsProfileLoading extends HostSettingsProfileState {",
-      "superclass": "HostSettingsProfileState",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 87,
+      "signature": "final class HostTeamProfileLoading extends HostTeamProfileState {",
+      "superclass": "HostTeamProfileState",
       "is_widget": false,
-      "body_hash": "a76299ac1b1f2a42"
+      "body_hash": "fd3601176f1a8d61"
     },
     {
-      "name": "HostSettingsProfileError",
+      "name": "HostTeamProfileError",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 93,
-      "signature": "final class HostSettingsProfileError extends HostSettingsProfileState {",
-      "superclass": "HostSettingsProfileState",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 91,
+      "signature": "final class HostTeamProfileError extends HostTeamProfileState {",
+      "superclass": "HostTeamProfileState",
       "is_widget": false,
-      "body_hash": "7ef5d7ed5f79b617"
+      "body_hash": "f3897e3dbf925952"
     },
     {
-      "name": "HostSettingsProfileMissing",
+      "name": "HostTeamProfileMissing",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 99,
-      "signature": "final class HostSettingsProfileMissing extends HostSettingsProfileState {",
-      "superclass": "HostSettingsProfileState",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 97,
+      "signature": "final class HostTeamProfileMissing extends HostTeamProfileState {",
+      "superclass": "HostTeamProfileState",
       "is_widget": false,
-      "body_hash": "be0ea87bddb907c3"
+      "body_hash": "38c1edcb8087f5d6"
     },
     {
-      "name": "HostSettingsProfileContent",
+      "name": "HostTeamProfileContent",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 103,
-      "signature": "final class HostSettingsProfileContent extends HostSettingsProfileState {",
-      "superclass": "HostSettingsProfileState",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 101,
+      "signature": "final class HostTeamProfileContent extends HostTeamProfileState {",
+      "superclass": "HostTeamProfileState",
       "is_widget": false,
-      "body_hash": "57412e753a694049"
+      "body_hash": "ef094384b3f4cc78"
     },
     {
-      "name": "HostSettingsClubsState",
+      "name": "HostTeamHostedClubsState",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 113,
-      "signature": "sealed class HostSettingsClubsState {",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 111,
+      "signature": "sealed class HostTeamHostedClubsState {",
       "is_widget": false,
-      "body_hash": "41bc0799f73b2dcd"
+      "body_hash": "a955a39977f15c7a"
     },
     {
-      "name": "HostSettingsClubsLoading",
+      "name": "HostTeamHostedClubsLoading",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 117,
-      "signature": "final class HostSettingsClubsLoading extends HostSettingsClubsState {",
-      "superclass": "HostSettingsClubsState",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 115,
+      "signature": "final class HostTeamHostedClubsLoading extends HostTeamHostedClubsState {",
+      "superclass": "HostTeamHostedClubsState",
       "is_widget": false,
-      "body_hash": "5b12a0c0fcef9848"
+      "body_hash": "e189fba2e17da286"
     },
     {
-      "name": "HostSettingsClubsError",
+      "name": "HostTeamHostedClubsError",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 121,
-      "signature": "final class HostSettingsClubsError extends HostSettingsClubsState {",
-      "superclass": "HostSettingsClubsState",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 119,
+      "signature": "final class HostTeamHostedClubsError extends HostTeamHostedClubsState {",
+      "superclass": "HostTeamHostedClubsState",
       "is_widget": false,
-      "body_hash": "20e94d24fb9a3001"
+      "body_hash": "cf3dfea034473c39"
     },
     {
-      "name": "HostSettingsClubsEmpty",
+      "name": "HostTeamHostedClubsEmpty",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 127,
-      "signature": "final class HostSettingsClubsEmpty extends HostSettingsClubsState {",
-      "superclass": "HostSettingsClubsState",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 125,
+      "signature": "final class HostTeamHostedClubsEmpty extends HostTeamHostedClubsState {",
+      "superclass": "HostTeamHostedClubsState",
       "is_widget": false,
-      "body_hash": "b9d0cc68082d3ff3"
+      "body_hash": "c27b79c0d74e466d"
     },
     {
-      "name": "HostSettingsClubsContent",
+      "name": "HostTeamHostedClubsContent",
       "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 131,
-      "signature": "final class HostSettingsClubsContent extends HostSettingsClubsState {",
-      "superclass": "HostSettingsClubsState",
+      "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+      "line": 129,
+      "signature": "final class HostTeamHostedClubsContent extends HostTeamHostedClubsState {",
+      "superclass": "HostTeamHostedClubsState",
       "is_widget": false,
-      "body_hash": "5b70d117e4e6f8df"
+      "body_hash": "99a952a313941ea1"
     },
     {
-      "name": "HostProfileEditState",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 137,
-      "signature": "sealed class HostProfileEditState {",
-      "is_widget": false,
-      "body_hash": "e14a7698c0159341"
-    },
-    {
-      "name": "HostProfileEditAuthRequired",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 141,
-      "signature": "final class HostProfileEditAuthRequired extends HostProfileEditState {",
-      "superclass": "HostProfileEditState",
-      "is_widget": false,
-      "body_hash": "7df193619f9a2ce8"
-    },
-    {
-      "name": "HostProfileEditLoading",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 145,
-      "signature": "final class HostProfileEditLoading extends HostProfileEditState {",
-      "superclass": "HostProfileEditState",
-      "is_widget": false,
-      "body_hash": "23252932f5923bb3"
-    },
-    {
-      "name": "HostProfileEditError",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 149,
-      "signature": "final class HostProfileEditError extends HostProfileEditState {",
-      "superclass": "HostProfileEditState",
-      "is_widget": false,
-      "body_hash": "0bd5e87b901d4ca9"
-    },
-    {
-      "name": "HostProfileEditMissing",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 155,
-      "signature": "final class HostProfileEditMissing extends HostProfileEditState {",
-      "superclass": "HostProfileEditState",
-      "is_widget": false,
-      "body_hash": "6ae6d7919ba96645"
-    },
-    {
-      "name": "HostProfileEditContent",
-      "kind": "class",
-      "file": "lib/hosts/presentation/host_settings_state.dart",
-      "line": 159,
-      "signature": "final class HostProfileEditContent extends HostProfileEditState {",
-      "superclass": "HostProfileEditState",
-      "is_widget": false,
-      "body_hash": "4571b03276fe95c2"
-    },
-    {
-      "name": "buildHostSettingsState",
+      "name": "buildHostTeamWorkspaceState",
       "kind": "function",
-      "file": "lib/hosts/presentation/host_settings_view_model.dart",
+      "file": "lib/hosts/presentation/host_team_workspace_view_model.dart",
       "line": 6,
-      "signature": "HostSettingsState buildHostSettingsState({",
-      "return_type": "HostSettingsState",
-      "body_hash": "9a413abf75e55d78"
+      "signature": "HostTeamWorkspaceState buildHostTeamWorkspaceState({",
+      "return_type": "HostTeamWorkspaceState",
+      "body_hash": "126d94404bf41ad6"
     },
     {
-      "name": "buildHostSettingsProfileState",
+      "name": "buildHostTeamProfileState",
       "kind": "function",
-      "file": "lib/hosts/presentation/host_settings_view_model.dart",
+      "file": "lib/hosts/presentation/host_team_workspace_view_model.dart",
       "line": 32,
-      "signature": "HostSettingsProfileState buildHostSettingsProfileState({",
-      "return_type": "HostSettingsProfileState",
-      "body_hash": "7896eabc7b7e5957"
+      "signature": "HostTeamProfileState buildHostTeamProfileState({",
+      "return_type": "HostTeamProfileState",
+      "body_hash": "a670ddde4c928be2"
     },
     {
-      "name": "buildHostSettingsClubsState",
+      "name": "buildHostTeamHostedClubsState",
       "kind": "function",
-      "file": "lib/hosts/presentation/host_settings_view_model.dart",
-      "line": 59,
-      "signature": "HostSettingsClubsState buildHostSettingsClubsState(",
-      "return_type": "HostSettingsClubsState",
-      "body_hash": "df7caa71cd788a5d"
-    },
-    {
-      "name": "buildHostProfileEditState",
-      "kind": "function",
-      "file": "lib/hosts/presentation/host_settings_view_model.dart",
-      "line": 72,
-      "signature": "HostProfileEditState buildHostProfileEditState({",
-      "return_type": "HostProfileEditState",
-      "body_hash": "13bb2cf56691cbad"
+      "file": "lib/hosts/presentation/host_team_workspace_view_model.dart",
+      "line": 56,
+      "signature": "HostTeamHostedClubsState buildHostTeamHostedClubsState(",
+      "return_type": "HostTeamHostedClubsState",
+      "body_hash": "ec67079237aedfcc"
     },
     {
       "name": "_fallbackHostProfileFromClubs",
       "kind": "function",
-      "file": "lib/hosts/presentation/host_settings_view_model.dart",
-      "line": 88,
+      "file": "lib/hosts/presentation/host_team_workspace_view_model.dart",
+      "line": 69,
       "signature": "HostProfile? _fallbackHostProfileFromClubs(String uid, List<Club>? clubs) {",
       "return_type": "HostProfile?",
       "body_hash": "1dccabed0a233c65"
@@ -30747,8 +30609,8 @@
     {
       "name": "_firstNonBlank",
       "kind": "function",
-      "file": "lib/hosts/presentation/host_settings_view_model.dart",
-      "line": 128,
+      "file": "lib/hosts/presentation/host_team_workspace_view_model.dart",
+      "line": 109,
       "signature": "String _firstNonBlank(Iterable<String?> values) {",
       "return_type": "String",
       "body_hash": "ce7433bf843cdc0b"
@@ -31969,13 +31831,13 @@
       "line": 63,
       "signature": "abstract class AppLocalizations {",
       "is_widget": false,
-      "body_hash": "018c076d98f2e0de"
+      "body_hash": "5256e95cbb5c1df1"
     },
     {
       "name": "_AppLocalizationsDelegate",
       "kind": "class",
       "file": "lib/l10n/generated/app_localizations.dart",
-      "line": 17234,
+      "line": 17132,
       "signature": "class _AppLocalizationsDelegate",
       "is_widget": false,
       "body_hash": "a9b59edf961edabe"
@@ -31984,7 +31846,7 @@
       "name": "lookupAppLocalizations",
       "kind": "function",
       "file": "lib/l10n/generated/app_localizations.dart",
-      "line": 17251,
+      "line": 17149,
       "signature": "AppLocalizations lookupAppLocalizations(Locale locale) {",
       "return_type": "AppLocalizations",
       "body_hash": "f2a3b6548a0086f3"
@@ -31997,7 +31859,7 @@
       "signature": "class AppLocalizationsEn extends AppLocalizations {",
       "superclass": "AppLocalizations",
       "is_widget": false,
-      "body_hash": "e0cc83a726657606"
+      "body_hash": "4e43bf2a7c59018d"
     },
     {
       "name": "_englishFallback",
@@ -34914,13 +34776,13 @@
       "file": "lib/routing/go_router.dart",
       "line": 63,
       "signature": "enum Routes {",
-      "body_hash": "9eadcbf4dd09cfcb"
+      "body_hash": "55802eb2d59f2827"
     },
     {
       "name": "routeAvailableForAppRole",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 173,
+      "line": 171,
       "signature": "bool routeAvailableForAppRole(Routes route, AppRole role) {",
       "return_type": "bool",
       "body_hash": "a33b95412a2d2b59"
@@ -34929,7 +34791,7 @@
       "name": "_hostManageSectionFromState",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 181,
+      "line": 179,
       "signature": "HostEventManageSection _hostManageSectionFromState(GoRouterState state) {",
       "return_type": "HostEventManageSection",
       "body_hash": "61b0da007eb9d264"
@@ -34938,7 +34800,7 @@
       "name": "hostOrganizerScreenForUri",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 191,
+      "line": 189,
       "signature": "HostClubsScreen hostOrganizerScreenForUri(Uri uri) {",
       "return_type": "HostClubsScreen",
       "body_hash": "6a5adf3ce2bc3087"
@@ -34947,7 +34809,7 @@
       "name": "_eventDetailInitialEvent",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 202,
+      "line": 200,
       "signature": "Event? _eventDetailInitialEvent(GoRouterState state) {",
       "return_type": "Event?",
       "body_hash": "d0ef5f3d80ace1a3"
@@ -34956,7 +34818,7 @@
       "name": "_eventDetailTransition",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 210,
+      "line": 208,
       "signature": "EventDetailRouteTransition _eventDetailTransition(GoRouterState state) {",
       "return_type": "EventDetailRouteTransition",
       "body_hash": "ac917b7438750bb6"
@@ -34965,7 +34827,7 @@
       "name": "_eventDetailPresentationMode",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 217,
+      "line": 215,
       "signature": "EventDetailPresentationMode _eventDetailPresentationMode(GoRouterState state) {",
       "return_type": "EventDetailPresentationMode",
       "body_hash": "69cfaac495cc305a"
@@ -34974,7 +34836,7 @@
       "name": "_eventDetailHeroTag",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 224,
+      "line": 222,
       "signature": "Object? _eventDetailHeroTag(GoRouterState state) {",
       "return_type": "Object?",
       "body_hash": "3032de33e3f0b62b"
@@ -34983,7 +34845,7 @@
       "name": "_eventDetailScreen",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 231,
+      "line": 229,
       "signature": "EventDetailScreen _eventDetailScreen(GoRouterState state) {",
       "return_type": "EventDetailScreen",
       "body_hash": "a565955cf88d8ee3"
@@ -34992,7 +34854,7 @@
       "name": "_clubDetailInitialClub",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 245,
+      "line": 243,
       "signature": "Club? _clubDetailInitialClub(GoRouterState state) {",
       "return_type": "Club?",
       "body_hash": "4fbc932b5976ba26"
@@ -35001,7 +34863,7 @@
       "name": "_clubDetailScreen",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 252,
+      "line": 250,
       "signature": "ClubDetailScreen _clubDetailScreen(GoRouterState state) {",
       "return_type": "ClubDetailScreen",
       "body_hash": "5333948599d01c00"
@@ -35010,7 +34872,7 @@
       "name": "_clubDetailPage",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 259,
+      "line": 257,
       "signature": "Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {",
       "return_type": "Page<void>",
       "body_hash": "1000c4baa4181d61"
@@ -35019,7 +34881,7 @@
       "name": "_exploreMapPage",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 270,
+      "line": 268,
       "signature": "Page<void> _exploreMapPage(BuildContext _, GoRouterState state) {",
       "return_type": "Page<void>",
       "body_hash": "4795349e2e43e4f5"
@@ -35028,7 +34890,7 @@
       "name": "_eventDetailPage",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 283,
+      "line": 281,
       "signature": "Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {",
       "return_type": "Page<void>",
       "body_hash": "e2758cd5826eae9a"
@@ -35037,7 +34899,7 @@
       "name": "_rootNavigatorKey",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 304,
+      "line": 302,
       "signature": "final _rootNavigatorKey = GlobalKey<NavigatorState>();",
       "body_hash": "3c88a0d0ef138533"
     },
@@ -35045,7 +34907,7 @@
       "name": "_dashboardShellKey",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 305,
+      "line": 303,
       "signature": "final _dashboardShellKey = GlobalKey<NavigatorState>();",
       "body_hash": "188c8b53e2f7854d"
     },
@@ -35053,7 +34915,7 @@
       "name": "_exploreShellKey",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 306,
+      "line": 304,
       "signature": "final _exploreShellKey = GlobalKey<NavigatorState>();",
       "body_hash": "1acdcf24cca4acb2"
     },
@@ -35061,7 +34923,7 @@
       "name": "_chatsShellKey",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 307,
+      "line": 305,
       "signature": "final _chatsShellKey = GlobalKey<NavigatorState>();",
       "body_hash": "175855bcdc02f4f8"
     },
@@ -35069,7 +34931,7 @@
       "name": "_profileShellKey",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 308,
+      "line": 306,
       "signature": "final _profileShellKey = GlobalKey<NavigatorState>();",
       "body_hash": "8316ca9e7bc5a1cb"
     },
@@ -35077,7 +34939,7 @@
       "name": "_hostTodayShellKey",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 309,
+      "line": 307,
       "signature": "final _hostTodayShellKey = GlobalKey<NavigatorState>();",
       "body_hash": "19228cc37c4b4c20"
     },
@@ -35085,7 +34947,7 @@
       "name": "_hostEventsShellKey",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 310,
+      "line": 308,
       "signature": "final _hostEventsShellKey = GlobalKey<NavigatorState>();",
       "body_hash": "9c3862546e34c6a3"
     },
@@ -35093,7 +34955,7 @@
       "name": "_hostInboxShellKey",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 311,
+      "line": 309,
       "signature": "final _hostInboxShellKey = GlobalKey<NavigatorState>();",
       "body_hash": "c03f52fbe481c219"
     },
@@ -35101,7 +34963,7 @@
       "name": "_hostOrganizerShellKey",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 312,
+      "line": 310,
       "signature": "final _hostOrganizerShellKey = GlobalKey<NavigatorState>();",
       "body_hash": "25e2f81e843b3902"
     },
@@ -35109,7 +34971,7 @@
       "name": "_fromQueryParam",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 314,
+      "line": 312,
       "signature": "const _fromQueryParam = 'from';",
       "body_hash": "b90346cca405f1f9"
     },
@@ -35117,7 +34979,7 @@
       "name": "_onboardingIntentQueryParam",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 315,
+      "line": 313,
       "signature": "const _onboardingIntentQueryParam = 'intent';",
       "body_hash": "f2ad135165362c15"
     },
@@ -35125,7 +34987,7 @@
       "name": "_completeProfileIntent",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 316,
+      "line": 314,
       "signature": "const _completeProfileIntent = 'complete-profile';",
       "body_hash": "3c82a46b468a8c16"
     },
@@ -35133,7 +34995,7 @@
       "name": "_completeRunPreferencesIntent",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 317,
+      "line": 315,
       "signature": "const _completeRunPreferencesIntent = 'complete-run-preferences';",
       "body_hash": "fef34051617ccc5e"
     },
@@ -35141,7 +35003,7 @@
       "name": "_initialRouteOverride",
       "kind": "constant",
       "file": "lib/routing/go_router.dart",
-      "line": 318,
+      "line": 316,
       "signature": "const _initialRouteOverride = String.fromEnvironment('CATCH_INITIAL_ROUTE');",
       "body_hash": "45b54cbcafea21e9"
     },
@@ -35149,7 +35011,7 @@
       "name": "initialAppLocation",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 324,
+      "line": 322,
       "signature": "String initialAppLocation(Ref ref) => _initialLocationFromPlatform();",
       "return_type": "String",
       "body_hash": "48ae87ea357a3e21"
@@ -35158,7 +35020,7 @@
       "name": "goRouter",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 329,
+      "line": 327,
       "signature": "GoRouter goRouter(Ref ref) {",
       "return_type": "GoRouter",
       "body_hash": "001fd7d2a6cde03a"
@@ -35167,7 +35029,7 @@
       "name": "_RouteLoadingScreen",
       "kind": "class",
       "file": "lib/routing/go_router.dart",
-      "line": 649,
+      "line": 647,
       "signature": "class _RouteLoadingScreen extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35177,16 +35039,16 @@
       "name": "_hostUtilityRoutes",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 678,
+      "line": 676,
       "signature": "List<RouteBase> _hostUtilityRoutes() {",
       "return_type": "List<RouteBase>",
-      "body_hash": "bd789f8a9f83e2f7"
+      "body_hash": "f1fb86d57017f315"
     },
     {
       "name": "hostClubsLegacyRedirect",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 833,
+      "line": 818,
       "signature": "String? hostClubsLegacyRedirect(Uri uri) {",
       "return_type": "String?",
       "body_hash": "ba53b03eaae54542"
@@ -35195,7 +35057,7 @@
       "name": "hostInsightsLegacyRedirect",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 845,
+      "line": 830,
       "signature": "String hostInsightsLegacyRedirect(String clubId) => Uri(",
       "return_type": "String",
       "body_hash": "0de73f754746ea4e"
@@ -35204,7 +35066,7 @@
       "name": "hostEditClubLegacyRedirect",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 851,
+      "line": 836,
       "signature": "String hostEditClubLegacyRedirect(String clubId) => Uri(",
       "return_type": "String",
       "body_hash": "59ab319127f66e06"
@@ -35213,7 +35075,7 @@
       "name": "_hostShellRoute",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 856,
+      "line": 841,
       "signature": "StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {",
       "return_type": "StatefulShellRoute",
       "body_hash": "52c5546ba54fed3e"
@@ -35222,7 +35084,7 @@
       "name": "_initialLocationFromPlatform",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 935,
+      "line": 920,
       "signature": "String _initialLocationFromPlatform() {",
       "return_type": "String",
       "body_hash": "740023f9f61b0ba1"
@@ -35231,7 +35093,7 @@
       "name": "_isPublicRoute",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 961,
+      "line": 946,
       "signature": "bool _isPublicRoute(String matchedLocation) {",
       "return_type": "bool",
       "body_hash": "64a7dc375d17f7e5"
@@ -35240,7 +35102,7 @@
       "name": "appRedirect",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 990,
+      "line": 975,
       "signature": "String? appRedirect({",
       "return_type": "String?",
       "body_hash": "5df128bdb09b9ae8"
@@ -35249,7 +35111,7 @@
       "name": "_requiresSocialProfile",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1099,
+      "line": 1084,
       "signature": "bool _requiresSocialProfile(String matchedLocation) {",
       "return_type": "bool",
       "body_hash": "ea0f0b3c7b76b40e"
@@ -35258,7 +35120,7 @@
       "name": "_pendingDestination",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1104,
+      "line": 1089,
       "signature": "String? _pendingDestination({",
       "return_type": "String?",
       "body_hash": "8f39aa0962f60b26"
@@ -35267,7 +35129,7 @@
       "name": "_resumeDestination",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1114,
+      "line": 1099,
       "signature": "String _resumeDestination(Uri uri) {",
       "return_type": "String",
       "body_hash": "ddb9d65149c72d74"
@@ -35276,7 +35138,7 @@
       "name": "_hostPendingDestination",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1131,
+      "line": 1116,
       "signature": "String? _hostPendingDestination({",
       "return_type": "String?",
       "body_hash": "f3590bd79ce24489"
@@ -35285,7 +35147,7 @@
       "name": "_locationWithFrom",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1142,
+      "line": 1127,
       "signature": "String _locationWithFrom(String path, {String? from}) {",
       "return_type": "String",
       "body_hash": "ea48d7e117f46a51"
@@ -35294,7 +35156,7 @@
       "name": "_profileCompletionLocation",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1153,
+      "line": 1138,
       "signature": "String _profileCompletionLocation({String? from}) {",
       "return_type": "String",
       "body_hash": "e1adb19409ed1420"
@@ -35303,7 +35165,7 @@
       "name": "runPreferencesCompletionLocation",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1166,
+      "line": 1151,
       "signature": "String runPreferencesCompletionLocation({String? from}) {",
       "return_type": "String",
       "body_hash": "72a8004f9eee812b"
@@ -35312,7 +35174,7 @@
       "name": "_sanitizeFrom",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1179,
+      "line": 1164,
       "signature": "String? _sanitizeFrom(String? from) {",
       "return_type": "String?",
       "body_hash": "e0d3a61bf4fcac0c"
@@ -35321,7 +35183,7 @@
       "name": "_isTransientRoute",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1186,
+      "line": 1171,
       "signature": "bool _isTransientRoute(String path) =>",
       "return_type": "bool",
       "body_hash": "63552d0e36934ef5"
@@ -35330,7 +35192,7 @@
       "name": "_isHostRoute",
       "kind": "function",
       "file": "lib/routing/go_router.dart",
-      "line": 1192,
+      "line": 1177,
       "signature": "bool _isHostRoute(String? path) =>",
       "return_type": "bool",
       "body_hash": "048a2cf0610f84a5"
@@ -35339,7 +35201,7 @@
       "name": "_RouterRefreshNotifier",
       "kind": "class",
       "file": "lib/routing/go_router.dart",
-      "line": 1197,
+      "line": 1182,
       "signature": "class _RouterRefreshNotifier extends ChangeNotifier {",
       "superclass": "ChangeNotifier",
       "is_widget": false,

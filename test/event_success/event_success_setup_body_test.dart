@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -10,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('setup body uses CatchField choices for live guide choices', (
+  testWidgets('setup body uses explanatory cards for live guide choices', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -245,7 +246,7 @@ Future<void> _tapChoice(WidgetTester tester, String label) async {
   final finder = _choice(label);
   await tester.ensureVisible(finder);
   await tester.pump();
-  tester.widgetList<CatchFieldChoiceChip>(finder).last.onPressed();
+  _invokeChoiceWidget(tester, finder);
 }
 
 void _invokeChoiceInField(
@@ -257,7 +258,16 @@ void _invokeChoiceInField(
     of: _field(fieldTitle),
     matching: _choice(label),
   );
-  tester.widgetList<CatchFieldChoiceChip>(choice).last.onPressed();
+  _invokeChoiceWidget(tester, choice);
+}
+
+void _invokeChoiceWidget(WidgetTester tester, Finder finder) {
+  final widget = tester.widgetList<Widget>(finder).last;
+  if (widget case final CatchFieldChoiceChip chip) {
+    chip.onPressed();
+  } else if (widget case final CatchOptionCard card) {
+    card.onTap!();
+  }
 }
 
 Future<void> _openField(WidgetTester tester, String title) async {
@@ -296,9 +306,12 @@ Finder _section(String title) {
 Finder _choice(String label, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchFieldChoiceChip &&
-        widget.label == label &&
-        (selected == null || widget.selected == selected),
+        (widget is CatchFieldChoiceChip &&
+            widget.label == label &&
+            (selected == null || widget.selected == selected)) ||
+        (widget is CatchOptionCard &&
+            widget.title == label &&
+            (selected == null || widget.selected == selected)),
     skipOffstage: false,
   );
 }

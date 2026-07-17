@@ -3952,7 +3952,7 @@ Widget _hostManageRouteCapture({
   );
 }
 
-Widget _hostManageLiveSectionCapture({Event? event, Widget? liveRoster}) {
+Widget _hostManageLiveSectionCapture({Event? event}) {
   final effectiveEvent = event ?? HostOperationsFixtures.privateEvent;
   return _AppRoleCapture(
     role: AppRole.host,
@@ -3960,7 +3960,6 @@ Widget _hostManageLiveSectionCapture({Event? event, Widget? liveRoster}) {
       event: effectiveEvent,
       initialTab: EventSuccessHostTab.live,
       showTabs: false,
-      liveRoster: liveRoster,
     ),
   );
 }
@@ -9065,156 +9064,65 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         const _AppRoleCapture(role: AppRole.host, child: HostClubsScreen()),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_active_profile',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_active_profile',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
+    builder: (context) => const _AppRoleCapture(
+      role: AppRole.host,
+      child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+    ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_text_scale_2',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_text_scale_2',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     textScale: 2,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
+    builder: (context) => const _AppRoleCapture(
+      role: AppRole.host,
+      child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+    ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_reduced_motion',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_reduced_motion',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     disableAnimations: true,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_settings_profile_loading',
-    routeIds: const <String>['hostSettingsScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncLoading<HostProfile?>(),
+    builder: (context) => const _AppRoleCapture(
+      role: AppRole.host,
+      child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
     ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_profile_error',
-    routeIds: const <String>['hostSettingsScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: AsyncError<HostProfile?>(
-        StateError('Capture host profile failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_settings_profile_offline',
-    routeIds: const <String>['hostSettingsScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: AsyncError<HostProfile?>(
-        obviousOfflineException(),
-        StackTrace.empty,
-      ),
-      hostedClubs: const <Club>[],
-      ownedClubs: const <Club>[],
-    ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_settings_no_profile',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_fallback_profile',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(
       hostProfile: const AsyncData<HostProfile?>(null),
-      hostedClubs: const <Club>[],
-      ownedClubs: const <Club>[],
-    ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_settings_create_profile_pending',
-    routeIds: const <String>['hostSettingsScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncData<HostProfile?>(null),
-      hostedClubs: const <Club>[],
-      ownedClubs: const <Club>[],
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.createPending,
-        child: HostAccountScreen(),
-      ),
+      child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
     ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_create_profile_error',
-    routeIds: const <String>['hostSettingsScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncData<HostProfile?>(null),
-      hostedClubs: const <Club>[],
-      ownedClubs: const <Club>[],
-    ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.createError,
-        child: HostAccountScreen(),
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_settings_create_profile_offline',
-    routeIds: const <String>['hostSettingsScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncData<HostProfile?>(null),
-      hostedClubs: const <Club>[],
-      ownedClubs: const <Club>[],
-    ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.createOffline,
-        child: HostAccountScreen(),
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_settings_fallback_profile',
-    routeIds: const <String>['hostSettingsScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncData<HostProfile?>(null),
-    ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_settings_clubs_loading',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_clubs_loading',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(
       hostedClubsAsync: const AsyncLoading<List<Club>>(),
       ownedClubsAsync: const AsyncLoading<List<Club>>(),
     ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
+    builder: (context) => const _AppRoleCapture(
+      role: AppRole.host,
+      child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+    ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_clubs_error',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_clubs_error',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(
       hostedClubsAsync: AsyncError<List<Club>>(
@@ -9222,12 +9130,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
+    builder: (context) => const _AppRoleCapture(
+      role: AppRole.host,
+      child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+    ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_clubs_offline',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_clubs_offline',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(
       hostedClubsAsync: AsyncError<List<Club>>(
@@ -9235,249 +9145,83 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
+    builder: (context) => const _AppRoleCapture(
+      role: AppRole.host,
+      child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+    ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_inline_profile_edit',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_inline_profile_edit',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostAccountScreen()),
+    builder: (context) => const _AppRoleCapture(
+      role: AppRole.host,
+      child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+    ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_save_profile_pending',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_save_profile_pending',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.savePending,
-        child: HostAccountScreen(),
+        child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
       ),
     ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_save_profile_error',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_save_profile_error',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.saveError,
-        child: HostAccountScreen(),
+        child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
       ),
     ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_save_profile_offline',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_save_profile_offline',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.saveOffline,
-        child: HostAccountScreen(),
+        child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
       ),
     ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_sign_out_error',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_sign_out_error',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.signOutError,
-        child: HostAccountScreen(),
+        child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
       ),
     ),
   ),
   ScreenCaptureEntry(
-    id: 'host_settings_sign_out_offline',
-    routeIds: const <String>['hostSettingsScreen'],
+    id: 'host_team_sign_out_offline',
+    routeIds: const <String>['hostClubTeamScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.signOutOffline,
-        child: HostAccountScreen(),
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_populated',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostProfileScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_validation_error',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: AsyncData<HostProfile?>(
-        HostOperationsFixtures.hostProfileMissingDisplayName,
-      ),
-    ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostProfileScreen(formAutovalidateMode: AutovalidateMode.always),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_text_scale_2',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    textScale: 2,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostProfileScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_reduced_motion',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    disableAnimations: true,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostProfileScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_loading',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncLoading<HostProfile?>(),
-    ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostProfileScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_error',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: AsyncError<HostProfile?>(
-        StateError('Capture host profile failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostProfileScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_offline',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: AsyncError<HostProfile?>(
-        obviousOfflineException(),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostProfileScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_missing',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncData<HostProfile?>(null),
-    ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostProfileScreen()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_create_pending',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncData<HostProfile?>(null),
-    ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.createPending,
-        child: HostProfileScreen(),
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_create_error',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncData<HostProfile?>(null),
-    ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.createError,
-        child: HostProfileScreen(),
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_create_offline',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostProfile: const AsyncData<HostProfile?>(null),
-    ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.createOffline,
-        child: HostProfileScreen(),
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_save_pending',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.savePending,
-        child: HostProfileScreen(),
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_save_error',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.saveError,
-        child: HostProfileScreen(),
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_profile_save_offline',
-    routeIds: const <String>['hostProfileScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _HostProfileMutationCapture(
-        mode: _HostProfileMutationCaptureMode.saveOffline,
-        child: HostProfileScreen(),
+        child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
       ),
     ),
   ),
@@ -11826,9 +11570,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       participations: _hostParticipations,
       planValue: AsyncData<EventSuccessPlan?>(_hostManageCheckInPlan),
     ),
-    builder: (context) => _hostManageLiveSectionCapture(
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
       event: _hostEvent,
-      liveRoster: const SizedBox.shrink(),
+      initialSection: HostEventManageSection.guests,
     ),
   ),
   ScreenCaptureEntry(

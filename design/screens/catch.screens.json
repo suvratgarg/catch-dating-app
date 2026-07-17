@@ -8584,7 +8584,7 @@
         "symbol": "HostClubsScreen"
       },
       "stateController": {
-        "primary": "uidProvider + _hostClubsForUserProvider + HostClubsScreenState + HostClubEditController (identity, contact, media, policy defaults, and Event Success defaults) + HostPaymentAccountController + watchHostPaymentAccountProvider + hostAnalyticsProvider",
+        "primary": "uidProvider + _hostClubsForUserProvider + HostClubsScreenState + HostClubEditController (identity, contact, media, policy defaults, and Event Success defaults) + HostPaymentAccountController + watchHostPaymentAccountProvider + hostAnalyticsProvider + HostTeamWorkspaceState + HostProfileController",
         "files": [
           {
             "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
@@ -8633,6 +8633,38 @@
           {
             "file": "lib/hosts/presentation/payments/host_payment_account_controller.dart",
             "symbol": "HostPaymentAccountController"
+          },
+          {
+            "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+            "symbol": "HostClubTeamScreen"
+          },
+          {
+            "file": "lib/hosts/data/host_profile_repository.dart",
+            "symbol": "HostProfileRepository"
+          },
+          {
+            "file": "lib/hosts/domain/host_profile.dart",
+            "symbol": "HostProfile"
+          },
+          {
+            "file": "lib/hosts/presentation/host_team_workspace_state.dart",
+            "symbol": "HostTeamWorkspaceState"
+          },
+          {
+            "file": "lib/hosts/presentation/host_profile_controller.dart",
+            "symbol": "HostProfileController"
+          },
+          {
+            "file": "lib/clubs/data/clubs_repository.dart",
+            "symbol": "watchClubsOwnedBy"
+          },
+          {
+            "file": "lib/clubs/data/clubs_repository.dart",
+            "symbol": "watchClubsHostedBy"
+          },
+          {
+            "file": "lib/auth/presentation/auth_session_controller.dart",
+            "symbol": "AuthSessionController"
           }
         ],
         "mutationOwners": [
@@ -8849,6 +8881,61 @@
           "id": "host_clubs_team_offline",
           "status": "captured",
           "notes": "Deterministic capture renders Host Clubs host-team mutation offline state."
+        },
+        {
+          "id": "host_team_active_profile",
+          "status": "captured",
+          "notes": "Deterministic Host team capture with active professional profile, profile summary rows, owned/hosted clubs, and account actions."
+        },
+        {
+          "id": "host_team_fallback_profile",
+          "status": "captured",
+          "notes": "Deterministic Host team capture for fallback professional profile derived from hosted club data."
+        },
+        {
+          "id": "host_team_clubs_loading",
+          "status": "captured",
+          "notes": "Deterministic Host team capture for hosted/owned clubs loading while active profile is available."
+        },
+        {
+          "id": "host_team_clubs_error",
+          "status": "captured",
+          "notes": "Deterministic Host team capture for hosted/owned clubs load error while active profile is available."
+        },
+        {
+          "id": "host_team_clubs_offline",
+          "status": "captured",
+          "notes": "Deterministic Host team capture for hosted/owned clubs offline-looking load failure."
+        },
+        {
+          "id": "host_team_inline_profile_edit",
+          "status": "captured",
+          "notes": "Deterministic Host team capture with editable professional profile fields inline."
+        },
+        {
+          "id": "host_team_save_profile_pending",
+          "status": "captured",
+          "notes": "Deterministic Host team capture for inline save-profile pending state."
+        },
+        {
+          "id": "host_team_save_profile_error",
+          "status": "captured",
+          "notes": "Deterministic Host team capture for failed save-profile snackbar feedback while inline fields remain available."
+        },
+        {
+          "id": "host_team_save_profile_offline",
+          "status": "captured",
+          "notes": "Deterministic Host team capture for offline-looking save-profile feedback while inline fields remain available."
+        },
+        {
+          "id": "host_team_sign_out_error",
+          "status": "captured",
+          "notes": "Deterministic Host team capture for failed sign-out snackbar feedback."
+        },
+        {
+          "id": "host_team_sign_out_offline",
+          "status": "captured",
+          "notes": "Deterministic Host team capture for offline-looking sign-out feedback."
         }
       ],
       "states": [
@@ -9026,12 +9113,12 @@
           "id": "club_settings_spokes_loaded",
           "kind": "populated",
           "status": "tested",
-          "source": "Event defaults, Live event guide, Host team, and owner-only Payments use thin CatchScreenTopBar spoke routes with the club name as eyebrow, capped content width, CatchSection composition, and terminal scroll padding.",
+          "source": "Event defaults, Live event guide, and Payments remain thin CatchScreenTopBar spokes. Host team is the canonical club-scoped Edit / Preview workspace for professional profile, team membership, hosted-club navigation, and bottom sign out.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart",
             "test/routing/router_redirect_test.dart"
           ],
-          "nextAction": "Keep the four planned route captures and Widgetbook owner-loaded previews synchronized.",
+          "nextAction": "Keep the three thin spoke previews and the expanded Host team route-state catalog synchronized.",
           "previewIds": [
             "HostClubEventDefaultsScreen/Owner loaded",
             "HostClubLiveGuideScreen/Owner loaded",
@@ -9043,7 +9130,7 @@
           "id": "club_settings_spokes_loading_error",
           "kind": "loading",
           "status": "implemented",
-          "source": "All four spokes resolve uid plus operable clubs through one adapter; uid/club loading uses HostLoadingScreen and failures use CatchErrorScaffold with typed retry invalidation.",
+          "source": "The three thin spokes and Host team resolve uid plus operable clubs with typed loading/error handling; Host team additionally adapts professional profile state through HostTeamWorkspaceState.",
           "nextAction": "Add deterministic route captures if the shared loading or error shell diverges visually.",
           "previewIds": [
             "HostClubEventDefaultsScreen/Owner loaded",
@@ -9304,6 +9391,256 @@
           ],
           "captureIds": [
             "host_clubs_light_dark"
+          ]
+        },
+        {
+          "id": "host_team_uid_missing",
+          "kind": "permission",
+          "status": "implemented",
+          "source": "Null uid routes settings to the same host auth-required surface used by host operations.",
+          "nextAction": "Add signed-out Host team capture and decide whether shell redirect should replace this local state; Widgetbook covers the local auth-required branch.",
+          "previewIds": [
+            "HostClubTeamScreen/Route states"
+          ]
+        },
+        {
+          "id": "profile_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "HostTeamProfileSection has a loading branch for defensive provider-only rendering; the club-scoped route normally resolves fallback identity from the selected club.",
+          "nextAction": "Compare loading treatment against the canonical Host team reference once exported.",
+          "captureIds": [],
+          "previewIds": [
+            "HostClubTeamScreen/Route states"
+          ]
+        },
+        {
+          "id": "profile_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Host profile load errors render CatchErrorState.fromError with retry when no fallback profile exists.",
+          "nextAction": "Compare error copy and retry placement against the canonical Host team reference once exported.",
+          "captureIds": [],
+          "previewIds": [
+            "HostClubTeamScreen/Route states"
+          ]
+        },
+        {
+          "id": "no_profile",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "No host profile renders Create host profile row inside the Profile section.",
+          "nextAction": "Compare no-profile and create-pending row treatment against the canonical Host team reference once exported.",
+          "captureIds": [],
+          "previewIds": [
+            "HostClubTeamScreen/Route states",
+            "HostTeamProfileSection/Profile summary states"
+          ]
+        },
+        {
+          "id": "fallback_profile_from_club",
+          "kind": "populated",
+          "status": "captured",
+          "source": "While the dedicated profile is loading, HostClubTeamScreen can derive display identity from owned/hosted club host profiles.",
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Fallback derivation now lives in HostTeamWorkspaceState; compare fallback profile rows against the canonical Host team reference once exported.",
+          "captureIds": [
+            "host_team_fallback_profile"
+          ],
+          "previewIds": [
+            "HostClubTeamScreen/Route states",
+            "HostTeamProfileSection/Profile summary states"
+          ]
+        },
+        {
+          "id": "active_profile",
+          "kind": "populated",
+          "status": "captured",
+          "source": "Active host profiles render display name, role title, status, and bio rows.",
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Compare profile summary row hierarchy against the canonical Host team reference once exported.",
+          "captureIds": [
+            "host_team_active_profile"
+          ],
+          "previewIds": [
+            "HostClubTeamScreen/Route states",
+            "HostTeamProfileSection/Profile summary states"
+          ]
+        },
+        {
+          "id": "edit_preview_tabs",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "The top tab rail toggles Edit and Preview account modes for profile and club rows.",
+          "nextAction": "Compare tab rail placement against the canonical Host team reference once exported.",
+          "previewIds": [
+            "HostClubTeamScreen/Route states",
+            "CatchTabRail/Contract states"
+          ]
+        },
+        {
+          "id": "inline_profile_editor",
+          "kind": "mutation",
+          "status": "captured",
+          "source": "Edit mode renders display name, role title, status, and bio in one Profile section, saves through HostProfileController without opening a modal, keeps the fields available when save fails, and shows shared Catch snackbar success feedback.",
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Compare inline field hierarchy and mutation feedback against the canonical Host team reference once exported.",
+          "captureIds": [
+            "host_team_inline_profile_edit",
+            "host_team_save_profile_pending",
+            "host_team_save_profile_error",
+            "host_team_save_profile_offline"
+          ],
+          "previewIds": [
+            "HostTeamProfileRows/Covered by host team route states"
+          ]
+        },
+        {
+          "id": "create_profile_mutation",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "Create host profile row calls HostProfileController.ensureProfileMutation, shows shared Catch snackbar feedback on success, shows a row-level pending affordance while creating, and surfaces snackbar copy on failure.",
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Compare create-pending row and snackbar feedback against the canonical Host team reference once exported.",
+          "captureIds": [],
+          "previewIds": [
+            "HostTeamProfileSection/Profile summary states"
+          ]
+        },
+        {
+          "id": "save_profile_mutation",
+          "kind": "mutation",
+          "status": "captured",
+          "source": "The inline Profile section saves display name, role title, and bio through HostProfileController.saveProfileMutation, surfaces snackbar copy on failure, and lets HostClubTeamScreen show shared Catch snackbar success feedback without modal state.",
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Compare inline save-pending and failed-save treatment against the canonical Host team reference once exported.",
+          "captureIds": [
+            "host_team_save_profile_pending",
+            "host_team_save_profile_error",
+            "host_team_save_profile_offline"
+          ],
+          "previewIds": [
+            "HostTeamProfileRows/Covered by host team route states"
+          ]
+        },
+        {
+          "id": "clubs_loading",
+          "kind": "loading",
+          "status": "captured",
+          "source": "Clubs section receives _hostClubsForUserProvider and can render async club state independently of profile rows.",
+          "nextAction": "Compare clubs-section loading treatment against the canonical Host team reference once exported.",
+          "captureIds": [
+            "host_team_clubs_loading"
+          ],
+          "previewIds": [
+            "HostClubTeamScreen/Route states",
+            "HostTeamHostedClubsSection/Clubs states"
+          ]
+        },
+        {
+          "id": "clubs_error",
+          "kind": "error",
+          "status": "captured",
+          "source": "Clubs section can surface hosted/owned club load errors.",
+          "nextAction": "Compare clubs-section retry treatment against the canonical Host team reference once exported.",
+          "captureIds": [
+            "host_team_clubs_error"
+          ],
+          "previewIds": [
+            "HostClubTeamScreen/Route states",
+            "HostTeamHostedClubsSection/Clubs states"
+          ]
+        },
+        {
+          "id": "clubs_section",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Host team lists hosted/owned clubs and routes edits or profile previews based on edit mode.",
+          "nextAction": "Add capture for owned and co-hosted clubs in settings preview mode.",
+          "previewIds": [
+            "HostClubTeamScreen/Route states",
+            "HostTeamHostedClubsSection/Clubs states"
+          ]
+        },
+        {
+          "id": "sign_out_action",
+          "kind": "mutation",
+          "status": "captured",
+          "source": "Top-bar sign-out action delegates to AuthSessionController.signOutMutation and surfaces failure through CatchMutationErrorListener.",
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Decide whether sign-out belongs in Host team or host shell account policy before visual comparison.",
+          "captureIds": [
+            "host_team_sign_out_error",
+            "host_team_sign_out_offline"
+          ],
+          "previewIds": [
+            "HostClubTeamScreen/Route states",
+            "CatchTabRail/Contract states"
+          ]
+        },
+        {
+          "id": "host_team_offline",
+          "kind": "offline",
+          "status": "captured",
+          "source": "Profile, clubs, create-profile, and save-profile offline-looking failures use shared mapped offline error state/snackbar copy.",
+          "nextAction": "Compare shared offline copy and placement against the canonical Host team reference once exported; decide only if host-specific offline copy is needed.",
+          "captureIds": [
+            "host_team_clubs_offline",
+            "host_team_save_profile_offline"
+          ]
+        },
+        {
+          "id": "host_team_text_scale_2",
+          "kind": "accessibility",
+          "status": "captured",
+          "source": "Settings rows, inline profile fields, and tab rail have text-scale coverage.",
+          "nextAction": "Review route, profile rows, club rows, and tab rail against the canonical Host team design reference once exported.",
+          "captureIds": [
+            "host_team_text_scale_2"
+          ],
+          "previewIds": [
+            "HostClubTeamScreen/Route states",
+            "HostTeamProfileSection/Profile summary states",
+            "HostTeamHostedClubsSection/Clubs states",
+            "CatchTabRail/Contract states"
+          ]
+        },
+        {
+          "id": "host_team_reduced_motion",
+          "kind": "accessibility",
+          "status": "captured",
+          "source": "Inline profile fields and tab switching have reduced-motion coverage.",
+          "nextAction": "Review tab switching and inline field focus motion against the canonical Host team reference once exported.",
+          "captureIds": [
+            "host_team_reduced_motion"
+          ],
+          "previewIds": [
+            "HostClubTeamScreen/Route states"
+          ]
+        },
+        {
+          "id": "host_team_light_dark",
+          "kind": "theme",
+          "status": "captured",
+          "source": "Host team uses tokenized rows, surfaces, and top bar.",
+          "nextAction": "Compare light and dark baselines after the Host team reference export is available.",
+          "captureIds": [
+            "host_team_active_profile"
+          ],
+          "previewIds": [
+            "HostClubTeamScreen/Route states"
           ]
         }
       ],
@@ -9575,8 +9912,8 @@
               "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
               "symbol": "HostTeamManagementSection"
             },
-            "currentOwner": "HostClubTeamScreen",
-            "targetOwner": "provider-free host team section plus HostTeamManagementController adapter",
+            "currentOwner": "HostClubTeamScreen + HostTeamManagementSection",
+            "targetOwner": "single Host team workspace plus provider-free team section and HostTeamManagementController",
             "dependencies": [
               "catch.badge",
               "catch.icon_button",
@@ -9595,7 +9932,7 @@
               "mutation_pending",
               "mutation_error"
             ],
-            "migration": "Keep host-team writes in HostTeamManagementController. HostTeamAddHostSheet is public and source-backed with Widgetbook ready, pending, error, and offline states; HostTeamHostActionDialog is public and source-backed with remove-host and transfer-ownership states. Remaining team migration is a broader controller/display-state seam if Host Clubs needs to lift every route/sheet side effect out of the section.",
+            "migration": "HostClubTeamScreen is the single route owner for profile Edit / Preview, selected-club team management, hosted-club navigation, and Edit-only bottom sign out. Host-team writes remain in HostTeamManagementController.",
             "previewIds": [
               "HostClubsScreen/Route states",
               "hostTeamAddHostSheetStates",
@@ -9731,6 +10068,145 @@
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
+          },
+          {
+            "id": "section.host.clubs.team.adapter",
+            "name": "Host team route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "HostTeamWorkspaceState"
+            ],
+            "flutter": {
+              "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+              "symbol": "HostClubTeamScreen"
+            },
+            "currentOwner": "HostClubTeamScreen + provider watches",
+            "targetOwner": "HostTeamWorkspaceState adapter",
+            "dependencies": [
+              "catch.surface"
+            ],
+            "states": [
+              "uid_missing",
+              "profile_loading",
+              "profile_error",
+              "active_profile"
+            ],
+            "migration": "Profile/clubs waves, fallback derivation, tab/account action availability, and club navigation policy now route through HostTeamWorkspaceState, while profile create/save mutations route through HostProfileController. Payout/admin ownership is blocked on product IA; reference-backed comparison is tracked by DS-HOST-SETTINGS-004.",
+            "previewIds": [
+              "HostClubTeamScreen/Route states"
+            ]
+          },
+          {
+            "id": "section.host.clubs.team.top_bar_tabs",
+            "name": "Host team top bar and tabs",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [
+              "HostTeamTopBar"
+            ],
+            "flutter": {
+              "file": "lib/core/widgets/catch_tab_rail.dart",
+              "symbol": "CatchTabRail"
+            },
+            "currentOwner": "HostClubTeamScreen + CatchTabRail",
+            "targetOwner": "route-owned top bar with shared tab rail",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.tab_rail"
+            ],
+            "states": [
+              "edit_preview_tabs",
+              "sign_out_action",
+              "text_scale_2"
+            ],
+            "migration": "Host team tab rail uses shared CatchTabRail, and the pushed route uses explicit CatchTopBar back navigation enforced by screen_top_bar_contracts.json. Remaining work is deciding whether tab/action state belongs in HostTeamWorkspaceState or stays route-local until broader account-action policy is settled.",
+            "previewIds": [
+              "HostClubTeamScreen/Route states",
+              "CatchTabRail/Contract states"
+            ]
+          },
+          {
+            "id": "section.host.clubs.team.profile_summary",
+            "name": "Host team profile summary",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [
+              "HostProfileSummaryRows"
+            ],
+            "flutter": {
+              "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+              "symbol": "HostTeamProfileSection"
+            },
+            "currentOwner": "HostTeamProfileSection",
+            "targetOwner": "provider-free profile summary section",
+            "dependencies": [
+              "catch.surface"
+            ],
+            "states": [
+              "no_profile",
+              "fallback_profile_from_club",
+              "active_profile"
+            ],
+            "migration": "HostTeamProfileSection is provider-free and renders no-profile, fallback, active, preview, and status rows from HostTeamProfileState plus callbacks. Fallback derivation now lives in HostTeamWorkspaceState and profile create/save mutations route through HostProfileController.",
+            "previewIds": [
+              "HostTeamProfileSection/Profile summary states"
+            ]
+          },
+          {
+            "id": "section.host.clubs.team.profile_editor",
+            "name": "Host team inline profile editor",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [
+              "HostTeamProfileRows"
+            ],
+            "flutter": {
+              "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+              "symbol": "HostTeamProfileRows"
+            },
+            "currentOwner": "HostTeamProfileRows inline form",
+            "targetOwner": "provider-free host profile editor form",
+            "dependencies": [
+              "catch.field",
+              "catch.button"
+            ],
+            "states": [
+              "inline_profile_editor",
+              "save_profile_mutation",
+              "create_profile_mutation"
+            ],
+            "migration": "HostTeamProfileRows renders display name, role title, status, and bio inside one CatchSection.fieldRows form and exposes the save mutation inline; captures cover ready, pending, failed, and offline save states.",
+            "previewIds": [
+              "HostTeamProfileRows/Covered by host team route states"
+            ]
+          },
+          {
+            "id": "section.host.clubs.team.clubs",
+            "name": "Host team clubs section",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [
+              "HostTeamHostedClubsSection"
+            ],
+            "flutter": {
+              "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+              "symbol": "HostTeamHostedClubsSection"
+            },
+            "currentOwner": "HostTeamHostedClubsSection",
+            "targetOwner": "provider-free settings clubs section",
+            "dependencies": [
+              "catch.surface"
+            ],
+            "states": [
+              "clubs_loading",
+              "clubs_error",
+              "clubs_section"
+            ],
+            "migration": "HostTeamHostedClubsSection is provider-free and renders loading, error, empty, edit, and preview rows from explicit club state and callbacks. Remaining adapter work is typed route-intent display data shared with Host Clubs where useful.",
+            "previewIds": [
+              "HostTeamHostedClubsSection/Clubs states"
+            ]
           }
         ]
       },
@@ -9755,6 +10231,21 @@
           "status": "closed",
           "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
         }
+      ],
+      "captureIds": [
+        "host_team_text_scale_2",
+        "host_team_reduced_motion",
+        "host_team_active_profile",
+        "host_team_fallback_profile",
+        "host_team_clubs_loading",
+        "host_team_clubs_error",
+        "host_team_clubs_offline",
+        "host_team_inline_profile_edit",
+        "host_team_save_profile_pending",
+        "host_team_save_profile_error",
+        "host_team_save_profile_offline",
+        "host_team_sign_out_error",
+        "host_team_sign_out_offline"
       ]
     },
     {
@@ -19482,1124 +19973,6 @@
           "status": "closed",
           "nextAction": "Closed for the owner-edit reference: edit_hosted_event compares within threshold against the registered Claude reference at 9.25% mismatch / 10.93 meanDelta. Reopen only if design adds new canonical Host Edit Event references."
         }
-      ]
-    },
-    {
-      "id": "screen.host.settings",
-      "name": "Host Settings",
-      "owner": "hosts",
-      "priority": "P2",
-      "status": "in_progress",
-      "routes": [
-        {
-          "id": "hostSettingsScreen",
-          "path": "/host/settings",
-          "role": "primary"
-        }
-      ],
-      "source": {
-        "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-        "symbol": "HostAccountScreen"
-      },
-      "stateController": {
-        "primary": "HostAccountScreen + HostSettingsState + HostProfileController + uidProvider + watchHostProfileProvider + _hostClubsForUserProvider + AuthSessionController",
-        "files": [
-          {
-            "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-            "symbol": "HostAccountScreen"
-          },
-          {
-            "file": "lib/hosts/data/host_profile_repository.dart",
-            "symbol": "HostProfileRepository"
-          },
-          {
-            "file": "lib/hosts/domain/host_profile.dart",
-            "symbol": "HostProfile"
-          },
-          {
-            "file": "lib/hosts/presentation/host_settings_state.dart",
-            "symbol": "HostSettingsState"
-          },
-          {
-            "file": "lib/hosts/presentation/host_profile_controller.dart",
-            "symbol": "HostProfileController"
-          },
-          {
-            "file": "lib/clubs/data/clubs_repository.dart",
-            "symbol": "watchClubsOwnedBy"
-          },
-          {
-            "file": "lib/clubs/data/clubs_repository.dart",
-            "symbol": "watchClubsHostedBy"
-          },
-          {
-            "file": "lib/auth/presentation/auth_session_controller.dart",
-            "symbol": "AuthSessionController"
-          }
-        ],
-        "mutationOwners": [
-          {
-            "file": "lib/hosts/presentation/host_profile_controller.dart",
-            "symbol": "HostProfileController"
-          },
-          {
-            "file": "lib/auth/presentation/auth_session_controller.dart",
-            "symbol": "AuthSessionController"
-          }
-        ],
-        "notes": "hostSettingsScreen is backed by HostAccountScreen. The screen watches uidProvider, watchHostProfileProvider, and _hostClubsForUserProvider, adapts profile/clubs branches plus tab/account/club navigation policy through HostSettingsState, falls back to club host profile data while the dedicated host profile loads, edits and saves professional profile fields inline through HostProfileController mutations, renders provider-free HostSettingsProfileSection and HostSettingsClubsSection rows, exposes enforced back navigation, and signs out through AuthSessionController. Remaining non-code work is reference export/pixel parity, with payout/admin placement blocked on product IA ownership."
-      },
-      "designRefs": [
-        {
-          "id": "repo.host-account-tests",
-          "kind": "repo",
-          "status": "available",
-          "path": "test/hosts/host_operations_screen_test.dart",
-          "notes": "Host operations tests cover host account profile fallback, inline profile editing, section-owned club dividers, and back navigation."
-        },
-        {
-          "id": "claude.host-settings",
-          "kind": "claude",
-          "status": "needs_export",
-          "notes": "Direct Host Account Claude template found in explorations/archived-templates/host-account/HostAccount.dc.html and mapped to hostSettingsScreen by host-coverage-manifest.json. Export remains blocked: 2026-06-25 Chrome headless attempts with the corrected temporary bundle layout, current support runtime swap, CDP capture, and original source path either produced placeholder boxes or hung before a valid PNG.",
-          "path": "design/source_packs/host-v2/host-account/HostAccount.dc.html"
-        }
-      ],
-      "captures": [
-        {
-          "id": "host_settings_active_profile",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture with active professional profile, profile summary rows, owned/hosted clubs, and account actions."
-        },
-        {
-          "id": "host_settings_profile_loading",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for host profile loading with hosted/owned club fixtures ready."
-        },
-        {
-          "id": "host_settings_profile_error",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for host profile load error with retry surface."
-        },
-        {
-          "id": "host_settings_profile_offline",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for host profile offline-looking load failure with shared mapped offline copy."
-        },
-        {
-          "id": "host_settings_no_profile",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for missing host profile without fallback club profile data."
-        },
-        {
-          "id": "host_settings_create_profile_pending",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for create-profile mutation pending on the no-profile row."
-        },
-        {
-          "id": "host_settings_create_profile_error",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for failed create-profile mutation snackbar feedback."
-        },
-        {
-          "id": "host_settings_create_profile_offline",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for offline-looking create-profile mutation feedback."
-        },
-        {
-          "id": "host_settings_fallback_profile",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for fallback professional profile derived from hosted club data."
-        },
-        {
-          "id": "host_settings_clubs_loading",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for hosted/owned clubs loading while active profile is available."
-        },
-        {
-          "id": "host_settings_clubs_error",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for hosted/owned clubs load error while active profile is available."
-        },
-        {
-          "id": "host_settings_clubs_offline",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for hosted/owned clubs offline-looking load failure."
-        },
-        {
-          "id": "host_settings_inline_profile_edit",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture with editable professional profile fields inline."
-        },
-        {
-          "id": "host_settings_save_profile_pending",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for inline save-profile pending state."
-        },
-        {
-          "id": "host_settings_save_profile_error",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for failed save-profile snackbar feedback while inline fields remain available."
-        },
-        {
-          "id": "host_settings_save_profile_offline",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for offline-looking save-profile feedback while inline fields remain available."
-        },
-        {
-          "id": "host_settings_sign_out_error",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for failed sign-out snackbar feedback."
-        },
-        {
-          "id": "host_settings_sign_out_offline",
-          "status": "captured",
-          "notes": "Deterministic Host Settings capture for offline-looking sign-out feedback."
-        }
-      ],
-      "states": [
-        {
-          "id": "uid_missing",
-          "kind": "permission",
-          "status": "implemented",
-          "source": "Null uid routes settings to the same host auth-required surface used by host operations.",
-          "nextAction": "Add signed-out host settings capture and decide whether shell redirect should replace this local state; Widgetbook covers the local auth-required branch.",
-          "previewIds": [
-            "HostAccountScreen/Route states"
-          ]
-        },
-        {
-          "id": "profile_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "HostAccountScreen shows HostSettingsRowsSkeleton only when the dedicated host profile is loading and no club fallback profile exists.",
-          "nextAction": "Compare loading treatment against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_profile_loading"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states"
-          ]
-        },
-        {
-          "id": "profile_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "Host profile load errors render CatchErrorState.fromError with retry when no fallback profile exists.",
-          "nextAction": "Compare error copy and retry placement against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_profile_error"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states"
-          ]
-        },
-        {
-          "id": "no_profile",
-          "kind": "empty",
-          "status": "captured",
-          "source": "No host profile renders Create host profile row inside the Profile section.",
-          "nextAction": "Compare no-profile and create-pending row treatment against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_no_profile"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states",
-            "HostSettingsProfileSection/Profile summary states"
-          ]
-        },
-        {
-          "id": "fallback_profile_from_club",
-          "kind": "populated",
-          "status": "captured",
-          "source": "While the dedicated profile is loading, HostAccountScreen can derive display identity from owned/hosted club host profiles.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Fallback derivation now lives in HostSettingsState; compare fallback profile rows against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_fallback_profile"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states",
-            "HostSettingsProfileSection/Profile summary states"
-          ]
-        },
-        {
-          "id": "active_profile",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Active host profiles render display name, role title, status, and bio rows.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Compare profile summary row hierarchy against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_active_profile"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states",
-            "HostSettingsProfileSection/Profile summary states"
-          ]
-        },
-        {
-          "id": "edit_preview_tabs",
-          "kind": "populated",
-          "status": "implemented",
-          "source": "The top tab rail toggles Edit and Preview account modes for profile and club rows.",
-          "nextAction": "Compare tab rail placement against the canonical Host Settings reference once exported.",
-          "previewIds": [
-            "HostAccountScreen/Route states",
-            "CatchTabRail/Contract states"
-          ]
-        },
-        {
-          "id": "inline_profile_editor",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Edit mode renders display name, role title, status, and bio in one Profile section, saves through HostProfileController without opening a modal, keeps the fields available when save fails, and shows shared Catch snackbar success feedback.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Compare inline field hierarchy and mutation feedback against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_inline_profile_edit",
-            "host_settings_save_profile_pending",
-            "host_settings_save_profile_error",
-            "host_settings_save_profile_offline"
-          ],
-          "previewIds": [
-            "HostProfileFields/Field states"
-          ]
-        },
-        {
-          "id": "create_profile_mutation",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Create host profile row calls HostProfileController.ensureProfileMutation, shows shared Catch snackbar feedback on success, shows a row-level pending affordance while creating, and surfaces snackbar copy on failure.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Compare create-pending row and snackbar feedback against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_create_profile_pending",
-            "host_settings_create_profile_error",
-            "host_settings_create_profile_offline"
-          ],
-          "previewIds": [
-            "HostSettingsProfileSection/Profile summary states"
-          ]
-        },
-        {
-          "id": "save_profile_mutation",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "The inline Profile section saves display name, role title, and bio through HostProfileController.saveProfileMutation, surfaces snackbar copy on failure, and lets HostAccountScreen show shared Catch snackbar success feedback without modal state.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Compare inline save-pending and failed-save treatment against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_save_profile_pending",
-            "host_settings_save_profile_error",
-            "host_settings_save_profile_offline"
-          ],
-          "previewIds": [
-            "HostProfileFields/Field states"
-          ]
-        },
-        {
-          "id": "clubs_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "Clubs section receives _hostClubsForUserProvider and can render async club state independently of profile rows.",
-          "nextAction": "Compare clubs-section loading treatment against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_clubs_loading"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states",
-            "HostSettingsClubsSection/Clubs states"
-          ]
-        },
-        {
-          "id": "clubs_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "Clubs section can surface hosted/owned club load errors.",
-          "nextAction": "Compare clubs-section retry treatment against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_clubs_error"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states",
-            "HostSettingsClubsSection/Clubs states"
-          ]
-        },
-        {
-          "id": "clubs_section",
-          "kind": "populated",
-          "status": "implemented",
-          "source": "Host settings lists hosted/owned clubs and routes edits or profile previews based on edit mode.",
-          "nextAction": "Add capture for owned and co-hosted clubs in settings preview mode.",
-          "previewIds": [
-            "HostAccountScreen/Route states",
-            "HostSettingsClubsSection/Clubs states"
-          ]
-        },
-        {
-          "id": "sign_out_action",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Top-bar sign-out action delegates to AuthSessionController.signOutMutation and surfaces failure through CatchMutationErrorListener.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Decide whether sign-out belongs in Host Settings or host shell account policy before visual comparison.",
-          "captureIds": [
-            "host_settings_sign_out_error",
-            "host_settings_sign_out_offline"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states",
-            "CatchTabRail/Contract states"
-          ]
-        },
-        {
-          "id": "offline",
-          "kind": "offline",
-          "status": "captured",
-          "source": "Profile, clubs, create-profile, and save-profile offline-looking failures use shared mapped offline error state/snackbar copy.",
-          "nextAction": "Compare shared offline copy and placement against the canonical Host Settings reference once exported; decide only if host-specific offline copy is needed.",
-          "captureIds": [
-            "host_settings_profile_offline",
-            "host_settings_clubs_offline",
-            "host_settings_create_profile_offline",
-            "host_settings_save_profile_offline"
-          ]
-        },
-        {
-          "id": "text_scale_2",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "Settings rows, inline profile fields, and tab rail have text-scale coverage.",
-          "nextAction": "Review route, profile rows, club rows, and tab rail against the canonical Host Settings design reference once exported.",
-          "captureIds": [
-            "host_settings_text_scale_2"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states",
-            "HostSettingsProfileSection/Profile summary states",
-            "HostSettingsClubsSection/Clubs states",
-            "CatchTabRail/Contract states"
-          ]
-        },
-        {
-          "id": "reduced_motion",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "Inline profile fields and tab switching have reduced-motion coverage.",
-          "nextAction": "Review tab switching and inline field focus motion against the canonical Host Settings reference once exported.",
-          "captureIds": [
-            "host_settings_reduced_motion"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states"
-          ]
-        },
-        {
-          "id": "light_dark",
-          "kind": "theme",
-          "status": "captured",
-          "source": "Host settings uses tokenized rows, surfaces, and top bar.",
-          "nextAction": "Compare light and dark baselines after the Host Settings reference export is available.",
-          "captureIds": [
-            "host_settings_active_profile"
-          ],
-          "previewIds": [
-            "HostAccountScreen/Route states"
-          ]
-        }
-      ],
-      "composition": {
-        "currentLayout": "HostAccountScreen owns uid/profile/club provider watches, adapts provider waves plus tab/account/club navigation policy through HostSettingsState, routes inline profile create/save through HostProfileController mutations, owns explicit back/sign-out side effects, then composes provider-free HostSettingsProfileSection, HostSettingsClubsSection, shared CatchTabRail tabs, and section-owned field rows.",
-        "targetLayout": "Host Settings has no remaining provider-free extraction target until product/design resolves payout/admin ownership and a valid reference export is available for pixel parity.",
-        "sections": [
-          {
-            "id": "section.host.settings.adapter",
-            "name": "Host settings route adapter",
-            "status": "implemented_local",
-            "layer": "screen-adapter",
-            "claudeComponents": [
-              "HostSettingsState"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-              "symbol": "HostAccountScreen"
-            },
-            "currentOwner": "HostAccountScreen + provider watches",
-            "targetOwner": "HostSettingsState adapter",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "uid_missing",
-              "profile_loading",
-              "profile_error",
-              "active_profile"
-            ],
-            "migration": "Profile/clubs waves, fallback derivation, tab/account action availability, and club navigation policy now route through HostSettingsState, while profile create/save mutations route through HostProfileController. Payout/admin ownership is blocked on product IA; reference-backed comparison is tracked by DS-HOST-SETTINGS-004.",
-            "previewIds": [
-              "HostAccountScreen/Route states"
-            ]
-          },
-          {
-            "id": "section.host.settings.top_bar_tabs",
-            "name": "Host settings top bar and tabs",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostSettingsTopBar"
-            ],
-            "flutter": {
-              "file": "lib/core/widgets/catch_tab_rail.dart",
-              "symbol": "CatchTabRail"
-            },
-            "currentOwner": "HostAccountScreen + CatchTabRail",
-            "targetOwner": "route-owned top bar with shared tab rail",
-            "dependencies": [
-              "catch.top_bar",
-              "catch.tab_rail"
-            ],
-            "states": [
-              "edit_preview_tabs",
-              "sign_out_action",
-              "text_scale_2"
-            ],
-            "migration": "Host Settings tab rail uses shared CatchTabRail, and the pushed route uses explicit CatchTopBar back navigation enforced by screen_top_bar_contracts.json. Remaining work is deciding whether tab/action state belongs in HostSettingsState or stays route-local until broader account-action policy is settled.",
-            "previewIds": [
-              "HostAccountScreen/Route states",
-              "CatchTabRail/Contract states"
-            ]
-          },
-          {
-            "id": "section.host.settings.profile_summary",
-            "name": "Host settings profile summary",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostProfileSummaryRows"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-              "symbol": "HostSettingsProfileSection"
-            },
-            "currentOwner": "HostSettingsProfileSection",
-            "targetOwner": "provider-free profile summary section",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "no_profile",
-              "fallback_profile_from_club",
-              "active_profile"
-            ],
-            "migration": "HostSettingsProfileSection is provider-free and renders no-profile, fallback, active, preview, and status rows from HostSettingsProfileState plus callbacks. Fallback derivation now lives in HostSettingsState and profile create/save mutations route through HostProfileController.",
-            "previewIds": [
-              "HostSettingsProfileSection/Profile summary states"
-            ]
-          },
-          {
-            "id": "section.host.settings.profile_editor",
-            "name": "Host settings inline profile editor",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostSettingsProfileRows"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-              "symbol": "HostSettingsProfileRows"
-            },
-            "currentOwner": "HostSettingsProfileRows inline form",
-            "targetOwner": "provider-free host profile editor form",
-            "dependencies": [
-              "catch.field",
-              "catch.button"
-            ],
-            "states": [
-              "inline_profile_editor",
-              "save_profile_mutation",
-              "create_profile_mutation"
-            ],
-            "migration": "HostSettingsProfileRows renders display name, role title, status, and bio inside one CatchSection.fieldRows form and exposes the save mutation inline; captures cover ready, pending, failed, and offline save states.",
-            "previewIds": [
-              "HostProfileFields/Field states"
-            ]
-          },
-          {
-            "id": "section.host.settings.clubs",
-            "name": "Host settings clubs section",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostSettingsClubsSection"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-              "symbol": "HostSettingsClubsSection"
-            },
-            "currentOwner": "HostSettingsClubsSection",
-            "targetOwner": "provider-free settings clubs section",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "clubs_loading",
-              "clubs_error",
-              "clubs_section"
-            ],
-            "migration": "HostSettingsClubsSection is provider-free and renders loading, error, empty, edit, and preview rows from explicit club state and callbacks. Remaining adapter work is typed route-intent display data shared with Host Clubs where useful.",
-            "previewIds": [
-              "HostSettingsClubsSection/Clubs states"
-            ]
-          }
-        ]
-      },
-      "openGaps": [
-        {
-          "id": "DS-HOST-SETTINGS-001",
-          "status": "closed",
-          "nextAction": "Closed: Host Settings route captures cover active, fallback, no-profile, profile loading/error/offline, clubs loading/error/offline, editor-sheet, create/save mutation pending/error/offline, sign-out error/offline, text scale, reduced motion, and theme states. Reference comparison is tracked by DS-HOST-SETTINGS-004."
-        },
-        {
-          "id": "DS-HOST-SETTINGS-002",
-          "status": "closed",
-          "nextAction": "Closed: Widgetbook covers route states, profile summary rows including create-pending, tab rail, clubs loading/error/empty/populated, text scale, reduced motion, and dark theme; HostProfileFields plus route captures cover editor-sheet save/error/offline behavior."
-        },
-        {
-          "id": "DS-HOST-SETTINGS-003",
-          "status": "blocked",
-          "nextAction": "Blocked: HostSettingsProfileSection, HostSettingsClubsSection, shared CatchTabRail tabs, and HostSettingsSection are source-backed provider-free components, with profile/clubs waves, tab/account action availability, and club navigation policy adapted through HostSettingsState. Payout/admin ownership needs a product IA decision before code changes; reference comparison is tracked by DS-HOST-SETTINGS-004."
-        },
-        {
-          "id": "DS-HOST-SETTINGS-004",
-          "status": "blocked",
-          "nextAction": "Blocked: export the canonical Host Settings reference from the found HostAccount.dc.html source after the Claude export/runtime issue is repaired, add masks/manifest wiring, then compare against host_settings_active_profile and related route captures."
-        }
-      ],
-      "captureIds": [
-        "host_settings_text_scale_2",
-        "host_settings_reduced_motion",
-        "host_settings_active_profile",
-        "host_settings_profile_loading",
-        "host_settings_profile_error",
-        "host_settings_profile_offline",
-        "host_settings_no_profile",
-        "host_settings_create_profile_pending",
-        "host_settings_create_profile_error",
-        "host_settings_create_profile_offline",
-        "host_settings_fallback_profile",
-        "host_settings_clubs_loading",
-        "host_settings_clubs_error",
-        "host_settings_clubs_offline",
-        "host_settings_inline_profile_edit",
-        "host_settings_save_profile_pending",
-        "host_settings_save_profile_error",
-        "host_settings_save_profile_offline",
-        "host_settings_sign_out_error",
-        "host_settings_sign_out_offline"
-      ]
-    },
-    {
-      "id": "screen.host.profile",
-      "name": "Host Profile",
-      "owner": "hosts",
-      "priority": "P2",
-      "status": "in_progress",
-      "routes": [
-        {
-          "id": "hostProfileScreen",
-          "path": "/host/settings/profile",
-          "role": "primary"
-        }
-      ],
-      "source": {
-        "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-        "symbol": "HostProfileScreen"
-      },
-      "stateController": {
-        "primary": "HostProfileScreen + HostProfileEditState + HostProfileController + uidProvider + watchHostProfileProvider",
-        "files": [
-          {
-            "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-            "symbol": "HostProfileScreen"
-          },
-          {
-            "file": "lib/hosts/data/host_profile_repository.dart",
-            "symbol": "HostProfileRepository"
-          },
-          {
-            "file": "lib/hosts/domain/host_profile.dart",
-            "symbol": "HostProfile"
-          },
-          {
-            "file": "lib/hosts/presentation/host_settings_state.dart",
-            "symbol": "HostProfileEditState"
-          },
-          {
-            "file": "lib/hosts/presentation/host_profile_controller.dart",
-            "symbol": "HostProfileController"
-          }
-        ],
-        "mutationOwners": [
-          {
-            "file": "lib/hosts/presentation/host_profile_controller.dart",
-            "symbol": "HostProfileController"
-          }
-        ],
-        "notes": "HostProfileScreen is the direct professional profile editor route kept alongside HostAccountScreen. It resolves uid and watchHostProfileProvider through HostProfileEditState, renders loading/error/missing-profile states, syncs controllers from the loaded HostProfile, validates display name, saves display name/role title/bio through HostProfileController.saveProfileMutation, creates a missing profile through HostProfileController.ensureProfileMutation, composes provider-free HostProfileForm and HostEmptyActionCard missing-profile states, and reports mutation failures through CatchMutationErrorListeners. Remaining route work is reference-backed parity and any product decision for host-specific offline copy."
-      },
-      "designRefs": [
-        {
-          "id": "repo.host-account-tests",
-          "kind": "repo",
-          "status": "available",
-          "path": "test/hosts/host_operations_screen_test.dart",
-          "notes": "Host operations tests assert HostProfileScreen is not nested inside the account sheet and route wiring opens the direct profile editor route."
-        },
-        {
-          "id": "claude.host-profile",
-          "kind": "claude",
-          "status": "blocked",
-          "notes": "Blocked on canonical design source/export. host-coverage-manifest.json and host-app-manifest.json both identify hostProfileScreen (/host/settings/profile) as the remaining standalone profile-editor gap; the local Claude bundle has no dedicated Host Profile editor template."
-        }
-      ],
-      "captures": [
-        {
-          "id": "host_profile_populated",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture with populated active professional profile form."
-        },
-        {
-          "id": "host_profile_loading",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for profile loading."
-        },
-        {
-          "id": "host_profile_error",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for profile load error with retry surface."
-        },
-        {
-          "id": "host_profile_offline",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for offline-looking profile load failure with shared mapped offline copy."
-        },
-        {
-          "id": "host_profile_missing",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for missing professional profile state."
-        },
-        {
-          "id": "host_profile_validation_error",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for display-name validation using the route form and shared host profile fields."
-        },
-        {
-          "id": "host_profile_create_pending",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for create-profile mutation pending."
-        },
-        {
-          "id": "host_profile_create_error",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for failed create-profile mutation snackbar feedback."
-        },
-        {
-          "id": "host_profile_create_offline",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for offline-looking create-profile mutation feedback."
-        },
-        {
-          "id": "host_profile_save_pending",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for save-profile mutation pending."
-        },
-        {
-          "id": "host_profile_save_error",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for failed save-profile mutation snackbar feedback."
-        },
-        {
-          "id": "host_profile_save_offline",
-          "status": "captured",
-          "notes": "Deterministic Host Profile editor capture for offline-looking save-profile mutation feedback."
-        }
-      ],
-      "states": [
-        {
-          "id": "uid_missing",
-          "kind": "permission",
-          "status": "implemented",
-          "source": "Null uid renders _HostAuthRequiredScreen.",
-          "nextAction": "Add signed-out host profile capture or route redirect contract; Widgetbook route coverage now exercises the auth-required branch.",
-          "previewIds": [
-            "HostProfileScreen/Route states"
-          ]
-        },
-        {
-          "id": "profile_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "watchHostProfileProvider loading renders HostSettingsRowsSkeleton.",
-          "nextAction": "Compare loading treatment against the canonical Host Profile reference once exported.",
-          "captureIds": [
-            "host_profile_loading"
-          ],
-          "previewIds": [
-            "HostProfileScreen/Route states"
-          ]
-        },
-        {
-          "id": "profile_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "Host profile load errors render CatchErrorState.fromError with retry invalidation.",
-          "nextAction": "Compare error copy and retry placement against the canonical Host Profile reference once exported.",
-          "captureIds": [
-            "host_profile_error"
-          ],
-          "previewIds": [
-            "HostProfileScreen/Route states"
-          ]
-        },
-        {
-          "id": "missing_profile",
-          "kind": "empty",
-          "status": "captured",
-          "source": "A null HostProfile renders HostEmptyActionCard with Create host profile action.",
-          "nextAction": "Compare missing-profile and create-pending treatment against the canonical Host Profile reference once exported.",
-          "captureIds": [
-            "host_profile_missing",
-            "host_profile_create_pending",
-            "host_profile_create_error",
-            "host_profile_create_offline"
-          ],
-          "previewIds": [
-            "HostProfileScreen/Route states",
-            "HostEmptyActionCard/Action card states"
-          ]
-        },
-        {
-          "id": "populated_profile",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Loaded HostProfile syncs display name, role title, bio, and status into the edit form.",
-          "nextAction": "Continue with reference-backed pixel comparison after the canonical Host Profile export is available.",
-          "captureIds": [
-            "host_profile_populated"
-          ],
-          "previewIds": [
-            "HostProfileScreen/Route states",
-            "HostProfileForm/Form states",
-            "HostProfileFields/Field states"
-          ]
-        },
-        {
-          "id": "validation_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "Empty display name returns Enter a display name validation copy.",
-          "nextAction": "Compare display-name validation copy and spacing against the canonical Host Profile reference once exported.",
-          "captureIds": [
-            "host_profile_validation_error"
-          ],
-          "previewIds": [
-            "HostProfileScreen/Route states",
-            "HostProfileForm/Form states"
-          ]
-        },
-        {
-          "id": "create_profile_mutation",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Missing state calls HostProfileController.ensureProfileMutation and reports failures through CatchMutationErrorListeners.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Compare create-pending button and snackbar feedback against the canonical Host Profile reference once exported.",
-          "captureIds": [
-            "host_profile_create_pending",
-            "host_profile_create_error",
-            "host_profile_create_offline"
-          ],
-          "previewIds": [
-            "HostEmptyActionCard/Action card states"
-          ]
-        },
-        {
-          "id": "save_pending",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "HostProfileController.saveProfileMutation disables Save profile and shows CatchButton loading while save is pending.",
-          "nextAction": "Compare save-pending treatment against the canonical Host Profile reference once exported.",
-          "captureIds": [
-            "host_profile_save_pending"
-          ],
-          "previewIds": [
-            "HostProfileForm/Form states"
-          ]
-        },
-        {
-          "id": "save_error",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Save failures show branded snack bar error copy.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Compare failed-save snackbar feedback against the canonical Host Profile reference once exported.",
-          "captureIds": [
-            "host_profile_save_error",
-            "host_profile_save_offline"
-          ]
-        },
-        {
-          "id": "save_success",
-          "kind": "mutation",
-          "status": "implemented",
-          "source": "Successful save shows shared Catch snackbar feedback and keeps the editor route open.",
-          "tests": [
-            "test/hosts/host_operations_screen_test.dart"
-          ],
-          "nextAction": "Route-level success behavior is tested; compare snackbar placement against the canonical Host Profile reference once exported."
-        },
-        {
-          "id": "status_variants",
-          "kind": "populated",
-          "status": "implemented",
-          "source": "Active, pending, and suspended profile statuses map to professional profile status labels.",
-          "nextAction": "Compare status label tone against the canonical Host Profile reference once exported.",
-          "previewIds": [
-            "HostProfileForm/Form states",
-            "HostProfileFields/Field states"
-          ]
-        },
-        {
-          "id": "offline",
-          "kind": "offline",
-          "status": "captured",
-          "source": "Profile load, create-profile, and save-profile offline-looking failures use shared mapped offline error state/snackbar copy.",
-          "nextAction": "Compare shared offline copy and placement against the canonical Host Profile reference once exported; decide only if host-specific offline copy is needed.",
-          "captureIds": [
-            "host_profile_offline",
-            "host_profile_create_offline",
-            "host_profile_save_offline"
-          ]
-        },
-        {
-          "id": "text_scale_2",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "Form fields, status copy, and save button need text-scale coverage.",
-          "nextAction": "Review route, form, and missing-state wrapping against the canonical Host Profile design reference once exported.",
-          "captureIds": [
-            "host_profile_text_scale_2"
-          ],
-          "previewIds": [
-            "HostProfileScreen/Route states",
-            "HostProfileForm/Form states",
-            "HostEmptyActionCard/Action card states"
-          ]
-        },
-        {
-          "id": "reduced_motion",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "Route transition and snackbar feedback need reduced-motion review.",
-          "nextAction": "Add snackbar/mutation reduced-motion proof for save-error flows.",
-          "captureIds": [
-            "host_profile_reduced_motion"
-          ],
-          "previewIds": [
-            "HostProfileScreen/Route states",
-            "HostProfileForm/Form states"
-          ]
-        },
-        {
-          "id": "light_dark",
-          "kind": "theme",
-          "status": "captured",
-          "source": "Host profile uses tokenized top bar, surface, fields, and button.",
-          "nextAction": "Compare light and dark baselines after the Host Profile reference export is available.",
-          "captureIds": [
-            "host_profile_populated"
-          ],
-          "previewIds": [
-            "HostProfileScreen/Route states",
-            "HostProfileForm/Form states"
-          ]
-        }
-      ],
-      "composition": {
-        "currentLayout": "HostProfileScreen owns controller synchronization, validation, and shared Catch snackbar success feedback at the route edge, adapts uid/profile provider waves through HostProfileEditState, routes create/save through HostProfileController, then composes provider-free HostProfileForm plus HostEmptyActionCard for the missing-profile branch. Host Settings uses its own inline section composition with the same controller mutation seam.",
-        "targetLayout": "Host Profile should continue sharing HostProfileEditState and HostProfileController with Host Settings so provider-free profile form sections render populated, missing, validation, and mutation states consistently.",
-        "sections": [
-          {
-            "id": "section.host.profile.adapter",
-            "name": "Host profile route adapter",
-            "status": "implemented_local",
-            "layer": "screen-adapter",
-            "claudeComponents": [
-              "HostProfileEditState"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-              "symbol": "HostProfileScreen"
-            },
-            "currentOwner": "HostProfileScreen + provider watches",
-            "targetOwner": "HostProfileEditState adapter",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "uid_missing",
-              "profile_loading",
-              "profile_error",
-              "populated_profile"
-            ],
-            "migration": "Provider waves now route through HostProfileEditState and create/save mutations route through HostProfileController. Remaining work is reference-backed comparison and any host-specific offline copy decision.",
-            "previewIds": [
-              "HostProfileScreen/Route states"
-            ]
-          },
-          {
-            "id": "section.host.profile.top_bar",
-            "name": "Host profile top bar",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostProfileTopBar"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-              "symbol": "HostProfileScreen"
-            },
-            "currentOwner": "HostProfileScreen",
-            "targetOwner": "provider-free profile top bar section",
-            "dependencies": [
-              "catch.top_bar"
-            ],
-            "states": [
-              "populated_profile",
-              "text_scale_2"
-            ],
-            "migration": "Keep professional profile title/kicker as display data and align with Host Settings top bar treatment; route preview covers compact text-scale behavior.",
-            "previewIds": [
-              "HostProfileScreen/Route states"
-            ]
-          },
-          {
-            "id": "section.host.profile.form",
-            "name": "Host profile form",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostProfileForm"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-              "symbol": "HostProfileForm"
-            },
-            "currentOwner": "HostProfileForm + HostProfileFields",
-            "targetOwner": "provider-free professional profile form",
-            "dependencies": [
-              "catch.field",
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "populated_profile",
-              "validation_error",
-              "save_pending",
-              "save_error",
-              "save_success",
-              "status_variants"
-            ],
-            "migration": "Provider-free HostProfileForm and HostProfileFields back the direct profile route, while Host Settings uses inline section fields with save/create state shared through HostProfileController. Validation, save-error, and offline states have deterministic capture proof.",
-            "previewIds": [
-              "HostProfileForm/Form states",
-              "HostProfileFields/Field states"
-            ]
-          },
-          {
-            "id": "section.host.profile.missing_state",
-            "name": "Host profile missing state",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostEmptyActionCard"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_empty_action_card.dart",
-              "symbol": "HostEmptyActionCard"
-            },
-            "currentOwner": "HostProfileScreen + HostEmptyActionCard",
-            "targetOwner": "shared host empty action card plus route-owned create action",
-            "dependencies": [
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "missing_profile",
-              "create_profile_mutation"
-            ],
-            "migration": "HostProfileScreen now composes HostEmptyActionCard for the missing-profile visual section while HostProfileController owns create-profile side effects. Capture proof should cover pending/error/success state shared with Host Settings.",
-            "previewIds": [
-              "HostProfileScreen/Route states",
-              "HostEmptyActionCard/Action card states"
-            ]
-          }
-        ]
-      },
-      "openGaps": [
-        {
-          "id": "DS-HOST-PROFILE-001",
-          "status": "closed",
-          "nextAction": "Host Profile has route captures for populated, loading, error/offline, missing, validation, create/save mutation pending/error/offline, text scale, reduced motion, and theme states. Reference-backed comparison remains tracked by DS-HOST-PROFILE-004."
-        },
-        {
-          "id": "DS-HOST-PROFILE-002",
-          "status": "closed",
-          "nextAction": "Widgetbook covers route, form, field/status, missing, create-pending, save-pending, validation, text-scale, reduced-motion, and dark states. Any save-error snackbar/offline-specific visual adjustment depends on the blocked canonical reference tracked by DS-HOST-PROFILE-004."
-        },
-        {
-          "id": "DS-HOST-PROFILE-003",
-          "status": "closed",
-          "nextAction": "HostProfileForm and HostProfileFields are source-backed and provider-free, the missing-profile branch uses shared HostEmptyActionCard, provider waves adapt through HostProfileEditState, create/save mutations route through HostProfileController, and direct route save success/failure behavior is tested. Reference-backed comparison remains tracked by DS-HOST-PROFILE-001/004."
-        },
-        {
-          "id": "DS-HOST-PROFILE-004",
-          "status": "blocked",
-          "nextAction": "Canonical Host Profile editor reference export is blocked until design provides the standalone /host/settings/profile editor source. Host manifests explicitly call this route missing/at-risk in the local Claude bundle."
-        }
-      ],
-      "captureIds": [
-        "host_profile_text_scale_2",
-        "host_profile_reduced_motion",
-        "host_profile_populated",
-        "host_profile_loading",
-        "host_profile_error",
-        "host_profile_offline",
-        "host_profile_missing",
-        "host_profile_validation_error",
-        "host_profile_create_pending",
-        "host_profile_create_error",
-        "host_profile_create_offline",
-        "host_profile_save_pending",
-        "host_profile_save_error",
-        "host_profile_save_offline"
       ]
     },
     {

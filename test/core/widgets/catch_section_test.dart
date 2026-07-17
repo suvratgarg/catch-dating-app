@@ -100,18 +100,26 @@ void main() {
   );
 
   testWidgets(
-    'CatchSection field dividers do not change the global row divider tone',
+    'CatchSection field dividers scale the token alpha in light and dark',
     (tester) async {
-      final tokens = CatchTokens.editorialLight;
-
-      expect(
-        CatchDivider.colorFor(tokens, CatchDividerRole.fieldSection),
-        tokens.line,
-      );
-      expect(
-        CatchDivider.colorFor(tokens, CatchDividerRole.fieldRow),
-        tokens.line.withValues(alpha: CatchOpacity.fieldRowDivider),
-      );
+      for (final tokens in [
+        CatchTokens.editorialLight,
+        CatchTokens.editorialDark,
+      ]) {
+        expect(
+          CatchDivider.colorFor(tokens, CatchDividerRole.fieldSection),
+          tokens.line,
+        );
+        final rowColor = CatchDivider.colorFor(
+          tokens,
+          CatchDividerRole.fieldRow,
+        );
+        expect(
+          rowColor.a,
+          closeTo(tokens.line.a * CatchOpacity.fieldRowDivider, 0.0001),
+        );
+        expect(rowColor.a, lessThan(tokens.line.a));
+      }
     },
   );
 

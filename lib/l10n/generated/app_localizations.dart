@@ -1208,6 +1208,12 @@ abstract class AppLocalizations {
   /// **'Working well'**
   String get eventSuccessEventSuccessFeatureBlocksTextWorkingWell;
 
+  /// Section title for the post-event recommendations list.
+  ///
+  /// In en, this message translates to:
+  /// **'Improve next time'**
+  String get eventSuccessEventSuccessFeatureBlocksTextImproveNextTime;
+
   /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
   ///
   /// In en, this message translates to:
@@ -2717,20 +2723,8 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'CLUB LOGO'**
-  String get hostsCreateClubPhotosPickerTextClubLogo;
-
-  /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).
-  ///
-  /// In en, this message translates to:
   /// **'A square logo, shown on your club profile and every event.'**
   String get hostsCreateClubPhotosPickerTextASquareLogoShown;
-
-  /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'PHOTOS'**
-  String get hostsCreateClubPhotosPickerTextPhotos;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).
   ///
@@ -3890,6 +3884,18 @@ abstract class AppLocalizations {
   /// **'Use the status tiles to focus the roster as people arrive.'**
   String get hostsHostEventAttendancePanelSubtitleUseTheStatusTiles;
 
+  /// Title for the host disclosure that reveals the attendee check-in QR code.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in QR'**
+  String get hostsHostEventAttendancePanelTitleCheckInQr;
+
+  /// Supporting copy for the host attendee check-in QR disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this code to attendees as they arrive.'**
+  String get hostsHostEventAttendancePanelBodyCheckInQr;
+
   /// Product copy used by lib/hosts/presentation/widgets/host_event_attendance_panel.dart (label).
   ///
   /// In en, this message translates to:
@@ -3919,6 +3925,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Revenue CSV'**
   String get hostsHostEventAttendancePanelLabelRevenueCsv;
+
+  /// Accessible label for the report export action menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Export report'**
+  String get hostsHostEventAttendancePanelLabelExport;
 
   /// Product copy used by lib/hosts/presentation/widgets/host_event_attendance_panel.dart (Text).
   ///
@@ -6413,12 +6425,6 @@ abstract class AppLocalizations {
   /// **'No clubs in {cityLabel} yet'**
   String exploreExploreListTitleNoClubsInCitylabel({required Object cityLabel});
 
-  /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{count}'**
-  String hostsCreateClubPhotosPickerTextCount({required Object count});
-
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -8503,6 +8509,12 @@ abstract class AppLocalizations {
     required Object catchSentCount,
   });
 
+  /// Label for the number of post-event catches sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Catches sent'**
+  String get eventSuccessEventSuccessHostReportLabelCatchesSent;
+
   /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
   ///
   /// In en, this message translates to:
@@ -9211,77 +9223,71 @@ abstract class AppLocalizations {
   /// **'You can manage only events that you host.'**
   String get hostsHostEventManageRouteScreenMessageYouCanManageOnly;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Host profile'**
-  String get hostsHostAccountScreenTitleHostProfile;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (tooltip).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Sign out'**
-  String get hostsHostAccountScreenTooltipSignOut;
+  String get hostsHostClubTeamScreenTitleSignOut;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Edit'**
-  String get hostsHostAccountScreenLabelEdit;
+  String get hostsHostClubTeamScreenLabelEdit;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Preview'**
-  String get hostsHostAccountScreenLabelPreview;
+  String get hostsHostClubTeamScreenLabelPreview;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Profile'**
-  String get hostsHostAccountScreenTitleProfile;
+  String get hostsHostClubTeamScreenTitleProfile;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Display name'**
-  String get hostsHostAccountScreenTitleDisplayName;
+  String get hostsHostClubTeamScreenTitleDisplayName;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Role title'**
-  String get hostsHostAccountScreenTitleRoleTitle;
+  String get hostsHostClubTeamScreenTitleRoleTitle;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Status'**
-  String get hostsHostAccountScreenTitleStatus;
+  String get hostsHostClubTeamScreenTitleStatus;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'About you as a host'**
-  String get hostsHostAccountScreenTitleAboutYouAsA;
+  String get hostsHostClubTeamScreenTitleAboutYouAsA;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Clubs you host'**
-  String get hostsHostAccountScreenTitleClubsYouHost;
+  String get hostsHostClubTeamScreenTitleClubsYouHost;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (Text).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'No host clubs yet.'**
-  String get hostsHostAccountScreenTextNoHostClubsYet;
+  String get hostsHostClubTeamScreenTextNoHostClubsYet;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Save profile'**
-  String get hostsHostAccountScreenLabelSaveProfile;
+  String get hostsHostClubTeamScreenLabelSaveProfile;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
   ///
@@ -9830,12 +9836,6 @@ abstract class AppLocalizations {
   /// **'Switch club'**
   String get hostsHostClubsScaffoldTooltipSwitchClub;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get hostsHostClubsScaffoldTooltipSettings;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (title).
   ///
   /// In en, this message translates to:
@@ -9960,72 +9960,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upcoming'**
   String get hostsHostOrganizerLabelUpcoming;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Professional profile'**
-  String get hostsHostProfileScreenTitleProfessionalProfile;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Professional profile'**
-  String get hostsHostProfileScreenTextProfessionalProfile;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Host profile. Professional profile'**
-  String get hostsHostProfileScreenTextHostProfileProfessionalProfile;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'HOST PROFILE'**
-  String get hostsHostProfileScreenTextHostProfile;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No host profile yet'**
-  String get hostsHostProfileScreenTitleNoHostProfileYet;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Create a professional host identity before editing profile details.'**
-  String get hostsHostProfileScreenBodyCreateAProfessionalHost;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Create host profile'**
-  String get hostsHostProfileScreenLabelCreateHostProfile;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Save profile'**
-  String get hostsHostProfileScreenLabelSaveProfile;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Display name'**
-  String get hostsHostProfileScreenTitleDisplayName;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Role title'**
-  String get hostsHostProfileScreenTitleRoleTitle;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Bio'**
-  String get hostsHostProfileScreenTitleBio;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
   ///
@@ -15060,41 +14994,41 @@ abstract class AppLocalizations {
   /// **'Participant'**
   String get hostsHostEventManageScreenStateVisiblecopyParticipant;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Host profile saved.'**
-  String get hostsHostAccountScreenVisiblecopyHostProfileSaved;
+  String get hostsHostClubTeamScreenVisiblecopyHostProfileSaved;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Host profile created.'**
-  String get hostsHostAccountScreenVisiblecopyHostProfileCreated;
+  String get hostsHostClubTeamScreenVisiblecopyHostProfileCreated;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Creating profile...'**
-  String get hostsHostAccountScreenVisiblecopyCreatingProfile;
+  String get hostsHostClubTeamScreenVisiblecopyCreatingProfile;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Create host profile'**
-  String get hostsHostAccountScreenVisiblecopyCreateHostProfile;
+  String get hostsHostClubTeamScreenVisiblecopyCreateHostProfile;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add role title'**
-  String get hostsHostAccountScreenVisiblecopyAddRoleTitle;
+  String get hostsHostClubTeamScreenVisiblecopyAddRoleTitle;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_account_screen.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add a host bio'**
-  String get hostsHostAccountScreenVisiblecopyAddAHostBio;
+  String get hostsHostClubTeamScreenVisiblecopyAddAHostBio;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_auth_required_screen.dart (visibleCopy).
   ///
@@ -15137,12 +15071,6 @@ abstract class AppLocalizations {
     required Object minAge,
     required Object maxAge,
   });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_profile_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Host profile saved.'**
-  String get hostsHostProfileScreenVisiblecopyHostProfileSaved;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).
   ///

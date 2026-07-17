@@ -35,6 +35,7 @@ import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
@@ -1030,16 +1031,13 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           validator: (value) =>
               _moneyRequiredValidator(value, currencyCode: state.currencyCode),
         ),
-        CatchField.choices<EventAdmissionPreset>(
+        CatchField.optionCards<EventAdmissionPreset>(
           title: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
-          body: state.admissionPreset.description(context.l10n),
           values: EventAdmissionPreset.values,
-          itemLabel: (preset) => preset.label(context.l10n),
-          selected: <EventAdmissionPreset>{state.admissionPreset},
-          onSelectionChanged: (selection) {
-            onAdmissionPresetChanged(selection.single);
-          },
-          initiallyOpen: true,
+          itemTitle: (preset) => preset.title(context.l10n),
+          itemDescription: (preset) => preset.description(context.l10n),
+          selected: state.admissionPreset,
+          onChanged: onAdmissionPresetChanged,
           icon: CatchIcons.howToRegOutlined,
         ),
         if (state.showInviteCode)
@@ -1159,45 +1157,18 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               ],
             ),
         ],
-        CatchField.input(
+        EventAgeRangeField(
           key: CreateEventFormKeys.minAge,
-          title: context.l10n.hostsEditHostedEventScreenTitleMinAge,
-          isOptional: true,
-          controller: minAgeController,
-          icon: CatchIcons.cakeOutlined,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          textInputAction: TextInputAction.next,
-          validator: (value) => validateAge(
-            value,
-            siblingController: maxAgeController,
-            isMinimum: true,
-          ),
+          minAgeController: minAgeController,
+          maxAgeController: maxAgeController,
         ),
-        CatchField.input(
-          key: CreateEventFormKeys.maxAge,
-          title: context.l10n.hostsEditHostedEventScreenTitleMaxAge,
-          isOptional: true,
-          controller: maxAgeController,
-          icon: CatchIcons.cakeOutlined,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          textInputAction: TextInputAction.next,
-          validator: (value) => validateAge(
-            value,
-            siblingController: minAgeController,
-            isMinimum: false,
-          ),
-        ),
-        CatchField.choices<EventCancellationPolicyId>(
+        CatchField.optionCards<EventCancellationPolicyId>(
           title: context.l10n.hostsEditHostedEventScreenLabelCancellationPolicy,
-          body: state.cancellationSummary,
           values: EventCancellationPolicyId.values,
-          itemLabel: (policyId) => policyFor(policyId).title.toUpperCase(),
-          selected: <EventCancellationPolicyId>{state.cancellationPolicyId},
-          onSelectionChanged: (selection) {
-            onCancellationPolicyChanged(selection.single);
-          },
+          itemTitle: (policyId) => policyFor(policyId).title,
+          itemDescription: (policyId) => policyFor(policyId).attendeeSummary,
+          selected: state.cancellationPolicyId,
+          onChanged: onCancellationPolicyChanged,
           icon: CatchIcons.ruleOutlined,
         ),
       ],

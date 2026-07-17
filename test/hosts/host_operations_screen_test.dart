@@ -38,8 +38,8 @@ import 'package:catch_dating_app/hosts/presentation/event_management/host_create
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
@@ -66,130 +66,97 @@ void main() {
 
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
-  test('HostSettingsState uses club fallback while profile is loading', () {
-    final ownedClub = buildClub(
-      id: 'owned-club',
-      name: 'Saket Run Club',
-      ownerUserId: _hostUid,
-      hostProfiles: const [
-        ClubHostProfile(
-          uid: _hostUid,
-          displayName: 'Suvrat',
-          role: ClubHostRole.owner,
-        ),
-      ],
-    );
+  test(
+    'HostTeamWorkspaceState uses club fallback while profile is loading',
+    () {
+      final ownedClub = buildClub(
+        id: 'owned-club',
+        name: 'Saket Run Club',
+        ownerUserId: _hostUid,
+        hostProfiles: const [
+          ClubHostProfile(
+            uid: _hostUid,
+            displayName: 'Suvrat',
+            role: ClubHostRole.owner,
+          ),
+        ],
+      );
 
-    final state = buildHostSettingsState(
-      uid: _hostUid,
-      profile: const AsyncLoading<HostProfile?>(),
-      clubs: AsyncData<List<Club>>([ownedClub]),
-    );
-
-    final profileState = state.profile;
-    expect(profileState, isA<HostSettingsProfileContent>());
-    final content = profileState as HostSettingsProfileContent;
-    expect(content.isFallback, isTrue);
-    expect(content.profile.displayName, 'Suvrat');
-    expect(content.profile.roleTitle, 'Owner');
-    expect(state.clubs, isA<HostSettingsClubsContent>());
-  });
-
-  test('HostSettingsActionState maps account and club navigation policy', () {
-    final profile = HostProfile(
-      uid: _hostUid,
-      displayName: 'Asha Host',
-      status: HostProfileStatus.active,
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
-    );
-    final ownedClub = buildClub(
-      id: 'owned-club',
-      name: 'Owner Club',
-      ownerUserId: _hostUid,
-    );
-    final cohostClub = buildClub(
-      id: 'cohost-club',
-      name: 'Co-host Club',
-      hostUserId: 'owner-2',
-      hostUserIds: const [_hostUid],
-    );
-
-    final editState = buildHostSettingsState(
-      uid: _hostUid,
-      profile: AsyncData<HostProfile?>(profile),
-      clubs: AsyncData<List<Club>>([ownedClub, cohostClub]),
-    );
-    expect(editState.actions.canSignOut, isTrue);
-    expect(editState.actions.canCreateProfile, isFalse);
-    expect(editState.actions.canEditProfile, isTrue);
-    expect(
-      editState.actions.clubNavigationFor(ownedClub).destination,
-      HostSettingsClubDestination.edit,
-    );
-    expect(
-      editState.actions.clubNavigationFor(cohostClub).destination,
-      HostSettingsClubDestination.preview,
-    );
-    expect(
-      editState.actions.clubNavigationFor(cohostClub).roleLabel,
-      'Host team',
-    );
-
-    final previewState = buildHostSettingsState(
-      uid: _hostUid,
-      profile: const AsyncData<HostProfile?>(null),
-      clubs: const AsyncData<List<Club>>([]),
-      editMode: false,
-      signOutPending: true,
-    );
-    expect(previewState.actions.canSignOut, isFalse);
-    expect(previewState.actions.canCreateProfile, isTrue);
-    expect(previewState.actions.canEditProfile, isFalse);
-    expect(
-      previewState.actions.clubNavigationFor(ownedClub).destination,
-      HostSettingsClubDestination.preview,
-    );
-  });
-
-  test('HostProfileEditState maps profile async branches', () {
-    final profile = HostProfile(
-      uid: _hostUid,
-      displayName: 'Asha Host',
-      status: HostProfileStatus.active,
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
-    );
-
-    expect(
-      buildHostProfileEditState(
-        uid: null,
-        profile: const AsyncData<HostProfile?>(null),
-      ),
-      isA<HostProfileEditAuthRequired>(),
-    );
-    expect(
-      buildHostProfileEditState(
+      final state = buildHostTeamWorkspaceState(
         uid: _hostUid,
         profile: const AsyncLoading<HostProfile?>(),
-      ),
-      isA<HostProfileEditLoading>(),
-    );
-    expect(
-      buildHostProfileEditState(
+        clubs: AsyncData<List<Club>>([ownedClub]),
+      );
+
+      final profileState = state.profile;
+      expect(profileState, isA<HostTeamProfileContent>());
+      final content = profileState as HostTeamProfileContent;
+      expect(content.isFallback, isTrue);
+      expect(content.profile.displayName, 'Suvrat');
+      expect(content.profile.roleTitle, 'Owner');
+      expect(state.clubs, isA<HostTeamHostedClubsContent>());
+    },
+  );
+
+  test(
+    'HostTeamWorkspaceActionState maps account and club navigation policy',
+    () {
+      final profile = HostProfile(
         uid: _hostUid,
-        profile: const AsyncData<HostProfile?>(null),
-      ),
-      isA<HostProfileEditMissing>(),
-    );
-    expect(
-      buildHostProfileEditState(
+        displayName: 'Asha Host',
+        status: HostProfileStatus.active,
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+      );
+      final ownedClub = buildClub(
+        id: 'owned-club',
+        name: 'Owner Club',
+        ownerUserId: _hostUid,
+      );
+      final cohostClub = buildClub(
+        id: 'cohost-club',
+        name: 'Co-host Club',
+        hostUserId: 'owner-2',
+        hostUserIds: const [_hostUid],
+      );
+
+      final editState = buildHostTeamWorkspaceState(
         uid: _hostUid,
         profile: AsyncData<HostProfile?>(profile),
-      ),
-      isA<HostProfileEditContent>(),
-    );
-  });
+        clubs: AsyncData<List<Club>>([ownedClub, cohostClub]),
+      );
+      expect(editState.actions.canSignOut, isTrue);
+      expect(editState.actions.canCreateProfile, isFalse);
+      expect(editState.actions.canEditProfile, isTrue);
+      expect(
+        editState.actions.clubNavigationFor(ownedClub).destination,
+        HostTeamClubDestination.edit,
+      );
+      expect(
+        editState.actions.clubNavigationFor(cohostClub).destination,
+        HostTeamClubDestination.preview,
+      );
+      expect(
+        editState.actions.clubNavigationFor(cohostClub).roleLabel,
+        'Host team',
+      );
+
+      final previewState = buildHostTeamWorkspaceState(
+        uid: _hostUid,
+        profile: const AsyncData<HostProfile?>(null),
+        clubs: const AsyncData<List<Club>>([]),
+        editMode: false,
+        signOutPending: true,
+      );
+      expect(previewState.actions.canSignOut, isFalse);
+      expect(previewState.actions.canCreateProfile, isTrue);
+      expect(previewState.actions.canEditProfile, isFalse);
+      expect(
+        previewState.actions.clubNavigationFor(ownedClub).destination,
+        HostTeamClubDestination.preview,
+      );
+    },
+  );
 
   test('HostClubsScreenState resolves selected club, tab, and owner role', () {
     final ownedClub = buildClub(
@@ -353,16 +320,16 @@ void main() {
     expect(find.text('Sign in required'), findsNothing);
   });
 
-  testWidgets('Host account shows loading while uid resolves', (tester) async {
+  testWidgets('Host team shows loading while uid resolves', (tester) async {
     await _pumpHostScreen(
       tester,
-      const HostAccountScreen(),
+      const HostClubTeamScreen(clubId: 'owned-club'),
       overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
       settle: false,
     );
 
     expect(find.byType(HostLoadingScreen), findsOneWidget);
-    expect(find.text('Host profile'), findsOneWidget);
+    expect(find.text('Host team'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
   });
 
@@ -395,21 +362,6 @@ void main() {
       rowTextLeft - sectionLeft,
       moreOrLessEquals(CatchFieldRow.textLaneInset, epsilon: 0.5),
     );
-  });
-
-  testWidgets('Host profile route shows loading while uid resolves', (
-    tester,
-  ) async {
-    await _pumpHostScreen(
-      tester,
-      const HostProfileScreen(),
-      overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
-      settle: false,
-    );
-
-    expect(find.byType(HostLoadingScreen), findsOneWidget);
-    expect(find.text('Professional profile'), findsOneWidget);
-    expect(find.text('Sign in required'), findsNothing);
   });
 
   testWidgets('Host payment card shows loading while uid resolves', (
@@ -1010,7 +962,9 @@ void main() {
     final tokens = CatchTokens.of(tester.element(maySection));
     expect(
       CatchDivider.colorFor(tokens, mayDividers.last.role),
-      tokens.line.withValues(alpha: CatchOpacity.fieldRowDivider),
+      tokens.line.withValues(
+        alpha: tokens.line.a * CatchOpacity.fieldRowDivider,
+      ),
     );
 
     await tester.tap(find.text('Repeat ‘Social run’'));
@@ -1142,12 +1096,13 @@ void main() {
         findsOneWidget,
       );
     }
+    expect(find.text('CLUB LOGO'), findsNothing);
+    expect(find.text('PHOTOS'), findsNothing);
     expect(find.text('Event defaults'), findsOneWidget);
     expect(find.text('Live event guide'), findsOneWidget);
     expect(find.text('Payments'), findsOneWidget);
     expect(find.text('Host team'), findsOneWidget);
-    expect(find.byTooltip('Settings'), findsOneWidget);
-    expect(find.bySemanticsLabel('Settings'), findsOneWidget);
+    expect(find.byTooltip('Host team'), findsNothing);
     expect(find.text('Trends · last 12 weeks'), findsNothing);
     expect(find.text('See insights'), findsNothing);
     expect(find.byType(HostAnalyticsTrendPanel), findsNothing);
@@ -1163,10 +1118,16 @@ void main() {
       isEmpty,
     );
 
-    await tester.tap(find.byTooltip('Settings'));
+    final hostTeamRow = find.byKey(
+      const ValueKey('host-club-settings-host-team'),
+    );
+    await tester.ensureVisible(hostTeamRow);
+    await pumpFeatureUi(tester);
+    await tester.tap(hostTeamRow);
     await pumpFeatureUi(tester);
 
-    expect(find.text('Host settings route'), findsOneWidget);
+    expect(find.byType(HostClubTeamScreen), findsOneWidget);
+    expect(find.byKey(const ValueKey('host-team-sign-out')), findsOneWidget);
   });
 
   testWidgets('Host club workspace keeps shared chrome across every tab', (
@@ -2150,7 +2111,7 @@ void main() {
   });
 
   testWidgets(
-    'Host account edit loads from club snapshot while profile waits',
+    'Host team workspace edit loads from club snapshot while profile waits',
     (tester) async {
       final ownedClub = buildClub(
         id: 'owned-club',
@@ -2168,7 +2129,7 @@ void main() {
 
       await _pumpHostScreen(
         tester,
-        const HostAccountScreen(),
+        const HostClubTeamScreen(clubId: 'owned-club'),
         overrides: [
           ..._hostClubOverrides(owned: [ownedClub]),
           watchHostProfileProvider(
@@ -2180,7 +2141,7 @@ void main() {
 
       expect(find.byType(CatchLoadingIndicator), findsNothing);
       expect(find.text('Display name'), findsOneWidget);
-      expect(find.text('Suvrat'), findsOneWidget);
+      expect(find.text('Suvrat'), findsWidgets);
       expect(find.text('Create host profile'), findsNothing);
 
       final displayNameField = find.widgetWithText(CatchField, 'Display name');
@@ -2196,16 +2157,16 @@ void main() {
     },
   );
 
-  testWidgets('Host account creates a missing professional profile', (
+  testWidgets('Host team workspace creates a missing professional profile', (
     tester,
   ) async {
     final repository = _FakeHostProfileRepository();
 
     await _pumpHostScreen(
       tester,
-      const HostAccountScreen(),
+      const HostClubTeamScreen(clubId: 'owned-club'),
       overrides: [
-        ..._hostClubOverrides(),
+        ..._hostClubOverrides(owned: [_hostTeamClubWithoutProfile()]),
         watchHostProfileProvider(
           _hostUid,
         ).overrideWithValue(const AsyncData<HostProfile?>(null)),
@@ -2219,7 +2180,7 @@ void main() {
     expect(repository.ensuredUid, _hostUid);
   });
 
-  testWidgets('Host account no-profile row shows create pending state', (
+  testWidgets('Host team workspace no-profile row shows create pending state', (
     tester,
   ) async {
     final displayNameController = TextEditingController();
@@ -2235,8 +2196,8 @@ void main() {
         home: Scaffold(
           body: ListView(
             children: [
-              HostSettingsProfileSection(
-                state: const HostSettingsProfileMissing(),
+              HostTeamProfileSection(
+                state: const HostTeamProfileMissing(),
                 editMode: true,
                 creatingProfile: true,
                 onRetry: () {},
@@ -2260,34 +2221,35 @@ void main() {
     expect(find.text('Create host profile'), findsNothing);
   });
 
-  testWidgets('Host account surfaces missing profile creation failures', (
-    tester,
-  ) async {
-    final repository = _FakeHostProfileRepository(throwOnEnsure: true);
+  testWidgets(
+    'Host team workspace surfaces missing profile creation failures',
+    (tester) async {
+      final repository = _FakeHostProfileRepository(throwOnEnsure: true);
 
-    await _pumpHostScreen(
-      tester,
-      const HostAccountScreen(),
-      overrides: [
-        ..._hostClubOverrides(),
-        watchHostProfileProvider(
-          _hostUid,
-        ).overrideWithValue(const AsyncData<HostProfile?>(null)),
-        hostProfileRepositoryProvider.overrideWith((ref) => repository),
-      ],
-    );
+      await _pumpHostScreen(
+        tester,
+        const HostClubTeamScreen(clubId: 'owned-club'),
+        overrides: [
+          ..._hostClubOverrides(owned: [_hostTeamClubWithoutProfile()]),
+          watchHostProfileProvider(
+            _hostUid,
+          ).overrideWithValue(const AsyncData<HostProfile?>(null)),
+          hostProfileRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
 
-    await tester.tap(find.text('Create host profile'));
-    await pumpFeatureUi(tester);
+      await tester.tap(find.text('Create host profile'));
+      await pumpFeatureUi(tester);
 
-    expect(find.text('Create host profile'), findsOneWidget);
-    expect(
-      find.text('Something went wrong. Please try again.'),
-      findsOneWidget,
-    );
-  });
+      expect(find.text('Create host profile'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsOneWidget,
+      );
+    },
+  );
 
-  testWidgets('Host account edits active professional profile inline', (
+  testWidgets('Host team workspace edits active professional profile inline', (
     tester,
   ) async {
     final profile = HostProfile(
@@ -2303,9 +2265,9 @@ void main() {
 
     await _pumpHostScreen(
       tester,
-      const HostAccountScreen(),
+      const HostClubTeamScreen(clubId: 'owned-club'),
       overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        ..._hostClubOverrides(owned: [_hostTeamClub()]),
         watchHostProfileProvider(
           _hostUid,
         ).overrideWithValue(AsyncData<HostProfile?>(profile)),
@@ -2329,62 +2291,68 @@ void main() {
     expect(repository.savedDisplayName, 'Updated Host');
     expect(repository.savedRoleTitle, 'Founder');
     expect(repository.savedBio, 'Runs easy miles.');
+    expect(find.text('Host profile saved.'), findsOneWidget);
   });
 
-  testWidgets('Host account keeps inline profile fields after save failure', (
-    tester,
-  ) async {
-    final profile = HostProfile(
-      uid: _hostUid,
-      displayName: 'Asha Host',
-      roleTitle: 'Founder',
-      bio: 'Runs easy miles.',
-      status: HostProfileStatus.active,
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
-    );
-    final repository = _FakeHostProfileRepository(
-      profile: profile,
-      throwOnSave: true,
-    );
+  testWidgets(
+    'Host team workspace keeps inline profile fields after save failure',
+    (tester) async {
+      final profile = HostProfile(
+        uid: _hostUid,
+        displayName: 'Asha Host',
+        roleTitle: 'Founder',
+        bio: 'Runs easy miles.',
+        status: HostProfileStatus.active,
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+      );
+      final repository = _FakeHostProfileRepository(
+        profile: profile,
+        throwOnSave: true,
+      );
 
-    await _pumpHostScreen(
-      tester,
-      const HostAccountScreen(),
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        watchHostProfileProvider(
-          _hostUid,
-        ).overrideWithValue(AsyncData<HostProfile?>(profile)),
-        hostProfileRepositoryProvider.overrideWith((ref) => repository),
-      ],
-    );
+      await _pumpHostScreen(
+        tester,
+        const HostClubTeamScreen(clubId: 'owned-club'),
+        overrides: [
+          ..._hostClubOverrides(owned: [_hostTeamClub()]),
+          watchHostProfileProvider(
+            _hostUid,
+          ).overrideWithValue(AsyncData<HostProfile?>(profile)),
+          hostProfileRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
 
-    await tester.tap(find.text('Save profile'));
-    await pumpFeatureUi(tester);
+      await tester.tap(find.text('Save profile'));
+      await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchBottomSheetScaffold), findsNothing);
-    expect(find.widgetWithText(CatchField, 'Display name'), findsOneWidget);
-    expect(find.text('Something went wrong. Please try again.'), findsWidgets);
-    expect(repository.savedUid, isNull);
-  });
+      expect(find.byType(CatchBottomSheetScaffold), findsNothing);
+      expect(find.widgetWithText(CatchField, 'Display name'), findsOneWidget);
+      expect(
+        find.text('Something went wrong. Please try again.'),
+        findsWidgets,
+      );
+      expect(repository.savedUid, isNull);
+    },
+  );
 
-  testWidgets('Host account exposes a back action with a safe root fallback', (
-    tester,
-  ) async {
-    await _pumpHostScreen(
-      tester,
-      const HostAccountScreen(),
-      overrides: _hostClubOverrides(),
-    );
+  testWidgets(
+    'Host team workspace exposes a back action with a safe root fallback',
+    (tester) async {
+      await _pumpHostScreen(
+        tester,
+        const HostClubTeamScreen(clubId: 'owned-club'),
+        overrides: _hostClubOverrides(owned: [_hostTeamClub()]),
+      );
 
-    await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
-    await pumpFeatureUi(tester);
+      await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
+      await pumpFeatureUi(tester);
 
-    expect(find.text('Organizer route'), findsOneWidget);
-  });
+      expect(find.text('Organizer route'), findsOneWidget);
+    },
+  );
 
-  testWidgets('Host account club rows use section-owned divider roles', (
+  testWidgets('Host team workspace club rows use section-owned divider roles', (
     tester,
   ) async {
     final ownedClub = buildClub(
@@ -2401,7 +2369,7 @@ void main() {
 
     await _pumpHostScreen(
       tester,
-      const HostAccountScreen(),
+      const HostClubTeamScreen(clubId: 'owned-club'),
       overrides: _hostClubOverrides(owned: [ownedClub], hosted: [hostedClub]),
     );
 
@@ -2432,7 +2400,7 @@ void main() {
     );
   });
 
-  testWidgets('Host account surfaces sign out failures', (tester) async {
+  testWidgets('Host team workspace surfaces sign out failures', (tester) async {
     final profile = HostProfile(
       uid: _hostUid,
       displayName: 'Asha Host',
@@ -2444,9 +2412,9 @@ void main() {
 
     await _pumpHostScreen(
       tester,
-      const HostAccountScreen(),
+      const HostClubTeamScreen(clubId: 'owned-club'),
       overrides: [
-        ..._hostClubOverrides(),
+        ..._hostClubOverrides(owned: [_hostTeamClub()]),
         watchHostProfileProvider(
           _hostUid,
         ).overrideWithValue(AsyncData<HostProfile?>(profile)),
@@ -2454,7 +2422,10 @@ void main() {
       ],
     );
 
-    await tester.tap(find.byTooltip('Sign out'));
+    final signOutRow = find.byKey(const ValueKey('host-team-sign-out'));
+    await tester.ensureVisible(signOutRow);
+    await pumpFeatureUi(tester);
+    await tester.tap(signOutRow);
     await pumpFeatureUi(tester);
 
     expect(authRepository.signOutCallCount, 1);
@@ -2462,60 +2433,33 @@ void main() {
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
     );
-    expect(find.byType(HostAccountScreen), findsOneWidget);
+    expect(find.byType(HostClubTeamScreen), findsOneWidget);
   });
 
-  testWidgets('Host profile route creates a missing professional profile', (
-    tester,
-  ) async {
-    final repository = _FakeHostProfileRepository();
+  testWidgets(
+    'Host team workspace keeps management and sign out on Edit only',
+    (tester) async {
+      await _pumpHostScreen(
+        tester,
+        const HostClubTeamScreen(clubId: 'owned-club'),
+        overrides: _hostClubOverrides(owned: [_hostTeamClub()]),
+      );
 
-    await _pumpHostScreen(
-      tester,
-      const HostProfileScreen(),
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        watchHostProfileProvider(
-          _hostUid,
-        ).overrideWithValue(const AsyncData<HostProfile?>(null)),
-        hostProfileRepositoryProvider.overrideWith((ref) => repository),
-      ],
-    );
+      expect(find.text('Add host'), findsOneWidget);
+      expect(find.byKey(const ValueKey('host-team-sign-out')), findsOneWidget);
+      expect(find.text('CLUBS YOU HOST'), findsOneWidget);
 
-    await tester.tap(find.text('Create host profile'));
-    await pumpFeatureUi(tester);
+      await tester.tap(find.text('Preview'));
+      await pumpFeatureUi(tester);
 
-    expect(repository.ensuredUid, _hostUid);
-  });
+      expect(find.text('Add host'), findsNothing);
+      expect(find.byKey(const ValueKey('host-team-sign-out')), findsNothing);
+      expect(find.text('CLUBS YOU HOST'), findsOneWidget);
+      expect(find.text('Catch Host'), findsWidgets);
+    },
+  );
 
-  testWidgets('Host profile route surfaces missing profile creation failures', (
-    tester,
-  ) async {
-    final repository = _FakeHostProfileRepository(throwOnEnsure: true);
-
-    await _pumpHostScreen(
-      tester,
-      const HostProfileScreen(),
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        watchHostProfileProvider(
-          _hostUid,
-        ).overrideWithValue(const AsyncData<HostProfile?>(null)),
-        hostProfileRepositoryProvider.overrideWith((ref) => repository),
-      ],
-    );
-
-    await tester.tap(find.text('Create host profile'));
-    await pumpFeatureUi(tester);
-
-    expect(find.text('No host profile yet'), findsOneWidget);
-    expect(
-      find.text('Something went wrong. Please try again.'),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('Host profile route validates required display name', (
+  testWidgets('Host team workspace validates required display name', (
     tester,
   ) async {
     final profile = HostProfile(
@@ -2531,9 +2475,9 @@ void main() {
 
     await _pumpHostScreen(
       tester,
-      const HostProfileScreen(),
+      const HostClubTeamScreen(clubId: 'owned-club'),
       overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        ..._hostClubOverrides(owned: [_hostTeamClub()]),
         watchHostProfileProvider(
           _hostUid,
         ).overrideWithValue(AsyncData<HostProfile?>(profile)),
@@ -2552,103 +2496,28 @@ void main() {
     expect(find.text('Enter a display name.'), findsOneWidget);
     expect(repository.savedUid, isNull);
   });
-
-  testWidgets('Host profile route surfaces save failures', (tester) async {
-    final profile = HostProfile(
-      uid: _hostUid,
-      displayName: 'Asha Host',
-      roleTitle: 'Founder',
-      bio: 'Runs easy miles.',
-      status: HostProfileStatus.active,
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
-    );
-    final repository = _FakeHostProfileRepository(
-      profile: profile,
-      throwOnSave: true,
-    );
-
-    await _pumpHostScreen(
-      tester,
-      const HostProfileScreen(),
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        watchHostProfileProvider(
-          _hostUid,
-        ).overrideWithValue(AsyncData<HostProfile?>(profile)),
-        hostProfileRepositoryProvider.overrideWith((ref) => repository),
-      ],
-    );
-
-    await tester.tap(find.text('Save profile'));
-    await pumpFeatureUi(tester);
-
-    expect(find.text('Professional profile'), findsOneWidget);
-    expect(
-      find.text('Something went wrong. Please try again.'),
-      findsOneWidget,
-    );
-    expect(repository.savedUid, isNull);
-  });
-
-  testWidgets('Host profile route saves and keeps the editor open', (
-    tester,
-  ) async {
-    final profile = HostProfile(
-      uid: _hostUid,
-      displayName: 'Asha Host',
-      roleTitle: 'Founder',
-      bio: 'Runs easy miles.',
-      status: HostProfileStatus.active,
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
-    );
-    final repository = _FakeHostProfileRepository(profile: profile);
-
-    await _pumpHostScreen(
-      tester,
-      const HostProfileScreen(),
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        watchHostProfileProvider(
-          _hostUid,
-        ).overrideWithValue(AsyncData<HostProfile?>(profile)),
-        hostProfileRepositoryProvider.overrideWith((ref) => repository),
-      ],
-    );
-
-    await tester.enterText(
-      find.descendant(
-        of: find.widgetWithText(CatchField, 'Display name'),
-        matching: find.byType(TextField),
-      ),
-      'Updated Host',
-    );
-    await tester.enterText(
-      find.descendant(
-        of: find.widgetWithText(CatchField, 'Role title'),
-        matching: find.byType(TextField),
-      ),
-      'Lead organizer',
-    );
-    await tester.enterText(
-      find.descendant(
-        of: find.widgetWithText(CatchField, 'Bio'),
-        matching: find.byType(TextField),
-      ),
-      'Curates social runs.',
-    );
-    await tester.tap(find.text('Save profile'));
-    await pumpFeatureUi(tester);
-
-    expect(repository.savedUid, _hostUid);
-    expect(repository.savedDisplayName, 'Updated Host');
-    expect(repository.savedRoleTitle, 'Lead organizer');
-    expect(repository.savedBio, 'Curates social runs.');
-    expect(find.byType(HostProfileScreen), findsOneWidget);
-    expect(find.text('Host profile saved.'), findsOneWidget);
-  });
 }
+
+Club _hostTeamClub() => buildClub(
+  id: 'owned-club',
+  name: 'Saket Run Club',
+  ownerUserId: _hostUid,
+  hostProfiles: const [
+    ClubHostProfile(
+      uid: _hostUid,
+      displayName: 'Catch Host',
+      role: ClubHostRole.owner,
+    ),
+  ],
+);
+
+Club _hostTeamClubWithoutProfile() => buildClub(
+  id: 'owned-club',
+  name: 'Saket Run Club',
+  hostUserId: 'other-host',
+  ownerUserId: 'other-host',
+  hostProfiles: const [],
+);
 
 List _hostClubOverrides({
   List<Club> owned = const [],
@@ -2712,6 +2581,13 @@ Future<void> _pumpHostScreen(
         },
       ),
       GoRoute(
+        path: Routes.hostClubTeamScreen.path,
+        name: Routes.hostClubTeamScreen.name,
+        builder: (_, state) => HostClubTeamScreen(
+          clubId: state.uri.queryParameters['clubId'] ?? '',
+        ),
+      ),
+      GoRoute(
         path: Routes.hostClubDetailScreen.path,
         name: Routes.hostClubDetailScreen.name,
         builder: (_, state) => Text('Club ${state.pathParameters['clubId']}'),
@@ -2736,13 +2612,6 @@ Future<void> _pumpHostScreen(
         ),
       ),
       GoRoute(
-        path: Routes.hostClubTeamScreen.path,
-        name: Routes.hostClubTeamScreen.name,
-        builder: (_, state) => HostClubTeamScreen(
-          clubId: state.uri.queryParameters['clubId'] ?? '',
-        ),
-      ),
-      GoRoute(
         path: Routes.hostClubPaymentsScreen.path,
         name: Routes.hostClubPaymentsScreen.name,
         builder: (_, state) => HostClubPaymentsScreen(
@@ -2758,16 +2627,6 @@ Future<void> _pumpHostScreen(
             Text('Section ${state.uri.queryParameters['section'] ?? 'setup'}'),
           ],
         ),
-      ),
-      GoRoute(
-        path: Routes.hostProfileScreen.path,
-        name: Routes.hostProfileScreen.name,
-        builder: (_, _) => const HostProfileScreen(),
-      ),
-      GoRoute(
-        path: Routes.hostSettingsScreen.path,
-        name: Routes.hostSettingsScreen.name,
-        builder: (_, _) => const Text('Host settings route'),
       ),
     ],
   );

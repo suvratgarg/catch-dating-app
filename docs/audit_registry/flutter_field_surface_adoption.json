@@ -56,13 +56,14 @@
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchSection.fieldRows", "expected": 6},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchSection.containedFieldRows", "expected": 2},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.nav", "expected": 3},
-        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.input", "expected": 13},
-        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.choices", "expected": 3},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.input", "expected": 11},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.choices", "expected": 1},
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.optionCards", "expected": 2},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.stepper", "expected": 1},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.toggle", "expected": 2},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.read", "expected": 8}
       ],
-      "targetModes": ["CatchSection.fieldRows", "CatchSection.containedFieldRows", "CatchField.nav", "CatchField.input", "CatchField.choices", "CatchField.stepper", "CatchField.toggle", "CatchField.read"],
+      "targetModes": ["CatchSection.fieldRows", "CatchSection.containedFieldRows", "CatchField.nav", "CatchField.input", "CatchField.choices", "CatchField.optionCards", "CatchField.stepper", "CatchField.toggle", "CatchField.read"],
       "preserve": ["HostEventEditScreenState", "HostEventEditSaveRequest", "validation keys", "lock states", "picker side effects"],
       "verification": [
         "Focused edit-state, payload, editable, locked, cancelled, validation, choice, and stepper tests",
@@ -114,25 +115,24 @@
       "recommendation": "Approve with the remaining Host club edit pass, separate from create-club."
     },
     {
-      "id": "FIELD-SURFACE-HOST-PROFILE",
+      "id": "FIELD-SURFACE-HOST-TEAM-PROFILE",
       "rank": 4,
       "status": "approval_ready",
       "risk": "low",
       "migrationKind": "section_shell",
       "reachability": "production_route",
-      "screenIds": ["screen.host.profile"],
-      "routeIds": ["hostProfileScreen"],
+      "screenIds": ["screen.host.clubs"],
+      "routeIds": ["hostClubTeamScreen"],
       "semanticFieldCount": 3,
       "bindings": [
-        {"file": "lib/hosts/presentation/host_operations/host_profile_screen.dart", "symbol": "HostProfileFields"},
-        {"file": "lib/hosts/presentation/host_operations/host_account_screen.dart", "symbol": "HostSettingsProfileRows"}
+        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "HostTeamProfileRows"}
       ],
       "anchors": [
-        {"file": "lib/hosts/presentation/host_operations/host_profile_screen.dart", "symbol": "CatchField.input", "expected": 3}
+        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "CatchField.input", "expected": 3}
       ],
       "targetModes": ["CatchSection.fieldRows"],
-      "preserve": ["shared HostProfileForm", "controller reuse", "profile image side effects"],
-      "recommendation": "Approve as a shell-only cleanup; the inputs are already canonical."
+      "preserve": ["profile validation", "controller reuse", "profile save side effects"],
+      "recommendation": "Complete: the unified Host team route owns the canonical field section."
     },
     {
       "id": "FIELD-SURFACE-EXPLORE-FILTERS",

@@ -16,7 +16,6 @@ void main() {
       Routes.hostClubDetailScreen,
       Routes.hostAppEventDetailScreen,
       Routes.hostChatScreen,
-      Routes.hostProfileScreen,
     ]) {
       expect(
         _routeBlock(source, route),

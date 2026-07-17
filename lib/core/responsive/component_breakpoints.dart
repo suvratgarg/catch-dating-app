@@ -36,4 +36,8 @@ abstract final class ComponentBreakpoints {
   /// Host waitlist movement callout stacks its text and action below this local
   /// width so the action label never crowds the summary.
   static const double hostWaitlistBulkOfferStackBreakpoint = 340.0;
+
+  /// Host roster boards use person rows instead of the three-column table
+  /// below this local width.
+  static const double hostRosterTableCompactBreakpoint = 600.0;
 }

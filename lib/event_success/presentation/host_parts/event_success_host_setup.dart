@@ -91,7 +91,6 @@ class _SetupTabState extends State<SetupTab> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final hasParticipantActivity =
         widget.event.signedUpCount > 0 ||
         widget.event.waitlistCount > 0 ||
@@ -112,8 +111,8 @@ class _SetupTabState extends State<SetupTab> {
       embedded: widget.embedded,
       children: [
         if (unsavedFrozen) ...[
-          NoticeCard(
-            icon: CatchIcons.lockClockRounded,
+          CatchSurface.message(
+            messageIcon: CatchIcons.lockClockRounded,
             title: eventHasStarted
                 ? context
                       .l10n
@@ -121,7 +120,7 @@ class _SetupTabState extends State<SetupTab> {
                 : context
                       .l10n
                       .eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo,
-            body: eventHasStarted
+            message: eventHasStarted
                 ? context
                       .l10n
                       .eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore
@@ -131,24 +130,25 @@ class _SetupTabState extends State<SetupTab> {
           ),
           gapH16,
         ] else if (!widget.planIsPersisted) ...[
-          NoticeCard(
-            icon: CatchIcons.cloudUploadOutlined,
+          CatchSurface.message(
+            messageIcon: CatchIcons.cloudUploadOutlined,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet,
-            body: context
+            message: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs,
           ),
           gapH16,
         ],
         if (setupFrozen && widget.planIsPersisted) ...[
-          NoticeCard(
-            icon: CatchIcons.lockClockRounded,
+          CatchSurface.message(
+            messageIcon: CatchIcons.lockClockRounded,
+            messageTone: CatchSurfaceMessageTone.warning,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupTitleSettingsAreLocked,
-            body: hasParticipantActivity
+            message: hasParticipantActivity
                 ? context
                       .l10n
                       .eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo
@@ -178,61 +178,53 @@ class _SetupTabState extends State<SetupTab> {
           ),
           gapH16,
         ],
-        CatchSurface(
-          borderColor: t.line,
-          padding: CatchInsets.content,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        if (setupFrozen)
+          CatchSection.fieldRows(
+            first: true,
+            title: context.l10n.eventSuccessEventSuccessHostSetupTitleYourPlan,
             children: [
-              CatchSectionHeader(
-                heavy: true,
-                padding: EdgeInsets.zero,
-                title:
-                    context.l10n.eventSuccessEventSuccessHostSetupTitleYourPlan,
-                subtitle: context
-                    .l10n
-                    .eventSuccessEventSuccessHostSetupSubtitleReviewTheEssentialsFirst,
-              ),
-              gapH12,
               HostActivitySummary(profile: profile, draft: presentedDraft),
-              gapH16,
               PlanSummary(
                 plan: widget.plan,
                 draft: presentedDraft,
                 planIsPersisted: widget.planIsPersisted,
               ),
-              if (presentedDraft.readinessIssues.isNotEmpty) ...[
-                gapH12,
+              if (presentedDraft.readinessIssues.isNotEmpty)
                 ReadinessIssues(issues: presentedDraft.readinessIssues),
-              ],
-              gapH16,
+            ],
+          )
+        else
+          EventSuccessSetupBody(
+            draft: presentedDraft,
+            eventFormat: widget.event.eventFormat,
+            targetAttendeeCount: _targetAttendeeCount,
+            attendeePrompt: _attendeePromptText,
+            planLeadingRows: [
+              PlanSummary(
+                plan: widget.plan,
+                draft: presentedDraft,
+                planIsPersisted: widget.planIsPersisted,
+              ),
+              if (presentedDraft.readinessIssues.isNotEmpty)
+                ReadinessIssues(issues: presentedDraft.readinessIssues),
               TargetAttendeeControl(
                 value: _targetAttendeeCount,
                 recommendedMin: _draft.playbook.capacity.min,
                 recommendedMax: _draft.playbook.capacity.max,
-                enabled: !setupFrozen,
+                enabled: true,
                 onChanged: (value) =>
                     setState(() => _targetAttendeeCount = value),
               ),
-              gapH16,
-              EventSuccessSetupBody(
-                draft: presentedDraft,
-                eventFormat: widget.event.eventFormat,
-                targetAttendeeCount: _targetAttendeeCount,
-                attendeePrompt: _attendeePromptText,
-                editable: !setupFrozen,
-                onChanged: (update) {
-                  setState(() => _draft = update(_draft));
-                },
-                onAttendeePromptChanged: (value) {
-                  setState(() => _attendeePromptText = value);
-                },
-              ),
             ],
+            onChanged: (update) {
+              setState(() => _draft = update(_draft));
+            },
+            onAttendeePromptChanged: (value) {
+              setState(() => _attendeePromptText = value);
+            },
           ),
-        ),
-        gapH16,
         if (_isDirty && !setupFrozen) ...[
+          gapH16,
           CatchInlineStatus(
             label: context
                 .l10n
@@ -241,42 +233,40 @@ class _SetupTabState extends State<SetupTab> {
           ),
           gapH8,
         ],
-        CatchButton(
-          label: !widget.planIsPersisted && setupFrozen
-              ? context
-                    .l10n
-                    .eventSuccessEventSuccessHostSetupLabelSaveUnavailable
-              : widget.planIsPersisted
-              ? (_isDirty
-                    ? context
-                          .l10n
-                          .eventSuccessEventSuccessHostSetupLabelSaveChanges
-                    : context
-                          .l10n
-                          .eventSuccessEventSuccessHostSetupLabelSaveSetup)
-              : context
-                    .l10n
-                    .eventSuccessEventSuccessHostSetupLabelSaveLiveGuide,
-          isLoading: widget.actionState.isSaving,
-          onPressed:
-              widget.actionState.isSaving ||
-                  setupFrozen ||
-                  _remotePlanChanged ||
-                  widget.onSaveSetup == null
-              ? null
-              : () => unawaited(
-                  widget.onSaveSetup!(
-                    EventSuccessSetupSaveRequest(
-                      event: widget.event,
-                      plan: widget.plan,
-                      planIsPersisted: widget.planIsPersisted,
-                      draft: _resolvedDraft,
-                      attendeePrompt: _attendeePromptText,
+        if (!setupFrozen) ...[
+          gapH16,
+          CatchButton(
+            label: widget.planIsPersisted
+                ? (_isDirty
+                      ? context
+                            .l10n
+                            .eventSuccessEventSuccessHostSetupLabelSaveChanges
+                      : context
+                            .l10n
+                            .eventSuccessEventSuccessHostSetupLabelSaveSetup)
+                : context
+                      .l10n
+                      .eventSuccessEventSuccessHostSetupLabelSaveLiveGuide,
+            isLoading: widget.actionState.isSaving,
+            onPressed:
+                widget.actionState.isSaving ||
+                    _remotePlanChanged ||
+                    widget.onSaveSetup == null
+                ? null
+                : () => unawaited(
+                    widget.onSaveSetup!(
+                      EventSuccessSetupSaveRequest(
+                        event: widget.event,
+                        plan: widget.plan,
+                        planIsPersisted: widget.planIsPersisted,
+                        draft: _resolvedDraft,
+                        attendeePrompt: _attendeePromptText,
+                      ),
                     ),
                   ),
-                ),
-          fullWidth: true,
-        ),
+            fullWidth: true,
+          ),
+        ],
       ],
     );
   }
@@ -300,75 +290,28 @@ class TargetAttendeeControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      tone: CatchSurfaceTone.raised,
-      borderColor: t.line,
-      padding: CatchInsets.contentDense,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final copy = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context
-                    .l10n
-                    .eventSuccessEventSuccessHostSetupTextTargetAttendees,
-                style: CatchTextStyles.sectionTitle(context),
-              ),
-              gapH2,
-              Text(
-                context.l10n
-                    .eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax(
-                      recommendedMin: recommendedMin,
-                      recommendedMax: recommendedMax,
-                    ),
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          );
-          final stepper = SizedBox(
-            width: math.min(
-              CatchLayout.hostTargetStepperWidth,
-              constraints.maxWidth,
-            ),
-            child: CatchNumberStepper(
-              value: value,
-              min: 1,
-              max: 1000,
-              formatValue: (number) => context.l10n
-                  .eventSuccessEventSuccessHostSetupVisiblecopyToint(
-                    toInt: number.toInt(),
-                  ),
-              enabled: enabled,
-              decreaseTooltip: context
-                  .l10n
-                  .eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees,
-              increaseTooltip: context
-                  .l10n
-                  .eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees,
-              onChanged: (number) => onChanged(number.toInt()),
-            ),
-          );
-          if (constraints.maxWidth < 360) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                copy,
-                gapH12,
-                Align(alignment: Alignment.centerLeft, child: stepper),
-              ],
-            );
-          }
-          return Row(
-            children: [
-              Expanded(child: copy),
-              gapW12,
-              stepper,
-            ],
-          );
-        },
-      ),
+    return CatchField.stepper(
+      title: context.l10n.eventSuccessEventSuccessHostSetupTextTargetAttendees,
+      body: context.l10n
+          .eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax(
+            recommendedMin: recommendedMin,
+            recommendedMax: recommendedMax,
+          ),
+      value: value,
+      min: 1,
+      max: 1000,
+      formatter: (number) =>
+          context.l10n.eventSuccessEventSuccessHostSetupVisiblecopyToint(
+            toInt: number.toInt(),
+          ),
+      enabled: enabled,
+      decreaseSemanticLabel: context
+          .l10n
+          .eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees,
+      increaseSemanticLabel: context
+          .l10n
+          .eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees,
+      onChanged: enabled ? (number) => onChanged(number.toInt()) : null,
     );
   }
 }
@@ -381,43 +324,12 @@ class ReadinessIssues extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
-      tone: CatchSurfaceTone.raised,
-      borderColor: t.warning.withValues(
-        alpha: CatchOpacity.readinessWarningBorder,
-      ),
-      padding: CatchInsets.contentDense,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.eventSuccessEventSuccessHostSetupTitleBeforeLaunch,
-            style: CatchTextStyles.sectionTitle(context),
-          ),
-          gapH6,
-          for (final issue in issues)
-            Padding(
-              padding: _hostLaunchIssueGap,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    CatchIcons.errorOutlineRounded,
-                    color: t.warning,
-                    size: 16,
-                  ),
-                  gapW6,
-                  Expanded(
-                    child: Text(
-                      issue,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
+    return CatchField.content(
+      title: context.l10n.eventSuccessEventSuccessHostSetupTitleBeforeLaunch,
+      body: issues.join('\n'),
+      bodyMaxLines: math.max(3, issues.length * 2),
+      icon: CatchIcons.errorOutlineRounded,
+      iconColor: t.warning,
     );
   }
 }
@@ -445,30 +357,6 @@ class NoticeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: t.primary),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: CatchTextStyles.sectionTitle(context)),
-                gapH4,
-                Text(
-                  body,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return CatchSurface.message(title: title, message: body, messageIcon: icon);
   }
 }

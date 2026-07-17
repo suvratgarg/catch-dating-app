@@ -265,36 +265,39 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                 completedCount: _mediaDrafts.length,
                 maximumClubPhotoCount: maxClubPhotos,
               ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CreateClubProfileImagePicker(
-                imageBytes: _pickedLogo?.bytes,
-                existingImageUrl: club.profileImageUrl,
-                onTap: mediaPending ? null : _pickLogo,
-                variant: CreateClubProfileImagePickerVariant.editLogo,
-              ),
-              gapH20,
-              CreateClubPhotosPicker(
-                photos: [for (final draft in _mediaDrafts) draft.preview],
-                existingImageUrl: _mediaDrafts.isEmpty ? club.imageUrl : null,
-                onAddPhotos:
-                    mediaPending || _mediaDrafts.length >= maxClubPhotos
-                    ? null
-                    : _pickPhotos,
-                onRemovePhoto: mediaPending ? null : _removePhoto,
-                onReorderPhoto: mediaPending ? null : _reorderPhoto,
-                variant: CreateClubPhotosPickerVariant.editStrip,
-              ),
-              if (mediaError != null) ...[
-                gapH12,
-                CatchFieldSupportRow(
-                  text: mediaError,
-                  color: CatchTokens.of(context).danger,
-                  showErrorIcon: true,
+          child: Padding(
+            padding: CatchInsets.fieldSectionChildTop,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CreateClubProfileImagePicker(
+                  imageBytes: _pickedLogo?.bytes,
+                  existingImageUrl: club.profileImageUrl,
+                  onTap: mediaPending ? null : _pickLogo,
+                  variant: CreateClubProfileImagePickerVariant.editLogo,
                 ),
+                gapH20,
+                CreateClubPhotosPicker(
+                  photos: [for (final draft in _mediaDrafts) draft.preview],
+                  existingImageUrl: _mediaDrafts.isEmpty ? club.imageUrl : null,
+                  onAddPhotos:
+                      mediaPending || _mediaDrafts.length >= maxClubPhotos
+                      ? null
+                      : _pickPhotos,
+                  onRemovePhoto: mediaPending ? null : _removePhoto,
+                  onReorderPhoto: mediaPending ? null : _reorderPhoto,
+                  variant: CreateClubPhotosPickerVariant.editStrip,
+                ),
+                if (mediaError != null) ...[
+                  gapH12,
+                  CatchFieldSupportRow(
+                    text: mediaError,
+                    color: CatchTokens.of(context).danger,
+                    showErrorIcon: true,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         CatchSection.fieldRows(

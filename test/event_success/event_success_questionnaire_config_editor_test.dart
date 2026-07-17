@@ -1,12 +1,13 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('selects questionnaire templates with CatchField choices', (
+  testWidgets('selects questionnaire templates with explanatory cards', (
     tester,
   ) async {
     var value = const EventSuccessQuestionnaireConfig.defaultTemplate();
@@ -56,7 +57,7 @@ void main() {
 }
 
 void _invokeChoice(WidgetTester tester, String label) {
-  tester.widgetList<CatchFieldChoiceChip>(_choice(label)).last.onPressed();
+  tester.widgetList<CatchOptionCard>(_choice(label)).last.onTap!();
 }
 
 Future<void> _openQuestionSetField(WidgetTester tester) async {
@@ -72,8 +73,8 @@ Future<void> _openQuestionSetField(WidgetTester tester) async {
 Finder _choice(String label, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchFieldChoiceChip &&
-        widget.label == label &&
+        widget is CatchOptionCard &&
+        widget.title == label &&
         (selected == null || widget.selected == selected),
   );
 }

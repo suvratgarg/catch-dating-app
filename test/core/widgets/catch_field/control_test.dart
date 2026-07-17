@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -131,6 +132,61 @@ void main() {
     expect(chip.accent, accent);
     expect(chip.selected, isTrue);
   });
+
+  testWidgets(
+    'CatchField optionCards keeps each title and description in one target',
+    (tester) async {
+      var selected = 'open';
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => CatchField.optionCards<String>(
+              title: 'Admission format',
+              values: const ['open', 'invite'],
+              itemTitle: (value) => value == 'open' ? 'Open' : 'Invite only',
+              itemDescription: (value) => value == 'open'
+                  ? 'Anyone eligible can book until capacity.'
+                  : 'Only people with the invite code can book.',
+              selected: selected,
+              initiallyOpen: true,
+              onChanged: (value) => setState(() => selected = value),
+            ),
+          ),
+        ),
+      );
+
+      final openCard = tester.widget<CatchOptionCard>(
+        find.byKey(const ValueKey('catch-field-option-card-Open')),
+      );
+      final inviteCard = tester.widget<CatchOptionCard>(
+        find.byKey(const ValueKey('catch-field-option-card-Invite only')),
+      );
+      expect(openCard.description, 'Anyone eligible can book until capacity.');
+      expect(openCard.selected, isTrue);
+      expect(
+        inviteCard.description,
+        'Only people with the invite code can book.',
+      );
+      expect(inviteCard.selected, isFalse);
+
+      await tester.tap(
+        find.byKey(const ValueKey('catch-field-option-card-Invite only')),
+      );
+      await tester.pump();
+      expect(selected, 'invite');
+      expect(
+        tester
+            .widget<CatchOptionCard>(
+              find.byKey(
+                const ValueKey('catch-field-option-card-Invite only'),
+                skipOffstage: false,
+              ),
+            )
+            .selected,
+        isTrue,
+      );
+    },
+  );
 
   testWidgets('CatchField stepper reports bounded changes', (tester) async {
     num value = 168;

@@ -43,7 +43,11 @@ class CatchDivider extends StatelessWidget {
       CatchDividerRole.section => tokens.line,
       CatchDividerRole.fieldSection => tokens.line,
       CatchDividerRole.fieldRow => tokens.line.withValues(
-        alpha: CatchOpacity.fieldRowDivider,
+        // `line` already carries the theme-specific alpha (8% in light,
+        // 13% in dark). Replacing it with 38% made every row rule much darker
+        // than both the token and the intended color-mix. Scale the existing
+        // alpha so the field-row role is genuinely quieter than a section.
+        alpha: tokens.line.a * CatchOpacity.fieldRowDivider,
       ),
     };
   }

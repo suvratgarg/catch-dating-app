@@ -51,7 +51,7 @@
       "owner": "agent",
       "area": "flutter,host,layout,screen-chrome",
       "priority": "high",
-      "summary": "The four Host tab roots now own AppShellActiveTab-aware terminal clearance, including all three Organizer workspace pages through CatchTabbedPageScrollView. The wider Host route audit still finds utility/detail/editor routes using fixed page bottom padding or no terminal primitive: dedicated Insights, Club detail, Create/Edit club, Create event, Event detail, Manage/Attendance/Success, Edit event, Settings, and Professional profile. Host Chat is intentionally composer-owned and /host/clubs is redirect-only.",
+      "summary": "The four Host tab roots now own AppShellActiveTab-aware terminal clearance, including all three Organizer workspace pages through CatchTabbedPageScrollView. The wider Host route audit still finds utility/detail/editor routes using fixed page bottom padding or no terminal primitive: dedicated Insights, Club detail, Create/Edit club, Create event, Event detail, Manage/Attendance/Success, Edit event, and the unified Host team workspace. Host Chat is intentionally composer-owned and /host/clubs is redirect-only.",
       "acceptance": [
         "classify every AppRouteAudience.host route as shell-aware terminal, fixed bottom-owner exception, redirect, or non-scroll",
         "migrate every scrollable Host route without a fixed bottom owner to CatchScrollTerminalPadding, CatchSliverTerminalPadding, CatchTabbedPageScrollView, or a shared body primitive that delegates to AppShellActiveTab.scrollTerminalClearanceOf",
@@ -67,8 +67,7 @@
         "lib/events/presentation/widgets/event_detail_body.dart",
         "lib/hosts/presentation/host_event_manage_screen.dart",
         "lib/hosts/presentation/edit_hosted_event_screen.dart",
-        "lib/hosts/presentation/host_operations/host_account_screen.dart",
-        "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+        "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
         "tool/design/tab_root_scroll_contracts.json"
       ],
       "source": "2026-07-16-host-terminal-spacing-audit"

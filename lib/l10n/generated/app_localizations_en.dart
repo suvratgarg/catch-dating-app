@@ -638,6 +638,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Working well';
 
   @override
+  String get eventSuccessEventSuccessFeatureBlocksTextImproveNextTime =>
+      'Improve next time';
+
+  @override
   String get eventSuccessEventSuccessFeatureBlocksLabelBeforeLaunch =>
       'Before launch';
 
@@ -1542,14 +1546,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Drag to reorder - the first photo is your cover. Add as many as you like.';
 
   @override
-  String get hostsCreateClubPhotosPickerTextClubLogo => 'CLUB LOGO';
-
-  @override
   String get hostsCreateClubPhotosPickerTextASquareLogoShown =>
       'A square logo, shown on your club profile and every event.';
-
-  @override
-  String get hostsCreateClubPhotosPickerTextPhotos => 'PHOTOS';
 
   @override
   String get hostsCreateClubPhotosPickerLabelChangeClubProfileImage =>
@@ -2212,6 +2210,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use the status tiles to focus the roster as people arrive.';
 
   @override
+  String get hostsHostEventAttendancePanelTitleCheckInQr => 'Check-in QR';
+
+  @override
+  String get hostsHostEventAttendancePanelBodyCheckInQr =>
+      'Show this code to attendees as they arrive.';
+
+  @override
   String get hostsHostEventAttendancePanelLabelSearchRoster => 'Search roster';
 
   @override
@@ -2226,6 +2231,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventAttendancePanelLabelRevenueCsv => 'Revenue CSV';
+
+  @override
+  String get hostsHostEventAttendancePanelLabelExport => 'Export report';
 
   @override
   String get hostsHostEventAttendancePanelTextWaitlistMovement =>
@@ -3823,11 +3831,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostsCreateClubPhotosPickerTextCount({required Object count}) {
-    return '$count';
-  }
-
-  @override
   String hostsEditHostedEventScreenTitleBasePriceCurrencycode({
     required Object currencyCode,
   }) {
@@ -5382,6 +5385,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get eventSuccessEventSuccessHostReportLabelCatchesSent =>
+      'Catches sent';
+
+  @override
   String
   eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned({
     required Object assignmentParticipantCount,
@@ -5898,40 +5905,37 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can manage only events that you host.';
 
   @override
-  String get hostsHostAccountScreenTitleHostProfile => 'Host profile';
+  String get hostsHostClubTeamScreenTitleSignOut => 'Sign out';
 
   @override
-  String get hostsHostAccountScreenTooltipSignOut => 'Sign out';
+  String get hostsHostClubTeamScreenLabelEdit => 'Edit';
 
   @override
-  String get hostsHostAccountScreenLabelEdit => 'Edit';
+  String get hostsHostClubTeamScreenLabelPreview => 'Preview';
 
   @override
-  String get hostsHostAccountScreenLabelPreview => 'Preview';
+  String get hostsHostClubTeamScreenTitleProfile => 'Profile';
 
   @override
-  String get hostsHostAccountScreenTitleProfile => 'Profile';
+  String get hostsHostClubTeamScreenTitleDisplayName => 'Display name';
 
   @override
-  String get hostsHostAccountScreenTitleDisplayName => 'Display name';
+  String get hostsHostClubTeamScreenTitleRoleTitle => 'Role title';
 
   @override
-  String get hostsHostAccountScreenTitleRoleTitle => 'Role title';
+  String get hostsHostClubTeamScreenTitleStatus => 'Status';
 
   @override
-  String get hostsHostAccountScreenTitleStatus => 'Status';
+  String get hostsHostClubTeamScreenTitleAboutYouAsA => 'About you as a host';
 
   @override
-  String get hostsHostAccountScreenTitleAboutYouAsA => 'About you as a host';
+  String get hostsHostClubTeamScreenTitleClubsYouHost => 'Clubs you host';
 
   @override
-  String get hostsHostAccountScreenTitleClubsYouHost => 'Clubs you host';
+  String get hostsHostClubTeamScreenTextNoHostClubsYet => 'No host clubs yet.';
 
   @override
-  String get hostsHostAccountScreenTextNoHostClubsYet => 'No host clubs yet.';
-
-  @override
-  String get hostsHostAccountScreenLabelSaveProfile => 'Save profile';
+  String get hostsHostClubTeamScreenLabelSaveProfile => 'Save profile';
 
   @override
   String get hostsHostAnalyticsLabelAllEvents => 'All events';
@@ -6254,9 +6258,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostClubsScaffoldTooltipSwitchClub => 'Switch club';
 
   @override
-  String get hostsHostClubsScaffoldTooltipSettings => 'Settings';
-
-  @override
   String get hostsHostClubsScaffoldTitleNoHostClubsYet => 'No host clubs yet';
 
   @override
@@ -6327,45 +6328,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostOrganizerLabelUpcoming => 'Upcoming';
-
-  @override
-  String get hostsHostProfileScreenTitleProfessionalProfile =>
-      'Professional profile';
-
-  @override
-  String get hostsHostProfileScreenTextProfessionalProfile =>
-      'Professional profile';
-
-  @override
-  String get hostsHostProfileScreenTextHostProfileProfessionalProfile =>
-      'Host profile. Professional profile';
-
-  @override
-  String get hostsHostProfileScreenTextHostProfile => 'HOST PROFILE';
-
-  @override
-  String get hostsHostProfileScreenTitleNoHostProfileYet =>
-      'No host profile yet';
-
-  @override
-  String get hostsHostProfileScreenBodyCreateAProfessionalHost =>
-      'Create a professional host identity before editing profile details.';
-
-  @override
-  String get hostsHostProfileScreenLabelCreateHostProfile =>
-      'Create host profile';
-
-  @override
-  String get hostsHostProfileScreenLabelSaveProfile => 'Save profile';
-
-  @override
-  String get hostsHostProfileScreenTitleDisplayName => 'Display name';
-
-  @override
-  String get hostsHostProfileScreenTitleRoleTitle => 'Role title';
-
-  @override
-  String get hostsHostProfileScreenTitleBio => 'Bio';
 
   @override
   String get hostsHostTodayTitleNoActiveEventsYet => 'No active events yet';
@@ -9688,26 +9650,26 @@ class AppLocalizationsEn extends AppLocalizations {
       'Participant';
 
   @override
-  String get hostsHostAccountScreenVisiblecopyHostProfileSaved =>
+  String get hostsHostClubTeamScreenVisiblecopyHostProfileSaved =>
       'Host profile saved.';
 
   @override
-  String get hostsHostAccountScreenVisiblecopyHostProfileCreated =>
+  String get hostsHostClubTeamScreenVisiblecopyHostProfileCreated =>
       'Host profile created.';
 
   @override
-  String get hostsHostAccountScreenVisiblecopyCreatingProfile =>
+  String get hostsHostClubTeamScreenVisiblecopyCreatingProfile =>
       'Creating profile...';
 
   @override
-  String get hostsHostAccountScreenVisiblecopyCreateHostProfile =>
+  String get hostsHostClubTeamScreenVisiblecopyCreateHostProfile =>
       'Create host profile';
 
   @override
-  String get hostsHostAccountScreenVisiblecopyAddRoleTitle => 'Add role title';
+  String get hostsHostClubTeamScreenVisiblecopyAddRoleTitle => 'Add role title';
 
   @override
-  String get hostsHostAccountScreenVisiblecopyAddAHostBio => 'Add a host bio';
+  String get hostsHostClubTeamScreenVisiblecopyAddAHostBio => 'Add a host bio';
 
   @override
   String get hostsHostAuthRequiredScreenVisiblecopySignIn => 'Sign in';
@@ -9737,10 +9699,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$minAge–$maxAge';
   }
-
-  @override
-  String get hostsHostProfileScreenVisiblecopyHostProfileSaved =>
-      'Host profile saved.';
 
   @override
   String get hostsHostTodayVisiblecopyMorning => 'morning';

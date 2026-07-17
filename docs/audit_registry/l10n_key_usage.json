@@ -15,15 +15,15 @@
     ]
   },
   "summary": {
-    "catalogKeys": 2699,
-    "usedKeys": 2699,
+    "catalogKeys": 2682,
+    "usedKeys": 2682,
     "orphanedKeys": 0,
-    "usageReferences": 2911,
-    "catalogL10nReferences": 2911,
+    "usageReferences": 2893,
+    "catalogL10nReferences": 2893,
     "nonMessageL10nReferences": 1,
     "missingCatalogKeys": 0,
     "missingCatalogReferences": 0,
-    "scannedDartFiles": 766,
+    "scannedDartFiles": 764,
     "excludedGeneratedDartFiles": 416
   },
   "orphanedKeys": [],
@@ -6055,7 +6055,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/ordered_photo_picker.dart",
-          "line": 180,
+          "line": 179,
           "column": 27
         }
       ],
@@ -6063,7 +6063,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/ordered_photo_picker.dart",
-          "line": 180,
+          "line": 179,
           "column": 27
         }
       ]
@@ -6075,7 +6075,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/ordered_photo_picker.dart",
-          "line": 184,
+          "line": 183,
           "column": 31
         }
       ],
@@ -6083,7 +6083,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/ordered_photo_picker.dart",
-          "line": 184,
+          "line": 183,
           "column": 31
         }
       ]
@@ -6095,7 +6095,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/ordered_photo_picker.dart",
-          "line": 218,
+          "line": 217,
           "column": 26
         }
       ],
@@ -6103,7 +6103,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/ordered_photo_picker.dart",
-          "line": 218,
+          "line": 217,
           "column": 26
         }
       ]
@@ -6115,7 +6115,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/ordered_photo_picker.dart",
-          "line": 257,
+          "line": 256,
           "column": 36
         }
       ],
@@ -6123,7 +6123,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/ordered_photo_picker.dart",
-          "line": 257,
+          "line": 256,
           "column": 36
         }
       ]
@@ -30795,7 +30795,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 208,
+          "line": 174,
           "column": 26
         }
       ],
@@ -30803,7 +30803,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 208,
+          "line": 174,
           "column": 26
         }
       ]
@@ -30815,7 +30815,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 207,
+          "line": 173,
           "column": 26
         }
       ],
@@ -30823,7 +30823,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 207,
+          "line": 173,
           "column": 26
         }
       ]
@@ -30855,7 +30855,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 143,
+          "line": 133,
           "column": 31
         }
       ],
@@ -30863,7 +30863,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 143,
+          "line": 133,
           "column": 31
         }
       ]
@@ -30875,16 +30875,16 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 129,
-          "column": 32
+          "line": 121,
+          "column": 28
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 129,
-          "column": 32
+          "line": 121,
+          "column": 28
         }
       ]
     },
@@ -30895,7 +30895,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 256,
+          "line": 222,
           "column": 40
         }
       ],
@@ -30903,48 +30903,8 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 256,
+          "line": 222,
           "column": 40
-        }
-      ]
-    },
-    {
-      "key": "hostsCreateClubPhotosPickerTextClubLogo",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 114,
-          "column": 26
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 114,
-          "column": 26
-        }
-      ]
-    },
-    {
-      "key": "hostsCreateClubPhotosPickerTextCount",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 175,
-          "column": 24
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 175,
-          "column": 24
         }
       ]
     },
@@ -30964,26 +30924,6 @@
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
           "line": 78,
-          "column": 24
-        }
-      ]
-    },
-    {
-      "key": "hostsCreateClubPhotosPickerTextPhotos",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 170,
-          "column": 24
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-          "line": 170,
           "column": 24
         }
       ]
@@ -31245,7 +31185,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart",
-          "line": 34,
+          "line": 33,
           "column": 26
         }
       ],
@@ -31253,7 +31193,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart",
-          "line": 34,
+          "line": 33,
           "column": 26
         }
       ]
@@ -31265,7 +31205,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart",
-          "line": 36,
+          "line": 35,
           "column": 26
         }
       ],
@@ -31273,7 +31213,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart",
-          "line": 36,
+          "line": 35,
           "column": 26
         }
       ]
@@ -34519,446 +34459,6 @@
       ]
     },
     {
-      "key": "hostsHostAccountScreenLabelEdit",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 100,
-          "column": 39
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 100,
-          "column": 39
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenLabelPreview",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 104,
-          "column": 39
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 104,
-          "column": 39
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenLabelSaveProfile",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 387,
-          "column": 31
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 387,
-          "column": 31
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenTextNoHostClubsYet",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 464,
-          "column": 24
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 464,
-          "column": 24
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenTitleAboutYouAsA",
-      "status": "used",
-      "usageCount": 2,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 370,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 416,
-          "column": 33
-        }
-      ],
-      "l10nReferenceCount": 2,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 370,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 416,
-          "column": 33
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenTitleClubsYouHost",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 479,
-          "column": 27
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 479,
-          "column": 27
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenTitleDisplayName",
-      "status": "used",
-      "usageCount": 3,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 290,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 353,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 395,
-          "column": 33
-        }
-      ],
-      "l10nReferenceCount": 3,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 290,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 353,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 395,
-          "column": 33
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenTitleHostProfile",
-      "status": "used",
-      "usageCount": 2,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 32,
-          "column": 29
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 81,
-          "column": 33
-        }
-      ],
-      "l10nReferenceCount": 2,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 32,
-          "column": 29
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 81,
-          "column": 33
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenTitleProfile",
-      "status": "used",
-      "usageCount": 3,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 286,
-          "column": 29
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 349,
-          "column": 29
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 384,
-          "column": 29
-        }
-      ],
-      "l10nReferenceCount": 3,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 286,
-          "column": 29
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 349,
-          "column": 29
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 384,
-          "column": 29
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenTitleRoleTitle",
-      "status": "used",
-      "usageCount": 2,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 358,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 403,
-          "column": 33
-        }
-      ],
-      "l10nReferenceCount": 2,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 358,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 403,
-          "column": 33
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenTitleStatus",
-      "status": "used",
-      "usageCount": 2,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 365,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 411,
-          "column": 33
-        }
-      ],
-      "l10nReferenceCount": 2,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 365,
-          "column": 33
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 411,
-          "column": 33
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenTooltipSignOut",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 87,
-          "column": 39
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 87,
-          "column": 39
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenVisiblecopyAddAHostBio",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 373,
-          "column": 32
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 373,
-          "column": 32
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenVisiblecopyAddRoleTitle",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 361,
-          "column": 32
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 361,
-          "column": 32
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenVisiblecopyCreateHostProfile",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 295,
-          "column": 24
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 295,
-          "column": 24
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenVisiblecopyCreatingProfile",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 292,
-          "column": 32
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 292,
-          "column": 32
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenVisiblecopyHostProfileCreated",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 199,
-          "column": 20
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 199,
-          "column": 20
-        }
-      ]
-    },
-    {
-      "key": "hostsHostAccountScreenVisiblecopyHostProfileSaved",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 181,
-          "column": 20
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "line": 181,
-          "column": 20
-        }
-      ]
-    },
-    {
       "key": "hostsHostAnalyticsBodyCheckoutChatsAndSaves",
       "status": "used",
       "usageCount": 1,
@@ -36585,7 +36085,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 417,
+          "line": 420,
           "column": 35
         },
         {
@@ -36603,7 +36103,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 417,
+          "line": 420,
           "column": 35
         },
         {
@@ -36621,30 +36121,50 @@
     {
       "key": "hostsHostClubEditTabLabelHostTeam",
       "status": "used",
-      "usageCount": 2,
+      "usageCount": 4,
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 440,
+          "line": 443,
           "column": 35
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 12,
-          "column": 27
+          "line": 34,
+          "column": 29
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 53,
+          "column": 29
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 105,
+          "column": 33
         }
       ],
-      "l10nReferenceCount": 2,
+      "l10nReferenceCount": 4,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 440,
+          "line": 443,
           "column": 35
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 12,
-          "column": 27
+          "line": 34,
+          "column": 29
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 53,
+          "column": 29
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 105,
+          "column": 33
         }
       ]
     },
@@ -36655,7 +36175,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 424,
+          "line": 427,
           "column": 35
         },
         {
@@ -36673,7 +36193,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 424,
+          "line": 427,
           "column": 35
         },
         {
@@ -36695,7 +36215,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 434,
+          "line": 437,
           "column": 37
         },
         {
@@ -36713,7 +36233,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 434,
+          "line": 437,
           "column": 37
         },
         {
@@ -36735,7 +36255,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 413,
+          "line": 416,
           "column": 31
         }
       ],
@@ -36743,7 +36263,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 413,
+          "line": 416,
           "column": 31
         }
       ]
@@ -36755,7 +36275,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 441,
+          "line": 444,
           "column": 39
         }
       ],
@@ -36763,7 +36283,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 441,
+          "line": 444,
           "column": 39
         }
       ]
@@ -36775,7 +36295,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 427,
+          "line": 430,
           "column": 34
         },
         {
@@ -36788,7 +36308,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 427,
+          "line": 430,
           "column": 34
         },
         {
@@ -36805,7 +36325,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 426,
+          "line": 429,
           "column": 34
         },
         {
@@ -36818,7 +36338,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 426,
+          "line": 429,
           "column": 34
         },
         {
@@ -36835,7 +36355,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 324,
+          "line": 327,
           "column": 35
         }
       ],
@@ -36843,7 +36363,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 324,
+          "line": 327,
           "column": 35
         }
       ]
@@ -36885,7 +36405,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 308,
+          "line": 311,
           "column": 35
         }
       ],
@@ -36893,7 +36413,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 308,
+          "line": 311,
           "column": 35
         }
       ]
@@ -36905,7 +36425,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 339,
+          "line": 342,
           "column": 35
         }
       ],
@@ -36913,7 +36433,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 339,
+          "line": 342,
           "column": 35
         }
       ]
@@ -36925,7 +36445,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 397,
+          "line": 400,
           "column": 35
         }
       ],
@@ -36933,7 +36453,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 397,
+          "line": 400,
           "column": 35
         }
       ]
@@ -36945,7 +36465,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 365,
+          "line": 368,
           "column": 35
         }
       ],
@@ -36953,7 +36473,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 365,
+          "line": 368,
           "column": 35
         }
       ]
@@ -36965,7 +36485,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 381,
+          "line": 384,
           "column": 35
         }
       ],
@@ -36973,7 +36493,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 381,
+          "line": 384,
           "column": 35
         }
       ]
@@ -36985,7 +36505,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 400,
+          "line": 403,
           "column": 32
         }
       ],
@@ -36993,7 +36513,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 400,
+          "line": 403,
           "column": 32
         }
       ]
@@ -37005,7 +36525,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 367,
+          "line": 370,
           "column": 41
         }
       ],
@@ -37013,7 +36533,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 367,
+          "line": 370,
           "column": 41
         }
       ]
@@ -37085,7 +36605,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 358,
+          "line": 361,
           "column": 31
         }
       ],
@@ -37093,7 +36613,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 358,
+          "line": 361,
           "column": 31
         }
       ]
@@ -37125,7 +36645,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 301,
+          "line": 304,
           "column": 31
         }
       ],
@@ -37133,7 +36653,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 301,
+          "line": 304,
           "column": 31
         }
       ]
@@ -37165,7 +36685,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 329,
+          "line": 332,
           "column": 30
         }
       ],
@@ -37173,7 +36693,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 329,
+          "line": 332,
           "column": 30
         }
       ]
@@ -37185,7 +36705,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 313,
+          "line": 316,
           "column": 30
         }
       ],
@@ -37193,7 +36713,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 313,
+          "line": 316,
           "column": 30
         }
       ]
@@ -37225,7 +36745,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 349,
+          "line": 352,
           "column": 30
         }
       ],
@@ -37233,7 +36753,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-          "line": 349,
+          "line": 352,
           "column": 30
         }
       ]
@@ -37255,6 +36775,416 @@
           "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
           "line": 261,
           "column": 35
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenLabelEdit",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 119,
+          "column": 39
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 119,
+          "column": 39
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenLabelPreview",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 123,
+          "column": 39
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 123,
+          "column": 39
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenLabelSaveProfile",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 454,
+          "column": 31
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 454,
+          "column": 31
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenTextNoHostClubsYet",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 531,
+          "column": 24
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 531,
+          "column": 24
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenTitleAboutYouAsA",
+      "status": "used",
+      "usageCount": 2,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 437,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 483,
+          "column": 33
+        }
+      ],
+      "l10nReferenceCount": 2,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 437,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 483,
+          "column": 33
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenTitleClubsYouHost",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 546,
+          "column": 27
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 546,
+          "column": 27
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenTitleDisplayName",
+      "status": "used",
+      "usageCount": 3,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 357,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 420,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 462,
+          "column": 33
+        }
+      ],
+      "l10nReferenceCount": 3,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 357,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 420,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 462,
+          "column": 33
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenTitleProfile",
+      "status": "used",
+      "usageCount": 3,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 353,
+          "column": 29
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 416,
+          "column": 29
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 451,
+          "column": 29
+        }
+      ],
+      "l10nReferenceCount": 3,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 353,
+          "column": 29
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 416,
+          "column": 29
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 451,
+          "column": 29
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenTitleRoleTitle",
+      "status": "used",
+      "usageCount": 2,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 425,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 470,
+          "column": 33
+        }
+      ],
+      "l10nReferenceCount": 2,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 425,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 470,
+          "column": 33
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenTitleSignOut",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 180,
+          "column": 38
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 180,
+          "column": 38
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenTitleStatus",
+      "status": "used",
+      "usageCount": 2,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 432,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 478,
+          "column": 33
+        }
+      ],
+      "l10nReferenceCount": 2,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 432,
+          "column": 33
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 478,
+          "column": 33
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenVisiblecopyAddAHostBio",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 440,
+          "column": 32
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 440,
+          "column": 32
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenVisiblecopyAddRoleTitle",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 428,
+          "column": 32
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 428,
+          "column": 32
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenVisiblecopyCreateHostProfile",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 362,
+          "column": 24
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 362,
+          "column": 24
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenVisiblecopyCreatingProfile",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 359,
+          "column": 32
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 359,
+          "column": 32
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenVisiblecopyHostProfileCreated",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 263,
+          "column": 20
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 263,
+          "column": 20
+        }
+      ]
+    },
+    {
+      "key": "hostsHostClubTeamScreenVisiblecopyHostProfileSaved",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 245,
+          "column": 20
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "line": 245,
+          "column": 20
         }
       ]
     },
@@ -37735,7 +37665,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 163,
+          "line": 154,
           "column": 35
         }
       ],
@@ -37743,7 +37673,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 163,
+          "line": 154,
           "column": 35
         }
       ]
@@ -37775,7 +37705,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 162,
+          "line": 153,
           "column": 36
         }
       ],
@@ -37783,7 +37713,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 162,
+          "line": 153,
           "column": 36
         }
       ]
@@ -37815,7 +37745,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 150,
+          "line": 141,
           "column": 33
         }
       ],
@@ -37823,7 +37753,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 150,
+          "line": 141,
           "column": 33
         }
       ]
@@ -37835,7 +37765,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 154,
+          "line": 145,
           "column": 33
         }
       ],
@@ -37843,7 +37773,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 154,
+          "line": 145,
           "column": 33
         }
       ]
@@ -37855,7 +37785,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 324,
+          "line": 311,
           "column": 21
         }
       ],
@@ -37863,7 +37793,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 324,
+          "line": 311,
           "column": 21
         }
       ]
@@ -37875,7 +37805,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 158,
+          "line": 149,
           "column": 33
         }
       ],
@@ -37883,7 +37813,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 158,
+          "line": 149,
           "column": 33
         }
       ]
@@ -37909,43 +37839,13 @@
       ]
     },
     {
-      "key": "hostsHostClubsScaffoldTooltipSettings",
-      "status": "used",
-      "usageCount": 2,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 128,
-          "column": 31
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 131,
-          "column": 35
-        }
-      ],
-      "l10nReferenceCount": 2,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 128,
-          "column": 31
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 131,
-          "column": 35
-        }
-      ]
-    },
-    {
       "key": "hostsHostClubsScaffoldTooltipSwitchClub",
       "status": "used",
       "usageCount": 1,
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 138,
+          "line": 129,
           "column": 35
         }
       ],
@@ -37953,7 +37853,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 138,
+          "line": 129,
           "column": 35
         }
       ]
@@ -37965,7 +37865,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 320,
+          "line": 307,
           "column": 16
         }
       ],
@@ -37973,7 +37873,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 320,
+          "line": 307,
           "column": 16
         }
       ]
@@ -37990,7 +37890,7 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 319,
+          "line": 306,
           "column": 16
         }
       ],
@@ -38003,7 +37903,7 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 319,
+          "line": 306,
           "column": 16
         }
       ]
@@ -43945,256 +43845,6 @@
           "path": "lib/hosts/presentation/payments/host_payment_account_controller_card.dart",
           "line": 65,
           "column": 20
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenBodyCreateAProfessionalHost",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 135,
-          "column": 30
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 135,
-          "column": 30
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenLabelCreateHostProfile",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 139,
-          "column": 34
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 139,
-          "column": 34
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenLabelSaveProfile",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 265,
-          "column": 37
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 265,
-          "column": 37
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenTextHostProfile",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 86,
-          "column": 36
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 86,
-          "column": 36
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenTextHostProfileProfessionalProfile",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 76,
-          "column": 24
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 76,
-          "column": 24
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenTextProfessionalProfile",
-      "status": "used",
-      "usageCount": 2,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 73,
-          "column": 32
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 93,
-          "column": 28
-        }
-      ],
-      "l10nReferenceCount": 2,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 73,
-          "column": 32
-        },
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 93,
-          "column": 28
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenTitleBio",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 329,
-          "column": 31
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 329,
-          "column": 31
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenTitleDisplayName",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 313,
-          "column": 31
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 313,
-          "column": 31
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenTitleNoHostProfileYet",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 133,
-          "column": 33
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 133,
-          "column": 33
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenTitleProfessionalProfile",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 37,
-          "column": 29
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 37,
-          "column": 29
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenTitleRoleTitle",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 321,
-          "column": 31
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 321,
-          "column": 31
-        }
-      ]
-    },
-    {
-      "key": "hostsHostProfileScreenVisiblecopyHostProfileSaved",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 207,
-          "column": 22
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "line": 207,
-          "column": 22
         }
       ]
     },

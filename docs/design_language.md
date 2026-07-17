@@ -268,6 +268,13 @@ New `CatchField` modes or slots require a `docs/widget_catalog.md` entry, a
 Widgetbook contract story, and a behavior-contract test under
 `test/core/widgets/catch_field/` in the same PR.
 
+Terse filter and tag labels use `CatchField.choices` and selectable chips.
+Mutually exclusive options with per-option guidance use
+`CatchField.optionCards`: the selected title owns the collapsed value, and
+each expanded title plus description stays inside one clickable
+`CatchOptionCard`. Do not put only the selected description in the field body;
+that detaches the explanation from the options it describes.
+
 - **Sizing:** constraints over constant heights/widths; min/max constraints, intrinsics,
   `Flexible`/`Expanded`, `AspectRatio`, content max-width clamp. Resilient to **Dynamic
   Type** (validate at text scale 1.0/1.5/2.0).

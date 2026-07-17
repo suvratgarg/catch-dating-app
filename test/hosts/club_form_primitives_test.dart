@@ -3,12 +3,14 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_basics_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_details_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -66,14 +68,45 @@ void main() {
 
     expect(find.byType(CatchSectionList), findsOneWidget);
     expect(find.byType(CatchSection), findsWidgets);
-    expect(find.byType(CatchFieldChoiceChip), findsWidgets);
-    expect(find.byType(CatchSurface), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchFieldOptionCardControl,
+        skipOffstage: false,
+      ),
+      findsWidgets,
+    );
+    expect(find.byType(CatchSurface, skipOffstage: false), findsWidgets);
+    final activityField = tester.widget<CatchField>(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchField && widget.title == 'Default activity',
+      ),
+    );
+    expect(activityField.body, 'Social run');
+    expect(
+      activityField.helperText,
+      'New events start from this activity. Hosts can still change the activity and override the event-specific setup.',
+    );
+    expect(find.byType(EventAgeRangeField), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchField &&
+            (widget.title == 'Min age' || widget.title == 'Max age'),
+      ),
+      findsNothing,
+    );
+
+    final admissionField = find.byWidgetPredicate(
+      (widget) => widget is CatchField && widget.title == 'Admission format',
+    );
+    await tester.tap(admissionField);
+    await tester.pump(CatchFieldTokens.reveal);
 
     final balanced = find.byWidgetPredicate(
-      (widget) => widget is CatchFieldChoiceChip && widget.label == 'BALANCED',
+      (widget) => widget is CatchOptionCard && widget.title == 'BALANCED',
     );
     await tester.ensureVisible(balanced);
-    await tester.tap(balanced);
+    tester.widget<CatchOptionCard>(balanced).onTap!();
     await tester.pump(CatchFieldTokens.singleChoiceCloseDelay);
     await tester.pump(CatchFieldTokens.reveal);
 
@@ -151,9 +184,10 @@ void main() {
     );
     Finder choice(String label, {bool? selected}) => find.byWidgetPredicate(
       (widget) =>
-          widget is CatchFieldChoiceChip &&
-          widget.label == label &&
+          widget is CatchOptionCard &&
+          widget.title == label &&
           (selected == null || widget.selected == selected),
+      skipOffstage: false,
     );
 
     await tester.pumpWidget(
@@ -172,7 +206,7 @@ void main() {
       ),
     );
 
-    expect(choice('OPEN', selected: true).hitTestable(), findsOneWidget);
+    expect(choice('OPEN', selected: true), findsOneWidget);
     expect(field('Cohort caps'), findsOneWidget);
     expect(field('Max straight men'), findsNothing);
     expect(field('Max straight women'), findsNothing);
@@ -210,9 +244,10 @@ void main() {
     );
     Finder choice(String label, {bool? selected}) => find.byWidgetPredicate(
       (widget) =>
-          widget is CatchFieldChoiceChip &&
-          widget.label == label &&
+          widget is CatchOptionCard &&
+          widget.title == label &&
           (selected == null || widget.selected == selected),
+      skipOffstage: false,
     );
 
     await tester.pumpWidget(
@@ -233,10 +268,11 @@ void main() {
 
     final admissionField = tester.widget<CatchField>(field('Admission format'));
     expect(admissionField.open, isNull);
-    expect(admissionField.initiallyOpen, isTrue);
+    expect(admissionField.initiallyOpen, isFalse);
+    await tester.tap(field('Admission format'));
+    await tester.pump(CatchFieldTokens.reveal);
     final balanced = choice('BALANCED');
-    await tester.ensureVisible(balanced);
-    await tester.tap(balanced.hitTestable());
+    tester.widget<CatchOptionCard>(balanced).onTap!();
     await tester.pump(CatchFieldTokens.singleChoiceCloseDelay);
     await tester.pump(CatchFieldTokens.reveal);
 
