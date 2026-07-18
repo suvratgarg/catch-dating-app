@@ -15,13 +15,13 @@
     },
     {
       "path": "design_system/components.json",
-      "sha256": "0863093bef18e28e46e98dd82e6d40f7e29dc44f4a0d3df070d4ad7e387de143",
-      "bytes": 323973
+      "sha256": "788a195ec9de32c060a6133e25d2f668c3d14aa8b5d450c5f799b3fd99e658a0",
+      "bytes": 325454
     },
     {
       "path": "design_system/design_language.txt",
-      "sha256": "eac3b9a9d6a48640040c87e2d5b194356d6b8f766454cc5abb9a400d8cb44ec5",
-      "bytes": 19778
+      "sha256": "1c3de8eaf60b166ee4dd9a2c098475862d9a00bcfd82bbe4f8289faa6af77f09",
+      "bytes": 20189
     },
     {
       "path": "design_system/specimens/catch_design_system.html",
@@ -40,8 +40,8 @@
     },
     {
       "path": "gallery/manifest.json",
-      "sha256": "888c67b1be664863ac476cfbba164c3654c9aca7202d81455499d7662e7c8ac9",
-      "bytes": 260187
+      "sha256": "b11362a06a9e0cdb45e924271f4838293d2be4659a95b7c3e510c6a7cca27ed5",
+      "bytes": 251728
     }
   ]
 }

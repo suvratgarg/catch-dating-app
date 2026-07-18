@@ -2,13 +2,13 @@
   "version": 1,
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
-    "routes": 54,
-    "captures": 618,
+    "routes": 52,
+    "captures": 598,
     "statusCounts": {
       "excluded": 6,
-      "captured": 37,
+      "captured": 36,
       "alias": 7,
-      "planned": 4
+      "planned": 3
     }
   },
   "profile": {
@@ -2537,9 +2537,9 @@
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_active_profile",
+      "id": "host_team_active_profile",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2547,16 +2547,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_active_profile.png",
-        "dark": "dark/host_settings_active_profile.png"
+        "light": "light/host_team_active_profile.png",
+        "dark": "dark/host_team_active_profile.png"
       },
-      "whatItIs": "Host Settings Active Profile",
+      "whatItIs": "Host Team Active Profile",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_text_scale_2",
+      "id": "host_team_text_scale_2",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2564,16 +2564,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_text_scale_2.png",
-        "dark": "dark/host_settings_text_scale_2.png"
+        "light": "light/host_team_text_scale_2.png",
+        "dark": "dark/host_team_text_scale_2.png"
       },
-      "whatItIs": "Host Settings Text Scale 2",
+      "whatItIs": "Host Team Text Scale 2",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_reduced_motion",
+      "id": "host_team_reduced_motion",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2581,16 +2581,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_reduced_motion.png",
-        "dark": "dark/host_settings_reduced_motion.png"
+        "light": "light/host_team_reduced_motion.png",
+        "dark": "dark/host_team_reduced_motion.png"
       },
-      "whatItIs": "Host Settings Reduced Motion",
+      "whatItIs": "Host Team Reduced Motion",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_profile_loading",
+      "id": "host_team_fallback_profile",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2598,16 +2598,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_profile_loading.png",
-        "dark": "dark/host_settings_profile_loading.png"
+        "light": "light/host_team_fallback_profile.png",
+        "dark": "dark/host_team_fallback_profile.png"
       },
-      "whatItIs": "Host Settings Profile Loading",
+      "whatItIs": "Host Team Fallback Profile",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_profile_error",
+      "id": "host_team_clubs_loading",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2615,16 +2615,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_profile_error.png",
-        "dark": "dark/host_settings_profile_error.png"
+        "light": "light/host_team_clubs_loading.png",
+        "dark": "dark/host_team_clubs_loading.png"
       },
-      "whatItIs": "Host Settings Profile Error",
+      "whatItIs": "Host Team Clubs Loading",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_profile_offline",
+      "id": "host_team_clubs_error",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2632,16 +2632,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_profile_offline.png",
-        "dark": "dark/host_settings_profile_offline.png"
+        "light": "light/host_team_clubs_error.png",
+        "dark": "dark/host_team_clubs_error.png"
       },
-      "whatItIs": "Host Settings Profile Offline",
+      "whatItIs": "Host Team Clubs Error",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_no_profile",
+      "id": "host_team_clubs_offline",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2649,16 +2649,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_no_profile.png",
-        "dark": "dark/host_settings_no_profile.png"
+        "light": "light/host_team_clubs_offline.png",
+        "dark": "dark/host_team_clubs_offline.png"
       },
-      "whatItIs": "Host Settings No Profile",
+      "whatItIs": "Host Team Clubs Offline",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_create_profile_pending",
+      "id": "host_team_inline_profile_edit",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2666,16 +2666,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_create_profile_pending.png",
-        "dark": "dark/host_settings_create_profile_pending.png"
+        "light": "light/host_team_inline_profile_edit.png",
+        "dark": "dark/host_team_inline_profile_edit.png"
       },
-      "whatItIs": "Host Settings Create Profile Pending",
+      "whatItIs": "Host Team Inline Profile Edit",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_create_profile_error",
+      "id": "host_team_save_profile_pending",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2683,16 +2683,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_create_profile_error.png",
-        "dark": "dark/host_settings_create_profile_error.png"
+        "light": "light/host_team_save_profile_pending.png",
+        "dark": "dark/host_team_save_profile_pending.png"
       },
-      "whatItIs": "Host Settings Create Profile Error",
+      "whatItIs": "Host Team Save Profile Pending",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_create_profile_offline",
+      "id": "host_team_save_profile_error",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2700,16 +2700,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_create_profile_offline.png",
-        "dark": "dark/host_settings_create_profile_offline.png"
+        "light": "light/host_team_save_profile_error.png",
+        "dark": "dark/host_team_save_profile_error.png"
       },
-      "whatItIs": "Host Settings Create Profile Offline",
+      "whatItIs": "Host Team Save Profile Error",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_fallback_profile",
+      "id": "host_team_save_profile_offline",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2717,16 +2717,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_fallback_profile.png",
-        "dark": "dark/host_settings_fallback_profile.png"
+        "light": "light/host_team_save_profile_offline.png",
+        "dark": "dark/host_team_save_profile_offline.png"
       },
-      "whatItIs": "Host Settings Fallback Profile",
+      "whatItIs": "Host Team Save Profile Offline",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_clubs_loading",
+      "id": "host_team_sign_out_error",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2734,16 +2734,16 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_clubs_loading.png",
-        "dark": "dark/host_settings_clubs_loading.png"
+        "light": "light/host_team_sign_out_error.png",
+        "dark": "dark/host_team_sign_out_error.png"
       },
-      "whatItIs": "Host Settings Clubs Loading",
+      "whatItIs": "Host Team Sign Out Error",
       "keepChangeNotes": ""
     },
     {
-      "id": "host_settings_clubs_error",
+      "id": "host_team_sign_out_offline",
       "routes": [
-        "hostSettingsScreen"
+        "hostClubTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2751,367 +2751,10 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_settings_clubs_error.png",
-        "dark": "dark/host_settings_clubs_error.png"
+        "light": "light/host_team_sign_out_offline.png",
+        "dark": "dark/host_team_sign_out_offline.png"
       },
-      "whatItIs": "Host Settings Clubs Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_settings_clubs_offline",
-      "routes": [
-        "hostSettingsScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_settings_clubs_offline.png",
-        "dark": "dark/host_settings_clubs_offline.png"
-      },
-      "whatItIs": "Host Settings Clubs Offline",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_settings_inline_profile_edit",
-      "routes": [
-        "hostSettingsScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_settings_inline_profile_edit.png",
-        "dark": "dark/host_settings_inline_profile_edit.png"
-      },
-      "whatItIs": "Host Settings Inline Profile Edit",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_settings_save_profile_pending",
-      "routes": [
-        "hostSettingsScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_settings_save_profile_pending.png",
-        "dark": "dark/host_settings_save_profile_pending.png"
-      },
-      "whatItIs": "Host Settings Save Profile Pending",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_settings_save_profile_error",
-      "routes": [
-        "hostSettingsScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_settings_save_profile_error.png",
-        "dark": "dark/host_settings_save_profile_error.png"
-      },
-      "whatItIs": "Host Settings Save Profile Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_settings_save_profile_offline",
-      "routes": [
-        "hostSettingsScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_settings_save_profile_offline.png",
-        "dark": "dark/host_settings_save_profile_offline.png"
-      },
-      "whatItIs": "Host Settings Save Profile Offline",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_settings_sign_out_error",
-      "routes": [
-        "hostSettingsScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_settings_sign_out_error.png",
-        "dark": "dark/host_settings_sign_out_error.png"
-      },
-      "whatItIs": "Host Settings Sign Out Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_settings_sign_out_offline",
-      "routes": [
-        "hostSettingsScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_settings_sign_out_offline.png",
-        "dark": "dark/host_settings_sign_out_offline.png"
-      },
-      "whatItIs": "Host Settings Sign Out Offline",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_populated",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_populated.png",
-        "dark": "dark/host_profile_populated.png"
-      },
-      "whatItIs": "Host Profile Populated",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_validation_error",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_validation_error.png",
-        "dark": "dark/host_profile_validation_error.png"
-      },
-      "whatItIs": "Host Profile Validation Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_text_scale_2",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_text_scale_2.png",
-        "dark": "dark/host_profile_text_scale_2.png"
-      },
-      "whatItIs": "Host Profile Text Scale 2",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_reduced_motion",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_reduced_motion.png",
-        "dark": "dark/host_profile_reduced_motion.png"
-      },
-      "whatItIs": "Host Profile Reduced Motion",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_loading",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_loading.png",
-        "dark": "dark/host_profile_loading.png"
-      },
-      "whatItIs": "Host Profile Loading",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_error",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_error.png",
-        "dark": "dark/host_profile_error.png"
-      },
-      "whatItIs": "Host Profile Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_offline",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_offline.png",
-        "dark": "dark/host_profile_offline.png"
-      },
-      "whatItIs": "Host Profile Offline",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_missing",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_missing.png",
-        "dark": "dark/host_profile_missing.png"
-      },
-      "whatItIs": "Host Profile Missing",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_create_pending",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_create_pending.png",
-        "dark": "dark/host_profile_create_pending.png"
-      },
-      "whatItIs": "Host Profile Create Pending",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_create_error",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_create_error.png",
-        "dark": "dark/host_profile_create_error.png"
-      },
-      "whatItIs": "Host Profile Create Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_create_offline",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_create_offline.png",
-        "dark": "dark/host_profile_create_offline.png"
-      },
-      "whatItIs": "Host Profile Create Offline",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_save_pending",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_save_pending.png",
-        "dark": "dark/host_profile_save_pending.png"
-      },
-      "whatItIs": "Host Profile Save Pending",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_save_error",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_save_error.png",
-        "dark": "dark/host_profile_save_error.png"
-      },
-      "whatItIs": "Host Profile Save Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_profile_save_offline",
-      "routes": [
-        "hostProfileScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_profile_save_offline.png",
-        "dark": "dark/host_profile_save_offline.png"
-      },
-      "whatItIs": "Host Profile Save Offline",
+      "whatItIs": "Host Team Sign Out Offline",
       "keepChangeNotes": ""
     },
     {
@@ -5428,6 +5071,23 @@
         "salesDemo.host.createGuide"
       ],
       "whatItIs": "Host Create Guide",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_guide_question_pack",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_guide_question_pack.png",
+        "dark": "dark/host_create_guide_question_pack.png"
+      },
+      "whatItIs": "Host Create Guide Question Pack",
       "keepChangeNotes": ""
     },
     {
