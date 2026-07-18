@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.649
+version: 2.5.650
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,16 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.650
+
+- Corrected the `CatchAsyncValueView` catalog contract after the system-stretch
+  E1 migration: the composer exposes only context-aware
+  `builder`/`loadingBuilder`/`errorBuilder` callbacks. The removed
+  context-less callbacks are no longer documented as supported.
+- Closed the S4 select-mode coverage gap with 1.3×/2.0× dynamic-type target
+  assertions and an RTL leading/trailing-lane smoke test.
+- Refreshed the async/error catalog anchors after the E1/E2 implementation.
 
 ### 2.5.649
 
@@ -71,8 +81,8 @@ a feature section here only when auditing that feature's widget surface.
   | Save announcements | Saving/saved visuals carried localized live-region labels, but transition delivery was implicit. | Status transitions now send one localized accessibility announcement; `save_status_test.dart` proves exactly `Saving`, then `Saved`, with no repeat on an unchanged rebuild. |
   | Error announcements | Error anatomy and color were covered, but appearance was not a live region. | Error support rows now publish one labeled live region; `row_modes_test.dart` pins it. |
   | Interactive targets | Row, chip, commit, and stepper targets passed; the field toggle exposed only its 44×26 visual as the target. | The toggle keeps the 44×26 visual but centers it in a 44-point target; the shared target assertion pins toggle and stepper lanes. |
-  | Dynamic type | The field modes rendered without overflow at 1.3×; a trailing read value could still truncate meaning at 2.0×. | At 2.0×, a trailing value without a body moves below the title and wraps. Row, input, toggle, and control suites run at 1.3× and 2.0×. |
-  | RTL | Directional padding and alignment already mirrored. | Added row, input, toggle, and control smoke tests for leading/trailing lane reversal. |
+  | Dynamic type | The field modes rendered without overflow at 1.3×; a trailing read value could still truncate meaning at 2.0×. | At 2.0×, a trailing value without a body moves below the title and wraps. Row, input, select, toggle, and control suites run at 1.3× and 2.0×. |
+  | RTL | Directional padding and alignment already mirrored. | Added row, input, select, toggle, and control smoke tests for leading/trailing lane reversal. |
 
 ### 2.5.645
 
@@ -6450,13 +6460,13 @@ Widgetbook callers.
 | `CatchErrorIcon` | `lib/core/widgets/catch_error_icon.dart:7` | Shared branded error medallion used by framework and app-facing error surfaces. Treat as an atom composed by error surfaces, not a separate product component to review in Widgetbook. |
 | `CatchErrorState` | `lib/core/widgets/catch_error_state.dart:13` | Canonical branded app-facing error content. Supports full-screen, inline, and compact modes, mapped title/message copy, optional retry, and optional secondary action while composing the shared public `CatchErrorBody`. Widgetbook groups this family as the single "Error surfaces" review point. |
 | `CatchErrorBody` | `lib/core/widgets/catch_error_state.dart:82` | Direct branded error-body renderer used by error placement adapters. Owns icon sizing, title/message typography, retry and secondary-action layout, inline/compact surface wrapping, and full-screen centering. |
-| `CatchErrorScaffold` | `lib/core/widgets/catch_error_state.dart:212` | Full-screen/root-tab placement adapter for load failures. Keeps framework crashes separate from app data-load failures while reusing `CatchErrorBody`. |
-| `CatchSliverErrorState` | `lib/core/widgets/catch_error_state.dart:275` | Sliver-native placement adapter for branded load failures. Uses `SliverFillRemaining` by default and supports retry callbacks for provider invalidation while reusing `CatchErrorBody`. |
-| `CatchInlineErrorState` | `lib/core/widgets/catch_error_state.dart:343` | Section/card placement adapter for branded load failures. Reuses `CatchErrorBody` in inline or compact mode when the rest of the screen remains usable. |
-| `CatchAsyncValueView<T>` | `lib/core/widgets/catch_async_value_view.dart:26` | Generic widget handling `AsyncValue` states for route and section bodies. Supports legacy `data/loading/error` callbacks, context-aware `builder/loadingBuilder/errorBuilder` callbacks, Riverpod skip flags, branded `CatchErrorState.fromError` defaults, and retry callbacks for provider invalidation. Empty success states stay in the data callback. |
-| `CatchAsyncValueSliver<T>` | `lib/core/widgets/catch_async_value_view.dart:83` | Sliver equivalent of `CatchAsyncValueView`. Supports sliver-native data, loading, and error builders plus branded `CatchSliverErrorState.fromError` defaults for scroll-owned surfaces. |
-| `CatchAsyncScreenLoading` | `lib/core/widgets/catch_async_value_view.dart:159` | Route/body loading placement helper that wraps `CatchSkeletonList` in `CatchScreenBody` so async screen loading states use the shared gutter and scroll safely on compact surfaces. |
-| `CatchAsyncSliverLoading` | `lib/core/widgets/catch_async_value_view.dart:183` | Sliver loading placement helper that wraps `CatchSkeletonList` in `CatchSliverPageBody` for `CustomScrollView` screens. |
+| `CatchErrorScaffold` | `lib/core/widgets/catch_error_state.dart:247` | Full-screen/root-tab placement adapter for load failures. Keeps framework crashes separate from app data-load failures while reusing `CatchErrorBody`. |
+| `CatchSliverErrorState` | `lib/core/widgets/catch_error_state.dart:341` | Sliver-native placement adapter for branded load failures. Uses `SliverFillRemaining` by default and supports retry callbacks for provider invalidation while reusing `CatchErrorBody`. |
+| `CatchInlineErrorState` | `lib/core/widgets/catch_error_state.dart:437` | Section/card placement adapter for branded load failures. Reuses `CatchErrorBody` in inline or compact mode when the rest of the screen remains usable. |
+| `CatchAsyncValueView<T>` | `lib/core/widgets/catch_async_value_view.dart:26` | Generic widget handling `AsyncValue` states for route and section bodies. Requires the context-aware `builder` callback and supports optional context-aware `loadingBuilder`/`errorBuilder` callbacks, Riverpod skip flags, branded `CatchErrorState.fromError` defaults, and retry callbacks for provider invalidation. Empty success states stay in the data builder. |
+| `CatchAsyncValueSliver<T>` | `lib/core/widgets/catch_async_value_view.dart:71` | Sliver equivalent of `CatchAsyncValueView`. Supports sliver-native data, loading, and error builders plus branded `CatchSliverErrorState.fromError` defaults for scroll-owned surfaces. |
+| `CatchAsyncScreenLoading` | `lib/core/widgets/catch_async_value_view.dart:133` | Route/body loading placement helper that wraps `CatchSkeletonList` in `CatchScreenBody` so async screen loading states use the shared gutter and scroll safely on compact surfaces. |
+| `CatchAsyncSliverLoading` | `lib/core/widgets/catch_async_value_view.dart:157` | Sliver loading placement helper that wraps `CatchSkeletonList` in `CatchSliverPageBody` for `CustomScrollView` screens. |
 | `CatchFormFieldLabel` | `lib/core/widgets/catch_form_field_label.dart:6` | Styled form field label with an optional badge (e.g., "Optional") and an inline `Label · Optional` renderer used by the Field handoff. The semantic label always includes optional status; the badge form can collapse at large text scale so narrow forms can ellipsize the label without overflow. |
 | `CatchFormFieldOptionalBadge` | `lib/core/widgets/catch_form_field_label.dart:102` | Direct optional-badge renderer used inside `CatchFormFieldLabel`. Keeps the default and error badge treatments reviewable without a private widget-returning helper. |
 | `CatchControlShell` | `lib/core/widgets/catch_control_shell.dart:50` | Shared single-line control shell for fields, select triggers, picker tiles, map pin tiles, and steppers. Owns the fill, border, focus ring, radius, and size metrics. Use `floating` for overlay chrome, `compact` for dense header/search controls, and `md` for regular form controls. Registered as formal component contract `catch.control_shell`; product UI should still prefer higher-level field, search, select, or stepper APIs. |

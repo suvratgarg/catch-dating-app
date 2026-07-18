@@ -1119,6 +1119,34 @@ void main() {
       expect(tester.takeException(), isNull);
       expectMinimumAccessibleTarget(tester, find.byType(TextField));
     });
+
+    testWidgets('CatchField select remains usable at ${scale}x text', (
+      tester,
+    ) async {
+      final selected = cityOptionByName('mumbai')!;
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 280,
+            child: CatchField.select<CityOption>(
+              title: 'Preferred city',
+              values: defaultCityOptions,
+              itemLabel: (city) => city.label,
+              value: selected,
+              prefixIcon: Icon(CatchIcons.locationOnOutlined),
+              onChanged: (_) {},
+            ),
+          ),
+          textScale: scale,
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expectMinimumAccessibleTarget(
+        tester,
+        find.bySemanticsLabel('Preferred city'),
+      );
+    });
   }
 
   testWidgets('CatchField input lanes mirror in RTL', (tester) async {
@@ -1141,6 +1169,34 @@ void main() {
     expect(
       tester.getCenter(find.byIcon(CatchIcons.locationOnOutlined)).dx,
       greaterThan(tester.getCenter(find.byType(EditableText)).dx),
+    );
+  });
+
+  testWidgets('CatchField select lanes mirror in RTL', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: SizedBox(
+            width: 280,
+            child: CatchField.select<CityOption>(
+              title: 'City',
+              values: defaultCityOptions,
+              itemLabel: (city) => city.label,
+              value: cityOptionByName('mumbai'),
+              prefixIcon: Icon(CatchIcons.locationOnOutlined),
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getCenter(find.byIcon(CatchIcons.locationOnOutlined)).dx,
+      greaterThan(
+        tester.getCenter(find.byIcon(CatchIcons.expandMoreRounded)).dx,
+      ),
     );
   });
 }

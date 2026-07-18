@@ -1,6 +1,6 @@
 # Catch System Stretch Spec — Field 10/10 Goals + Adjacent Canonical Surfaces (for Codex)
 
-Status: owner-independent implementation complete; S2 production motion awaits owner sign-off · 2026-07-18
+Status: owner-independent implementation complete; S2 production motion and §9.4 follow-up scheduling await owner sign-off · 2026-07-18
 Scope: `lib/core/widgets/` (field family, top bar family, async/error/loading family, section layout), `lib/core/forms/`, `lib/core/schema_contracts/` + `contracts/` (S1 codegen), `lib/core/theme/` (motion usage only — no new token values without owner sign-off), `design/components/` (S5), `test/core/`, `widgetbook/`, `tool/`, docs.
 Supersedes: §14 of [`catch_field_section_system_spec.md`](catch_field_section_system_spec.md) ("base spec") — that section was a sketch; THIS document is the implementation contract for S1–S6. The base spec's §14 remains as rationale.
 Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec").
@@ -547,3 +547,37 @@ test additions; catalog + passes.jsonl stamps throughout.
   without restructuring.
 - The two-top-bar split until T4's census says otherwise — do not merge
   speculatively.
+
+## 14. Implementation completion audit (2026-07-18)
+
+This matrix maps every active or trigger-gated phase to current authoritative
+evidence. It separates completed implementation from the two decisions that the
+spec reserves for the owner.
+
+| Scope | Current evidence | State |
+|---|---|---|
+| S1a — generated constraints | `tool/contracts/generate_schema_contracts.mjs` emits `field_constraints.g.dart`; `--check` reports all generated schema outputs current. | complete |
+| S1b — descriptor adoption | Consumer profile and Host Club edit descriptor factories bind their constrained rows to `CatchContractConstraints`; the former 280/300 literals and Host inline editors are absent. | complete |
+| S1c — drift gate | `contract_alignment_test.dart` covers both factories and contains the seeded contradictory-limit probe; Flutter CI and `tools_manifest.json` run it. | complete |
+| S2 — motion language | `field_motion_use_cases.dart` presents current/proposed versions of exactly the four ratified moments with knobs and no token additions. Production wiring remains prohibited until owner review. | **owner gate** |
+| S3 — exact field modes | Const public factories redirect to sealed row/toggle/edit/select/control implementations; the old object payload/materializer and `CatchFieldMode` are absent; state dispatch is exhaustive and the identity test pins `Widget.canUpdate`, `find.byType`, and state continuity. The public input facade remains long because public API compatibility and const construction are both explicit constraints; no all-mode private constructor remains. | complete |
+| S4 — accessibility | The catalog audit table records roles, announcements, targets, dynamic type, and RTL findings. Row, input, select, toggle, and control tests pin localized one-shot announcements, live errors, 44-point targets, 1.3×/2.0× rendering, and RTL lane mirroring. | complete |
+| S5 / S6 | No substantial admin-forms work order or recurring field-correction trigger fired. Their artifacts remain deliberately absent. | dormant by trigger |
+| T1–T5 — top bars | `CatchSliverTopBar` is absent; both bars consume required-copy `CatchTopBarSearch`; action shortcuts are absent; the split and `BuildContext` constraint are documented; the main file is 895 lines. | complete |
+| E1–E3 — async/error/loading | Async composers expose only context-aware builders; retry copy resolves through l10n; the catalog records skeleton/loading/error doctrine and the corrected current API. | complete |
+| P1–P3 — terminal padding | Both named stragglers use `CatchScrollTerminalPadding`; the seeded manifest-backed scanner passes; `docs/app_architecture.md` owns the shell placement contract. | complete |
+| §9.4 survey | The bounded findings table is present and no survey-only production fix was applied. Its `fix-now` follow-up remains unscheduled until owner reviews the dispositions. | **owner gate** |
+| O1 / O2 | Host Club edit uses `CatchFormRowList` and typed choice descriptors; the hand-rolled Host inline editor classes are absent. | complete |
+| O3 | Host Insights keeps `CatchField.control` only for the documented composite time-window/report grid; the catalog reiterates that plain selectors use `choices`/`stepper`. | complete |
+
+The clean audit receipts include
+`catch-system-stretch-20260718`,
+`catch-system-stretch-registry-closeout-20260718`, and
+`catch-system-stretch-s3-exact-configs-20260718`, followed by the completion
+receipts `catch-system-stretch-completion-audit-20260718`,
+`catch-system-stretch-s4-select-invariants-20260718`, and
+`catch-system-stretch-completion-closeout-20260718`. The final matrix has 704
+passing Flutter tests across `test/core`, `test/user_profile`, and `test/hosts`;
+the full data-contract gate passes; full analysis has no errors or warnings;
+and agent readiness is 100/100. The unrelated Explore quality plan is not part
+of this implementation and remains untouched.
