@@ -1874,18 +1874,20 @@
       "applies_to": [
         "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
         "lib/events/presentation/widgets/who_is_going.dart",
-        "test/hosts/host_create_event_screen_test.dart"
+        "lib/event_success/presentation/event_success_manual_qa_screen.dart",
+        "test/hosts/host_create_event_screen_test.dart",
+        "test/event_success/event_success_manual_qa_screen_test.dart"
       ],
       "symptom": "A freshly allocated List is passed to a Riverpod family whose generated provider compares arguments by identity, creating a new profile request on rebuild and leaving the host roster in a repeated loading cycle.",
       "guard": {
         "type": "command",
-        "command": "flutter test --concurrency=1 test/hosts/host_create_event_screen_test.dart --plain-name 'host manage keeps ritual controls in Live and check-in in Guests'",
-        "guardEvidence": "the host-manage test opens the live roster, renders both profiles, and asserts the repository is fetched exactly once"
+        "command": "flutter test --concurrency=1 test/hosts/host_create_event_screen_test.dart --plain-name 'host manage keeps ritual controls in Live and check-in in Guests' && flutter test --concurrency=1 test/event_success/event_success_manual_qa_screen_test.dart",
+        "guardEvidence": "the host-manage test opens the live roster, renders both profiles, and asserts the repository is fetched exactly once; the manual-QA suite proves its scoped fixture overrides the full profile family and settles after host-section rebuilds"
       },
       "owner_docs": [
         "docs/app_architecture.md"
       ],
-      "notes": "Until the provider accepts a value-equality key type, stabilize the ordered uid list by contents in the owning ConsumerState before watching or invalidating the family."
+      "notes": "Until the provider accepts a value-equality key type, stabilize the ordered uid list by contents in the owning ConsumerState before watching or invalidating the family. Scoped fixtures must override the whole family because the stable list intentionally has a different identity from the source view model list."
     }
   ]
 }

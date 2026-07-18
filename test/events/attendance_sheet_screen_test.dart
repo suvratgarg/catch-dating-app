@@ -37,12 +37,11 @@ void main() {
       ],
     );
     await _settleAttendanceSheet(tester);
-
-    expect(find.text('Check-in board'), findsOneWidget);
-    expect(find.text('ALL'), findsOneWidget);
-    expect(find.text('DUE'), findsOneWidget);
-    expect(find.text('IN'), findsOneWidget);
-    expect(find.text('WAITLIST'), findsOneWidget);
+    expect(find.text('CHECK-IN BOARD'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Due'), findsOneWidget);
+    expect(find.text('In'), findsOneWidget);
+    expect(find.text('Waitlist'), findsOneWidget);
     expect(find.text('GUEST'), findsOneWidget);
     expect(find.text('STATUS'), findsOneWidget);
     expect(find.text('HOST ACTION'), findsOneWidget);
@@ -75,7 +74,7 @@ void main() {
     );
     await _settleAttendanceSheet(tester);
 
-    expect(find.text('Participation'), findsOneWidget);
+    expect(find.text('PARTICIPATION'), findsOneWidget);
     expect(find.text('ALL'), findsOneWidget);
     expect(find.text('BOOKED'), findsOneWidget);
     expect(find.text('WAITLIST'), findsOneWidget);
@@ -112,14 +111,14 @@ void main() {
     );
     await _settleAttendanceSheet(tester);
 
-    expect(find.text('Event report'), findsOneWidget);
-    expect(find.text('ALL'), findsOneWidget);
-    expect(find.text('ATTENDED'), findsOneWidget);
-    expect(find.text('NO-SHOW'), findsOneWidget);
-    expect(find.text('WAITLIST'), findsOneWidget);
-    expect(find.text('NAME'), findsOneWidget);
-    expect(find.text('ATTENDANCE'), findsOneWidget);
-    expect(find.text('PAYMENT'), findsOneWidget);
+    expect(find.text('EVENT REPORT'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Attended'), findsOneWidget);
+    expect(find.text('No-show'), findsOneWidget);
+    expect(find.text('Waitlist'), findsOneWidget);
+    expect(find.text('NAME'), findsNothing);
+    expect(find.text('ATTENDANCE'), findsNothing);
+    expect(find.text('PAYMENT'), findsNothing);
     expect(find.text('No participants yet'), findsOneWidget);
     expect(
       find.text(
@@ -197,6 +196,8 @@ void main() {
     );
     await _settleAttendanceSheet(tester);
 
+    await tester.tap(find.byTooltip('Export report'));
+    await _settleAttendanceSheet(tester);
     await tester.tap(find.text('Revenue CSV'));
     await _settleAttendanceSheet(tester);
 
@@ -209,6 +210,8 @@ void main() {
     expect(revenueCsv, contains('Meera,runner-3,cancelled,cancelled'));
     expect(find.text('Revenue CSV ready.'), findsOneWidget);
 
+    await tester.tap(find.byTooltip('Export report'));
+    await _settleAttendanceSheet(tester);
     await tester.tap(find.text('Ops CSV'));
     await _settleAttendanceSheet(tester);
 
@@ -314,7 +317,7 @@ void main() {
       'runner-2',
       'runner-3',
     ]);
-    expect(find.text('Check-in board'), findsOneWidget);
+    expect(find.text('CHECK-IN BOARD'), findsOneWidget);
     expect(find.text('GUEST'), findsOneWidget);
     expect(find.text('STATUS'), findsOneWidget);
     expect(find.text('HOST ACTION'), findsOneWidget);
@@ -424,7 +427,7 @@ void main() {
     );
     await _settleAttendanceSheet(tester);
 
-    expect(find.text('Participation'), findsOneWidget);
+    expect(find.text('PARTICIPATION'), findsOneWidget);
     expect(find.text('Asha'), findsOneWidget);
     expect(find.text('Meera'), findsOneWidget);
     expect(find.text('Booked'), findsWidgets);

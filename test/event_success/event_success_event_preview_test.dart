@@ -19,8 +19,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart'
     show buildClub, buildEvent, buildUser;
-import '../test_pump_helpers.dart';
-
 void main() {
   test('maps a real event into the Social Event Lite preview context', () {
     final start = DateTime(2026, 5, 17, 7);
@@ -133,23 +131,23 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Live host mode'),
       700,
-      scrollable: findPrimaryScrollable(),
+      scrollable: _eventSuccessScrollable(),
     );
     expect(find.text('Live host mode'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Attendee companion'),
       700,
-      scrollable: findPrimaryScrollable(),
+      scrollable: _eventSuccessScrollable(),
     );
     expect(find.text('Attendee companion'), findsOneWidget);
 
     await tester.scrollUntilVisible(
-      find.text('Post-event host report'),
+      find.text('POST-EVENT HOST REPORT'),
       700,
-      scrollable: findPrimaryScrollable(),
+      scrollable: _eventSuccessScrollable(),
     );
-    expect(find.text('Post-event host report'), findsOneWidget);
+    expect(find.text('POST-EVENT HOST REPORT'), findsOneWidget);
   });
 
   testWidgets('route renders preview-shaped skeleton while event loads', (
@@ -190,3 +188,10 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 }
+
+Finder _eventSuccessScrollable() => find
+    .descendant(
+      of: find.byType(CustomScrollView),
+      matching: find.byType(Scrollable),
+    )
+    .first;

@@ -1279,7 +1279,6 @@ class _ManualQaFixtures {
     profiles = _publicProfiles();
     participations = _participations();
     attendanceViewModel = _attendanceViewModel();
-    attendeeProfileRows = _attendeeProfileRows();
     participation = _participation();
     assignments = _microPodAssignments();
     rotationAssignments = _rotationAssignments();
@@ -1317,7 +1316,6 @@ class _ManualQaFixtures {
   late final EventParticipationRoster roster;
   late final List<EventParticipation> participations;
   late final AttendanceSheetViewModel attendanceViewModel;
-  late final Map<String, (String, String?)> attendeeProfileRows;
   late final UserProfile viewer;
   late final List<PublicProfile> profiles;
   late final EventParticipation participation;
@@ -1464,9 +1462,12 @@ class _ManualQaFixtures {
       attendanceSheetViewModelProvider(
         event.id,
       ).overrideWithValue(AsyncData(attendanceViewModel)),
-      attendeeProfilesProvider(
-        attendanceViewModel.profileIds,
-      ).overrideWith((ref) async => attendeeProfileRows),
+      attendeeProfilesProvider.overrideWith(
+        (ref, profileIds) => {
+          for (final profile in _profilesFor(profileIds))
+            profile.uid: (profile.name, profile.primaryPhotoThumbnailUrl),
+        },
+      ),
       watchEventParticipationRosterProvider(
         event.id,
       ).overrideWith((ref) => Stream.value(roster)),
@@ -1595,13 +1596,6 @@ class _ManualQaFixtures {
           participation.uid: participation,
       }),
     );
-  }
-
-  Map<String, (String, String?)> _attendeeProfileRows() {
-    return {
-      for (final profile in profiles)
-        profile.uid: (profile.name, profile.primaryPhotoThumbnailUrl),
-    };
   }
 
   EventParticipation _participation() {
