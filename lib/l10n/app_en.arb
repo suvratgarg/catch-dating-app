@@ -2733,6 +2733,13 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
+  "exploreExploreScreenLabelChangeCity": "Change city",
+  "@exploreExploreScreenLabelChangeCity": {
+    "description": "Recovery action shown when the selected Explore city has no clubs.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen"
+  },
   "exploreCatchCoverStoryMessageChangeLocation": "Change location",
   "@exploreCatchCoverStoryMessageChangeLocation": {
     "description": "Product copy used by lib/explore/presentation/widgets/catch_cover_story.dart (message).",
@@ -2803,16 +2810,46 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
   },
-  "exploreExploreFilterRailLabelDone": "Done",
-  "@exploreExploreFilterRailLabelDone": {
-    "description": "Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).",
+  "exploreExploreFilterRailLabelUpdatingPlans": "Updating plans",
+  "@exploreExploreFilterRailLabelUpdatingPlans": {
+    "description": "Filter sheet footer while the current Explore result count is loading.",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
   },
-  "exploreExploreFilterRailTextDistance": "DISTANCE",
-  "@exploreExploreFilterRailTextDistance": {
-    "description": "Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (Text).",
+  "exploreExploreFilterRailLabelShowPlans": "{count, plural, =1{Show 1 plan} other{Show {count} plans}}",
+  "@exploreExploreFilterRailLabelShowPlans": {
+    "description": "Filter sheet footer with the exhaustive live Explore result count.",
+    "placeholders": {
+      "count": {"type": "int"}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailLabelShowPlansPlus": "Show {count}+ plans",
+  "@exploreExploreFilterRailLabelShowPlansPlus": {
+    "description": "Filter sheet footer with the lower-bound live Explore result count when more pages exist.",
+    "placeholders": {
+      "count": {"type": "int"}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailTextDistanceEventsOnly": "DISTANCE · EVENTS ONLY",
+  "@exploreExploreFilterRailTextDistanceEventsOnly": {
+    "description": "Explore filter heading clarifying that club cards do not carry distance coordinates.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailAppliedDistance": "{distance} · events only",
+  "@exploreExploreFilterRailAppliedDistance": {
+    "description": "Applied distance-filter chip clarifying its event-only scope.",
+    "placeholders": {
+      "distance": {}
+    },
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
@@ -12754,13 +12791,6 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
-  "exploreExploreScreenStateActionlabelSeeWeekend": "See weekend",
-  "@exploreExploreScreenStateActionlabelSeeWeekend": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
   "exploreExploreScreenStateTitleNothingTomorrow": "Nothing tomorrow",
   "@exploreExploreScreenStateTitleNothingTomorrow": {
     "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (title).",
@@ -13832,9 +13862,31 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
   },
-  "exploreExploreFilterRailLabelAnytime": "Anytime",
-  "@exploreExploreFilterRailLabelAnytime": {
-    "description": "Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).",
+  "exploreExploreFilterRailLabelAny": "Any",
+  "@exploreExploreFilterRailLabelAny": {
+    "description": "Compact final option in the Explore seven-day date strip.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailDateSupply": "{label} · {count}",
+  "@exploreExploreFilterRailDateSupply": {
+    "description": "Explore date-strip label paired with the current supply count.",
+    "placeholders": {
+      "label": {},
+      "count": {"type": "int"}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailDateSupplyPlus": "{label} · {count}+",
+  "@exploreExploreFilterRailDateSupplyPlus": {
+    "description": "Explore date-strip label with a lower-bound supply count when more discovery pages exist.",
+    "placeholders": {
+      "label": {},
+      "count": {"type": "int"}
+    },
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
@@ -20048,7 +20100,7 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
-  "exploreExploreScreenStateAvailabilityFullForYou": "Full for you",
+  "exploreExploreScreenStateAvailabilityFullForYou": "Your group is full",
   "@exploreExploreScreenStateAvailabilityFullForYou": {
     "description": "Explore availability label when viewer-specific inventory is full.",
     "x-audience": "consumer",

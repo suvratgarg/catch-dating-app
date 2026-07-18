@@ -2390,6 +2390,12 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get exploreExploreScreenLabelClear;
 
+  /// Recovery action shown when the selected Explore city has no clubs.
+  ///
+  /// In en, this message translates to:
+  /// **'Change city'**
+  String get exploreExploreScreenLabelChangeCity;
+
   /// Product copy used by lib/explore/presentation/widgets/catch_cover_story.dart (message).
   ///
   /// In en, this message translates to:
@@ -2450,17 +2456,35 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get exploreExploreFilterRailLabelClear;
 
-  /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).
+  /// Filter sheet footer while the current Explore result count is loading.
   ///
   /// In en, this message translates to:
-  /// **'Done'**
-  String get exploreExploreFilterRailLabelDone;
+  /// **'Updating plans'**
+  String get exploreExploreFilterRailLabelUpdatingPlans;
 
-  /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (Text).
+  /// Filter sheet footer with the exhaustive live Explore result count.
   ///
   /// In en, this message translates to:
-  /// **'DISTANCE'**
-  String get exploreExploreFilterRailTextDistance;
+  /// **'{count, plural, =1{Show 1 plan} other{Show {count} plans}}'**
+  String exploreExploreFilterRailLabelShowPlans({required int count});
+
+  /// Filter sheet footer with the lower-bound live Explore result count when more pages exist.
+  ///
+  /// In en, this message translates to:
+  /// **'Show {count}+ plans'**
+  String exploreExploreFilterRailLabelShowPlansPlus({required int count});
+
+  /// Explore filter heading clarifying that club cards do not carry distance coordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'DISTANCE · EVENTS ONLY'**
+  String get exploreExploreFilterRailTextDistanceEventsOnly;
+
+  /// Applied distance-filter chip clarifying its event-only scope.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} · events only'**
+  String exploreExploreFilterRailAppliedDistance({required Object distance});
 
   /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (Text).
   ///
@@ -10913,12 +10937,6 @@ abstract class AppLocalizations {
   /// **'The next good fit may be over the weekend.'**
   String get exploreExploreScreenStateMessageTheNextGoodFit;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
-  ///
-  /// In en, this message translates to:
-  /// **'See weekend'**
-  String get exploreExploreScreenStateActionlabelSeeWeekend;
-
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (title).
   ///
   /// In en, this message translates to:
@@ -11836,11 +11854,29 @@ abstract class AppLocalizations {
   /// **'This week'**
   String get exploreExploreFilterRailLabelThisWeek;
 
-  /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).
+  /// Compact final option in the Explore seven-day date strip.
   ///
   /// In en, this message translates to:
-  /// **'Anytime'**
-  String get exploreExploreFilterRailLabelAnytime;
+  /// **'Any'**
+  String get exploreExploreFilterRailLabelAny;
+
+  /// Explore date-strip label paired with the current supply count.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {count}'**
+  String exploreExploreFilterRailDateSupply({
+    required Object label,
+    required int count,
+  });
+
+  /// Explore date-strip label with a lower-bound supply count when more discovery pages exist.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {count}+'**
+  String exploreExploreFilterRailDateSupplyPlus({
+    required Object label,
+    required int count,
+  });
 
   /// Product copy used by lib/dashboard/presentation/notifications_list_state.dart (visibleCopy).
   ///
@@ -17537,7 +17573,7 @@ abstract class AppLocalizations {
   /// Explore availability label when viewer-specific inventory is full.
   ///
   /// In en, this message translates to:
-  /// **'Full for you'**
+  /// **'Your group is full'**
   String get exploreExploreScreenStateAvailabilityFullForYou;
 
   /// Explore availability label for an invite-only event.

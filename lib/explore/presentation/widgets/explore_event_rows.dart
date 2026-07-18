@@ -39,7 +39,7 @@ class ExploreFeedEventRow extends StatelessWidget {
     final heroTag = isSyntheticExploreItem(item)
         ? null
         : eventTicketHeroTag(event.id, analyticsSource);
-    return EventDateRailCard(
+    final card = EventDateRailCard(
       event: event,
       kicker: state.kicker,
       title: state.title,
@@ -52,6 +52,12 @@ class ExploreFeedEventRow extends StatelessWidget {
       onTap: isSyntheticExploreItem(item)
           ? null
           : () => onEventSelected?.call(item, analyticsSource),
+    );
+    if (item.status != EventTileStatus.ineligible) return card;
+    return Opacity(
+      key: ValueKey('explore-ineligible-event-${event.id}'),
+      opacity: CatchOpacity.discoveryIneligible,
+      child: card,
     );
   }
 }

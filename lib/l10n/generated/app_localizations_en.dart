@@ -1363,6 +1363,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenLabelClear => 'Clear';
 
   @override
+  String get exploreExploreScreenLabelChangeCity => 'Change city';
+
+  @override
   String get exploreCatchCoverStoryMessageChangeLocation => 'Change location';
 
   @override
@@ -1394,10 +1397,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreFilterRailLabelClear => 'Clear';
 
   @override
-  String get exploreExploreFilterRailLabelDone => 'Done';
+  String get exploreExploreFilterRailLabelUpdatingPlans => 'Updating plans';
 
   @override
-  String get exploreExploreFilterRailTextDistance => 'DISTANCE';
+  String exploreExploreFilterRailLabelShowPlans({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Show $count plans',
+      one: 'Show 1 plan',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exploreExploreFilterRailLabelShowPlansPlus({required int count}) {
+    return 'Show $count+ plans';
+  }
+
+  @override
+  String get exploreExploreFilterRailTextDistanceEventsOnly =>
+      'DISTANCE · EVENTS ONLY';
+
+  @override
+  String exploreExploreFilterRailAppliedDistance({required Object distance}) {
+    return '$distance · events only';
+  }
 
   @override
   String get exploreExploreFilterRailTextClubs => 'CLUBS';
@@ -6924,9 +6949,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'The next good fit may be over the weekend.';
 
   @override
-  String get exploreExploreScreenStateActionlabelSeeWeekend => 'See weekend';
-
-  @override
   String get exploreExploreScreenStateTitleNothingTomorrow =>
       'Nothing tomorrow';
 
@@ -7531,7 +7553,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreFilterRailLabelThisWeek => 'This week';
 
   @override
-  String get exploreExploreFilterRailLabelAnytime => 'Anytime';
+  String get exploreExploreFilterRailLabelAny => 'Any';
+
+  @override
+  String exploreExploreFilterRailDateSupply({
+    required Object label,
+    required int count,
+  }) {
+    return '$label · $count';
+  }
+
+  @override
+  String exploreExploreFilterRailDateSupplyPlus({
+    required Object label,
+    required int count,
+  }) {
+    return '$label · $count+';
+  }
 
   @override
   String get dashboardNotificationsListStateVisiblecopyMarking => 'Marking...';
@@ -11273,7 +11311,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenStateAvailabilityFull => 'Full';
 
   @override
-  String get exploreExploreScreenStateAvailabilityFullForYou => 'Full for you';
+  String get exploreExploreScreenStateAvailabilityFullForYou =>
+      'Your group is full';
 
   @override
   String get exploreExploreScreenStateAvailabilityInviteRequired =>

@@ -9992,6 +9992,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _memberDiscoveryCities.first,
       ),
       deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+      exploreDiscoveryReferenceNowProvider.overrideWithValue(
+        DateTime(2026, 6, 11, 10),
+      ),
       uidProvider.overrideWith((ref) => Stream.value(null)),
       watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
       exploreSourceClubsProvider.overrideWithValue(
@@ -10006,7 +10009,21 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         ),
       ),
       exploreFeedViewModelProvider.overrideWithValue(
-        AsyncData(ExploreFeedViewModel(items: _memberDiscoveryItems)),
+        AsyncData(
+          ExploreFeedViewModel(
+            items: [_memberDiscoveryItems.first],
+            dateSupplyCounts: {
+              ExploreTimeFilter.tonight: 1,
+              ExploreTimeFilter.tomorrow: 1,
+              ExploreTimeFilter.dayTwo: 1,
+              ExploreTimeFilter.dayThree: 0,
+              ExploreTimeFilter.dayFour: 1,
+              ExploreTimeFilter.dayFive: 0,
+              ExploreTimeFilter.daySix: 1,
+              ExploreTimeFilter.anytime: _memberDiscoveryItems.length,
+            },
+          ),
+        ),
       ),
     ],
     builder: (context) => const ExploreScreen(),

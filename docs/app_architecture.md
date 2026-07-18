@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.38
+version: 1.4.39
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -176,6 +176,26 @@ The first folder-boundary cleanup applied after this spec uses these owners:
 - Shared activity/event visual primitives used by core widgets live in
   `lib/core/widgets`, not under `events/presentation/widgets`.
 - Club display-name lookup is a data/provider seam in `lib/clubs/data`.
+
+### Explore discovery scope and filter boundary
+
+Explore's visible date strip is an intent selector, not a set of overlapping
+weekly taxonomies. `Tonight`, the next six local dates, and `Any` are the only
+production strip options. The bounded date options share one seven-day
+discovery request; the feed view model filters that cached supply in memory and
+publishes per-date density counts. Counts use a `+` suffix whenever the cursor
+window is not exhaustive. `Any` keeps the accumulated cursor path. Pull refresh
+and tab re-entry invalidate the shared Explore clock snapshot before rebuilding
+the request, keeping query bounds and visible labels aligned across midnight.
+
+`ExploreScreen` remains the provider boundary for the filter sheet. It watches
+the current filter selection and feed while the sheet is open, then passes a
+plain `ExploreFilterSheetState` into the provider-free rail/sheet widgets. The
+map distance ring and sheet distance choice both mutate
+`exploreFiltersProvider`; do not introduce a map-only distance state. Distance
+is labeled as events-only because club cards do not own exact coordinates.
+Empty-market recovery reuses the same provider-free city picker sheet as the
+header trigger.
 
 ## Dependency Direction
 

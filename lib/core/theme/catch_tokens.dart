@@ -976,6 +976,10 @@ abstract final class CatchOpacity {
   /// Disabled control opacity for non-semantic fade states.
   static const double disabledControl = 0.40;
 
+  /// Explore feed weight for events that remain informative but the viewer
+  /// cannot currently join.
+  static const double discoveryIneligible = 0.64;
+
   /// Translucent fill for floating icon-button chrome over photos and maps.
   static const double iconButtonFloatFill = 0.90;
 

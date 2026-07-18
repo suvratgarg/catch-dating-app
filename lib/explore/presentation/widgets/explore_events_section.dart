@@ -199,6 +199,7 @@ List<Widget> _exploreContentSlivers(
       : ExploreFeedViewModel(
           items: effectiveItems,
           externalItems: viewModel.externalItems,
+          dateSupplyCounts: viewModel.dateSupplyCounts,
           isExhaustive: viewModel.isExhaustive,
           isLoadingMore: viewModel.isLoadingMore,
           windowRequest: viewModel.windowRequest,

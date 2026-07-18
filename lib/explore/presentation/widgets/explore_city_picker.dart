@@ -55,20 +55,33 @@ class _ExploreCityPickerState extends State<ExploreCityPicker> {
     final onSelected = widget.onSelected;
     if (onSelected == null || widget.state.cities.isEmpty) return;
     setState(() => _isSheetOpen = true);
-    await showCatchBottomSheet<void>(
+    await showExploreCityPickerSheet(
       context: context,
-      builder: (sheetContext) => ExploreCityPickerSheet(
-        cities: widget.state.cities,
-        selectedCity: widget.state.selectedCity,
-        onSelected: (city) {
-          onSelected(city);
-          Navigator.of(sheetContext).pop();
-        },
-      ),
+      state: widget.state,
+      onSelected: onSelected,
     );
     if (!mounted) return;
     setState(() => _isSheetOpen = false);
   }
+}
+
+Future<void> showExploreCityPickerSheet({
+  required BuildContext context,
+  required ExploreCityPickerState state,
+  required ValueChanged<CityData> onSelected,
+}) {
+  if (!state.enabled || state.cities.isEmpty) return Future.value();
+  return showCatchBottomSheet<void>(
+    context: context,
+    builder: (sheetContext) => ExploreCityPickerSheet(
+      cities: state.cities,
+      selectedCity: state.selectedCity,
+      onSelected: (city) {
+        onSelected(city);
+        Navigator.of(sheetContext).pop();
+      },
+    ),
+  );
 }
 
 class CityTrigger extends StatelessWidget {

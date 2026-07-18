@@ -29,10 +29,18 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'explore_feed_view_model.g.dart';
 
+/// Shared wall-clock snapshot for one mounted Explore surface.
+///
+/// Keeping the query window and date-strip labels on the same provider avoids
+/// midnight drift and gives capture/tests one explicit deterministic seam.
+@riverpod
+DateTime exploreDiscoveryReferenceNow(Ref ref) => _discoveryReferenceNow();
+
 class ExploreFeedViewModel {
   const ExploreFeedViewModel({
     required this.items,
     this.externalItems = const <ExploreExternalEventItem>[],
+    this.dateSupplyCounts = const <ExploreTimeFilter, int>{},
     this.isExhaustive = true,
     this.isLoadingMore = false,
     this.windowRequest,
@@ -40,6 +48,7 @@ class ExploreFeedViewModel {
 
   final List<ExploreEventItem> items;
   final List<ExploreExternalEventItem> externalItems;
+  final Map<ExploreTimeFilter, int> dateSupplyCounts;
   final bool isExhaustive;
   final bool isLoadingMore;
   final ExploreDiscoveryWindowRequest? windowRequest;
@@ -55,6 +64,7 @@ class ExploreFeedViewModel {
           )
           .length;
   bool get hasMore => !isExhaustive;
+  int? dateSupplyCount(ExploreTimeFilter filter) => dateSupplyCounts[filter];
   ExploreEventItem? get featuredItem => items.isEmpty ? null : items.first;
   List<ExploreEventItem> get railItems => items.skip(1).take(8).toList();
 
@@ -245,8 +255,13 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final filters = ref.watch(exploreFiltersProvider);
   final clubsAsync = ref.watch(exploreSourceClubsProvider);
   final uidAsync = ref.watch(uidProvider);
-  final now = _discoveryReferenceNow();
-  final timeWindow = exploreTimeWindowFor(filters.timeFilter, now);
+  final now = ref.watch(exploreDiscoveryReferenceNowProvider);
+  final selectedTimeWindow = exploreTimeWindowFor(filters.timeFilter, now);
+  final queryTimeWindow =
+      isExploreDateStripFilter(filters.timeFilter) &&
+          filters.timeFilter != ExploreTimeFilter.anytime
+      ? exploreDateStripQueryWindow(now)
+      : selectedTimeWindow;
   final activityKindFilter = _activityKindForFilter(filters.activityTag);
   final distanceFilterKm = exploreDistanceFilterKm(filters.distanceFilter);
   final normalizedQuery = query.trim().toLowerCase();
@@ -358,8 +373,8 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final windowRequest = ExploreDiscoveryWindowRequest(
     internalQuery: EventDiscoveryQuery.forCity(
       marketId: city.effectiveMarketId,
-      startAt: timeWindow?.start ?? now,
-      endBefore: timeWindow?.end,
+      startAt: queryTimeWindow?.start ?? now,
+      endBefore: queryTimeWindow?.end,
       activityKinds: [?activityKindFilter],
       center: deviceLocationAsync.asData?.value,
       maxDistanceKm: distanceFilterKm,
@@ -367,8 +382,8 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
     ),
     externalQuery: ExternalEventDiscoveryQuery.forCity(
       citySlug: city.effectiveSlug,
-      startAt: timeWindow?.start ?? now,
-      endBefore: timeWindow?.end,
+      startAt: queryTimeWindow?.start ?? now,
+      endBefore: queryTimeWindow?.end,
       activityKinds: [?activityKindFilter],
     ),
   );
@@ -485,85 +500,115 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       club.id: club,
   };
   final deviceLocation = deviceLocationAsync.asData?.value;
+  final allItems = eventsById.values
+      .where((event) => event.isUpcomingAt(now))
+      .map((event) {
+        final club = clubById[event.clubId];
+        if (club == null) return null;
+        final isClubMember = membershipClubIds.contains(event.clubId);
+        final distanceFromUserKm = _distanceFromUserKm(
+          event: event,
+          deviceLocation: deviceLocation,
+        );
+        return ExploreEventItem(
+          event: event,
+          club: club,
+          availability: resolveViewerEventAvailability(
+            event: event,
+            userProfile: userProfile,
+            participation: participationByEventId[event.id],
+            isSaved: savedEventIds.contains(event.id),
+            isClubMember: isClubMember,
+            now: now,
+          ),
+          isJoinedClubMember: isClubMember,
+          isFollowedClubSignal: followedClubIds.contains(event.clubId),
+          distanceFromUserKm: distanceFromUserKm,
+        );
+      })
+      .nonNulls
+      .where(
+        (item) => _matchesClubScopeFilters(
+          club: item.club,
+          filters: filters,
+          joinedClubIds: membershipClubIds,
+          activityKindFilter: activityKindFilter,
+        ),
+      )
+      .where((item) => _matchesDistanceFilter(item, distanceFilterKm))
+      .where(
+        (item) => _matchesSearch(
+          item,
+          normalizedQuery,
+          serverEventIds: serverEventIds,
+          serverClubIds: serverClubIds,
+        ),
+      )
+      .toList();
   final items =
-      eventsById.values
-          .where((event) => event.isUpcomingAt(now))
-          .where((event) => _matchesEventTimeFilters(event, filters, now))
-          .map((event) {
-            final club = clubById[event.clubId];
-            if (club == null) return null;
-            final isClubMember = membershipClubIds.contains(event.clubId);
-            final distanceFromUserKm = _distanceFromUserKm(
-              event: event,
-              deviceLocation: deviceLocation,
-            );
-            return ExploreEventItem(
-              event: event,
-              club: club,
-              availability: resolveViewerEventAvailability(
-                event: event,
-                userProfile: userProfile,
-                participation: participationByEventId[event.id],
-                isSaved: savedEventIds.contains(event.id),
-                isClubMember: isClubMember,
-                now: now,
-              ),
-              isJoinedClubMember: isClubMember,
-              isFollowedClubSignal: followedClubIds.contains(event.clubId),
-              distanceFromUserKm: distanceFromUserKm,
-            );
-          })
-          .nonNulls
-          .where(
-            (item) => _matchesClubScopeFilters(
-              club: item.club,
-              filters: filters,
-              joinedClubIds: membershipClubIds,
-              activityKindFilter: activityKindFilter,
-            ),
-          )
-          .where((item) => _matchesDistanceFilter(item, distanceFilterKm))
-          .where(
-            (item) => _matchesSearch(
-              item,
-              normalizedQuery,
-              serverEventIds: serverEventIds,
-              serverClubIds: serverClubIds,
-            ),
-          )
+      allItems
+          .where((item) => _matchesEventTimeFilters(item.event, filters, now))
           .toList()
         ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
+  final allExternalItems = discoveryWindow.externalEvents
+      .where((event) => event.isUpcomingAt(now))
+      .map((event) {
+        return ExploreExternalEventItem(
+          event: event,
+          distanceFromUserKm: _externalDistanceFromUserKm(
+            event: event,
+            deviceLocation: deviceLocation,
+          ),
+        );
+      })
+      .where((item) => _matchesExternalDistanceFilter(item, distanceFilterKm))
+      .where((item) => _matchesExternalSearch(item, normalizedQuery))
+      .toList();
   final externalItems =
-      discoveryWindow.externalEvents
-          .where((event) => event.isUpcomingAt(now))
+      allExternalItems
           .where(
-            (event) => _matchesExternalEventTimeFilters(event, filters, now),
+            (item) =>
+                _matchesExternalEventTimeFilters(item.event, filters, now),
           )
-          .map((event) {
-            return ExploreExternalEventItem(
-              event: event,
-              distanceFromUserKm: _externalDistanceFromUserKm(
-                event: event,
-                deviceLocation: deviceLocation,
-              ),
-            );
-          })
-          .where(
-            (item) => _matchesExternalDistanceFilter(item, distanceFilterKm),
-          )
-          .where((item) => _matchesExternalSearch(item, normalizedQuery))
           .toList()
         ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
+  final dateSupplyCounts = _exploreDateSupplyCounts(
+    internalItems: allItems,
+    externalItems: allExternalItems,
+    now: now,
+  );
 
   return AsyncData(
     ExploreFeedViewModel(
       items: List.unmodifiable(items),
       externalItems: List.unmodifiable(externalItems),
+      dateSupplyCounts: dateSupplyCounts,
       isExhaustive: discoveryWindow.isExhaustive,
       isLoadingMore: discoveryWindow.isLoadingMore,
       windowRequest: windowRequest,
     ),
   );
+}
+
+Map<ExploreTimeFilter, int> _exploreDateSupplyCounts({
+  required List<ExploreEventItem> internalItems,
+  required List<ExploreExternalEventItem> externalItems,
+  required DateTime now,
+}) {
+  final starts = <DateTime>[
+    for (final item in internalItems) item.event.startTime,
+    for (final item in externalItems) item.event.startTime,
+  ];
+  return Map.unmodifiable({
+    for (final filter in displayedExploreDateFilters)
+      filter: filter == ExploreTimeFilter.anytime
+          ? starts.length
+          : starts
+                .where(
+                  (start) => exploreTimeWindowFor(filter, now)!.contains(start),
+                )
+                .length,
+  });
 }
 
 @riverpod
@@ -644,7 +689,7 @@ AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
       attendedEvents: attendedEventsAsync.asData?.value ?? const <Event>[],
       signedUpEvents: signedUpEvents,
       viewer: userAsync.asData?.value,
-      now: _discoveryReferenceNow(),
+      now: ref.watch(exploreDiscoveryReferenceNowProvider),
     ),
   );
 }

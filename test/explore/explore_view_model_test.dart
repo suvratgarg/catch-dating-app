@@ -350,6 +350,59 @@ void main() {
       ]);
       expect(sheetState.areaOptions, ['Bandra', 'Khar']);
       expect(sheetState.activeCount, 1);
+      expect(sheetState.actionLabel, 'Show 0 plans');
+      expect(sheetState.actionLoading, isFalse);
+    });
+
+    test('ExploreDateStripState exposes seven dates with supply density', () {
+      final state = ExploreDateStripState.from(
+        viewModel: const ExploreFeedViewModel(
+          items: [],
+          dateSupplyCounts: {
+            ExploreTimeFilter.tonight: 2,
+            ExploreTimeFilter.tomorrow: 0,
+            ExploreTimeFilter.dayTwo: 4,
+            ExploreTimeFilter.anytime: 6,
+          },
+        ),
+        l10n: _l10n,
+        now: DateTime(2026, 5, 26, 10),
+      );
+
+      expect(state.options, hasLength(8));
+      expect(state.options[0].label, 'Tonight · 2');
+      expect(state.options[1].label, 'Tomorrow · 0');
+      expect(state.options[2].label, 'Thu 28 · 4');
+      expect(state.options[7].label, 'Any · 6');
+      expect(
+        state.options.map((option) => option.value),
+        displayedExploreDateFilters,
+      );
+    });
+
+    test('ExploreFilterSheetState keeps cursor counts honest', () {
+      final state = ExploreFilterSheetState.from(
+        filters: const ExploreFilterSelection(),
+        sourceClubs: const [],
+        viewModel: const ExploreFeedViewModel(
+          items: [],
+          isExhaustive: false,
+        ),
+        l10n: _l10n,
+      );
+
+      expect(state.actionLabel, 'Show 0+ plans');
+      expect(state.actionLoading, isFalse);
+
+      final loading = state.withLiveResults(
+        filters: const ExploreFilterSelection(highRatedOnly: true),
+        viewModel: null,
+        feedLoading: true,
+        l10n: _l10n,
+      );
+      expect(loading.actionLabel, 'Updating plans');
+      expect(loading.actionLoading, isTrue);
+      expect(loading.activeCount, 1);
     });
 
     test('ExploreCoverStoryState derives provider-free cover copy', () {
@@ -1158,8 +1211,16 @@ void main() {
       expect(tonight.end, DateTime(2026, 5, 27, 3));
 
       final tomorrow = exploreTimeWindowFor(ExploreTimeFilter.tomorrow, now)!;
-      expect(tomorrow.start, DateTime(2026, 5, 27));
-      expect(tomorrow.end, DateTime(2026, 5, 28));
+      expect(tomorrow.start, DateTime(2026, 5, 27, 3));
+      expect(tomorrow.end, DateTime(2026, 5, 28, 3));
+
+      final daySix = exploreTimeWindowFor(ExploreTimeFilter.daySix, now)!;
+      expect(daySix.start, DateTime(2026, 6, 1, 3));
+      expect(daySix.end, DateTime(2026, 6, 2, 3));
+
+      final stripWindow = exploreDateStripQueryWindow(now);
+      expect(stripWindow.start, now);
+      expect(stripWindow.end, DateTime(2026, 6, 2, 3));
 
       final weekend = exploreTimeWindowFor(ExploreTimeFilter.weekend, now)!;
       expect(weekend.start, DateTime(2026, 5, 29));
@@ -1168,6 +1229,12 @@ void main() {
       final thisWeek = exploreTimeWindowFor(ExploreTimeFilter.thisWeek, now)!;
       expect(thisWeek.start, now);
       expect(thisWeek.end, DateTime(2026, 6, 2, 10));
+    });
+
+    test('Explore defaults to the highest-intent Tonight scope', () {
+      const selection = ExploreFilterSelection();
+      expect(selection.timeFilter, ExploreTimeFilter.tonight);
+      expect(selection.hasActiveFilters, isFalse);
     });
 
     test('distance filter values define proximity radii', () {
@@ -1608,6 +1675,9 @@ void main() {
         addTearDown(container.dispose);
         container
             .read(exploreFiltersProvider.notifier)
+            .setTimeFilter(ExploreTimeFilter.anytime);
+        container
+            .read(exploreFiltersProvider.notifier)
             .setDistanceFilter(ExploreDistanceFilter.threeKm);
 
         final subscription = container.listen(
@@ -1640,6 +1710,71 @@ void main() {
     );
 
     test(
+      'exploreFeedViewModelProvider reuses one dated window and counts days',
+      () async {
+        final referenceNow = DateTime(2026, 5, 26, 10);
+        final club = buildClub(id: 'club-date-strip');
+        final tonight = event_test.buildEvent(
+          id: 'date-strip-tonight',
+          clubId: club.id,
+          startTime: DateTime(2026, 5, 26, 20),
+        );
+        final tomorrow = event_test.buildEvent(
+          id: 'date-strip-tomorrow',
+          clubId: club.id,
+          startTime: DateTime(2026, 5, 27, 8),
+        );
+        final dayTwo = event_test.buildEvent(
+          id: 'date-strip-day-two',
+          clubId: club.id,
+          startTime: DateTime(2026, 5, 28, 12),
+        );
+        final container = ProviderContainer(
+          overrides: [
+            exploreDiscoveryReferenceNowProvider.overrideWithValue(
+              referenceNow,
+            ),
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            watchClubsByLocationProvider(
+              _mumbaiMarketId,
+            ).overrideWith((ref) => Stream.value([club])),
+            eventDiscoveryRepositoryProvider.overrideWithValue(
+              _FakeEventDiscoveryRepository([dayTwo, tomorrow, tonight]),
+            ),
+            externalEventRepositoryProvider.overrideWithValue(
+              _FakeExternalEventRepository([]),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final subscription = container.listen(
+          exploreFeedViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
+        await flushTestEventQueue();
+        await container.pump();
+
+        final viewModel = subscription.read().requireValue;
+        expect(viewModel.items.map((item) => item.event.id), [
+          'date-strip-tonight',
+        ]);
+        expect(viewModel.dateSupplyCount(ExploreTimeFilter.tonight), 1);
+        expect(viewModel.dateSupplyCount(ExploreTimeFilter.tomorrow), 1);
+        expect(viewModel.dateSupplyCount(ExploreTimeFilter.dayTwo), 1);
+        expect(viewModel.dateSupplyCount(ExploreTimeFilter.anytime), 3);
+        expect(viewModel.windowRequest?.internalQuery.startAt, referenceNow);
+        expect(
+          viewModel.windowRequest?.internalQuery.endBefore,
+          DateTime(2026, 6, 2, 3),
+        );
+      },
+    );
+
+    test(
       'exploreFeedViewModelProvider keeps external supply separate',
       () async {
         final externalEvent = _externalEvent(
@@ -1663,6 +1798,9 @@ void main() {
           ],
         );
         addTearDown(container.dispose);
+        container
+            .read(exploreFiltersProvider.notifier)
+            .setTimeFilter(ExploreTimeFilter.anytime);
 
         final subscription = container.listen(
           exploreFeedViewModelProvider,
@@ -1687,6 +1825,7 @@ void main() {
         ]);
         expect(viewModel.isEmpty, isFalse);
         expect(viewModel.count, 1);
+        expect(viewModel.dateSupplyCount(ExploreTimeFilter.anytime), 1);
       },
     );
 
@@ -1760,6 +1899,9 @@ void main() {
           ],
         );
         addTearDown(container.dispose);
+        container
+            .read(exploreFiltersProvider.notifier)
+            .setTimeFilter(ExploreTimeFilter.anytime);
 
         final subscription = container.listen(
           exploreFeedViewModelProvider,
@@ -1848,6 +1990,9 @@ void main() {
           ],
         );
         addTearDown(container.dispose);
+        container
+            .read(exploreFiltersProvider.notifier)
+            .setTimeFilter(ExploreTimeFilter.anytime);
 
         final subscription = container.listen(
           exploreFeedViewModelProvider,

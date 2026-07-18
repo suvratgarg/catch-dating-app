@@ -29,6 +29,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
@@ -153,7 +154,12 @@ Future<void> _pumpClubsSlivers(
       ],
       child: MaterialApp(
         theme: AppTheme.light,
-        home: Scaffold(body: CustomScrollView(slivers: slivers)),
+        home: Scaffold(
+          body: CustomScrollView(
+            key: const ValueKey('explore-test-scroll-view'),
+            slivers: slivers,
+          ),
+        ),
       ),
     ),
   );
@@ -561,7 +567,10 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Load more plans'),
         250,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: find.descendant(
+          of: find.byKey(const ValueKey('explore-test-scroll-view')),
+          matching: find.byType(Scrollable),
+        ),
       );
       await tester.tap(find.text('Load more plans'));
 
@@ -1547,6 +1556,9 @@ void main() {
               body: CustomScrollView(
                 slivers: [
                   _exploreEventsSection(
+                    filters: const ExploreFilterSelection(
+                      timeFilter: ExploreTimeFilter.thisWeek,
+                    ),
                     feedAsync: AsyncData(
                       ExploreFeedViewModel(
                         items: [
@@ -1793,6 +1805,9 @@ void main() {
     ) async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
+      container
+          .read(exploreFiltersProvider.notifier)
+          .setTimeFilter(ExploreTimeFilter.thisWeek);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -3357,10 +3372,30 @@ void main() {
         await tester.pump();
 
         expect(find.byType(ExploreCityPicker), findsOneWidget);
-        expect(find.byIcon(CatchIcons.locationOnOutlined), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(ExploreCityPicker),
+            matching: find.byIcon(CatchIcons.locationOnOutlined),
+          ),
+          findsOneWidget,
+        );
         expect(_topLevelSearchField(), findsOneWidget);
         expect(find.byType(TextField), findsNothing);
         expect(find.text('No clubs in Mumbai yet'), findsOneWidget);
+        expect(find.text('Change city'), findsOneWidget);
+
+        await tester.tap(find.text('Change city'));
+        await _pumpClubUi(tester);
+        expect(find.text('City'), findsOneWidget);
+        expect(find.text('Delhi'), findsOneWidget);
+        await tester.tap(find.text('Delhi'));
+        await _pumpClubUi(tester);
+        expect(
+          ProviderScope.containerOf(
+            tester.element(find.byType(ExploreScreen)),
+          ).read(selectedExploreCityProvider).label,
+          'Delhi',
+        );
 
         await tester.tap(find.byTooltip('Search events or clubs'));
         await tester.pump();
@@ -3651,9 +3686,9 @@ void main() {
       // the right-aligned filter glyph.
       expect(find.text('Tonight'), findsOneWidget);
       expect(find.text('Tomorrow'), findsOneWidget);
-      expect(find.text('Weekend'), findsOneWidget);
-      expect(find.text('This week'), findsOneWidget);
-      expect(find.text('Anytime'), findsOneWidget);
+      expect(find.text('Weekend'), findsNothing);
+      expect(find.text('This week'), findsNothing);
+      expect(find.text('Any'), findsOneWidget);
       expect(
         find.byKey(const ValueKey('explore-filter-button')),
         findsOneWidget,
@@ -3669,7 +3704,7 @@ void main() {
       expect(find.text('Joined clubs'), findsNothing);
       expect(find.text('Rated 4.5+'), findsNothing);
 
-      await tester.tap(find.text('Tonight'));
+      await tester.tap(find.text('Tomorrow'));
       await _pumpClubUi(tester);
 
       expect(find.text('1'), findsOneWidget);
@@ -3678,6 +3713,8 @@ void main() {
       await _pumpClubUi(tester);
 
       expect(find.text('Explore filters'), findsOneWidget);
+      expect(find.text('DISTANCE · EVENTS ONLY'), findsOneWidget);
+      expect(find.text('Show 0 plans'), findsOneWidget);
       expect(find.text('3 km'), findsOneWidget);
       expect(find.text('Joined clubs'), findsOneWidget);
       expect(find.text('Following'), findsNothing);
@@ -3783,6 +3820,11 @@ void main() {
             body: ExploreFilterRail(
               filters: filters,
               state: ExploreFilterRailState.from(filters, l10n: _l10n),
+              dateStripState: ExploreDateStripState.from(
+                viewModel: null,
+                l10n: _l10n,
+                now: DateTime(2026, 5, 26, 10),
+              ),
             ),
           ),
         ),
@@ -3792,17 +3834,177 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Tonight'), findsOneWidget);
       expect(find.text('Tomorrow'), findsOneWidget);
-      expect(find.text('Weekend'), findsOneWidget);
-      expect(find.text('This week'), findsOneWidget);
-      expect(find.text('Anytime'), findsOneWidget);
+      expect(find.text('Thu 28'), findsOneWidget);
+      expect(find.text('Mon 1'), findsOneWidget);
+      expect(find.text('Weekend'), findsNothing);
+      expect(find.text('This week'), findsNothing);
+      expect(find.text('Any'), findsOneWidget);
       expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
       expect(find.text('Filters'), findsNothing);
       expect(find.text('1'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('explore-applied-filter-row')),
+        findsOneWidget,
+      );
+      expect(find.text('Rated 4.5+'), findsOneWidget);
 
       final iconCenter = tester.getCenter(find.byIcon(CatchIcons.tuneRounded));
       final badgeCenter = tester.getCenter(find.text('1'));
       expect(badgeCenter.dx, greaterThan(iconCenter.dx));
       expect(badgeCenter.dy, lessThan(iconCenter.dy));
+    });
+
+    testWidgets('ExploreFilterRail removes visible applied filters', (
+      tester,
+    ) async {
+      var filters = const ExploreFilterSelection(
+        distanceFilter: ExploreDistanceFilter.threeKm,
+        area: 'Bandra',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) => ExploreFilterRail(
+                filters: filters,
+                onDistanceFilterSelected: (distance) => setState(
+                  () => filters = filters.copyWith(distanceFilter: distance),
+                ),
+                onToggleArea: (area) =>
+                    setState(() => filters = filters.copyWith(area: null)),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('3 km · events only'), findsOneWidget);
+      expect(find.text('Bandra'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('explore-applied-distance')));
+      await tester.pump();
+
+      expect(filters.distanceFilter, ExploreDistanceFilter.any);
+      expect(find.text('3 km · events only'), findsNothing);
+      expect(find.text('Bandra'), findsOneWidget);
+    });
+
+    testWidgets('ExploreFilterSheet updates its live result count', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'filter-count-club');
+      final first = ExploreEventItem(
+        event: event_test.buildEvent(id: 'filter-count-1', clubId: club.id),
+        club: club,
+      );
+      final second = ExploreEventItem(
+        event: event_test.buildEvent(id: 'filter-count-2', clubId: club.id),
+        club: club,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            exploreFeedViewModelProvider.overrideWith((ref) {
+              final filters = ref.watch(exploreFiltersProvider);
+              return AsyncData(
+                ExploreFeedViewModel(
+                  items: filters.highRatedOnly ? [first] : [first, second],
+                ),
+              );
+            }),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: Consumer(
+                builder: (context, ref, _) {
+                  final filters = ref.watch(exploreFiltersProvider);
+                  final initialSheetState = ExploreFilterSheetState.from(
+                    filters: filters,
+                    sourceClubs: [club],
+                    l10n: _l10n,
+                  );
+                  return ExploreFilterRail(
+                    filters: filters,
+                    sheetState: initialSheetState,
+                    onToggleHighRatedOnly: () => ref
+                        .read(exploreFiltersProvider.notifier)
+                        .toggleHighRatedOnly(),
+                    onOpenFilters: () => unawaited(
+                      showCatchBottomSheet<void>(
+                        context: context,
+                        builder: (_) => Consumer(
+                          builder: (sheetContext, ref, _) {
+                            final liveFilters = ref.watch(
+                              exploreFiltersProvider,
+                            );
+                            final liveFeed = ref.watch(
+                              exploreFeedViewModelProvider,
+                            );
+                            return ExploreFilterSheet(
+                              filters: liveFilters,
+                              state: initialSheetState.withLiveResults(
+                                filters: liveFilters,
+                                viewModel: liveFeed.asData?.value,
+                                feedLoading: liveFeed.isLoading,
+                                l10n: _l10n,
+                              ),
+                              onToggleHighRatedOnly: () => ref
+                                  .read(exploreFiltersProvider.notifier)
+                                  .toggleHighRatedOnly(),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
+      await _pumpClubUi(tester);
+      expect(find.text('Show 2 plans'), findsOneWidget);
+
+      await tester.tap(_selectChip('Rated 4.5+'));
+      await _pumpClubUi(tester);
+      expect(find.text('Show 1 plan'), findsOneWidget);
+    });
+
+    testWidgets('ExploreFeedEventRow demotes ineligible plans with a reason', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'ineligible-club');
+      final item = ExploreEventItem(
+        event: event_test.buildEvent(id: 'ineligible-event', clubId: club.id),
+        club: club,
+        availability: const ViewerEventAvailability(
+          status: ViewerEventAvailabilityStatus.fullForViewer,
+          spotsRemaining: 0,
+          isSaved: false,
+          isHosted: false,
+          isClubMember: false,
+        ),
+      );
+
+      await pumpTestApp(tester, ExploreFeedEventRow(item: item));
+
+      final opacity = tester.widget<Opacity>(
+        find.byKey(const ValueKey('explore-ineligible-event-ineligible-event')),
+      );
+      expect(opacity.opacity, CatchOpacity.discoveryIneligible);
+      expect(
+        find.textContaining('YOUR GROUP IS FULL', findRichText: true),
+        findsOneWidget,
+      );
     });
 
     testWidgets('ExploreScreen map pill opens the map route', (tester) async {

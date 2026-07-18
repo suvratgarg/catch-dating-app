@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -31,6 +32,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -102,10 +104,17 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       filters,
       l10n: context.l10n,
     );
+    final dateStripState = ExploreDateStripState.from(
+      viewModel: feedAsync.asData?.value,
+      l10n: context.l10n,
+      now: ref.watch(exploreDiscoveryReferenceNowProvider),
+    );
     final filterSheetState = ExploreFilterSheetState.from(
       filters: filters,
       sourceClubs: sourceClubs,
       l10n: context.l10n,
+      viewModel: feedAsync.asData?.value,
+      feedLoading: feedAsync.isLoading,
     );
     final screenState = ExploreDiscoveryScreenState.from(
       l10n: context.l10n,
@@ -217,6 +226,44 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       );
     }
 
+    void openExploreFilters() {
+      unawaited(
+        showCatchBottomSheet<void>(
+          context: context,
+          builder: (_) => Consumer(
+            builder: (sheetContext, ref, _) {
+              final liveFilters = ref.watch(exploreFiltersProvider);
+              final liveFeed = ref.watch(exploreFeedViewModelProvider);
+              return ExploreFilterSheet(
+                filters: liveFilters,
+                state: filterSheetState.withLiveResults(
+                  filters: liveFilters,
+                  viewModel: liveFeed.asData?.value,
+                  feedLoading: liveFeed.isLoading,
+                  l10n: sheetContext.l10n,
+                ),
+                onDistanceFilterSelected: (filter) =>
+                    unawaited(_applyDistanceFilter(filter)),
+                onToggleJoinedOnly: () => ref
+                    .read(exploreFiltersProvider.notifier)
+                    .toggleJoinedOnly(),
+                onToggleHighRatedOnly: () => ref
+                    .read(exploreFiltersProvider.notifier)
+                    .toggleHighRatedOnly(),
+                onToggleActivityTag: (tag) => ref
+                    .read(exploreFiltersProvider.notifier)
+                    .toggleActivityTag(tag),
+                onToggleArea: (area) =>
+                    ref.read(exploreFiltersProvider.notifier).toggleArea(area),
+                onClearFilters: () =>
+                    ref.read(exploreFiltersProvider.notifier).clear(),
+              );
+            },
+          ),
+        ),
+      );
+    }
+
     Widget savedEventsAction({bool onDarkBackdrop = false}) {
       return CatchIconAction(
         icon: CatchIcons.bookmarkBorderRounded,
@@ -302,6 +349,17 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 ref.read(exploreSearchQueryProvider.notifier).clear(),
             onClearFilters: () =>
                 ref.read(exploreFiltersProvider.notifier).clear(),
+            onChangeCity: cityPickerState.enabled
+                ? () => unawaited(
+                    showExploreCityPickerSheet(
+                      context: context,
+                      state: cityPickerState,
+                      onSelected: (selectedCity) => ref
+                          .read(selectedExploreCityProvider.notifier)
+                          .setCity(selectedCity),
+                    ),
+                  )
+                : null,
           ),
         ),
       ],
@@ -346,6 +404,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     child: ExploreFilterRail(
                       filters: filters,
                       state: filterRailState,
+                      dateStripState: dateStripState,
                       sheetState: filterSheetState,
                       onTimeFilterSelected: (filter) => ref
                           .read(exploreFiltersProvider.notifier)
@@ -366,6 +425,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           .toggleArea(area),
                       onClearFilters: () =>
                           ref.read(exploreFiltersProvider.notifier).clear(),
+                      onOpenFilters: openExploreFilters,
                     ),
                   ),
                   ...bodySlivers,
@@ -413,6 +473,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   }
 
   Future<void> _refreshExploreData() async {
+    ref.invalidate(exploreDiscoveryReferenceNowProvider);
     ref.invalidate(exploreDiscoveryWindowProvider);
     ref.invalidate(watchClubsByLocationProvider);
     ref.invalidate(exploreSourceClubsProvider);
@@ -493,11 +554,13 @@ class ExploreScreenEmptyState extends StatelessWidget {
     required this.state,
     this.onClearSearch,
     this.onClearFilters,
+    this.onChangeCity,
   });
 
   final ExploreDiscoveryEmptyState state;
   final VoidCallback? onClearSearch;
   final VoidCallback? onClearFilters;
+  final VoidCallback? onChangeCity;
 
   @override
   Widget build(BuildContext context) {
@@ -519,7 +582,11 @@ class ExploreScreenEmptyState extends StatelessWidget {
               cityLabel: state.cityLabel,
             ),
             message: context.l10n.exploreExploreScreenMessageTryAnotherCityFrom,
-            action: action,
+            action: CatchButton(
+              label: context.l10n.exploreExploreScreenLabelChangeCity,
+              icon: Icon(CatchIcons.locationOnOutlined),
+              onPressed: onChangeCity,
+            ),
           ),
         ),
       ),
