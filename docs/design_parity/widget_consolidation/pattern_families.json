@@ -532,6 +532,72 @@
           "rationale": "App-start screen composition that uses the indicator but should not become another primitive concept."
         }
       ]
+    },
+    {
+      "id": "host-broadcast-composer-namespace-collision",
+      "title": "Host broadcast composer namespace collision",
+      "intent": "Resolve two public HostBroadcastComposerSheet classes that share one deterministic namespace while owning different workflows: a parameterless Chats inbox blast preview and an event-aware Host inbox broadcast mutation.",
+      "priority": "P0",
+      "status": "review",
+      "targetContract": "one canonical host broadcast workflow or two explicitly qualified compositions",
+      "qualityReference": "HostBroadcastComposerSheet",
+      "decisionSource": "owner-review-requested:2026-07-18",
+      "acceptedVisualDelta": [],
+      "reviewQuestions": [
+        {
+          "id": "HBC1",
+          "prompt": "Should the parameterless Chats blast sheet be replaced by the event-aware Host broadcast workflow, or remain a separately named composition?",
+          "recommendation": "Use the event-aware Host workflow as the canonical broadcast composer; if Chats must retain eventless blasts, rename that composition to ChatBlastComposerSheet so the workflow boundary is explicit.",
+          "options": [
+            "Canonicalize the Host workflow and explicitly rename any retained eventless Chats composition.",
+            "Keep both public classes with the same HostBroadcastComposerSheet name in separate libraries."
+          ]
+        }
+      ],
+      "members": [
+        {
+          "symbol": "HostBroadcastComposerSheet",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "The collision spans lib/chats/presentation/inbox/chat_inbox_screen.dart and lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart; owner review must select one workflow boundary before code changes."
+        }
+      ]
+    },
+    {
+      "id": "swipe-reaction-control-boundary",
+      "title": "Swipe reaction control boundary",
+      "intent": "Determine whether CatchesPassButton and ReactionControlButton need independent rendering or should configure the existing CatchIconButton concept while retaining pass/reaction behavior in feature adapters.",
+      "priority": "P0",
+      "status": "review",
+      "targetContract": "CatchIconButton plus feature-owned pass/reaction adapters",
+      "qualityReference": "CatchesPassButton",
+      "decisionSource": "owner-review-requested:2026-07-18",
+      "acceptedVisualDelta": [],
+      "reviewQuestions": [
+        {
+          "id": "SRC1",
+          "prompt": "Should pass and reaction controls keep two renderers, or share CatchIconButton with feature-owned semantics?",
+          "recommendation": "Share CatchIconButton rendering and retain small feature adapters only where pending-state semantics or stable test keys require them; do not create another core concept.",
+          "options": [
+            "Share CatchIconButton rendering and keep only behavior-bearing feature adapters.",
+            "Keep independent CatchesPassButton and ReactionControlButton renderers."
+          ]
+        }
+      ],
+      "members": [
+        {
+          "symbol": "CatchesPassButton",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Owns pass localization, pending semantics, SwipeKeys.passButton, 56px geometry, and physical elevation, but duplicates a circular icon-action renderer."
+        },
+        {
+          "symbol": "ReactionControlButton",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Owns overlay/inline reaction palette and pending semantics, but duplicates the same semantic, opacity, circular Material, InkWell, spinner, and icon construction."
+        }
+      ]
     }
   ]
 }

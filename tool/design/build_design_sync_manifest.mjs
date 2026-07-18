@@ -9,58 +9,87 @@ import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 const outputPath = fromRepo("design/sync/catch.design-sync.json");
 const componentPath = fromRepo("design/components/catch.components.json");
 const capabilityPath = fromRepo("design/sync/live_capabilities.json");
+const figmaSnapshotPath = fromRepo("design/sync/figma_library_snapshot.json");
+const claudeContextPath = fromRepo("design_context_pack/design_system/components.json");
 
-export function buildDesignSyncManifest({componentsDocument, capabilities}) {
+export function buildDesignSyncManifest({
+  componentsDocument,
+  capabilities,
+  figmaSnapshot = unavailableFigmaSnapshot(),
+  claudeContextDocument = componentsDocument,
+}) {
   const components = componentsDocument.components ?? [];
   const metrics = conceptMetrics(components);
-  const mappings = components.map((component) => ({
-    contractId: component.id,
-    conceptRole: component.governance?.conceptRole,
-    conceptId: component.governance?.conceptId ?? null,
-    dartSymbol: component.dart?.symbol,
-    dartFile: component.dart?.file,
-    figmaName: component.design?.figma?.componentName,
-    figmaStatus: component.design?.figma?.status,
-    figmaUrl: component.design?.figma?.componentUrl ?? null,
-    figmaNodeId: nodeIdFromUrl(component.design?.figma?.componentUrl),
-    codeConnectStatus: component.design?.codeConnect?.status,
-    codeConnectTemplate: component.design?.codeConnect?.template ?? null,
-    claudeHandoffName: component.design?.claude?.handoffName,
-    claudeAllowed: component.design?.claude?.allowed === true,
-    contractDigest: digest(contractFingerprint(component)),
+  const figmaByName = groupBy(figmaSnapshot.components ?? [], (entry) => entry.name);
+  const mappings = components.map((component) => buildMapping({
+    component,
+    capabilities,
+    figmaSnapshot,
+    figmaMatches: figmaByName.get(component.design?.figma?.componentName) ?? [],
   }));
-  const mappingStates = countBy(mappings, (entry) => entry.figmaStatus ?? "missing");
+  const mappingStates = countBy(mappings, (entry) => entry.figmaStatus);
   const codeConnectStates = countBy(mappings, (entry) => entry.codeConnectStatus ?? "missing");
+  const sourceDigest = digest(componentsDocument);
+  const claudeContextDigest = claudeContextDocument ? digest(claudeContextDocument) : null;
+  const claudeContextStatus = !claudeContextDocument
+    ? "missing"
+    : claudeContextDigest === sourceDigest ? "current" : "stale";
+  const spikeIds = ["catch.badge", "catch.field"];
+  const spikeMappings = spikeIds.map((id) => mappings.find((entry) => entry.contractId === id));
+  const spikeFigmaReady = spikeMappings.every((entry) => entry?.figmaStatus === "current");
+  const spikeStatus = !capabilities.figma.fileKey
+    ? "awaiting-figma-file-approval"
+    : spikeFigmaReady ? "figma-round-trip-ready" : "awaiting-figma-publish-snapshot";
+
   return {
-    version: 1,
+    version: 2,
     updated: new Date().toISOString().slice(0, 10),
     sourceOfTruth: {
       behavior: "Flutter sources named by design/components/catch.components.json",
       componentContracts: "design/components/catch.components.json",
       tokens: "design/tokens/catch.tokens.json",
+      figmaSnapshot: "design/sync/figma_library_snapshot.json",
+      figmaSnapshotImporter: "tool/design/import_figma_library_snapshot.mjs",
       claudeContext: "design_context_pack/design_system/components.json",
       liveCapabilities: "design/sync/live_capabilities.json",
       generator: "tool/design/build_design_sync_manifest.mjs",
     },
-    sourceDigest: digest(componentsDocument),
+    sourceDigest,
+    claudeContext: {
+      status: claudeContextStatus,
+      digest: claudeContextDigest,
+      contractDigest: sourceDigest,
+    },
+    figmaSnapshot: {
+      status: figmaSnapshot.status,
+      capturedAt: figmaSnapshot.capturedAt ?? null,
+      fileKey: figmaSnapshot.source?.fileKey ?? null,
+      digest: figmaSnapshot.snapshotDigest ?? null,
+      componentCount: figmaSnapshot.components?.length ?? 0,
+      reviewSnapshotCount: figmaSnapshot.reviewSnapshots?.length ?? 0,
+    },
     capabilities,
     metrics: {
       ...metrics,
       figmaMappingStates: mappingStates,
+      figmaPropertyDriftCount: mappings.reduce((sum, entry) => sum + entry.figmaDrift.length, 0),
       codeConnectMappingStates: codeConnectStates,
       claudeAllowed: mappings.filter((entry) => entry.claudeAllowed).length,
+      claudeContextState: claudeContextStatus,
       figmaMappedConcepts: mappings.filter(
-        (entry) => entry.conceptRole === "concept" && entry.figmaStatus === "mapped",
+        (entry) => entry.conceptRole === "concept" && entry.figmaStatus === "current",
       ).length,
     },
     spike: {
-      componentIds: ["catch.badge", "catch.field"],
+      componentIds: spikeIds,
       purpose: "Prove code-to-Figma identity, state coverage, Claude handoff, and drift detection before scaling.",
-      status: capabilities.figma.fileKey ? "figma-file-ready" : "awaiting-figma-file-approval",
+      status: spikeStatus,
       codeConnectStatus: capabilities.codeConnect.status,
       acceptance: [
         "Figma component exists with variable-bound states",
-        "registry componentUrl resolves to the published component node",
+        "a LIBRARY_PUBLISH webhook is hydrated from the Figma file API and normalized without hand editing",
+        "registry componentName resolves to exactly one published component node",
+        "Figma property definitions match generated contract props and review states",
         "contract digest matches the generated Claude context",
         "Code Connect is mapped only when the account tier supports publication",
         "a deliberately stale or incomplete mapping fails the gate",
@@ -73,11 +102,20 @@ export function buildDesignSyncManifest({componentsDocument, capabilities}) {
 export function validateDesignSyncManifest(manifest, {requireLive = false} = {}) {
   const problems = [];
   const ids = new Set();
+  if (manifest.claudeContext?.status !== "current") {
+    problems.push(`Claude context is ${manifest.claudeContext?.status ?? "missing"}`);
+  }
   for (const entry of manifest.mappings ?? []) {
     if (ids.has(entry.contractId)) problems.push(`${entry.contractId}: duplicate mapping`);
     ids.add(entry.contractId);
-    if (entry.figmaStatus === "mapped" && (!entry.figmaUrl || !entry.figmaNodeId)) {
+    if (
+      entry.figmaDeclaredStatus === "mapped" &&
+      (!entry.figmaDeclaredUrl || !nodeIdFromUrl(entry.figmaDeclaredUrl))
+    ) {
       problems.push(`${entry.contractId}: mapped Figma entry requires a node-specific URL`);
+    }
+    if (entry.figmaStatus === "current" && (!entry.figmaUrl || !entry.figmaNodeId)) {
+      problems.push(`${entry.contractId}: current Figma mapping requires a generated node URL`);
     }
     if (entry.codeConnectStatus === "mapped" && !entry.codeConnectTemplate) {
       problems.push(`${entry.contractId}: mapped Code Connect entry requires a template`);
@@ -87,8 +125,8 @@ export function validateDesignSyncManifest(manifest, {requireLive = false} = {})
   for (const spikeId of manifest.spike?.componentIds ?? []) {
     const entry = (manifest.mappings ?? []).find((mapping) => mapping.contractId === spikeId);
     if (!entry) problems.push(`${spikeId}: missing spike mapping`);
-    if (requireLive && entry?.figmaStatus !== "mapped") {
-      problems.push(`${spikeId}: live Figma mapping is required`);
+    if (requireLive && entry?.figmaStatus !== "current") {
+      problems.push(`${spikeId}: current live Figma mapping is required`);
     }
   }
   if (
@@ -103,12 +141,139 @@ export function validateDesignSyncManifest(manifest, {requireLive = false} = {})
   return problems.sort();
 }
 
+function buildMapping({component, capabilities, figmaSnapshot, figmaMatches}) {
+  const expectedProperties = expectedFigmaProperties(component);
+  const declaredUrl = component.design?.figma?.componentUrl ?? null;
+  const declaredNodeId = nodeIdFromUrl(declaredUrl);
+  let figmaStatus = "missing";
+  let figmaNode = null;
+  let figmaDrift = [];
+  if (figmaMatches.length === 1) {
+    figmaNode = figmaMatches[0];
+    figmaDrift = compareFigmaProperties(expectedProperties, figmaNode.propertyDefinitions ?? []);
+    if (
+      capabilities.figma.fileKey &&
+      figmaSnapshot.source?.fileKey !== capabilities.figma.fileKey
+    ) {
+      figmaDrift.push(
+        `snapshot file ${figmaSnapshot.source?.fileKey ?? "missing"} does not match configured file ${capabilities.figma.fileKey}`,
+      );
+    }
+    figmaStatus = figmaDrift.length === 0 ? "current" : "stale";
+  } else if (figmaMatches.length > 1) {
+    figmaStatus = "stale";
+    figmaDrift.push(`${figmaMatches.length} Figma nodes share component name ${component.design?.figma?.componentName}`);
+  } else if (declaredNodeId || component.design?.figma?.status === "mapped") {
+    figmaStatus = "stale";
+    figmaDrift.push("declared mapping has no captured Figma component evidence");
+  }
+  const fileKey = figmaSnapshot.source?.fileKey ?? capabilities.figma.fileKey;
+  const generatedUrl = figmaNode && fileKey
+    ? `https://www.figma.com/design/${fileKey}/Catch-Design-System?node-id=${figmaNode.nodeId.replace(/:/gu, "-")}`
+    : null;
+  return {
+    contractId: component.id,
+    conceptRole: component.governance?.conceptRole,
+    conceptId: component.governance?.conceptId ?? null,
+    dartSymbol: component.dart?.symbol,
+    dartFile: component.dart?.file,
+    figmaName: component.design?.figma?.componentName,
+    figmaDeclaredStatus: component.design?.figma?.status ?? "missing",
+    figmaDeclaredUrl: declaredUrl,
+    figmaStatus,
+    figmaUrl: generatedUrl ?? declaredUrl,
+    figmaNodeId: figmaNode?.nodeId ?? declaredNodeId,
+    figmaComponentKey: figmaNode?.componentKey ?? null,
+    figmaExpectedPropertyCount: expectedProperties.length,
+    figmaExpectedPropertyDigest: digest(expectedProperties),
+    figmaActualPropertyCount: figmaNode?.propertyDefinitions?.length ?? 0,
+    figmaActualPropertyDigest: figmaNode
+      ? digest(figmaNode.propertyDefinitions ?? [])
+      : null,
+    figmaDrift: [...new Set(figmaDrift)].sort(),
+    codeConnectStatus: component.design?.codeConnect?.status,
+    codeConnectTemplate: component.design?.codeConnect?.template ?? null,
+    claudeHandoffName: component.design?.claude?.handoffName,
+    claudeAllowed: component.design?.claude?.allowed === true,
+    contractDigest: digest(contractFingerprint(component)),
+  };
+}
+
+export function expectedFigmaProperties(component) {
+  const result = [];
+  for (const prop of component.contract?.props ?? []) {
+    const type = figmaPropertyType(prop.type);
+    if (!type) continue;
+    result.push({
+      name: prop.name,
+      normalizedName: normalizePropertyName(prop.name),
+      type,
+      defaultValue: prop.default ?? null,
+      variantOptions: type === "VARIANT" ? [...(prop.values ?? [])].map(String).sort() : [],
+    });
+  }
+  if ((component.contract?.states ?? []).length > 0) {
+    result.push({
+      name: "reviewState",
+      normalizedName: "review_state",
+      type: "VARIANT",
+      defaultValue: component.contract.states[0],
+      variantOptions: [...component.contract.states].map(String).sort(),
+    });
+  }
+  return result.sort((a, b) => a.normalizedName.localeCompare(b.normalizedName));
+}
+
+export function compareFigmaProperties(expected, actual) {
+  const problems = [];
+  const actualGroups = groupBy(actual, (entry) => entry.normalizedName ?? normalizePropertyName(entry.name));
+  const expectedNames = new Set(expected.map((entry) => entry.normalizedName));
+  for (const item of expected) {
+    const matches = actualGroups.get(item.normalizedName) ?? [];
+    if (matches.length === 0) {
+      problems.push(`missing Figma property ${item.name}`);
+      continue;
+    }
+    if (matches.length > 1) {
+      problems.push(`duplicate Figma property namespace ${item.name}`);
+      continue;
+    }
+    const candidate = matches[0];
+    if (candidate.type !== item.type) {
+      problems.push(`${item.name}: expected ${item.type}, found ${candidate.type}`);
+    }
+    if (item.type === "VARIANT") {
+      const expectedOptions = item.variantOptions.map(normalizePropertyToken).sort();
+      const actualOptions = (candidate.variantOptions ?? []).map(normalizePropertyToken).sort();
+      if (JSON.stringify(expectedOptions) !== JSON.stringify(actualOptions)) {
+        problems.push(`${item.name}: variant options differ`);
+      }
+    }
+  }
+  for (const item of actual) {
+    const normalizedName = item.normalizedName ?? normalizePropertyName(item.name);
+    if (!expectedNames.has(normalizedName)) {
+      problems.push(`untracked Figma property ${item.name}`);
+    }
+  }
+  return [...new Set(problems)].sort();
+}
+
 function main() {
   const check = process.argv.includes("--check");
   const requireLive = process.argv.includes("--require-live");
   const document = JSON.parse(fs.readFileSync(componentPath, "utf8"));
   const capabilities = JSON.parse(fs.readFileSync(capabilityPath, "utf8"));
-  const manifest = buildDesignSyncManifest({componentsDocument: document, capabilities});
+  const figmaSnapshot = JSON.parse(fs.readFileSync(figmaSnapshotPath, "utf8"));
+  const claudeContextDocument = fs.existsSync(claudeContextPath)
+    ? JSON.parse(fs.readFileSync(claudeContextPath, "utf8"))
+    : null;
+  const manifest = buildDesignSyncManifest({
+    componentsDocument: document,
+    capabilities,
+    figmaSnapshot,
+    claudeContextDocument,
+  });
   const problems = validateDesignSyncManifest(manifest, {requireLive});
   if (problems.length > 0) fail(problems);
   if (check) {
@@ -118,7 +283,13 @@ function main() {
     if (JSON.stringify(comparable, null, 2) !== JSON.stringify(manifest, null, 2)) {
       fail([`${relativeToRepo(outputPath)} is stale; run node tool/design/build_design_sync_manifest.mjs`]);
     }
-    console.log(`Design sync manifest check passed (${manifest.metrics.conceptCount} concepts, ${manifest.metrics.figmaMappingStates.mapped ?? 0} Figma mappings).`);
+    console.log(
+      `Design sync manifest check passed (${manifest.metrics.conceptCount} concepts; ` +
+      `${manifest.metrics.figmaMappingStates.current ?? 0} current, ` +
+      `${manifest.metrics.figmaMappingStates.stale ?? 0} stale, ` +
+      `${manifest.metrics.figmaMappingStates.missing ?? 0} missing Figma mappings; ` +
+      `Claude context ${manifest.claudeContext.status}).`,
+    );
     return;
   }
   fs.mkdirSync(path.dirname(outputPath), {recursive: true});
@@ -138,6 +309,25 @@ function contractFingerprint(component) {
   };
 }
 
+function figmaPropertyType(type) {
+  if (type === "enum") return "VARIANT";
+  if (type === "bool") return "BOOLEAN";
+  if (type === "string" || type === "number") return "TEXT";
+  return null;
+}
+
+function normalizePropertyName(value) {
+  return String(value).split("#", 1)[0]
+    .replace(/([a-z0-9])([A-Z])/gu, "$1_$2")
+    .replace(/[^A-Za-z0-9]+/gu, "_")
+    .replace(/^_+|_+$/gu, "")
+    .toLowerCase();
+}
+
+function normalizePropertyToken(value) {
+  return normalizePropertyName(String(value));
+}
+
 function digest(value) {
   return crypto.createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
@@ -152,6 +342,17 @@ function nodeIdFromUrl(value) {
   }
 }
 
+function groupBy(values, keyFor) {
+  const result = new Map();
+  for (const value of values) {
+    const key = keyFor(value);
+    const group = result.get(key) ?? [];
+    group.push(value);
+    result.set(key, group);
+  }
+  return result;
+}
+
 function countBy(values, keyFor) {
   const counts = {};
   for (const value of values) {
@@ -159,6 +360,10 @@ function countBy(values, keyFor) {
     counts[key] = (counts[key] ?? 0) + 1;
   }
   return Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)));
+}
+
+function unavailableFigmaSnapshot() {
+  return {status: "unavailable", source: {fileKey: null}, components: [], reviewSnapshots: []};
 }
 
 function fail(problems) {

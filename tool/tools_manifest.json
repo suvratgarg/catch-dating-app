@@ -3272,13 +3272,32 @@
       ]
     },
     {
+      "id": "design:figma-library-snapshot",
+      "category": "design",
+      "path": "tool/design/import_figma_library_snapshot.mjs",
+      "command": "node tool/design/import_figma_library_snapshot.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Normalizes a Figma LIBRARY_PUBLISH webhook plus hydrated file response into deterministic component-node, property-definition, and review-snapshot evidence.",
+      "checks": [
+        "node --check tool/design/import_figma_library_snapshot.mjs",
+        "node tool/design/import_figma_library_snapshot.mjs --self-test",
+        "node tool/design/import_figma_library_snapshot.mjs --check"
+      ],
+      "role": "generator",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/design/import_figma_library_snapshot.mjs --self-test"
+      }
+    },
+    {
       "id": "design:sync-manifest",
       "category": "design",
       "path": "tool/design/build_design_sync_manifest.mjs",
       "command": "node tool/design/build_design_sync_manifest.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Builds and validates the code, Figma, Code Connect, and Claude Design mapping manifest with a Badge + Field live-readiness spike.",
+      "description": "Builds and validates generated current/stale/missing Figma mappings, property drift, Code Connect readiness, and Claude context parity for the Badge + Field live spike.",
       "checks": [
         "node --check tool/design/build_design_sync_manifest.mjs",
         "node --test tool/design/build_design_sync_manifest.test.mjs",
@@ -3290,7 +3309,10 @@
         "path": "tool/design/build_design_sync_manifest.test.mjs",
         "contains": [
           "known-bad mapped entries without node URLs fail",
-          "live spike gate stays red when Figma and Code Connect are unavailable"
+          "live spike gate stays red when Figma and Code Connect are unavailable",
+          "snapshot names generate current mappings without hand-edited URLs",
+          "known-bad Figma property drift is deterministic",
+          "known-bad stale Claude context fails"
         ]
       }
     },
@@ -3301,7 +3323,7 @@
       "command": "node tool/design/build_widget_concept_report.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Generates the quantitative report for component contracts, independent concepts, member APIs, collisions, ledger coverage, and design-tool readiness.",
+      "description": "Generates machine-readable and Markdown metrics for concept/class deltas, members, unclassified entries, collisions, ledger and Widgetbook coverage, Figma health, Claude parity, and owner-review queue size.",
       "checks": [
         "node --check tool/design/build_widget_concept_report.mjs",
         "node tool/design/build_widget_concept_report.mjs --check"
@@ -3454,10 +3476,17 @@
       "command": "node tool/design/check_widgetbook_coverage.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Scans production Flutter widget classes against generated Widgetbook component listings and the widget decision ledger.",
+      "description": "Enforces role-derived Widgetbook evidence for concepts, members, contracted compositions, feature-owned compositions, and screen-owned widgets.",
       "checks": [
-        "node --check tool/design/check_widgetbook_coverage.mjs"
-      ]
+        "node --check tool/design/check_widgetbook_coverage.mjs",
+        "node tool/design/check_widgetbook_coverage.mjs --self-test",
+        "node tool/design/check_widgetbook_coverage.mjs --check"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/design/check_widgetbook_coverage.mjs --self-test"
+      }
     },
     {
       "id": "design:widgetbook-compare-build",
@@ -3885,7 +3914,7 @@
       "safety": "local",
       "status": "active",
       "role": "gate",
-      "description": "Runs seeded structural probes for the widget dedupe fingerprint extractor and similarity clustering.",
+      "description": "Runs seeded structural, concept-primary, member-parent, composition-identity, and deterministic collision probes for widget consolidation.",
       "checks": [
         "node --check tool/design/check_widget_dedupe_probes.mjs",
         "node tool/design/check_widget_dedupe_probes.mjs"

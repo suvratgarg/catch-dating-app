@@ -2016,6 +2016,72 @@ must not attempt it.
   rule: no exact K/R match, blocked because event location maps and explore
   maps are route-level map screens with different data sources and markers.
 
+## WO-024 — Deterministic widget concept identity and design sync
+
+Status: implementation complete; verification and owner gates in progress
+(2026-07-18).
+
+Objective: replace top-level-contract counting and ad hoc standalone-widget
+judgment with a generated concept/member/composition/screen model, reconcile
+current similarity evidence to stable decisions, and establish one repo-owned
+code/Figma/Claude synchronization contract.
+
+Implemented scope:
+
+1. `design/components/catch.components.json` is schema v3 and every top-level
+   contract/member carries a governed role, concept identity, qualifier where
+   applicable, and stable decision reference for non-obvious boundaries.
+2. Component, classification, similarity, Widgetbook, and seeded dedupe tooling
+   enforce concept topology, deterministic collision namespaces, normalized
+   member-set reconciliation, role-derived review obligations, and known-bad
+   failures.
+3. The calibration slice records one-concept/many-member, false-positive
+   separation, feature composition/recipe, and decompression outcomes without
+   requiring Dart API churn.
+4. All 45 current structural clusters now resolve to an exact normalized
+   member-set ledger decision. Fifteen regenerated clusters were reconciled to
+   prior reviewed decisions or fresh K2–K5 evidence; two real boundaries were
+   promoted to owner-review families rather than guessed.
+5. `design/sync/figma_library_snapshot.json` and its importer normalize a real
+   Figma `LIBRARY_PUBLISH` trigger plus hydrated file response, node ids,
+   component property definitions, and review snapshot digests. The generated
+   sync manifest derives current/stale/missing mappings without hand-edited
+   node URLs and verifies Claude context parity by digest.
+6. `widget_concept_metrics.json` and `widget_concept_report.md` separately
+   report concept count, class count, members/concept, unclassified entries,
+   unresolved collision families, ledger coverage, Widgetbook evidence,
+   Figma health, per-family concept/class deltas, and the owner queue.
+
+Current quantified result:
+
+- 65 top-level handoff contracts represent 60 independent concepts, 118 member
+  APIs, 2 contracted compositions, and 1 contracted screen boundary.
+- The former 64-entry top-level proxy becomes 60 concepts (delta -4) with no
+  Dart class deletion in the calibrated families.
+- 1,094 generated widget/state classifications contain zero unclassified
+  entries; 59/59 instantiated concept primaries and 116/116 member classes have
+  role-derived Widgetbook evidence.
+- Similarity reconciliation is 45/45 exact clusters with zero unresolved
+  collision families; ranked-pair discovery remains a separately reported
+  bounded queue and is not treated as merge authorization.
+- Claude context is current; Figma is honestly 0 current, 0 stale, and 65
+  missing until the live file is approved and published.
+
+Owner gates (also generated in `widget_concept_metrics.json`):
+
+- loading decompression into skeleton, loading-indicator, and async-value
+  concepts;
+- the duplicate public `HostBroadcastComposerSheet` workflow namespace;
+- shared rendering for `CatchesPassButton` and `ReactionControlButton`;
+- approval to create or identify the live Catch Design System Figma file; and
+- Organization/Enterprise Code Connect access, or an explicit revision of the
+  live exit gate for Starter.
+
+Interim receipt: `2026-07-18-widget-concept-system-local` (`partial`) records
+the green local enforcement loop and the five generated review/live gates. A
+final clean receipt is stamped only after those decisions and the live Badge +
+Field round trip complete.
+
 ## Completed
 
 (move finished orders here with their receipts line)

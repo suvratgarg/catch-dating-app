@@ -13,18 +13,24 @@ const decisionsPath =
     : args[decisionsIndex + 1];
 const shouldCheck = args.includes("--check");
 const shouldJson = args.includes("--json");
+const shouldSelfTest = args.includes("--self-test");
 
 if (args.includes("--help") || args.includes("-h")) {
   console.log(`Usage:
   node tool/design/check_widgetbook_coverage.mjs [--json] [--write <path>] [--decisions <path>] [--check]
 
 Scans lib/**/*.dart widget classes and compares them to generated Widgetbook
-component names. A public widget class is mechanically covered by direct name
-match. Private widget classes always remain in the decision queue because
-Widgetbook cannot import library-private Dart symbols directly. Explicit
-replacement/promotion/delete decisions are loaded from the decision ledger when
-present.
+component names. Coverage obligations are derived from the generated concept
+role: concepts need a direct family preview; members may use their parent's
+family; contracted compositions need a direct feature preview; uncontracted
+compositions and screens use their feature/screen review owners. Explicit
+replacement/promotion/delete decisions remain supported for legacy cleanup.
 `);
+  process.exit(0);
+}
+
+if (shouldSelfTest) {
+  runSelfTest();
   process.exit(0);
 }
 
@@ -40,6 +46,12 @@ if (decisionsIndex !== -1 && !decisionsPath) {
 
 const widgetClasses = scanWidgetClasses();
 const widgetbookNames = parseWidgetbookComponentNames();
+const classifications = loadClassifications();
+const conceptPrimaryNames = new Map(
+  [...classifications.values()]
+    .filter((entry) => entry.conceptRole === "concept" && entry.conceptId)
+    .map((entry) => [entry.conceptId, entry.name]),
+);
 const decisionLedger = loadDecisionLedger(decisionsPath);
 const rows = widgetClasses.map((entry) => {
   const publicName = entry.name.replace(/^_/, "");
@@ -51,7 +63,14 @@ const rows = widgetClasses.map((entry) => {
     visibility: entry.visibility,
   });
   const decision = decisionLedger.decisionsByKey.get(decisionKey(entry));
-  const status = decision?.status ?? mechanicalStatus;
+  const classification = classifications.get(decisionKey(entry)) ?? null;
+  const roleCoverage = classifyRoleCoverage({
+    classification,
+    exactNameMatched,
+    widgetbookNames,
+    conceptPrimaryNames,
+  });
+  const status = decision?.status ?? roleCoverage.status;
 
   return {
     ...entry,
@@ -59,6 +78,10 @@ const rows = widgetClasses.map((entry) => {
     exactNameMatched,
     publicNameMatched,
     mechanicalStatus,
+    conceptRole: classification?.conceptRole ?? "unclassified",
+    conceptId: classification?.conceptId ?? null,
+    contractId: classification?.contractId ?? null,
+    coverageObligation: roleCoverage.obligation,
     decision: decision ?? null,
     status,
   };
@@ -73,9 +96,12 @@ const result = {
   decisionLedgerPath: decisionsPath,
   total: rows.length,
   stats: countBy(rows, (row) => row.status),
+  mechanicalStats: countBy(rows, (row) => row.mechanicalStatus),
+  roleStats: countBy(rows, (row) => row.conceptRole),
+  obligationStats: countBy(rows, (row) => row.coverageObligation),
   decisionStats: countBy(
     rows.filter((row) => row.decision !== null),
-    (row) => row.status,
+    (row) => row.decision.status,
   ),
   areaStats: buildAreaStats(rows),
   staleDecisions,
@@ -92,20 +118,96 @@ if (shouldJson) {
   printSummary(result);
 }
 
-const uncovered =
-  (result.stats.PRIVATE_NAME_MATCH_NEEDS_EXPLICIT_DECISION ?? 0) +
-  (result.stats.PRIVATE_NEEDS_RENAME_OR_REPLACE ?? 0) +
-  (result.stats.PUBLIC_NEEDS_CATALOG_OR_REPLACE ?? 0);
+const uncovered = (result.stats.ROLE_COVERAGE_REQUIRED ?? 0) +
+  (result.stats.UNCLASSIFIED_ROLE_REVIEW_REQUIRED ?? 0);
 if (shouldCheck && (uncovered > 0 || staleDecisions.length > 0)) {
   const parts = [];
   if (uncovered > 0) {
-    parts.push(`${uncovered} widget class(es) need catalog-or-replace decisions`);
+    parts.push(`${uncovered} widget class(es) fail role-derived review coverage`);
   }
   if (staleDecisions.length > 0) {
     parts.push(`${staleDecisions.length} stale decision(s) no longer match live widget classes`);
   }
   console.error(`Widgetbook coverage check failed: ${parts.join("; ")}.`);
   process.exit(1);
+}
+
+function classifyRoleCoverage({
+  classification,
+  exactNameMatched,
+  widgetbookNames,
+  conceptPrimaryNames,
+}) {
+  const role = classification?.conceptRole;
+  if (role === "concept") {
+    return exactNameMatched
+      ? {status: "ROLE_COVERED", obligation: "concept-direct"}
+      : {status: "ROLE_COVERAGE_REQUIRED", obligation: "concept-direct"};
+  }
+  if (role === "member") {
+    const primaryName = conceptPrimaryNames.get(classification.conceptId);
+    const covered = exactNameMatched || (primaryName && widgetbookNames.has(primaryName));
+    return covered
+      ? {status: "ROLE_COVERED", obligation: "member-parent-family"}
+      : {status: "ROLE_COVERAGE_REQUIRED", obligation: "member-parent-family"};
+  }
+  if (role === "composition") {
+    if (classification.contractId !== null) {
+      return exactNameMatched
+        ? {status: "ROLE_COVERED", obligation: "contracted-composition-direct"}
+        : {status: "ROLE_COVERAGE_REQUIRED", obligation: "contracted-composition-direct"};
+    }
+    return {status: "FEATURE_REVIEW_OWNED", obligation: "feature-review"};
+  }
+  if (role === "screen") {
+    return {status: "SCREEN_REVIEW_OWNED", obligation: "screen-contract"};
+  }
+  return {
+    status: "UNCLASSIFIED_ROLE_REVIEW_REQUIRED",
+    obligation: "classification-required",
+  };
+}
+
+function loadClassifications() {
+  const parsed = JSON.parse(
+    fs.readFileSync(fromRepo("docs/audit_registry/widget_classification.json"), "utf8"),
+  );
+  return new Map((parsed.widgets ?? [])
+    .filter((entry) => entry.classKind === "widget")
+    .map((entry) => [`${entry.file}::${entry.name}`, entry]));
+}
+
+function runSelfTest() {
+  const names = new Set(["CatchBadge"]);
+  const primaries = new Map([["catch.badge", "CatchBadge"]]);
+  const missingConcept = classifyRoleCoverage({
+    classification: {conceptRole: "concept", conceptId: "catch.field", contractId: "catch.field"},
+    exactNameMatched: false,
+    widgetbookNames: names,
+    conceptPrimaryNames: primaries,
+  });
+  if (missingConcept.status !== "ROLE_COVERAGE_REQUIRED") {
+    throw new Error("known-bad concept without a family preview must fail");
+  }
+  const member = classifyRoleCoverage({
+    classification: {conceptRole: "member", conceptId: "catch.badge", contractId: "catch.badge.status_dot"},
+    exactNameMatched: false,
+    widgetbookNames: names,
+    conceptPrimaryNames: primaries,
+  });
+  if (member.status !== "ROLE_COVERED") {
+    throw new Error("member must inherit its concept family preview");
+  }
+  const composition = classifyRoleCoverage({
+    classification: {conceptRole: "composition", contractId: null},
+    exactNameMatched: false,
+    widgetbookNames: names,
+    conceptPrimaryNames: primaries,
+  });
+  if (composition.status !== "FEATURE_REVIEW_OWNED") {
+    throw new Error("uncontracted composition must stay with feature review");
+  }
+  console.log("Widgetbook role-derived coverage self-test passed.");
 }
 
 function classifyMechanicalCoverage({
@@ -278,20 +380,18 @@ function buildAreaStats(rows) {
 
 function printSummary(result) {
   const decisionQueue =
-    (result.stats.PRIVATE_NAME_MATCH_NEEDS_EXPLICIT_DECISION ?? 0) +
-    (result.stats.PRIVATE_NEEDS_RENAME_OR_REPLACE ?? 0) +
-    (result.stats.PUBLIC_NEEDS_CATALOG_OR_REPLACE ?? 0);
+    (result.stats.ROLE_COVERAGE_REQUIRED ?? 0) +
+    (result.stats.UNCLASSIFIED_ROLE_REVIEW_REQUIRED ?? 0);
   console.log(`Widget classes: ${result.total}`);
   console.log(
     [
-      `Public already cataloged by name: ${result.stats.PUBLIC_ALREADY_CATALOGED_NAME_MATCH ?? 0}`,
-      `Explicit already cataloged: ${result.stats.ALREADY_CATALOGED ?? 0}`,
-      `Explicit replaced with catalog entry: ${result.stats.REPLACE_WITH_EXISTING_CATALOG_ENTRY ?? 0}`,
-      `Explicit promote to Widgetbook catalog: ${result.stats.PROMOTE_TO_WIDGETBOOK_CATALOG ?? 0}`,
-      `Explicit delete/merge duplicate: ${result.stats.DELETE_OR_MERGE_DUPLICATE ?? 0}`,
-      `Private name match needs explicit decision: ${result.stats.PRIVATE_NAME_MATCH_NEEDS_EXPLICIT_DECISION ?? 0}`,
-      `Private needs rename/replace: ${result.stats.PRIVATE_NEEDS_RENAME_OR_REPLACE ?? 0}`,
-      `Public needs catalog/replace: ${result.stats.PUBLIC_NEEDS_CATALOG_OR_REPLACE ?? 0}`,
+      `Public already cataloged by name: ${result.mechanicalStats.PUBLIC_ALREADY_CATALOGED_NAME_MATCH ?? 0}`,
+      `Private name match: ${result.mechanicalStats.PRIVATE_NAME_MATCH_NEEDS_EXPLICIT_DECISION ?? 0}`,
+      `Private without a direct name match: ${result.mechanicalStats.PRIVATE_NEEDS_RENAME_OR_REPLACE ?? 0}`,
+      `Public without a direct name match: ${result.mechanicalStats.PUBLIC_NEEDS_CATALOG_OR_REPLACE ?? 0}`,
+      `Role-covered: ${result.stats.ROLE_COVERED ?? 0}`,
+      `Feature-review owned: ${result.stats.FEATURE_REVIEW_OWNED ?? 0}`,
+      `Screen-review owned: ${result.stats.SCREEN_REVIEW_OWNED ?? 0}`,
       `Total decision queue: ${decisionQueue}`,
       `Stale decisions: ${result.staleDecisions.length}`,
     ].join("\n"),

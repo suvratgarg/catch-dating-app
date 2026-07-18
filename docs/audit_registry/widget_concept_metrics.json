@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "updated": "2026-07-18",
+  "sourceOfTruth": {
+    "componentContracts": "design/components/catch.components.json",
+    "classification": "docs/audit_registry/widget_classification.json",
+    "similarity": "docs/audit_registry/widget_similarity.json",
+    "patternFamilies": "docs/design_parity/widget_consolidation/pattern_families.json",
+    "designSync": "design/sync/catch.design-sync.json",
+    "generator": "tool/design/build_widget_concept_report.mjs"
+  },
+  "totals": {
+    "baselineTopLevelConceptProxy": 64,
+    "topLevelContracts": 65,
+    "concepts": 60,
+    "conceptDelta": -4,
+    "publicContractClasses": 194,
+    "productionWidgetAndStateClasses": 1094,
+    "members": 118,
+    "membersPerConcept": 1.97,
+    "unclassifiedContractEntries": 0,
+    "unclassifiedProductionEntries": 0,
+    "unresolvedCollisionFamilies": 0,
+    "ownerReviewQueueSize": 5
+  },
+  "ledgerCoverage": {
+    "normalizedMemberSetCoveredClusters": 45,
+    "totalClusters": 45,
+    "unresolvedClusters": 0,
+    "rankedPairsCovered": 147,
+    "totalRankedPairs": 200,
+    "unresolvedRankedPairs": 53,
+    "decisionsIndexed": 311
+  },
+  "widgetbookEvidence": {
+    "completeConcepts": 59,
+    "totalInstantiatedConcepts": 59,
+    "coveredMembers": 116,
+    "totalMembers": 116
+  },
+  "figmaMappings": {
+    "current": 0,
+    "stale": 0,
+    "missing": 65,
+    "propertyDrift": 0
+  },
+  "claudeContext": {
+    "status": "current",
+    "digest": "ae3c17e78844d026401dacbc15bcc97a2beb66f20fd52012255b76878c4b010a",
+    "contractDigest": "ae3c17e78844d026401dacbc15bcc97a2beb66f20fd52012255b76878c4b010a"
+  },
+  "familyDeltas": [
+    {
+      "id": "error-state",
+      "family": "Error state",
+      "contractIds": [
+        "catch.error_state"
+      ],
+      "classSymbols": [
+        "CatchErrorBody",
+        "CatchErrorIcon",
+        "CatchErrorScaffold",
+        "CatchErrorState",
+        "CatchFrameworkErrorDebugDetails",
+        "CatchFrameworkErrorView",
+        "CatchInlineErrorState",
+        "CatchSliverErrorState"
+      ],
+      "baselineConcepts": 1,
+      "baselineClasses": 8,
+      "currentConcepts": 1,
+      "conceptDelta": 0,
+      "proposedConcepts": null,
+      "proposedConceptDelta": null,
+      "currentClasses": 8,
+      "classDelta": 0
+    },
+    {
+      "id": "person-row",
+      "family": "Person row",
+      "contractIds": [
+        "catch.person_row"
+      ],
+      "classSymbols": [
+        "CatchPersonChatLayout",
+        "CatchPersonChatTrailing",
+        "CatchPersonNewMatchDot",
+        "CatchPersonRosterLayout",
+        "CatchPersonRow",
+        "CatchPersonUnreadCountPill"
+      ],
+      "baselineConcepts": 1,
+      "baselineClasses": 6,
+      "currentConcepts": 1,
+      "conceptDelta": 0,
+      "proposedConcepts": null,
+      "proposedConceptDelta": null,
+      "currentClasses": 6,
+      "classDelta": 0
+    },
+    {
+      "id": "meta-vs-stage",
+      "family": "Meta row vs stage label",
+      "contractIds": [
+        "catch.meta_row"
+      ],
+      "classSymbols": [
+        "CatchMetaRow",
+        "StageSectionLabel"
+      ],
+      "baselineConcepts": 0,
+      "baselineClasses": 2,
+      "currentConcepts": 1,
+      "conceptDelta": 1,
+      "proposedConcepts": null,
+      "proposedConceptDelta": null,
+      "currentClasses": 2,
+      "classDelta": 0
+    },
+    {
+      "id": "notification-privacy",
+      "family": "Notification + privacy",
+      "contractIds": [
+        "catch.badge",
+        "catch.privacy_badge",
+        "catch.field",
+        "catch.notification_row"
+      ],
+      "classSymbols": [
+        "CatchBadge",
+        "CatchPrivacyBadge",
+        "CatchField",
+        "NotificationRow"
+      ],
+      "baselineConcepts": 4,
+      "baselineClasses": 4,
+      "currentConcepts": 2,
+      "conceptDelta": -2,
+      "proposedConcepts": null,
+      "proposedConceptDelta": null,
+      "currentClasses": 4,
+      "classDelta": 0
+    },
+    {
+      "id": "option-group-tab-rail",
+      "family": "Option group + tab rail",
+      "contractIds": [
+        "catch.option_group",
+        "catch.tab_rail"
+      ],
+      "classSymbols": [
+        "CatchOptionGroup",
+        "CatchTabRail"
+      ],
+      "baselineConcepts": 2,
+      "baselineClasses": 2,
+      "currentConcepts": 1,
+      "conceptDelta": -1,
+      "proposedConcepts": null,
+      "proposedConceptDelta": null,
+      "currentClasses": 2,
+      "classDelta": 0
+    },
+    {
+      "id": "club-dock",
+      "family": "Club dock",
+      "contractIds": [
+        "catch.club_dock"
+      ],
+      "classSymbols": [
+        "ClubDetailDock"
+      ],
+      "baselineConcepts": 1,
+      "baselineClasses": 1,
+      "currentConcepts": 0,
+      "conceptDelta": -1,
+      "proposedConcepts": null,
+      "proposedConceptDelta": null,
+      "currentClasses": 1,
+      "classDelta": 0
+    },
+    {
+      "id": "event-detail-screen",
+      "family": "Event detail screen body",
+      "contractIds": [
+        "catch.event_detail_sections"
+      ],
+      "classSymbols": [
+        "EventDetailBody"
+      ],
+      "baselineConcepts": 1,
+      "baselineClasses": 1,
+      "currentConcepts": 0,
+      "conceptDelta": -1,
+      "proposedConcepts": null,
+      "proposedConceptDelta": null,
+      "currentClasses": 1,
+      "classDelta": 0
+    },
+    {
+      "id": "loading",
+      "family": "Loading",
+      "contractIds": [
+        "catch.loading"
+      ],
+      "classSymbols": [
+        "CatchAsyncScreenLoading",
+        "CatchAsyncSliverLoading",
+        "CatchAsyncValueSliver",
+        "CatchAsyncValueView",
+        "CatchLoadingIndicator",
+        "CatchSkeleton",
+        "CatchSkeletonList",
+        "CatchStartupLoadingScreen"
+      ],
+      "baselineConcepts": 1,
+      "baselineClasses": 8,
+      "proposedConcepts": 3,
+      "currentConcepts": 1,
+      "conceptDelta": 0,
+      "proposedConceptDelta": 2,
+      "currentClasses": 8,
+      "classDelta": 0
+    }
+  ],
+  "ownerReviewQueue": [
+    {
+      "familyId": "design-sync",
+      "familyStatus": "blocked-plan-tier",
+      "questionId": "CODECONNECT1",
+      "prompt": "How should the live Code Connect exit gate be resolved on the current Starter plan?",
+      "recommendation": "Upgrade or move the spike to an Organization/Enterprise workspace before claiming published Code Connect; keep repository templates planned until then.",
+      "options": [
+        "Use an Organization or Enterprise workspace for the published spike.",
+        "Formally revise the exit gate to stop at generated local mappings on Starter."
+      ]
+    },
+    {
+      "familyId": "design-sync",
+      "familyStatus": "awaiting-figma-file-approval",
+      "questionId": "FIGMA1",
+      "prompt": "May Codex create the Catch Design System Figma file for the Badge + Field live spike?",
+      "recommendation": "Approve creation of one dedicated design-system file in the verified Suvrat Garg's team workspace.",
+      "options": [
+        "Approve creation of the dedicated Catch Design System file.",
+        "Provide an existing editable Figma design-system file URL instead."
+      ]
+    },
+    {
+      "familyId": "host-broadcast-composer-namespace-collision",
+      "familyStatus": "review",
+      "questionId": "HBC1",
+      "prompt": "Should the parameterless Chats blast sheet be replaced by the event-aware Host broadcast workflow, or remain a separately named composition?",
+      "recommendation": "Use the event-aware Host workflow as the canonical broadcast composer; if Chats must retain eventless blasts, rename that composition to ChatBlastComposerSheet so the workflow boundary is explicit.",
+      "options": [
+        "Canonicalize the Host workflow and explicitly rename any retained eventless Chats composition.",
+        "Keep both public classes with the same HostBroadcastComposerSheet name in separate libraries."
+      ]
+    },
+    {
+      "familyId": "loading-concept-decompression",
+      "familyStatus": "review",
+      "questionId": "L1",
+      "prompt": "How many independent concepts does the current catch.loading contract contain?",
+      "recommendation": "Use three concepts: skeleton placeholders, indeterminate loading indicator, and async-value boundary; classify the startup screen as composition.",
+      "options": [
+        "Use three concepts and classify startup as composition.",
+        "Keep one loading concept with all members.",
+        "Use two concepts: loading visuals and async boundaries."
+      ]
+    },
+    {
+      "familyId": "swipe-reaction-control-boundary",
+      "familyStatus": "review",
+      "questionId": "SRC1",
+      "prompt": "Should pass and reaction controls keep two renderers, or share CatchIconButton with feature-owned semantics?",
+      "recommendation": "Share CatchIconButton rendering and retain small feature adapters only where pending-state semantics or stable test keys require them; do not create another core concept.",
+      "options": [
+        "Share CatchIconButton rendering and keep only behavior-bearing feature adapters.",
+        "Keep independent CatchesPassButton and ReactionControlButton renderers."
+      ]
+    }
+  ]
+}

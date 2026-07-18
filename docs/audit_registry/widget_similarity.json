@@ -159,11 +159,11 @@
     "screenClusters": 11,
     "skippedTrivial": 110,
     "absorbCandidates": 6,
-    "ledgerDecisions": 296,
-    "exactClusterDecisionCoverage": 30,
-    "unresolvedClusters": 15,
-    "rankedPairDecisionCoverage": 145,
-    "unresolvedRankedPairs": 55
+    "ledgerDecisions": 311,
+    "exactClusterDecisionCoverage": 45,
+    "unresolvedClusters": 0,
+    "rankedPairDecisionCoverage": 147,
+    "unresolvedRankedPairs": 53
   },
   "groundTruthRecall": [
     {
@@ -12990,7 +12990,7 @@
       "structuralSignals": [],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:host-broadcast-composer-namespace-collision"
     },
     {
       "id": "c005-dialog",
@@ -13067,7 +13067,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:skeleton-list-vs-hairline-list"
     },
     {
       "id": "c008-skeleton",
@@ -13096,7 +13096,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:feature-skeleton-layouts-a"
     },
     {
       "id": "c009-stage-action-dock",
@@ -13262,7 +13262,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:cross-domain-info-surfaces"
     },
     {
       "id": "c015-rotation-slots",
@@ -13317,7 +13317,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:badge-wrap-adapters"
     },
     {
       "id": "c017-override-sheet",
@@ -13397,7 +13397,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:feature-skeleton-layouts-b"
     },
     {
       "id": "c020-override-round-editor",
@@ -13475,7 +13475,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:profile-tab-live-vs-skeleton-sliver"
     },
     {
       "id": "c023-event-success-skeleton-surface",
@@ -13632,7 +13632,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:icon-text-content-rows"
     },
     {
       "id": "c029-button",
@@ -13657,7 +13657,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:swipe-reaction-controls"
     },
     {
       "id": "c030-hero",
@@ -13761,7 +13761,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:feature-skeleton-layouts-c"
     },
     {
       "id": "c034-host-funnel-summary",
@@ -13787,7 +13787,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:host-report-metric-sections"
     },
     {
       "id": "c035-row",
@@ -13812,7 +13812,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:conversation-vs-progress-row"
     },
     {
       "id": "c036-event-focus-rail",
@@ -13912,7 +13912,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:profile-hero-vs-photo-block"
     },
     {
       "id": "c040-editor",
@@ -13963,7 +13963,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:prompt-vs-analytics-empty-state"
     },
     {
       "id": "c042-companion-primary-action-skeleton",
@@ -14016,7 +14016,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:hero-metric-vs-reveal-copy"
     },
     {
       "id": "c044-sliver-body",
@@ -14222,7 +14222,8 @@
       ],
       "absorbCandidate": false,
       "decisionRefs": [
-        "c014-skeleton"
+        "c014-skeleton",
+        "concept-discovery:feature-skeleton-layouts-a"
       ]
     },
     {
@@ -14439,7 +14440,8 @@
       ],
       "absorbCandidate": false,
       "decisionRefs": [
-        "c006-sliver-body"
+        "c006-sliver-body",
+        "concept-discovery:profile-tab-live-vs-skeleton-sliver"
       ]
     },
     {
@@ -15542,7 +15544,8 @@
       ],
       "absorbCandidate": false,
       "decisionRefs": [
-        "c002-afterglow-beat-row"
+        "c002-afterglow-beat-row",
+        "concept-discovery:host-report-metric-sections"
       ]
     },
     {
@@ -15595,7 +15598,8 @@
       ],
       "absorbCandidate": false,
       "decisionRefs": [
-        "c039-people-token-row"
+        "c039-people-token-row",
+        "concept-discovery:badge-wrap-adapters"
       ]
     },
     {
@@ -15648,7 +15652,8 @@
       ],
       "absorbCandidate": false,
       "decisionRefs": [
-        "c007-attendee-prompt-preview"
+        "c007-attendee-prompt-preview",
+        "concept-discovery:icon-text-content-rows"
       ]
     },
     {
@@ -15863,7 +15868,8 @@
       ],
       "absorbCandidate": false,
       "decisionRefs": [
-        "c007-attendee-prompt-preview"
+        "c007-attendee-prompt-preview",
+        "concept-discovery:icon-text-content-rows"
       ]
     },
     {
@@ -15889,7 +15895,8 @@
       ],
       "absorbCandidate": false,
       "decisionRefs": [
-        "c019-skeleton"
+        "c019-skeleton",
+        "concept-discovery:feature-skeleton-layouts-c"
       ]
     },
     {
@@ -15971,7 +15978,8 @@
       ],
       "absorbCandidate": false,
       "decisionRefs": [
-        "c002-afterglow-beat-row"
+        "c002-afterglow-beat-row",
+        "concept-discovery:prompt-vs-analytics-empty-state"
       ]
     },
     {
@@ -16025,7 +16033,9 @@
         "top-score"
       ],
       "absorbCandidate": false,
-      "decisionRefs": []
+      "decisionRefs": [
+        "concept-discovery:badge-wrap-adapters"
+      ]
     },
     {
       "rank": 73,
@@ -16397,7 +16407,8 @@
       ],
       "absorbCandidate": false,
       "decisionRefs": [
-        "c014-skeleton"
+        "c014-skeleton",
+        "concept-discovery:feature-skeleton-layouts-a"
       ]
     },
     {
@@ -18292,7 +18303,9 @@
         "name-family"
       ],
       "absorbCandidate": false,
-      "decisionRefs": []
+      "decisionRefs": [
+        "concept-discovery:host-broadcast-composer-namespace-collision"
+      ]
     },
     {
       "rank": 160,

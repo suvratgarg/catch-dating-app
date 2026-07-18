@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.1.0
-updated: 2026-06-17
+version: 1.2.0
+updated: 2026-07-18
 owner: ui_elevation_initiative
 status: active
 ---
@@ -45,9 +45,12 @@ recipe qualifiers when a standalone class solves a real API problem without
 creating another concept. Feature compositions normally keep feature names and
 do not count as concepts.
 
-Figma mappings start as `unmapped`. Once a Figma library component exists, set
-`design.figma.status` to `mapped` and add its component URL. Code Connect
-templates should then live beside their owning Flutter primitive or in a
-dedicated Figma mapping folder, and the registry should point at that template.
-The executable sync contract and current live-capability receipt live in
-`design/sync/README.md`.
+Figma mappings start as `unmapped`. The registry's `componentName` is the stable
+join key. A library-publish snapshot supplies the file key and node id, and the
+sync manifest generates the node URL; live mappings do not require hand-edited
+URLs. The old `status` and `componentUrl` fields remain accepted as declared
+fallback metadata and are treated as stale when no captured node proves them.
+Code Connect templates should live beside their owning Flutter primitive or in
+a dedicated Figma mapping folder, and the registry should point at that
+template. The executable sync contract, snapshot importer, and current
+live-capability receipt live in `design/sync/README.md`.
