@@ -38,6 +38,7 @@ import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_mini_bar_chart.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
@@ -131,6 +132,55 @@ Widget catchSectionLabelContractStates(BuildContext context) {
           child: CatchSectionLabel(
             label: 'A deliberately long structural context label',
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchMetaRow,
+  path: '[Core primitives]/Metadata',
+)
+Widget catchMetaRowContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchMetaRow',
+    contractId: 'catch.meta_row',
+    states: const ['default', 'semantic-icon', 'semantic-label', 'truncated'],
+    children: [
+      _StateCard(
+        label: 'default',
+        child: CatchMetaRow(
+          icon: CatchIcons.locationOnRounded,
+          label: '2.4 km away',
+        ),
+      ),
+      _StateCard(
+        label: 'semantic-icon',
+        child: CatchMetaRow(
+          icon: CatchIcons.directionsRunRounded,
+          label: 'Social run',
+          color: t.success,
+        ),
+      ),
+      _StateCard(
+        label: 'semantic-label',
+        child: CatchMetaRow(
+          icon: CatchIcons.infoOutlineRounded,
+          label: 'Host confirmation required',
+          color: t.warning,
+          labelColor: t.warning,
+        ),
+      ),
+      _StateCard(
+        label: 'truncated',
+        child: CatchMetaRow(
+          icon: CatchIcons.locationOnRounded,
+          label:
+              'A deliberately long venue description that demonstrates the single-line truncation contract in the review surface',
         ),
       ),
     ],
