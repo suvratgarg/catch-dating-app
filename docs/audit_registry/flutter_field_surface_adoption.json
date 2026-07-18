@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 5,
+  "version": 6,
   "updated": "2026-07-18",
   "owner": "design_system",
   "goal": "Classify every remaining production Flutter field surface that should converge on CatchField and CatchSection while preserving specialized controls.",
@@ -134,9 +134,9 @@
         {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "HostTeamProfileRows"}
       ],
       "anchors": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "CatchField.input", "expected": 3}
+        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "CatchField.inputActions", "expected": 3}
       ],
-      "targetModes": ["CatchSection.fieldRows"],
+      "targetModes": ["CatchSection.fieldRows", "CatchField.inputActions"],
       "preserve": ["profile validation", "controller reuse", "profile save side effects"],
       "recommendation": "Complete: the unified Host team route owns the canonical field section."
     },

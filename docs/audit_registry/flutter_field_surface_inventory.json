@@ -3,7 +3,7 @@
   "generatedBy": "tool/design/generate_flutter_field_surface_inventory.mjs",
   "source": {
     "manifest": "docs/audit_registry/flutter_field_surface_adoption.json",
-    "manifestSha256": "466168695b4fc5fa226115c76cddbeda3072856c7beaf2aad200d65cf39c53f2",
+    "manifestSha256": "56ceae1445f117cad56c0d09bc86cc50f1d8d8a995727d7123f25171f180507a",
     "routeInventory": "tool/ui_capture/route_inventory.json",
     "routeInventorySha256": "06791556d5d634a08f5b60481c7c258a8ecbd0eb7828b63033a5fc020d16c03c",
     "screenContracts": "design/screens/catch.screens.json",
@@ -128,12 +128,12 @@
           "expected": 6,
           "observed": 6,
           "lines": [
-            415,
-            471,
-            537,
-            994,
-            1187,
-            1238
+            417,
+            472,
+            538,
+            1000,
+            1200,
+            1251
           ]
         },
         {
@@ -143,8 +143,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1078,
-            1127
+            1087,
+            1138
           ]
         },
         {
@@ -154,9 +154,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            419,
-            430,
-            500
+            421,
+            432,
+            501
           ]
         },
         {
@@ -166,17 +166,17 @@
           "expected": 11,
           "observed": 11,
           "lines": [
-            474,
-            519,
-            543,
-            602,
-            1004,
-            1015,
-            1044,
-            1080,
-            1093,
-            1129,
-            1143
+            475,
+            520,
+            544,
+            606,
+            1010,
+            1021,
+            1053,
+            1089,
+            1103,
+            1140,
+            1155
           ]
         },
         {
@@ -186,7 +186,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            583
+            584
           ]
         },
         {
@@ -196,8 +196,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1034,
-            1165
+            1043,
+            1178
           ]
         },
         {
@@ -207,7 +207,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            442
+            444
           ]
         },
         {
@@ -217,8 +217,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1067,
-            1118
+            1076,
+            1129
           ]
         },
         {
@@ -228,14 +228,14 @@
           "expected": 8,
           "observed": 8,
           "lines": [
-            1110,
-            1190,
-            1198,
-            1206,
-            1216,
-            1221,
-            1241,
-            1246
+            1121,
+            1203,
+            1211,
+            1219,
+            1229,
+            1234,
+            1254,
+            1259
           ]
         }
       ]
@@ -393,12 +393,13 @@
       "anchors": [
         {
           "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "symbol": "CatchField.input",
+          "symbol": "CatchField.inputActions",
           "expected": 3
         }
       ],
       "targetModes": [
-        "CatchSection.fieldRows"
+        "CatchSection.fieldRows",
+        "CatchField.inputActions"
       ],
       "preserve": [
         "profile validation",
@@ -410,13 +411,13 @@
         {
           "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
           "kind": "call",
-          "symbol": "CatchField.input",
+          "symbol": "CatchField.inputActions",
           "expected": 3,
           "observed": 3,
           "lines": [
-            461,
-            469,
-            482
+            480,
+            505,
+            529
           ]
         }
       ]
@@ -807,9 +808,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            308,
-            323,
-            341
+            309,
+            324,
+            342
           ]
         },
         {
@@ -829,7 +830,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            359
+            360
           ]
         },
         {
@@ -839,10 +840,10 @@
           "expected": 4,
           "observed": 4,
           "lines": [
-            375,
-            391,
-            407,
-            422
+            376,
+            392,
+            408,
+            423
           ]
         }
       ]
