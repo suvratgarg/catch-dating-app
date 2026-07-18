@@ -199,7 +199,18 @@
             "slots": {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/slot"
+                "oneOf": [
+                  {"type": "string", "minLength": 1},
+                  {"$ref": "#/$defs/slot"}
+                ]
+              }
+            },
+            "constructorProps": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {"type": "string", "minLength": 1},
+                "uniqueItems": true
               }
             },
             "tokens": {
@@ -238,6 +249,7 @@
           "required": [
             "role",
             "canonicalFamily",
+            "conceptRole",
             "publicApi",
             "stateOwnership",
             "asyncOwnership",
@@ -254,6 +266,24 @@
             "canonicalFamily": {
               "type": "string",
               "pattern": "^catch\\.[a-z0-9_.-]+$"
+            },
+            "conceptRole": {
+              "enum": ["concept", "member", "composition", "screen"]
+            },
+            "conceptId": {
+              "type": "string",
+              "pattern": "^catch\\.[a-z0-9_.-]+$"
+            },
+            "parentConceptId": {
+              "type": "string",
+              "pattern": "^catch\\.[a-z0-9_.-]+$"
+            },
+            "qualifier": {
+              "enum": ["variant", "anatomy", "adapter", "recipe", "layout"]
+            },
+            "decisionRef": {
+              "type": "string",
+              "minLength": 1
             },
             "publicApi": {
               "type": "boolean"
@@ -383,7 +413,7 @@
     },
     "contractMember": {
       "type": "object",
-      "required": ["id", "symbol", "summary", "states"],
+      "required": ["id", "symbol", "summary", "states", "governance"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -408,6 +438,34 @@
             "type": "string"
           },
           "uniqueItems": true
+        },
+        "governance": {
+          "$ref": "#/$defs/conceptGovernance"
+        }
+      }
+    },
+    "conceptGovernance": {
+      "type": "object",
+      "required": ["conceptRole", "decisionRef"],
+      "additionalProperties": false,
+      "properties": {
+        "conceptRole": {
+          "enum": ["member", "composition", "screen"]
+        },
+        "conceptId": {
+          "type": "string",
+          "pattern": "^catch\\.[a-z0-9_.-]+$"
+        },
+        "parentConceptId": {
+          "type": "string",
+          "pattern": "^catch\\.[a-z0-9_.-]+$"
+        },
+        "qualifier": {
+          "enum": ["variant", "anatomy", "adapter", "recipe", "layout"]
+        },
+        "decisionRef": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }

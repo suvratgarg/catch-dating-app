@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "updated": "2026-07-17",
+  "version": 2,
+  "updated": "2026-07-18",
   "sourceOfTruth": {
     "generator": "tool/design/build_widget_similarity.mjs",
     "fingerprints": "artifacts/widget_dedupe/fingerprints.json",
@@ -158,7 +158,12 @@
     "relatedEdges": 20,
     "screenClusters": 11,
     "skippedTrivial": 110,
-    "absorbCandidates": 6
+    "absorbCandidates": 6,
+    "ledgerDecisions": 296,
+    "exactClusterDecisionCoverage": 30,
+    "unresolvedClusters": 15,
+    "rankedPairDecisionCoverage": 145,
+    "unresolvedRankedPairs": 55
   },
   "groundTruthRecall": [
     {
@@ -1268,7 +1273,7 @@
       "simhash128": "e5d8cc04bb9be224ebe7cc9766399b67",
       "tokenStreamLength": 97,
       "coarseTokenStreamLength": 97,
-      "usageCountRaw": 184,
+      "usageCountRaw": 182,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1580,7 +1585,7 @@
       "simhash128": "f00dca7feb2c3162054906460a1606a2",
       "tokenStreamLength": 12,
       "coarseTokenStreamLength": 12,
-      "usageCountRaw": 31,
+      "usageCountRaw": 32,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1606,7 +1611,7 @@
       "simhash128": "435c7f7e577515508f26f774e99bc7b3",
       "tokenStreamLength": 38,
       "coarseTokenStreamLength": 38,
-      "usageCountRaw": 56,
+      "usageCountRaw": 59,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2048,7 +2053,7 @@
       "simhash128": "4f08fb69911622dc674a81b9fd534581",
       "tokenStreamLength": 40,
       "coarseTokenStreamLength": 40,
-      "usageCountRaw": 22,
+      "usageCountRaw": 21,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2334,7 +2339,7 @@
       "simhash128": "ec9e0e0bb2d3ecbdae6fa4fbc46ccc1a",
       "tokenStreamLength": 58,
       "coarseTokenStreamLength": 58,
-      "usageCountRaw": 87,
+      "usageCountRaw": 86,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3153,7 +3158,7 @@
       "simhash128": "f7b9d7e77bfddd77ed0feeffd2ffdcaf",
       "tokenStreamLength": 3,
       "coarseTokenStreamLength": 3,
-      "usageCountRaw": 10,
+      "usageCountRaw": 7,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3179,7 +3184,7 @@
       "simhash128": "8401595db0f9a199be08e45976489d15",
       "tokenStreamLength": 290,
       "coarseTokenStreamLength": 290,
-      "usageCountRaw": 196,
+      "usageCountRaw": 191,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -3231,7 +3236,7 @@
       "simhash128": "232bd3e655432876a98aa6bda683c2e4",
       "tokenStreamLength": 10,
       "coarseTokenStreamLength": 10,
-      "usageCountRaw": 35,
+      "usageCountRaw": 33,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3374,7 +3379,7 @@
       "simhash128": "f37ffdd7f38f3eed57dca5e32ae7eb79",
       "tokenStreamLength": 5,
       "coarseTokenStreamLength": 5,
-      "usageCountRaw": 13,
+      "usageCountRaw": 17,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3465,7 +3470,7 @@
       "simhash128": "7dc9d929c8a5c9bf3e46c41ff06fdd21",
       "tokenStreamLength": 100,
       "coarseTokenStreamLength": 100,
-      "usageCountRaw": 259,
+      "usageCountRaw": 258,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -5090,7 +5095,7 @@
       "simhash128": "6241fddfa2b5cc88a5b6fd0396d19dbf",
       "tokenStreamLength": 37,
       "coarseTokenStreamLength": 37,
-      "usageCountRaw": 3,
+      "usageCountRaw": 0,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -8145,7 +8150,7 @@
       "simhash128": "0358fea8fc31f238af42f57df63f93fd",
       "tokenStreamLength": 27,
       "coarseTokenStreamLength": 27,
-      "usageCountRaw": 14,
+      "usageCountRaw": 10,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -12907,7 +12912,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c001-error-state"
     },
     {
       "id": "c002-layout",
@@ -12932,7 +12938,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c004-layout"
     },
     {
       "id": "c003-catch-meta-row",
@@ -12958,7 +12965,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c003-catch-meta-row"
     },
     {
       "id": "c004-host-broadcast-composer-sheet",
@@ -12981,7 +12989,8 @@
       },
       "structuralSignals": [],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c005-dialog",
@@ -13005,7 +13014,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c005-dialog"
     },
     {
       "id": "c006-loading-screen",
@@ -13031,7 +13041,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c016-loading-screen"
     },
     {
       "id": "c007-list",
@@ -13055,7 +13066,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c008-skeleton",
@@ -13083,7 +13095,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c009-stage-action-dock",
@@ -13109,7 +13122,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c008-stage-action-dock"
     },
     {
       "id": "c010-event-success-report-metrics-skeleton",
@@ -13137,7 +13151,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c011-event-success-report-metrics-skeleton"
     },
     {
       "id": "c011-host-card",
@@ -13162,7 +13177,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c013-host-card"
     },
     {
       "id": "c012-tab-skeleton",
@@ -13189,7 +13205,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c017-tab-skeleton"
     },
     {
       "id": "c013-icon",
@@ -13213,7 +13230,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c018-icon"
     },
     {
       "id": "c014-afterglow-beat-row",
@@ -13243,7 +13261,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c015-rotation-slots",
@@ -13269,7 +13288,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c021-rotation-slots"
     },
     {
       "id": "c016-club-tag-wrap",
@@ -13296,7 +13316,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c017-override-sheet",
@@ -13321,7 +13342,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c022-override-sheet"
     },
     {
       "id": "c018-row",
@@ -13346,7 +13368,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c029-row"
     },
     {
       "id": "c019-skeleton",
@@ -13373,7 +13396,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c020-override-round-editor",
@@ -13398,7 +13422,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c023-override-round-editor"
     },
     {
       "id": "c021-app-shell",
@@ -13423,7 +13448,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c023-app-shell"
     },
     {
       "id": "c022-sliver-body",
@@ -13448,7 +13474,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c023-event-success-skeleton-surface",
@@ -13472,7 +13499,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c026-event-success-skeleton-surface"
     },
     {
       "id": "c024-slot-row",
@@ -13497,7 +13525,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c026-slot-row"
     },
     {
       "id": "c025-rows",
@@ -13523,7 +13552,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c025-rows"
     },
     {
       "id": "c026-home-screen",
@@ -13549,7 +13579,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c047-home-screen"
     },
     {
       "id": "c027-card",
@@ -13573,7 +13604,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c040-card"
     },
     {
       "id": "c028-paper-expectation-row",
@@ -13599,7 +13631,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c029-button",
@@ -13623,7 +13656,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c030-hero",
@@ -13648,7 +13682,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c046-hero"
     },
     {
       "id": "c031-profile-tab",
@@ -13672,7 +13707,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c038-profile-tab"
     },
     {
       "id": "c032-card",
@@ -13696,7 +13732,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c037-card"
     },
     {
       "id": "c033-skeleton",
@@ -13723,7 +13760,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c034-host-funnel-summary",
@@ -13748,7 +13786,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c035-row",
@@ -13772,7 +13811,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c036-event-focus-rail",
@@ -13796,7 +13836,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c044-event-focus-rail"
     },
     {
       "id": "c037-calendar-stats-header",
@@ -13820,7 +13861,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c043-calendar-stats-header"
     },
     {
       "id": "c038-row",
@@ -13844,7 +13886,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c044-row"
     },
     {
       "id": "c039-profile-hero-widget",
@@ -13868,7 +13911,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c040-editor",
@@ -13892,7 +13936,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": "c042-editor"
     },
     {
       "id": "c041-event-success-prompt-card",
@@ -13917,7 +13962,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c042-companion-primary-action-skeleton",
@@ -13944,7 +13990,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c048-companion-primary-action-skeleton"
     },
     {
       "id": "c043-host-today-hero-metric",
@@ -13968,7 +14015,8 @@
         "small-widget"
       ],
       "visualBridges": [],
-      "scope": "widget"
+      "scope": "widget",
+      "decisionRef": null
     },
     {
       "id": "c044-sliver-body",
@@ -13994,7 +14042,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c049-sliver-body"
     },
     {
       "id": "c045-companion-error",
@@ -14018,7 +14067,8 @@
         "structural"
       ],
       "visualBridges": [],
-      "scope": "screen"
+      "scope": "screen",
+      "decisionRef": "c050-companion-error"
     }
   ],
   "rankedPairs": [
@@ -14047,7 +14097,11 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "c004-layout",
+        "c005-layout"
+      ]
     },
     {
       "rank": 2,
@@ -14074,7 +14128,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "c001-error-state"
+      ]
     },
     {
       "rank": 3,
@@ -14101,7 +14158,11 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c013-host-card",
+        "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)"
+      ]
     },
     {
       "rank": 4,
@@ -14129,7 +14190,10 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c016-loading-screen"
+      ]
     },
     {
       "rank": 5,
@@ -14156,7 +14220,10 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c014-skeleton"
+      ]
     },
     {
       "rank": 6,
@@ -14183,7 +14250,11 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c029-row",
+        "c032/c035 event policy rows"
+      ]
     },
     {
       "rank": 7,
@@ -14210,7 +14281,11 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c022-override-sheet",
+        "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)"
+      ]
     },
     {
       "rank": 8,
@@ -14238,7 +14313,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c049-sliver-body"
+      ]
     },
     {
       "rank": 9,
@@ -14264,7 +14342,11 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c023-override-round-editor",
+        "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)"
+      ]
     },
     {
       "rank": 10,
@@ -14292,7 +14374,11 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c017-tab-skeleton",
+        "c021-tab-skeleton"
+      ]
     },
     {
       "rank": 11,
@@ -14320,7 +14406,11 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c046-profile-tab + c043-dashboard-full + c057-home-screen",
+        "c047-home-screen"
+      ]
     },
     {
       "rank": 12,
@@ -14347,7 +14437,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c006-sliver-body"
+      ]
     },
     {
       "rank": 13,
@@ -14374,7 +14467,11 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c025-rows",
+        "c032/c035 event policy rows"
+      ]
     },
     {
       "rank": 14,
@@ -14400,7 +14497,11 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c026-slot-row",
+        "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)"
+      ]
     },
     {
       "rank": 15,
@@ -14427,7 +14528,11 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c021-rotation-slots",
+        "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)"
+      ]
     },
     {
       "rank": 16,
@@ -14453,7 +14558,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c023-app-shell"
+      ]
     },
     {
       "rank": 17,
@@ -14478,7 +14586,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "c003-catch-meta-row"
+      ]
     },
     {
       "rank": 18,
@@ -14502,7 +14613,10 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchBrandedSheetHeader/CatchPlainSheetHeader"
+      ]
     },
     {
       "rank": 19,
@@ -14528,7 +14642,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchMetaRow/EventPolicyLabSectionTitle"
+      ]
     },
     {
       "rank": 20,
@@ -14551,7 +14668,11 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "c005-dialog",
+        "c006-dialog"
+      ]
     },
     {
       "rank": 21,
@@ -14574,7 +14695,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 22,
@@ -14597,7 +14719,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchSectionLabel/StageSectionLabel"
+      ]
     },
     {
       "rank": 23,
@@ -14620,7 +14745,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: ClubPhotoStrip/EventDetailPhotoStrip"
+      ]
     },
     {
       "rank": 24,
@@ -14643,7 +14771,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchPersonAvatar/CatchVeiledPersonAvatar"
+      ]
     },
     {
       "rank": 25,
@@ -14666,7 +14797,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: ClubHeroAppBar/EventDetailHeroAppBar"
+      ]
     },
     {
       "rank": 26,
@@ -14689,7 +14823,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 27,
@@ -14714,7 +14849,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 28,
@@ -14739,7 +14875,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "n004-event-card"
+      ]
     },
     {
       "rank": 29,
@@ -14762,7 +14901,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: OrderedPhotoAddTile/OrderedPhotoTile"
+      ]
     },
     {
       "rank": 30,
@@ -14785,7 +14927,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 31,
@@ -14808,7 +14951,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 32,
@@ -14831,7 +14975,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 33,
@@ -14854,7 +14999,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 34,
@@ -14877,7 +15023,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchEmptyStateContent/EmptyHeroContent"
+      ]
     },
     {
       "rank": 35,
@@ -14900,7 +15049,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 36,
@@ -14923,7 +15073,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 37,
@@ -14948,7 +15099,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 38,
@@ -14971,7 +15123,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 39,
@@ -14994,7 +15147,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchPersonAvatarStack/HostTodayAvatarStack"
+      ]
     },
     {
       "rank": 40,
@@ -15019,7 +15175,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchMetaRow/HostManageMetaRow"
+      ]
     },
     {
       "rank": 41,
@@ -15042,7 +15201,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: EventDetailSocialSection/EventReviewsSection"
+      ]
     },
     {
       "rank": 42,
@@ -15065,7 +15227,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 43,
@@ -15090,7 +15253,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 44,
@@ -15113,7 +15277,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 45,
@@ -15136,7 +15301,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchDetailSliverSectionList/CatchSectionList"
+      ]
     },
     {
       "rank": 46,
@@ -15161,7 +15329,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchScreenBody/PublicProfileScreenBody"
+      ]
     },
     {
       "rank": 47,
@@ -15186,7 +15357,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 48,
@@ -15209,7 +15381,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CatchFieldRow/ProfileFieldRow"
+      ]
     },
     {
       "rank": 49,
@@ -15232,7 +15407,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: ClubDetailBody/EventDetailBody"
+      ]
     },
     {
       "rank": 50,
@@ -15255,7 +15433,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": []
     },
     {
       "rank": 51,
@@ -15278,7 +15457,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": true
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: CreateEventPhotoPicker/OrderedPhotoPicker"
+      ]
     },
     {
       "rank": 52,
@@ -15305,7 +15487,8 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 53,
@@ -15329,7 +15512,11 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c045-hero",
+        "c046-hero"
+      ]
     },
     {
       "rank": 54,
@@ -15353,7 +15540,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c002-afterglow-beat-row"
+      ]
     },
     {
       "rank": 55,
@@ -15376,7 +15566,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c040-card"
+      ]
     },
     {
       "rank": 56,
@@ -15400,7 +15593,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c039-people-token-row"
+      ]
     },
     {
       "rank": 57,
@@ -15423,7 +15619,11 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c050-companion-error",
+        "c061-companion-error"
+      ]
     },
     {
       "rank": 58,
@@ -15446,7 +15646,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c007-attendee-prompt-preview"
+      ]
     },
     {
       "rank": 59,
@@ -15469,7 +15672,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c008-stage-action-dock"
+      ]
     },
     {
       "rank": 60,
@@ -15492,7 +15698,11 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c038-profile-tab",
+        "c046-profile-tab + c043-dashboard-full + c057-home-screen"
+      ]
     },
     {
       "rank": 61,
@@ -15517,7 +15727,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CompanionStageSkeleton/HostChartSkeleton"
+      ]
     },
     {
       "rank": 62,
@@ -15542,7 +15755,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: DashboardFocusLoadingCard/HostChartSkeleton"
+      ]
     },
     {
       "rank": 63,
@@ -15566,7 +15782,10 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: HostEventManageRouteScreen/HostLoadingScreen"
+      ]
     },
     {
       "rank": 64,
@@ -15591,7 +15810,8 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 65,
@@ -15614,7 +15834,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c011-event-success-report-metrics-skeleton"
+      ]
     },
     {
       "rank": 66,
@@ -15638,7 +15861,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c007-attendee-prompt-preview"
+      ]
     },
     {
       "rank": 67,
@@ -15661,7 +15887,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c019-skeleton"
+      ]
     },
     {
       "rank": 68,
@@ -15687,7 +15916,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: DashboardLoadingHeader/HostSummarySkeleton"
+      ]
     },
     {
       "rank": 69,
@@ -15710,7 +15942,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c043-calendar-stats-header"
+      ]
     },
     {
       "rank": 70,
@@ -15734,7 +15969,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c002-afterglow-beat-row"
+      ]
     },
     {
       "rank": 71,
@@ -15760,7 +15998,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventPolicyLabSectionTitle/StageSectionLabel"
+      ]
     },
     {
       "rank": 72,
@@ -15783,7 +16024,8 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 73,
@@ -15809,7 +16051,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventPolicyLabSectionTitle/PreviewLine"
+      ]
     },
     {
       "rank": 74,
@@ -15832,7 +16077,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c048-companion-primary-action-skeleton"
+      ]
     },
     {
       "rank": 75,
@@ -15856,7 +16104,8 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 76,
@@ -15882,7 +16131,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CompanionPrimaryActionSkeleton/HostChartSkeleton"
+      ]
     },
     {
       "rank": 77,
@@ -15905,7 +16157,11 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c042-editor",
+        "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)"
+      ]
     },
     {
       "rank": 78,
@@ -15929,7 +16185,10 @@
         "name-family",
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventPolicyLabScreen/EventSuccessEventPreviewLoadingScreen"
+      ]
     },
     {
       "rank": 79,
@@ -15952,7 +16211,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventSuccessEventPreviewLoadingScreen/EventSuccessEventPreviewScreen"
+      ]
     },
     {
       "rank": 80,
@@ -15975,7 +16237,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventSuccessEventPreviewLoadingScreen/EventSuccessManualQaScreen"
+      ]
     },
     {
       "rank": 81,
@@ -16001,7 +16266,8 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 82,
@@ -16024,7 +16290,8 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 83,
@@ -16047,7 +16314,11 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c037-card",
+        "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)"
+      ]
     },
     {
       "rank": 84,
@@ -16071,7 +16342,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c048-companion-primary-action-skeleton"
+      ]
     },
     {
       "rank": 85,
@@ -16097,7 +16371,8 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 86,
@@ -16120,7 +16395,10 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c014-skeleton"
+      ]
     },
     {
       "rank": 87,
@@ -16143,7 +16421,8 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 88,
@@ -16168,7 +16447,8 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 89,
@@ -16191,7 +16471,8 @@
       "selectionSources": [
         "top-score"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 90,
@@ -16214,7 +16495,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: FirstHelloCheckInCard/SelfCheckInCard"
+      ]
     },
     {
       "rank": 91,
@@ -16237,7 +16521,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: StageConversationCueCard/StagePromptCard"
+      ]
     },
     {
       "rank": 92,
@@ -16260,7 +16547,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c048-companion-primary-action-skeleton"
+      ]
     },
     {
       "rank": 93,
@@ -16283,7 +16573,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EditHostedEventRouteScreen/HostEventManageRouteScreen"
+      ]
     },
     {
       "rank": 94,
@@ -16309,7 +16602,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ExploreListEmptyState/ExploreScreenEmptyState"
+      ]
     },
     {
       "rank": 95,
@@ -16333,7 +16629,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventCheckInCelebrationScreen/EventJoinedCelebrationScreen"
+      ]
     },
     {
       "rank": 96,
@@ -16356,7 +16655,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ProfileSurfaceFactsSkeleton/ProfileSurfaceRunningSkeleton"
+      ]
     },
     {
       "rank": 97,
@@ -16380,7 +16682,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ProfileMultiEnumEntry/ProfileSingleEnumEntry"
+      ]
     },
     {
       "rank": 98,
@@ -16404,7 +16709,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: RevealGroupSlotRow/RevealSlotRow"
+      ]
     },
     {
       "rank": 99,
@@ -16427,7 +16735,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ChatPersonRowSkeleton/NotificationRowSkeleton"
+      ]
     },
     {
       "rank": 100,
@@ -16450,7 +16761,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CelebrationIcon/PaperCelebrationIcon"
+      ]
     },
     {
       "rank": 101,
@@ -16473,7 +16787,11 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "c034-celebration-details-card",
+        "c041-celebration-details-card"
+      ]
     },
     {
       "rank": 102,
@@ -16497,7 +16815,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ClubHostLoadingSkeleton/ClubStatsLoadingSkeleton"
+      ]
     },
     {
       "rank": 103,
@@ -16521,7 +16842,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventRecapLoadingBody/EventSuccessCompanionLoadingBody"
+      ]
     },
     {
       "rank": 104,
@@ -16545,7 +16869,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ClubEventSuccessDefaultsStep/ClubHostDefaultsStep"
+      ]
     },
     {
       "rank": 105,
@@ -16568,7 +16895,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: OnboardingGenderInterestStep/OnboardingRunningPrefsStep"
+      ]
     },
     {
       "rank": 106,
@@ -16591,7 +16921,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 107,
@@ -16614,7 +16945,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: GroupOverrideMemberEditor/GroupOverrideUnitEditor"
+      ]
     },
     {
       "rank": 108,
@@ -16637,7 +16971,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ClubShareCard/EventShareCard"
+      ]
     },
     {
       "rank": 109,
@@ -16660,7 +16997,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 110,
@@ -16683,7 +17021,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CelebrationDetailRow/PaperCelebrationDetailRow"
+      ]
     },
     {
       "rank": 111,
@@ -16706,7 +17047,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 112,
@@ -16729,7 +17071,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: StageCueLine/StagePrivacyLine"
+      ]
     },
     {
       "rank": 113,
@@ -16752,7 +17097,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: PaperCelebrationDetailRow/PaperExpectationRow"
+      ]
     },
     {
       "rank": 114,
@@ -16777,7 +17125,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 115,
@@ -16800,7 +17149,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ClubDetailsStep/EventDetailsStep"
+      ]
     },
     {
       "rank": 116,
@@ -16825,7 +17177,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 117,
@@ -16848,7 +17201,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ExploreExternalEventRow/ExploreFeedClubRow"
+      ]
     },
     {
       "rank": 118,
@@ -16873,7 +17229,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventActionCardHeader/EventPolicyLabHeader"
+      ]
     },
     {
       "rank": 119,
@@ -16896,7 +17255,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventSuccessConversationCueCard/StageConversationCueCard"
+      ]
     },
     {
       "rank": 120,
@@ -16919,7 +17281,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ClubContactSection/ClubHostSection"
+      ]
     },
     {
       "rank": 121,
@@ -16942,7 +17307,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: RecapHeroSkeleton/RecapStatSkeleton"
+      ]
     },
     {
       "rank": 122,
@@ -16965,7 +17333,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ActivitySectionSkeleton/ProfileSurfaceSectionSkeleton"
+      ]
     },
     {
       "rank": 123,
@@ -16988,7 +17359,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CreateClubPhotosPicker/CreateEventPhotoPicker"
+      ]
     },
     {
       "rank": 124,
@@ -17011,7 +17385,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n003-host-card"
+      ]
     },
     {
       "rank": 125,
@@ -17035,7 +17412,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: DashboardEmptySliverBody/DashboardFullSliverBody"
+      ]
     },
     {
       "rank": 126,
@@ -17060,7 +17440,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventAgendaTileSkeleton/PaymentHistoryTileSkeleton"
+      ]
     },
     {
       "rank": 127,
@@ -17083,7 +17466,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventActionCard/HostEmptyActionCard"
+      ]
     },
     {
       "rank": 128,
@@ -17106,7 +17492,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 129,
@@ -17129,7 +17516,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventDetailHeroSkeleton/ProfileSurfaceHeroSkeleton"
+      ]
     },
     {
       "rank": 130,
@@ -17152,7 +17542,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CompanionPaperScaffold/CompanionStageScaffold"
+      ]
     },
     {
       "rank": 131,
@@ -17175,7 +17568,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventSuccessPromptCard/StagePromptCard"
+      ]
     },
     {
       "rank": 132,
@@ -17198,7 +17594,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 133,
@@ -17221,7 +17618,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ExploreEventsEmptySliver/ExploreEventsLoadingSliver"
+      ]
     },
     {
       "rank": 134,
@@ -17244,7 +17644,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EditHostedEventRouteScreen/EditHostedEventScreen"
+      ]
     },
     {
       "rank": 135,
@@ -17267,7 +17670,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: BookingConflictEventRow/ExploreExternalEventRow"
+      ]
     },
     {
       "rank": 136,
@@ -17290,7 +17696,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: PaymentCheckoutSheet/PaymentReceiptSheet"
+      ]
     },
     {
       "rank": 137,
@@ -17313,7 +17722,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CustomQuestionFields/CustomQuestionnaireFields"
+      ]
     },
     {
       "rank": 138,
@@ -17336,7 +17748,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)"
+      ]
     },
     {
       "rank": 139,
@@ -17359,7 +17774,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 140,
@@ -17382,7 +17798,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CreateClubScreen/CreateEventScreen"
+      ]
     },
     {
       "rank": 141,
@@ -17405,7 +17824,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n070-report-skeleton"
+      ]
     },
     {
       "rank": 142,
@@ -17428,7 +17850,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: AttendeeQaControls/ManualQaControls"
+      ]
     },
     {
       "rank": 143,
@@ -17451,7 +17876,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: PaperProgressRail/QuestionProgressRail"
+      ]
     },
     {
       "rank": 144,
@@ -17475,7 +17903,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 145,
@@ -17498,7 +17927,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: HostAnalyticsReportView/UserAnalyticsReportView"
+      ]
     },
     {
       "rank": 146,
@@ -17521,7 +17953,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: WingmanCandidateRow/WingmanRequestHostRow"
+      ]
     },
     {
       "rank": 147,
@@ -17544,7 +17979,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendPanel"
+      ]
     },
     {
       "rank": 148,
@@ -17569,7 +18007,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: HostAnalyticsMetricGridSkeleton/VibeGridSkeleton"
+      ]
     },
     {
       "rank": 149,
@@ -17592,7 +18033,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 150,
@@ -17615,7 +18057,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 151,
@@ -17639,7 +18082,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventPolicyLabScreen/EventSuccessLabScreen"
+      ]
     },
     {
       "rank": 152,
@@ -17662,7 +18108,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ClubReviewsSection/EventReviewsSection"
+      ]
     },
     {
       "rank": 153,
@@ -17685,7 +18134,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CatchesProfileReviewSkeleton/CatchesTopOverlaySkeleton"
+      ]
     },
     {
       "rank": 154,
@@ -17708,7 +18160,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: PaperExpectationCard/PaperPrivacyCard"
+      ]
     },
     {
       "rank": 155,
@@ -17731,7 +18186,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 156,
@@ -17754,7 +18210,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ExploreCityPickerSheet/ExploreFilterSheet"
+      ]
     },
     {
       "rank": 157,
@@ -17777,7 +18236,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: PaymentHistoryScreen/ReviewsHistoryScreen"
+      ]
     },
     {
       "rank": 158,
@@ -17800,7 +18262,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)"
+      ]
     },
     {
       "rank": 159,
@@ -17826,7 +18291,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 160,
@@ -17849,7 +18315,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 161,
@@ -17872,7 +18339,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ClubDetailScreen/EventDetailScreen"
+      ]
     },
     {
       "rank": 162,
@@ -17895,7 +18365,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: PaymentConfirmationBodyController/PaymentPendingCheckoutController"
+      ]
     },
     {
       "rank": 163,
@@ -17918,7 +18391,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventSuccessQuestionnaireConfigEditor/EventSuccessStructureConfigEditor"
+      ]
     },
     {
       "rank": 164,
@@ -17941,7 +18417,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventLocationMapScreen/ExploreMapScreen"
+      ]
     },
     {
       "rank": 165,
@@ -17964,7 +18443,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CreateEventScreen/EditHostedEventScreen"
+      ]
     },
     {
       "rank": 166,
@@ -17987,7 +18469,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: PaymentConfirmationScreen/PaymentHistoryScreen"
+      ]
     },
     {
       "rank": 167,
@@ -18010,7 +18495,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: DraftPickerSheet/ExploreCityPickerSheet"
+      ]
     },
     {
       "rank": 168,
@@ -18033,7 +18521,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 169,
@@ -18056,7 +18545,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventActionCardHeader/ShareCardHeader"
+      ]
     },
     {
       "rank": 170,
@@ -18079,7 +18571,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: CalendarDateHeader/CalendarStatsHeader"
+      ]
     },
     {
       "rank": 171,
@@ -18104,7 +18599,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventPolicyScenarioPicker/EventSuccessTabPicker"
+      ]
     },
     {
       "rank": 172,
@@ -18127,7 +18625,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n023-club-section + n115-activity-section"
+      ]
     },
     {
       "rank": 173,
@@ -18150,7 +18651,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 174,
@@ -18173,7 +18675,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n210-error-screen"
+      ]
     },
     {
       "rank": 175,
@@ -18196,7 +18701,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n024-profile-editor + n072-host-editor + n029-entry-editor + n141-range-editor"
+      ]
     },
     {
       "rank": 176,
@@ -18219,7 +18727,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ChatConversationsList/ChatMessageList"
+      ]
     },
     {
       "rank": 177,
@@ -18242,7 +18753,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 178,
@@ -18267,7 +18779,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n093-profile-photo"
+      ]
     },
     {
       "rank": 179,
@@ -18292,7 +18807,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 180,
@@ -18315,7 +18831,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 181,
@@ -18338,7 +18855,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n215-roster-cell"
+      ]
     },
     {
       "rank": 182,
@@ -18361,7 +18881,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 183,
@@ -18384,7 +18905,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 184,
@@ -18409,7 +18931,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 185,
@@ -18434,7 +18957,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n212-profile-view"
+      ]
     },
     {
       "rank": 186,
@@ -18457,7 +18983,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 187,
@@ -18481,7 +19008,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 188,
@@ -18506,7 +19034,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 189,
@@ -18529,7 +19058,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: AttendedEventTile/HostAnalyticsEventTile"
+      ]
     },
     {
       "rank": 190,
@@ -18552,7 +19084,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 191,
@@ -18575,7 +19108,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n109-club-artwork + n135-explore-card"
+      ]
     },
     {
       "rank": 192,
@@ -18598,7 +19134,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n030-event-list + n065-event-tile"
+      ]
     },
     {
       "rank": 193,
@@ -18623,7 +19162,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: EventSuccessDefaultsPanel/EventSuccessHostPanel"
+      ]
     },
     {
       "rank": 194,
@@ -18648,7 +19190,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 195,
@@ -18671,7 +19214,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n171-is-going"
+      ]
     },
     {
       "rank": 196,
@@ -18694,7 +19240,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 197,
@@ -18719,7 +19266,8 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 198,
@@ -18744,7 +19292,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n006-loading-body + n069-host-body"
+      ]
     },
     {
       "rank": 199,
@@ -18767,7 +19318,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n175-payment-body"
+      ]
     },
     {
       "rank": 200,
@@ -18790,7 +19344,10 @@
       "selectionSources": [
         "name-family"
       ],
-      "absorbCandidate": false
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "n086-saved-sliver"
+      ]
     }
   ],
   "nameFamilies": [
@@ -18890,7 +19447,7 @@
         "HostTodayDashboardCard",
         "HostTodayTaskCard"
       ],
-      "usageSum": 75,
+      "usageSum": 71,
       "scope": "mixed"
     },
     {
@@ -19001,7 +19558,7 @@
         "SwipeEmptyState",
         "UserAnalyticsEmptyState"
       ],
-      "usageSum": 94,
+      "usageSum": 97,
       "scope": "mixed"
     },
     {
@@ -19844,7 +20401,7 @@
         "CatchDetailSliverSectionList",
         "CatchSectionList"
       ],
-      "usageSum": 44,
+      "usageSum": 42,
       "scope": "widget"
     },
     {
@@ -19892,18 +20449,7 @@
       "scope": "screen"
     },
     {
-      "id": "n081-field-row",
-      "stem": "FieldRow",
-      "stemType": "final-two",
-      "members": [
-        "CatchFieldRow",
-        "ProfileFieldRow"
-      ],
-      "usageSum": 25,
-      "scope": "widget"
-    },
-    {
-      "id": "n082-history-screen",
+      "id": "n081-history-screen",
       "stem": "HistoryScreen",
       "stemType": "final-two",
       "members": [
@@ -19914,7 +20460,7 @@
       "scope": "screen"
     },
     {
-      "id": "n083-detail-screen",
+      "id": "n082-detail-screen",
       "stem": "DetailScreen",
       "stemType": "final-two",
       "members": [
@@ -19925,23 +20471,34 @@
       "scope": "screen"
     },
     {
-      "id": "n084-mono-label",
-      "stem": "MonoLabel",
+      "id": "n083-field-row",
+      "stem": "FieldRow",
       "stemType": "final-two",
       "members": [
-        "CatchMonoLabel",
-        "ExploreMonoLabel"
+        "CatchFieldRow",
+        "ProfileFieldRow"
       ],
-      "usageSum": 23,
+      "usageSum": 24,
       "scope": "widget"
     },
     {
-      "id": "n085-terminal-padding",
+      "id": "n084-terminal-padding",
       "stem": "TerminalPadding",
       "stemType": "final-two",
       "members": [
         "CatchScrollTerminalPadding",
         "CatchSliverTerminalPadding"
+      ],
+      "usageSum": 24,
+      "scope": "widget"
+    },
+    {
+      "id": "n085-mono-label",
+      "stem": "MonoLabel",
+      "stemType": "final-two",
+      "members": [
+        "CatchMonoLabel",
+        "ExploreMonoLabel"
       ],
       "usageSum": 23,
       "scope": "widget"
@@ -19980,18 +20537,7 @@
       "scope": "widget"
     },
     {
-      "id": "n089-action-card",
-      "stem": "ActionCard",
-      "stemType": "final-two",
-      "members": [
-        "EventActionCard",
-        "HostEmptyActionCard"
-      ],
-      "usageSum": 18,
-      "scope": "widget"
-    },
-    {
-      "id": "n090-composer-sheet",
+      "id": "n089-composer-sheet",
       "stem": "ComposerSheet",
       "stemType": "final-two",
       "members": [
@@ -20002,7 +20548,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n091-field-row",
+      "id": "n090-field-row",
       "stem": "FieldRow",
       "stemType": "outer",
       "members": [
@@ -20013,7 +20559,7 @@
       "scope": "widget"
     },
     {
-      "id": "n092-section-header",
+      "id": "n091-section-header",
       "stem": "SectionHeader",
       "stemType": "final-two",
       "members": [
@@ -20024,7 +20570,7 @@
       "scope": "widget"
     },
     {
-      "id": "n093-detail-body",
+      "id": "n092-detail-body",
       "stem": "DetailBody",
       "stemType": "final-two",
       "members": [
@@ -20035,7 +20581,7 @@
       "scope": "widget"
     },
     {
-      "id": "n094-map-screen",
+      "id": "n093-map-screen",
       "stem": "MapScreen",
       "stemType": "final-two",
       "members": [
@@ -20046,7 +20592,7 @@
       "scope": "screen"
     },
     {
-      "id": "n095-meta-row",
+      "id": "n094-meta-row",
       "stem": "MetaRow",
       "stemType": "final-two",
       "members": [
@@ -20057,7 +20603,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n096-top-action",
+      "id": "n095-top-action",
       "stem": "TopAction",
       "stemType": "outer",
       "members": [
@@ -20065,6 +20611,17 @@
         "CatchTopBarTextAction"
       ],
       "usageSum": 15,
+      "scope": "widget"
+    },
+    {
+      "id": "n096-action-card",
+      "stem": "ActionCard",
+      "stemType": "final-two",
+      "members": [
+        "EventActionCard",
+        "HostEmptyActionCard"
+      ],
+      "usageSum": 14,
       "scope": "widget"
     },
     {
@@ -20794,18 +21351,7 @@
       "scope": "widget"
     },
     {
-      "id": "n163-custom-fields",
-      "stem": "CustomFields",
-      "stemType": "outer",
-      "members": [
-        "CustomQuestionFields",
-        "CustomQuestionnaireFields"
-      ],
-      "usageSum": 6,
-      "scope": "widget"
-    },
-    {
-      "id": "n164-details-card",
+      "id": "n163-details-card",
       "stem": "DetailsCard",
       "stemType": "final-two",
       "members": [
@@ -20816,7 +21362,7 @@
       "scope": "widget"
     },
     {
-      "id": "n165-event-line",
+      "id": "n164-event-line",
       "stem": "EventLine",
       "stemType": "outer",
       "members": [
@@ -20827,7 +21373,7 @@
       "scope": "screen"
     },
     {
-      "id": "n166-event-row",
+      "id": "n165-event-row",
       "stem": "EventRow",
       "stemType": "outer",
       "members": [
@@ -20838,7 +21384,7 @@
       "scope": "screen"
     },
     {
-      "id": "n167-history-skeleton",
+      "id": "n166-history-skeleton",
       "stem": "HistorySkeleton",
       "stemType": "final-two",
       "members": [
@@ -20849,7 +21395,7 @@
       "scope": "screen"
     },
     {
-      "id": "n168-host-bar",
+      "id": "n167-host-bar",
       "stem": "HostBar",
       "stemType": "outer",
       "members": [
@@ -20860,7 +21406,7 @@
       "scope": "widget"
     },
     {
-      "id": "n169-host-grid",
+      "id": "n168-host-grid",
       "stem": "HostGrid",
       "stemType": "outer",
       "members": [
@@ -20871,7 +21417,7 @@
       "scope": "widget"
     },
     {
-      "id": "n170-host-shell",
+      "id": "n169-host-shell",
       "stem": "HostShell",
       "stemType": "outer",
       "members": [
@@ -20882,7 +21428,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n171-override-sheet",
+      "id": "n170-override-sheet",
       "stem": "OverrideSheet",
       "stemType": "final-two",
       "members": [
@@ -20893,7 +21439,7 @@
       "scope": "widget"
     },
     {
-      "id": "n172-payment-skeleton",
+      "id": "n171-payment-skeleton",
       "stem": "PaymentSkeleton",
       "stemType": "outer",
       "members": [
@@ -20904,7 +21450,7 @@
       "scope": "screen"
     },
     {
-      "id": "n173-policy-card",
+      "id": "n172-policy-card",
       "stem": "PolicyCard",
       "stemType": "final-two",
       "members": [
@@ -20915,7 +21461,7 @@
       "scope": "screen"
     },
     {
-      "id": "n174-progress-rail",
+      "id": "n173-progress-rail",
       "stem": "ProgressRail",
       "stemType": "final-two",
       "members": [
@@ -20926,7 +21472,7 @@
       "scope": "widget"
     },
     {
-      "id": "n175-qa-controls",
+      "id": "n174-qa-controls",
       "stem": "QaControls",
       "stemType": "final-two",
       "members": [
@@ -20937,7 +21483,7 @@
       "scope": "screen"
     },
     {
-      "id": "n176-read-card",
+      "id": "n175-read-card",
       "stem": "ReadCard",
       "stemType": "outer",
       "members": [
@@ -20948,7 +21494,7 @@
       "scope": "screen"
     },
     {
-      "id": "n177-rotation-editor",
+      "id": "n176-rotation-editor",
       "stem": "RotationEditor",
       "stemType": "outer",
       "members": [
@@ -20959,7 +21505,7 @@
       "scope": "widget"
     },
     {
-      "id": "n178-round-editor",
+      "id": "n177-round-editor",
       "stem": "RoundEditor",
       "stemType": "final-two",
       "members": [
@@ -20970,7 +21516,7 @@
       "scope": "widget"
     },
     {
-      "id": "n179-scroll-view",
+      "id": "n178-scroll-view",
       "stem": "ScrollView",
       "stemType": "final-two",
       "members": [
@@ -20981,7 +21527,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n180-stage-line",
+      "id": "n179-stage-line",
       "stem": "StageLine",
       "stemType": "outer",
       "members": [
@@ -20992,7 +21538,7 @@
       "scope": "widget"
     },
     {
-      "id": "n181-wingman-row",
+      "id": "n180-wingman-row",
       "stem": "WingmanRow",
       "stemType": "outer",
       "members": [
@@ -21003,7 +21549,7 @@
       "scope": "widget"
     },
     {
-      "id": "n182-explore-card",
+      "id": "n181-explore-card",
       "stem": "ExploreCard",
       "stemType": "outer",
       "members": [
@@ -21014,7 +21560,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n183-host-header",
+      "id": "n182-host-header",
       "stem": "HostHeader",
       "stemType": "outer",
       "members": [
@@ -21025,7 +21571,7 @@
       "scope": "widget"
     },
     {
-      "id": "n184-tile-skeleton",
+      "id": "n183-tile-skeleton",
       "stem": "TileSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21036,7 +21582,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n185-card-header",
+      "id": "n184-card-header",
       "stem": "CardHeader",
       "stemType": "final-two",
       "members": [
@@ -21047,7 +21593,7 @@
       "scope": "widget"
     },
     {
-      "id": "n186-error-screen",
+      "id": "n185-error-screen",
       "stem": "ErrorScreen",
       "stemType": "final-two",
       "members": [
@@ -21058,7 +21604,7 @@
       "scope": "screen"
     },
     {
-      "id": "n187-event-cta",
+      "id": "n186-event-cta",
       "stem": "EventCta",
       "stemType": "outer",
       "members": [
@@ -21069,7 +21615,7 @@
       "scope": "widget"
     },
     {
-      "id": "n188-loading-card",
+      "id": "n187-loading-card",
       "stem": "LoadingCard",
       "stemType": "final-two",
       "members": [
@@ -21080,7 +21626,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n189-profile-view",
+      "id": "n188-profile-view",
       "stem": "ProfileView",
       "stemType": "outer",
       "members": [
@@ -21091,7 +21637,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n190-screen-loading",
+      "id": "n189-screen-loading",
       "stem": "ScreenLoading",
       "stemType": "final-two",
       "members": [
@@ -21100,6 +21646,17 @@
       ],
       "usageSum": 4,
       "scope": "mixed"
+    },
+    {
+      "id": "n190-custom-fields",
+      "stem": "CustomFields",
+      "stemType": "outer",
+      "members": [
+        "CustomQuestionFields",
+        "CustomQuestionnaireFields"
+      ],
+      "usageSum": 3,
+      "scope": "widget"
     },
     {
       "id": "n191-grid-skeleton",

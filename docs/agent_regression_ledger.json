@@ -1,5 +1,5 @@
 {
-  "version": 30,
+  "version": 31,
   "updated": "2026-07-18",
   "owner": "agent_operating_model",
   "entries": [
@@ -1888,6 +1888,31 @@
         "docs/app_architecture.md"
       ],
       "notes": "Until the provider accepts a value-equality key type, stabilize the ordered uid list by contents in the owning ConsumerState before watching or invalidating the family. Scoped fixtures must override the whole family because the stable list intentionally has a different identity from the source view model list."
+    },
+    {
+      "id": "REG-WIDGET-CONCEPT-IDENTITY-001",
+      "title": "Public widget contracts silently become independent design concepts",
+      "status": "active",
+      "applies_to": [
+        "design/components/catch.components.json",
+        "docs/audit_registry/widget_classification.json",
+        "docs/audit_registry/widget_similarity.json",
+        "design/sync/catch.design-sync.json",
+        "tool/design/component_concepts.mjs",
+        "tool/design/check_component_contracts.mjs"
+      ],
+      "symptom": "A new top-level handoff contract or public wrapper increments the claimed design-system concept count even though it is only a variant, anatomy, adapter, recipe, feature composition, or screen; or a generated cluster id changes and silently disconnects a prior consolidation decision.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/design/component_concepts.test.mjs && node tool/design/check_component_contracts.mjs && node tool/design/check_widget_classification.mjs && node tool/design/build_widget_similarity.mjs --check && node tool/design/build_design_sync_manifest.mjs --check",
+        "guardEvidence": "known-bad duplicate primaries and missing parents fail; every contracted class has an explicit concept role; similarity decisions reconcile by normalized member set; generated metrics keep unclassified entries at zero"
+      },
+      "owner_docs": [
+        "design/components/README.md",
+        "docs/design_parity/widget_consolidation/consolidation_rules.md",
+        "design/sync/README.md"
+      ],
+      "notes": "Count primary concept ids, not files, classes, or top-level contract entries. Preserve useful public adapters and recipes as members. Feature composition and screens remain documented but never claim a concept id. A collision is a review candidate, not a merge instruction."
     }
   ]
 }

@@ -67,6 +67,9 @@ function buildRegistry() {
   const fingerprints = readJson(fromRepo(fingerprintsPath));
   const contracts =
     readJson(fromRepo("design/components/catch.components.json")).components ?? [];
+  const decisions =
+    readJson(fromRepo("docs/design_parity/widget_consolidation/decisions.json")).decisions ?? [];
+  const decisionIndex = buildDecisionIndex(decisions);
   const contractedSymbols = collectContractedSymbols(contracts);
   const allWidgets = (fingerprints.widgets ?? [])
     .map(normalizeWidget)
@@ -148,7 +151,10 @@ function buildRegistry() {
     }));
   const rankedPairs = selectRankedPairs(pairScoresWithAbsorb, nameFamilies)
     .slice(0, RANKED_PAIR_COUNT)
-    .map((pair, index) => rankedPairFor(pair, index + 1, widgetsByName, contractedSymbols));
+    .map((pair, index) => ({
+      ...rankedPairFor(pair, index + 1, widgetsByName, contractedSymbols),
+      decisionRefs: decisionsForPair(pair, decisionIndex),
+    }));
 
   const calibrationPairs = deterministicCalibrationPairs(pairScoresWithAbsorb);
   const calibration = buildCalibration(calibrationPairs);
@@ -187,7 +193,11 @@ function buildRegistry() {
       structuralSignals: cluster.structuralSignals,
       visualBridges: cluster.visualBridges,
       scope: cluster.scope,
+      decisionRef: decisionIndex.byMemberSet.get(memberSetKey(cluster.members.map((member) => member.name)))?.clusterId ?? null,
     }));
+
+  const decidedClusters = clusterRows.filter((cluster) => cluster.decisionRef !== null).length;
+  const decidedRankedPairs = rankedPairs.filter((pair) => pair.decisionRefs.length > 0).length;
 
   const groundTruthRecall = buildGroundTruthRecall({
     clusters: clusterRows,
@@ -197,7 +207,7 @@ function buildRegistry() {
   });
 
   return {
-    version: 1,
+    version: 2,
     updated: today,
     sourceOfTruth: {
       generator: "tool/design/build_widget_similarity.mjs",
@@ -235,6 +245,11 @@ function buildRegistry() {
       skippedTrivial: skippedTrivial.length,
       absorbCandidates: clusterRows.filter((cluster) => cluster.absorbCandidate)
         .length,
+      ledgerDecisions: decisions.length,
+      exactClusterDecisionCoverage: decidedClusters,
+      unresolvedClusters: clusterRows.length - decidedClusters,
+      rankedPairDecisionCoverage: decidedRankedPairs,
+      unresolvedRankedPairs: rankedPairs.length - decidedRankedPairs,
     },
     groundTruthRecall,
     skippedTrivial,
@@ -265,6 +280,33 @@ function buildRegistry() {
       .sort((a, b) => b.jaccard - a.jaccard || a.a.localeCompare(b.a) || a.b.localeCompare(b.b))
       .map(formatPair),
   };
+}
+
+function buildDecisionIndex(decisions) {
+  const byMemberSet = new Map();
+  const bySymbol = new Map();
+  for (const decision of decisions) {
+    const names = [...new Set((decision.members ?? []).map((member) => member.name))].sort();
+    if (names.length > 0) byMemberSet.set(memberSetKey(names), decision);
+    for (const name of names) {
+      const entries = bySymbol.get(name) ?? [];
+      entries.push(decision);
+      bySymbol.set(name, entries);
+    }
+  }
+  return {byMemberSet, bySymbol};
+}
+
+function decisionsForPair(pair, index) {
+  const left = index.bySymbol.get(pair.a) ?? [];
+  return left
+    .filter((decision) => (decision.members ?? []).some((member) => member.name === pair.b))
+    .map((decision) => decision.clusterId)
+    .sort();
+}
+
+function memberSetKey(names) {
+  return [...new Set(names)].sort().join("\u001f");
 }
 
 function normalizeWidget(widget) {

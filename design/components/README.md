@@ -1,6 +1,6 @@
 ---
 doc_id: component_contract_registry
-version: 1.0.0
+version: 1.1.0
 updated: 2026-06-17
 owner: ui_elevation_initiative
 status: active
@@ -14,7 +14,10 @@ names the public component contract that Figma, Claude Design, future Code
 Connect templates, docs, and validators should agree on.
 
 The registry deliberately describes component APIs, states, slots, token
-dependencies, and handoff names. It does not attempt to generate Dart widget
+dependencies, handoff names, and concept identity. A top-level contract is not
+automatically an independent concept: `conceptRole` distinguishes a primary
+concept from a member, composition, or screen while preserving useful public
+handoff contracts. It does not attempt to generate Dart widget
 implementations from JSX, CSS, or Figma node geometry.
 
 ## Files
@@ -33,8 +36,18 @@ implementations from JSX, CSS, or Figma node geometry.
 4. Regenerate the design context pack with
    `node tool/design/build_context_pack.mjs` when the registry should be shared
    with Claude Design or another design tool.
+5. Regenerate `design/sync/catch.design-sync.json` so mapping state and contract
+   digests stay current.
+
+Use `Catch<ControlledNoun>` for new concepts. Prefer named constructors for
+variants, concept-qualified names for public members, and explicit adapter or
+recipe qualifiers when a standalone class solves a real API problem without
+creating another concept. Feature compositions normally keep feature names and
+do not count as concepts.
 
 Figma mappings start as `unmapped`. Once a Figma library component exists, set
 `design.figma.status` to `mapped` and add its component URL. Code Connect
 templates should then live beside their owning Flutter primitive or in a
 dedicated Figma mapping folder, and the registry should point at that template.
+The executable sync contract and current live-capability receipt live in
+`design/sync/README.md`.

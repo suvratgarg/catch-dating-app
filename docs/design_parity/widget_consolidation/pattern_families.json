@@ -459,6 +459,79 @@
           "rationale": "Keep this expanded sibling, but make it consume the same future/current/complete state model and explicit completion treatment as the compact rail."
         }
       ]
+    },
+    {
+      "id": "loading-concept-decompression",
+      "title": "Loading concept decompression",
+      "intent": "Determine whether the current catch.loading handoff contract has compressed content-shaped placeholders, indeterminate progress, async data boundaries, and an app-start screen into one concept merely because they all occur while waiting.",
+      "priority": "P0",
+      "status": "review",
+      "targetContract": "catch.skeleton + catch.loading_indicator + catch.async_value",
+      "qualityReference": "CatchSkeleton",
+      "decisionSource": "owner-review-requested:2026-07-18",
+      "acceptedVisualDelta": [],
+      "reviewQuestions": [
+        {
+          "id": "L1",
+          "prompt": "How many independent concepts does the current catch.loading contract contain?",
+          "recommendation": "Use three concepts: skeleton placeholders, indeterminate loading indicator, and async-value boundary; classify the startup screen as composition.",
+          "options": [
+            "Use three concepts and classify startup as composition.",
+            "Keep one loading concept with all members.",
+            "Use two concepts: loading visuals and async boundaries."
+          ]
+        }
+      ],
+      "members": [
+        {
+          "symbol": "CatchSkeleton",
+          "disposition": "register",
+          "preview": "source-only",
+          "rationale": "Content-shaped placeholder primary and proposed skeleton concept owner."
+        },
+        {
+          "symbol": "CatchSkeletonList",
+          "disposition": "register",
+          "preview": "source-only",
+          "rationale": "List-layout member of the skeleton placeholder concept."
+        },
+        {
+          "symbol": "CatchLoadingIndicator",
+          "disposition": "register",
+          "preview": "source-only",
+          "rationale": "Indeterminate inline progress has different semantics and usage from content-shaped placeholders."
+        },
+        {
+          "symbol": "CatchAsyncScreenLoading",
+          "disposition": "register",
+          "preview": "source-only",
+          "rationale": "Screen placement adapter that composes the skeleton concept."
+        },
+        {
+          "symbol": "CatchAsyncSliverLoading",
+          "disposition": "register",
+          "preview": "source-only",
+          "rationale": "Sliver placement adapter that composes the skeleton concept."
+        },
+        {
+          "symbol": "CatchAsyncValueView",
+          "disposition": "register",
+          "preview": "source-only",
+          "rationale": "Generic data/loading/error boundary and proposed async-value concept owner."
+        },
+        {
+          "symbol": "CatchAsyncValueSliver",
+          "disposition": "register",
+          "preview": "source-only",
+          "rationale": "Sliver layout member of the async-value boundary concept."
+        },
+        {
+          "symbol": "CatchStartupLoadingScreen",
+          "disposition": "register",
+          "preview": "source-only",
+          "rationale": "App-start screen composition that uses the indicator but should not become another primitive concept."
+        }
+      ]
     }
   ]
 }

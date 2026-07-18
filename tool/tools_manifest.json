@@ -3229,10 +3229,35 @@
       "status": "active",
       "description": "Validates the Catch component contract registry used by Figma, Claude Design, and Code Connect handoffs.",
       "checks": [
+        "node --check tool/design/component_concepts.mjs",
+        "node --test tool/design/component_concepts.test.mjs",
         "node --check tool/design/check_component_contracts.mjs",
         "node tool/design/check_component_contracts.mjs"
       ],
       "role": "finder"
+    },
+    {
+      "id": "design:component-concepts",
+      "category": "design",
+      "path": "tool/design/component_concepts.mjs",
+      "command": "node --test tool/design/component_concepts.test.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Provides deterministic component-concept identity, collision-key, topology, and metric helpers.",
+      "checks": [
+        "node --check tool/design/component_concepts.mjs",
+        "node --test tool/design/component_concepts.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/component_concepts.test.mjs",
+        "contains": [
+          "normalization deliberately forces comparable names into one namespace",
+          "known-bad duplicate primaries and missing parents are rejected",
+          "metrics count concepts rather than public contracts"
+        ]
+      }
     },
     {
       "id": "design:widget-classification-generate",
@@ -3245,6 +3270,43 @@
       "checks": [
         "node --check tool/design/generate_widget_classification.mjs"
       ]
+    },
+    {
+      "id": "design:sync-manifest",
+      "category": "design",
+      "path": "tool/design/build_design_sync_manifest.mjs",
+      "command": "node tool/design/build_design_sync_manifest.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Builds and validates the code, Figma, Code Connect, and Claude Design mapping manifest with a Badge + Field live-readiness spike.",
+      "checks": [
+        "node --check tool/design/build_design_sync_manifest.mjs",
+        "node --test tool/design/build_design_sync_manifest.test.mjs",
+        "node tool/design/build_design_sync_manifest.mjs --check"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/build_design_sync_manifest.test.mjs",
+        "contains": [
+          "known-bad mapped entries without node URLs fail",
+          "live spike gate stays red when Figma and Code Connect are unavailable"
+        ]
+      }
+    },
+    {
+      "id": "design:widget-concept-report",
+      "category": "design",
+      "path": "tool/design/build_widget_concept_report.mjs",
+      "command": "node tool/design/build_widget_concept_report.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Generates the quantitative report for component contracts, independent concepts, member APIs, collisions, ledger coverage, and design-tool readiness.",
+      "checks": [
+        "node --check tool/design/build_widget_concept_report.mjs",
+        "node tool/design/build_widget_concept_report.mjs --check"
+      ],
+      "role": "finder"
     },
     {
       "id": "design:widget-classification-check",
