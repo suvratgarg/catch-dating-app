@@ -115,7 +115,7 @@ void main() {
             find.byKey(const ValueKey('catch-field-control-opacity')),
           )
           .duration,
-      CatchFieldTokens.standard,
+      CatchMotion.base,
     );
 
     await tester.tap(find.byKey(const ValueKey('catch-field-choice-Hindi')));
@@ -390,7 +390,7 @@ void main() {
 
     await tester.tap(find.byType(TextField));
     await tester.pump();
-    await tester.pump(CatchMotion.fast);
+    await tester.pump(CatchMotion.base);
 
     expect(find.text('Bio'), findsOneWidget);
     expect(find.text(' · Optional'), findsOneWidget);
@@ -424,7 +424,7 @@ void main() {
 
       await tester.tap(find.byType(TextField));
       await tester.pump();
-      await tester.pump(CatchMotion.fast);
+      await tester.pump(CatchMotion.base);
 
       expect(find.byType(TextField), findsOneWidget);
       expect(tester.element(find.byType(TextField)), same(inputElement));
@@ -445,7 +445,7 @@ void main() {
       await tester.enterText(find.byType(TextField), '');
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pump();
-      await tester.pump(CatchMotion.fast);
+      await tester.pump(CatchMotion.base);
 
       expect(controller.text, isEmpty);
       expect(find.byType(TextField), findsOneWidget);
@@ -470,7 +470,7 @@ void main() {
     expect(find.text('Add instagram'), findsOneWidget);
     await tester.tap(find.byType(TextField));
     await tester.pump();
-    await tester.pump(CatchMotion.fast);
+    await tester.pump(CatchMotion.base);
 
     final field = tester.widget<TextField>(find.byType(TextField));
     expect(field.decoration?.hintText, isNull);
@@ -545,7 +545,7 @@ void main() {
 
     await tester.tap(find.byType(TextField));
     await tester.pump();
-    await tester.pump(CatchMotion.fast);
+    await tester.pump(CatchMotion.base);
 
     expect(changes, <bool>[true]);
 
@@ -583,7 +583,7 @@ void main() {
 
       expect(formKey.currentState!.validate(), isFalse);
       await tester.pump();
-      await tester.pump(CatchMotion.fast);
+      await tester.pump(CatchMotion.base);
 
       expect(find.byType(TextField), findsOneWidget);
       expect(tester.element(find.byType(TextField)), same(inputElement));
@@ -617,7 +617,7 @@ void main() {
       controller.clear();
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pump();
-      await tester.pump(CatchMotion.fast);
+      await tester.pump(CatchMotion.base);
 
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Public name'), findsNothing);
@@ -784,7 +784,7 @@ void main() {
         matching: find.byType(AnimatedRotation),
       ),
     );
-    expect(rotation.duration, CatchFieldTokens.reveal);
+    expect(rotation.duration, CatchMotion.base);
     expect(iconTheme.color, CatchTokens.editorialLight.ink2);
 
     await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
@@ -1213,7 +1213,7 @@ Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
 
 Future<void> _pumpCatchFieldMotion(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(CatchFieldTokens.reveal);
+  await tester.pump(CatchMotion.base);
   await tester.pump();
 }
 

@@ -183,6 +183,58 @@ void main() {
     expect(scale().scale, 1);
   });
 
+  testWidgets(
+    'CatchChip.selectable snaps selection under reduced motion without layout shift',
+    (tester) async {
+      var selected = false;
+      late StateSetter update;
+      await tester.pumpWidget(
+        _wrap(
+          MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                update = setState;
+                return CatchChip.selectable(
+                  label: 'Run club',
+                  selected: selected,
+                  onChanged: (_) {},
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      final chip = _chip('Run club');
+      final restingSize = tester.getSize(chip);
+      update(() => selected = true);
+      await tester.pump();
+
+      expect(tester.getSize(chip), restingSize);
+      expect(
+        tester
+            .widget<AnimatedContainer>(
+              find.descendant(
+                of: chip,
+                matching: find.byType(AnimatedContainer),
+              ),
+            )
+            .duration,
+        Duration.zero,
+      );
+      expect(
+        tester
+            .widget<AnimatedScale>(
+              find.descendant(of: chip, matching: find.byType(AnimatedScale)),
+            )
+            .duration,
+        Duration.zero,
+      );
+      expect(tester.binding.hasScheduledFrame, isFalse);
+    },
+  );
+
   testWidgets('CatchChip.selectable keeps inverse ink legible in dark mode', (
     tester,
   ) async {

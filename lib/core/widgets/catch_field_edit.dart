@@ -323,7 +323,7 @@ extension _CatchFieldEdit on _CatchFieldState {
   Widget _buildTextEntryMotion(BuildContext context, {required Widget child}) {
     return AnimatedSize(
       duration: _motionDuration(context),
-      curve: CatchFieldTokens.curve,
+      curve: CatchMotion.standardCurve,
       alignment: Alignment.topCenter,
       child: child,
     );
@@ -774,11 +774,11 @@ String _selectPlaceholder(AppLocalizations l10n, String? title) {
 }
 
 Duration _catchFieldMotionDuration(BuildContext context) {
-  return _fieldDuration(context, CatchFieldTokens.fast);
+  return _fieldDuration(context, CatchMotion.base);
 }
 
 Duration _expansionMotionDuration(BuildContext context) {
-  return _fieldDuration(context, CatchFieldTokens.reveal);
+  return _fieldDuration(context, CatchMotion.base);
 }
 
 Duration _fieldDuration(BuildContext context, Duration duration) {

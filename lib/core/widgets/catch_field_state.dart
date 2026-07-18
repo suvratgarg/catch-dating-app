@@ -40,8 +40,10 @@ class _CatchFieldState extends State<CatchField>
   double _expandedContentRevealStart = 0;
   double _expandedContentRevealDestination = 0;
   Timer? _singleChoiceCloseTimer;
+  Timer? _statusLaneDismissTimer;
   late bool _inputWasEmpty;
   bool _textEntryHasValidationError = false;
+  late bool _statusLaneActive;
 
   TextEditingController get _controller =>
       widget.controller ?? _internalController;
@@ -61,6 +63,7 @@ class _CatchFieldState extends State<CatchField>
       text: widget.controller == null ? widget.initialValue : null,
     );
     _inputWasEmpty = _controller.text.isEmpty;
+    _statusLaneActive = _effectiveStatus != CatchFieldStatus.idle;
     _attachControllerListener(_controller);
     if (widget._explicitSaveInput && _isOpen) {
       _pendingExpansionFocus = true;
@@ -73,6 +76,12 @@ class _CatchFieldState extends State<CatchField>
   @override
   void didUpdateWidget(covariant CatchField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (_effectiveStatus != CatchFieldStatus.idle) {
+      _statusLaneDismissTimer?.cancel();
+      _statusLaneActive = true;
+    } else if (_effectiveStatusFor(oldWidget) != CatchFieldStatus.idle) {
+      _scheduleStatusLaneDismiss();
+    }
     if (oldWidget.status != widget.status) {
       _announceStatusTransition(widget.status);
     }
@@ -150,6 +159,7 @@ class _CatchFieldState extends State<CatchField>
     _activeExpandedContentRevealPosition = null;
     _expandedContentRevealController.dispose();
     _singleChoiceCloseTimer?.cancel();
+    _statusLaneDismissTimer?.cancel();
     _listenedController?.removeListener(_syncFieldValue);
     _detachFocusNode();
     _rowFocusNode.dispose();
@@ -282,7 +292,7 @@ class _CatchFieldState extends State<CatchField>
       return;
     }
 
-    final progress = CatchFieldTokens.curve.transform(
+    final progress = CatchMotion.standardCurve.transform(
       _expandedContentRevealController.value,
     );
     final requested =
@@ -402,9 +412,26 @@ class _CatchFieldState extends State<CatchField>
           targetHeight + bottomClearance,
         ),
         duration: revealDuration,
-        curve: CatchFieldTokens.curve,
+        curve: CatchMotion.standardCurve,
       );
     });
+  }
+
+  void _scheduleStatusLaneDismiss() {
+    _statusLaneDismissTimer?.cancel();
+    final duration = _fieldDuration(context, CatchMotion.base);
+    if (duration == Duration.zero) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleStatusLaneDismissed();
+      });
+      return;
+    }
+    _statusLaneDismissTimer = Timer(duration, _handleStatusLaneDismissed);
+  }
+
+  void _handleStatusLaneDismissed() {
+    if (!mounted || _effectiveStatus != CatchFieldStatus.idle) return;
+    setState(() => _statusLaneActive = false);
   }
 
   void _handleExpansionAnimationEnd() {
@@ -529,6 +556,12 @@ class _CatchFieldState extends State<CatchField>
   bool get _isOpen => widget.open ?? _open;
   bool get _isSaving =>
       widget._isLoading || widget.status == CatchFieldStatus.saving;
+  CatchFieldStatus get _effectiveStatus =>
+      _isSaving ? CatchFieldStatus.saving : widget.status;
+  CatchFieldStatus _effectiveStatusFor(CatchField field) =>
+      field._isLoading || field.status == CatchFieldStatus.saving
+      ? CatchFieldStatus.saving
+      : field.status;
   // Keep progress in the commit bar through its close animation. Once the
   // drawer is actually offstage, the header becomes the only visible owner.
   bool get _visibleCommitBarOwnsSavingIndicator =>

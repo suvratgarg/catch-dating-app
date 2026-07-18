@@ -2115,6 +2115,7 @@
               "fixed-chevron",
               "rotating-chevron",
               "toggle",
+              "status",
               "clear",
               "valid",
               "custom"
@@ -2125,6 +2126,25 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.status_indicator",
+            "symbol": "CatchFieldStatusIndicator",
+            "summary": "Animated field-family saving and saved feedback with a plain reduced-motion swap.",
+            "states": [
+              "idle",
+              "saving",
+              "saved",
+              "reduced-motion"
+            ],
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.field"
             }
           },
@@ -11265,13 +11285,32 @@
               "top",
               "scrolled",
               "restored",
-              "terminal-clearance"
+              "terminal-clearance",
+              "readable-width"
             ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.tabbed_screen",
               "parentConceptId": "catch.tabbed_screen",
               "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.tabbed_screen"
+            }
+          },
+          {
+            "id": "catch.tabbed_screen.sliver_content_width",
+            "symbol": "CatchSliverContentWidth",
+            "file": "lib/core/widgets/catch_tabbed_screen.dart",
+            "summary": "Sliver-native semantic width policy that stays direct on phones and centers the canonical readable lane on wide viewports.",
+            "states": [
+              "phone-direct",
+              "wide-centered",
+              "full-sliver-protocol"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.tabbed_screen",
+              "parentConceptId": "catch.tabbed_screen",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.tabbed_screen"
             }
           }

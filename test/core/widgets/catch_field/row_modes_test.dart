@@ -575,6 +575,6 @@ Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
 
 Future<void> _pumpCatchFieldMotion(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(CatchFieldTokens.reveal);
+  await tester.pump(CatchMotion.base);
   await tester.pump();
 }

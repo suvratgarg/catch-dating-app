@@ -10,7 +10,7 @@ import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(
-  name: 'Current vs proposed',
+  name: 'Approved production',
   type: CatchField,
   path: '[Review gates]/Field motion',
 )
@@ -33,12 +33,47 @@ Widget catchFieldMotionReview(BuildContext context) {
     label: 'Chip selected',
     initialValue: true,
   );
+  final disableAnimations = context.knobs.boolean(
+    label: 'Disable animations',
+    initialValue: false,
+  );
 
-  return _MotionReviewScreen(
-    accordionOpen: accordionOpen,
-    drawerOpen: drawerOpen,
-    status: status,
-    chipSelected: chipSelected,
+  return MediaQuery(
+    data: (MediaQuery.maybeOf(context) ?? const MediaQueryData()).copyWith(
+      disableAnimations: disableAnimations,
+    ),
+    child: _MotionReviewScreen(
+      accordionOpen: accordionOpen,
+      drawerOpen: drawerOpen,
+      status: status,
+      chipSelected: chipSelected,
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Saving and saved',
+  type: CatchFieldStatusIndicator,
+  path: '[Core primitives]/Fields',
+)
+Widget catchFieldStatusIndicatorContract(BuildContext context) {
+  final status = context.knobs.object.dropdown<CatchFieldStatus>(
+    label: 'Status',
+    options: CatchFieldStatus.values,
+    initialOption: CatchFieldStatus.saved,
+    labelBuilder: (value) => value.name,
+  );
+  final disableAnimations = context.knobs.boolean(
+    label: 'Disable animations',
+    initialValue: false,
+  );
+  return MediaQuery(
+    data: (MediaQuery.maybeOf(context) ?? const MediaQueryData()).copyWith(
+      disableAnimations: disableAnimations,
+    ),
+    child: Scaffold(
+      body: Center(child: CatchFieldStatusIndicator(status: status)),
+    ),
   );
 }
 
@@ -65,31 +100,32 @@ class _MotionReviewScreen extends StatelessWidget {
           padding: CatchInsets.pageBody,
           children: [
             Text(
-              'Field motion taste gate',
+              'Approved field motion',
               style: CatchTextStyles.headline(context),
             ),
             gapH8,
             Text(
-              'Four moments only. The proposal reuses CatchMotion.base, '
+              'Owner-approved on 2026-07-19. Four moments only. Production '
+              'reuses CatchMotion.base, '
               'CatchMotion.fast, CatchMotion.standardCurve, and '
-              'CatchMotion.easeOutBackCurve; no token additions are proposed.',
+              'CatchMotion.easeOutBackCurve; no tokens were added.',
               style: CatchTextStyles.bodyLead(context, color: t.ink2),
             ),
             gapH20,
             _Comparison(
               title: 'Accordion / inline editor',
-              current: _AccordionPreview(open: accordionOpen),
-              proposed: _ProposedReveal(open: accordionOpen),
+              before: _AccordionPreview(open: accordionOpen),
+              approved: _ProposedReveal(open: accordionOpen),
             ),
             gapH16,
             _Comparison(
               title: 'Disclosure drawer',
-              current: _DrawerPreview(
+              before: _DrawerPreview(
                 open: drawerOpen,
                 revealDuration: CatchFieldTokens.reveal,
                 opacityDuration: CatchFieldTokens.fast,
               ),
-              proposed: _DrawerPreview(
+              approved: _DrawerPreview(
                 open: drawerOpen,
                 revealDuration: CatchMotion.base,
                 opacityDuration: CatchMotion.base,
@@ -98,22 +134,22 @@ class _MotionReviewScreen extends StatelessWidget {
             gapH16,
             _Comparison(
               title: 'Idle → saving → saved',
-              current: CatchField.read(
+              before: _StatusSnapshot(status: status),
+              approved: CatchField.read(
                 title: 'Profile details',
-                body: 'Status swaps immediately today',
+                body: 'Shared production status motion',
                 status: status,
               ),
-              proposed: _ProposedStatus(status: status),
             ),
             gapH16,
             _Comparison(
               title: 'Selectable chip',
-              current: CatchChip.selectable(
+              before: CatchChip.selectable(
                 label: 'Run club',
                 selected: chipSelected,
                 onChanged: (_) {},
               ),
-              proposed: CatchChip.selectable(
+              approved: CatchChip.selectable(
                 label: 'Run club',
                 selected: chipSelected,
                 onChanged: (_) {},
@@ -131,14 +167,14 @@ class _MotionReviewScreen extends StatelessWidget {
 class _Comparison extends StatelessWidget {
   const _Comparison({
     required this.title,
-    required this.current,
-    required this.proposed,
+    required this.before,
+    required this.approved,
     this.note,
   });
 
   final String title;
-  final Widget current;
-  final Widget proposed;
+  final Widget before;
+  final Widget approved;
   final String? note;
 
   @override
@@ -156,8 +192,8 @@ class _Comparison extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final cards = [
-                _Preview(label: 'Current', child: current),
-                _Preview(label: 'Proposed', child: proposed),
+                _Preview(label: 'Before approval', child: before),
+                _Preview(label: 'Approved', child: approved),
               ];
               if (constraints.maxWidth < CatchLayout.maxContentWidth) {
                 return Column(children: [cards.first, gapH12, cards.last]);
@@ -237,7 +273,9 @@ class _ProposedReveal extends StatelessWidget {
         children: [
           const Text('Event description'),
           TweenAnimationBuilder<double>(
-            duration: CatchMotion.base,
+            duration: MediaQuery.maybeOf(context)?.disableAnimations == true
+                ? Duration.zero
+                : CatchMotion.base,
             curve: CatchMotion.standardCurve,
             tween: Tween(end: open ? 1 : 0),
             builder: (context, value, child) => ClipRect(
@@ -294,8 +332,8 @@ class _DrawerPreview extends StatelessWidget {
   }
 }
 
-class _ProposedStatus extends StatelessWidget {
-  const _ProposedStatus({required this.status});
+class _StatusSnapshot extends StatelessWidget {
+  const _StatusSnapshot({required this.status});
 
   final CatchFieldStatus status;
 
@@ -308,34 +346,16 @@ class _ProposedStatus extends StatelessWidget {
       child: Row(
         children: [
           const Expanded(child: Text('Profile details')),
-          AnimatedSwitcher(
-            duration: CatchMotion.base,
-            switchInCurve: status == CatchFieldStatus.saved
-                ? CatchMotion.easeOutBackCurve
-                : CatchMotion.standardCurve,
-            switchOutCurve: CatchMotion.standardCurve,
-            transitionBuilder: (child, animation) => FadeTransition(
-              opacity: animation,
-              child: status == CatchFieldStatus.saved
-                  ? ScaleTransition(scale: animation, child: child)
-                  : child,
+          switch (status) {
+            CatchFieldStatus.idle => const SizedBox.square(
+              dimension: CatchIcon.md,
             ),
-            child: switch (status) {
-              CatchFieldStatus.idle => const SizedBox.square(
-                key: ValueKey('idle'),
-                dimension: CatchIcon.md,
-              ),
-              CatchFieldStatus.saving => CatchFieldSpinner(
-                key: const ValueKey('saving'),
-                color: t.ink3,
-              ),
-              CatchFieldStatus.saved => Icon(
-                CatchIcons.checkCircleFilled,
-                key: const ValueKey('saved'),
-                color: t.success,
-              ),
-            },
-          ),
+            CatchFieldStatus.saving => CatchFieldSpinner(color: t.ink3),
+            CatchFieldStatus.saved => Icon(
+              CatchIcons.checkCircleFilled,
+              color: t.success,
+            ),
+          },
         ],
       ),
     );

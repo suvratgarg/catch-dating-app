@@ -1,6 +1,6 @@
 # Catch System Stretch Spec — Field 10/10 Goals + Adjacent Canonical Surfaces (for Codex)
 
-Status: owner-independent implementation complete; S2 production motion and §9.4 follow-up scheduling await owner sign-off · 2026-07-18
+Status: implementation complete; both owner gates approved and closed · 2026-07-19
 Scope: `lib/core/widgets/` (field family, top bar family, async/error/loading family, section layout), `lib/core/forms/`, `lib/core/schema_contracts/` + `contracts/` (S1 codegen), `lib/core/theme/` (motion usage only — no new token values without owner sign-off), `design/components/` (S5), `test/core/`, `widgetbook/`, `tool/`, docs.
 Supersedes: §14 of [`catch_field_section_system_spec.md`](catch_field_section_system_spec.md) ("base spec") — that section was a sketch; THIS document is the implementation contract for S1–S6. The base spec's §14 remains as rationale.
 Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec").
@@ -8,6 +8,8 @@ Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_gu
 Owner has authorized S1–S6 for implementation (2026-07-17), plus the
 adjacent-surface phases in §9–§10. Items marked `⚠ OWNER` retain their
 specific gates (mostly taste sign-offs), everything else is ratified.
+The owner approved both remaining gates on 2026-07-19: S2 production motion
+and the §9.4 semantic content-width follow-up.
 
 ---
 
@@ -195,6 +197,11 @@ exactly four moments — no others:
    reduced-motion assertions (animations skipped) and pump-through tests
    (no pending timers leak — the saved-tick timer already exists; reuse its
    discipline).
+
+Owner sign-off: approved 2026-07-19 from the Widgetbook review story. The
+production implementation uses `CatchMotion.base`, `CatchMotion.fast`,
+`CatchMotion.standardCurve`, and `CatchMotion.easeOutBackCurve`; no motion
+tokens were added.
 
 ### 4.3 Acceptance
 
@@ -466,10 +473,10 @@ starting point.
 
 ### 9.4.1 Configurable-surface findings (2026-07-18)
 
-This is the bounded survey only. No production changes below are authorized by
-the survey; the owner must review the dispositions before a follow-up schedules
-any `fix-now` item. Parameter counts exclude `key`. Usage counts include
-`lib/`, tests, and Widgetbook unless called out.
+The owner reviewed the bounded survey on 2026-07-19 and approved its sole
+`fix-now` item. The semantic content-width follow-up is now implemented;
+parameter counts below remain the original survey snapshot. Usage counts
+include `lib/`, tests, and Widgetbook unless called out.
 
 | Surface | Lines | Public parameter count | Dead named constructors | English defaults | Duplicated configuration / finding | Disposition |
 |---|---:|---|---|---|---|---|
@@ -479,7 +486,7 @@ any `fix-now` item. Parameter counts exclude `key`. Usage counts include
 | `CatchChip` | 380 | `tag` 6; `selectable` 7; `activity` 6; `removable` 7 | None; tag 7, selectable 20, activity 11, removable 4 uses | None; removable semantics use `MaterialLocalizations` | The private 13-field storage object is shared, while each public constructor exposes a disjoint interaction contract. No public duplicated cluster survives. | leave — the typed constructors are the desired state. |
 | Adaptive dialog + picker | 414 combined | adaptive dialog 5; confirm helper 7; confirm/form widgets 3 each; date picker 5; time picker 3 | None; APIs are function-based | None; confirm/cancel/date/time/done copy resolves through l10n | Cupertino/Material branching repeats by necessity, while dialog card geometry and Cupertino picker-sheet chrome are already shared internally. | leave — platform branching is explicit and localized. |
 | `CatchOptionGroup` | 307 | 10 | No named constructors; 18 uses | None | Variant, scrolling, trailing content, divider, and controller-driven `selectionPosition` describe orthogonal layout/animation concerns; no repeated caller bundle justified another config type. | leave — keep the current parent-owned selection contract. |
-| `CatchTabbedScreenScaffold` + `CatchTabbedPageScrollView` | 238 | scaffold 12; page 7 | None; one production scaffold and three production page uses | None | All three live page uses repeat the centered `ConstrainedBox(maxWidth: CatchLayout.maxContentWidth)` pattern around primary box content, while the page primitive already owns overlap and terminal padding. | fix-now (future follow-up) — promote an optional semantic max-width/content wrapper into the page primitive after owner review; do not alter sliver-native preview content. |
+| `CatchTabbedScreenScaffold` + `CatchTabbedPageScrollView` | 238 | scaffold 12; page 7 | None; one production scaffold and three production page uses | None | All three live page uses repeat the centered `ConstrainedBox(maxWidth: CatchLayout.maxContentWidth)` pattern around primary box content, while the page primitive already owns overlap and terminal padding. | complete (2026-07-19) — `constrainToContentWidth` centers box-content slivers around the canonical 600 px lane only when the viewport has surplus width; narrow layouts remain direct and Preview remains full-bleed/sliver-native. |
 | `CatchBottomDock` | 37 | 3 | No named constructors; 16 uses | None | Padding and safe-area ownership are the entire contract; no duplicated mode cluster. | leave — small, semantic, and correctly bounded. |
 
 ## 10. Base-spec leftovers (O1–O3) — scheduled
@@ -548,25 +555,25 @@ test additions; catalog + passes.jsonl stamps throughout.
 - The two-top-bar split until T4's census says otherwise — do not merge
   speculatively.
 
-## 14. Implementation completion audit (2026-07-18)
+## 14. Implementation completion audit (2026-07-19)
 
 This matrix maps every active or trigger-gated phase to current authoritative
-evidence. It separates completed implementation from the two decisions that the
-spec reserves for the owner.
+evidence. Both decisions reserved for the owner were approved on 2026-07-19
+and are included in the completed implementation.
 
 | Scope | Current evidence | State |
 |---|---|---|
 | S1a — generated constraints | `tool/contracts/generate_schema_contracts.mjs` emits `field_constraints.g.dart`; `--check` reports all generated schema outputs current. | complete |
 | S1b — descriptor adoption | Consumer profile and Host Club edit descriptor factories bind their constrained rows to `CatchContractConstraints`; the former 280/300 literals and Host inline editors are absent. | complete |
 | S1c — drift gate | `contract_alignment_test.dart` covers both factories and contains the seeded contradictory-limit probe; Flutter CI and `tools_manifest.json` run it. | complete |
-| S2 — motion language | `field_motion_use_cases.dart` presents current/proposed versions of exactly the four ratified moments with knobs and no token additions. Production wiring remains prohibited until owner review. | **owner gate** |
+| S2 — motion language | The owner-approved `field_motion_use_cases.dart` story covers exactly four moments and reduced motion. Production fields now share `CatchMotion.base`/`standardCurve` for editor, drawer, chevron, and scroll reveal; drawer content fades/slides at most 8 px; status cross-fades/scales with cancellable dismissal; `CatchChip.selectable` retains its short token and layout; no token was added. | complete |
 | S3 — exact field modes | Const public factories redirect to sealed row/toggle/edit/select/control implementations; the old object payload/materializer and `CatchFieldMode` are absent; state dispatch is exhaustive and the identity test pins `Widget.canUpdate`, `find.byType`, and state continuity. The public input facade remains long because public API compatibility and const construction are both explicit constraints; no all-mode private constructor remains. | complete |
 | S4 — accessibility | The catalog audit table records roles, announcements, targets, dynamic type, and RTL findings. Row, input, select, toggle, and control tests pin localized one-shot announcements, live errors, 44-point targets, 1.3×/2.0× rendering, and RTL lane mirroring. | complete |
 | S5 / S6 | No substantial admin-forms work order or recurring field-correction trigger fired. Their artifacts remain deliberately absent. | dormant by trigger |
 | T1–T5 — top bars | `CatchSliverTopBar` is absent; both bars consume required-copy `CatchTopBarSearch`; action shortcuts are absent; the split and `BuildContext` constraint are documented; the main file is 895 lines. | complete |
 | E1–E3 — async/error/loading | Async composers expose only context-aware builders; retry copy resolves through l10n; the catalog records skeleton/loading/error doctrine and the corrected current API. | complete |
 | P1–P3 — terminal padding | Both named stragglers use `CatchScrollTerminalPadding`; the seeded manifest-backed scanner passes; `docs/app_architecture.md` owns the shell placement contract. | complete |
-| §9.4 survey | The bounded findings table is present and no survey-only production fix was applied. Its `fix-now` follow-up remains unscheduled until owner reviews the dispositions. | **owner gate** |
+| §9.4 survey | The bounded findings table is present and owner-reviewed. `CatchTabbedPageScrollView.constrainToContentWidth` replaces the repeated Edit/Insights wrappers, remains direct at narrow widths, and leaves the sliver-native Preview page unconstrained. | complete |
 | O1 / O2 | Host Club edit uses `CatchFormRowList` and typed choice descriptors; the hand-rolled Host inline editor classes are absent. | complete |
 | O3 | Host Insights keeps `CatchField.control` only for the documented composite time-window/report grid; the catalog reiterates that plain selectors use `choices`/`stepper`. | complete |
 
@@ -576,8 +583,13 @@ The clean audit receipts include
 `catch-system-stretch-s3-exact-configs-20260718`, followed by the completion
 receipts `catch-system-stretch-completion-audit-20260718`,
 `catch-system-stretch-s4-select-invariants-20260718`, and
-`catch-system-stretch-completion-closeout-20260718`. The final matrix has 704
-passing Flutter tests across `test/core`, `test/user_profile`, and `test/hosts`;
-the full data-contract gate passes; full analysis has no errors or warnings;
-and agent readiness is 100/100. The unrelated Explore quality plan is not part
-of this implementation and remains untouched.
+`catch-system-stretch-completion-closeout-20260718`. The owner-gate closeout is
+recorded separately as `2026-07-19-catch-system-stretch-owner-gates`. Its final
+focused loop has 180 passing Flutter tests across CatchField, CatchChip, the
+tabbed-screen shell, and Host operations; focused app and Widgetbook analysis
+passes; the full design tool category passes; new-widget inventory reports zero
+unresolved items; and the repository readiness gate passes. The earlier final
+matrix also has 704 passing Flutter tests across `test/core`,
+`test/user_profile`, and `test/hosts`; the full data-contract gate passes and
+full analysis has no errors or warnings. The unrelated Explore quality plan is
+not part of this implementation and remains untouched.

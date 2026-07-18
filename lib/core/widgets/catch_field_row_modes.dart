@@ -101,7 +101,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       paddingDuration: _hasControl
           ? _expansionMotionDuration(context)
           : Duration.zero,
-      paddingCurve: CatchFieldTokens.curve,
+      paddingCurve: CatchMotion.standardCurve,
       content: _buildBody(t),
     );
     final row = positionsTrailing && trailingSlot != null
@@ -223,7 +223,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
             endPadding: rowPadding.right,
             bottomPadding: rowPadding.bottom,
             revealDuration: _expansionMotionDuration(context),
-            opacityDuration: _fieldDuration(context, CatchFieldTokens.standard),
+            opacityDuration: _fieldDuration(context, CatchMotion.base),
             onRevealEnd: _handleExpansionAnimationEnd,
           ),
         if (rootError?.isNotEmpty == true)
@@ -344,15 +344,14 @@ extension _CatchFieldRowModes on _CatchFieldState {
         value: widget.toggled,
         onChanged: _isSaving ? null : widget.onToggle,
         semanticLabel: _title,
-        status: widget.status,
+        status: _effectiveStatus,
         topPadding: 0,
       );
     }
-    if (_isSaving && !_visibleCommitBarOwnsSavingIndicator) {
-      return CatchFieldTrailing.saving();
-    }
-    if (!_isSaving && widget.status == CatchFieldStatus.saved && !_hasError) {
-      return CatchFieldTrailing.saved();
+    if (_statusLaneActive &&
+        !_visibleCommitBarOwnsSavingIndicator &&
+        !_hasError) {
+      return CatchFieldTrailing.status(status: _effectiveStatus);
     }
     if (!_isSaving && widget.valid && !_hasError) {
       return CatchFieldTrailing.valid(topPadding: 0);

@@ -1992,6 +1992,21 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Fields',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldStatusIndicator',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Saving and saved',
+                builder: _widgetbook_workspace_primitives_field_motion_use_cases
+                    .catchFieldStatusIndicatorContract,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Host operations',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -2565,6 +2580,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchPageDotsContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSliverContentWidth',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Readable sliver width',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchSliverContentWidthContractStates,
               ),
             ],
           ),
@@ -10433,7 +10459,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'CatchField',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Current vs proposed',
+                name: 'Approved production',
                 builder: _widgetbook_workspace_primitives_field_motion_use_cases
                     .catchFieldMotionReview,
               ),

@@ -87,13 +87,16 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
 /// Inner scroll owner for one page of [CatchTabbedScreenScaffold].
 ///
 /// It preserves the NestedScrollView overlap contract, isolates focus reveal
-/// requests from the horizontal pager, and owns shell-aware terminal padding.
+/// requests from the horizontal pager, owns shell-aware terminal padding, and
+/// can center box-content slivers at the canonical readable width without
+/// converting sliver-native pages into box layouts.
 class CatchTabbedPageScrollView extends StatefulWidget {
   const CatchTabbedPageScrollView({
     super.key,
     required this.scrollKey,
     required this.slivers,
     this.includeTerminalPadding = true,
+    this.constrainToContentWidth = false,
     this.controller,
     this.scrollStateController,
     this.physics,
@@ -103,6 +106,14 @@ class CatchTabbedPageScrollView extends StatefulWidget {
   final PageStorageKey<String> scrollKey;
   final List<Widget> slivers;
   final bool includeTerminalPadding;
+
+  /// Centers each supplied sliver around a [CatchLayout.maxContentWidth]
+  /// content lane plus the canonical [CatchInsets.pageBody] side gutters.
+  ///
+  /// Leave this false for full-bleed or intrinsically sliver-native pages such
+  /// as read-only previews. The overlap injector and terminal-padding sliver
+  /// always retain the viewport's full cross-axis extent.
+  final bool constrainToContentWidth;
   final ScrollController? controller;
   final CatchTabbedPageScrollController? scrollStateController;
   final ScrollPhysics? physics;
@@ -219,7 +230,11 @@ class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
                   context,
                 ),
               ),
-              ...widget.slivers,
+              for (final sliver in widget.slivers)
+                if (widget.constrainToContentWidth)
+                  CatchSliverContentWidth(sliver: sliver)
+                else
+                  sliver,
               if (widget.includeTerminalPadding)
                 const CatchSliverTerminalPadding(),
             ],
@@ -233,6 +248,42 @@ class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
                 );
         },
       ),
+    );
+  }
+}
+
+/// Centers one sliver around the canonical readable content lane on wide
+/// viewports while leaving phone layouts direct and full width.
+///
+/// [CatchTabbedPageScrollView] applies this contract when
+/// `constrainToContentWidth` is true. It remains public so sliver-native route
+/// shells can reuse and test the same width policy without private helpers.
+class CatchSliverContentWidth extends StatelessWidget {
+  const CatchSliverContentWidth({super.key, required this.sliver});
+
+  final Widget sliver;
+
+  @override
+  Widget build(BuildContext context) {
+    final pageExtent =
+        CatchLayout.maxContentWidth + CatchInsets.pageBody.horizontal;
+    return SliverLayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.crossAxisExtent <= pageExtent) return sliver;
+        return SliverCrossAxisGroup(
+          slivers: [
+            const SliverCrossAxisExpanded(
+              flex: 1,
+              sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
+            ),
+            SliverConstrainedCrossAxis(maxExtent: pageExtent, sliver: sliver),
+            const SliverCrossAxisExpanded(
+              flex: 1,
+              sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
+            ),
+          ],
+        );
+      },
     );
   }
 }
