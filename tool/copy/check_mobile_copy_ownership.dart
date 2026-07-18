@@ -490,11 +490,6 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
     return null;
   }
 
-  bool _isCopyName(String name) {
-    if (_diagnosticName.hasMatch(name)) return false;
-    return _copyArgumentNames.contains(name) || _copyMemberNames.contains(name);
-  }
-
   bool _isCopyMemberName(String name) {
     if (_diagnosticName.hasMatch(name)) return false;
     return _copyMemberNames.contains(name);
