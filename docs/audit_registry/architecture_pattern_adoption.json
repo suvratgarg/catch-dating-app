@@ -1,5 +1,5 @@
 {
-  "version": "1.5.41",
+  "version": "1.5.42",
   "updated": "2026-07-18",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -710,6 +710,13 @@
           "providerFree": true,
           "status": "aligned",
           "lastReviewedPass": "2026-07-03-host-operations-screen-state"
+        },
+        {
+          "path": "lib/hosts/presentation/host_team_workspace_state.dart",
+          "role": "provider-free Host Team workspace state for profile and hosted-club async branches, create/edit/sign-out action policy, owner-versus-team role labels, and typed edit-or-preview navigation intent",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
         },
         {
           "path": "test/hosts/host_operations_screen_test.dart",

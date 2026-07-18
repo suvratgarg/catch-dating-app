@@ -1,5 +1,5 @@
 {
-  "version": 29,
+  "version": 30,
   "updated": "2026-07-18",
   "owner": "agent_operating_model",
   "entries": [
@@ -40,7 +40,7 @@
       "guard": {
         "type": "command",
         "command": "flutter test test/hosts/host_operations_screen_test.dart test/event_success/event_success_questionnaire_config_editor_test.dart",
-        "guardEvidence": "tests require no Save profile action, one CatchFieldAccordion editor, field-local Cancel rollback and Done commit, pack preview before commit, and failure retention"
+        "guardEvidence": "Host team workspace edits active professional profile inline"
       },
       "owner_docs": [
         "docs/widget_catalog.md"
@@ -106,7 +106,7 @@
       "guard": {
         "type": "command",
         "command": "flutter test test/hosts/host_operations_screen_test.dart && node tool/design/check_tab_root_scroll_contracts.mjs --check",
-        "guardEvidence": "Host workspace tests cover the standalone guide toggle and shared tab composition; catalog and architecture require loaded/loading pageBody parity"
+        "guardEvidence": "Host analytics loading uses canonical section rhythm"
       },
       "owner_docs": [
         "docs/app_architecture.md",
@@ -1791,7 +1791,7 @@
       "guard": {
         "type": "command",
         "command": "flutter test test/event_success/event_success_setup_body_test.dart test/event_success/event_success_structure_config_editor_test.dart test/event_success/event_success_questionnaire_config_editor_test.dart test/event_success/event_success_playbooks_test.dart test/event_success/event_success_repository_test.dart test/event_success/event_success_runtime_test.dart && ./tool/check_data_contract.sh",
-        "guardEvidence": "setup body uses CatchField choices for live guide choices"
+        "guardEvidence": "setup body uses explanatory cards for live guide choices"
       },
       "owner_docs": [
         "docs/event_success.md",

@@ -935,6 +935,11 @@
       ],
       "enforcement": [
         {
+          "tool": "design:host-event-field-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md"
+        },
+        {
           "tool": "design:section-dividers",
           "stage": "scanner-gate",
           "docAnchor": "docs/widget_catalog.md"

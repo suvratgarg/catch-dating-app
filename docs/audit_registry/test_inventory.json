@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 520,
+  "total": 521,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -382,7 +382,7 @@
       ]
     },
     "tooling": {
-      "count": 117,
+      "count": 118,
       "files": [
         "tool/agent/check_agent_readiness.test.mjs",
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
@@ -417,6 +417,7 @@
         "tool/demo/seed_demo_data_append.test.mjs",
         "tool/demo/seed_demo_data_schema.test.mjs",
         "tool/design/check_component_lexicon.test.mjs",
+        "tool/design/check_host_event_field_contracts.test.mjs",
         "tool/design/check_option_group_usage.test.mjs",
         "tool/design/check_rail_contracts.test.mjs",
         "tool/design/check_reference_screens.test.mjs",
