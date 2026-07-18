@@ -1,5 +1,5 @@
 {
-  "version": "1.5.40",
+  "version": "1.5.41",
   "updated": "2026-07-18",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -430,7 +430,7 @@
       "adopters": [
         {
           "path": "lib/core/widgets/catch_empty_state.dart",
-          "role": "reference shell-aware sliver state viewport plus canonical empty-state placement adapter; preserves responsive overflow while shifting the optical center above floating shell chrome",
+          "role": "reference CatchStateViewport geometry shared by box and sliver empty/error placement; preserves responsive overflow while shifting the optical center above floating shell chrome",
           "providerFree": true,
           "status": "aligned",
           "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
@@ -444,7 +444,19 @@
         },
         {
           "path": "test/core/catch_primitives_test.dart",
-          "role": "floating-shell optical-center parity coverage for sliver empty and error states",
+          "role": "floating-shell optical-center parity coverage for box, sliver empty, and sliver error states",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "consumer Profile terminal box empty/error branches routed through CatchStateViewport inside the floating tab shell",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
+          "path": "test/profile/profile_widgets_test.dart",
+          "role": "Profile unavailable/error branch adoption coverage for shell-aware box placement",
           "status": "aligned",
           "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
         },

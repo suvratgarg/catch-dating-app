@@ -204,7 +204,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         key: Key(
           context.l10n.hostsHostEventManageScreenBodyHostEventManageScroll,
         ),
-        padding: CatchInsets.pageBodyUnderHeader,
+        padding: CatchInsets.pageBody,
         children: [
           ..._selectedSectionChildren(
             section: screenState.selectedSection,
@@ -589,6 +589,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     required String inviteLink,
   }) {
     final box = context.findRenderObject() as RenderBox?;
+    final l10n = context.l10n;
     final origin = box == null
         ? null
         : box.localToGlobal(Offset.zero) & box.size;
@@ -602,7 +603,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   club: club,
                   event: event,
                   inviteLink: inviteLink,
-                  l10n: context.l10n,
+                  l10n: l10n,
                   origin: origin,
                 ),
           )
@@ -614,8 +615,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   .logError(
                     error,
                     stackTrace,
-                    reason: context
-                        .l10n
+                    reason: l10n
                         .hostsHostEventManageScreenVisiblecopyHosteventmanagescreenSharehostprivatelinkFailed,
                   );
             },

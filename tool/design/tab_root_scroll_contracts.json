@@ -110,6 +110,7 @@
             {"text": "bottom: false", "minimumOccurrences": 1},
             {"text": "NestedScrollView", "minimumOccurrences": 1},
             {"text": "ProfileTabScrollView", "minimumOccurrences": 1},
+            {"text": "CatchStateViewport", "minimumOccurrences": 2},
             {"text": "managesFieldVisibility: true", "minimumOccurrences": 1},
             {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
           ]

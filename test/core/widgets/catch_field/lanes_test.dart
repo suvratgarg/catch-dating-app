@@ -402,6 +402,7 @@ void main() {
       _wrap(
         CatchField.nav(
           leading: Semantics(label: '27 May', child: const Text('27')),
+          leadingExtent: 48,
           title: 'Wednesday Evening Run',
           body: '2 attended · 20% full · free',
           onTap: () => tapped = true,

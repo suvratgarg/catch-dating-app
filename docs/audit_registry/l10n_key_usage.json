@@ -15,11 +15,11 @@
     ]
   },
   "summary": {
-    "catalogKeys": 2741,
-    "usedKeys": 2741,
+    "catalogKeys": 2738,
+    "usedKeys": 2738,
     "orphanedKeys": 0,
-    "usageReferences": 2973,
-    "catalogL10nReferences": 2973,
+    "usageReferences": 2970,
+    "catalogL10nReferences": 2970,
     "nonMessageL10nReferences": 1,
     "missingCatalogKeys": 0,
     "missingCatalogReferences": 0,
@@ -31,7 +31,7 @@
     {
       "key": "localeName",
       "path": "lib/core/widgets/catch_field.dart",
-      "line": 590,
+      "line": 595,
       "column": 29
     }
   ],
@@ -1095,7 +1095,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 87,
+          "line": 79,
           "column": 47
         }
       ],
@@ -1103,7 +1103,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 87,
+          "line": 79,
           "column": 47
         }
       ]
@@ -1115,7 +1115,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 76,
+          "line": 68,
           "column": 47
         }
       ],
@@ -1123,7 +1123,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 76,
+          "line": 68,
           "column": 47
         }
       ]
@@ -1135,7 +1135,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 86,
+          "line": 78,
           "column": 47
         }
       ],
@@ -1143,7 +1143,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 86,
+          "line": 78,
           "column": 47
         }
       ]
@@ -1155,7 +1155,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 75,
+          "line": 67,
           "column": 47
         }
       ],
@@ -1163,7 +1163,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 75,
+          "line": 67,
           "column": 47
         }
       ]
@@ -1175,7 +1175,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 91,
+          "line": 83,
           "column": 12
         }
       ],
@@ -1183,7 +1183,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 91,
+          "line": 83,
           "column": 12
         }
       ]
@@ -1195,7 +1195,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 80,
+          "line": 72,
           "column": 12
         }
       ],
@@ -1203,7 +1203,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 80,
+          "line": 72,
           "column": 12
         }
       ]
@@ -1215,7 +1215,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 89,
+          "line": 81,
           "column": 12
         }
       ],
@@ -1223,7 +1223,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 89,
+          "line": 81,
           "column": 12
         }
       ]
@@ -1235,7 +1235,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 78,
+          "line": 70,
           "column": 12
         }
       ],
@@ -1243,7 +1243,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 78,
+          "line": 70,
           "column": 12
         }
       ]
@@ -1255,7 +1255,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 93,
+          "line": 85,
           "column": 12
         }
       ],
@@ -1263,7 +1263,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 93,
+          "line": 85,
           "column": 12
         }
       ]
@@ -1275,7 +1275,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 82,
+          "line": 74,
           "column": 12
         }
       ],
@@ -1283,7 +1283,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-          "line": 82,
+          "line": 74,
           "column": 12
         }
       ]
@@ -5385,7 +5385,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/catch_field_row_modes.dart",
-          "line": 475,
+          "line": 480,
           "column": 24
         },
         {
@@ -5398,7 +5398,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/catch_field_row_modes.dart",
-          "line": 475,
+          "line": 480,
           "column": 24
         },
         {
@@ -5420,7 +5420,7 @@
         },
         {
           "path": "lib/core/widgets/catch_field_row_modes.dart",
-          "line": 384,
+          "line": 389,
           "column": 33
         }
       ],
@@ -5433,7 +5433,7 @@
         },
         {
           "path": "lib/core/widgets/catch_field_row_modes.dart",
-          "line": 384,
+          "line": 389,
           "column": 33
         }
       ]
@@ -5450,7 +5450,7 @@
         },
         {
           "path": "lib/core/widgets/catch_field_row_modes.dart",
-          "line": 385,
+          "line": 390,
           "column": 44
         }
       ],
@@ -5463,7 +5463,7 @@
         },
         {
           "path": "lib/core/widgets/catch_field_row_modes.dart",
-          "line": 385,
+          "line": 390,
           "column": 44
         }
       ]
@@ -5475,7 +5475,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/catch_field.dart",
-          "line": 593,
+          "line": 598,
           "column": 17
         }
       ],
@@ -5483,7 +5483,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/catch_field.dart",
-          "line": 593,
+          "line": 598,
           "column": 17
         }
       ]
@@ -5535,7 +5535,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/catch_field_row_modes.dart",
-          "line": 469,
+          "line": 474,
           "column": 22
         },
         {
@@ -5553,7 +5553,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/catch_field_row_modes.dart",
-          "line": 469,
+          "line": 474,
           "column": 22
         },
         {
@@ -6005,7 +6005,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/catch_section_layout.dart",
-          "line": 759,
+          "line": 761,
           "column": 38
         }
       ],
@@ -6013,7 +6013,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/catch_section_layout.dart",
-          "line": 759,
+          "line": 761,
           "column": 38
         }
       ]
@@ -20255,16 +20255,16 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 154,
-          "column": 24
+          "line": 225,
+          "column": 16
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 154,
-          "column": 24
+          "line": 225,
+          "column": 16
         }
       ]
     },
@@ -20275,7 +20275,7 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 58,
+          "line": 72,
           "column": 22
         }
       ],
@@ -20283,7 +20283,7 @@
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 58,
+          "line": 72,
           "column": 22
         }
       ]
@@ -20295,7 +20295,7 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 51,
+          "line": 65,
           "column": 16
         }
       ],
@@ -20303,7 +20303,7 @@
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 51,
+          "line": 65,
           "column": 16
         }
       ]
@@ -20315,7 +20315,7 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 292,
+          "line": 436,
           "column": 18
         }
       ],
@@ -20323,7 +20323,7 @@
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 292,
+          "line": 436,
           "column": 18
         }
       ]
@@ -20335,7 +20335,7 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 297,
+          "line": 441,
           "column": 18
         }
       ],
@@ -20343,7 +20343,7 @@
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 297,
+          "line": 441,
           "column": 18
         }
       ]
@@ -20355,7 +20355,7 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 302,
+          "line": 446,
           "column": 18
         }
       ],
@@ -20363,7 +20363,7 @@
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 302,
+          "line": 446,
           "column": 18
         }
       ]
@@ -20375,16 +20375,16 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 174,
-          "column": 24
+          "line": 241,
+          "column": 16
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 174,
-          "column": 24
+          "line": 241,
+          "column": 16
         }
       ]
     },
@@ -20395,16 +20395,16 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 221,
-          "column": 20
+          "line": 306,
+          "column": 16
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 221,
-          "column": 20
+          "line": 306,
+          "column": 16
         }
       ]
     },
@@ -20415,7 +20415,7 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 285,
+          "line": 429,
           "column": 10
         }
       ],
@@ -20423,7 +20423,7 @@
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 285,
+          "line": 429,
           "column": 10
         }
       ]
@@ -20435,7 +20435,7 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 49,
+          "line": 63,
           "column": 16
         }
       ],
@@ -20443,7 +20443,7 @@
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 49,
+          "line": 63,
           "column": 16
         }
       ]
@@ -20455,16 +20455,16 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 213,
-          "column": 12
+          "line": 266,
+          "column": 14
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 213,
-          "column": 12
+          "line": 266,
+          "column": 14
         }
       ]
     },
@@ -20475,16 +20475,16 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 113,
-          "column": 18
+          "line": 206,
+          "column": 16
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 113,
-          "column": 18
+          "line": 206,
+          "column": 16
         }
       ]
     },
@@ -20495,27 +20495,7 @@
       "usages": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 251,
-          "column": 18
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 251,
-          "column": 18
-        }
-      ]
-    },
-    {
-      "key": "eventSuccessEventSuccessQuestionnaireConfigEditorTitlePrompt",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 236,
+          "line": 285,
           "column": 16
         }
       ],
@@ -20523,28 +20503,8 @@
       "l10nReferences": [
         {
           "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 236,
+          "line": 285,
           "column": 16
-        }
-      ]
-    },
-    {
-      "key": "eventSuccessEventSuccessQuestionnaireConfigEditorVisiblecopyCustomQuestionSet",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 118,
-          "column": 22
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-          "line": 118,
-          "column": 22
         }
       ]
     },
@@ -21775,7 +21735,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 448,
+          "line": 446,
           "column": 26
         }
       ],
@@ -21783,7 +21743,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 448,
+          "line": 446,
           "column": 26
         }
       ]
@@ -21795,7 +21755,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 449,
+          "line": 447,
           "column": 26
         }
       ],
@@ -21803,7 +21763,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 449,
+          "line": 447,
           "column": 26
         }
       ]
@@ -21815,7 +21775,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 594,
+          "line": 592,
           "column": 41
         }
       ],
@@ -21823,7 +21783,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 594,
+          "line": 592,
           "column": 41
         }
       ]
@@ -21835,7 +21795,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 604,
+          "line": 602,
           "column": 41
         }
       ],
@@ -21843,7 +21803,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 604,
+          "line": 602,
           "column": 41
         }
       ]
@@ -21855,7 +21815,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 584,
+          "line": 582,
           "column": 41
         }
       ],
@@ -21863,7 +21823,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 584,
+          "line": 582,
           "column": 41
         }
       ]
@@ -22015,7 +21975,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 748,
+          "line": 746,
           "column": 28
         }
       ],
@@ -22023,7 +21983,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 748,
+          "line": 746,
           "column": 28
         }
       ]
@@ -22035,7 +21995,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 585,
+          "line": 583,
           "column": 41
         }
       ],
@@ -22043,7 +22003,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 585,
+          "line": 583,
           "column": 41
         }
       ]
@@ -22055,7 +22015,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 744,
+          "line": 742,
           "column": 28
         }
       ],
@@ -22063,7 +22023,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 744,
+          "line": 742,
           "column": 28
         }
       ]
@@ -22075,7 +22035,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 606,
+          "line": 604,
           "column": 40
         }
       ],
@@ -22083,7 +22043,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 606,
+          "line": 604,
           "column": 40
         }
       ]
@@ -22095,7 +22055,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 595,
+          "line": 593,
           "column": 41
         }
       ],
@@ -22103,7 +22063,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 595,
+          "line": 593,
           "column": 41
         }
       ]
@@ -22115,12 +22075,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 743,
+          "line": 741,
           "column": 28
         },
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 749,
+          "line": 747,
           "column": 28
         }
       ],
@@ -22128,12 +22088,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 743,
+          "line": 741,
           "column": 28
         },
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 749,
+          "line": 747,
           "column": 28
         }
       ]
@@ -22145,12 +22105,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 745,
+          "line": 743,
           "column": 28
         },
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 747,
+          "line": 745,
           "column": 28
         }
       ],
@@ -22158,12 +22118,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 745,
+          "line": 743,
           "column": 28
         },
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 747,
+          "line": 745,
           "column": 28
         }
       ]
@@ -22175,7 +22135,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 746,
+          "line": 744,
           "column": 28
         }
       ],
@@ -22183,7 +22143,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
-          "line": 746,
+          "line": 744,
           "column": 28
         }
       ]
@@ -30411,7 +30371,7 @@
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
           "line": 100,
-          "column": 39
+          "column": 45
         }
       ],
       "l10nReferenceCount": 2,
@@ -30424,7 +30384,7 @@
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
           "line": 100,
-          "column": 39
+          "column": 45
         }
       ]
     },
@@ -30875,7 +30835,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 291,
+          "line": 293,
           "column": 18
         }
       ],
@@ -30883,7 +30843,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 291,
+          "line": 293,
           "column": 18
         }
       ]
@@ -30895,7 +30855,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 381,
+          "line": 383,
           "column": 18
         }
       ],
@@ -30903,7 +30863,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 381,
+          "line": 383,
           "column": 18
         }
       ]
@@ -30915,7 +30875,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 525,
+          "line": 527,
           "column": 12
         }
       ],
@@ -30923,7 +30883,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 525,
+          "line": 527,
           "column": 12
         }
       ]
@@ -30935,7 +30895,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 531,
+          "line": 533,
           "column": 12
         }
       ],
@@ -30943,7 +30903,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 531,
+          "line": 533,
           "column": 12
         }
       ]
@@ -30955,7 +30915,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 527,
+          "line": 529,
           "column": 12
         }
       ],
@@ -30963,7 +30923,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 527,
+          "line": 529,
           "column": 12
         }
       ]
@@ -30975,7 +30935,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 529,
+          "line": 531,
           "column": 12
         }
       ],
@@ -30983,7 +30943,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 529,
+          "line": 531,
           "column": 12
         }
       ]
@@ -30995,7 +30955,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 268,
+          "line": 270,
           "column": 33
         }
       ],
@@ -31003,7 +30963,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 268,
+          "line": 270,
           "column": 33
         }
       ]
@@ -31015,7 +30975,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 518,
+          "line": 520,
           "column": 12
         }
       ],
@@ -31023,7 +30983,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 518,
+          "line": 520,
           "column": 12
         }
       ]
@@ -31035,7 +30995,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 493,
+          "line": 495,
           "column": 30
         }
       ],
@@ -31043,7 +31003,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 493,
+          "line": 495,
           "column": 30
         }
       ]
@@ -31055,7 +31015,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 516,
+          "line": 518,
           "column": 12
         }
       ],
@@ -31063,7 +31023,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 516,
+          "line": 518,
           "column": 12
         }
       ]
@@ -31075,12 +31035,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 514,
+          "line": 516,
           "column": 12
         },
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 520,
+          "line": 522,
           "column": 12
         }
       ],
@@ -31088,12 +31048,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 514,
+          "line": 516,
           "column": 12
         },
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 520,
+          "line": 522,
           "column": 12
         }
       ]
@@ -31185,7 +31145,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 288,
+          "line": 290,
           "column": 33
         }
       ],
@@ -31193,7 +31153,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 288,
+          "line": 290,
           "column": 33
         }
       ]
@@ -31205,7 +31165,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 378,
+          "line": 380,
           "column": 33
         }
       ],
@@ -31213,7 +31173,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 378,
+          "line": 380,
           "column": 33
         }
       ]
@@ -31225,7 +31185,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 442,
+          "line": 444,
           "column": 45
         }
       ],
@@ -31233,7 +31193,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 442,
+          "line": 444,
           "column": 45
         }
       ]
@@ -31245,7 +31205,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 310,
+          "line": 312,
           "column": 28
         }
       ],
@@ -31253,7 +31213,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 310,
+          "line": 312,
           "column": 28
         }
       ]
@@ -31265,7 +31225,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 343,
+          "line": 345,
           "column": 28
         }
       ],
@@ -31273,7 +31233,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 343,
+          "line": 345,
           "column": 28
         }
       ]
@@ -31285,7 +31245,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 402,
+          "line": 404,
           "column": 45
         }
       ],
@@ -31293,7 +31253,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
-          "line": 402,
+          "line": 404,
           "column": 45
         }
       ]
@@ -32925,7 +32885,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 458,
+          "line": 459,
           "column": 32
         }
       ],
@@ -32933,7 +32893,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 458,
+          "line": 459,
           "column": 32
         }
       ]
@@ -32945,7 +32905,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 461,
+          "line": 462,
           "column": 32
         }
       ],
@@ -32953,7 +32913,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 461,
+          "line": 462,
           "column": 32
         }
       ]
@@ -32965,7 +32925,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1130,
+          "line": 1133,
           "column": 30
         }
       ],
@@ -32973,7 +32933,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1130,
+          "line": 1133,
           "column": 30
         }
       ]
@@ -33025,7 +32985,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1078,
+          "line": 1081,
           "column": 18
         }
       ],
@@ -33033,7 +32993,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1078,
+          "line": 1081,
           "column": 18
         }
       ]
@@ -33095,7 +33055,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1227,
+          "line": 1230,
           "column": 31
         }
       ],
@@ -33103,7 +33063,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1227,
+          "line": 1230,
           "column": 31
         }
       ]
@@ -33115,7 +33075,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1041,
+          "line": 1044,
           "column": 31
         }
       ],
@@ -33123,7 +33083,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1041,
+          "line": 1044,
           "column": 31
         }
       ]
@@ -33135,7 +33095,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1232,
+          "line": 1235,
           "column": 31
         }
       ],
@@ -33143,7 +33103,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1232,
+          "line": 1235,
           "column": 31
         }
       ]
@@ -33155,7 +33115,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1176,
+          "line": 1179,
           "column": 31
         }
       ],
@@ -33163,7 +33123,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1176,
+          "line": 1179,
           "column": 31
         }
       ]
@@ -33175,7 +33135,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1209,
+          "line": 1212,
           "column": 31
         }
       ],
@@ -33183,7 +33143,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1209,
+          "line": 1212,
           "column": 31
         }
       ]
@@ -33195,7 +33155,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 446,
+          "line": 447,
           "column": 32
         }
       ],
@@ -33203,7 +33163,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 446,
+          "line": 447,
           "column": 32
         }
       ]
@@ -33235,12 +33195,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 998,
+          "line": 1001,
           "column": 27
         },
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1198,
+          "line": 1201,
           "column": 27
         }
       ],
@@ -33248,12 +33208,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 998,
+          "line": 1001,
           "column": 27
         },
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1198,
+          "line": 1201,
           "column": 27
         }
       ]
@@ -33265,7 +33225,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 940,
+          "line": 943,
           "column": 42
         }
       ],
@@ -33273,7 +33233,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 940,
+          "line": 943,
           "column": 42
         }
       ]
@@ -33285,7 +33245,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1217,
+          "line": 1220,
           "column": 31
         }
       ],
@@ -33293,7 +33253,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1217,
+          "line": 1220,
           "column": 31
         }
       ]
@@ -33305,12 +33265,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 418,
+          "line": 419,
           "column": 40
         },
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1249,
+          "line": 1252,
           "column": 27
         }
       ],
@@ -33318,12 +33278,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 418,
+          "line": 419,
           "column": 40
         },
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1249,
+          "line": 1252,
           "column": 27
         }
       ]
@@ -33355,7 +33315,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 905,
+          "line": 908,
           "column": 24
         }
       ],
@@ -33363,7 +33323,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 905,
+          "line": 908,
           "column": 24
         }
       ]
@@ -33375,7 +33335,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 910,
+          "line": 913,
           "column": 24
         }
       ],
@@ -33383,7 +33343,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 910,
+          "line": 913,
           "column": 24
         }
       ]
@@ -33395,7 +33355,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 909,
+          "line": 912,
           "column": 24
         }
       ],
@@ -33403,7 +33363,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 909,
+          "line": 912,
           "column": 24
         }
       ]
@@ -33415,7 +33375,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 907,
+          "line": 910,
           "column": 24
         }
       ],
@@ -33423,7 +33383,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 907,
+          "line": 910,
           "column": 24
         }
       ]
@@ -33435,7 +33395,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1055,
+          "line": 1058,
           "column": 30
         }
       ],
@@ -33443,7 +33403,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1055,
+          "line": 1058,
           "column": 30
         }
       ]
@@ -33495,7 +33455,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 613,
+          "line": 616,
           "column": 30
         }
       ],
@@ -33503,7 +33463,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 613,
+          "line": 616,
           "column": 30
         }
       ]
@@ -33515,7 +33475,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1204,
+          "line": 1207,
           "column": 16
         }
       ],
@@ -33523,7 +33483,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1204,
+          "line": 1207,
           "column": 16
         }
       ]
@@ -33535,7 +33495,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1002,
+          "line": 1005,
           "column": 24
         }
       ],
@@ -33543,7 +33503,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1002,
+          "line": 1005,
           "column": 24
         }
       ]
@@ -33555,7 +33515,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1059,
+          "line": 1062,
           "column": 24
         }
       ],
@@ -33563,7 +33523,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1059,
+          "line": 1062,
           "column": 24
         }
       ]
@@ -33575,7 +33535,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1201,
+          "line": 1204,
           "column": 31
         }
       ],
@@ -33583,7 +33543,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1201,
+          "line": 1204,
           "column": 31
         }
       ]
@@ -33595,7 +33555,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1121,
+          "line": 1124,
           "column": 30
         }
       ],
@@ -33603,7 +33563,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1121,
+          "line": 1124,
           "column": 30
         }
       ]
@@ -33615,7 +33575,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1259,
+          "line": 1262,
           "column": 16
         }
       ],
@@ -33623,7 +33583,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1259,
+          "line": 1262,
           "column": 16
         }
       ]
@@ -33635,7 +33595,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1021,
+          "line": 1024,
           "column": 16
         }
       ],
@@ -33643,7 +33603,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1021,
+          "line": 1024,
           "column": 16
         }
       ]
@@ -33655,7 +33615,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 900,
+          "line": 903,
           "column": 24
         }
       ],
@@ -33663,7 +33623,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 900,
+          "line": 903,
           "column": 24
         }
       ]
@@ -33675,7 +33635,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1075,
+          "line": 1078,
           "column": 33
         }
       ],
@@ -33683,7 +33643,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1075,
+          "line": 1078,
           "column": 33
         }
       ]
@@ -33695,7 +33655,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1128,
+          "line": 1131,
           "column": 33
         }
       ],
@@ -33703,7 +33663,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1128,
+          "line": 1131,
           "column": 33
         }
       ]
@@ -33715,7 +33675,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 607,
+          "line": 610,
           "column": 30
         }
       ],
@@ -33723,7 +33683,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 607,
+          "line": 610,
           "column": 30
         }
       ]
@@ -33755,7 +33715,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 384,
+          "line": 385,
           "column": 29
         }
       ],
@@ -33763,7 +33723,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 384,
+          "line": 385,
           "column": 29
         }
       ]
@@ -33775,12 +33735,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 424,
+          "line": 425,
           "column": 32
         },
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 680,
+          "line": 683,
           "column": 27
         }
       ],
@@ -33788,12 +33748,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 424,
+          "line": 425,
           "column": 32
         },
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 680,
+          "line": 683,
           "column": 27
         }
       ]
@@ -33825,7 +33785,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1052,
+          "line": 1055,
           "column": 33
         }
       ],
@@ -33833,7 +33793,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1052,
+          "line": 1055,
           "column": 33
         }
       ]
@@ -33865,7 +33825,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1009,
+          "line": 1012,
           "column": 31
         }
       ],
@@ -33873,7 +33833,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1009,
+          "line": 1012,
           "column": 31
         }
       ]
@@ -33885,7 +33845,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1155,
+          "line": 1158,
           "column": 24
         }
       ],
@@ -33893,7 +33853,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1155,
+          "line": 1158,
           "column": 24
         }
       ]
@@ -33905,7 +33865,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1090,
+          "line": 1093,
           "column": 24
         }
       ],
@@ -33913,7 +33873,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1090,
+          "line": 1093,
           "column": 24
         }
       ]
@@ -33925,7 +33885,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1104,
+          "line": 1107,
           "column": 24
         }
       ],
@@ -33933,7 +33893,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1104,
+          "line": 1107,
           "column": 24
         }
       ]
@@ -33945,7 +33905,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 903,
+          "line": 906,
           "column": 24
         }
       ],
@@ -33953,7 +33913,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 903,
+          "line": 906,
           "column": 24
         }
       ]
@@ -33965,7 +33925,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 902,
+          "line": 905,
           "column": 24
         }
       ],
@@ -33973,7 +33933,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 902,
+          "line": 905,
           "column": 24
         }
       ]
@@ -33985,12 +33945,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 435,
+          "line": 436,
           "column": 32
         },
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 697,
+          "line": 700,
           "column": 27
         }
       ],
@@ -33998,12 +33958,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 435,
+          "line": 436,
           "column": 32
         },
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 697,
+          "line": 700,
           "column": 27
         }
       ]
@@ -34015,7 +33975,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1140,
+          "line": 1143,
           "column": 24
         }
       ],
@@ -34023,7 +33983,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1140,
+          "line": 1143,
           "column": 24
         }
       ]
@@ -34035,7 +33995,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1066,
+          "line": 1069,
           "column": 32
         }
       ],
@@ -34043,7 +34003,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1066,
+          "line": 1069,
           "column": 32
         }
       ]
@@ -34055,7 +34015,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1211,
+          "line": 1214,
           "column": 16
         }
       ],
@@ -34063,7 +34023,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1211,
+          "line": 1214,
           "column": 16
         }
       ]
@@ -34075,7 +34035,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1030,
+          "line": 1033,
           "column": 35
         }
       ],
@@ -34083,7 +34043,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1030,
+          "line": 1033,
           "column": 35
         }
       ]
@@ -34095,7 +34055,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1219,
+          "line": 1222,
           "column": 30
         }
       ],
@@ -34103,7 +34063,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1219,
+          "line": 1222,
           "column": 30
         }
       ]
@@ -34195,7 +34155,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 73,
+          "line": 114,
           "column": 41
         }
       ],
@@ -34203,7 +34163,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 73,
+          "line": 114,
           "column": 41
         }
       ]
@@ -34215,7 +34175,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 120,
+          "line": 165,
           "column": 28
         }
       ],
@@ -34223,7 +34183,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 120,
+          "line": 165,
           "column": 28
         }
       ]
@@ -34240,7 +34200,7 @@
         },
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 181,
+          "line": 229,
           "column": 45
         }
       ],
@@ -34253,7 +34213,7 @@
         },
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 181,
+          "line": 229,
           "column": 45
         }
       ]
@@ -34265,7 +34225,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 92,
+          "line": 137,
           "column": 28
         }
       ],
@@ -34273,7 +34233,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 92,
+          "line": 137,
           "column": 28
         }
       ]
@@ -34285,7 +34245,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 210,
+          "line": 260,
           "column": 26
         }
       ],
@@ -34293,7 +34253,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 210,
+          "line": 260,
           "column": 26
         }
       ]
@@ -34305,7 +34265,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 205,
+          "line": 255,
           "column": 41
         }
       ],
@@ -34313,7 +34273,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 205,
+          "line": 255,
           "column": 41
         }
       ]
@@ -34325,7 +34285,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 138,
+          "line": 186,
           "column": 43
         }
       ],
@@ -34333,7 +34293,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 138,
+          "line": 186,
           "column": 43
         }
       ]
@@ -34345,7 +34305,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 88,
+          "line": 133,
           "column": 43
         }
       ],
@@ -34353,7 +34313,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 88,
+          "line": 133,
           "column": 43
         }
       ]
@@ -34365,7 +34325,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 148,
+          "line": 196,
           "column": 42
         }
       ],
@@ -34373,7 +34333,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 148,
+          "line": 196,
           "column": 42
         }
       ]
@@ -34385,7 +34345,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 163,
+          "line": 211,
           "column": 32
         }
       ],
@@ -34393,7 +34353,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 163,
+          "line": 211,
           "column": 32
         }
       ]
@@ -34405,7 +34365,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 168,
+          "line": 216,
           "column": 32
         }
       ],
@@ -34413,7 +34373,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 168,
+          "line": 216,
           "column": 32
         }
       ]
@@ -34425,12 +34385,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 101,
+          "line": 146,
           "column": 32
         },
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 157,
+          "line": 205,
           "column": 32
         }
       ],
@@ -34438,12 +34398,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 101,
+          "line": 146,
           "column": 32
         },
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 157,
+          "line": 205,
           "column": 32
         }
       ]
@@ -34455,7 +34415,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 178,
+          "line": 226,
           "column": 34
         }
       ],
@@ -34463,7 +34423,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 178,
+          "line": 226,
           "column": 34
         }
       ]
@@ -34475,7 +34435,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 111,
+          "line": 156,
           "column": 32
         }
       ],
@@ -34483,7 +34443,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 111,
+          "line": 156,
           "column": 32
         }
       ]
@@ -34495,7 +34455,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 106,
+          "line": 151,
           "column": 32
         }
       ],
@@ -34503,7 +34463,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-          "line": 106,
+          "line": 151,
           "column": 32
         }
       ]
@@ -36830,17 +36790,17 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 34,
+          "line": 33,
           "column": 29
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 53,
+          "line": 52,
           "column": 29
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 105,
+          "line": 104,
           "column": 33
         }
       ],
@@ -36853,17 +36813,17 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 34,
+          "line": 33,
           "column": 29
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 53,
+          "line": 52,
           "column": 29
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 105,
+          "line": 104,
           "column": 33
         }
       ]
@@ -37505,7 +37465,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 119,
+          "line": 118,
           "column": 39
         }
       ],
@@ -37513,7 +37473,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 119,
+          "line": 118,
           "column": 39
         }
       ]
@@ -37525,7 +37485,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 123,
+          "line": 122,
           "column": 39
         }
       ],
@@ -37533,28 +37493,8 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 123,
+          "line": 122,
           "column": 39
-        }
-      ]
-    },
-    {
-      "key": "hostsHostClubTeamScreenLabelSaveProfile",
-      "status": "used",
-      "usageCount": 1,
-      "usages": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 454,
-          "column": 31
-        }
-      ],
-      "l10nReferenceCount": 1,
-      "l10nReferences": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 454,
-          "column": 31
         }
       ]
     },
@@ -37565,7 +37505,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 531,
+          "line": 637,
           "column": 24
         }
       ],
@@ -37573,7 +37513,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 531,
+          "line": 637,
           "column": 24
         }
       ]
@@ -37585,26 +37525,26 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 437,
+          "line": 465,
           "column": 33
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 483,
-          "column": 33
+          "line": 531,
+          "column": 31
         }
       ],
       "l10nReferenceCount": 2,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 437,
+          "line": 465,
           "column": 33
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 483,
-          "column": 33
+          "line": 531,
+          "column": 31
         }
       ]
     },
@@ -37615,7 +37555,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 546,
+          "line": 652,
           "column": 27
         }
       ],
@@ -37623,7 +37563,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 546,
+          "line": 652,
           "column": 27
         }
       ]
@@ -37640,13 +37580,13 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 420,
+          "line": 448,
           "column": 33
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 462,
-          "column": 33
+          "line": 482,
+          "column": 31
         }
       ],
       "l10nReferenceCount": 3,
@@ -37658,13 +37598,13 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 420,
+          "line": 448,
           "column": 33
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 462,
-          "column": 33
+          "line": 482,
+          "column": 31
         }
       ]
     },
@@ -37680,13 +37620,13 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 416,
+          "line": 444,
           "column": 29
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 451,
-          "column": 29
+          "line": 477,
+          "column": 27
         }
       ],
       "l10nReferenceCount": 3,
@@ -37698,13 +37638,13 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 416,
+          "line": 444,
           "column": 29
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 451,
-          "column": 29
+          "line": 477,
+          "column": 27
         }
       ]
     },
@@ -37715,26 +37655,26 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 425,
+          "line": 453,
           "column": 33
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 470,
-          "column": 33
+          "line": 507,
+          "column": 31
         }
       ],
       "l10nReferenceCount": 2,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 425,
+          "line": 453,
           "column": 33
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 470,
-          "column": 33
+          "line": 507,
+          "column": 31
         }
       ]
     },
@@ -37745,7 +37685,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 180,
+          "line": 178,
           "column": 38
         }
       ],
@@ -37753,7 +37693,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 180,
+          "line": 178,
           "column": 38
         }
       ]
@@ -37765,26 +37705,26 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 432,
+          "line": 460,
           "column": 33
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 478,
-          "column": 33
+          "line": 525,
+          "column": 31
         }
       ],
       "l10nReferenceCount": 2,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 432,
+          "line": 460,
           "column": 33
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 478,
-          "column": 33
+          "line": 525,
+          "column": 31
         }
       ]
     },
@@ -37795,7 +37735,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 440,
+          "line": 468,
           "column": 32
         }
       ],
@@ -37803,7 +37743,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 440,
+          "line": 468,
           "column": 32
         }
       ]
@@ -37815,7 +37755,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 428,
+          "line": 456,
           "column": 32
         }
       ],
@@ -37823,7 +37763,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 428,
+          "line": 456,
           "column": 32
         }
       ]
@@ -37875,7 +37815,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 263,
+          "line": 265,
           "column": 20
         }
       ],
@@ -37883,7 +37823,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 263,
+          "line": 265,
           "column": 20
         }
       ]
@@ -37895,7 +37835,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 245,
+          "line": 246,
           "column": 20
         }
       ],
@@ -37903,7 +37843,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 245,
+          "line": 246,
           "column": 20
         }
       ]
@@ -38366,7 +38306,7 @@
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
           "line": 105,
-          "column": 36
+          "column": 39
         }
       ],
       "l10nReferenceCount": 1,
@@ -38374,7 +38314,7 @@
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
           "line": 105,
-          "column": 36
+          "column": 39
         }
       ]
     },
@@ -38385,7 +38325,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 154,
+          "line": 153,
           "column": 35
         }
       ],
@@ -38393,7 +38333,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 154,
+          "line": 153,
           "column": 35
         }
       ]
@@ -38425,7 +38365,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 153,
+          "line": 152,
           "column": 36
         }
       ],
@@ -38433,7 +38373,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 153,
+          "line": 152,
           "column": 36
         }
       ]
@@ -38445,16 +38385,16 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 108,
-          "column": 41
+          "line": 107,
+          "column": 39
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 108,
-          "column": 41
+          "line": 107,
+          "column": 39
         }
       ]
     },
@@ -38465,7 +38405,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 141,
+          "line": 140,
           "column": 33
         }
       ],
@@ -38473,7 +38413,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 141,
+          "line": 140,
           "column": 33
         }
       ]
@@ -38485,7 +38425,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 145,
+          "line": 144,
           "column": 33
         }
       ],
@@ -38493,7 +38433,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 145,
+          "line": 144,
           "column": 33
         }
       ]
@@ -38505,7 +38445,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 311,
+          "line": 310,
           "column": 21
         }
       ],
@@ -38513,7 +38453,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 311,
+          "line": 310,
           "column": 21
         }
       ]
@@ -38525,7 +38465,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 149,
+          "line": 148,
           "column": 33
         }
       ],
@@ -38533,7 +38473,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 149,
+          "line": 148,
           "column": 33
         }
       ]
@@ -38565,7 +38505,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 129,
+          "line": 128,
           "column": 35
         }
       ],
@@ -38573,7 +38513,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 129,
+          "line": 128,
           "column": 35
         }
       ]
@@ -38585,7 +38525,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 307,
+          "line": 306,
           "column": 16
         }
       ],
@@ -38593,7 +38533,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 307,
+          "line": 306,
           "column": 16
         }
       ]
@@ -38610,7 +38550,7 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 306,
+          "line": 305,
           "column": 16
         }
       ],
@@ -38623,7 +38563,7 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "line": 306,
+          "line": 305,
           "column": 16
         }
       ]
@@ -42970,8 +42910,8 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 175,
-          "column": 43
+          "line": 174,
+          "column": 41
         }
       ],
       "l10nReferenceCount": 2,
@@ -42983,8 +42923,8 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 175,
-          "column": 43
+          "line": 174,
+          "column": 41
         }
       ]
     },
@@ -43000,8 +42940,8 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 154,
-          "column": 41
+          "line": 152,
+          "column": 43
         }
       ],
       "l10nReferenceCount": 2,
@@ -43013,8 +42953,8 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 154,
-          "column": 41
+          "line": 152,
+          "column": 43
         }
       ]
     },
@@ -43025,12 +42965,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 374,
+          "line": 373,
           "column": 30
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 390,
+          "line": 389,
           "column": 40
         }
       ],
@@ -43038,12 +42978,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 374,
+          "line": 373,
           "column": 30
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 390,
+          "line": 389,
           "column": 40
         }
       ]
@@ -43055,12 +42995,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 375,
+          "line": 374,
           "column": 30
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 391,
+          "line": 390,
           "column": 40
         }
       ],
@@ -43068,12 +43008,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 375,
+          "line": 374,
           "column": 30
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
-          "line": 391,
+          "line": 390,
           "column": 40
         }
       ]
@@ -43085,26 +43025,26 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 108,
+          "line": 109,
           "column": 40
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 163,
-          "column": 40
+          "line": 161,
+          "column": 38
         }
       ],
       "l10nReferenceCount": 2,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 108,
+          "line": 109,
           "column": 40
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 163,
-          "column": 40
+          "line": 161,
+          "column": 38
         }
       ]
     },
@@ -43120,8 +43060,8 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 168,
-          "column": 32
+          "line": 164,
+          "column": 40
         }
       ],
       "l10nReferenceCount": 2,
@@ -43133,8 +43073,8 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 168,
-          "column": 32
+          "line": 164,
+          "column": 40
         }
       ]
     },
@@ -43146,12 +43086,12 @@
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
           "line": 107,
-          "column": 26
+          "column": 28
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 161,
-          "column": 28
+          "line": 159,
+          "column": 26
         }
       ],
       "l10nReferenceCount": 2,
@@ -43159,12 +43099,12 @@
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
           "line": 107,
-          "column": 26
+          "column": 28
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "line": 161,
-          "column": 28
+          "line": 159,
+          "column": 26
         }
       ]
     },
@@ -44565,7 +44505,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 442,
+          "line": 443,
           "column": 29
         }
       ],
@@ -44573,7 +44513,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 442,
+          "line": 443,
           "column": 29
         }
       ]
@@ -44625,7 +44565,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 349,
+          "line": 350,
           "column": 24
         }
       ],
@@ -44633,7 +44573,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 349,
+          "line": 350,
           "column": 24
         }
       ]
@@ -44665,7 +44605,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 340,
+          "line": 341,
           "column": 24
         }
       ],
@@ -44673,7 +44613,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 340,
+          "line": 341,
           "column": 24
         }
       ]
@@ -44725,7 +44665,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 439,
+          "line": 440,
           "column": 12
         }
       ],
@@ -44733,7 +44673,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 439,
+          "line": 440,
           "column": 12
         }
       ]
@@ -44810,7 +44750,7 @@
         },
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 436,
+          "line": 437,
           "column": 27
         }
       ],
@@ -44823,7 +44763,7 @@
         },
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 436,
+          "line": 437,
           "column": 27
         }
       ]
@@ -44865,7 +44805,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 452,
+          "line": 453,
           "column": 33
         }
       ],
@@ -44873,7 +44813,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 452,
+          "line": 453,
           "column": 33
         }
       ]
@@ -44925,7 +44865,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 317,
+          "line": 318,
           "column": 32
         }
       ],
@@ -44933,7 +44873,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 317,
+          "line": 318,
           "column": 32
         }
       ]
@@ -45005,12 +44945,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 329,
+          "line": 330,
           "column": 26
         },
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 346,
+          "line": 347,
           "column": 24
         }
       ],
@@ -45018,12 +44958,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 329,
+          "line": 330,
           "column": 26
         },
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 346,
+          "line": 347,
           "column": 24
         }
       ]
@@ -45035,12 +44975,12 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 323,
+          "line": 324,
           "column": 26
         },
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 337,
+          "line": 338,
           "column": 24
         }
       ],
@@ -45048,12 +44988,12 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 323,
+          "line": 324,
           "column": 26
         },
         {
           "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-          "line": 337,
+          "line": 338,
           "column": 24
         }
       ]
@@ -45065,16 +45005,16 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 114,
-          "column": 38
+          "line": 118,
+          "column": 35
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 114,
-          "column": 38
+          "line": 118,
+          "column": 35
         }
       ]
     },
@@ -45085,7 +45025,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 186,
+          "line": 197,
           "column": 35
         }
       ],
@@ -45093,7 +45033,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 186,
+          "line": 197,
           "column": 35
         }
       ]
@@ -45105,7 +45045,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 616,
+          "line": 627,
           "column": 33
         }
       ],
@@ -45113,7 +45053,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 616,
+          "line": 627,
           "column": 33
         }
       ]
@@ -45125,16 +45065,16 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 124,
-          "column": 43
+          "line": 133,
+          "column": 39
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 124,
-          "column": 43
+          "line": 133,
+          "column": 39
         }
       ]
     },
@@ -45145,7 +45085,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 518,
+          "line": 529,
           "column": 37
         }
       ],
@@ -45153,7 +45093,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 518,
+          "line": 529,
           "column": 37
         }
       ]
@@ -45165,7 +45105,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 378,
+          "line": 389,
           "column": 42
         }
       ],
@@ -45173,7 +45113,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 378,
+          "line": 389,
           "column": 42
         }
       ]
@@ -45185,7 +45125,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 621,
+          "line": 632,
           "column": 33
         }
       ],
@@ -45193,7 +45133,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 621,
+          "line": 632,
           "column": 33
         }
       ]
@@ -45205,7 +45145,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 532,
+          "line": 543,
           "column": 37
         }
       ],
@@ -45213,7 +45153,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 532,
+          "line": 543,
           "column": 37
         }
       ]
@@ -45225,16 +45165,16 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 119,
-          "column": 43
+          "line": 127,
+          "column": 39
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 119,
-          "column": 43
+          "line": 127,
+          "column": 39
         }
       ]
     },
@@ -45245,7 +45185,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 541,
+          "line": 552,
           "column": 32
         }
       ],
@@ -45253,7 +45193,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 541,
+          "line": 552,
           "column": 32
         }
       ]
@@ -45265,7 +45205,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 377,
+          "line": 388,
           "column": 42
         }
       ],
@@ -45273,7 +45213,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 377,
+          "line": 388,
           "column": 42
         }
       ]
@@ -45285,7 +45225,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 542,
+          "line": 553,
           "column": 32
         }
       ],
@@ -45293,7 +45233,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 542,
+          "line": 553,
           "column": 32
         }
       ]
@@ -45305,7 +45245,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 525,
+          "line": 536,
           "column": 37
         }
       ],
@@ -45313,7 +45253,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 525,
+          "line": 536,
           "column": 37
         }
       ]
@@ -45325,7 +45265,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 472,
+          "line": 483,
           "column": 32
         }
       ],
@@ -45333,7 +45273,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 472,
+          "line": 483,
           "column": 32
         }
       ]
@@ -45345,7 +45285,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 243,
+          "line": 254,
           "column": 27
         }
       ],
@@ -45353,7 +45293,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 243,
+          "line": 254,
           "column": 27
         }
       ]
@@ -45365,7 +45305,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 238,
+          "line": 249,
           "column": 12
         }
       ],
@@ -45373,7 +45313,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 238,
+          "line": 249,
           "column": 12
         }
       ]
@@ -45385,7 +45325,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 163,
+          "line": 174,
           "column": 32
         }
       ],
@@ -45393,7 +45333,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 163,
+          "line": 174,
           "column": 32
         }
       ]
@@ -45405,7 +45345,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 182,
+          "line": 193,
           "column": 33
         }
       ],
@@ -45413,7 +45353,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 182,
+          "line": 193,
           "column": 33
         }
       ]
@@ -45425,7 +45365,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 158,
+          "line": 169,
           "column": 31
         }
       ],
@@ -45433,7 +45373,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 158,
+          "line": 169,
           "column": 31
         }
       ]
@@ -45445,16 +45385,16 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 113,
-          "column": 39
+          "line": 117,
+          "column": 33
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 113,
-          "column": 39
+          "line": 117,
+          "column": 33
         }
       ]
     },
@@ -45465,7 +45405,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 333,
+          "line": 344,
           "column": 34
         }
       ],
@@ -45473,7 +45413,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 333,
+          "line": 344,
           "column": 34
         }
       ]
@@ -45485,7 +45425,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 232,
+          "line": 243,
           "column": 28
         }
       ],
@@ -45493,7 +45433,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 232,
+          "line": 243,
           "column": 28
         }
       ]
@@ -45505,7 +45445,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 233,
+          "line": 244,
           "column": 25
         }
       ],
@@ -45513,7 +45453,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 233,
+          "line": 244,
           "column": 25
         }
       ]
@@ -45525,7 +45465,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 231,
+          "line": 242,
           "column": 28
         }
       ],
@@ -45533,7 +45473,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 231,
+          "line": 242,
           "column": 28
         }
       ]
@@ -45545,7 +45485,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 515,
+          "line": 526,
           "column": 37
         }
       ],
@@ -45553,7 +45493,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 515,
+          "line": 526,
           "column": 37
         }
       ]
@@ -45565,7 +45505,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 529,
+          "line": 540,
           "column": 37
         }
       ],
@@ -45573,7 +45513,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 529,
+          "line": 540,
           "column": 37
         }
       ]
@@ -45585,7 +45525,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 522,
+          "line": 533,
           "column": 37
         }
       ],
@@ -45593,7 +45533,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_today.dart",
-          "line": 522,
+          "line": 533,
           "column": 37
         }
       ]
@@ -45605,7 +45545,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 561,
+          "line": 667,
           "column": 38
         }
       ],
@@ -45613,7 +45553,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 561,
+          "line": 667,
           "column": 38
         }
       ]
@@ -45625,7 +45565,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 562,
+          "line": 668,
           "column": 39
         }
       ],
@@ -45633,7 +45573,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 562,
+          "line": 668,
           "column": 39
         }
       ]
@@ -45645,7 +45585,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 563,
+          "line": 669,
           "column": 41
         }
       ],
@@ -45653,7 +45593,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 563,
+          "line": 669,
           "column": 41
         }
       ]
@@ -45705,7 +45645,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 554,
+          "line": 660,
           "column": 17
         }
       ],
@@ -45713,7 +45653,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-          "line": 554,
+          "line": 660,
           "column": 17
         }
       ]
@@ -52470,7 +52410,7 @@
         },
         {
           "path": "lib/core/widgets/catch_error_state.dart",
-          "line": 129,
+          "line": 130,
           "column": 53
         }
       ],
@@ -52483,7 +52423,7 @@
         },
         {
           "path": "lib/core/widgets/catch_error_state.dart",
-          "line": 129,
+          "line": 130,
           "column": 53
         }
       ]
@@ -52655,7 +52595,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1347,
+          "line": 1350,
           "column": 35
         }
       ],
@@ -52663,7 +52603,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1347,
+          "line": 1350,
           "column": 35
         }
       ]
@@ -52785,7 +52725,7 @@
       "usages": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1341,
+          "line": 1344,
           "column": 17
         },
         {
@@ -52803,7 +52743,7 @@
       "l10nReferences": [
         {
           "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "line": 1341,
+          "line": 1344,
           "column": 17
         },
         {
@@ -55855,7 +55795,7 @@
       "usages": [
         {
           "path": "lib/user_profile/presentation/profile_screen.dart",
-          "line": 227,
+          "line": 229,
           "column": 18
         }
       ],
@@ -55863,7 +55803,7 @@
       "l10nReferences": [
         {
           "path": "lib/user_profile/presentation/profile_screen.dart",
-          "line": 227,
+          "line": 229,
           "column": 18
         }
       ]
@@ -55875,7 +55815,7 @@
       "usages": [
         {
           "path": "lib/user_profile/presentation/profile_screen.dart",
-          "line": 224,
+          "line": 226,
           "column": 30
         }
       ],
@@ -55883,7 +55823,7 @@
       "l10nReferences": [
         {
           "path": "lib/user_profile/presentation/profile_screen.dart",
-          "line": 224,
+          "line": 226,
           "column": 30
         }
       ]

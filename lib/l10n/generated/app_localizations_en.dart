@@ -829,10 +829,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Remove question';
 
   @override
-  String get eventSuccessEventSuccessQuestionnaireConfigEditorTitlePrompt =>
-      'Prompt';
-
-  @override
   String get eventSuccessEventSuccessSetupBodyTitleYourGoalForTheEvent =>
       'Your goal for the event';
 
@@ -5815,9 +5811,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostClubTeamScreenTextNoHostClubsYet => 'No host clubs yet.';
 
   @override
-  String get hostsHostClubTeamScreenLabelSaveProfile => 'Save profile';
-
-  @override
   String get hostsHostAnalyticsLabelAllEvents => 'All events';
 
   @override
@@ -8659,11 +8652,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String
   get eventSuccessEventSuccessEventPreviewBodyScreenVisiblecopyThisClub =>
       'This club';
-
-  @override
-  String
-  get eventSuccessEventSuccessQuestionnaireConfigEditorVisiblecopyCustomQuestionSet =>
-      'Custom question set';
 
   @override
   String eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointPeople({

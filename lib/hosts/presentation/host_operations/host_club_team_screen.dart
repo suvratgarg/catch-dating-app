@@ -128,7 +128,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
             top: false,
             bottom: false,
             child: ListView(
-              padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
+              padding: CatchInsets.pageBody.copyWith(bottom: 0),
               children: [
                 Center(
                   child: ConstrainedBox(

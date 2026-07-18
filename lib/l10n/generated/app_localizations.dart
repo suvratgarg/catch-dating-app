@@ -1498,12 +1498,6 @@ abstract class AppLocalizations {
   String
   get eventSuccessEventSuccessQuestionnaireConfigEditorMessageRemoveQuestion;
 
-  /// Product copy used by lib/event_success/presentation/event_success_questionnaire_config_editor.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Prompt'**
-  String get eventSuccessEventSuccessQuestionnaireConfigEditorTitlePrompt;
-
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (title).
   ///
   /// In en, this message translates to:
@@ -9105,12 +9099,6 @@ abstract class AppLocalizations {
   /// **'No host clubs yet.'**
   String get hostsHostClubTeamScreenTextNoHostClubsYet;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Save profile'**
-  String get hostsHostClubTeamScreenLabelSaveProfile;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
   ///
   /// In en, this message translates to:
@@ -13537,13 +13525,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This club'**
   String get eventSuccessEventSuccessEventPreviewBodyScreenVisiblecopyThisClub;
-
-  /// Product copy used by lib/event_success/presentation/event_success_questionnaire_config_editor.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Custom question set'**
-  String
-  get eventSuccessEventSuccessQuestionnaireConfigEditorVisiblecopyCustomQuestionSet;
 
   /// Product copy used by lib/event_success/presentation/event_success_structure_config_editor.dart (visibleCopy).
   ///

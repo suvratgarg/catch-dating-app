@@ -1,5 +1,5 @@
 {
-  "version": 28,
+  "version": 29,
   "updated": "2026-07-18",
   "owner": "agent_operating_model",
   "entries": [
@@ -13,18 +13,18 @@
         "lib/core/widgets/catch_error_state.dart",
         "tool/design/check_tab_root_scroll_contracts.mjs"
       ],
-      "symptom": "A feature composes SliverFillRemaining around CatchEmptyState or CatchErrorState, so content centers in the full scaffold and appears too low behind the floating tab bar; local spacer nudges then drift between empty and error branches.",
+      "symptom": "A feature centers CatchEmptyState or CatchErrorState in the full box/sliver scaffold, so content appears too low behind the floating tab bar; local spacer nudges then drift between empty and error branches.",
       "guard": {
         "type": "command",
-        "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check && flutter test test/core/catch_primitives_test.dart --plain-name 'sliver empty and error states center in the visible floating-shell region'",
-        "guardEvidence": "the scanner rejects raw presentation composition and the primitive test verifies equal 50px upward optical correction for a 100px floating obstruction"
+        "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check && flutter test test/core/catch_primitives_test.dart test/profile/profile_widgets_test.dart",
+        "guardEvidence": "the manifest requires both Profile box branches, the scanner rejects raw sliver presentation composition, and primitive tests verify a 50px upward optical correction for a 100px floating obstruction"
       },
       "owner_docs": [
         "docs/app_architecture.md",
         "docs/widget_catalog.md",
         "docs/audit_registry/rules.json"
       ],
-      "notes": "Use CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState. Keep hasScrollBody true because CatchEmptyState uses LayoutBuilder for responsive overflow."
+      "notes": "Use CatchStateViewport for box roots and CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState for slivers. Keep hasScrollBody true because CatchEmptyState uses LayoutBuilder for responsive overflow."
     },
     {
       "id": "REG-EXPLICIT-FIELD-COMMIT-001",
@@ -55,13 +55,14 @@
         "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
         "lib/hosts/presentation/event_management/widgets/when_step.dart",
         "lib/hosts/presentation/edit_hosted_event_screen.dart",
-        "test/hosts/host_create_event_screen_test.dart"
+        "test/hosts/host_create_event_screen_test.dart",
+        "tool/design/check_host_event_field_contracts.mjs"
       ],
       "symptom": "Entering create/edit event reveals multiple drawers immediately, allows two choice drawers to stay open, or renders activity/pace choice chips without their activity color.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/hosts/host_create_event_screen_test.dart --plain-name 'CreateEventScreen basics disclosures start collapsed, share one accordion, and color activity chips'",
-        "guardEvidence": "the test verifies zero initial chips, mutual exclusion, per-activity pigments, and selected-activity pace accents"
+        "command": "node tool/design/check_host_event_field_contracts.mjs --check && flutter test test/hosts/host_create_event_screen_test.dart --plain-name 'CreateEventScreen basics disclosures start collapsed, share one accordion, and color activity chips'",
+        "guardEvidence": "the scanner covers all Host call sites; the test verifies zero initial chips, mutual exclusion, per-activity pigments, and selected-activity pace accents"
       },
       "owner_docs": [
         "docs/widget_catalog.md"
@@ -76,18 +77,19 @@
         "lib/core/widgets/catch_field.dart",
         "lib/core/widgets/catch_section_layout.dart",
         "lib/hosts/presentation/host_operations/host_events_list.dart",
-        "lib/hosts/presentation/widgets/host_team_management_section.dart"
+        "lib/hosts/presentation/widgets/host_team_management_section.dart",
+        "tool/design/check_section_dividers.mjs"
       ],
       "symptom": "A 48px date block or 42px avatar begins correctly but its section divider still assumes the standard 24px icon extent, leaving rules visibly short or misaligned.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/core/widgets/catch_section_test.dart test/hosts/host_operations_screen_test.dart",
-        "guardEvidence": "primitive and Host Past geometry tests require leading, text lane, divider start, and trailing section edge to agree"
+        "command": "node tool/design/check_section_dividers.mjs --summary --fail-on high && flutter test test/core/widgets/catch_section_test.dart test/hosts/host_operations_screen_test.dart",
+        "guardEvidence": "constructor assertions and the scanner require explicit custom-leading geometry; primitive and Host Past tests require leading, text lane, divider start, and trailing section edge to agree"
       },
       "owner_docs": [
         "docs/widget_catalog.md"
       ],
-      "notes": "Declare leadingExtent whenever CatchField.leading is wider than the standard icon slot."
+      "notes": "Declare leadingExtent for every CatchField.leading; custom leading content never inherits the standard icon slot implicitly."
     },
     {
       "id": "REG-HOST-SCREEN-RHYTHM-001",
@@ -95,6 +97,8 @@
       "status": "active",
       "applies_to": [
         "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+        "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+        "lib/hosts/presentation/host_event_manage_screen.dart",
         "lib/hosts/presentation/widgets/host_loading_skeletons.dart",
         "lib/event_success/presentation/event_success_defaults_panel.dart"
       ],

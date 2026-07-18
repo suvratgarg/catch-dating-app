@@ -65,6 +65,7 @@ import 'package:catch_dating_app/event_success/data/event_success_repository.dar
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks/modules.dart';
@@ -5354,6 +5355,20 @@ final _hostEventSetupDraft = _captureFixtures.hostSetupDraft(
   id: 'host-event-setup-capture-draft',
   club: _dashboardHostClub,
   savedAt: _captureNow,
+);
+final _hostEventGuideDefaults = EventSuccessDefaults.recommendedForActivity(
+  ActivityKind.dinner,
+  enabled: true,
+);
+final _hostEventGuideDraft = _hostEventSetupDraft.copyWith(
+  id: 'host-event-guide-capture-draft',
+  eventSuccessDefaults: _hostEventGuideDefaults.copyWith(
+    moduleSelectionConfigured: true,
+    selectedModuleIds: [
+      ..._hostEventGuideDefaults.selectedModuleIds,
+      EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+    ],
+  ),
 );
 final _hostEventPastScheduleDraft = _hostEventSetupDraft.copyWith(
   id: 'host-event-past-schedule-capture-draft',
@@ -10723,7 +10738,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
-      initialDraft: _hostEventSetupDraft,
+      initialDraft: _hostEventGuideDraft,
+      initialStep: 4,
+      loadMapTiles: false,
+      now: () => _captureNow,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_guide_question_pack',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => CreateEventScreen(
+      club: _dashboardHostClub,
+      initialDraft: _hostEventGuideDraft,
       initialStep: 4,
       loadMapTiles: false,
       now: () => _captureNow,

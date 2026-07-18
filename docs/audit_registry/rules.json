@@ -726,6 +726,11 @@
       ],
       "enforcement": [
         {
+          "tool": "design:host-event-field-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md#rule-changelog"
+        },
+        {
           "tool": "design:section-dividers",
           "stage": "scanner-gate",
           "docAnchor": "docs/widget_catalog.md"
@@ -978,6 +983,11 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "design:host-event-field-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
         {
           "tool": "lint:catch-ui-plugin-smoke",
           "stage": "analyzer-warning",
@@ -1752,7 +1762,7 @@
         "lib/core/presentation/**",
         "lib/core/widgets/catch_section_layout.dart"
       ],
-      "instruction": "Every direct consumer and host StatefulShellBranch must declare its true root scroll owners in tool/design/tab_root_scroll_contracts.json. Root scrolls end in CatchSliverTerminalPadding or CatchScrollTerminalPadding, use SafeArea(bottom: false) when the terminal owns the device inset, consume raw floating iOS shell obstruction, and add no tab-bar inset for Android chrome already reserved by Scaffold. Presentation empty/error slivers must use CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center.",
+      "instruction": "Every direct consumer and host StatefulShellBranch must declare its true root scroll owners in tool/design/tab_root_scroll_contracts.json. Root scrolls end in CatchSliverTerminalPadding or CatchScrollTerminalPadding, use SafeArea(bottom: false) when the terminal owns the device inset, consume raw floating iOS shell obstruction, and add no tab-bar inset for Android chrome already reserved by Scaffold. Box-layout terminal empty/error branches use CatchStateViewport; presentation slivers use CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center.",
       "sunset_when": [
         "Every tab-root scroll surface is structurally created through one canonical root-scroll constructor that appends terminal clearance automatically"
       ],
@@ -2863,6 +2873,6 @@
       ]
     }
   },
-  "version": "2.7.15",
-  "updated": "2026-07-14"
+  "version": "2.7.19",
+  "updated": "2026-07-18"
 }

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.36
+version: 1.4.37
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -510,6 +510,11 @@ Prefer box layout for auth, onboarding, create/edit forms, bottom sheets,
 dialogs, short settings pages, and small reusable widgets that need to work
 inside more than one scroll context.
 
+When a box-layout root branch renders a terminal empty or error state inside a
+floating app shell, wrap the state in `CatchStateViewport`. It subtracts the
+shell's published bottom obstruction from the optical center. Do not add a
+feature-local `Center`, spacer, or bottom padding to compensate for tab chrome.
+
 Sliver rules:
 
 - Direct children of `CustomScrollView.slivers` must be slivers.
@@ -520,7 +525,8 @@ Sliver rules:
 - Use `CatchSliverStateViewport`, `CatchSliverEmptyState`, or
   `CatchSliverErrorState` for centered sliver empty/error states. They preserve
   responsive overflow and subtract the floating shell's published bottom
-  obstruction from the optical center. Do not compose a feature-local
+  obstruction from the optical center through the same `CatchStateViewport`
+  geometry as box screens. Do not compose a feature-local
   `SliverFillRemaining` around `CatchEmptyState` or `CatchErrorState`.
 - If a parent owns a sliver scroll view, async loading/error/empty/data state
   widgets should usually return slivers too.

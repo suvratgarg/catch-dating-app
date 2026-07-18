@@ -157,6 +157,37 @@ test("allows CatchSection field rows to own sibling dividers", () => {
   assert.equal(findings.length, 0);
 });
 
+test("flags custom CatchField leading content without a declared extent", () => {
+  const findings = scanSourceForSectionDividers({
+    relativePath: "lib/hosts/presentation/host_operations/host_events_list.dart",
+    source: [
+      "CatchField.nav(",
+      "  title: 'Saturday Evening Run',",
+      "  leading: HostEventLifecycleDateBlock(day: '23'),",
+      ")",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "high");
+  assert.equal(findings[0].rule, "FIELD-LEADING-001");
+});
+
+test("allows custom CatchField leading content with a declared extent", () => {
+  const findings = scanSourceForSectionDividers({
+    relativePath: "lib/hosts/presentation/host_operations/host_events_list.dart",
+    source: [
+      "CatchField.nav(",
+      "  title: 'Saturday Evening Run',",
+      "  leading: HostEventLifecycleDateBlock(day: '23'),",
+      "  leadingExtent: 48,",
+      ")",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 0);
+});
+
 test("scanSectionDividers covers lib, test, and widgetbook sources", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-dividers-"));
   writeFile(

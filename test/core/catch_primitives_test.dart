@@ -2322,6 +2322,39 @@ void main() {
   });
 
   testWidgets(
+    'box state viewport centers in the visible floating-shell region',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(400, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const AppShellActiveTab(
+            index: 1,
+            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomOverlayInset: 100,
+            child: Scaffold(
+              key: ValueKey('box-state-scaffold'),
+              body: CatchStateViewport(
+                child: CatchEmptyState(title: 'Nothing here'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final scaffold = find.byKey(const ValueKey('box-state-scaffold'));
+      final offset =
+          tester.getCenter(find.byType(CatchEmptyStateContent)).dy -
+          tester.getCenter(scaffold).dy;
+      expect(offset, closeTo(-50, 1));
+    },
+  );
+
+  testWidgets(
     'sliver empty and error states center in the visible floating-shell region',
     (tester) async {
       tester.view.devicePixelRatio = 1;

@@ -71,6 +71,10 @@ final class _RowConfig extends _CatchFieldConfig {
          'Use either CatchField.leading or CatchField.icon, not both.',
        ),
        assert(
+         leading == null || leadingExtent != null,
+         'CatchField.leading requires an explicit leadingExtent.',
+       ),
+       assert(
          leadingExtent == null || (leading != null && leadingExtent > 0),
          'CatchField.leadingExtent requires non-null leading content.',
        ),
@@ -119,6 +123,10 @@ final class _RowConfig extends _CatchFieldConfig {
        assert(
          leading == null || icon == null,
          'Use either CatchField.leading or CatchField.icon, not both.',
+       ),
+       assert(
+         leading == null || leadingExtent != null,
+         'CatchField.leading requires an explicit leadingExtent.',
        ),
        assert(
          leadingExtent == null || (leading != null && leadingExtent > 0),
@@ -171,6 +179,10 @@ final class _RowConfig extends _CatchFieldConfig {
          'Use either CatchField.leading or CatchField.icon, not both.',
        ),
        assert(
+         leading == null || leadingExtent != null,
+         'CatchField.leading requires an explicit leadingExtent.',
+       ),
+       assert(
          leadingExtent == null || (leading != null && leadingExtent > 0),
          'CatchField.leadingExtent requires non-null leading content.',
        ),
@@ -219,6 +231,10 @@ final class _RowConfig extends _CatchFieldConfig {
        assert(
          leading == null || icon == null,
          'Use either CatchField.leading or CatchField.icon, not both.',
+       ),
+       assert(
+         leading == null || leadingExtent != null,
+         'CatchField.leading requires an explicit leadingExtent.',
        ),
        assert(
          leadingExtent == null || (leading != null && leadingExtent > 0),

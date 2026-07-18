@@ -773,6 +773,7 @@
         "host_create_policy_dynamic_pricing_disabled",
         "host_create_policy_dynamic_pricing_validation",
         "host_create_guide",
+        "host_create_guide_question_pack",
         "host_create_basics_validation",
         "host_create_custom_activity",
         "host_create_event_photos",

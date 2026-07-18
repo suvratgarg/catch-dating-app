@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.651
+version: 2.5.652
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,20 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.652
+
+- Added `CatchStateViewport` for box-layout terminal empty/error branches and
+  migrated Profile's unavailable/error paths. Box and sliver state placement
+  now share the same floating-shell optical-center correction.
+- Made custom `CatchField.leading` geometry mandatory in the constructor and
+  divider scanner, and added a Host event-field gate for collapsed entry state
+  plus activity-palette accents.
+- Normalized the remaining Host Team and Event Manage body rhythm to
+  `CatchInsets.pageBody`; loading and loaded branches now use the same top
+  spacing contract.
+- Routed `ProfileSurfaceRule` through `CatchDivider.section` and removed the
+  dead `Save profile` localization key after the field-local migration.
 
 ### 2.5.651
 
@@ -6481,7 +6495,8 @@ Widgetbook callers.
 | `CatchErrorState` | `lib/core/widgets/catch_error_state.dart:13` | Canonical branded app-facing error content. Supports full-screen, inline, and compact modes, mapped title/message copy, optional retry, and optional secondary action while composing the shared public `CatchErrorBody`. Widgetbook groups this family as the single "Error surfaces" review point. |
 | `CatchErrorBody` | `lib/core/widgets/catch_error_state.dart:82` | Direct branded error-body renderer used by error placement adapters. Owns icon sizing, title/message typography, retry and secondary-action layout, inline/compact surface wrapping, and full-screen centering. |
 | `CatchErrorScaffold` | `lib/core/widgets/catch_error_state.dart:247` | Full-screen/root-tab placement adapter for load failures. Keeps framework crashes separate from app data-load failures while reusing `CatchErrorBody`. |
-| `CatchSliverStateViewport` / `CatchSliverEmptyState` | `lib/core/widgets/catch_empty_state.dart` | Canonical sliver placement for terminal empty/error content. The viewport preserves a tight remaining region for responsive child overflow and subtracts the floating app-shell obstruction from the visible optical center; `CatchSliverEmptyState` supplies the standard cardless empty renderer. Presentation code must not recreate this with raw `SliverFillRemaining`. |
+| `CatchStateViewport` | `lib/core/widgets/catch_empty_state.dart` | Canonical box-layout placement for terminal empty/error content inside an app shell. Subtracts the floating bottom obstruction from the visible optical center and is used by Profile's unavailable/error branches; feature screens must not recreate this with local spacers or bottom padding. |
+| `CatchSliverStateViewport` / `CatchSliverEmptyState` | `lib/core/widgets/catch_empty_state.dart` | Canonical sliver placement for terminal empty/error content. The viewport preserves a tight remaining region for responsive child overflow and delegates floating-shell optical-center correction to `CatchStateViewport`; `CatchSliverEmptyState` supplies the standard cardless empty renderer. Presentation code must not recreate this with raw `SliverFillRemaining`. |
 | `CatchSliverErrorState` | `lib/core/widgets/catch_error_state.dart:341` | Sliver-native placement adapter for branded load failures. Reuses `CatchSliverStateViewport`, supports retry callbacks for provider invalidation, and therefore shares the same shell-aware optical center as empty states. |
 | `CatchInlineErrorState` | `lib/core/widgets/catch_error_state.dart:437` | Section/card placement adapter for branded load failures. Reuses `CatchErrorBody` in inline or compact mode when the rest of the screen remains usable. |
 | `CatchAsyncValueView<T>` | `lib/core/widgets/catch_async_value_view.dart:26` | Generic widget handling `AsyncValue` states for route and section bodies. Requires the context-aware `builder` callback and supports optional context-aware `loadingBuilder`/`errorBuilder` callbacks, Riverpod skip flags, branded `CatchErrorState.fromError` defaults, and retry callbacks for provider invalidation. Empty success states stay in the data builder. |

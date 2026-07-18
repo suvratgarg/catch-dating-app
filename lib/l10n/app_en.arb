@@ -1711,13 +1711,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_questionnaire_config_editor"
   },
-  "eventSuccessEventSuccessQuestionnaireConfigEditorTitlePrompt": "Prompt",
-  "@eventSuccessEventSuccessQuestionnaireConfigEditorTitlePrompt": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_questionnaire_config_editor.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_questionnaire_config_editor"
-  },
   "eventSuccessEventSuccessSetupBodyTitleYourGoalForTheEvent": "Your goal for the event",
   "@eventSuccessEventSuccessSetupBodyTitleYourGoalForTheEvent": {
     "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (title).",
@@ -10695,13 +10688,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
   },
-  "hostsHostClubTeamScreenLabelSaveProfile": "Save profile",
-  "@hostsHostClubTeamScreenLabelSaveProfile": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
-  },
   "hostsHostAnalyticsLabelAllEvents": "All events",
   "@hostsHostAnalyticsLabelAllEvents": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).",
@@ -15780,13 +15766,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_event_preview_body_screen"
-  },
-  "eventSuccessEventSuccessQuestionnaireConfigEditorVisiblecopyCustomQuestionSet": "Custom question set",
-  "@eventSuccessEventSuccessQuestionnaireConfigEditorVisiblecopyCustomQuestionSet": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_questionnaire_config_editor.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_questionnaire_config_editor"
   },
   "eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointPeople": "{toInt} people",
   "@eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointPeople": {

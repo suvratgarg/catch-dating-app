@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1093,
-    "widgetClasses": 965,
+    "total": 1094,
+    "widgetClasses": 966,
     "stateClasses": 128,
-    "publicClasses": 960,
+    "publicClasses": 961,
     "privateClasses": 133,
     "byRole": {
       "atom": 53,
-      "composition": 350,
+      "composition": 351,
       "feature-adapter": 287,
       "pattern": 18,
       "screen": 257,
@@ -28,11 +28,11 @@
       "keep-public-cataloged": 708,
       "keep-widget-state": 128,
       "review-catalog-coverage": 43,
-      "review-promote-or-consolidate": 19,
+      "review-promote-or-consolidate": 20,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
-      "cataloged": 671,
+      "cataloged": 672,
       "contracted": 190,
       "not-applicable": 128,
       "route-covered": 54,
@@ -3591,6 +3591,33 @@
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.sliver_state_viewport",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchStateViewport",
+      "file": "lib/core/widgets/catch_empty_state.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.state_viewport",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

@@ -1522,6 +1522,7 @@ Widget catchFieldContractStates(BuildContext context) {
               ),
             ),
           ),
+          leadingExtent: 48,
           title: 'Wednesday Evening Run',
           body: '2 attended · 20% full · free',
           emphasis: CatchFieldEmphasis.title,

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-18T12:53:12.168Z",
+  "generatedAt": "2026-07-18T13:19:13.476Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,16 +10,16 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 6,
-    "addedPublicWidgetClasses": 6,
+    "addedWidgetClasses": 1,
+    "addedPublicWidgetClasses": 1,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
     "movedWidgetClasses": 0,
     "movedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 6,
+    "coveredNewWidgets": 1,
     "unresolved": 0,
     "widgetsByStatus": {
-      "covered": 6
+      "covered": 1
     },
     "helpersByStatus": {},
     "issues": {}
@@ -28,77 +28,12 @@
   "movedWidgetHelpers": [],
   "addedWidgets": [
     {
-      "name": "CatchSliverStateViewport",
+      "name": "CatchStateViewport",
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "line": 92,
       "file": "lib/core/widgets/catch_empty_state.dart",
       "library": "lib/core/widgets/catch_empty_state.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CatchSliverEmptyState",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 121,
-      "file": "lib/core/widgets/catch_empty_state.dart",
-      "library": "lib/core/widgets/catch_empty_state.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventSuccessQuestionnaireConfigEditor",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 11,
-      "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-      "library": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CustomQuestionnaireFields",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 144,
-      "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-      "library": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventDetailsStep",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 16,
-      "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-      "library": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "HostTeamProfileRows",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 389,
-      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-      "library": "lib/hosts/presentation/host_operations_screen.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",

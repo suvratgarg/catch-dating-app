@@ -1514,6 +1514,38 @@ Widget catchSliverErrorStateCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: CatchStateViewport,
+  path: '[Core catalog]/Feedback',
+)
+Widget catchStateViewportCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchStateViewport',
+    catalogId: 'core.widgets.catch_state_viewport',
+    children: [
+      _StateCard(
+        label: 'box body / floating-shell optical center',
+        child: SizedBox(
+          height: 420,
+          child: AppShellActiveTab(
+            index: appShellHomeTabIndex,
+            bottomOverlayInset: 88,
+            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            child: CatchStateViewport(
+              child: CatchEmptyState(
+                icon: CatchIcons.calendarTodayOutlined,
+                title: 'No upcoming events',
+                message: 'The optical center excludes floating chrome.',
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: CatchSliverStateViewport,
   path: '[Core catalog]/Feedback',
 )

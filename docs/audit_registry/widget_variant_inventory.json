@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-18T12:52:21.370Z",
+  "generatedAt": "2026-07-18T13:18:57.015Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 860,
-    "components": 812,
-    "stateCards": 1764,
+    "useCases": 861,
+    "components": 813,
+    "stateCards": 1765,
     "reviewCandidates": 42,
     "oversizedUseCases": 42,
     "multiUseCaseComponents": 42
@@ -24661,6 +24661,38 @@
             {
               "label": "boot surface before delayed spinner",
               "normalizedLabel": "boot surface before delayed spinner"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchStateViewport",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core catalog]/Feedback"
+      ],
+      "labels": [
+        "box body / floating-shell optical center"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchStateViewportCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Feedback",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "box body / floating-shell optical center",
+              "normalizedLabel": "box body floating shell optical center"
             }
           ]
         }

@@ -3493,13 +3493,42 @@
       }
     },
     {
+      "id": "design:host-event-field-contracts",
+      "category": "design",
+      "path": "tool/design/check_host_event_field_contracts.mjs",
+      "command": "node tool/design/check_host_event_field_contracts.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Enforces collapsed event create/edit disclosures and activity-palette accents on ActivityKind, EventInteractionModel, and PaceLevel Host choice fields.",
+      "checks": [
+        "node --check tool/design/check_host_event_field_contracts.mjs",
+        "node --test tool/design/check_host_event_field_contracts.test.mjs",
+        "node tool/design/check_host_event_field_contracts.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "DESIGN-TOKENS-001",
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_host_event_field_contracts.test.mjs",
+        "contains": [
+          "flags activity choice fields without itemAccent",
+          "flags initially open event create fields",
+          "flags event accordions seeded with an expanded field"
+        ]
+      }
+    },
+    {
       "id": "design:section-dividers",
       "category": "design",
       "path": "tool/design/check_section_dividers.mjs",
       "command": "node tool/design/check_section_dividers.mjs --summary",
       "safety": "local",
       "status": "active",
-      "description": "Reports raw Divider inventory, high-confidence CatchSection row-divider misuse, feature row groups that assign sibling divider flags, and thin feature-local CatchSection wrappers so row and section hairlines route through CatchDivider roles.",
+      "description": "Reports raw Divider inventory, high-confidence CatchSection row-divider misuse, custom CatchField leading content without declared text-lane geometry, feature row groups that assign sibling divider flags, and thin feature-local CatchSection wrappers so row and section hairlines route through canonical roles.",
       "checks": [
         "node --check tool/design/check_section_dividers.mjs",
         "node --test tool/design/check_section_dividers.test.mjs",
@@ -3517,6 +3546,7 @@
         "contains": [
           "flags caller-owned internalDividerColor on divided sections",
           "flags raw dividers using old row divider opacities",
+          "flags custom CatchField leading content without a declared extent",
           "flags thin feature wrappers around CatchSection field rows",
           "flags feature row groups that manually assign sibling field dividers"
         ]
@@ -4272,7 +4302,7 @@
       "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Requires every consumer and host StatefulShellBranch to declare semantic shell-aware terminal clearance and rejects raw empty/error SliverFillRemaining composition that bypasses optical shell geometry.",
+      "description": "Requires every consumer and host StatefulShellBranch to declare semantic shell-aware terminal clearance, enforces registered box-layout CatchStateViewport adoption, and rejects raw empty/error SliverFillRemaining composition that bypasses optical shell geometry.",
       "checks": [
         "node --check tool/design/check_tab_root_scroll_contracts.mjs",
         "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
