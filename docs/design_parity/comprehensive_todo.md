@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.294
-updated: 2026-07-16
+version: 0.2.295
+updated: 2026-07-19
 owner: product_design_parity
 status: active
 ---
@@ -664,7 +664,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.dashboard.home` | 19 | 9 | 2 | None | None | Keep as the reference-complete baseline; finish remaining full-body display-data cleanup. |
 | P1 | `screen.event_success.companion` | 26 | 11 | 1 | Stage variants blocked on missing canonical exports | `DS-EVENT-SUCCESS-COMPANION-004` blocked | `EventSuccessCompanionScreenState` owns runtime moment selection/effect identity and companion action sections now receive provider-free action state plus typed callbacks. Route/runtime, action pending, text-scale, reduced-motion, and paired light/dark captures are closed. Remaining runtime-stage reference exports are blocked until canonical design sources are supplied. |
 | P1 | `screen.event.detail` | 21 | 14 | 1 | None | None | Booking dock, booking/cancel mutation feedback, host lookup, companion availability, body visibility, invite-loop visibility, host-app bottom-nav visibility, and social/review access now map through provider-free Event Detail display states. Continue only reference/pixel comparison, waitlist-specific mutation variants, or new product variants. |
-| P1 | `screen.explore.discovery` | 20 | 8 | 1 | None | None | Explore Discovery is registry-complete: sections/components, Widgetbook coverage, deterministic captures, advisory comparison, and `ExploreDiscoveryScreenState` provider-wave mapping are closed. The 2026-07 Explore v2 engineering pass aligned search/cover composition, full-feed counts, chronological day groups, sticky ticket strips, map-pin counts, five time scopes, club lanes, and truthful joined-club semantics. Product-policy variants remain owner-blocked in `EXPLORE-PRODUCT-DECISIONS-2026-07-10`, outside screen gaps. |
+| P1 | `screen.explore.discovery` | 20 | 8 | 1 | None | None | Explore Discovery is registry-complete: sections/components, Widgetbook coverage, deterministic captures, advisory comparison, and `ExploreDiscoveryScreenState` provider-wave mapping are closed. The 2026-07 quality pass adds ranked-but-non-destructive cover selection, honest CTA copy, a seven-day intent strip plus Any, cursor freshness, privacy-safe attendee proof, host/rating club context, and current widget-contract convergence. Cross Paths is retired until a consent-safe relationship source exists. |
 | P1 | `screen.host.chat` | 29 | 9 | 1 | Blocked: provider-specific offline policy and dedicated Host Chat reference masks | `DS-HOST-CHAT-001` blocked, `DS-HOST-CHAT-005` blocked | `ChatRouteState` now owns the route provider watch wave and mutation-pending flags; `HostChatScreenState` owns typed retry targets, report/block pending state, and top-bar action intents; `ChatReadMarkerState` owns read-marker decision policy; `ChatReadMarkerController` executes mark-read side effects; `ChatScrollCoordinator` owns initial/appended/send-success message list auto-scroll; `ChatThreadActionController` executes profile/share/report/block typed action intents; `ChatRetryController` executes typed route/message/Suvbot retry invalidation; `ChatThreadLookupState` owns profile/event/host lookup keys. Host Chat captures now include keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, and safety pending menu variants. The populated-thread reference baseline is within threshold against `host_chat_inquiry` (`12.71%` mismatch, meanDelta `5.28`). Resume when provider-specific profile/club/event offline copy and dedicated Host Chat reference masks are supplied. |
 | P1 | `screen.host.club.detail` | 19 | 10 | 1 | None | None | Public-view parity pass aligned the Claude photo fixture, one-line title scale, next-event address, next-run banner, 4-up stats, section order, activity chips, capture font loading, asset prewarm, floating hero chrome, stat value fit, regular-weight About copy, split generic-tag wraps, and hero-edge mask calibration. Advisory comparison is now within threshold at 15.82% / 15.22 after improving from 28.94% / 44.44 and 17.87% / 19.52. Current contract is closed as public-preview-only; reopen only if design adds distinct hosted schedule/share/contact/review or host-control variants. |
 | P1 | `screen.host.clubs` | 49 | 18 | 4 | None | None | Captures now cover the default Organizer overview, signed-out, co-host, loading, error/offline, empty, analytics, inline editor, payout, team mutation, and the canonical Host team workspace across profile fallback/save, hosted clubs, sign-out failures, accessibility, and reduced motion. `HostClubTeamScreen` owns profile Edit / Preview, selected-club team management, hosted-club navigation, and the terminal Edit-only sign-out row; the duplicate Settings and standalone Host Profile screens are deleted. The Host Organizer advisory compare remains within threshold after compact Organizer header, payout callout, metric-row, and mask calibration work (`5.71%` mismatch, mean delta `3.53`). |
@@ -1159,7 +1159,7 @@ tests, captures, Widgetbook, and audit receipts.
     entry."
   - The Claude-vs-Widgetbook inventory now treats source-backed generated
     entries as represented rather than missing. Existing generated entries for
-    `CatchCountPill`, `CatchCoverStory`, `CatchCrossPathsCard`,
+    `CatchCountPill`, `CatchCoverStory`, `CatchClubCover`, `CatchIndexRow`,
     `EventBookingDock`, `EventDetailHintList`, `EventDetailHostCard`,
     `EventDetailItinerary`, `EventDetailMapCard`,
     `EventDetailMechanismList`, `EventDetailPhotoStrip`,
@@ -1204,8 +1204,9 @@ tests, captures, Widgetbook, and audit receipts.
 - [ ] `TODO-P1-002` Explore Discovery: cover-header and fixture alignment pass
   complete; advisory baseline improved from 61.62% mismatch / 90.26 meanDelta
   to 41.87% mismatch / 36.74 meanDelta. The section/component registry split is
-  now explicit: CoverStory, CountPill, CrossPathsCard, and DateTicket/EventTicket
-  roles map to registered component contracts, while ClubPolaroid, filter rail,
+  now explicit: CoverStory, CountPill, ClubCover, IndexRow, and
+  DateTicket/EventTicket roles map to registered component contracts, while
+  ClubPolaroid, filter rail,
   activity grid, feed, chrome, map launcher, map route, and empty/error surfaces
   are registered screen-local sections. Deterministic captures now cover
   signed-in joined clubs, filter-empty, offline, unclaimed-host, selected-pin,
@@ -1389,7 +1390,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 
 - [x] `explore.discovery` (20 state follow-ups, 0 open gaps)
   - captured: `loading`, `club_source_error`, `event_feed_error`, `empty_city`, `no_search_results`, `discovery_feed`, `search_query`, `filters_active`, `anonymous_guest`, `unclaimed_host_projection`, `map_route`, `pins_ready`, `selected_pin`, `large_pan_scope`, `no_exact_pins`, `map_loading`, `map_error`, `offline`, `text_scale_2`, `reduced_motion`
-  - DP-EXPLORE-001: Closed by the screen-local Explore section registry plus formal component mappings for `catch.cover_story`, `catch.count_pill`, `catch.cross_paths_card`, and `catch.event_card`; ClubPolaroid remains section-local until reuse justifies a global component contract.
+  - DP-EXPLORE-001: Closed by the screen-local Explore section registry plus formal component mappings for `catch.cover_story`, `catch.count_pill`, `catch.club_cover`, `catch.index_row`, and `catch.event_card`; the unwired Cross Paths proposal is retired until a consent-safe relationship source exists, while ClubPolaroid remains section-local.
   - DP-EXPLORE-002: Closed by deterministic captures for signed-in joined clubs, filter-empty/no-filter results, explicit offline copy, unclaimed host projection, selected-pin map, and distance-ring map variants. Map masks and provider-wave cleanup remain tracked separately.
   - DP-EXPLORE-003: Closed by advisory comparison of `explore_search_query` against the Claude Explore discovery-feed reference; remaining visual divergence is tracked as reference/pixel follow-up, not as missing registry/capture coverage.
   - DS-EXPLORE-004: Closed by `ExploreDiscoveryScreenState`, which maps route provider-wave inputs into map launcher, body branch, and empty-state display state before `ExploreScreen` renders visual slivers.
@@ -1405,8 +1406,8 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - DP-EXPLORE-MAP-002: Closed by Widgetbook states for route, collapsed summary, selected event lead, nearby rail, loading/error, and text-scale map-sheet lead coverage.
 - [x] Feature-level drift/previews
   - DP-EXPLORE-LINT-001: Closed by `tool/design/check_screen_coverage.mjs`, which blocks contracted routes from remaining uncontracted in screen coverage.
-  - DP-EXPLORE-PREVIEW-001: Closed by existing Widgetbook coverage for Explore screen/chrome, filter rail/sheet, CoverStory, mixed feed cards, Cross Paths, map launcher, empty/error states, activity index, and map route states.
-  - Owner-blocked: `EXPLORE-PRODUCT-DECISIONS-2026-07-10` keeps Cross Paths/privacy, full-event visibility, cover ranking/imminence, generated-feed ranking, template authority, follow-graph semantics, friends-going, saved/for-you, and nothing-tonight choices out of autonomous implementation.
+  - DP-EXPLORE-PREVIEW-001: Closed by existing Widgetbook coverage for Explore screen/chrome, date/filter rail and sheet, CoverStory, mixed feed cards, veiled attendee proof, map launcher, empty/error states, activity index, and map route states.
+  - Product decisions resolved 2026-07-19: the cover is ranked independently while the feed stays chronological; Cross Paths is retired; attendee proof remains veiled and read-free; map/sheet distance shares one state. Future identified people, mutuals, follow-graph semantics, saved/for-you, and editorial lanes require their own product/data contract.
 
 ### P1 dashboard_home
 

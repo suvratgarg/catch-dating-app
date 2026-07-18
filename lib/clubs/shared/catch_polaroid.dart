@@ -117,7 +117,7 @@ class CatchPolaroid extends StatelessWidget {
                             titleStyle ??
                             CatchTextStyles.clubDisplay(
                               context,
-                              size: CatchLayout.clubPolaroidTitleSize,
+                              step: CatchDisplayStep.s,
                             ),
                       ),
                     ),

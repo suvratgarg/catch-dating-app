@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
@@ -7,11 +8,9 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
-import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_event_support_widgets.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +36,7 @@ class ExploreClubPolaroidCard extends StatelessWidget {
     final card = CatchPolaroid(
       onTap: onTap,
       paddingKey: const ValueKey('explore-club-polaroid-padding'),
-      media: ExploreClubCover(club: club),
+      media: CatchClubCover(club: club),
       mediaOverlay: Positioned(
         top: CatchSpacing.s3,
         right: CatchSpacing.s3,
@@ -48,11 +47,18 @@ class ExploreClubPolaroidCard extends StatelessWidget {
       title: state.title,
       subtitle: state.supportingLabel,
       showArrow: onTap != null,
-      footer: Row(
+      footer: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(child: ExploreClubTags(state: state)),
-          gapW10,
-          ExploreMonoLabel(state.ratingReviewLabel, color: t.ink3),
+          ClubHostIdentityLine(
+            hostName: state.hostName,
+            hostAvatarUrl: state.hostAvatarUrl,
+            eyebrow: state.hostEyebrow,
+            avatarSize: 24,
+            trailing: CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
+          ),
+          if (state.tags.isNotEmpty) ...[gapH8, ExploreClubTags(state: state)],
         ],
       ),
     );
@@ -92,11 +98,9 @@ class ExploreFeedClubRow extends StatelessWidget {
     final onTap = isSynthetic || onClubSelected == null
         ? null
         : () => onClubSelected!(club);
-    final card = CatchSurface(
+    final card = CatchSurface.card(
       onTap: onTap,
-      radius: CatchRadius.md,
       borderColor: t.line2,
-      elevation: CatchSurfaceElevation.card,
       padding: CatchInsets.content,
       child: Row(
         children: [
@@ -109,7 +113,7 @@ class ExploreFeedClubRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(
                 CatchLayout.clubCoverCompactMediaRadius,
               ),
-              child: ExploreClubCover(club: club, compact: true),
+              child: CatchClubCover(club: club, compact: true),
             ),
           ),
           gapW14,
@@ -118,13 +122,16 @@ class ExploreFeedClubRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                ExploreMonoLabel(state.rowKicker, color: palette.accent),
+                CatchMonoLabel(state.rowKicker, color: palette.accent),
                 gapH4,
                 Text(
                   state.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.clubDisplay(context, size: 27),
+                  style: CatchTextStyles.clubDisplay(
+                    context,
+                    step: CatchDisplayStep.m,
+                  ),
                 ),
                 gapH4,
                 Text(
@@ -134,7 +141,7 @@ class ExploreFeedClubRow extends StatelessWidget {
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 gapH4,
-                ExploreMonoLabel(state.ratingReviewLabel, color: t.ink3),
+                CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
               ],
             ),
           ),
@@ -159,28 +166,6 @@ class ExploreFeedClubRow extends StatelessWidget {
   }
 }
 
-class ExploreClubCover extends StatelessWidget {
-  const ExploreClubCover({super.key, required this.club, this.compact = false});
-
-  final Club club;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final url = club.primaryClubPhotoUrl?.trim();
-    if (url == null || url.isEmpty) {
-      return ClubPolaroidArtwork(club: club, compact: compact);
-    }
-    return CatchGradedImage(
-      child: CatchNetworkImage(
-        url,
-        errorBuilder: (_, _, _) =>
-            ClubPolaroidArtwork(club: club, compact: compact),
-      ),
-    );
-  }
-}
-
 class ExploreClubTags extends StatelessWidget {
   const ExploreClubTags({super.key, required this.state});
 
@@ -190,7 +175,7 @@ class ExploreClubTags extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     if (state.tags.isEmpty) {
-      return ExploreMonoLabel(
+      return CatchMonoLabel(
         state.memberCountLabel.toUpperCase(),
         color: t.ink3,
       );

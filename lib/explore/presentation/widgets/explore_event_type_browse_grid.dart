@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/formatters/catch_count_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_index_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -218,53 +220,29 @@ class ActivityTypeRow extends StatelessWidget {
     final t = CatchTokens.of(context);
     final visual = eventActivityVisual(entry.activityKind, context: context);
     final foreground = active ? visual.deep : t.ink;
-    return Semantics(
-      button: true,
+    return CatchIndexRow(
       selected: active,
-      label: context.l10n.exploreExploreEventTypeBrowseGridLabelLabelCountlabel(
-        label: visual.label,
-        countLabel: _countLabel(context.l10n, entry.count),
+      semanticLabel: context.l10n
+          .exploreExploreEventTypeBrowseGridLabelLabelCountlabel(
+            label: visual.label,
+            countLabel: CatchCountCopy.events(context.l10n, entry.count),
+          ),
+      title: visual.label,
+      titleStyle: CatchTextStyles.titleL(context, color: foreground),
+      leading: CatchStatusDot(
+        color: visual.accent,
+        size: CatchLayout.eventTypeIndexDotSize,
       ),
-      child: InkWell(
-        onTap: onTap,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: t.line)),
-          ),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: CatchLayout.eventTypeIndexRowHeight,
-            ),
-            child: Row(
-              children: [
-                CatchStatusDot(
-                  color: visual.accent,
-                  size: CatchLayout.eventTypeIndexDotSize,
-                ),
-                gapW16,
-                Expanded(
-                  child: Text(
-                    visual.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.titleL(context, color: foreground),
-                  ),
-                ),
-                gapW12,
-                Text(
-                  context.l10n.exploreExploreEventTypeBrowseGridTextCount(
-                    count: entry.count,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style: CatchTextStyles.titleL(context, color: t.ink2),
-                ),
-              ],
-            ),
-          ),
+      trailing: Text(
+        context.l10n.exploreExploreEventTypeBrowseGridTextCount(
+          count: entry.count,
         ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.end,
+        style: CatchTextStyles.titleL(context, color: t.ink2),
       ),
+      onTap: onTap,
     );
   }
 }
@@ -286,43 +264,19 @@ class MoreActivityTypesRow extends StatelessWidget {
         .exploreExploreEventTypeBrowseGridLabelRemainingcountMoreTypes(
           remainingCount: remainingCount,
         );
-    return Semantics(
-      button: true,
-      label: context.l10n
+    return CatchIndexRow(
+      semanticLabel: context.l10n
           .exploreExploreEventTypeBrowseGridLabelShowRemainingcountMoreActivity(
             remainingCount: remainingCount,
           ),
-      child: InkWell(
-        onTap: onTap,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: t.line)),
-          ),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: CatchLayout.eventTypeIndexRowHeight,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.kicker(context, color: t.ink3),
-                  ),
-                ),
-                gapW12,
-                Icon(
-                  CatchIcons.forwardArrow,
-                  size: CatchIcon.sm,
-                  color: t.ink3,
-                ),
-              ],
-            ),
-          ),
-        ),
+      title: label,
+      titleStyle: CatchTextStyles.kicker(context, color: t.ink3),
+      trailing: Icon(
+        CatchIcons.forwardArrow,
+        size: CatchIcon.sm,
+        color: t.ink3,
       ),
+      onTap: onTap,
     );
   }
 }
@@ -380,9 +334,6 @@ List<ActivityEntry> _rankedActivityEntries(List<ExploreEventItem> items) {
   });
   return entries;
 }
-
-String _countLabel(AppLocalizations l10n, int count) =>
-    l10n.exploreExploreEventTypeBrowseGridEventCount(count: count);
 
 bool _matchesActiveTag(String? tag, ActivityKind kind) {
   final normalized = tag?.trim().toLowerCase();

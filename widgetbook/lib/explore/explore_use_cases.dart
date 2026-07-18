@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
@@ -25,7 +26,6 @@ import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
@@ -1074,153 +1074,6 @@ Widget exploreEventsSectionStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Cross paths card states',
-  type: CatchCrossPathsCard,
-  path: '[Explore]/Cards',
-)
-Widget catchCrossPathsCardStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'CatchCrossPathsCard',
-    catalogId: 'card.explore.cross_paths',
-    children: [
-      _StateCard(
-        label: 'postcard',
-        child: SizedBox(
-          width: 340,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.socialRun,
-            quote: 'I am going for coffee after the run.',
-            displayName: 'Neha',
-            age: 29,
-            meta: 'Bandra · 2 km away',
-            kicker: 'Crossed paths',
-            onJoin: _noop,
-            onLike: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'photo row',
-        child: SizedBox(
-          width: 340,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.dinner,
-            quote: 'Ask me about the dessert menu.',
-            displayName: 'Maya',
-            age: 31,
-            meta: 'Fort · Host friend',
-            kicker: 'Also going',
-            variant: CatchCrossPathsVariant.photo,
-            onJoin: _noop,
-            onLike: _noop,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Cross paths portrait states',
-  type: CrossPathsPortrait,
-  path: '[Explore]/Cards',
-)
-Widget crossPathsPortraitStates(BuildContext context) {
-  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
-  return _CatalogScreen(
-    title: 'CrossPathsPortrait',
-    catalogId: 'card.explore.cross_paths.portrait',
-    children: [
-      _StateCard(
-        label: 'fallback and photo',
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 112,
-              height: 150,
-              child: CrossPathsPortrait(activity: activity),
-            ),
-            gapW12,
-            SizedBox(
-              width: 112,
-              height: 150,
-              child: CrossPathsPortrait(
-                activity: activity,
-                photoUrl:
-                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&q=80',
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Cross paths polaroid states',
-  type: CrossPathsPolaroidRail,
-  path: '[Explore]/Cards',
-)
-Widget crossPathsPolaroidRailStates(BuildContext context) {
-  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
-  return _CatalogScreen(
-    title: 'CrossPathsPolaroidRail',
-    catalogId: 'card.explore.cross_paths.polaroid_rail',
-    children: [
-      _StateCard(
-        label: 'fallback and photo',
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: CatchLayout.crossPathsRailColumnWidth,
-              child: CrossPathsPolaroidRail(activity: activity),
-            ),
-            gapW24,
-            SizedBox(
-              width: CatchLayout.crossPathsRailColumnWidth,
-              child: CrossPathsPolaroidRail(
-                activity: activity,
-                photoUrl:
-                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&q=80',
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Cross paths CTA states',
-  type: CrossPathsCtaRow,
-  path: '[Explore]/Cards',
-)
-Widget crossPathsCtaRowStates(BuildContext context) {
-  return const _CatalogScreen(
-    title: 'CrossPathsCtaRow',
-    catalogId: 'card.explore.cross_paths.cta_row',
-    children: [
-      _StateCard(
-        label: 'join and like',
-        child: CrossPathsCtaRow(
-          cta: 'Join her there',
-          onJoin: _noop,
-          onLike: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'disabled actions',
-        child: CrossPathsCtaRow(cta: 'Join waitlist'),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'This week states',
   type: ThisWeekRecommendationsSection,
   path: '[Explore]/Sections',
@@ -1360,12 +1213,12 @@ Widget exploreFeedClubRowStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Club cover states',
-  type: ExploreClubCover,
+  type: CatchClubCover,
   path: '[Explore]/Cards',
 )
 Widget exploreClubCoverStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreClubCover',
+    title: 'CatchClubCover',
     catalogId: 'card.explore.feed.club_cover',
     children: [
       _StateCard(
@@ -1373,14 +1226,14 @@ Widget exploreClubCoverStates(BuildContext context) {
         child: SizedBox(
           width: 260,
           height: 260,
-          child: ExploreClubCover(club: _clubs[0]),
+          child: CatchClubCover(club: _clubs[0]),
         ),
       ),
       _StateCard(
         label: 'compact fallback',
         child: SizedBox.square(
           dimension: 96,
-          child: ExploreClubCover(
+          child: CatchClubCover(
             club: _clubs[2].copyWith(imageUrl: null),
             compact: true,
           ),
@@ -1405,7 +1258,6 @@ Widget exploreClubTagsStates(BuildContext context) {
         child: ExploreClubTags(
           state: ExploreClubCardState.from(
             _clubs[0],
-            isSynthetic: false,
             l10n: context.l10n,
           ),
         ),
@@ -1415,33 +1267,9 @@ Widget exploreClubTagsStates(BuildContext context) {
         child: ExploreClubTags(
           state: ExploreClubCardState.from(
             _clubs[0].copyWith(tags: []),
-            isSynthetic: false,
             l10n: context.l10n,
           ),
         ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Mono label states',
-  type: ExploreMonoLabel,
-  path: '[Explore]/Cards',
-)
-Widget exploreMonoLabelStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return _CatalogScreen(
-    title: 'ExploreMonoLabel',
-    catalogId: 'card.explore.feed.mono_label',
-    children: [
-      _StateCard(
-        label: 'result count',
-        child: ExploreMonoLabel('10 PLANS - JUN 24-30', color: t.ink3),
-      ),
-      _StateCard(
-        label: 'accent row kicker',
-        child: ExploreMonoLabel('CLUB TO KNOW', color: t.accent),
       ),
     ],
   );

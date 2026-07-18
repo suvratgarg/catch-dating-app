@@ -15,6 +15,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_d
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
+import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -28,6 +29,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -39,8 +41,8 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -339,7 +341,7 @@ void main() {
       );
 
       final title = tester.widget<Text>(find.text('Neighbourhood Club'));
-      expect(title.style?.fontSize, CatchLayout.clubPolaroidTitleSize);
+      expect(title.style?.fontSize, CatchDisplayStep.s.size);
       expect(title.style?.fontStyle, isNot(FontStyle.italic));
       expect(find.byIcon(CatchIcons.forwardArrow), findsOneWidget);
 
@@ -1001,7 +1003,7 @@ void main() {
 
       expect(find.text(event.title), findsOneWidget);
 
-      await tester.tap(find.text('Claim a seat'));
+      await tester.tap(find.text('View and book'));
       await tester.pump();
 
       expect(selectedItem?.event.id, 'event-cover');
@@ -1159,15 +1161,15 @@ void main() {
       expect(find.text('Mumbai'), findsOneWidget);
       expect(find.text('Find an event worth showing up for.'), findsNothing);
       expect(find.byType(CatchCoverStory), findsNothing);
-      final cityMaterial = tester.widget<Material>(
+      final cityButton = tester.widget<CatchButton>(
         find
             .descendant(
               of: find.byType(ExploreCityPicker),
-              matching: find.byType(Material),
+              matching: find.byType(CatchButton),
             )
             .first,
       );
-      expect(cityMaterial.color, CatchTokens.light.surface);
+      expect(cityButton.backgroundColor, CatchTokens.light.surface);
     });
 
     testWidgets('ExploreDiscoveryCoverHeader search opens the compact field', (
@@ -1360,7 +1362,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: Scaffold(body: ExploreClubCover(club: club)),
+          home: Scaffold(body: CatchClubCover(club: club)),
         ),
       );
 
@@ -1380,6 +1382,7 @@ void main() {
         rating: 4.9,
         reviewCount: 61,
         nextEventLabel: 'Fri 8 PM',
+        hostName: 'Asha Shah',
       );
 
       await tester.pumpWidget(
@@ -1398,6 +1401,8 @@ void main() {
       );
 
       expect(find.text('4.9 · 61 REVIEWS'), findsOneWidget);
+      expect(find.text('Hosted by'), findsOneWidget);
+      expect(find.text('Asha Shah'), findsOneWidget);
       expect(find.text('View club'), findsNothing);
       expect(
         find.bySemanticsLabel(RegExp('Tempo House.*42 members.*61 REVIEWS')),
@@ -2036,7 +2041,7 @@ void main() {
       expect(find.text('HYD'), findsNothing);
       expect(find.text('Hyderabad'), findsOneWidget);
       final triggerSize = tester.getSize(find.byType(ExploreCityPicker));
-      expect(triggerSize.height, CatchIconButton.navSize);
+      expect(triggerSize.height, CatchSpacing.s12);
       expect(triggerSize.width, greaterThan(triggerSize.height));
       expect(triggerSize.width, lessThanOrEqualTo(132));
     });
@@ -3182,7 +3187,7 @@ void main() {
       expect(find.text('Event event-42'), findsOneWidget);
     });
 
-    testWidgets('ExploreScreen renders the guest club directory with Join', (
+    testWidgets('ExploreScreen renders a navigable guest club directory', (
       tester,
     ) async {
       final club = buildClub(id: 'club-99', name: 'Pace Social');
@@ -3218,7 +3223,8 @@ void main() {
 
       expect(find.text('Club directory'), findsOneWidget);
       expect(find.text('Pace Social'), findsWidgets);
-      expect(_catchButtonWithLabel('Join'), findsOneWidget);
+      expect(find.byType(ExploreClubPolaroidCard), findsOneWidget);
+      expect(_catchButtonWithLabel('Join'), findsNothing);
     });
 
     testWidgets('ExploreScreen shows skeleton cards while loading', (
@@ -3460,7 +3466,7 @@ void main() {
     });
 
     testWidgets(
-      'ExploreScreen restores the featured row when search replaces the cover',
+      'ExploreScreen keeps the featured event in the feed during search',
       (tester) async {
         final club = buildClub(id: 'search-cover-club', name: 'Search Social');
         final event = event_test.buildEvent(
@@ -3486,6 +3492,7 @@ void main() {
               exploreFeedViewModelProvider.overrideWithValue(
                 AsyncData(
                   ExploreFeedViewModel(
+                    featuredEventId: event.id,
                     items: [
                       ExploreEventItem(
                         event: event,
@@ -3506,7 +3513,7 @@ void main() {
         await _pumpClubUi(tester);
 
         expect(find.byType(CatchCoverStory), findsOneWidget);
-        expect(find.byType(EventDateRailCard), findsNothing);
+        expect(find.byType(EventDateRailCard), findsOneWidget);
         expect(find.textContaining('1 PLAN'), findsOneWidget);
 
         await tester.tap(find.byTooltip('Search events or clubs'));
@@ -3529,7 +3536,7 @@ void main() {
         await tester.pump();
 
         expect(find.byType(CatchCoverStory), findsOneWidget);
-        expect(find.byType(EventDateRailCard), findsNothing);
+        expect(find.byType(EventDateRailCard), findsOneWidget);
       },
     );
 
@@ -3559,6 +3566,7 @@ void main() {
             exploreFeedViewModelProvider.overrideWithValue(
               AsyncData(
                 ExploreFeedViewModel(
+                  featuredEventId: event.id,
                   items: [
                     ExploreEventItem(
                       event: event,
@@ -3583,7 +3591,7 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.text(event.title), findsOneWidget);
+      expect(find.text(event.title), findsWidgets);
       expect(find.byType(CatchCoverStory), findsOneWidget);
       expect(find.text('Map'), findsOneWidget);
       expect(

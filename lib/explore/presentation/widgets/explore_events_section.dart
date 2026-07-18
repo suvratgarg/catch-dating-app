@@ -3,12 +3,12 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_event_support_widgets.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -18,7 +18,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
 
 export 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
-export 'package:catch_dating_app/explore/presentation/widgets/explore_event_support_widgets.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
 
 final EdgeInsets _exploreEventsErrorPadding = CatchInsets.pageBody.copyWith(
@@ -198,6 +197,7 @@ List<Widget> _exploreContentSlivers(
       ? viewModel
       : ExploreFeedViewModel(
           items: effectiveItems,
+          featuredEventId: viewModel.featuredEventId,
           externalItems: viewModel.externalItems,
           dateSupplyCounts: viewModel.dateSupplyCounts,
           isExhaustive: viewModel.isExhaustive,
@@ -231,7 +231,7 @@ List<Widget> _exploreContentSlivers(
         child: Padding(
           padding: resultCountPadding,
           child: Builder(
-            builder: (context) => ExploreMonoLabel(
+            builder: (context) => CatchMonoLabel(
               sectionState.resultCountLabel,
               color: CatchTokens.of(context).ink3,
             ),

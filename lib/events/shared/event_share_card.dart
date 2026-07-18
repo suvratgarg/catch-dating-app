@@ -144,7 +144,7 @@ class EventShareCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: CatchTextStyles.eventDisplay(
                             context,
-                            size: 34,
+                            step: CatchDisplayStep.l,
                             height: 0.98,
                             color: t.primaryInk,
                           ),

@@ -812,7 +812,13 @@ List<Object> _exploreProviderOverrides({
         ),
       );
   final effectiveFeed =
-      feed ?? AsyncData(ExploreFeedViewModel(items: _memberDiscoveryItems));
+      feed ??
+      AsyncData(
+        ExploreFeedViewModel(
+          items: _memberDiscoveryItems,
+          featuredEventId: _memberDiscoveryItems.first.event.id,
+        ),
+      );
 
   return [
     cityListProvider.overrideWith((ref) async => _memberDiscoveryCities),
@@ -10012,6 +10018,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         AsyncData(
           ExploreFeedViewModel(
             items: [_memberDiscoveryItems.first],
+            featuredEventId: _memberDiscoveryItems.first.event.id,
             dateSupplyCounts: {
               ExploreTimeFilter.tonight: 1,
               ExploreTimeFilter.tomorrow: 1,
@@ -10042,7 +10049,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
           kicker: 'Bright activity backdrop',
           title: 'Thursday Evening Walk',
           body: 'A deliberately pale activity glow behind the complete story.',
-          cta: 'Claim a seat',
+          cta: 'View and book',
           data: '7:30 PM · Free',
           data2: '18 going · 4 left',
         ),

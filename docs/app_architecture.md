@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.39
+version: 1.4.40
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -196,6 +196,23 @@ map distance ring and sheet distance choice both mutate
 is labeled as events-only because club cards do not own exact coordinates.
 Empty-market recovery reuses the same provider-free city picker sheet as the
 header trigger.
+
+Cover promotion is a separate display decision from feed ordering. Resolve the
+cover through `selectExploreFeaturedEventId`, which reuses recommendation
+ranking, prioritizes joinable availability plus bounded attendance strength,
+and excludes hosted, joined, blocked, ineligible, cancelled, and past supply.
+Store the selected id on `ExploreFeedViewModel`; never infer the cover from
+`items.first`, and never remove the promoted event from the chronological body.
+Cover copy may describe only the next detail-page action available to that
+viewer; it must not promise a booking or waitlist mutation that the CTA does not
+execute.
+
+Explore social proof must not create profile reads per event row. The discovery
+ticket may render `signedUpCount` through veiled activity avatars using the
+shared Event Detail privacy contract. Identified people, mutuals, or Cross Paths
+require an explicit consent-safe relationship source and batched provider seam;
+without one, keep the proposal retired. Club cards may reuse already-loaded
+club host and aggregate rating data through shared club identity atoms.
 
 ## Dependency Direction
 

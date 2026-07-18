@@ -25,6 +25,7 @@ import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart'
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'explore_feed_view_model.g.dart';
@@ -39,6 +40,7 @@ DateTime exploreDiscoveryReferenceNow(Ref ref) => _discoveryReferenceNow();
 class ExploreFeedViewModel {
   const ExploreFeedViewModel({
     required this.items,
+    this.featuredEventId,
     this.externalItems = const <ExploreExternalEventItem>[],
     this.dateSupplyCounts = const <ExploreTimeFilter, int>{},
     this.isExhaustive = true,
@@ -47,6 +49,7 @@ class ExploreFeedViewModel {
   });
 
   final List<ExploreEventItem> items;
+  final String? featuredEventId;
   final List<ExploreExternalEventItem> externalItems;
   final Map<ExploreTimeFilter, int> dateSupplyCounts;
   final bool isExhaustive;
@@ -65,17 +68,10 @@ class ExploreFeedViewModel {
           .length;
   bool get hasMore => !isExhaustive;
   int? dateSupplyCount(ExploreTimeFilter filter) => dateSupplyCounts[filter];
-  ExploreEventItem? get featuredItem => items.isEmpty ? null : items.first;
-  List<ExploreEventItem> get railItems => items.skip(1).take(8).toList();
-
-  /// All items except the featured hero, grouped by local-time day in
-  /// chronological order. The day buckets are what the Explore feed renders
-  /// as sticky sections (`TODAY`, `TOMORROW`, day-of-week + date for further
-  /// out).
-  List<ExploreEventDayGroup> dayGroupsExcludingFeatured({DateTime? now}) {
-    final featured = featuredItem;
-    final referenceNow = now ?? DateTime.now();
-    return _groupByDay(items.where((item) => item != featured), referenceNow);
+  ExploreEventItem? get featuredItem {
+    final eventId = featuredEventId;
+    if (eventId == null) return null;
+    return items.where((item) => item.event.id == eventId).firstOrNull;
   }
 
   /// All items grouped by day, including the featured one. Useful when the
@@ -181,6 +177,108 @@ class ExploreEventItem {
     status: tileStatus,
     clubName: club.name,
   );
+}
+
+/// Picks one honest Explore hero from viewer-actionable events.
+///
+/// The existing recommendation scorer supplies preference, distance, and
+/// recency relevance. Explore then adds availability priority and bounded
+/// social proof so the chronologically first event cannot win merely by being
+/// first. Joined/hosted and blocked events stay in the feed but cannot become
+/// acquisition CTAs in the cover story.
+String? selectExploreFeaturedEventId({
+  required List<ExploreEventItem> items,
+  required DateTime now,
+  UserProfile? viewer,
+  Set<String> signedUpEventIds = const <String>{},
+  List<Event> attendedEvents = const <Event>[],
+  List<Event> signedUpEvents = const <Event>[],
+}) {
+  final candidates = items
+      .where((item) => _isExploreHeroCandidate(item, now))
+      .toList(growable: false);
+  if (candidates.isEmpty) return null;
+
+  final recommendationScores = <String, double>{
+    for (final recommendation in rankExploreEventRecommendations(
+      candidates: [
+        for (final item in candidates)
+          ExploreEventRecommendationCandidate(
+            event: item.event,
+            clubName: item.club.name,
+            clubLocation: item.club.location,
+          ),
+      ],
+      signedUpEventIds: signedUpEventIds,
+      attendedEvents: attendedEvents,
+      signedUpEvents: signedUpEvents,
+      viewer: viewer,
+      now: now,
+      limit: candidates.length,
+    ))
+      recommendation.event.id: recommendation.score,
+  };
+
+  final ranked = [...candidates]
+    ..sort((a, b) {
+      final bScore = _exploreHeroScore(b, recommendationScores);
+      final aScore = _exploreHeroScore(a, recommendationScores);
+      final byScore = bScore.compareTo(aScore);
+      if (byScore != 0) return byScore;
+      return a.event.startTime.compareTo(b.event.startTime);
+    });
+  return ranked.first.event.id;
+}
+
+bool _isExploreHeroCandidate(ExploreEventItem item, DateTime now) {
+  final event = item.event;
+  if (event.isCancelled || !event.startTime.isAfter(now)) return false;
+  final availability = item.availability;
+  if (availability == null) {
+    return !event.isFull &&
+        item.status != EventTileStatus.ineligible &&
+        item.status != EventTileStatus.full &&
+        item.status != EventTileStatus.joined &&
+        item.status != EventTileStatus.hosted;
+  }
+  return switch (availability.status) {
+    ViewerEventAvailabilityStatus.open ||
+    ViewerEventAvailabilityStatus.saved ||
+    ViewerEventAvailabilityStatus.approvedToBook ||
+    ViewerEventAvailabilityStatus.requestRequired ||
+    ViewerEventAvailabilityStatus.waitlistAvailable => true,
+    ViewerEventAvailabilityStatus.hosted ||
+    ViewerEventAvailabilityStatus.joined ||
+    ViewerEventAvailabilityStatus.waitlisted ||
+    ViewerEventAvailabilityStatus.attended ||
+    ViewerEventAvailabilityStatus.full ||
+    ViewerEventAvailabilityStatus.fullForViewer ||
+    ViewerEventAvailabilityStatus.inviteRequired ||
+    ViewerEventAvailabilityStatus.membershipRequired ||
+    ViewerEventAvailabilityStatus.runPreferencesRequired ||
+    ViewerEventAvailabilityStatus.ageRestricted ||
+    ViewerEventAvailabilityStatus.past ||
+    ViewerEventAvailabilityStatus.cancelled => false,
+  };
+}
+
+double _exploreHeroScore(
+  ExploreEventItem item,
+  Map<String, double> recommendationScores,
+) {
+  final availabilityScore = switch (item.availability?.status) {
+    ViewerEventAvailabilityStatus.approvedToBook => 48.0,
+    ViewerEventAvailabilityStatus.saved => 46.0,
+    ViewerEventAvailabilityStatus.open || null => 44.0,
+    ViewerEventAvailabilityStatus.requestRequired => 34.0,
+    ViewerEventAvailabilityStatus.waitlistAvailable => 24.0,
+    _ => 0.0,
+  };
+  final attendanceScore =
+      item.event.signedUpCount.clamp(0, 20).toDouble() * 0.8;
+  return availabilityScore +
+      attendanceScore +
+      (recommendationScores[item.event.id] ?? 0);
 }
 
 class ExploreExternalEventItem {
@@ -581,6 +679,18 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   return AsyncData(
     ExploreFeedViewModel(
       items: List.unmodifiable(items),
+      featuredEventId: selectExploreFeaturedEventId(
+        items: items,
+        viewer: userProfile,
+        signedUpEventIds: {
+          for (final participation
+              in participationsAsync.asData?.value ??
+                  const <EventParticipation>[])
+            if (participation.status == EventParticipationStatus.signedUp)
+              participation.eventId,
+        },
+        now: now,
+      ),
       externalItems: List.unmodifiable(externalItems),
       dateSupplyCounts: dateSupplyCounts,
       isExhaustive: discoveryWindow.isExhaustive,

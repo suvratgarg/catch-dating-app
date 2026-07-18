@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -166,6 +167,11 @@ Future<void> _pumpCaptureFrame(WidgetTester tester) async {
   await tester.pump();
   await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
   await pumpFeatureUiFor(tester, const Duration(milliseconds: 250));
+  // MaterialApp's theme transition can finish on the same frame that a nested
+  // implicit surface animation receives its final dark-theme target. Give that
+  // second-order animation one bounded beat so dark captures record the settled
+  // token colors instead of a light/dark midpoint.
+  await pumpFeatureUiFor(tester, CatchMotion.base);
 }
 
 Future<void> _writeBoundaryPng(

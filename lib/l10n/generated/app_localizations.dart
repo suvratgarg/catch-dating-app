@@ -2408,18 +2408,6 @@ abstract class AppLocalizations {
   /// **'Search'**
   String get exploreCatchCoverStoryTooltipSearch;
 
-  /// Product copy used by lib/explore/presentation/widgets/catch_cross_paths_card.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'TO: YOU'**
-  String get exploreCatchCrossPathsCardTextToYou;
-
-  /// Product copy used by lib/explore/presentation/widgets/catch_cross_paths_card.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Like'**
-  String get exploreCatchCrossPathsCardTooltipLike;
-
   /// Product copy used by lib/explore/presentation/widgets/explore_city_picker.dart (Text).
   ///
   /// In en, this message translates to:
@@ -10871,11 +10859,29 @@ abstract class AppLocalizations {
   /// **'10 km'**
   String get exploreExploreScreenStateLabel10Km;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (ctaLabel).
+  /// Explore cover-story CTA for an event the viewer can book after opening its details.
   ///
   /// In en, this message translates to:
-  /// **'Claim a seat'**
-  String get exploreExploreScreenStateCtalabelClaimASeat;
+  /// **'View and book'**
+  String get exploreExploreScreenStateCtaViewAndBook;
+
+  /// Explore cover-story CTA for an event that requires an attendance request.
+  ///
+  /// In en, this message translates to:
+  /// **'View and request'**
+  String get exploreExploreScreenStateCtaViewAndRequest;
+
+  /// Explore cover-story CTA for an event whose waitlist can be viewed from details.
+  ///
+  /// In en, this message translates to:
+  /// **'View waitlist'**
+  String get exploreExploreScreenStateCtaViewWaitlist;
+
+  /// Explore cover-story CTA for an event that has no immediate booking action.
+  ///
+  /// In en, this message translates to:
+  /// **'View event'**
+  String get exploreExploreScreenStateCtaViewEvent;
 
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
   ///
@@ -10894,6 +10900,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Club to know'**
   String get exploreExploreScreenStateCaptionClubToKnow;
+
+  /// Eyebrow above the host identity shown on an Explore club polaroid.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosted by'**
+  String get exploreExploreScreenStateLabelHostedBy;
 
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
   ///
@@ -17520,25 +17532,23 @@ abstract class AppLocalizations {
   /// **'Price on source'**
   String get eventsEventPriceCopyPriceOnSource;
 
-  /// Localized event count spoken for an Explore activity category.
+  /// Shared localized event-count copy for indexes and semantic labels.
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =0{No events} =1{1 event} other{{count} events}}'**
-  String exploreExploreEventTypeBrowseGridEventCount({required int count});
+  String coreCatchCountCopyEvents({required int count});
 
-  /// Explore distance label for a venue less than one kilometre away.
+  /// Shared distance label for a place less than one kilometre away.
   ///
   /// In en, this message translates to:
   /// **'{meters} m away'**
-  String exploreExploreScreenStateDistanceMetersAway({required int meters});
+  String coreCatchDistanceFormatterMetersAway({required int meters});
 
-  /// Explore distance label for a venue at least one kilometre away.
+  /// Shared distance label for a place at least one kilometre away.
   ///
   /// In en, this message translates to:
   /// **'{distance} km away'**
-  String exploreExploreScreenStateDistanceKilometersAway({
-    required Object distance,
-  });
+  String coreCatchDistanceFormatterKilometersAway({required String distance});
 
   /// Explore availability label for an event open to the viewer.
   ///

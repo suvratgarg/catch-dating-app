@@ -11,13 +11,13 @@
   },
   "totals": {
     "baselineTopLevelConceptProxy": 64,
-    "topLevelContracts": 68,
-    "concepts": 62,
-    "conceptDelta": -2,
-    "publicContractClasses": 194,
-    "productionWidgetAndStateClasses": 1094,
-    "members": 115,
-    "membersPerConcept": 1.85,
+    "topLevelContracts": 69,
+    "concepts": 63,
+    "conceptDelta": -1,
+    "publicContractClasses": 196,
+    "productionWidgetAndStateClasses": 1091,
+    "members": 116,
+    "membersPerConcept": 1.84,
     "unclassifiedContractEntries": 0,
     "unclassifiedProductionEntries": 0,
     "unresolvedCollisionFamilies": 0,
@@ -33,27 +33,27 @@
     "decisionsIndexed": 314
   },
   "widgetbookEvidence": {
-    "completeConcepts": 61,
-    "totalInstantiatedConcepts": 61,
-    "coveredMembers": 113,
-    "totalMembers": 113
+    "completeConcepts": 62,
+    "totalInstantiatedConcepts": 62,
+    "coveredMembers": 114,
+    "totalMembers": 114
   },
   "figmaMappings": {
     "current": 0,
     "stale": 0,
-    "missing": 68,
+    "missing": 69,
     "propertyDrift": 0,
     "variableBound": 0,
     "reviewSnapshots": 0
   },
   "claudeContext": {
     "status": "current",
-    "digest": "3850a12f1c85d7e411dad9ea981a25f929e16a34f77fdf33fb7535ec624e440b",
-    "contractDigest": "3850a12f1c85d7e411dad9ea981a25f929e16a34f77fdf33fb7535ec624e440b"
+    "digest": "6e83f0859a061f46d68e8561f64cb9c093485b31007595233ac87442f021b9c4",
+    "contractDigest": "6e83f0859a061f46d68e8561f64cb9c093485b31007595233ac87442f021b9c4"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "f2b4dde7d12e989595eec7b361b800bcf2c264c16e764022c1c417e898c3d869",
+    "handoffRequestDigest": "9a6916bf64a44c9239b5ae3f15f6fb02c9050b57f3269b13e7e1b6812eebf27d",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -300,7 +300,7 @@
     {
       "requirement": "6. Report concept and class counts separately",
       "status": "proven",
-      "evidence": "62 concepts, 194 contracted public classes, 1094 production widget/state classes"
+      "evidence": "63 concepts, 196 contracted public classes, 1091 production widget/state classes"
     },
     {
       "requirement": "7. Complete live Figma/Claude Badge + Field round trip",

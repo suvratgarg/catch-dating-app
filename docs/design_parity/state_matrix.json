@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-17",
+  "updated": "2026-07-19",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -910,8 +910,8 @@
       "id": "explore_discovery",
       "name": "Explore Discovery",
       "priority": "P1",
-      "status": "in_progress",
-      "nextPass": "explore-spec-policy-review-01",
+      "status": "ready",
+      "nextPass": "explore-quality-maintenance-01",
       "screens": [
         {
           "id": "explore.discovery",
@@ -932,17 +932,19 @@
           "componentIds": [
             "catch.button",
             "catch.chip",
+            "catch.club_cover",
             "catch.count_pill",
             "catch.cover_story",
-            "catch.cross_paths_card",
             "catch.event_card",
             "catch.field",
             "catch.icon_button",
+            "catch.index_row",
             "catch.surface",
             "catch.top_bar"
           ],
           "captureIds": [
             "member_event_discovery",
+            "explore_cover_contrast_floor",
             "explore_joined_clubs",
             "explore_loading",
             "explore_club_source_error",
@@ -975,14 +977,14 @@
               "kind": "external",
               "status": "available",
               "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/components/explore",
-              "notes": "Claude Explore components: CoverStory, CountPill, and CrossPathsCard."
+              "notes": "Claude Explore components include CoverStory, CountPill, and the retired CrossPathsCard proposal."
             },
             {
               "id": "claude.explore-spec-v2",
               "kind": "external",
               "status": "available",
               "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/explorations/screen-specs/Explore Spec.html",
-              "notes": "Explore v2 product model and behavior spec dated 2026-07-08. Open choices remain owner-blocked in EXPLORE-PRODUCT-DECISIONS-2026-07-10 until accepted."
+              "notes": "Explore v2 product model and behavior spec dated 2026-07-08. The owner accepted the quality-pass defaults on 2026-07-19; the completed backlog receipt records the resolution."
             },
             {
               "id": "screen.explore.discovery",
@@ -1085,6 +1087,7 @@
               "status": "captured",
               "captureIds": [
                 "member_event_discovery",
+                "explore_cover_contrast_floor",
                 "explore_joined_clubs"
               ],
               "previewIds": [
@@ -1257,7 +1260,7 @@
             {
               "id": "DP-EXPLORE-001",
               "status": "closed",
-              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, catch.cross_paths_card for the catalog-only CrossPathsCard contract, and catch.event_card for DateTicket/EventTicket-style ticket/card roles. ClubPolaroid remains section-local through ExploreClubPolaroidCard and ClubPolaroidArtwork until reuse justifies a global component contract."
+              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, and catch.event_card for DateTicket/EventTicket-style ticket/card roles. The catalog-only CrossPathsCard proposal was retired because it had no consent-safe relationship source. ClubPolaroid remains section-local through ExploreClubPolaroidCard and ClubPolaroidArtwork until reuse justifies a global component contract."
             },
             {
               "id": "DP-EXPLORE-002",
@@ -1684,7 +1687,7 @@
         {
           "id": "DP-EXPLORE-PREVIEW-001",
           "status": "closed",
-          "nextAction": "Closed by existing Widgetbook use cases for Explore screen, browse chrome, filter rail/sheet, CoverStory, mixed feed cards, Cross Paths, map launcher, empty/error states, activity index, and map route states."
+          "nextAction": "Closed by existing Widgetbook use cases for Explore screen, browse chrome, filter rail/sheet, CoverStory, mixed feed cards, privacy-safe attendee proof, map launcher, empty/error states, the governed activity index, and map route states."
         }
       ]
     },

@@ -64,6 +64,7 @@ ExploreEventItem _exploreItem({
   int? bookedCount,
   int priceInPaise = 0,
   double? distanceFromUserKm,
+  ViewerEventAvailability? availability,
   double startingPointLat = 19.0608,
   double startingPointLng = 72.8365,
 }) {
@@ -85,6 +86,7 @@ ExploreEventItem _exploreItem({
       startingPointLng: startingPointLng,
     ),
     club: club,
+    availability: availability,
     isJoinedClubMember: isJoinedClubMember,
     isFollowedClubSignal: isFollowedClubSignal,
     distanceFromUserKm: distanceFromUserKm,
@@ -384,10 +386,7 @@ void main() {
       final state = ExploreFilterSheetState.from(
         filters: const ExploreFilterSelection(),
         sourceClubs: const [],
-        viewModel: const ExploreFeedViewModel(
-          items: [],
-          isExhaustive: false,
-        ),
+        viewModel: const ExploreFeedViewModel(items: [], isExhaustive: false),
         l10n: _l10n,
       );
 
@@ -422,13 +421,128 @@ void main() {
 
       expect(state.kicker, 'Tonight - Cover Club - Start');
       expect(state.title, item.event.title);
-      expect(state.ctaLabel, 'Claim a seat');
+      expect(state.ctaLabel, 'View and book');
       expect(state.timePriceLabel, '6:00 PM - Free');
       expect(state.attendanceLabel, '19 going - 1 left');
     });
 
+    test('ranked hero beats chronology and stays in the feed', () {
+      final now = DateTime(2026, 7, 1, 10);
+      final club = buildClub(id: 'ranked-hero-club');
+      final soonest = _exploreItem(
+        id: 'soonest',
+        club: club,
+        startTime: DateTime(2026, 7, 1, 18),
+        bookedCount: 0,
+      );
+      final socialProof = _exploreItem(
+        id: 'social-proof',
+        club: club,
+        startTime: DateTime(2026, 7, 2, 18),
+        bookedCount: 12,
+      );
+
+      final featuredEventId = selectExploreFeaturedEventId(
+        items: [soonest, socialProof],
+        now: now,
+      );
+      final viewModel = ExploreFeedViewModel(
+        items: [soonest, socialProof],
+        featuredEventId: featuredEventId,
+      );
+      final section = ExploreFeedSectionState.from(
+        viewModel: viewModel,
+        candidateClubs: const [],
+        joinedClubIds: const {},
+        showThisWeekList: false,
+        l10n: _l10n,
+        now: now,
+      );
+
+      expect(featuredEventId, 'social-proof');
+      expect(viewModel.featuredItem, same(socialProof));
+      expect(section.bodyViewModel.items.map((item) => item.event.id), [
+        'soonest',
+        'social-proof',
+      ]);
+    });
+
+    test('blocked events cannot become the Explore hero', () {
+      final now = DateTime(2026, 7, 1, 10);
+      final club = buildClub(id: 'eligible-hero-club');
+      final blocked = _exploreItem(
+        id: 'members-only',
+        club: club,
+        startTime: DateTime(2026, 7, 1, 18),
+        bookedCount: 15,
+        availability: const ViewerEventAvailability(
+          status: ViewerEventAvailabilityStatus.membershipRequired,
+          spotsRemaining: 5,
+          isSaved: false,
+          isHosted: false,
+          isClubMember: false,
+        ),
+      );
+      final open = _exploreItem(
+        id: 'open-event',
+        club: club,
+        startTime: DateTime(2026, 7, 2, 18),
+        availability: const ViewerEventAvailability(
+          status: ViewerEventAvailabilityStatus.open,
+          spotsRemaining: 20,
+          isSaved: false,
+          isHosted: false,
+          isClubMember: false,
+        ),
+      );
+
+      expect(
+        selectExploreFeaturedEventId(items: [blocked, open], now: now),
+        'open-event',
+      );
+    });
+
+    test('cover CTA describes the next detail action honestly', () {
+      final club = buildClub(id: 'cover-cta-club');
+      final start = DateTime(2026, 7, 2, 18);
+      ExploreCoverStoryState stateFor(ViewerEventAvailabilityStatus status) {
+        return ExploreCoverStoryState.from(
+          _exploreItem(
+            id: status.name,
+            club: club,
+            startTime: start,
+            availability: ViewerEventAvailability(
+              status: status,
+              spotsRemaining: 4,
+              isSaved: false,
+              isHosted: false,
+              isClubMember: false,
+            ),
+          ),
+          l10n: _l10n,
+        );
+      }
+
+      expect(
+        stateFor(ViewerEventAvailabilityStatus.open).ctaLabel,
+        'View and book',
+      );
+      expect(
+        stateFor(ViewerEventAvailabilityStatus.requestRequired).ctaLabel,
+        'View and request',
+      );
+      expect(
+        stateFor(ViewerEventAvailabilityStatus.waitlistAvailable).ctaLabel,
+        'View waitlist',
+      );
+      expect(
+        stateFor(ViewerEventAvailabilityStatus.joined).ctaLabel,
+        'View event',
+      );
+    });
+
     test(
-      'ExploreFeedSectionState counts the full feed and only promotes a visible cover',
+      'ExploreFeedSectionState counts the full feed and keeps the cover event visible',
       () {
         final now = DateTime(2026, 7, 1, 10);
         final eventClub = buildClub(id: 'event-club');
@@ -474,26 +588,31 @@ void main() {
         );
 
         expect(state.bodyViewModel.items.map((item) => item.event.id), [
+          'featured-event',
           'second-event',
           'third-event',
         ]);
         expect(state.totalCount, 3);
         expect(state.resultCountLabel, '3 PLANS · JUL 1-3');
-        expect(state.cards, hasLength(3));
+        expect(state.cards, hasLength(4));
         expect(
           (state.cards[0] as ExploreMixedEventRowCard).item.event.id,
-          'second-event',
+          'featured-event',
         );
         expect(
           (state.cards[1] as ExploreMixedEventRowCard).item.event.id,
-          'third-event',
+          'second-event',
         );
         expect(
           (state.cards[2] as ExploreMixedClubSpotlightCard).club.id,
           'spotlight-club',
         );
-        expect(state.cardGroups, hasLength(2));
-        expect(state.cardGroups.first.label, startsWith('Tomorrow ·'));
+        expect(
+          (state.cards[3] as ExploreMixedEventRowCard).item.event.id,
+          'third-event',
+        );
+        expect(state.cardGroups, hasLength(3));
+        expect(state.cardGroups.first.label, startsWith('Today ·'));
 
         final searchState = ExploreFeedSectionState.from(
           l10n: _l10n,
@@ -556,7 +675,7 @@ void main() {
         showThisWeekList: true,
         now: now,
       );
-      expect(promoted.thisWeekItems, hasLength(5));
+      expect(promoted.thisWeekItems, hasLength(6));
       expect(promoted.cards, isEmpty);
       expect(promoted.isEmpty, false);
 
@@ -573,12 +692,21 @@ void main() {
         showThisWeekList: true,
         now: now,
       );
-      expect(twoDayStrip.thisWeekItems, hasLength(2));
+      expect(twoDayStrip.thisWeekItems, hasLength(3));
       expect(twoDayStrip.cards, isEmpty);
 
       final oneDayFallback = ExploreFeedSectionState.from(
         l10n: _l10n,
-        viewModel: ExploreFeedViewModel(items: [featured, weekItems.first]),
+        viewModel: ExploreFeedViewModel(
+          items: [
+            featured,
+            _exploreItem(
+              id: 'same-day-event',
+              club: club,
+              startTime: DateTime(2026, 7, 1, 20),
+            ),
+          ],
+        ),
         candidateClubs: const [],
         joinedClubIds: const {},
         showThisWeekList: true,
@@ -587,7 +715,7 @@ void main() {
       expect(oneDayFallback.thisWeekItems, isEmpty);
       expect(
         oneDayFallback.cards.whereType<ExploreMixedEventRowCard>(),
-        hasLength(1),
+        hasLength(2),
       );
     });
 

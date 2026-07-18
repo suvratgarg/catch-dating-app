@@ -1,6 +1,6 @@
 {
-  "version": "2.7.161",
-  "updated": "2026-07-16",
+  "version": "2.7.162",
+  "updated": "2026-07-19",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -226,23 +226,6 @@
       "source": "2026-07-01-react-surface-ui-primitive-governance"
     },
     {
-      "id": "EXPLORE-PRODUCT-DECISIONS-2026-07-10",
-      "title": "Resolve Explore v2 product and viewer-graph decisions",
-      "status": "owner-blocked",
-      "owner": "user",
-      "area": "explore,product-design,privacy,data",
-      "priority": "high",
-      "summary": "Owner review is required before the Explore v2 draft becomes a contract for these choices: ship Cross Paths with a person-recommendation provider and privacy policy or retire it; keep full events visible or hide them behind reveal; choose best-ranked or imminence-biased cover selection; define whether viewer-graph ranking may reorder the chronological day feed; and declare the Explore template a representative fixture or literal layout specification. Friends/mutuals-going, a saved/for-you lane, and an editorial nothing-tonight cover remain candidates. A real club-follow graph also needs explicit semantics for non-member follows, join/leave transitions, notifications, and privacy before Following can return as a filter or ranking signal.",
-      "paths": [
-        "design/screens/catch.screens.json",
-        "docs/design_parity/state_matrix.json",
-        "docs/design_parity/comprehensive_todo.md",
-        "lib/clubs/data/club_membership_repository.dart",
-        "lib/explore/**"
-      ],
-      "source": "explore-spec-v2-2026-07-08"
-    },
-    {
       "id": "MATCH-CHAT-OWNER-QA-001",
       "title": "Owner-side QA: live Chats device pass + seeded-data + thumbnail backfill",
       "status": "owner-blocked",
@@ -262,6 +245,19 @@
   ],
   "next_up": [],
   "completed": [
+    {
+      "id": "EXPLORE-PRODUCT-DECISIONS-2026-07-10-DONE",
+      "title": "Resolve Explore v2 product and viewer-graph decisions",
+      "completed": "2026-07-19",
+      "rules": [
+        "COPY-VERB-INTEGRITY-001",
+        "DATA-ACCESS-BATCH-001",
+        "WIDGET-CATALOG-001",
+        "WIDGET-SEMANTICS-001"
+      ],
+      "summary": "Owner authorized the quality-pass defaults: rank the cover independently while the body stays chronological; keep the cover event in the feed; use availability-aware detail CTA copy; retire Cross Paths until a consent-safe relationship provider exists; expose only veiled attendee-count proof without per-row profile reads; keep one map/filter distance state; and converge W6 against the current widget survey rather than adding superseded aliases.",
+      "source": "explore-screen-quality-pass-2026-07-19"
+    },
     {
       "id": "ARCH-PROVIDER-CODEGEN-001-DONE",
       "title": "Migrate reviewed manual Riverpod families to code generation",

@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -32,6 +34,7 @@ import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
+import 'package:catch_dating_app/core/widgets/catch_index_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
@@ -75,7 +78,6 @@ import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
@@ -894,6 +896,91 @@ Widget catchTypographyContractStates(BuildContext context) {
               ),
             ),
           ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchIndexRow,
+  path: '[Core primitives]/Lists',
+)
+Widget catchIndexRowContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _ContractScreen(
+    title: 'CatchIndexRow',
+    contractId: 'catch.index_row',
+    states: const ['default', 'selected', 'leading', 'trailing', 'disabled'],
+    children: [
+      _StateCard(
+        label: 'default',
+        child: CatchIndexRow(title: 'Dinner', onTap: _noop),
+      ),
+      _StateCard(
+        label: 'selected with leading and trailing',
+        child: CatchIndexRow(
+          title: 'Social run',
+          selected: true,
+          leading: CatchStatusDot(color: t.accent),
+          trailing: const Text('12'),
+          onTap: _noop,
+        ),
+      ),
+      const _StateCard(
+        label: 'disabled',
+        child: CatchIndexRow(title: 'Coming soon', onTap: null),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchClubCover,
+  path: '[Core primitives]/Media',
+)
+Widget catchClubCoverContractStates(BuildContext context) {
+  final fallbackClub = Club(
+    id: 'contract-cover-fallback',
+    name: 'Sea Face Social',
+    description: 'A social movement club.',
+    location: 'Mumbai',
+    area: 'Bandra',
+    createdAt: DateTime(2026),
+  );
+  final photoClub = fallbackClub.copyWith(
+    id: 'contract-cover-photo',
+    imageUrl:
+        'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=720&q=80',
+  );
+  return _ContractScreen(
+    title: 'CatchClubCover',
+    contractId: 'catch.club_cover',
+    states: const ['photo', 'fallback', 'compact', 'error-fallback'],
+    children: [
+      _StateCard(
+        label: 'photo',
+        child: SizedBox(
+          width: 280,
+          height: 180,
+          child: CatchClubCover(club: photoClub),
+        ),
+      ),
+      _StateCard(
+        label: 'fallback',
+        child: SizedBox(
+          width: 280,
+          height: 180,
+          child: CatchClubCover(club: fallbackClub),
+        ),
+      ),
+      _StateCard(
+        label: 'compact',
+        child: SizedBox.square(
+          dimension: 72,
+          child: CatchClubCover(club: fallbackClub, compact: true),
         ),
       ),
     ],
@@ -7256,98 +7343,6 @@ Widget catchCoverStoryContractStates(BuildContext context) {
             activityKind: ActivityKind.yoga,
             title: 'Stretch into Sunday',
             showGhostGlyph: false,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchCrossPathsCard,
-  path: '[Core primitives]/Product composites',
-)
-Widget catchCrossPathsCardContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchCrossPathsCard',
-    contractId: 'catch.cross_paths_card',
-    states: const [
-      'postcard',
-      'photo-row',
-      'no-photo-fallback',
-      'with-like',
-      'long-copy',
-    ],
-    children: [
-      _StateCard(
-        label: 'postcard',
-        child: SizedBox(
-          width: 420,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.socialRun,
-            kicker: 'Crossed paths',
-            quote: 'I am going for coffee after the run.',
-            displayName: 'Isha',
-            age: 29,
-            meta: '2 km away',
-            onJoin: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'photo-row',
-        child: SizedBox(
-          width: 420,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.dinner,
-            variant: CatchCrossPathsVariant.photo,
-            quote: 'The host saved two seats at the long table.',
-            displayName: 'Maya',
-            age: 31,
-            meta: 'Tonight',
-            onJoin: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'no-photo-fallback',
-        child: SizedBox(
-          width: 420,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.pickleball,
-            variant: CatchCrossPathsVariant.photo,
-            quote: 'Come hit a warm-up set.',
-            displayName: 'Naina',
-            onJoin: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'with-like',
-        child: SizedBox(
-          width: 420,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.pubQuiz,
-            quote: 'I need one more teammate for music trivia.',
-            displayName: 'Dev',
-            onJoin: _noop,
-            onLike: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'long-copy',
-        child: SizedBox(
-          width: 340,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.yoga,
-            quote:
-                'I am trying the longer beginner-friendly class before brunch if you want to join the same table afterwards.',
-            displayName: 'Aanya',
-            age: 28,
-            meta: 'Sunday morning near Bandra',
-            onJoin: _noop,
           ),
         ),
       ),

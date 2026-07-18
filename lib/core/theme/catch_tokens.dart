@@ -1886,7 +1886,6 @@ abstract final class CatchLayout {
   static const double clubPolaroidRadius = CatchSpacing.micro6;
   static const double clubPolaroidMediaRadius = CatchSpacing.micro3;
   static const double clubCoverCompactMediaRadius = CatchRadius.md;
-  static const double clubPolaroidTitleSize = CatchSpacing.s6;
   static const double polaroidBodyReserve = 108.0;
   static const double polaroidBodyReserveWithFooter = 212.0;
   static const double eventTypeTileMaxWidth = 340.0;
@@ -1968,13 +1967,6 @@ abstract final class CatchLayout {
   static const double journeyStepsIndexColumnWidth = 30.0;
   static const double journeyStepsRailColumnWidth = 20.0;
   static const double journeyStepsNodeExtent = 11.0;
-  // CrossPathsCard (design-system components/explore/CrossPathsCard).
-  static const double crossPathsPolaroidWidth = 76.0;
-  static const double crossPathsPolaroidHeight = 92.0;
-  static const double crossPathsRailColumnWidth = 104.0;
-  static const double crossPathsPhotoVariantWidth = 122.0;
-  static const double crossPathsHeartExtent = 34.0;
-  static const double crossPathsPolaroidTilt = 0.0349; // 2° in radians
   // CoverStory (design-system components/explore/CoverStory).
   static const double exploreDiscoveryCoverHeight = 316.0;
   static const double coverStoryGhostGlyphSize = 210.0;

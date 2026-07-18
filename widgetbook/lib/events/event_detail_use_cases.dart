@@ -2718,6 +2718,32 @@ Widget eventDateRailCardState(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Ticket stub states',
+  type: EventTicketStub,
+  path: '[Events]/Tiles',
+)
+Widget eventTicketStubStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      EventTicketStub(
+        decisionLabel: '6:30 PM · 18 going · 6 left',
+        priceLabel: 'Free',
+        statusColor: t.accent,
+      ),
+      gapH16,
+      EventTicketStub(
+        decisionLabel: '7:00 PM · Waitlist open',
+        statusLabel: 'Request',
+        priceLabel: 'From ₹499',
+        statusColor: t.warning,
+      ),
+    ],
+  );
+}
+
 @widgetbook.UseCase(name: 'Date rail', type: DateRail, path: '[Events]/Tiles')
 Widget eventDateRailState(BuildContext context) {
   return DateRail(

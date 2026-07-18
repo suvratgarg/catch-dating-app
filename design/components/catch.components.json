@@ -3569,6 +3569,9 @@
           "CatchTextStyles.kickerLg",
           "CatchTextStyles.fieldSectionKicker",
           "CatchTextStyles.monoLabel",
+          "CatchTextStyles.clubDisplay",
+          "CatchTextStyles.eventDisplay",
+          "CatchDisplayStep",
           "CatchMonoLabel"
         ],
         "goldens": [],
@@ -9128,182 +9131,6 @@
       }
     },
     {
-      "id": "catch.cross_paths_card",
-      "name": "CatchCrossPathsCard",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Explore person-in-feed card with postcard/photo variants, activity-gradient fallback, quote, attribution, CTA, and like action.",
-      "dart": {
-        "symbol": "CatchCrossPathsCard",
-        "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-        "constructors": [
-          "CatchCrossPathsCard"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/CrossPathsCard",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "CrossPathsCard",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "activityKind",
-            "type": "enum",
-            "required": true,
-            "dartType": "ActivityKind",
-            "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
-          },
-          {
-            "name": "quote",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "displayName",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "variant",
-            "type": "enum",
-            "required": false,
-            "default": "postcard",
-            "dartType": "CatchCrossPathsVariant",
-            "values": [
-              "postcard",
-              "photo"
-            ]
-          },
-          {
-            "name": "kicker",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "age",
-            "type": "number",
-            "required": false,
-            "dartType": "int?"
-          },
-          {
-            "name": "meta",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "photoUrl",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "cta",
-            "type": "string",
-            "required": false,
-            "default": "Join her there",
-            "dartType": "String"
-          },
-          {
-            "name": "onJoin",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
-          },
-          {
-            "name": "onLike",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
-          }
-        ],
-        "states": [
-          "postcard",
-          "photo-row",
-          "no-photo-fallback",
-          "with-like",
-          "long-copy"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s2",
-          "space.s3",
-          "space.s4",
-          "space.s5",
-          "radius.md",
-          "radius.lg",
-          "theme.light.color.bg",
-          "theme.light.color.ink",
-          "theme.light.color.line",
-          "theme.light.color.surface"
-        ],
-        "dartRoles": [
-          "CatchCrossPathsVariant",
-          "CatchButton",
-          "CatchGradedImage",
-          "CatchTextStyles.profileAnswer"
-        ],
-        "goldens": []
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.button",
-          "catch.icon_button"
-        ],
-        "notes": [
-          "Product composition for Explore; validate a production call site before making broader feed-row claims."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.cross_paths_card",
-        "publicApi": true,
-        "stateOwnership": "slot-state-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.cross_paths_card"
-      },
-      "surfaces": {
-        "flutter": "CatchCrossPathsCard"
-      }
-    },
-    {
       "id": "catch.person_avatar",
       "name": "CatchPersonAvatar",
       "status": "active",
@@ -10167,6 +9994,25 @@
               "conceptId": "catch.event_card",
               "parentConceptId": "catch.event_card",
               "qualifier": "layout",
+              "decisionRef": "contract-family:catch.event_card"
+            }
+          },
+          {
+            "id": "catch.event_card.ticket_stub",
+            "symbol": "EventTicketStub",
+            "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+            "summary": "Shared responsive ticket decision row for time, capacity, status, and trailing price copy.",
+            "states": [
+              "inline",
+              "stacked",
+              "with-status",
+              "long-price"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.event_card"
             }
           },
@@ -12031,6 +11877,224 @@
           "Use for a factual icon-and-label line; use catch.ui_label for structural section hierarchy.",
           "The CatchMetaRow/StageSectionLabel ledger decision is an intentional false-positive boundary."
         ]
+      }
+    },
+    {
+      "id": "catch.index_row",
+      "name": "CatchIndexRow",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Canonical hairline index row for compact directories and browse lists with optional leading and trailing content.",
+      "dart": {
+        "symbol": "CatchIndexRow",
+        "file": "lib/core/widgets/catch_index_row.dart",
+        "constructors": [
+          "CatchIndexRow"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/IndexRow",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "IndexRow",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "leading",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "trailing",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "selected",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "default",
+          "selected",
+          "leading",
+          "trailing",
+          "disabled"
+        ],
+        "slots": [
+          {
+            "name": "leading",
+            "kind": "optional-leading-widget"
+          },
+          {
+            "name": "trailing",
+            "kind": "optional-trailing-widget"
+          }
+        ],
+        "tokens": [
+          "space.s3",
+          "space.s4",
+          "theme.light.color.line",
+          "theme.light.color.ink",
+          "theme.light.color.ink2"
+        ],
+        "dartRoles": [
+          "CatchTextStyles.titleL",
+          "CatchLayout.eventTypeIndexRowHeight"
+        ],
+        "goldens": []
+      },
+            "handoff": {
+                "allowedChildren": [
+                    "catch.ui_label"
+        ],
+        "notes": [
+          "Use for quiet browse and directory indexes; richer selectable controls belong to catch.option_group."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.index_row",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.index_row"
+      },
+      "surfaces": {
+        "flutter": "CatchIndexRow"
+      }
+    },
+    {
+      "id": "catch.club_cover",
+      "name": "CatchClubCover",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Canonical club-cover resolver for uploaded photos, the global image grade, deterministic club artwork, and compact fallbacks.",
+      "dart": {
+        "symbol": "CatchClubCover",
+        "file": "lib/clubs/shared/catch_club_cover.dart",
+        "constructors": [
+          "CatchClubCover"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/ClubCover",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "ClubCover",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "club",
+            "type": "object",
+            "required": true,
+            "dartType": "Club"
+          },
+          {
+            "name": "compact",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "photo",
+          "fallback",
+          "compact",
+          "error-fallback"
+        ],
+        "slots": [],
+        "tokens": [
+          "theme.light.color.surface",
+          "theme.light.color.ink",
+          "theme.light.color.primary"
+        ],
+        "dartRoles": [
+          "Club.primaryClubPhotoUrl",
+          "CatchGradedImage",
+          "CatchNetworkImage",
+          "ClubPolaroidArtwork"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use whenever a club cover is rendered; do not resolve imageUrl, clubPhotos, or fallback artwork independently at call sites."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.club_cover",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+                "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.club_cover"
+      },
+      "surfaces": {
+        "flutter": "CatchClubCover"
       }
     }
   ]

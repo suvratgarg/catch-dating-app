@@ -1372,12 +1372,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreCatchCoverStoryTooltipSearch => 'Search';
 
   @override
-  String get exploreCatchCrossPathsCardTextToYou => 'TO: YOU';
-
-  @override
-  String get exploreCatchCrossPathsCardTooltipLike => 'Like';
-
-  @override
   String get exploreExploreCityPickerTextCity => 'City';
 
   @override
@@ -6912,7 +6906,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenStateLabel10Km => '10 km';
 
   @override
-  String get exploreExploreScreenStateCtalabelClaimASeat => 'Claim a seat';
+  String get exploreExploreScreenStateCtaViewAndBook => 'View and book';
+
+  @override
+  String get exploreExploreScreenStateCtaViewAndRequest => 'View and request';
+
+  @override
+  String get exploreExploreScreenStateCtaViewWaitlist => 'View waitlist';
+
+  @override
+  String get exploreExploreScreenStateCtaViewEvent => 'View event';
 
   @override
   String get exploreExploreScreenStateActionlabelOpen => 'Open';
@@ -6922,6 +6925,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exploreExploreScreenStateCaptionClubToKnow => 'Club to know';
+
+  @override
+  String get exploreExploreScreenStateLabelHostedBy => 'Hosted by';
 
   @override
   String get exploreExploreScreenStateActionlabelPreview => 'Preview';
@@ -11269,7 +11275,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsEventPriceCopyPriceOnSource => 'Price on source';
 
   @override
-  String exploreExploreEventTypeBrowseGridEventCount({required int count}) {
+  String coreCatchCountCopyEvents({required int count}) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -11281,14 +11287,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String exploreExploreScreenStateDistanceMetersAway({required int meters}) {
+  String coreCatchDistanceFormatterMetersAway({required int meters}) {
     return '$meters m away';
   }
 
   @override
-  String exploreExploreScreenStateDistanceKilometersAway({
-    required Object distance,
-  }) {
+  String coreCatchDistanceFormatterKilometersAway({required String distance}) {
     return '$distance km away';
   }
 

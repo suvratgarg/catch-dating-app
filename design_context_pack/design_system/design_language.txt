@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.5.5
-updated: 2026-07-17
+version: 1.5.6
+updated: 2026-07-18
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -186,7 +186,7 @@ tiers within one list.
   the ticket-stub typography (serial/time treatment).
 - **Polaroid → clubs: already built, needs naming + extending.** The cover-photo club
   tile (`_DirectoryPhotoCard`) *is* a polaroid — white inset frame, framed photo, IBM
-  Plex Mono caption, italic serif name. Extract a `CatchPolaroid` primitive, and give the
+  Plex Mono caption, and upright Archivo `clubDisplay` name. Extract a `CatchPolaroid` primitive, and give the
   **no-cover** variant (`_DirectoryIdentityCard`) the polaroid treatment too (caption +
   activity art in the frame) so "no photo" looks intentional.
 

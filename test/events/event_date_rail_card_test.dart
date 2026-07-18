@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:flutter/material.dart';
@@ -107,5 +108,33 @@ void main() {
       find.byKey(const ValueKey('event_date_rail_card.price')),
     );
     expect(cardRect.right - priceRect.right, lessThanOrEqualTo(24));
+  });
+
+  testWidgets('DateTicket exposes veiled attendee proof without identities', (
+    tester,
+  ) async {
+    final event = buildEvent(
+      startTime: DateTime(2026, 7, 18, 14, 20),
+      bookedCount: 5,
+    );
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(
+        body: EventDateRailCard(
+          event: event,
+          kicker: 'Vijay Nagar Event Collective',
+          showAttendeeSignal: true,
+        ),
+      ),
+    );
+
+    final stack = tester.widget<CatchPersonAvatarStack>(
+      find.byType(CatchPersonAvatarStack),
+    );
+    expect(stack.items, isEmpty);
+    expect(stack.totalCount, 5);
+    expect(stack.veiledCount, 5);
+    expect(find.byType(CatchVeiledPersonAvatar), findsNWidgets(4));
   });
 }

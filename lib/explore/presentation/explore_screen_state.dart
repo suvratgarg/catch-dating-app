@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/core/formatters/catch_distance_formatter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -448,7 +449,7 @@ class ExploreCoverStoryState {
     return ExploreCoverStoryState(
       kicker: _coverKicker(item, l10n: l10n, now: now),
       title: item.event.title,
-      ctaLabel: l10n.exploreExploreScreenStateCtalabelClaimASeat,
+      ctaLabel: _coverCtaLabel(item, l10n),
       timePriceLabel: l10n.exploreExploreScreenStateVisiblecopyTimePricelabel(
         time: EventFormatters.time(item.event.startTime),
         priceLabel: eventPriceLabel(
@@ -490,12 +491,10 @@ class ExploreFeedSectionState {
     bool promoteFeaturedItem = true,
     DateTime? now,
   }) {
-    final featured = promoteFeaturedItem ? viewModel.featuredItem : null;
-    final bodyItems = viewModel.items
-        .where((item) => item != featured)
-        .toList(growable: false);
+    final bodyItems = viewModel.items;
     final bodyViewModel = ExploreFeedViewModel(
       items: bodyItems,
+      featuredEventId: viewModel.featuredEventId,
       externalItems: viewModel.externalItems,
       dateSupplyCounts: viewModel.dateSupplyCounts,
       isExhaustive: viewModel.isExhaustive,
@@ -676,6 +675,9 @@ class ExploreClubCardState {
     required this.title,
     required this.supportingLabel,
     required this.ratingReviewLabel,
+    required this.hostEyebrow,
+    required this.hostName,
+    required this.hostAvatarUrl,
     required this.semanticLabel,
     required this.rowKicker,
     required this.tags,
@@ -685,6 +687,12 @@ class ExploreClubCardState {
     Club club, {
     required AppLocalizations l10n,
   }) {
+    final hostEyebrow = l10n.exploreExploreScreenStateLabelHostedBy;
+    final hostName = club.displayHostName;
+    final ratingReviewLabel = l10n.exploreExploreScreenStateClubRatingReviews(
+      rating: club.rating.toStringAsFixed(1),
+      reviewCount: club.reviewCount,
+    );
     return ExploreClubCardState(
       memberCountLabel: clubMemberCountLabel(club),
       caption:
@@ -693,23 +701,12 @@ class ExploreClubCardState {
               .toUpperCase(),
       title: club.name,
       supportingLabel: _clubSupportingLabel(club, l10n),
-      ratingReviewLabel: l10n.exploreExploreScreenStateClubRatingReviews(
-        rating: club.rating.toStringAsFixed(1),
-        reviewCount: club.reviewCount,
-      ),
-      semanticLabel: l10n.exploreExploreScreenStateClubCardSemantics(
-        title: club.name,
-        caption:
-            (club.nextEventLabel ??
-                    l10n.exploreExploreScreenStateCaptionClubToKnow)
-                .toUpperCase(),
-        supportingLabel: _clubSupportingLabel(club, l10n),
-        memberCountLabel: clubMemberCountLabel(club),
-        ratingReviewLabel: l10n.exploreExploreScreenStateClubRatingReviews(
-          rating: club.rating.toStringAsFixed(1),
-          reviewCount: club.reviewCount,
-        ),
-      ),
+      ratingReviewLabel: ratingReviewLabel,
+      hostEyebrow: hostEyebrow,
+      hostName: hostName,
+      hostAvatarUrl: club.hostAvatarUrl,
+      semanticLabel:
+          '${l10n.exploreExploreScreenStateClubCardSemantics(title: club.name, caption: (club.nextEventLabel ?? l10n.exploreExploreScreenStateCaptionClubToKnow).toUpperCase(), supportingLabel: _clubSupportingLabel(club, l10n), memberCountLabel: clubMemberCountLabel(club), ratingReviewLabel: ratingReviewLabel)}, $hostEyebrow $hostName',
       rowKicker: l10n.exploreExploreScreenStateVisiblecopyClubToKnow,
       tags: visibleClubTags(club, limit: 2),
     );
@@ -720,6 +717,9 @@ class ExploreClubCardState {
   final String title;
   final String supportingLabel;
   final String ratingReviewLabel;
+  final String hostEyebrow;
+  final String hostName;
+  final String? hostAvatarUrl;
   final String semanticLabel;
   final String rowKicker;
   final List<String> tags;
@@ -994,7 +994,7 @@ String _rowSupportingLabel(ExploreEventItem item, AppLocalizations l10n) {
   return [
     if (event.eventFormat.isDistanceBased) event.activitySummaryLabel,
     event.locationName,
-    _distanceLabel(item.distanceFromUserKm, l10n),
+    CatchDistanceFormatter.away(l10n, item.distanceFromUserKm),
   ].whereType<String>().where((label) => label.trim().isNotEmpty).join(' · ');
 }
 
@@ -1051,23 +1051,8 @@ String _externalEventSupportingLabel(
   return _joinExploreLabels([
     event.activityKind.label,
     event.meetingPoint,
-    _distanceLabel(item.distanceFromUserKm, l10n),
+    CatchDistanceFormatter.away(l10n, item.distanceFromUserKm),
   ]);
-}
-
-String? _distanceLabel(double? distanceKm, AppLocalizations l10n) {
-  if (distanceKm == null) return null;
-  if (distanceKm < 1) {
-    return l10n.exploreExploreScreenStateDistanceMetersAway(
-      meters: (distanceKm * 1000).round(),
-    );
-  }
-  final rounded = distanceKm >= 10
-      ? distanceKm.round().toString()
-      : distanceKm.toStringAsFixed(1);
-  return l10n.exploreExploreScreenStateDistanceKilometersAway(
-    distance: rounded,
-  );
 }
 
 String? _availabilityLabel(
@@ -1194,6 +1179,21 @@ String _coverSpotsLabel(ExploreEventItem item, AppLocalizations l10n) {
   return spots == 1
       ? l10n.exploreExploreScreenStateVisiblecopy1Left
       : l10n.exploreExploreScreenStateVisiblecopySpotsLeft(spots: spots);
+}
+
+String _coverCtaLabel(ExploreEventItem item, AppLocalizations l10n) {
+  return switch (item.availability?.status) {
+    ViewerEventAvailabilityStatus.open ||
+    ViewerEventAvailabilityStatus.saved ||
+    ViewerEventAvailabilityStatus.approvedToBook ||
+    null => l10n.exploreExploreScreenStateCtaViewAndBook,
+    ViewerEventAvailabilityStatus.requestRequired =>
+      l10n.exploreExploreScreenStateCtaViewAndRequest,
+    ViewerEventAvailabilityStatus.waitlistAvailable ||
+    ViewerEventAvailabilityStatus.waitlisted =>
+      l10n.exploreExploreScreenStateCtaViewWaitlist,
+    _ => l10n.exploreExploreScreenStateCtaViewEvent,
+  };
 }
 
 List<String> _areaOptions(Iterable<Club> clubs, String? selectedArea) {

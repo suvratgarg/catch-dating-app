@@ -1,6 +1,6 @@
 {
-  "version": 31,
-  "updated": "2026-07-18",
+  "version": 33,
+  "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -649,7 +649,7 @@
       "symptom": "The featured event is always removed from the body even after search replaces its cover, the result label counts only visible body rows, or the map pill counts events that cannot produce map pins.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/explore/explore_view_model_test.dart --plain-name 'ExploreFeedSectionState counts the full feed and only promotes a visible cover'"
+        "command": "flutter test test/explore/explore_view_model_test.dart --plain-name 'ExploreFeedSectionState counts the full feed and keeps the cover event visible'"
       },
       "owner_docs": [
         "docs/widget_catalog.md",
@@ -693,6 +693,68 @@
         "docs/agent_regression_ledger.json"
       ],
       "notes": "Calendar grouping fixtures must derive every event and availability calculation from one captured reference time and pin intended same-day events to one explicit calendar day."
+    },
+    {
+      "id": "REG-EXPLORE-004",
+      "title": "Explore cover falls back to chronology or promises an unavailable mutation",
+      "status": "active",
+      "applies_to": [
+        "lib/explore/presentation/explore_feed_view_model.dart",
+        "lib/explore/presentation/explore_screen_state.dart",
+        "test/explore/explore_view_model_test.dart"
+      ],
+      "symptom": "The cover is inferred from items.first, promotes blocked/ineligible/past supply, disappears from the chronological feed, or labels a detail navigation as an immediate booking mutation.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/explore/explore_view_model_test.dart",
+        "guardEvidence": "focused state tests prove recommendation rank beats chronology, blocked events cannot hero, CTA copy follows availability, and the selected cover id stays in the feed"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/plans/explore_screen_quality_pass_spec.md"
+      ],
+      "notes": "Cover ranking is an independent display decision; chronological body order and actual CTA side effects remain authoritative."
+    },
+    {
+      "id": "REG-EXPLORE-005",
+      "title": "Explore social proof exposes identities or creates per-ticket reads",
+      "status": "active",
+      "applies_to": [
+        "lib/events/shared/event_tiles/event_date_rail_card.dart",
+        "lib/explore/presentation/widgets/explore_club_cards.dart",
+        "test/events/event_date_rail_card_test.dart"
+      ],
+      "symptom": "Explore restores an unwired person card, looks up attendee profiles per ticket, or displays identifiable people without a consent-safe relationship contract.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/events/event_date_rail_card_test.dart --plain-name 'DateTicket exposes veiled attendee proof without identities'",
+        "guardEvidence": "the ticket receives only Event.signedUpCount and renders empty identity items plus veiled activity avatars"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_parity/comprehensive_todo.md"
+      ],
+      "notes": "Identified people, mutuals, and Cross Paths require an explicit consent-safe, batched relationship source before any UI is reintroduced."
+    },
+    {
+      "id": "REG-EXPLORE-006",
+      "title": "Dark UI captures freeze halfway through nested theme animations",
+      "status": "active",
+      "applies_to": [
+        "test/ui_captures/support/capture_pump.dart",
+        "test/ui_captures/catalog/screen_capture_catalog.dart"
+      ],
+      "symptom": "A dark capture is written on the frame where MaterialApp finishes its theme transition, leaving CatchSurface implicit animations at a light/dark midpoint and producing false gray cards in visual-review evidence.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/ui_capture/run_captures.mjs --ids member_event_discovery,explore_cover_contrast_floor --output-dir /private/tmp/catch-explore-quality-captures --pixel-ratio 1.0 --output-layout theme-first",
+        "guardEvidence": "the bounded capture pump includes a post-theme animation beat and both dark artifacts visually resolve to the final dark surface tokens"
+      },
+      "owner_docs": [
+        "docs/plans/explore_screen_quality_pass_spec.md",
+        "docs/plans/ui_capture_visual_qa.md"
+      ],
+      "notes": "Keep capture settling bounded because loading indicators may animate indefinitely; the extra CatchMotion.base beat targets second-order implicit animations without using pumpAndSettle."
     },
     {
       "id": "REG-MAP-001",

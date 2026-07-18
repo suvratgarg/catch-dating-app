@@ -2348,6 +2348,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Lists',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchIndexRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchIndexRowContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Loading',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -2399,6 +2415,17 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Media',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchClubCover',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchClubCoverContractStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchDetailHeroBackdrop',
             useCases: [
@@ -2735,17 +2762,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchCoverStoryContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchCrossPathsCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCrossPathsCardContractStates,
               ),
             ],
           ),
@@ -4024,6 +4040,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventTicketStub',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Ticket stub states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventTicketStubStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'PerforationLine',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4044,47 +4070,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Cards',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchCrossPathsCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Cross paths card states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .catchCrossPathsCardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CrossPathsCtaRow',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Cross paths CTA states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .crossPathsCtaRowStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CrossPathsPolaroidRail',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Cross paths polaroid states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .crossPathsPolaroidRailStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CrossPathsPortrait',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Cross paths portrait states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .crossPathsPortraitStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ExploreClubCover',
+            name: 'CatchClubCover',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Club cover states',
@@ -4110,16 +4096,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Club tags states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreClubTagsStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ExploreMonoLabel',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Mono label states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .exploreMonoLabelStates,
               ),
             ],
           ),
